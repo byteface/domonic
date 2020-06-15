@@ -6,6 +6,8 @@
     Generate HTML using python 3
 """
 
+__version__ = "0.0.2"
+
 from typing import *
 
 from .html import *
