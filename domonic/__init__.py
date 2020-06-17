@@ -6,7 +6,7 @@
     Generate HTML using python 3
 """
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 from typing import *
 
@@ -34,15 +34,9 @@ class domonic:
 
     @staticmethod
     def parse(html:str) -> str :
-        ''' HTML as input and returns domonic '''
+        ''' HTML as input and returns python '''
 
         print("attempting to parse the page")
-
-        # - TODO - should probs pretty it up first and strip want cant be
-        # turn all tags into class definitions.
-        # check closing tags. turn to closed bracks
-        # create strings around content and remove white space
-        # put underscores on attributes
 
         import re
 
@@ -51,9 +45,7 @@ class domonic:
         
         # html = "<html><body>some content</body></html>"
 
-        # "style","script"
-
-        htmltags = ["html","span","button","link","form","nav","details","summary","header","head","body","meta","title","div","footer","img","a","p","h1","h2","h3","h4","h5","h6","hr","ul","ol","li","time","template","label","input","small","strong","option","select"]
+        htmltags = ["html","span","button","link","form","nav","details","summary","header","head","body","meta","title","div","footer","img","a","p","h1","h2","h3","h4","h5","h6","hr","ul","ol","li","time","template","label","input","small","strong","option","select","main","td","tr","thead","th","table","tbody","canvas","b","center","br"]
 
         for tag in htmltags:
 
@@ -76,48 +68,77 @@ class domonic:
             pattern = re.compile(reg)
             html = re.sub( pattern, ')', html)#, flags=re.IGNORECASE )
 
-            # second pass. single no closed. i.e meta
-            # reg = f">"
-            # pattern = re.compile(reg)
-            # html = re.sub( pattern, ')', html)#, flags=re.IGNORECASE )
-
-            # need to get all the ( and )
-            # count left and right. until it changes.
-            # left > (((()
-            # right > )(()
-
-
-
-            # tags = re.findall(pattern,html)
-            # if len(tags) < 1:
-                # continue
-            # print(tags)
-            # for count,each in enumerate(tags):
-                # print(count,each)
-                # tags[count] = tag + "(" + each + ")"
-            # html = ''.join(tags)
-            # print(count, html)
-        
-        print(html)
-        
 
         # close any tags that arent properly self closing
         flag=False
+        increase_index=0 # by the amount of new chars you add
         for index,char in enumerate(html):
-            if char=="(":flag=True
+            index = index+increase_index
+            if char=="(":
+                flag=True
+                tag = html[index-4] + html[index-3] + html[index-2] + html[index-1]
+                print(tag)
+
             if char==")":flag=False
             if char==">" and flag is True:
-                html = f"{html[:index]},{html[index+1:]}" # replace it for a ','
-                # TODO - if its self closing. replace for a ')' instead
+                if 'meta' in tag or 'link' in tag or 'hr' in tag:
+                    html = f"{html[:index]}),{html[index+1:]}" # replace it for a '),'
+                    increase_index +=1
+                else:
+                    html = f"{html[:index]},{html[index+1:]}" # replace for a ','
+                    # index = index-1
+                    # html = f"{html[:index]}).html({html[index+1:]}" # replace for a ','
+                    # increase_index +=6
+                
 
         # strip any comments
         cleaned=[]
         for line in html.splitlines():
-            print('smelly fanny!')
             if "<!" in line:
                 continue
             cleaned.append(line)
         html = '\n'.join(cleaned)
+
+
+        attributes = ["alt","integrity","crossorigin","charset","lang","class","id","style","placeholder","text","value","href","width","height","src","name","content","rel","color","type","size"]        
+        # put underscores on all the attributes
+        for attr in attributes:
+            reg = f' {attr}="'
+            pattern = re.compile(reg)
+            html = re.sub( pattern, f' _{attr}="', html )#, flags=re.IGNORECASE )
+
+        # commas between them
+        for attr in attributes:
+            reg = f'" _{attr}="'
+            pattern = re.compile(reg)
+            html = re.sub( pattern, f'", _{attr}="', html )#, flags=re.IGNORECASE )
+
+
+        # TODO - diff between loaded and inline
+        # get the style and script tags
+        htmltags = ["style","script"]
+        for tag in htmltags:
+            reg = f"<{tag}>"
+            pattern = re.compile(reg)
+            html = re.sub( pattern, f'{tag}("""', html )#, flags=re.IGNORECASE )
+
+            # second pass. atrributed
+            reg = f"<{tag}"
+            pattern = re.compile(reg)
+            html = re.sub( pattern, f'{tag}("""', html )#, flags=re.IGNORECASE )
+            
+            reg = f"</{tag}>"
+            pattern = re.compile(reg)
+            html = re.sub( pattern, '""")', html)#, flags=re.IGNORECASE )
+
+            reg = f"/>"
+            pattern = re.compile(reg)
+            html = re.sub( pattern, '""")', html)#, flags=re.IGNORECASE )
+
+
+        html = ')'.join(html.split(',)'))
+
+        print(html)
 
         # return eval('print("test")')
         # return eval('Location()')

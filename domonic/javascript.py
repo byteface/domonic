@@ -13,7 +13,7 @@ import random
 #
 class js_object(object):
 
-    def valueOf():
+    def valueOf(self):
         """ Returns the primitive value of an array Array, Boolean, Date, Number, String"""
         pass
 
@@ -34,7 +34,7 @@ class Math(js_object):
     SQRT1_2 = 0.7071067811865476
     SQRT2 = 1.4142135623730951
 
-    # TODO - pass what types of validation
+    # TODO - pass what types of validation?
     # i.e force numbers
     # i.e positive/negative numbers allowed
     # convert bool/string to number?
@@ -42,7 +42,7 @@ class Math(js_object):
         def validation_decorator(*args, **kwargs):
             for n in args:
                 if type(n) != float and type(n) != int:
-                    raise ValueError("Value passed NaN")
+                    raise ValueError("Value passed was NaN")
             return func(*args)
         return validation_decorator
 
@@ -266,7 +266,7 @@ class Global(object):
 
         return False
 
-    def NaN():
+    def NaN(self):
         """ "Not-a-Number" value """
         return "NaN"
 
@@ -301,7 +301,7 @@ class Global(object):
         """ Converts an object's value to a string """
         return str(x)
 
-    def undefined():
+    def undefined(self):
         """ Indicates that a variable has not been assigned a value """
         return None
 

@@ -175,6 +175,7 @@ input = type('input', (closed_tag, Element), {'name':'input'})
 keygen = type('keygen', (closed_tag, Element), {'name':'keygen'})
 command = type('command', (closed_tag, Element), {'name':'command'})
 
+main = type('command', (tag, Element), {'name':'main'}) # TODO - y was this missing?
 
 # TODO - this can't be added at the mo. need to push it
 class doctype():

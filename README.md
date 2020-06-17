@@ -84,19 +84,23 @@ from html5print import HTMLBeautifier
 print(HTMLBeautifier.beautify(output, 4))
 ```
 
-### common errors
-If you incorrectly type the code it will obviously not work. So there are a bunch of common ones I've noticed :
-
-##### TODO - catch these and raise a friendly error that tells you what to fix
+### Common Errors
+If you incorrectly type code it will obviously not work. So there are a bunch of common ones I've noticed when creating large domonic templates. :
 
 IndexError: list index out of range
     - You most likely didn't put a underscore on an attribute.
 
 SyntaxError: invalid syntax
-    - You most likely are missing a comma somewhere between params
+    - You are Missing a comma between attributes
 
 SyntaxError: positional argument follows keyword argument
     - You have to pass attributes LAST. and strings and objects first. *see docs*
+
+TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
+    - You are Missing a comma between attributes. before the **{}
+
+##### TODO - catch these and raise a friendly custom ParseError that tells you what to fix
+
 
 
 ### run tests

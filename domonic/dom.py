@@ -39,16 +39,16 @@ class Event(object):
 
 class EventTarget:
 
-    def __init__():
+    def __init__(self):
         self.listeners = {}
 
     # TODO - event: str, function, useCapture: bool
-    def addEventListener(_type, callback):
+    def addEventListener(self, _type, callback):
         if _type not in self.listeners:
             self.listeners[_type] = []
         self.listeners[_type].append(callback)
 
-    def removeEventListener(_type, callback):
+    def removeEventListener(self, _type, callback):
         if _type not in self.listeners:
             return
 
@@ -60,7 +60,7 @@ class EventTarget:
                 stack.remove(thing)
                 return
 
-    def dispatchEvent(event):
+    def dispatchEvent(self, event):
         if event._type not in self.listeners:
             return True
 
@@ -161,13 +161,12 @@ class Element(Node):
         pass
 
     # def accessKey( key: str ): -> None
-        ''' Sets or returns the accesskey attribute of an element'''
-
+        # ''' Sets or returns the accesskey attribute of an element'''
         # return        
         # example
         # dom.getElementById("myAnchor").accessKey = "w";
 
-    def addEventListener(event: str, function, useCapture: bool) -> None:
+    def addEventListener(self, event: str, function, useCapture: bool) -> None:
         '''Attaches an event handler to the specified element'''
         # return
         # example
@@ -176,16 +175,15 @@ class Element(Node):
         # });
         pass
 
-
-    # def appendChild():
+    def appendChild(self, item):
         '''Adds a new child node, to an element, as the last child node'''
+        # self.content = self.content + item.__str__()
         # return
+        pass
 
     def attributes(self) -> List :
         ''' Returns a List of an element's attributes'''
         return self.attributes
-
-
 
     def innerHTML(self, *args) -> str :
         ''' Sets or returns the content of an element'''
@@ -194,181 +192,347 @@ class Element(Node):
 
     def html(self, *args) -> str : return self.innerHTML(*args) # jquery
 
-
-    """
-    def blur():
+    def blur(self):
         '''Removes focus from an element'''
-    def childElementCount():
+        pass
+    def childElementCount(self):
         ''' Returns the number of child elements an element has'''
-    def childNodes():
+        pass
+    def childNodes(self):
         ''' Returns a collection of an element's child nodes (including text and comment nodes)'''
-    def children():
+        pass
+    def children(self):
         ''' Returns a collection of an element's child element (excluding text and comment nodes)'''
-    def classList():
+        pass
+    def classList(self):
         ''' Returns the class name(s) of an element'''
-    def className():
+        pass
+    def className(self):
         ''' Sets or returns the value of the class attribute of an element'''
-    def click():
-    '''Simulates a mouse-click on an element'''
-    def clientHeight():
-    ''' Returns the height of an element, including padding'''
-    def clientLeft():
-    ''' Returns the width of the left border of an element'''
-    def clientTop():
-    ''' Returns the width of the top border of an element'''
-    def clientWidth():
-    ''' Returns the width of an element, including padding'''
-    def cloneNode():
-    '''Clones an element'''
-    def compareDocumentPosition():
-    '''Compares the document position of two elements'''
-    def contains():
-    '''Returns true if a node is a descendant of a node, otherwise false'''
-    def contentEditable():
-    ''' Sets or returns whether the content of an element is editable or not'''
-    def dir():
-    ''' Sets or returns the value of the dir attribute of an element'''
-    def exitFullscreen():
-    '''Cancels an element in fullscreen mode'''
-    def firstChild():
-    ''' Returns the first child node of an element'''
-    def firstElementChild():
-    ''' Returns the first child element of an element'''
-    def focus():
-    '''Gives focus to an element'''
-    def getAttribute():
-    '''Returns the specified attribute value of an element node'''
-    def getAttributeNode():
-    '''Returns the specified attribute node'''
-    def getBoundingClientRect():
-    '''Returns the size of an element and its position relative to the viewport'''
-    def getElementsByClassName():
-    '''Returns a collection of all child elements with the specified class name'''
-    def getElementsByTagName():
-    '''Returns a collection of all child elements with the specified tag name'''
-    def hasAttribute():
-    '''Returns true if an element has the specified attribute, otherwise false'''
-    def hasAttributes():
-    '''Returns true if an element has any attributes, otherwise false'''
-    def hasChildNodes():
-    '''Returns true if an element has any child nodes, otherwise false'''
-    def id():
-    ''' Sets or returns the value of the id attribute of an element'''
-    def innerText():
-    ''' Sets or returns the text content of a node and its descendants'''
-    def insertAdjacentElement():
-    '''Inserts a HTML element at the specified position relative to the current element'''
-    def insertAdjacentHTML():
-    '''Inserts a HTML formatted text at the specified position relative to the current element'''
-    def insertAdjacentText():
-    '''Inserts text into the specified position relative to the current element'''
-    def insertBefore():
-    '''Inserts a new child node before a specified, existing, child node'''
-    def isContentEditable():
-    ''' Returns true if the content of an element is editable, otherwise false'''
-    def isDefaultNamespace():
-    '''Returns true if a specified namespaceURI is the default, otherwise false'''():
-    def isEqualNode():
-    '''Checks if two elements are equal'''
-    def isSameNode():
-    '''Checks if two elements are the same node'''
-    def isSupported():
-    '''Returns true if a specified feature is supported on the element'''
-    def lang():
-    ''' Sets or returns the value of the lang attribute of an element'''
-    def lastChild():
-    ''' Returns the last child node of an element'''
-    def lastElementChild():
-    ''' Returns the last child element of an element'''
-    def namespaceURI():
-    ''' Returns the namespace URI of an element'''
-    def nextSibling():
-    ''' Returns the next node at the same node tree level'''
-    def nextElementSibling():
-    ''' Returns the next element at the same node tree level'''
-    def nodeName():
-    ''' Returns the name of a node'''
-    def nodeType():
-    ''' Returns the node type of a node'''
-    def nodeValue():
-    ''' Sets or returns the value of a node'''
-    def normalize():
-    '''Joins adjacent text nodes and removes empty text nodes in an element'''
-    def offsetHeight():
-    ''' Returns the height of an element, including padding, border and scrollbar'''
-    def offsetWidth():
-    ''' Returns the width of an element, including padding, border and scrollbar'''
-    def offsetLeft():
-    ''' Returns the horizontal offset position of an element'''
-    def offsetParent():
-    ''' Returns the offset container of an element'''
-    def offsetTop():
-    ''' Returns the vertical offset position of an element'''
-    def ownerDocument():
-    ''' Returns the root element (document object) for an element'''
-    def parentNode():
-    ''' Returns the parent node of an element'''
-    def parentElement():
-    ''' Returns the parent element node of an element'''
-    def previousSibling():
-    ''' Returns the previous node at the same node tree level'''
-    def previousElementSibling():
-    ''' Returns the previous element at the same node tree level'''
-    def querySelector():
-    '''Returns the first child element that matches a specified CSS selector(s) of an element'''
-    def querySelectorAll():
-    '''Returns all child elements that matches a specified CSS selector(s) of an element'''
-    def remove():
-    '''Removes the element from the DOM'''
-    def removeAttribute():
-    '''Removes a specified attribute from an element'''
-    def removeAttributeNode():
-    '''Removes a specified attribute node, and returns the removed node'''
-    def removeChild():
-    '''Removes a child node from an element'''
-    def removeEventListener():
-    '''Removes an event handler that has been attached with the addEventListener() method'''
-    def replaceChild():
-    '''Replaces a child node in an element'''
-    def requestFullscreen():
-    '''Shows an element in fullscreen mode'''
-    def scrollHeight():
-    ''' Returns the entire height of an element, including padding'''
-    def scrollIntoView():
-    '''Scrolls the specified element into the visible area of the browser window'''
-    def scrollLeft():
-    ''' Sets or returns the number of pixels an element's content is scrolled horizontally'''
-    def scrollTop():
-    ''' Sets or returns the number of pixels an element's content is scrolled vertically'''
-    def scrollWidth():
-    ''' Returns the entire width of an element, including padding'''
-    def setAttribute():
-    '''Sets or changes the specified attribute, to the specified value'''
-    def setAttributeNode():
-    '''Sets or changes the specified attribute node'''
-    def style():
-    ''' Sets or returns the value of the style attribute of an element'''
-    def tabIndex():
-    ''' Sets or returns the value of the tabindex attribute of an element'''
-    def tagName():
-    ''' Returns the tag name of an element'''
-    def textContent():
-    ''' Sets or returns the textual content of a node and its descendants'''
-    def title():
-    ''' Sets or returns the value of the title attribute of an element'''
-    def toString():
-    '''Converts an element to a string'''
-    """
+        pass
+    def click(self):
+        '''Simulates a mouse-click on an element'''
+        pass
+    
+    def clientHeight(self):
+        ''' Returns the height of an element, including padding'''
+        pass
 
+    def clientLeft(self):
+        ''' Returns the width of the left border of an element'''
+        pass
+    def clientTop(self):
+        ''' Returns the width of the top border of an element'''
+        pass
+    def clientWidth(self):
+        ''' Returns the width of an element, including padding'''
+        pass
+    def cloneNode(self):
+        '''Clones an element'''
+        pass
 
+    def compareDocumentPosition(self):
+        '''Compares the document position of two elements'''
+        pass
+
+    def contains(self):
+        '''Returns true if a node is a descendant of a node, otherwise false'''
+        pass
+
+    def contentEditable(self):
+        ''' Sets or returns whether the content of an element is editable or not'''
+        pass
+
+    def dir(self):
+        ''' Sets or returns the value of the dir attribute of an element'''
+        pass
+
+    def exitFullscreen(self):
+        '''Cancels an element in fullscreen mode'''
+        pass
+
+    def firstChild(self):
+        ''' Returns the first child node of an element'''
+        pass
+
+    def firstElementChild(self):
+        ''' Returns the first child element of an element'''
+        pass
+
+    def focus(self):
+        '''Gives focus to an element'''
+        pass
+
+    def getAttribute(self, attribute: str) -> str:
+        '''Returns the specified attribute value of an element node'''
+        try:
+            return self.kwargs[attribute]
+        except Exception as e:
+            print('failed to get attribute')
+            return ''
+
+    def getAttributeNode(self, attribute: str) -> str:
+        '''Returns the specified attribute node'''
+        try:
+            return f"{attribute}={self.kwargs[attribute]}"
+        except Exception as e:
+            print('failed to get attribute')
+            return ''
+
+    def getBoundingClientRect(self):
+        '''Returns the size of an element and its position relative to the viewport'''
+        pass
+
+    def getElementsByClassName(self):
+        '''Returns a collection of all child elements with the specified class name'''
+        pass
+        
+    def getElementsByTagName(self, tag : str) -> List:
+        '''Returns a collection of all child elements with the specified tag name'''
+        reg = f"(<{tag}.*?>.+?</{tag}>)"
+
+        closed_tags = ["base","link","meta","hr","br","wbr","img","embed","param","source","track","area","col","input","keygen","command"]
+        if tag in closed_tags:
+            reg = f"(<{tag}.*?/>)"
+
+        pattern = re.compile(reg)
+        tags = re.findall(pattern,str(self))
+        return tags
+
+    def hasAttribute(self, attribute: str) -> str:
+        '''Returns true if an element has the specified attribute, otherwise false'''
+        try:
+            return f"{attribute}={self.kwargs[attribute]}"
+        except Exception as e:
+            print('failed to get attribute')
+            return ''
+
+    def hasAttributes(self) -> bool:
+        '''Returns true if an element has any attributes, otherwise false'''
+        if len(self.kwargs)>0:
+            return True
+        else:
+            return False
+
+    def hasChildNodes(self):
+        '''Returns true if an element has any child nodes, otherwise false'''
+        pass
+
+    def id(self):
+        ''' Sets or returns the value of the id attribute of an element'''
+        pass
+
+    def innerText(self):
+        ''' Sets or returns the text content of a node and its descendants'''
+        pass
+
+    def insertAdjacentElement(self):
+        '''Inserts a HTML element at the specified position relative to the current element'''
+        pass
+
+    def insertAdjacentHTML(self):
+        '''Inserts a HTML formatted text at the specified position relative to the current element'''
+        pass
+
+    def insertAdjacentText(self):
+        '''Inserts text into the specified position relative to the current element'''
+        pass
+
+    def insertBefore(self):
+        '''Inserts a new child node before a specified, existing, child node'''
+        pass
+
+    def isContentEditable(self):
+        ''' Returns true if the content of an element is editable, otherwise false'''
+        pass
+
+    def isDefaultNamespace(self):
+        '''Returns true if a specified namespaceURI is the default, otherwise false'''
+        pass
+
+    def isEqualNode(self):
+        '''Checks if two elements are equal'''
+        pass
+
+    def isSameNode(self):
+        '''Checks if two elements are the same node'''
+        pass
+
+    def isSupported(self):
+        '''Returns true if a specified feature is supported on the element'''
+        pass
+
+    def lang(self):
+        ''' Sets or returns the value of the lang attribute of an element'''
+        pass
+
+    def lastChild(self):
+        ''' Returns the last child node of an element'''
+        pass
+
+    def lastElementChild(self):
+        ''' Returns the last child element of an element'''
+        pass
+
+    def namespaceURI(self):
+        ''' Returns the namespace URI of an element'''
+        pass
+
+    def nextSibling(self):
+        ''' Returns the next node at the same node tree level'''
+        pass
+
+    def nextElementSibling(self):
+        ''' Returns the next element at the same node tree level'''
+        pass
+
+    def nodeName(self):
+        ''' Returns the name of a node'''
+        pass
+
+    def nodeType(self):
+        ''' Returns the node type of a node'''
+        pass
+
+    def nodeValue(self):
+        ''' Sets or returns the value of a node'''
+        pass
+
+    def normalize(self):
+        '''Joins adjacent text nodes and removes empty text nodes in an element'''
+        pass
+
+    def offsetHeight(self):
+        ''' Returns the height of an element, including padding, border and scrollbar'''
+        pass
+
+    def offsetWidth(self):
+        ''' Returns the width of an element, including padding, border and scrollbar'''
+        pass
+
+    def offsetLeft(self):
+        ''' Returns the horizontal offset position of an element'''
+        pass
+
+    def offsetParent(self):
+        ''' Returns the offset container of an element'''
+        pass
+
+    def offsetTop(self):
+        ''' Returns the vertical offset position of an element'''
+        pass
+
+    def ownerDocument(self):
+        ''' Returns the root element (document object) for an element'''
+        pass
+
+    def parentNode(self):
+        ''' Returns the parent node of an element'''
+        pass
+
+    def parentElement(self):
+        ''' Returns the parent element node of an element'''
+        pass
+
+    def previousSibling(self):
+        ''' Returns the previous node at the same node tree level'''
+        pass
+
+    def previousElementSibling(self):
+        ''' Returns the previous element at the same node tree level'''
+        pass
+
+    def querySelector(self):
+        '''Returns the first child element that matches a specified CSS selector(s) of an element'''
+        pass
+
+    def querySelectorAll(self):
+        '''Returns all child elements that matches a specified CSS selector(s) of an element'''
+        pass
+
+    def remove(self):
+        '''Removes the element from the DOM'''
+        pass
+
+    def removeAttribute(self):
+        '''Removes a specified attribute from an element'''
+        pass
+
+    def removeAttributeNode(self):
+        '''Removes a specified attribute node, and returns the removed node'''
+        pass
+
+    def removeChild(self):
+        '''Removes a child node from an element'''
+        pass
+
+    def removeEventListener(self):
+        '''Removes an event handler that has been attached with the addEventListener() method'''
+        pass
+
+    def replaceChild(self):
+        '''Replaces a child node in an element'''
+        pass
+
+    def requestFullscreen(self):
+        '''Shows an element in fullscreen mode'''
+        pass
+
+    def scrollHeight(self):
+        ''' Returns the entire height of an element, including padding'''
+        pass
+
+    def scrollIntoView(self):
+        '''Scrolls the specified element into the visible area of the browser window'''
+        pass
+
+    def scrollLeft(self):
+        ''' Sets or returns the number of pixels an element's content is scrolled horizontally'''
+        pass
+
+    def scrollTop(self):
+        ''' Sets or returns the number of pixels an element's content is scrolled vertically'''
+        pass
+
+    def scrollWidth(self):
+        ''' Returns the entire width of an element, including padding'''
+        pass
+
+    def setAttribute(self):
+        '''Sets or changes the specified attribute, to the specified value'''
+        pass
+
+    def setAttributeNode(self):
+        '''Sets or changes the specified attribute node'''
+        pass
+
+    def style(self):
+        ''' Sets or returns the value of the style attribute of an element'''
+        pass
+
+    def tabIndex(self):
+        ''' Sets or returns the value of the tabindex attribute of an element'''
+        pass
+
+    def tagName(self):
+        ''' Returns the tag name of an element'''
+        pass
+
+    def textContent(self):
+        ''' Sets or returns the textual content of a node and its descendants'''
+        pass
+
+    def title(self):
+        ''' Sets or returns the value of the title attribute of an element'''
+        pass
+
+    def toString(self):
+        '''Converts an element to a string'''
+        pass
 
 
 
 class Document(Element):
-
-    # @staticmethod
-    # baseURI = type('baseURI', (static_function,), {'baseURI':'eventual.technology'})
-    # baseURI = static_function("eventual.technology", lambda:True, lambda:False)
 
     # baseURI = "eventual.technology"
 
@@ -412,15 +576,15 @@ class Document(Element):
         '''Adopts a node from another document'''
         # return
 
-    def anchors():
+    def anchors(self):
         ''' Returns a collection of all <a> elements in the document that have a name attribute'''
         return
 
-    def applets():
+    def applets(self):
         ''' Returns a collection of all <applet> elements in the document'''
         return
 
-    # def baseURI():
+    # def baseURI(self):
         ''' Returns the absolute base URI of a document'''
         # return self.uri
 
@@ -486,39 +650,39 @@ class Document(Element):
         '''Creates a Text node'''
         # return
 
-    # def defaultView():
+    # def defaultView(self):
         ''' Returns the window object associated with a document, or null if none is available.'''
         # return
 
-    # def designMode():
+    # def designMode(self):
         ''' Controls whether the entire document should be editable or not.'''
         # return
 
-    def doctype():
+    def doctype(self):
         ''' Returns the Document Type Declaration associated with the document'''
         return
 
-    def documentElement():
+    def documentElement(self):
         ''' Returns the Document Element of the document (the <html> element)'''
         return
 
-    # def documentMode():
+    # def documentMode(self):
         ''' Returns the mode used by the browser to render the document'''
         # return
 
-    def domain():
+    def domain(self):
         ''' Returns the domain name of the server that loaded the document'''
         return
 
-    # def domConfig():
+    # def domConfig(self):
         '''Obsolete. Returns the DOM configuration of the document'''
         # return
 
-    def embeds():
+    def embeds(self):
         ''' Returns a collection of all <embed> elements the document'''
         return
 
-    # def execCommand():
+    # def execCommand(self):
         '''Invokes the specified clipboard operation on the element currently having focus.'''
         # return
 
@@ -540,27 +704,23 @@ class Document(Element):
         '''Returns a Boolean value indicating whether the document can be viewed in fullscreen mode'''
         # return
 
-    def getElementById():
+    def getElementById(self):
         '''Returns the element that has the ID attribute with the specified value'''
         return
 
-    def getElementsByClassName():
+    def getElementsByClassName(self):
         '''Returns a NodeList containing all elements with the specified class name'''
         return
 
-    def getElementsByName():
+    def getElementsByName(self):
         '''Returns a NodeList containing all elements with a specified name'''
-        return
-
-    def getElementsByTagName():
-        '''Returns a NodeList containing all elements with the specified tag name'''
         return
 
     # def hasFocus():
         '''Returns a Boolean value indicating whether the document has focus'''
         # return
 
-    def head():
+    def head(self):
         ''' Returns the <head> element of the document'''
         return
 
@@ -589,31 +749,36 @@ class Document(Element):
         ''' Returns the date and time the document was last modified'''
         # return
 
-    def links():
+    def links(self):
         ''' Returns a collection of all <a> and <area> elements in the document that have a href attribute'''
-        return
+        tag = "a"
+        reg = f"(<{tag}.*?/>)"
+        pattern = re.compile(reg)
+        tags = re.findall(pattern,str(self))
+        return tags
 
-    def normalize():
+
+    def normalize(self):
         '''Removes empty Text nodes, and joins adjacent nodes'''
         return
 
-    def normalizeDocument():
+    def normalizeDocument(self):
         '''Removes empty Text nodes, and joins adjacent nodes'''
         return
 
-    # def open():
+    # def open(self):
         '''Opens an HTML output stream to collect output from document.write()'''
         # return
 
-    def querySelector():
+    def querySelector(self):
         '''Returns the first element that matches a specified CSS selector(s) in the document'''
         return
 
-    def querySelectorAll():
+    def querySelectorAll(self):
         '''Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document'''
         return
 
-    # def readyState():
+    # def readyState(self):
         ''' Returns the (loading) status of the document'''
         # return
 
@@ -625,7 +790,7 @@ class Document(Element):
         '''Removes an event handler from the document (that has been attached with the addEventListener() method)'''
         # return
 
-    def renameNode(node, namespaceURI, nodename):
+    def renameNode(self, node, namespaceURI, nodename):
         '''Renames the specified node'''
         return
 
@@ -655,16 +820,16 @@ class Document(Element):
             print('document has no title')
             return ''
 
-    def URL():
+    def URL(self):
         ''' Returns the full URL of the HTML document'''
         pass
 
-    def write( html: str = "" ) -> None:
+    def write(self, html: str = "" ) -> None:
         '''Writes HTML expressions or JavaScript code to a document'''
         # doc = html
         pass
 
-    def writeln( html: str = "" ) -> None:
+    def writeln( self, html: str = "" ) -> None:
         '''Same as write(), but adds a newline character after each statement'''
         # doc = html
         pass
