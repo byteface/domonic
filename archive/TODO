@@ -46,7 +46,10 @@ TypeError: __str__() missing 1 required positional argument: 'self'
 
 
 
-
-
 TODO - poll the source and send updates to the dom via socket? auto generate the js/python?
 div("hello world", bind="http://www.somedatasource"),
+
+
+
+
+- attribute for setting content. so can do _html=

@@ -85,13 +85,18 @@ print(HTMLBeautifier.beautify(output, 4))
 ```
 
 ### common errors
+If you incorrectly type the code it will obviously not work. So there are a bunch of common ones I've noticed :
+
 ##### TODO - catch these and raise a friendly error that tells you what to fix
 
-IndexError: list index out of range 
-    - You most likely didn't put a underscore on an attribute
+IndexError: list index out of range
+    - You most likely didn't put a underscore on an attribute.
 
 SyntaxError: invalid syntax
     - You most likely are missing a comma somewhere between params
+
+SyntaxError: positional argument follows keyword argument
+    - You have to pass attributes LAST. and strings and objects first. *see docs*
 
 
 ### run tests
@@ -102,6 +107,31 @@ python3 test_domonic.py
 
 ### more
 several undocumented features. take a look at the code.
+
+
+### docs
+
+while you can create a div with content like :
+
+    div("some content")
+
+python doesn't allow named params before unamed ones. So you can't do this:
+
+    div(_class="container", p("Some content") )
+
+or it will complain the params are in the wrong order. You have to instead put content before attributes:
+
+    div( p("Some content"), _class="container")
+
+which is annoying when a div gets long. You can get around this several ways.
+
+With 'innerHTML' which is available on every Node:
+
+    div( _class="container" ).innerHTML("Some content")
+
+With 'html' which is available on every Node:
+
+    div( _class="container" ).html("Some content")
 
 
 ### disclaimer

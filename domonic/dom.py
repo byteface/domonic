@@ -101,7 +101,7 @@ class Node(EventTarget):
         self.textContent = None
         pass
 
-        # appendChild()
+        # appendChild() # TODO - append.?.< why missed?
         # cloneNode()
         # compareDocumentPosition()
         # contains()
@@ -147,7 +147,224 @@ class Console(object):
 console = Console
 
 
-class Document(Node):
+
+
+
+
+
+
+class Element(Node):
+
+    def __init__(self, *args, **kwargs):
+        self.content = None
+        self.attributes = None
+        pass
+
+    # def accessKey( key: str ): -> None
+        ''' Sets or returns the accesskey attribute of an element'''
+
+        # return        
+        # example
+        # dom.getElementById("myAnchor").accessKey = "w";
+
+    def addEventListener(event: str, function, useCapture: bool) -> None:
+        '''Attaches an event handler to the specified element'''
+        # return
+        # example
+        # document.getElementById("myBtn").addEventListener("click", function(){
+        #   document.getElementById("demo").innerHTML = "Hello World";
+        # });
+        pass
+
+
+    # def appendChild():
+        '''Adds a new child node, to an element, as the last child node'''
+        # return
+
+    def attributes(self) -> List :
+        ''' Returns a List of an element's attributes'''
+        return self.attributes
+
+
+
+    def innerHTML(self, *args) -> str :
+        ''' Sets or returns the content of an element'''
+        self.content = ''.join([each.__str__() for each in args])
+        return self.content
+
+    def html(self, *args) -> str : return self.innerHTML(*args) # jquery
+
+
+    """
+    def blur():
+        '''Removes focus from an element'''
+    def childElementCount():
+        ''' Returns the number of child elements an element has'''
+    def childNodes():
+        ''' Returns a collection of an element's child nodes (including text and comment nodes)'''
+    def children():
+        ''' Returns a collection of an element's child element (excluding text and comment nodes)'''
+    def classList():
+        ''' Returns the class name(s) of an element'''
+    def className():
+        ''' Sets or returns the value of the class attribute of an element'''
+    def click():
+    '''Simulates a mouse-click on an element'''
+    def clientHeight():
+    ''' Returns the height of an element, including padding'''
+    def clientLeft():
+    ''' Returns the width of the left border of an element'''
+    def clientTop():
+    ''' Returns the width of the top border of an element'''
+    def clientWidth():
+    ''' Returns the width of an element, including padding'''
+    def cloneNode():
+    '''Clones an element'''
+    def compareDocumentPosition():
+    '''Compares the document position of two elements'''
+    def contains():
+    '''Returns true if a node is a descendant of a node, otherwise false'''
+    def contentEditable():
+    ''' Sets or returns whether the content of an element is editable or not'''
+    def dir():
+    ''' Sets or returns the value of the dir attribute of an element'''
+    def exitFullscreen():
+    '''Cancels an element in fullscreen mode'''
+    def firstChild():
+    ''' Returns the first child node of an element'''
+    def firstElementChild():
+    ''' Returns the first child element of an element'''
+    def focus():
+    '''Gives focus to an element'''
+    def getAttribute():
+    '''Returns the specified attribute value of an element node'''
+    def getAttributeNode():
+    '''Returns the specified attribute node'''
+    def getBoundingClientRect():
+    '''Returns the size of an element and its position relative to the viewport'''
+    def getElementsByClassName():
+    '''Returns a collection of all child elements with the specified class name'''
+    def getElementsByTagName():
+    '''Returns a collection of all child elements with the specified tag name'''
+    def hasAttribute():
+    '''Returns true if an element has the specified attribute, otherwise false'''
+    def hasAttributes():
+    '''Returns true if an element has any attributes, otherwise false'''
+    def hasChildNodes():
+    '''Returns true if an element has any child nodes, otherwise false'''
+    def id():
+    ''' Sets or returns the value of the id attribute of an element'''
+    def innerText():
+    ''' Sets or returns the text content of a node and its descendants'''
+    def insertAdjacentElement():
+    '''Inserts a HTML element at the specified position relative to the current element'''
+    def insertAdjacentHTML():
+    '''Inserts a HTML formatted text at the specified position relative to the current element'''
+    def insertAdjacentText():
+    '''Inserts text into the specified position relative to the current element'''
+    def insertBefore():
+    '''Inserts a new child node before a specified, existing, child node'''
+    def isContentEditable():
+    ''' Returns true if the content of an element is editable, otherwise false'''
+    def isDefaultNamespace():
+    '''Returns true if a specified namespaceURI is the default, otherwise false'''():
+    def isEqualNode():
+    '''Checks if two elements are equal'''
+    def isSameNode():
+    '''Checks if two elements are the same node'''
+    def isSupported():
+    '''Returns true if a specified feature is supported on the element'''
+    def lang():
+    ''' Sets or returns the value of the lang attribute of an element'''
+    def lastChild():
+    ''' Returns the last child node of an element'''
+    def lastElementChild():
+    ''' Returns the last child element of an element'''
+    def namespaceURI():
+    ''' Returns the namespace URI of an element'''
+    def nextSibling():
+    ''' Returns the next node at the same node tree level'''
+    def nextElementSibling():
+    ''' Returns the next element at the same node tree level'''
+    def nodeName():
+    ''' Returns the name of a node'''
+    def nodeType():
+    ''' Returns the node type of a node'''
+    def nodeValue():
+    ''' Sets or returns the value of a node'''
+    def normalize():
+    '''Joins adjacent text nodes and removes empty text nodes in an element'''
+    def offsetHeight():
+    ''' Returns the height of an element, including padding, border and scrollbar'''
+    def offsetWidth():
+    ''' Returns the width of an element, including padding, border and scrollbar'''
+    def offsetLeft():
+    ''' Returns the horizontal offset position of an element'''
+    def offsetParent():
+    ''' Returns the offset container of an element'''
+    def offsetTop():
+    ''' Returns the vertical offset position of an element'''
+    def ownerDocument():
+    ''' Returns the root element (document object) for an element'''
+    def parentNode():
+    ''' Returns the parent node of an element'''
+    def parentElement():
+    ''' Returns the parent element node of an element'''
+    def previousSibling():
+    ''' Returns the previous node at the same node tree level'''
+    def previousElementSibling():
+    ''' Returns the previous element at the same node tree level'''
+    def querySelector():
+    '''Returns the first child element that matches a specified CSS selector(s) of an element'''
+    def querySelectorAll():
+    '''Returns all child elements that matches a specified CSS selector(s) of an element'''
+    def remove():
+    '''Removes the element from the DOM'''
+    def removeAttribute():
+    '''Removes a specified attribute from an element'''
+    def removeAttributeNode():
+    '''Removes a specified attribute node, and returns the removed node'''
+    def removeChild():
+    '''Removes a child node from an element'''
+    def removeEventListener():
+    '''Removes an event handler that has been attached with the addEventListener() method'''
+    def replaceChild():
+    '''Replaces a child node in an element'''
+    def requestFullscreen():
+    '''Shows an element in fullscreen mode'''
+    def scrollHeight():
+    ''' Returns the entire height of an element, including padding'''
+    def scrollIntoView():
+    '''Scrolls the specified element into the visible area of the browser window'''
+    def scrollLeft():
+    ''' Sets or returns the number of pixels an element's content is scrolled horizontally'''
+    def scrollTop():
+    ''' Sets or returns the number of pixels an element's content is scrolled vertically'''
+    def scrollWidth():
+    ''' Returns the entire width of an element, including padding'''
+    def setAttribute():
+    '''Sets or changes the specified attribute, to the specified value'''
+    def setAttributeNode():
+    '''Sets or changes the specified attribute node'''
+    def style():
+    ''' Sets or returns the value of the style attribute of an element'''
+    def tabIndex():
+    ''' Sets or returns the value of the tabindex attribute of an element'''
+    def tagName():
+    ''' Returns the tag name of an element'''
+    def textContent():
+    ''' Sets or returns the textual content of a node and its descendants'''
+    def title():
+    ''' Sets or returns the value of the title attribute of an element'''
+    def toString():
+    '''Converts an element to a string'''
+    """
+
+
+
+
+
+class Document(Element):
 
     # @staticmethod
     # baseURI = type('baseURI', (static_function,), {'baseURI':'eventual.technology'})
@@ -455,206 +672,6 @@ class Document(Node):
 
 document = Document
 # doc = Document
-
-
-
-class Element:
-
-    def __init__(self, *args, **kwargs):
-        pass
-
-    # def accessKey( key: str ): -> None
-        ''' Sets or returns the accesskey attribute of an element'''
-
-        # return        
-        # example
-        # dom.getElementById("myAnchor").accessKey = "w";
-
-    def addEventListener(event: str, function, useCapture: bool) -> None:
-        '''Attaches an event handler to the specified element'''
-        # return
-        # example
-        # document.getElementById("myBtn").addEventListener("click", function(){
-        #   document.getElementById("demo").innerHTML = "Hello World";
-        # });
-        pass
-
-
-    # def appendChild():
-        '''Adds a new child node, to an element, as the last child node'''
-        # return
-
-    def attributes() -> List:
-        ''' Returns a List of an element's attributes'''
-    
-        return []
-
-    """
-    def blur():
-        '''Removes focus from an element'''
-    def childElementCount():
-        ''' Returns the number of child elements an element has'''
-    def childNodes():
-        ''' Returns a collection of an element's child nodes (including text and comment nodes)'''
-    def children():
-        ''' Returns a collection of an element's child element (excluding text and comment nodes)'''
-    def classList():
-        ''' Returns the class name(s) of an element'''
-    def className():
-        ''' Sets or returns the value of the class attribute of an element'''
-    def click():
-    '''Simulates a mouse-click on an element'''
-    def clientHeight():
-    ''' Returns the height of an element, including padding'''
-    def clientLeft():
-    ''' Returns the width of the left border of an element'''
-    def clientTop():
-    ''' Returns the width of the top border of an element'''
-    def clientWidth():
-    ''' Returns the width of an element, including padding'''
-    def cloneNode():
-    '''Clones an element'''
-    def compareDocumentPosition():
-    '''Compares the document position of two elements'''
-    def contains():
-    '''Returns true if a node is a descendant of a node, otherwise false'''
-    def contentEditable():
-    ''' Sets or returns whether the content of an element is editable or not'''
-    def dir():
-    ''' Sets or returns the value of the dir attribute of an element'''
-    def exitFullscreen():
-    '''Cancels an element in fullscreen mode'''
-    def firstChild():
-    ''' Returns the first child node of an element'''
-    def firstElementChild():
-    ''' Returns the first child element of an element'''
-    def focus():
-    '''Gives focus to an element'''
-    def getAttribute():
-    '''Returns the specified attribute value of an element node'''
-    def getAttributeNode():
-    '''Returns the specified attribute node'''
-    def getBoundingClientRect():
-    '''Returns the size of an element and its position relative to the viewport'''
-    def getElementsByClassName():
-    '''Returns a collection of all child elements with the specified class name'''
-    def getElementsByTagName():
-    '''Returns a collection of all child elements with the specified tag name'''
-    def hasAttribute():
-    '''Returns true if an element has the specified attribute, otherwise false'''
-    def hasAttributes():
-    '''Returns true if an element has any attributes, otherwise false'''
-    def hasChildNodes():
-    '''Returns true if an element has any child nodes, otherwise false'''
-    def id():
-    ''' Sets or returns the value of the id attribute of an element'''
-    def innerHTML():
-    ''' Sets or returns the content of an element'''
-    def innerText():
-    ''' Sets or returns the text content of a node and its descendants'''
-    def insertAdjacentElement():
-    '''Inserts a HTML element at the specified position relative to the current element'''
-    def insertAdjacentHTML():
-    '''Inserts a HTML formatted text at the specified position relative to the current element'''
-    def insertAdjacentText():
-    '''Inserts text into the specified position relative to the current element'''
-    def insertBefore():
-    '''Inserts a new child node before a specified, existing, child node'''
-    def isContentEditable():
-    ''' Returns true if the content of an element is editable, otherwise false'''
-    def isDefaultNamespace():
-    '''Returns true if a specified namespaceURI is the default, otherwise false'''():
-    def isEqualNode():
-    '''Checks if two elements are equal'''
-    def isSameNode():
-    '''Checks if two elements are the same node'''
-    def isSupported():
-    '''Returns true if a specified feature is supported on the element'''
-    def lang():
-    ''' Sets or returns the value of the lang attribute of an element'''
-    def lastChild():
-    ''' Returns the last child node of an element'''
-    def lastElementChild():
-    ''' Returns the last child element of an element'''
-    def namespaceURI():
-    ''' Returns the namespace URI of an element'''
-    def nextSibling():
-    ''' Returns the next node at the same node tree level'''
-    def nextElementSibling():
-    ''' Returns the next element at the same node tree level'''
-    def nodeName():
-    ''' Returns the name of a node'''
-    def nodeType():
-    ''' Returns the node type of a node'''
-    def nodeValue():
-    ''' Sets or returns the value of a node'''
-    def normalize():
-    '''Joins adjacent text nodes and removes empty text nodes in an element'''
-    def offsetHeight():
-    ''' Returns the height of an element, including padding, border and scrollbar'''
-    def offsetWidth():
-    ''' Returns the width of an element, including padding, border and scrollbar'''
-    def offsetLeft():
-    ''' Returns the horizontal offset position of an element'''
-    def offsetParent():
-    ''' Returns the offset container of an element'''
-    def offsetTop():
-    ''' Returns the vertical offset position of an element'''
-    def ownerDocument():
-    ''' Returns the root element (document object) for an element'''
-    def parentNode():
-    ''' Returns the parent node of an element'''
-    def parentElement():
-    ''' Returns the parent element node of an element'''
-    def previousSibling():
-    ''' Returns the previous node at the same node tree level'''
-    def previousElementSibling():
-    ''' Returns the previous element at the same node tree level'''
-    def querySelector():
-    '''Returns the first child element that matches a specified CSS selector(s) of an element'''
-    def querySelectorAll():
-    '''Returns all child elements that matches a specified CSS selector(s) of an element'''
-    def remove():
-    '''Removes the element from the DOM'''
-    def removeAttribute():
-    '''Removes a specified attribute from an element'''
-    def removeAttributeNode():
-    '''Removes a specified attribute node, and returns the removed node'''
-    def removeChild():
-    '''Removes a child node from an element'''
-    def removeEventListener():
-    '''Removes an event handler that has been attached with the addEventListener() method'''
-    def replaceChild():
-    '''Replaces a child node in an element'''
-    def requestFullscreen():
-    '''Shows an element in fullscreen mode'''
-    def scrollHeight():
-    ''' Returns the entire height of an element, including padding'''
-    def scrollIntoView():
-    '''Scrolls the specified element into the visible area of the browser window'''
-    def scrollLeft():
-    ''' Sets or returns the number of pixels an element's content is scrolled horizontally'''
-    def scrollTop():
-    ''' Sets or returns the number of pixels an element's content is scrolled vertically'''
-    def scrollWidth():
-    ''' Returns the entire width of an element, including padding'''
-    def setAttribute():
-    '''Sets or changes the specified attribute, to the specified value'''
-    def setAttributeNode():
-    '''Sets or changes the specified attribute node'''
-    def style():
-    ''' Sets or returns the value of the style attribute of an element'''
-    def tabIndex():
-    ''' Sets or returns the value of the tabindex attribute of an element'''
-    def tagName():
-    ''' Returns the tag name of an element'''
-    def textContent():
-    ''' Sets or returns the textual content of a node and its descendants'''
-    def title():
-    ''' Sets or returns the value of the title attribute of an element'''
-    def toString():
-    '''Converts an element to a string'''
-    """
 
 
 # class Bar(object):
