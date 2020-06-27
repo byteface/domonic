@@ -7,6 +7,7 @@
 """
 
 from .dom import *
+from .javascript import *
 
 def render( inp, outp='' ):
     # print( inp )
@@ -32,6 +33,8 @@ class tag():
         # except Exception as e:
             # print("ERROR!: MISSING UNDERSCORE ON AN ATTRIBUTE?", e )
             # self.attributes=''
+        # print(self.attributes)
+
 
     def __str__(self):
         return f"<{self.name}{self.attributes}>{self.content}</{self.name}>"
@@ -73,7 +76,27 @@ h6 = type('h6', (tag, Element), {'name':'h6'})
 p = type('p', (tag, Element), {'name':'p'})
 i = type('i', (tag, Element), {'name':'i'})
 b = type('b', (tag, Element), {'name':'b'})
-a = type('a', (tag, Element), {'name':'a'})
+
+def Atag(self,*args,**kwargs):
+    # print("are you threatening me!!")
+    # print(args)
+    # print(kwargs)
+    tag.__init__(self,*args,**kwargs)
+    # Element.__init__(self, url=kwargs['_href'])
+    URL.__init__(self, url=kwargs['_href'])
+
+
+def __update__(self):
+    # print('THIS ran')
+    # print(self.href)
+    URL.__update__(self)
+    # print('>>>',self.href)
+    tag.__init__(self,_href=self.href)
+    
+
+
+a = type('a', (tag, Element, URL), {'name':'a', '__init__':Atag, '__update__':__update__})
+
 ul = type('ul', (tag, Element), {'name':'ul'})
 ol = type('ol', (tag, Element), {'name':'ol'})
 li = type('li', (tag, Element), {'name':'li'})

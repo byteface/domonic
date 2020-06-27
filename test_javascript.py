@@ -18,6 +18,7 @@ from domonic.javascript import Math
 from domonic.javascript import Global
 from domonic.javascript import Window
 from domonic.javascript import Date
+from domonic.javascript import URL
 
 # from domonic.javascript import *
 
@@ -302,6 +303,41 @@ class domonicTestCase(unittest.TestCase):
     #     print("test_domonic_get-----------=-----------=-----------=-----------=-----------=-----------=-----------=")
     #     page = eval(domonic.get("http://eventual.technology"))
     #     dir(page)
+
+
+
+    def test_javascript_url(self):
+        url = URL('https://somesite.com/blog/article-one#some-hash')
+        print('TESTS:')
+        print(url)
+        print(url.toString())
+        print(url.href)
+        print(url.protocol)
+        url.protocol = "http"
+        print(url.protocol)
+        print(url.host)
+        print(url.pathname)
+        print(url.hash)
+
+        # print(url.origin)
+
+        url = URL('https://somesite.com:8000/blog/article-one#some-hash')
+        print(url.protocol)
+        print(url.host)
+        print(url.hostname)
+        print(url.pathname)
+        print(url.hash)
+        print(url.port)
+ 
+        url.host = 'test.com'
+        print('host:',url.host)
+        print('href:',url.href)
+        print(url.hostname)
+        print(url.pathname)
+        print(url.hash)
+        print(url.port)
+        url.port = 8983
+        print(url.toString())
 
 
 if __name__ == '__main__':

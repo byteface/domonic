@@ -578,6 +578,7 @@ class Document(Element):
 
     def anchors(self):
         ''' Returns a collection of all <a> elements in the document that have a name attribute'''
+        print('hi')
         return
 
     def applets(self):

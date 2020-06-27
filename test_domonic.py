@@ -799,6 +799,31 @@ class domonicTestCase(unittest.TestCase):
         pass
 
 
+    def test_domonic_render_a_tag(self):
+        # test = html(body("asdfasdf"))
+        # print(test)
+        # print(test.anchors())
+        atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
+        # print('atag:',atag)
+        print('href:',atag.href)
+        print('protocol:',atag.protocol)
+        print('port:',atag.port)
+
+        atag.protocol = "http"
+        print('protocol:',atag.protocol)
+        print('href:',atag.href)
+        print(atag)
+        # print(atag.attributes)
+
+        atag.port = 8983
+        print(atag)
+
+        # print('host:',atag.host)
+        # print('hostname:',atag.hostname)
+        # atag.protocol = 'http'
+        # print(atag)
+
+
 
 if __name__ == '__main__':
     unittest.main()

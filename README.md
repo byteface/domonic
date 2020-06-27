@@ -8,6 +8,9 @@
     <br>
 </h1>
 
+[![PyPI version](https://badge.fury.io/py/domonic.svg)](https://badge.fury.io/py/domonic.svg)
+
+[![Downloads](https://pepy.tech/badge/domonic)](https://pepy.tech/project/domonic)
 
 ```python
 from domonic import *
@@ -34,6 +37,12 @@ output = render(
 ### install
 ```bash
     python3 -m pip install domonic
+```
+
+or if you had it before upgrade:
+
+```bash
+    python3 -m pip install domonic --upgrade
 ```
 
 ### usage
@@ -101,8 +110,6 @@ TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
 
 ##### TODO - catch these and raise a friendly custom ParseError that tells you what to fix
 
-
-
 ### run tests
 ```bash
 python3 test_domonic.py
@@ -110,7 +117,41 @@ python3 test_domonic.py
 
 
 ### more
-several undocumented features. take a look at the code.
+
+There is a javascript package being started that mirrors the js API:
+
+```python
+from domonic.javascript import Math
+
+print(Math.random())
+```
+
+```python
+from domonic.javascript import URL
+
+url = URL('https://somesite.com/blog/article-one#some-hash')
+print(url.protocol)
+print(url.host)
+print(url.pathname)
+print(url.hash)
+```
+
+You can update a-tags the same way as it inherits from URL:
+
+```python
+from domonic import *
+
+atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
+print('href:',atag.href)
+print('protocol:',atag.protocol)
+print('port:',atag.port)
+
+atag.protocol = "http"
+atag.port = 8983
+print(atag)
+```
+
+several other undocumented features. take a look at the code.
 
 
 ### docs

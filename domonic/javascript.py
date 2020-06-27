@@ -656,6 +656,8 @@ class Window(object):
         # dom.location = Location(x)
         # self.location = dom.location
 
+        # import requests.
+
     @staticmethod
     def alert(msg):
         """ Displays an alert box with a message and an OK button """
@@ -843,34 +845,159 @@ class String(object):
 
 
 
+import urllib.parse
+
+# https://developer.mozilla.org/en-US/docs/Web/API/URL
 class URL(object):
 
-    def __init__(self, *args, **kwargs):
+    def __update__(self):
+
+        try:
+            # make obj with all old props
+            new = {}
+            new['protocol'] = self.url.scheme
+            new['hostname'] = self.url.hostname
+            new['port'] = self.url.port
+            new['host'] = ''#self.url.hostname
+            new['pathname'] = self.url.path
+            new['hash'] = ''#self.url.hash
+
+            # update it with all the new ones
+            new = {}
+            new['protocol'] = self.protocol
+            new['hostname'] = self.hostname
+            new['port'] = self.port
+            new['host'] = self.host
+            new['pathname'] = self.pathname
+            new['hash'] = self.hash#self.hash
+
+            # rebuild
+            self.url = urllib.parse.urlsplit( new['protocol']+ "://" + new['host'] + new['pathname'] + new['hash'] )
+
+            # reset
+            self.href = self.url.geturl()
+        except Exception as e:
+            # print('not on init')
+            # print(e)
+            pass
+
+    def __init__(self, url:str="", *args, **kwargs): # TODO - relative to
+
+        # print('!!!!!!!!!!! --------------------------------------------------------------------------------------------------- !!!!')
+        # print('HERE I AM!!!',url, args, kwargs)
+
+        self.url = urllib.parse.urlsplit(url)
+        # print("---- HEY!!!!!!",self.url.geturl())  
+        self.href = self.url.geturl()
+        self.protocol = self.url.scheme
+        self.hostname = self.url.hostname
+        self.port = self.url.port
+        # print('GONE')
+        self.host = self.url.hostname#self.host#self.url.hostname
+        # print('GONE')
+        self.pathname = self.url.path
+        self.hash = ''#self.hash#''#self.url.hash
+
+        # self.href = url
         # self.args = args
         # self.kwargs = kwargs
-        self.x = x
-        pass
-
-        # back()    Loads the previous URL in the history list  History
-        # forward() Loads the next URL in the history list  History
-        # go()  Loads a specific URL from the history list  History
-        # hash  Sets or returns the anchor part (#) of a URL    Location
-        # host  Sets or returns the hostname and port number of a URL   Location
-        # hostname  Sets or returns the hostname of a URL   Location
-        # href  Sets or returns the entire URL  Location
-        # newURL    Returns the URL of the document, after the hash has been changed    HasChangeEvent
-        # oldURL    Returns the URL of the document, before the hash was changed    HasChangeEvent
-        # onhashchange  The event occurs when there has been changes to the anchor part of a URL    HashChangeEvent
-        # origin    Returns the protocol, hostname and port number of a URL Location
-        # pathname  Sets or returns the path name of a URL  Location
-        # port  Sets or returns the port number of a URL    Location
-        # protocol  Sets or returns the protocol of a URL   Location
-        # referrer  Returns the URL of the document that loaded the current document    Document
-        # search    Sets or returns the querystring part of a URL   Location
-        # url   Returns the URL of the changed item's document  StorageEvent
-        # URL   Returns the full URL of the HTML document   Document
+        # print('URL CREATED')
 
 
+    def toString(self):
+        return self.href
+
+    # def toJson
+
+
+    # @property
+    # def href(self):
+    #     return self.href
+
+    # @href.setter
+    # def href(self, href:str):
+    #     self.url = href
+    #     self.href = href
+
+    @property
+    def protocol(self):
+        return self.__protocol
+
+    @protocol.setter
+    def protocol(self, p:str):
+        self.__protocol = p
+        self.__update__()
+
+
+    @property
+    def hostname(self):
+        return self.__hostname
+
+    @hostname.setter
+    def hostname(self, h:str):
+        if h is None: return
+        if ":" in h:
+            h = h.split(':')[0]
+        self.__hostname = h
+        self.__update__()
+
+
+    @property
+    def port(self):
+        return self.__port
+
+    @port.setter
+    def port(self, p:str):
+        self.__port = p
+        self.__update__()
+
+
+    @property
+    def host(self):        
+        if self.port is not None:
+            return self.hostname + ":" + str(self.port)
+        else:
+            return self.hostname
+
+    @host.setter
+    def host(self, h:str):
+        if h is None: return
+        p = self.port
+        if ":" in h:
+            p = int(h.split(':')[1])
+            h = h.split(':')[0]
+        self.__host = h
+        self.hostname = h
+        self.port = p
+        self.__update__()
+
+
+    @property
+    def pathname(self):
+        return self.__pathname
+
+    @pathname.setter
+    def pathname(self, p:str):
+        self.__pathname = p
+        self.__update__()
+
+
+    @property
+    def hash(self):
+        ''' hash Sets or returns the anchor part (#) of a URL '''
+        if '#' in self.href:
+            return '#'+self.href.split('#')[1]
+        # return ''
+        return self.__hash
+
+    @hash.setter
+    def hash(self, h:str):
+        self.__hash = h
+        self.__update__()
+
+    # @property
+    # def origin(self):
+        '''# origin    Returns the protocol, hostname and port number of a URL Location'''
 
 
 
