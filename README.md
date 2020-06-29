@@ -256,3 +256,7 @@ Feel free to send pull requests. I'll merge and releaese asap.
 exerimental/learning project
 
 There's a complete more supported library I found already doing similar called 'dominate' . So if you want to do something like this, use that.
+
+
+### Notes
+https://medium.com/@joel.barmettler/how-to-upload-your-python-package-to-pypi-65edc5fe9c56
