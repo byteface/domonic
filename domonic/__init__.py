@@ -4,15 +4,23 @@
     ~~~~~
     
     Generate HTML using python 3
+
+    A fake DOM using python 3
+    
+    JS-like API for python 3
+    
+    Run Terminal commands using python 3 (this one requires a nix machine)
+
 """
 
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 from typing import *
 
 from .html import *
 from .dom import *
 from .javascript import *
+from .terminal import *
 
 import requests
 
@@ -35,6 +43,8 @@ class domonic:
     @staticmethod
     def parse(html:str) -> str :
         ''' HTML as input and returns python '''
+
+        # NOTE - not fully working. so not documented yet. should get you 80% of the way there.
 
         print("attempting to parse the page")
 
