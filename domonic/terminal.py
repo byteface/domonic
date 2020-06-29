@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    domonic.bash
+    domonic.terminal
     ~~~~~
     
     call command line functions in python 3
