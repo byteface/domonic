@@ -37,9 +37,25 @@ class tag(object):
 
 
     # TODO - test
-    # @property
-    # def content(self):
-    #     return ''.join([each.__str__() for each in self.args])
+    @property
+    def content(self):
+        return ''.join([each.__str__() for each in self.args])
+
+    @content.setter
+    def content(self,ignore):
+        self.__content = ''.join([each.__str__() for each in self.args])
+        return
+
+
+    @property
+    def attributes(self):
+        return ''.join([ ''' %s="%s"''' % (key.split('_',1)[1], value) for key, value in self.kwargs.items()])
+
+    @attributes.setter
+    def attributes(self,ignore):
+        self.__attributes = ''.join([ ''' %s="%s"''' % (key.split('_',1)[1], value) for key, value in self.kwargs.items()])
+        return
+
 
 
     def __str__(self):

@@ -84,17 +84,11 @@ class Node(EventTarget):
         # self.kwargs = kwargs
         self.baseURI = 'eventual.technology'
         self.baseURIObject = None
-        self.childNodes = None
-        self.firstChild = None
         self.isConnected = None
-        self.lastChild = None
         self.localName = None
         self.namespaceURI = None
         self.nextSibling = None
-        self.nodeName = None
         self.nodePrincipal = None
-        self.nodeType = None
-        self.nodeValue = None
         self.outerText = None
         self.ownerDocument = None
         self.parentElement = None
@@ -105,13 +99,63 @@ class Node(EventTarget):
         self.textContent = None
         pass
 
-        # appendChild() # TODO - append.?.< why missed?
+    def appendChild(self, item):
+        '''Adds a new child node, to an element, as the last child node'''
+        self.args = self.args + (item,)
+
+    def hasChildNodes(self):
+        '''Returns true if an element has any child nodes, otherwise false'''
+        return len(self.args)>1
+
+    def lastChild(self):
+        ''' Returns the last child node of an element'''
+        try:
+            return self.args[len(self.args)-1]
+        except Exception as e:
+            return None
+
+    def firstChild(self):
+        ''' Returns the first child node of an element'''
+        try:
+            return self.args[0]
+        except Exception as e:
+            return None
+
+    def childElementCount(self):
+        ''' Returns the number of child elements an element has'''
+        return len(self.args)
+
+    def childNodes(self):
+        ''' Returns a collection of an element's child nodes (including text and comment nodes)'''
+        return self.args
+
+    def children(self):
+        ''' Returns a collection of an element's child element (excluding text and comment nodes)'''
+        newlist=[]
+        for each in self.args:
+            if(type(each) != str):
+                newlist.append(each)
+        return newlist
+
+    def nodeType(self):
+        ''' Returns the node type of a node'''
+        # pass
+        return 1
+
+    @property
+    def nodeName(self):
+        ''' Returns the name of a node'''
+        return self.tagName.upper()
+
+    def nodeValue(self):
+        ''' Sets or returns the value of a node'''
+        pass
+
         # cloneNode()
         # compareDocumentPosition()
         # contains()
         # getRootNode()
         # getUserData()
-        # hasChildNodes()
         # insertBefore()
         # isDefaultNamespace()
         # isEqualNode()
@@ -170,10 +214,18 @@ class Element(Node):
         #self.attributes = None
 
         # self.style = Style()
-        self.id = None
+        if self.hasAttribute('id'):
+            self.id = self.id#''#None
+
         self.lang = None
         self.tabIndex = None
-        self.title = None
+
+        if self.hasAttribute('title'):
+            self.title = self.title
+
+        if self.hasAttribute('class'):
+            self.className = self.className
+            self.classList = self.classList
 
         self.tagName
         self.style = Style()# = #'test'#Style()
@@ -193,11 +245,9 @@ class Element(Node):
         # });
         pass
 
-    def appendChild(self, item):
+    # def appendChild(self, item):
         '''Adds a new child node, to an element, as the last child node'''
-        # self.content = self.content + item.__str__()
-        # return
-        pass
+        # self.args = self.args + (item,)
 
     def attributes(self) -> List :
         ''' Returns a List of an element's attributes'''
@@ -213,21 +263,30 @@ class Element(Node):
     def blur(self):
         '''Removes focus from an element'''
         pass
-    def childElementCount(self):
-        ''' Returns the number of child elements an element has'''
-        pass
-    def childNodes(self):
-        ''' Returns a collection of an element's child nodes (including text and comment nodes)'''
-        pass
-    def children(self):
-        ''' Returns a collection of an element's child element (excluding text and comment nodes)'''
-        pass
+
+    @property
     def classList(self):
-        ''' Returns the class name(s) of an element'''
-        pass
+        ''' Sets or returns the value of the classList attribute of an element'''
+        return self.getAttribute('class').split(' ')
+
+    @classList.setter
+    def classList(self, newname:str):
+        ''' Sets or returns the value of the classList attribute of an element'''
+        # self.setAttribute('class', newid)
+        return
+
+
+    @property
     def className(self):
-        ''' Sets or returns the value of the class attribute of an element'''
-        pass
+        ''' Sets or returns the value of the className attribute of an element'''
+        return self.getAttribute('class')
+
+    @className.setter
+    def className(self, newname:str):
+        ''' Sets or returns the value of the className attribute of an element'''
+        self.setAttribute('class', newname)
+
+
     def click(self):
         '''Simulates a mouse-click on an element'''
         pass
@@ -239,12 +298,15 @@ class Element(Node):
     def clientLeft(self):
         ''' Returns the width of the left border of an element'''
         pass
+
     def clientTop(self):
         ''' Returns the width of the top border of an element'''
         pass
+
     def clientWidth(self):
         ''' Returns the width of an element, including padding'''
         pass
+
     def cloneNode(self):
         '''Clones an element'''
         pass
@@ -269,10 +331,6 @@ class Element(Node):
         '''Cancels an element in fullscreen mode'''
         pass
 
-    def firstChild(self):
-        ''' Returns the first child node of an element'''
-        pass
-
     def firstElementChild(self):
         ''' Returns the first child element of an element'''
         pass
@@ -284,9 +342,14 @@ class Element(Node):
     def getAttribute(self, attribute: str) -> str:
         '''Returns the specified attribute value of an element node'''
         try:
+
+            if attribute[0:1] is not '_':
+                attribute = '_' + attribute
+
             return self.kwargs[attribute]
         except Exception as e:
             print('failed to get attribute')
+            print(e)
             return ''
 
     def getAttributeNode(self, attribute: str) -> str:
@@ -295,6 +358,7 @@ class Element(Node):
             return f"{attribute}={self.kwargs[attribute]}"
         except Exception as e:
             print('failed to get attribute')
+            print(e)
             return ''
 
     def getBoundingClientRect(self):
@@ -320,10 +384,15 @@ class Element(Node):
     def hasAttribute(self, attribute: str) -> str:
         '''Returns true if an element has the specified attribute, otherwise false'''
         try:
-            return f"{attribute}={self.kwargs[attribute]}"
+
+            if attribute[0:1] is not '_':
+                attribute = '_' + attribute
+
+            return attribute in self.kwargs.keys()
         except Exception as e:
             print('failed to get attribute')
-            return ''
+            print(e)
+            return False
 
     def hasAttributes(self) -> bool:
         '''Returns true if an element has any attributes, otherwise false'''
@@ -332,18 +401,24 @@ class Element(Node):
         else:
             return False
 
-    def hasChildNodes(self):
+    # def hasChildNodes(self):
         '''Returns true if an element has any child nodes, otherwise false'''
-        pass
+        # return len(self.args)>1
 
-    # def id(self):
+    @property
+    def id(self):
         ''' Sets or returns the value of the id attribute of an element'''
-        # pass
+        return self.getAttribute('id')
+
+    @id.setter
+    def id(self, newid:str):
+        ''' Sets or returns the value of the id attribute of an element'''
+        self.setAttribute('id', newid)
 
 
     def innerText(self):
         ''' Sets or returns the text content of a node and its descendants'''
-        pass
+        return ''.join([each.__str__() for each in self.args])
 
     def insertAdjacentElement(self):
         '''Inserts a HTML element at the specified position relative to the current element'''
@@ -386,9 +461,12 @@ class Element(Node):
         # pass
 
 
-    def lastChild(self):
+    # def lastChild(self):
         ''' Returns the last child node of an element'''
-        pass
+        # try:
+            # return self.args[len(self.args)-1]
+        # except Exception as e:
+            # return None
 
     def lastElementChild(self):
         ''' Returns the last child element of an element'''
@@ -404,18 +482,6 @@ class Element(Node):
 
     def nextElementSibling(self):
         ''' Returns the next element at the same node tree level'''
-        pass
-
-    def nodeName(self):
-        ''' Returns the name of a node'''
-        pass
-
-    def nodeType(self):
-        ''' Returns the node type of a node'''
-        pass
-
-    def nodeValue(self):
-        ''' Sets or returns the value of a node'''
         pass
 
     def normalize(self):
@@ -474,9 +540,17 @@ class Element(Node):
         '''Removes the element from the DOM'''
         pass
 
-    def removeAttribute(self):
+    def removeAttribute(self, attribute:str):
         '''Removes a specified attribute from an element'''
-        pass
+        try:
+
+            if attribute[0:1] is not '_':
+                attribute = '_' + attribute
+
+            del self.kwargs[attribute]
+        except Exception as e:    
+            print('failed to remove!', e)
+            pass
 
     def removeAttributeNode(self):
         '''Removes a specified attribute node, and returns the removed node'''
@@ -518,9 +592,17 @@ class Element(Node):
         ''' Returns the entire width of an element, including padding'''
         pass
 
-    def setAttribute(self):
+    def setAttribute(self, attribute, value):
         '''Sets or changes the specified attribute, to the specified value'''
-        pass
+        try:
+
+            if attribute[0:1] is not '_':
+                attribute = '_' + attribute
+
+            self.kwargs[attribute] = value
+        except Exception as e:
+            print('failed to set attribute')
+
 
     def setAttributeNode(self):
         '''Sets or changes the specified attribute node'''
@@ -551,11 +633,27 @@ class Element(Node):
 
     def textContent(self):
         ''' Sets or returns the textual content of a node and its descendants'''
-        pass
-
-    # def title(self):
-        ''' Sets or returns the value of the title attribute of an element'''
         # pass
+        # def __str__(self):
+
+        #TODO - not finished. this wont work
+        return f" {' '*len(self.name)}{' '*len(self.attributes)} {self.content}  {' '*len(self.name)} "
+
+
+
+
+
+    @property
+    def title(self):
+        ''' Sets or returns the value of the title attribute of an element'''
+        return self.getAttribute('title')
+
+    @title.setter
+    def title(self, newtitle:str):
+        ''' Sets or returns the value of the title attribute of an element'''
+        self.setAttribute('title', newtitle)
+
+
 
     def toString(self):
         '''Converts an element to a string'''
@@ -864,7 +962,9 @@ class Document(Element):
     def write(self, html: str = "" ) -> None:
         '''Writes HTML expressions or JavaScript code to a document'''
         # doc = html
-        pass
+        from .html import tag
+        tag.__init__(self,html)
+        # super(tag).__init__(html)
 
     def writeln( self, html: str = "" ) -> None:
         '''Same as write(), but adds a newline character after each statement'''
@@ -951,9 +1051,7 @@ class dom(object):
 
     @property
     def console():
-        print('its a fucking console')
         return self._console
-
 
     def __init__(self, *args, **kwargs):
         self.args = args

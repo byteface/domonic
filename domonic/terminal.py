@@ -344,3 +344,8 @@ wait = type('wait', (command,), {'name':'wait'})
 
 
 # https://ss64.com/bash/
+
+
+
+
+# PIPE etc? 
