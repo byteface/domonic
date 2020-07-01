@@ -13,14 +13,14 @@
 
 """
 
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 
 from typing import *
 
 from .html import *
 from .dom import *
-from .javascript import *
-from .terminal import *
+# from .javascript import *
+# from .terminal import *
 
 import requests
 

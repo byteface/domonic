@@ -9,6 +9,10 @@
 from typing import *
 import re
 
+from domonic.css import Style
+from domonic.javascript import URL
+
+
 class Event(object):
 
     def __init__(self):
@@ -123,7 +127,9 @@ class Node(EventTarget):
 
 class Console(object):
 
-    log = lambda msg : print(msg)
+    @staticmethod
+    def log(msg:str):
+        print(msg)
 
     def __init__(self, *args, **kwargs):
         # self.args = args
@@ -155,10 +161,22 @@ console = Console
 
 class Element(Node):
 
+
     def __init__(self, *args, **kwargs):
-        self.content = None
-        self.attributes = None
-        pass
+
+        # print('ELEMENT RAN')
+
+        #self.content = None
+        #self.attributes = None
+
+        # self.style = Style()
+        self.id = None
+        self.lang = None
+        self.tabIndex = None
+        self.title = None
+
+        self.tagName
+        self.style = Style()# = #'test'#Style()
 
     # def accessKey( key: str ): -> None
         # ''' Sets or returns the accesskey attribute of an element'''
@@ -318,9 +336,10 @@ class Element(Node):
         '''Returns true if an element has any child nodes, otherwise false'''
         pass
 
-    def id(self):
+    # def id(self):
         ''' Sets or returns the value of the id attribute of an element'''
-        pass
+        # pass
+
 
     def innerText(self):
         ''' Sets or returns the text content of a node and its descendants'''
@@ -362,9 +381,10 @@ class Element(Node):
         '''Returns true if a specified feature is supported on the element'''
         pass
 
-    def lang(self):
+    # def lang(self):
         ''' Sets or returns the value of the lang attribute of an element'''
-        pass
+        # pass
+
 
     def lastChild(self):
         ''' Returns the last child node of an element'''
@@ -506,29 +526,45 @@ class Element(Node):
         '''Sets or changes the specified attribute node'''
         pass
 
+
+
+    @property
     def style(self):
         ''' Sets or returns the value of the style attribute of an element'''
-        pass
+        return self.__style
 
-    def tabIndex(self):
+
+    @style.setter
+    def style(self, style):
+        self.__style = style
+
+
+    # def tabIndex(self):
         ''' Sets or returns the value of the tabindex attribute of an element'''
-        pass
+        # pass
 
+    @property
     def tagName(self):
-        ''' Returns the tag name of an element'''
-        pass
+        return self.name
+
+
 
     def textContent(self):
         ''' Sets or returns the textual content of a node and its descendants'''
         pass
 
-    def title(self):
+    # def title(self):
         ''' Sets or returns the value of the title attribute of an element'''
-        pass
+        # pass
 
     def toString(self):
         '''Converts an element to a string'''
         pass
+
+
+
+
+
 
 
 
@@ -855,63 +891,19 @@ document = Document
 
 
 
-class Location(object):
-
-    # href = static_function(document.baseURI)
-    href = lambda:Location.some_func()
-
-    @staticmethod
-    def some_func(self):
-        # ''' Sets or returns the hostname and port number of a URL'''
-        print("some_func ran")
-        return
-
+class Location(URL):
 
     def __init__(self, *args, **kwargs):
-        # self.args = args
-        # self.kwargs = kwargs
         pass
 
-    # def __str__(self):
-    #     return self.uri
+    def __str__(self):
+        return self.href
 
     # def __repr__(self):
     #     return self.uri
 
-
-    ''' Sets or returns the anchor part (#) of a URL'''
-    # hash = lambda : dom.baseURI.split("#")[1]
-
-    # host = lambda : dom.baseURI.split(":")[1] if ":" in dom.baseURI else 80
-
-    def host(self):
-        # ''' Sets or returns the hostname and port number of a URL'''
-        return
-
-    def hostname(self):
-        ''' Sets or returns the hostname of a URL'''
-        return
-
-    # @property
-    # @staticmethod
-    # def href(self):
-        ''' Sets or returns the entire URL'''
-        # return self.uri
-
     def origin(self):
         ''' Returns the protocol, hostname and port number of a URL'''
-        return
-
-    def pathname(self):
-        ''' Sets or returns the path name of a URL'''
-        return
-
-    def port(self):
-        ''' Sets or returns the port number of a URL'''
-        return
-
-    def protocol(self):
-        ''' Sets or returns the protocol of a URL'''
         return
 
     def search(self):
@@ -942,25 +934,35 @@ location = Location
 class dom(object):
 
     console = type('console', (console,), {'name':'console'})
-    document = type('document', (document,), {'name':'document'})
+
     location = type('location', (location,), {'name':'location'})
+    
+    document = type('document', (document,), {'name':'document'})
 
     # @property
     # def location(self):
-    #     print("====================================================================================")
+    #     print("! ===== ======= ============= ================= ============= !")
     #     return self.location
 
     # @location.setter
     # def location(self, uri: str):
-    #     print("================================================!====================================")
+    #     print("! ====== =========== ============== ============ ============ !")
     #     self.location.uri = uri
+
+    @property
+    def console():
+        print('its a fucking console')
+        return self._console
+
 
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
 
+        # self.console = dom.console
+
         # self.location = type('location', (location,), {'name':'location'})
-        # self.console = type('console', (dom.console,), {'name':'console'})
+        self.console = type('console', (dom.console,), {'name':'console'})
         # self.doc = type('document', (DOM,), {'name':'document'})
 
         # self.attr = type('attribute', (DOM,), {'name':'attribute'})

@@ -20,10 +20,7 @@ from domonic.javascript import Window
 from domonic.javascript import Date
 from domonic.javascript import URL
 
-# from domonic.javascript import *
-
-from domonic import domonic
-
+from domonic.javascript import *
 
 class domonicTestCase(unittest.TestCase):
 
@@ -188,6 +185,7 @@ class domonicTestCase(unittest.TestCase):
     def test_domonic_window_console_log(self):
         # window = Window()
         Window().console.log("test this")
+        # window.console.log("test this")
 
     def test_domonic_window_alert(self):
         # Window().alert("test this 2")
@@ -338,6 +336,17 @@ class domonicTestCase(unittest.TestCase):
         print(url.port)
         url.port = 8983
         print(url.toString())
+
+
+    def test_javascript_window(self):
+        print('asdf')
+        print(window)
+        print(window.location)
+
+        # window.location = "https://google.com"
+        # print(window.location.href)
+
+        pass
 
 
 if __name__ == '__main__':

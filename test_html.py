@@ -12,12 +12,7 @@ import unittest
 # import requests
 # from mock import patch
 
-from domonic.javascript import Math
-from domonic.javascript import Global
-from domonic.javascript import Window
-from domonic.javascript import Date
-
-from domonic import *
+from domonic.html import *
 
 class domonicTestCase(unittest.TestCase):
 

@@ -10,6 +10,12 @@ from typing import *
 import math
 import random
 
+from domonic import dom
+
+# from .dom import *
+# from domonic import *
+
+
 #
 class js_object(object):
 
@@ -622,12 +628,15 @@ class KeyboardEvent(object):
     # onkeyup   The event occurs when the user releases a key   KeyboardEvent
     # repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent
 
-
-
-
 from .dom import *
 
 class Window(object):
+
+    # @staticmethod
+    # def console(self):
+    #     print("xxxxxXXXXxasdfffffff")
+    #     return dom.console
+
 
     # CONSTANTS
     
@@ -639,24 +648,36 @@ class Window(object):
     # frames    Returns all <iframe> elements in the current window Window
 
     def __init__(self, *args, **kwargs):
+        print('window here!')
+
+        print(type(dom))
         # self.args = args
         # self.kwargs = kwargs
         self.console = dom.console
-        self.location = dom.location
-        self.document = dom.document
+        # self.document = dom.document
+        # self.location = ''#dom.location
+        
+    @property
+    def location(self):
 
-    # @property
-    # def location(self):
-    #     return dom.location
+        print("@@@@@@@@@@@@@@@@@@@@@@")
+        return self.__location
 
-    # @location.setter
-    # def location(self, x):
-    #     print("====================>>>>>>>", x)
-    #     dom.location = x
-        # dom.location = Location(x)
-        # self.location = dom.location
+    @location.setter
+    def location(self, x):
+        print("====================>>>>>>>", x)
+        # dom.location = x
+        # dom.location = dom.location(x)#Location(x)
+
+        from .dom import Location
+        print('test::::-------------------------------------------------------',Location)
+
+        # print("xxxxxxxx>>>>>>", dom.location)
+        # self.__location = dom.location
 
         # import requests.
+
+        pass
 
     @staticmethod
     def alert(msg):
@@ -746,7 +767,7 @@ class Window(object):
 # view  Returns a reference to the Window object where the event occurred   UiEvent
 
 
-
+window = Window
 
 
 
@@ -849,8 +870,8 @@ import urllib.parse
 
 # https://developer.mozilla.org/en-US/docs/Web/API/URL
 class URL(object):
-
     def __update__(self):
+        # print( "update URL:", type(self), self  )
 
         try:
             # make obj with all old props
@@ -877,32 +898,20 @@ class URL(object):
             # reset
             self.href = self.url.geturl()
         except Exception as e:
-            # print('not on init')
+            # print('fails on props called by init as they dont exist yet')
             # print(e)
             pass
 
     def __init__(self, url:str="", *args, **kwargs): # TODO - relative to
-
-        # print('!!!!!!!!!!! --------------------------------------------------------------------------------------------------- !!!!')
-        # print('HERE I AM!!!',url, args, kwargs)
-
         self.url = urllib.parse.urlsplit(url)
-        # print("---- HEY!!!!!!",self.url.geturl())  
         self.href = self.url.geturl()
+
         self.protocol = self.url.scheme
         self.hostname = self.url.hostname
         self.port = self.url.port
-        # print('GONE')
-        self.host = self.url.hostname#self.host#self.url.hostname
-        # print('GONE')
+        self.host = self.url.hostname
         self.pathname = self.url.path
-        self.hash = ''#self.hash#''#self.url.hash
-
-        # self.href = url
-        # self.args = args
-        # self.kwargs = kwargs
-        # print('URL CREATED')
-
+        self.hash = ''
 
     def toString(self):
         return self.href
@@ -926,6 +935,7 @@ class URL(object):
     @protocol.setter
     def protocol(self, p:str):
         self.__protocol = p
+        # if self.ready : self.__update__() # TODO - this instead of silent err?
         self.__update__()
 
 
@@ -1004,41 +1014,9 @@ class URL(object):
 
 # clipboardData Returns an object containing the data affected by the clipboard operation   ClipboardData
 
-# lastModified   Returns the date and time the document was last modified   Document
-
-# accessKey Sets or returns the accesskey attribute of an element   Element
-
-# activeElement Returns the currently focused element in the document   Document
-
-# addEventListener()    Attaches an event handler to the document   Document, Element
-
-# adoptNode()   Adopts a node from another document Document
-
-# anchors   Returns a collection of all <a> elements in the document that have a name attribute Document
-
 # animationName Returns the name of the animation   AnimationEvent
 
-# appCodeName   Returns the code name of the browser    Navigator
-
-# appendChild() Adds a new child node, to an element, as the last child node    Element
-
-# applets   Returns a collection of all <applet> elements in the document   Document
-
-# appName   Returns the name of the browser Navigator
-
-# appVersion    Returns the version information of the browser  Navigator
-
-# assert()  Writes an error message to the console if the assertion is false    Console
-
-# assign()  Loads a new document    Location
-
-# attributes    Returns a NamedNodeMap of an element's attributes   Element
-
 # back()    Loads the previous URL in the history list  History
-
-# baseURI   Returns the absolute base URI of a document Document
-
-# body  Sets or returns the document's body (the <body> element)    Document
 
 # break Exits a switch or a loop    Statements
 
@@ -1048,73 +1026,25 @@ class URL(object):
 
 # changeTouches Returns a list of all the touch objects whose state changed between the previous touch and this touch   TouchEvent
 
-# characterSet  Returns the character encoding for the document Document
-
 # charAt()  Returns the character at the specified index (position) String
 
 # charCodeAt()  Returns the Unicode of the character at the specified index String
-
-# charset   Deprecated. Use characterSet instead. Returns the character encoding for the document   Document
-
-# childElementCount Returns the number of child elements an element has Element
-
-# childNodes    Returns a collection of an element's child nodes (including text and comment nodes) Element
-
-# children  Returns a collection of an element's child element (excluding text and comment nodes)   Element
-
-# classList Returns the class name(s) of an element Element
-
-# className Sets or returns the value of the class attribute of an element  Element
 
 # clear()   Clears the console  Console, Storage
 
 # clearWatch()  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    Geolocation
 
-# click()   Simulates a mouse-click on an element   Element
-
-# clientHeight  Returns the height of an element, including padding Element
-
-# clientLeft    Returns the width of the left border of an element  Element
-
-# clientTop Returns the width of the top border of an element   Element
-
-# clientWidth   Returns the width of an element, including padding  Element
-
 # colorDepth    Returns the bit depth of the color palette for displaying images    Screen
-
-# compareDocumentPosition() Compares the document position of two elements  Element
 
 # composed  Returns whether the event is composed or not    Event
 
 # const Declares a variable with a constant value   Statements
 
-# contains()    Returns true if a node is a descendant of a node, otherwise false   Element
-
-# contentEditable   Sets or returns whether the content of an element is editable or not    Element
-
 # continue  Breaks one iteration (in the loop) if a specified condition occurs, and continues with the next iteration in the loop   Statements
-
-# cookie    Returns all name/value pairs of cookies in the document Document
-
-# cookieEnabled Determines whether cookies are enabled in the browser   Navigator
 
 # coordinates   Returns the position and altitude of the device on Earth    Geolocation
 
 # copyWithin()  Copies array elements within the array, to and from specified positions Array
-
-# count()   Logs the number of times that this particular call to count() has been called   Console
-
-# createAttribute() Creates an attribute node   Document
-
-# createComment()   Creates a Comment node with the specified text  Document
-
-# createDocumentFragment()  Creates an empty DocumentFragment node  Document
-
-# createElement()   Creates an Element node Document
-
-# createEvent() Creates a new event Document, Event
-
-# createTextNode()  Creates a Text node Document
 
 # currentTarget Returns the element whose event listeners triggered the event   Event
 
@@ -1134,29 +1064,13 @@ class URL(object):
 
 # deltaMode Returns a number that represents the unit of measurements for delta values (pixels, lines or pages) WheelEvent
 
-# designMode    Controls whether the entire document should be editable or not. Document
-
 # detail    Returns a number that indicates how many times the mouse was clicked    UiEvent
 
 # do ... while  Executes a block of statements and repeats the block while a condition is true  Statements
 
-# doctype   Returns the Document Type Declaration associated with the document  Document
-
-# documentElement   Returns the Document Element of the document (the <html> element)   Document
-
-# documentMode  Returns the mode used by the browser to render the document Document
-
-# documentURI   Sets or returns the location of the document    Document
-
-# domain    Returns the domain name of the server that loaded the document  Document
-
-# domConfig Obsolete. Returns the DOM configuration of the document Document
-
 # elapsedTime   Returns the number of seconds an animation has been running AnimationEvent
 
 # elapsedTime   Returns the number of seconds a transition has been running  
-
-# embeds    Returns a collection of all <embed> elements the document   Document
 
 # entries() Returns a key/value pair Array Iteration Object Array
 
@@ -1167,12 +1081,6 @@ class URL(object):
 # every()   Checks if every element in an array pass a test Array
 
 # exec()    Tests for a match in a string. Returns the first match  RegExp
-
-# execCommand() Invokes the specified clipboard operation on the element currently having focus.    Document
-
-# exitFullscreen()  Cancels an element in fullscreen mode   Element
-
-# dir   Sets or returns the value of the dir attribute of an element    Element
 
 # filter()  Creates a new array with every element in an array that pass a test Array
 
@@ -1194,29 +1102,11 @@ class URL(object):
 
 # fromCharCode()    Converts Unicode values to characters   String
 
-# fullscreenElement Returns the current element that is displayed in fullscreen mode    Document
-
-# fullscreenEnabled()   Returns a Boolean value indicating whether the document can be viewed in fullscreen mode    Document
-
 # function  Declares a function Statements
 
 # geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
 
-# getAttribute()    Returns the specified attribute value of an element node    Element
-
-# getAttributeNode()    Returns the specified attribute node    Element
-
-# getBoundingClientRect()   Returns the size of an element and its position relative to the viewport    Element
-
 # getCurrentPosition()  Returns the current position of the device  Geolocation
-
-# getElementById()  Returns the element that has the ID attribute with the specified value  Document
-
-# getElementsByClassName()  Returns a NodeList containing all elements with the specified class name    Document, Element
-
-# getElementsByName()   Returns a NodeList containing all elements with a specified name    Document
-
-# getElementsByTagName()    Returns a NodeList containing all elements with the specified tag name  Document, Element
 
 # getItem() Returns the value of the specified key name Storage
 
@@ -1226,31 +1116,7 @@ class URL(object):
 
 # go()  Loads a specific URL from the history list  History
 
-# group()   Creates a new inline group in the console. This indents following console messages by an additional level, until console.groupEnd() is called   Console
-
-# groupCollapsed()  Creates a new inline group in the console. However, the new group is created collapsed. The user will need to use the disclosure button to expand it    Console
-
-# groupEnd()    Exits the current inline group in the console   Console
-
-# hasAttribute()    Returns true if an element has the specified attribute, otherwise false Element
-
-# hasAttributes()   Returns true if an element has any attributes, otherwise false  Element
-
-# hasChildNodes()   Returns true if an element has any child nodes, otherwise false Element
-
-# hasFocus()    Returns a Boolean value indicating whether the document has focus   Document
-
-# hash  Sets or returns the anchor part (#) of a URL    Location
-
-# head  Returns the <head> element of the document  Document
-
 # height    Returns the total height of the screen  Screen
-
-# host  Sets or returns the hostname and port number of a URL   Location
-
-# hostname  Sets or returns the hostname of a URL   Location
-
-# href  Sets or returns the entire URL  Location
 
 # id    Sets or returns the value of the id attribute of an element Element
 
@@ -1258,45 +1124,13 @@ class URL(object):
 
 # ignoreCase    Checks whether the "i" modifier is set  RegExp
 
-# images    Returns a collection of all <img> elements in the document  Document
-
-# implementation    Returns the DOMImplementation object that handles this document Document
-
-# importNode()  Imports a node from another document    Document
-
-# info()    Outputs an informational message to the console Console
-
-# innerHTML Sets or returns the content of an element   Element
-
-# innerText Sets or returns the text content of a node and its descendants  Element
-
-# inputEncoding Returns the encoding, character set, used for the document  Document
-
 # inputType Returns the type of the change (i.e "inserting" or "deleting")  InputEvent
-
-# insertAdjacentElement()   Inserts a HTML element at the specified position relative to the current element    Element
-
-# insertAdjacentHTML()  Inserts a HTML formatted text at the specified position relative to the current element Element
-
-# insertAdjacentText()  Inserts text into the specified position relative to the current element    Element
-
-# insertBefore()    Inserts a new child node before a specified, existing, child node   Element
-
-# isContentEditable Returns true if the content of an element is editable, otherwise false  Element
-
-# isDefaultNamespace()  Returns true if a specified namespaceURI is the default, otherwise false    Element
-
-# isEqualNode() Checks if two elements are equal    Element
 
 # isId  Returns true if the attribute is of type Id, otherwise it returns false Attribute
 
 # isInteger()   Checks whether a value is an integer    Number
 
 # isSafeInteger()   Checks whether a value is a safe integer    Number
-
-# isSameNode()  Checks if two elements are the same node    Element
-
-# isSupported() Returns true if a specified feature is supported on the element Element
 
 # isTrusted Returns whether or not an event is trusted  Event
 
@@ -1306,19 +1140,11 @@ class URL(object):
 
 # keys()    Returns a Array Iteration Object, containing the keys of the original array Array
 
-# lang  Sets or returns the value of the lang attribute of an element   Element
-
 # language  Returns the language of the browser Navigator
-
-# lastChild Returns the last child node of an element   Element
-
-# lastElementChild  Returns the last child element of an element    Element
 
 # lengthComputable  Returns whether the length of the progress can be computable or not ProgressEvent
 
 # let   Declares a variable inside brackets {} scope    Statements
-
-# links Returns a collection of all <a> and <area> elements in the document that have a href attribute  Document
 
 # loaded    Returns how much work has been loaded   ProgressEvent
 
@@ -1343,30 +1169,6 @@ class URL(object):
 # newURL    Returns the URL of the document, after the hash has been changed    HasChangeEvent
 
 # newValue  Returns the new value of the changed storage item   StorageEvent
-
-# nextSibling   Returns the next node at the same node tree level   Element
-
-# nextElementSibling    Returns the next element at the same node tree level    Element
-
-# nodeName  Returns the name of a node  Element
-
-# nodeType  Returns the node type of a node Element
-
-# nodeValue Sets or returns the value of a node Element
-
-# normalize()   Removes empty Text nodes, and joins adjacent nodes  Document, Element
-
-# normalizeDocument()   Removes empty Text nodes, and joins adjacent nodes  Document
-
-# offsetHeight  Returns the height of an element, including padding, border and scrollbar   Element
-
-# offsetWidth   Returns the width of an element, including padding, border and scrollbar    Element
-
-# offsetLeft    Returns the horizontal offset position of an element    Element
-
-# offsetParent  Returns the offset container of an element  Element
-
-# offsetTop Returns the vertical offset position of an element  Element
 
 # oldURL    Returns the URL of the document, before the hash was changed    HasChangeEvent
 
@@ -1516,25 +1318,9 @@ class URL(object):
 
 # origin    Returns the protocol, hostname and port number of a URL Location
 
-# outerHTML Sets or returns the outer content of an element Element
-
-# outerText Sets or returns the text outer content of a node and its descendants    Element
-
-# ownerDocument Returns the root element (document object) for an element   Element
-
-# parentNode    Returns the parent node of an element   Element
-
-# parentElement Returns the parent element node of an element   Element
-
-# pathname  Sets or returns the path name of a URL  Location
-
 # persisted Returns whether the webpage was cached by the browser   PageTransitionEvent
 
 # pixelDepth    Returns the color resolution (in bits per pixel) of the screen  Screen
-
-# platform  Returns for which platform the browser is compiled  Navigator
-
-# port  Sets or returns the port number of a URL    Location
 
 # position  Returns the position of the concerned device at a given time    Geolocation
 
@@ -1546,33 +1332,9 @@ class URL(object):
 
 # preventDefault()  Cancels the event if it is cancelable, meaning that the default action that belongs to the event will not occur Event
 
-# product   Returns the engine name of the browser  Navigator
-
 # propertyName  Returns the name of the CSS property associated with the animation or transition    AnimationEvent, TransitionEvent
 
-# protocol  Sets or returns the protocol of a URL   Location
-
 # pseudoElement Returns the name of the pseudo-element of the animation or transition   AnimationEvent, TransitionEvent
-
-# querySelector()   Returns the first element that matches a specified CSS selector(s) in the document  Document, Element
-
-# querySelectorAll()    Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document  Document, Element
-
-# readyState    Returns the (loading) status of the document    Document
-
-# referrer  Returns the URL of the document that loaded the current document    Document
-
-# reload()  Reloads the current document    Location
-
-# remove()  Removes the element from the DOM    Element
-
-# removeAttribute() Removes a specified attribute from an element   Element
-
-# removeAttributeNode() Removes a specified attribute node, and returns the removed node    Element
-
-# removeChild() Removes a child node from an element    Element
-
-# removeEventListener() Removes an event handler that has been attached with the addEventListener() method  Element
 
 # removeItem()  Removes that key from the storage   Storage
 
@@ -1582,41 +1344,15 @@ class URL(object):
 
 # replace() Searches a string for a specified value, or a regular expression, and returns a new string where the specified values are replaced  String, Location
 
-# replaceChild()    Replaces a child node in an element Element
-
-# requestFullscreen()   Shows an element in fullscreen mode Element
-
 # return    Stops the execution of a function and returns a value from that function    Statements
-
-# previousSibling   Returns the previous node at the same node tree level   Element
-
-# previousElementSibling    Returns the previous element at the same node tree level    Element
 
 # prototype Allows you to add properties and methods to an object   Number
 
-# removeEventListener() Removes an event handler from the document (that has been attached with the addEventListener() method)  Document
-
 # removeNamedItem() Removes a specified attribute node  Attribute
-
-# renameNode()  Renames the specified node  Document
-
-# scripts   Returns a collection of <script> elements in the document   Document
-
-# scrollHeight  Returns the entire height of an element, including padding  Element
-
-# scrollLeft    Sets or returns the number of pixels an element's content is scrolled horizontally  Element
-
-# scrollTop Sets or returns the number of pixels an element's content is scrolled vertically    Element
-
-# scrollWidth   Returns the entire width of an element, including padding   Element
 
 # search    Sets or returns the querystring part of a URL   Location
 
 # search()  Searches a string for a specified value, or regular expression, and returns the position of the match   String
-
-# setAttribute()    Sets or changes the specified attribute, to the specified value Element
-
-# setAttributeNode()    Sets or changes the specified attribute node    Element
 
 # setNamedItem()    Sets the specified attribute node (by name) Attribute
 
@@ -1640,11 +1376,7 @@ class URL(object):
 
 # stringify()   Convert a JavaScript object to a JSON string    JSON
 
-# strictErrorChecking   Sets or returns whether error-checking is enforced or not   Document
-
 # storageArea   Returns an object representing the affected storage object  StorageEvent
-
-# style Sets or returns the value of the style attribute of an element  Element
 
 # substr()  Extracts the characters from a string, beginning at a specified start position, and through the specified number of character   String
 
@@ -1652,27 +1384,13 @@ class URL(object):
 
 # switch    Marks a block of statements to be executed depending on different cases Statements
 
-# table()   Displays tabular data as a table    Console
-
-# tabIndex  Sets or returns the value of the tabindex attribute of an element   Element
-
-# tagName   Returns the tag name of an element  Element
-
 # target    Returns the element that triggered the event    Event
 
 # targetTouches Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element    TouchEvent
 
-# textContent   Sets or returns the textual content of a node and its descendants   Element
-
 # throw Throws (generates) an error Statements
 
-# time()    Starts a timer (can track how long an operation takes)  Console
-
-# timeEnd() Stops a timer that was previously started by console.time() Console
-
 # timeStamp Returns the time (in milliseconds relative to the epoch) at which the event was created Event
-
-# title Sets or returns the title of the document   Document, Element
 
 # toExponential()   Converts a number into an exponential notation  Number
 
@@ -1704,22 +1422,12 @@ class URL(object):
 
 # url   Returns the URL of the changed item's document  StorageEvent
 
-# URL   Returns the full URL of the HTML document   Document
-
-# userAgent Returns the user-agent header sent by the browser to the server Navigator
-
 # value Sets or returns the value of the attribute  Attribute
 
 # var   Declares a variable Statements
-
-# warn()    Outputs a warning message to the console    Console
 
 # watchPosition()   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   Geolocation
 
 # width Returns the total width of the screen   Screen
 
 # while Marks a block of statements to be executed while a condition is true    Statements
-
-# write()   Writes HTML expressions or JavaScript code to a document    Document
-
-# writeln()
