@@ -1,11 +1,8 @@
-"""    
-    test_domonic 
-    ~~~~~~~~~~~~~~~~
-    
-    unit tests for domonic
-    
+"""
+    test_domonic
+    ~~~~~~~~~~~~
+    - unit tests for domonic
     # TODO - tests for all bs5 pages
-
 """
 
 import unittest
@@ -13,6 +10,7 @@ import unittest
 # from mock import patch
 
 from domonic.html import *
+
 
 class domonicTestCase(unittest.TestCase):
 
@@ -37,22 +35,22 @@ class domonicTestCase(unittest.TestCase):
     def test_domonic_render(self):
         test = html(
             head(
-            meta( _charset="utf-8"),
+            meta(_charset="utf-8"),
             # meta( **{"http-equiv":"X-UA-Compatible"},, _content="IE=edge"),
             title("eventual.technology"),
-            meta( _name="viewport", _content="width=device-width, initial-scale=1"),
-            meta( _name="description", _content="eventual technology" ),
-            meta( _name="keywords", _content="website, html5, javascript, python, software, aws" ),
-            meta( _name="author", _content="eventual.technology" ),
-            meta( _property="og:title", _content="eventual technology"),
-            meta( _property="og:image", _content=""),
-            meta( _property="og:url", _content=""),
-            meta( _property="og:site_name", _content="eventual.technology"),
-            meta( _property="og:description", _content=""),
-            meta( _name="twitter:title", _content="eventual technology" ),
-            meta( _name="twitter:image", _content="" ),
-            meta( _name="twitter:url", _content="eventual.technology" ),
-            meta( _name="twitter:card", _content="" )
+            meta(_name="viewport", _content="width=device-width, initial-scale=1"),
+            meta(_name="description", _content="eventual technology" ),
+            meta(_name="keywords", _content="website, html5, javascript, python, software, aws" ),
+            meta(_name="author", _content="eventual.technology" ),
+            meta(_property="og:title", _content="eventual technology"),
+            meta(_property="og:image", _content=""),
+            meta(_property="og:url", _content=""),
+            meta(_property="og:site_name", _content="eventual.technology"),
+            meta(_property="og:description", _content=""),
+            meta(_name="twitter:title", _content="eventual technology" ),
+            meta(_name="twitter:image", _content="" ),
+            meta(_name="twitter:url", _content="eventual.technology" ),
+            meta(_name="twitter:card", _content="" )
             ),
             body(
                 header(
@@ -60,7 +58,7 @@ class domonicTestCase(unittest.TestCase):
                     h2("07535784121")
                 ),
                 footer(
-                    img( _class="logo", _src="static/img/logo.svg", _alt="eventual technology")
+                    img(_class="logo", _src="static/img/logo.svg", _alt="eventual technology")
                 )
 
             )
@@ -817,7 +815,6 @@ class domonicTestCase(unittest.TestCase):
         # print('hostname:',atag.hostname)
         # atag.protocol = 'http'
         # print(atag)
-
 
 
 if __name__ == '__main__':

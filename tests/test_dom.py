@@ -1,25 +1,21 @@
-"""    
-    test_domonic 
-    ~~~~~~~~~~~~~~~~
-    
-    unit tests for domonic
-    
-    # TODO - tests for all bs5 pages
-
+"""
+    test_domonic
+    ~~~~~~~~~~~~
+    - unit tests for domonic.dom
 """
 
 import unittest
 # import requests
 # from mock import patch
 
-from domonic import *
-from domonic.css import *
+from domonic.html import *
+from domonic.style import *
+
 
 class domonicTestCase(unittest.TestCase):
 
     def test_dom(self):
-        
-        sometag = div( "asdfasdf", div(), div("yo"), _id="test")
+        sometag = div("asdfasdf", div(), div("yo"), _id="test")
         print(sometag.tagName)
 
         print(sometag)
@@ -37,10 +33,10 @@ class domonicTestCase(unittest.TestCase):
         print(sometag.setAttribute('id','newid'))
         print(sometag)
 
-        print('>>',sometag.lastChild())
-        print('>>',sometag.hasChildNodes())
+        print(sometag.lastChild())
+        print(sometag.hasChildNodes())
         # print('>>',sometag.textContent()) # TODO - will have a think. either strip or render tagless somehow
-        
+
         sometag.removeAttribute('id')
         print(sometag)
 
@@ -57,6 +53,7 @@ class domonicTestCase(unittest.TestCase):
         print(htmltag)
 
         print('-END-')
+
 
 if __name__ == '__main__':
     unittest.main()

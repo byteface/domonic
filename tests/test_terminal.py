@@ -1,17 +1,11 @@
-"""    
-    test_domonic 
+"""
+    test_terminal
     ~~~~~~~~~~~~~~~~
-    
-    unit tests for domonic
-    
-    # TODO - need to do a js call on the same function. get result. compare to ours
-    # TODO - test raising value errors
-    # TODO - seperate test file per class
-
 """
 
 import unittest
 from domonic.terminal import *
+
 
 class domonicTestCase(unittest.TestCase):
 
@@ -20,9 +14,9 @@ class domonicTestCase(unittest.TestCase):
         print(ls())
         # print(ls("-al"))
         # print(ls("../"))
-        
+
         print(pwd())
-        print(cd('../')) # < TODO - will need custom 
+        print(cd('../'))  # < TODO - will need custom
         # print(cd('archive'))
         # print('---',pwd())
 
@@ -44,8 +38,7 @@ class domonicTestCase(unittest.TestCase):
         # for i, l in enumerate(cat('LICENSE.txt')):
         #     print(i,l)
 
-        # for l in history():
-            # print('ls'.l)
+        # for l in history(): # print('ls'.l) # TODO
 
         # print(history())
         # print(man("ls"))
@@ -62,10 +55,6 @@ class domonicTestCase(unittest.TestCase):
         # print(wget('eventual.technology'))
         print(date())
         print(cal())
-        
-        
-
-
 
 
 if __name__ == '__main__':

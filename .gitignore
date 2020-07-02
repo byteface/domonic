@@ -5,3 +5,5 @@ venv
 __pycache__
 domonic.egg-info
 dist
+.vscode
+*_tmp

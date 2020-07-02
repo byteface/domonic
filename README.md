@@ -104,12 +104,14 @@ print(HTMLBeautifier.beautify(output, 4))
 ```
 
 ### run tests
+See Makefile:
 ```bash
-python3 test_domonic.py
-python3 test_javascript.py
-python3 test_terminal.py
+make test
 ```
-
+or to test a single function:
+```bash
+python3.7 -m unittest tests.test_javascript.domonicTestCase.test_javascript_array
+```
 
 ### MORE
 
@@ -119,18 +121,26 @@ There is a javascript package being started that mirrors the js API:
 
 ```python
 from domonic.javascript import Math
-
 print(Math.random())
-```
 
-```python
+from domonic.javascript import Array
+myArr=Array(1,2,3)
+print(myArr.splice(1))
+
 from domonic.javascript import URL
-
 url = URL('https://somesite.com/blog/article-one#some-hash')
 print(url.protocol)
 print(url.host)
 print(url.pathname)
 print(url.hash)
+
+# from domonic.javascript import Global
+# Global.decodeURIComponent(...
+# Global.encodeComponent(...
+
+# from domonic.javascript import Date
+# etc..
+
 ```
 
 You can update a-tags the same way as it inherits from URL:
@@ -248,7 +258,7 @@ TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
 ##### TODO - catch these errors and raise a friendly custom ParseError that tells you what to fix
 
 
-### help
+### join in
 Feel free to send pull requests. I'll merge and releaese asap.
 
 
@@ -256,7 +266,3 @@ Feel free to send pull requests. I'll merge and releaese asap.
 exerimental/learning project
 
 There's a complete more supported library I found already doing similar called 'dominate' . So if you want to do something like this, use that.
-
-
-### Notes
-https://medium.com/@joel.barmettler/how-to-upload-your-python-package-to-pypi-65edc5fe9c56

@@ -1,29 +1,24 @@
 # -*- coding: utf-8 -*-
 """
-    domonic.css
-    ~~~~~
-    
+    domonic.style
+    ~~~~~~~~~~~
 """
-
-# from .dom import *
-# from .javascript import *
 
 
 class Style(object):
-    '''
-        # js syntax styles # TODO - just add normal float > TODO - consider camel case for hyphen params on domonic html also
-
-    '''
+    """[ js syntax styles ]
+        # TODO - just add normal float?
+        # TODO - consider camel case for hyphen params?
+    """
 
     def __init__(self):
-
-        # print('Style created!!!!')
 
         self.alignContent = 'stretch'
         '''Sets or returns the alignment between the lines inside a flexible container when the items do not use all available space   3'''
 
         self.alignItems = None
-        '''Sets or returns the alignment for items inside a flexible container 3'''
+        '''Sets or returns the alignment for items \
+            inside a flexible container 3'''
 
         self.alignSelf = None
         '''Sets or returns the alignment for selected items inside a flexible container    3'''
@@ -551,10 +546,11 @@ class Style(object):
         '''Sets or returns the vertical alignment of the content in an element 1'''
 
         self.visibility = None
-        '''Sets or returns whether an element should be visible    2'''
+        '''Sets or returns whether an element should be visible 2'''
 
         self.whiteSpace = None
-        '''Sets or returns how to handle tabs, line breaks and whitespace in a text    1'''
+        """[Sets or returns how to handle tabs, line breaks and whitespace in a text 1]
+        """
 
         self.width = None
         '''Sets or returns the width of an element 1'''
@@ -574,33 +570,30 @@ class Style(object):
         self.zIndex = None
         '''Sets or returns the stack order of a positioned element 2'''
 
-
-
     # def render_style(): # thinking if a style gets set. it could call this and force render the style tag with that prop?
 
     def style_set_decorator(func):
         def style_wrapper(value=None, *args, **kwargs):
-            if value == None: value = 'none'
+            if value is None:
+                value = 'none'
             func(value, *args, **kwargs)
         return style_wrapper
 
     def style_get_decorator(func):
         def style_wrapper(value=None, *args, **kwargs):
             value = func(value, *args, **kwargs)
-            if value == None: value = 'none'
+            if value is None:
+                value = 'none'
             return value
         return style_wrapper
 
-
     @property
-    @style_get_decorator # TODO - pass array of valid words as params. so can raise value errors
+    # TODO - pass array of valid words as params. so can raise value errors
+    @style_get_decorator
     def alignContent(self):
         return self.__alignContent
 
     @alignContent.setter
     @style_get_decorator
-    def alignContent(self,value='stretch'):
+    def alignContent(self, value='stretch'):
         self.__alignContent = value
-
-
-

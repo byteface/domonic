@@ -9,8 +9,9 @@
 from typing import *
 import re
 
-from domonic.css import Style
-from domonic.javascript import URL
+from domonic.style import Style
+# from domonic.javascript import *
+from .javascript import URL
 
 
 class Event(object):
@@ -31,14 +32,28 @@ class Event(object):
         self.target = None
         self.timeStamp = None
         self.type = None
+        pass
 
-        # composedPath
-        # createEvent
-        # initEvent
-        # msConvertURL()
-        # preventDefault
-        # stopImmediatePropagation
-        # stopPropagation
+        def composedPath(self):
+            pass
+
+        def createEvent(self):
+            pass
+
+        def initEvent(self):
+            pass
+
+        def msConvertURL(self):
+            pass
+
+        def preventDefault(self):
+            pass
+
+        def stopImmediatePropagation(self):
+            pass
+
+        def stopPropagation(self):
+            pass
 
 
 class EventTarget:
@@ -68,11 +83,12 @@ class EventTarget:
         if event._type not in self.listeners:
             return True
 
-        stack = self.listeners[event._type]#.slice()
+        stack = self.listeners[event._type]
+        #.slice()
 
         for thing in stack:
             thing(event)
-            # type(thing, (Event,), self) 
+            # type(thing, (Event,), self)
 
         return not event.defaultPrevented
 
@@ -105,20 +121,20 @@ class Node(EventTarget):
 
     def hasChildNodes(self):
         '''Returns true if an element has any child nodes, otherwise false'''
-        return len(self.args)>1
+        return len(self.args) > 1
 
     def lastChild(self):
         ''' Returns the last child node of an element'''
         try:
-            return self.args[len(self.args)-1]
-        except Exception as e:
+            return self.args[len(self.args) - 1]
+        except Exception:
             return None
 
     def firstChild(self):
         ''' Returns the first child node of an element'''
         try:
-            return self.args[0]
-        except Exception as e:
+            return self.args[0]  # TODO - check if this means includes content
+        except Exception:
             return None
 
     def childElementCount(self):
@@ -131,7 +147,7 @@ class Node(EventTarget):
 
     def children(self):
         ''' Returns a collection of an element's child element (excluding text and comment nodes)'''
-        newlist=[]
+        newlist = []
         for each in self.args:
             if(type(each) != str):
                 newlist.append(each)
@@ -172,7 +188,7 @@ class Node(EventTarget):
 class Console(object):
 
     @staticmethod
-    def log(msg:str):
+    def log(msg: str):
         print(msg)
 
     def __init__(self, *args, **kwargs):
@@ -194,28 +210,22 @@ class Console(object):
         # warn()
         pass
 
+
 console = Console
 
 
-
-
-
-
-
-
 class Element(Node):
-
 
     def __init__(self, *args, **kwargs):
 
         # print('ELEMENT RAN')
 
-        #self.content = None
-        #self.attributes = None
+        # self.content = None
+        # self.attributes = None
 
         # self.style = Style()
         if self.hasAttribute('id'):
-            self.id = self.id#''#None
+            self.id = self.id  #''#None
 
         self.lang = None
         self.tabIndex = None
@@ -228,11 +238,11 @@ class Element(Node):
             self.classList = self.classList
 
         self.tagName
-        self.style = Style()# = #'test'#Style()
+        self.style = Style()  # = #'test'#Style()
 
     # def accessKey( key: str ): -> None
         # ''' Sets or returns the accesskey attribute of an element'''
-        # return        
+        # return
         # example
         # dom.getElementById("myAnchor").accessKey = "w";
 
@@ -249,16 +259,17 @@ class Element(Node):
         '''Adds a new child node, to an element, as the last child node'''
         # self.args = self.args + (item,)
 
-    def attributes(self) -> List :
+    def attributes(self) -> List:
         ''' Returns a List of an element's attributes'''
         return self.attributes
 
-    def innerHTML(self, *args) -> str :
+    def innerHTML(self, *args) -> str:
         ''' Sets or returns the content of an element'''
         self.content = ''.join([each.__str__() for each in args])
         return self.content
 
-    def html(self, *args) -> str : return self.innerHTML(*args) # jquery
+    def html(self, *args) -> str: 
+        return self.innerHTML(*args)  # jquery
 
     def blur(self):
         '''Removes focus from an element'''
@@ -270,11 +281,10 @@ class Element(Node):
         return self.getAttribute('class').split(' ')
 
     @classList.setter
-    def classList(self, newname:str):
+    def classList(self, newname: str):
         ''' Sets or returns the value of the classList attribute of an element'''
         # self.setAttribute('class', newid)
         return
-
 
     @property
     def className(self):
@@ -282,15 +292,14 @@ class Element(Node):
         return self.getAttribute('class')
 
     @className.setter
-    def className(self, newname:str):
+    def className(self, newname: str):
         ''' Sets or returns the value of the className attribute of an element'''
         self.setAttribute('class', newname)
-
 
     def click(self):
         '''Simulates a mouse-click on an element'''
         pass
-    
+
     def clientHeight(self):
         ''' Returns the height of an element, including padding'''
         pass
@@ -343,7 +352,7 @@ class Element(Node):
         '''Returns the specified attribute value of an element node'''
         try:
 
-            if attribute[0:1] is not '_':
+            if attribute[0:1] != '_':
                 attribute = '_' + attribute
 
             return self.kwargs[attribute]
@@ -368,8 +377,8 @@ class Element(Node):
     def getElementsByClassName(self):
         '''Returns a collection of all child elements with the specified class name'''
         pass
-        
-    def getElementsByTagName(self, tag : str) -> List:
+
+    def getElementsByTagName(self, tag: str) -> List:
         '''Returns a collection of all child elements with the specified tag name'''
         reg = f"(<{tag}.*?>.+?</{tag}>)"
 
@@ -385,7 +394,7 @@ class Element(Node):
         '''Returns true if an element has the specified attribute, otherwise false'''
         try:
 
-            if attribute[0:1] is not '_':
+            if attribute[0:1] != '_':
                 attribute = '_' + attribute
 
             return attribute in self.kwargs.keys()
@@ -396,7 +405,7 @@ class Element(Node):
 
     def hasAttributes(self) -> bool:
         '''Returns true if an element has any attributes, otherwise false'''
-        if len(self.kwargs)>0:
+        if len(self.kwargs) > 0:
             return True
         else:
             return False
@@ -411,10 +420,9 @@ class Element(Node):
         return self.getAttribute('id')
 
     @id.setter
-    def id(self, newid:str):
+    def id(self, newid: str):
         ''' Sets or returns the value of the id attribute of an element'''
         self.setAttribute('id', newid)
-
 
     def innerText(self):
         ''' Sets or returns the text content of a node and its descendants'''
@@ -540,15 +548,15 @@ class Element(Node):
         '''Removes the element from the DOM'''
         pass
 
-    def removeAttribute(self, attribute:str):
+    def removeAttribute(self, attribute: str):
         '''Removes a specified attribute from an element'''
         try:
 
-            if attribute[0:1] is not '_':
+            if attribute[0:1] != '_':
                 attribute = '_' + attribute
 
             del self.kwargs[attribute]
-        except Exception as e:    
+        except Exception as e:
             print('failed to remove!', e)
             pass
 
@@ -596,30 +604,25 @@ class Element(Node):
         '''Sets or changes the specified attribute, to the specified value'''
         try:
 
-            if attribute[0:1] is not '_':
+            if attribute[0:1] != '_':
                 attribute = '_' + attribute
 
             self.kwargs[attribute] = value
         except Exception as e:
             print('failed to set attribute')
 
-
     def setAttributeNode(self):
         '''Sets or changes the specified attribute node'''
         pass
-
-
 
     @property
     def style(self):
         ''' Sets or returns the value of the style attribute of an element'''
         return self.__style
 
-
     @style.setter
     def style(self, style):
         self.__style = style
-
 
     # def tabIndex(self):
         ''' Sets or returns the value of the tabindex attribute of an element'''
@@ -629,19 +632,13 @@ class Element(Node):
     def tagName(self):
         return self.name
 
-
-
     def textContent(self):
         ''' Sets or returns the textual content of a node and its descendants'''
         # pass
         # def __str__(self):
 
-        #TODO - not finished. this wont work
+        # TODO - not finished. this wont work
         return f" {' '*len(self.name)}{' '*len(self.attributes)} {self.content}  {' '*len(self.name)} "
-
-
-
-
 
     @property
     def title(self):
@@ -649,21 +646,13 @@ class Element(Node):
         return self.getAttribute('title')
 
     @title.setter
-    def title(self, newtitle:str):
+    def title(self, newtitle: str):
         ''' Sets or returns the value of the title attribute of an element'''
         self.setAttribute('title', newtitle)
-
-
 
     def toString(self):
         '''Converts an element to a string'''
         pass
-
-
-
-
-
-
 
 
 class Document(Element):
@@ -677,11 +666,9 @@ class Document(Element):
         # self.kwargs = kwargs
         # self.documentURI = uri
         # self.baseURI = ""
-
         # self.raw
-        self.body = "" #???
+        self.body = "" # ??
         pass
-
 
     # TODO - still not great as it also returns 'links' when searching for 'li'
     # @property
@@ -731,7 +718,7 @@ class Document(Element):
         tag = "body"
         reg = f"(<{tag}.*?>.+?</{tag}>)"
         pattern = re.compile(reg)
-        tags = re.findall(pattern,str(self))
+        tags = re.findall(pattern, str(self))
         return tags[0]
 
     @body.setter
@@ -828,7 +815,7 @@ class Document(Element):
         tag = "form"
         reg = f"(<{tag}.*?>.+?</{tag}>)"
         pattern = re.compile(reg)
-        tags = re.findall(pattern,str(self))
+        tags = re.findall(pattern, str(self))
         return tags
 
     # def fullscreenElement():
@@ -952,21 +939,21 @@ class Document(Element):
             tags = re.findall(pattern,str(self))
             return tags[0]
         except Exception as e:
-            print('document has no title')
+            print('document has no title',e)
             return ''
 
     def URL(self):
         ''' Returns the full URL of the HTML document'''
         pass
 
-    def write(self, html: str = "" ) -> None:
+    def write(self, html: str = "") -> None:
         '''Writes HTML expressions or JavaScript code to a document'''
         # doc = html
         from .html import tag
-        tag.__init__(self,html)
+        tag.__init__(self, html)
         # super(tag).__init__(html)
 
-    def writeln( self, html: str = "" ) -> None:
+    def writeln(self, html: str = "") -> None:
         '''Same as write(), but adds a newline character after each statement'''
         # doc = html
         pass
@@ -976,22 +963,7 @@ document = Document
 # doc = Document
 
 
-# class Bar(object):
-#     def __init__(self):
-#         self.value = ''
-#     def __get__(self, instance, owner):
-#         print "returned from descriptor object"
-#         return self.value
-#     def __set__(self, instance, value):
-#         print "set in descriptor object"
-#         self.value = value
-#     def __delete__(self, instance):
-#         print "deleted in descriptor object"
-#         del self.value
-
-
-
-class Location(URL):
+class Location():
 
     def __init__(self, *args, **kwargs):
         pass
@@ -1010,7 +982,7 @@ class Location(URL):
         ''' Sets or returns the querystring part of a URL'''
         return
 
-    def assign( self, url: str = "" ) -> None:
+    def assign(self, url: str = "") -> None:
         '''Loads a new document'''
         # TODO - if different download?
         # dom.baseURI = url
@@ -1025,19 +997,13 @@ class Location(URL):
         return
 
 
-
-
 location = Location
 
 
-
 class dom(object):
-
-    console = type('console', (console,), {'name':'console'})
-
-    location = type('location', (location,), {'name':'location'})
-    
-    document = type('document', (document,), {'name':'document'})
+    console = type('console', (console,), {'name': 'console'})
+    location = type('location', (location,), {'name': 'location'})
+    document = type('document', (document,), {'name': 'document'})
 
     # @property
     # def location(self):
@@ -1050,7 +1016,7 @@ class dom(object):
     #     self.location.uri = uri
 
     @property
-    def console():
+    def console(self):
         return self._console
 
     def __init__(self, *args, **kwargs):
@@ -1060,7 +1026,7 @@ class dom(object):
         # self.console = dom.console
 
         # self.location = type('location', (location,), {'name':'location'})
-        self.console = type('console', (dom.console,), {'name':'console'})
+        self.console = type('console', (dom.console,), {'name': 'console'})
         # self.doc = type('document', (DOM,), {'name':'document'})
 
         # self.attr = type('attribute', (DOM,), {'name':'attribute'})
@@ -1082,6 +1048,5 @@ class dom(object):
         # self.attribute = self.attr
         pass
 
-    def __str__(self):
-        # return "HTML DOM"
-        return f"<!DOCTYPE html>"
+    # def __str__(self):
+        # return "<!DOCTYPE html>"

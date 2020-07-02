@@ -1,22 +1,22 @@
 """    
-    domonic.javascript 
+    domonic.javascript
     ~~~~~~~~~~~~~~~~
-    
-    https://www.w3schools.com/jsref/jsref_reference.asp
-
+    - https://www.w3schools.com/jsref/jsref_reference.asp
 """
 
-from typing import *
+# from typing import *
+import urllib.parse
+from dateutil.parser import parse
+import datetime
+import time
+from urllib.parse import unquote, quote
 import math
 import random
 
-from domonic import dom
-
+# from domonic import dom
 # from .dom import *
-# from domonic import *
 
 
-#
 class js_object(object):
 
     def valueOf(self):
@@ -57,7 +57,7 @@ class Math(js_object):
     def abs(x):
         """ Returns the absolute value of x """
         return abs(x)
-    
+
     @staticmethod
     @validate
     def acos(x):
@@ -90,9 +90,9 @@ class Math(js_object):
 
     @staticmethod
     @validate
-    def atan2(x,y):
+    def atan2(x, y):
         """ Returns the arctangent of the quotient of its arguments """
-        return math.atan2(x,y)
+        return math.atan2(x, y)
 
     @staticmethod
     @validate
@@ -105,7 +105,7 @@ class Math(js_object):
     def cbrt(x):
         """ Returns the cubic root of x """
         # return math.cbrt(x)
-        return round(math.pow(x, 1/3))
+        return round(math.pow(x, 1 / 3))
 
     @staticmethod
     @validate
@@ -139,21 +139,21 @@ class Math(js_object):
 
     @staticmethod
     @validate
-    def log(x,y):
+    def log(x, y):
         """ Returns the natural logarithm (base E) of x """
-        return math.log(x,y)
+        return math.log(x, y)
 
     @staticmethod
     @validate
-    def max(x,y):
+    def max(x, y):
         """ Returns the number with the highest value """
-        return max(x,y)
+        return max(x, y)
 
     @staticmethod
     @validate
-    def min(x,y):
+    def min(x, y):
         """ Returns the number with the lowest value """
-        return min(x,y)
+        return min(x, y)
 
     @staticmethod
     @validate
@@ -170,9 +170,9 @@ class Math(js_object):
 
     @staticmethod
     @validate
-    def pow(x,y):
+    def pow(x, y):
         """ Returns the value of x to the power of y """
-        return math.pow(x,y)
+        return math.pow(x, y)
 
     @staticmethod
     @validate
@@ -212,7 +212,7 @@ class Math(js_object):
 
 
 # import urllib
-from urllib.parse import unquote, quote
+
 
 class Global(object):
 
@@ -233,7 +233,7 @@ class Global(object):
     @staticmethod
     def encodeURI(x):
         """ Encodes a URI """
-        return quote(str(x), safe='~@#$&()*!+=:;,.?/\'');
+        return quote(str(x), safe='~@#$&()*!+=:;,.?/\'')
 
     @staticmethod
     def encodeURIComponent(x):
@@ -242,7 +242,7 @@ class Global(object):
 
     # @staticmethod
     # def escape():
-        """ Deprecated in version 1.5. Use encodeURI() or encodeURIComponent() instead """
+        """ Deprecated in version 1.5. Use encodeURI() or encodeURIComponent() """
         # pass
 
     # @staticmethod
@@ -256,7 +256,7 @@ class Global(object):
     # pass
     """A numeric value that represents positive/negative infinity """
     # pass
-    
+
     @staticmethod
     def isFinite():
         """ Determines whether a value is a finite, legal number """
@@ -280,7 +280,7 @@ class Global(object):
     def Number(x):
         """ Converts an object's value to a number """
         try:
-            if type(x) == float or type(x) == int:# or type(x) == long:
+            if type(x) == float or type(x) == int:  # or type(x) == long:
                 return x
 
             if type(x) == str:
@@ -288,7 +288,7 @@ class Global(object):
                     return float(x)
                 else:
                     return int(x)
-        except:
+        except Exception:
             return "NaN"
         return "NaN"
 
@@ -317,14 +317,10 @@ class Global(object):
         # pass
 
 
-import time
-import datetime
-from dateutil.parser import parse # sucks this was removed in pyton3. as means ill need a lib
-
 class Date(js_object):
 
-    def __init__(self, date:str = None, formatter = 'python'):
-        if date == None:
+    def __init__(self, date: str = None, formatter='python'):
+        if date is None:
             self.date = datetime.datetime.now()
         else:
             self.date = self.parse_date(date)
@@ -341,7 +337,7 @@ class Date(js_object):
     def getDay(self):
         """  Returns the day of the week (from 0-6) """
         day = self.date.isoweekday()
-        return day if (day<7) else 0
+        return day if (day < 7) else 0
         # TODO - do for a date object passed in. this only does today
 
     def getFullYear(self):
@@ -354,7 +350,7 @@ class Date(js_object):
 
     def getMilliseconds(self):
         """ Returns the milliseconds (from 0-999) """
-        return round(self.date.now().microsecond/1000)
+        return round(self.date.now().microsecond / 1000)
 
     def getMinutes(self):
         """  Returns the minutes (from 0-59) """
@@ -372,7 +368,7 @@ class Date(js_object):
         """ Returns the number of milliseconds since midnight Jan 1 1970, and a specified date """
         return int(str(time.time()).split('.')[0])
         # TODO - whats difference between this and 'now()' ?
-        
+
     # def getTimezoneOffset(self):
         """ Returns the time difference between UTC time and local time, in minutes """
         # pass
@@ -415,7 +411,7 @@ class Date(js_object):
 
     def now(self):
         """ Returns the number of milliseconds since midnight Jan 1, 1970 """
-        return round(time.time()*1000)
+        return round(time.time() * 1000)
 
     # def onstorage(self):
         """ The event occurs when a Web Storage area is updated StorageEvent"""
@@ -429,7 +425,6 @@ class Date(js_object):
         """ Parses a date string and returns the number of milliseconds since January 1, 1970 """
         self.date = self.parse_date(str(date_string))
         # return self.date.getTime()
-
 
     def setDate(self, day):
         """ Sets the day of the month of a date object """
@@ -457,7 +452,8 @@ class Date(js_object):
         print('TODO: setMilliseconds')
         pass
 
-    def setMinutes(self, minutes):# TODO - , seconds = None, milliseconds = None):
+    # TODO - , seconds = None, milliseconds = None):
+    def setMinutes(self, minutes):
         """  Set the minutes of a date object """
         self.date.replace(minute=int(minutes))
         # return self.now()
@@ -559,8 +555,7 @@ class Date(js_object):
 
     # def valueOf():
     """ Returns the primitive value of an array Array, Boolean, Date, Number, String"""
-        # pass
-
+    # pass
 
 
 class MouseEvent(object):
@@ -598,8 +593,6 @@ class MouseEvent(object):
     # which Returns which mouse button was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent
 
 
-
-
 class KeyboardEvent(object):
     def __init__(self, *args, **kwargs):
         # self.args = args
@@ -608,7 +601,6 @@ class KeyboardEvent(object):
 
     # @property
     # def location(self):
-
 
     # KeyboardEvent
     # altKey    Returns whether the "ALT" key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent
@@ -627,38 +619,72 @@ class KeyboardEvent(object):
     # onkeyup   The event occurs when the user releases a key   KeyboardEvent
     # repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent
 
-from .dom import *
+
+class Screen(object):
+
+    # wrap a lib?
+    # https://github.com/rr-/screeninfo?
+
+    def __init__(self):
+        # from sys import platform
+        # if platform == "linux" or platform == "linux2":
+        #     # linux
+        # import subprocess
+        # resuls = subprocess.Popen(['xrandr'],stdout=subprocess.PIPE).communicate()[0].split("current")[1].split(",")[0]
+        # width = resuls.split("x")[0].strip()
+        # heigth = resuls.split("x")[1].strip()
+        # print width + "x" + heigth
+        # elif platform == "darwin":
+        #     # OS X
+        # results = str(subprocess.Popen(['system_profiler SPDisplaysDataType'],stdout=subprocess.PIPE, shell=True).communicate()[0])
+        # res = re.search('Resolution: \d* x \d*', results).group(0).split(' ')
+        # width, height = res[1], res[3]
+        # return width, height
+        # elif platform == "win32":
+        # from win32api import GetSystemMetrics
+        # print("Width =", GetSystemMetrics(0))
+        # print("Height =", GetSystemMetrics(1))
+        pass
+
+    def availHeight(self):
+        ''' Returns the height of the screen (excluding the Windows Taskbar) '''
+        raise NotImplementedError
+
+    def availWidth(self):
+        ''' Returns the width of the screen (excluding the Windows Taskbar) '''
+        raise NotImplementedError
+
+    def colorDepth(self):
+        ''' Returns the colorDepth '''
+        raise NotImplementedError
+
+    def height(self):
+        ''' Returns the total height of the screen '''
+        raise NotImplementedError
+
+    def pixelDepth(self):
+        ''' Returns the pixelDepth '''
+        raise NotImplementedError
+
+    def width(self):
+        ''' Returns the total width of the screen  '''
+        raise NotImplementedError
+
 
 class Window(object):
 
-    # @staticmethod
-    # def console(self):
-    #     print("xxxxxXXXXxasdfffffff")
-    #     return dom.console
-
-
-    # CONSTANTS
-    
-    # VARS
-    # clientX   Returns the horizontal coordinate of the mouse pointer, relative to the current window, when the mouse event was triggered  MouseEvent, TouchEvent
-    # clientY   Returns the vertical coordinate of the mouse pointer, relative to the current window, when the mouse event was triggered    MouseEvent, TouchEvent
-    # screenX   Returns the horizontal coordinate of the window/mouse pointer relative to the screen    Window, MouseEvent
-    # screenY   Returns the vertical coordinate of the window/mouse pointer relative to the screen  Window, MouseEvent
-    # frames    Returns all <iframe> elements in the current window Window
-
     def __init__(self, *args, **kwargs):
         print('window here!')
-
-        print(type(dom))
+        # print(type(dom))
         # self.args = args
         # self.kwargs = kwargs
-        self.console = dom.console
+        # self.console = dom.console
         # self.document = dom.document
         # self.location = ''#dom.location
-        
+        self.location = None
+
     @property
     def location(self):
-
         print("@@@@@@@@@@@@@@@@@@@@@@")
         return self.__location
 
@@ -667,15 +693,11 @@ class Window(object):
         print("====================>>>>>>>", x)
         # dom.location = x
         # dom.location = dom.location(x)#Location(x)
-
-        from .dom import Location
-        print('test::::-------------------------------------------------------',Location)
-
+        # from .dom import Location
+        # print('test::::-------------------------------------------------------',Location)
         # print("xxxxxxxx>>>>>>", dom.location)
         # self.__location = dom.location
-
         # import requests.
-
         pass
 
     @staticmethod
@@ -685,7 +707,7 @@ class Window(object):
         return
 
     @staticmethod
-    def prompt(msg, default_text = ""):
+    def prompt(msg, default_text=""):
         """ Displays a dialog box that prompts the visitor for input """
         print(msg)
         data = input()
@@ -693,26 +715,22 @@ class Window(object):
 
     # TODO - clearTimeout.
     @staticmethod
-    def setTimeout( time, function ):
+    def setTimeout(time, function):
         """ Calls a function or evaluates an expression after a specified number of milliseconds """
         time.delay(time)
         function()
         return
 
-
     # @staticmethod
     # @getter
     # def navigator():
-        """ Returns the Navigator object for the window (See Navigator object) """        
+        """ Returns the Navigator object for the window (See Navigator object) """
         # return
-
 
 # WINDOW
 # localStorage  Allows to save key/value pairs in a web browser. Stores the data with no expiration date    Window
 # requestAnimationFrame()   Requests the browser to call a function to update an animation before the next repaint  Window
 # atob()    Decodes a base-64 encoded string    Window
-# availHeight   Returns the height of the screen (excluding the Windows Taskbar)    Screen
-# availWidth    Returns the width of the screen (excluding the Windows Taskbar) Screen
 # blur()    Removes focus from an element   Element, Window
 # btoa()    Encodes a string in base-64 Window
 # clearInterval()   Clears a timer set with setInterval()   Window
@@ -769,31 +787,142 @@ class Window(object):
 window = Window
 
 
+class Array(object):
 
+    def __init__(self, *args):
+        self.args = list(args)
 
+    def __getitem__(self, index):
+        return self.args[index]
 
-# Array
-# constructor   Returns the function that created the Array object's prototype  Array, Boolean, Date, Number, RegExp
-# toString()    Converts an array to a string, and returns the result   Array, Boolean, Date, Number, RegExp, String, Element
-# length    Sets or returns the number of elements in an array  Array, Attribute, History, HTMLCollection, Window, Storage
-# concat()  Joins two or more arrays, and returns a copy of the joined arrays   Array, String
-# fill()    Fill the elements in an array with a static value   Array
-# includes()    Check if an array contains the specified element    Array, String
-# indexOf() Search the array for an element and returns its position    Array, String
-# isArray() Checks whether an object is an array    Array
-# join()    Joins all elements of an array into a string    Array
-# lastIndexOf() Search the array for an element, starting at the end, and returns its position  Array, String
-# map() Creates a new array with the result of calling a function for each array element    Array
-# pop() Removes the last element of an array, and returns that element  Array
-# push()    Adds new elements to the end of an array, and returns the new length    Array
-# reduce()  Reduce the values of an array to a single value (going left-to-right)   Array
-# reduceRight() Reduce the values of an array to a single value (going right-to-left)   Array
-# reverse() Reverses the order of the elements in an array  Array
-# slice()   Selects a part of an array, and returns the new array   Array, String
-# some()    Checks if any of the elements in an array pass a test   Array
-# sort()    Sorts the elements of an array  Array
-# unshift() Adds new elements to the beginning of an array, and returns the new length  Array
+    def __setitem__(self, index, value):
+        self.args[index] = value
 
+    def __len__(self):
+        return len(self.args)
+
+        # TODO - all the dunder methods
+
+    def __str___(self):
+        return self.args
+
+    def __repr__(self):
+        return str(self.args)
+
+    def toString(self):
+        ''' Converts an array to a string, and returns the result '''
+        return str(self.ars)  # TODO - check what js does
+
+    @property
+    def length(self):
+        """ Sets or returns the number of elements in an array """
+        return len(self.args)
+
+    def concat(self, value):
+        """ Joins two or more arrays, and returns a copy of the joined arrays """
+        return self.args.extend(value)
+
+    def fill(self):
+        """ Fill the elements in an array with a static value """
+        raise NotImplementedError
+
+    def includes(self, value):
+        """ Check if an array contains the specified element """
+        if value in self.args:
+            return True
+        else:
+            return False
+
+    def indexOf(self, value):
+        """ Search the array for an element and returns its position """
+        # for count, each in enumerate(self.args):
+        #     if each == value:
+        #         return count
+        try:
+            return self.args.index(value)
+        except Exception as e:
+            print(e)
+            return None
+
+    def isArray(self):
+        """ Checks whether an object is an array  """
+        raise NotImplementedError
+
+    def join(self, value):
+        """ Joins all elements of an array into a string  """
+        # TODO - get passed param names
+        return value.join([str(x) for x in self.args])
+
+    def lastIndexOf(self, value):
+        """ Search the array for an element, starting at the end, and returns its position """
+        try:
+            return len(self.args) - self.args[::-1].index(value) - 1
+        except Exception as e:
+            print(e)
+            return None
+
+    def map(self):
+        """ Creates a new array with the result of calling a function for each array element """
+        raise NotImplementedError
+
+    def pop(self):
+        """ Removes the last element of an array, and returns that element """
+        # item = self.args[len(self.args)-1]
+        # del self.args[len(self.args)-1]
+        return self.args.pop()
+
+    def push(self, value):
+        """ Adds new elements to the end of an array, and returns the new length """
+        self.args.append(value)
+        return len(self.args)
+
+    def reduce(self):
+        """ Reduce the values of an array to a single value (going left-to-right) """
+        raise NotImplementedError
+
+    def reduceRight(self):
+        """ Reduce the values of an array to a single value (going right-to-left) """
+        raise NotImplementedError
+
+    def reverse(self):
+        """ Reverses the order of the elements in an array """
+        self.args = self.args[::-1]
+        return self.args
+
+    def slice(self, start, stop, step=1):
+        """ Selects a part of an array, and returns the new array """
+        self.args.slice(start, stop, step)
+
+    def splice(self, start, delete_count=None, *items):
+        """ Selects a part of an array, and returns the new array """
+        if delete_count == None:
+            delete_count = len(self.args) - start
+
+        total = start + delete_count
+        removed = self.args[start:total]
+        self.args[start:total] = items
+        return removed
+        # return self.args
+
+    def some(self):
+        """ Checks if any of the elements in an array pass a test """
+        raise NotImplementedError
+
+    def sort(self):
+        """ Sorts the elements of an array """
+        raise NotImplementedError
+
+    def unshift(self, *args):
+        """ Adds new elements to the beginning of an array, and returns the new length """
+        for i in reversed(args):
+            self.args.insert(0, i)
+        return len(self.args)
+
+    def shift(self):
+        """ removes the first element from an array and returns that removed element """
+        item = self.args[0]
+        del self.args[0]
+        return item
 
 
 class Navigator(object):
@@ -809,11 +938,6 @@ class Navigator(object):
         # self.kwargs = kwargs
         pass
 
-    # def appVersion()
-    #     """ Returns the version information of the browser"""
-
-
-    # Navigator
     # appCodeName   Returns the code name of the browser    Navigator
     # appName   Returns the name of the browser Navigator
     # appVersion    Returns the version information of the browser  Navigator
@@ -824,7 +948,6 @@ class Navigator(object):
     # userAgent Returns the user-agent header sent by the browser to the server Navigator
 
 
-
 class String(object):
 
     def __init__(self, x="", *args, **kwargs):
@@ -832,7 +955,7 @@ class String(object):
         # self.kwargs = kwargs
         self.x = x
 
-    def repeat(self,count):
+    def repeat(self, count):
         ''' Returns a new string with a specified number of copies of an existing string '''
         return self.x*count
 
@@ -845,7 +968,7 @@ class String(object):
         if start is None:
             start = 0
 
-        self.x.startswith( x, beg=start, end=end)
+        self.x.startswith(x, beg=start, end=end)
 
     def substring(self):
         ''' Extracts the characters from a string, between two specified indices '''
@@ -859,28 +982,37 @@ class String(object):
         self.x.endswith(x, start, end)
 
 
+# fromCharCode()    Converts Unicode values to characters   String
+# localeCompare()   Compares two strings in the current locale  String
+# repeat()  Returns a new string with a specified number of copies of an existing string    String
+# replace() Searches a string for a specified value, or a regular expression, and returns a new string where the specified values are replaced  String
+# search()  Searches a string for a specified value, or regular expression, and returns the position of the match   String
+# substr()  Extracts the characters from a string, beginning at a specified start position, and through the specified number of character   String
+# toLocaleLowerCase()   Converts a string to lowercase letters, according to the host's locale  String
+# toLocaleUpperCase()   Converts a string to uppercase letters, according to the host's locale  String
+# toLowerCase() Converts a string to lowercase letters  String
+# toUpperCase() Converts a string to uppercase letters  String
+# trim()    Removes whitespace from both ends of a string   String
+
 # compile() Deprecated in version 1.5. Compiles a regular expression    RegExp
 # lastIndex Specifies the index at which to start the next match    RegExp
 # test()    Tests for a match in a string. Returns true or false    RegExp
 
 
-
-import urllib.parse
-
 # https://developer.mozilla.org/en-US/docs/Web/API/URL
+
 class URL(object):
     def __update__(self):
         # print( "update URL:", type(self), self  )
-
         try:
             # make obj with all old props
             new = {}
             new['protocol'] = self.url.scheme
             new['hostname'] = self.url.hostname
             new['port'] = self.url.port
-            new['host'] = ''#self.url.hostname
+            new['host'] = ''  # self.url.hostname
             new['pathname'] = self.url.path
-            new['hash'] = ''#self.url.hash
+            new['hash'] = ''  # self.url.hash
 
             # update it with all the new ones
             new = {}
@@ -889,10 +1021,11 @@ class URL(object):
             new['port'] = self.port
             new['host'] = self.host
             new['pathname'] = self.pathname
-            new['hash'] = self.hash#self.hash
+            new['hash'] = self.hash  # self.hash
 
             # rebuild
-            self.url = urllib.parse.urlsplit( new['protocol']+ "://" + new['host'] + new['pathname'] + new['hash'] )
+            self.url = urllib.parse.urlsplit(
+                new['protocol'] + "://" + new['host'] + new['pathname'] + new['hash'])
 
             # reset
             self.href = self.url.geturl()
@@ -901,7 +1034,7 @@ class URL(object):
             # print(e)
             pass
 
-    def __init__(self, url:str="", *args, **kwargs): # TODO - relative to
+    def __init__(self, url: str = "", *args, **kwargs):  # TODO - relative to
         self.url = urllib.parse.urlsplit(url)
         self.href = self.url.geturl()
 
@@ -917,7 +1050,6 @@ class URL(object):
 
     # def toJson
 
-
     # @property
     # def href(self):
     #     return self.href
@@ -932,45 +1064,44 @@ class URL(object):
         return self.__protocol
 
     @protocol.setter
-    def protocol(self, p:str):
+    def protocol(self, p: str):
         self.__protocol = p
         # if self.ready : self.__update__() # TODO - this instead of silent err?
         self.__update__()
-
 
     @property
     def hostname(self):
         return self.__hostname
 
     @hostname.setter
-    def hostname(self, h:str):
-        if h is None: return
+    def hostname(self, h: str):
+        if h is None:
+            return
         if ":" in h:
             h = h.split(':')[0]
         self.__hostname = h
         self.__update__()
-
 
     @property
     def port(self):
         return self.__port
 
     @port.setter
-    def port(self, p:str):
+    def port(self, p: str):
         self.__port = p
         self.__update__()
 
-
     @property
-    def host(self):        
+    def host(self):
         if self.port is not None:
             return self.hostname + ":" + str(self.port)
         else:
             return self.hostname
 
     @host.setter
-    def host(self, h:str):
-        if h is None: return
+    def host(self, h: str):
+        if h is None:
+            return
         p = self.port
         if ":" in h:
             p = int(h.split(':')[1])
@@ -980,16 +1111,14 @@ class URL(object):
         self.port = p
         self.__update__()
 
-
     @property
     def pathname(self):
         return self.__pathname
 
     @pathname.setter
-    def pathname(self, p:str):
+    def pathname(self, p: str):
         self.__pathname = p
         self.__update__()
-
 
     @property
     def hash(self):
@@ -1000,15 +1129,13 @@ class URL(object):
         return self.__hash
 
     @hash.setter
-    def hash(self, h:str):
+    def hash(self, h: str):
         self.__hash = h
         self.__update__()
 
     # @property
     # def origin(self):
         '''# origin    Returns the protocol, hostname and port number of a URL Location'''
-
-
 
 
 # clipboardData Returns an object containing the data affected by the clipboard operation   ClipboardData
@@ -1032,8 +1159,6 @@ class URL(object):
 # clear()   Clears the console  Console, Storage
 
 # clearWatch()  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    Geolocation
-
-# colorDepth    Returns the bit depth of the color palette for displaying images    Screen
 
 # composed  Returns whether the event is composed or not    Event
 
@@ -1069,7 +1194,7 @@ class URL(object):
 
 # elapsedTime   Returns the number of seconds an animation has been running AnimationEvent
 
-# elapsedTime   Returns the number of seconds a transition has been running  
+# elapsedTime   Returns the number of seconds a transition has been running
 
 # entries() Returns a key/value pair Array Iteration Object Array
 
@@ -1099,8 +1224,6 @@ class URL(object):
 
 # from()    Creates an array from an object Array
 
-# fromCharCode()    Converts Unicode values to characters   String
-
 # function  Declares a function Statements
 
 # geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
@@ -1114,8 +1237,6 @@ class URL(object):
 # getTargetRanges() Returns an array containing target ranges that will be affected by the insertion/deletion   InputEvent
 
 # go()  Loads a specific URL from the history list  History
-
-# height    Returns the total height of the screen  Screen
 
 # id    Sets or returns the value of the id attribute of an element Element
 
@@ -1147,8 +1268,6 @@ class URL(object):
 
 # loaded    Returns how much work has been loaded   ProgressEvent
 
-# localeCompare()   Compares two strings in the current locale  String
-
 # match()   Searches a string for a match against a regular expression, and returns the matches String
 
 # MAX_VALUE Returns the largest number possible in JavaScript   Number
@@ -1160,8 +1279,6 @@ class URL(object):
 # MIN_VALUE Returns the smallest number possible in JavaScript  Number
 
 # namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection
-
-# namespaceURI  Returns the namespace URI of an element Element
 
 # NEGATIVE_INFINITY Represents negative infinity (returned on overflow) Number
 
@@ -1215,7 +1332,7 @@ class URL(object):
 
 # ondurationchange  The event occurs when the duration of the media is changed  Event
 
-# onemptied The event occurs when something bad happens and the media file is suddenly unavailable (like unexpectedly disconnects)   
+# onemptied The event occurs when something bad happens and the media file is suddenly unavailable (like unexpectedly disconnects)
 
 # onended   The event occurs when the media has reach the end (useful for messages like "thanks for listening") Event
 
@@ -1319,8 +1436,6 @@ class URL(object):
 
 # persisted Returns whether the webpage was cached by the browser   PageTransitionEvent
 
-# pixelDepth    Returns the color resolution (in bits per pixel) of the screen  Screen
-
 # position  Returns the position of the concerned device at a given time    Geolocation
 
 # positionError Returns the reason of an error occurring when using the geolocating device  Geolocation
@@ -1339,10 +1454,6 @@ class URL(object):
 
 # repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent
 
-# repeat()  Returns a new string with a specified number of copies of an existing string    String
-
-# replace() Searches a string for a specified value, or a regular expression, and returns a new string where the specified values are replaced  String, Location
-
 # return    Stops the execution of a function and returns a value from that function    Statements
 
 # prototype Allows you to add properties and methods to an object   Number
@@ -1351,39 +1462,19 @@ class URL(object):
 
 # search    Sets or returns the querystring part of a URL   Location
 
-# search()  Searches a string for a specified value, or regular expression, and returns the position of the match   String
-
 # setNamedItem()    Sets the specified attribute node (by name) Attribute
-
-# shift()   Removes the first element of an array, and returns that element Array
 
 # source    Returns the text of the RegExp pattern  RegExp
 
 # specified Returns true if the attribute has been specified, otherwise it returns false    Attribute
 
-# splice()  Adds/Removes elements from an array Array
-
-# split()   Splits a string into an array of substrings String
-
-# startsWith()  Checks whether a string begins with specified characters    String
-
 # state Returns an object containing a copy of the history entries  PopStateEvent
-
-# stopImmediatePropagation()    Prevents other listeners of the same event from being called    Event
-
-# stopPropagation() Prevents further propagation of an event during event flow  Event
 
 # stringify()   Convert a JavaScript object to a JSON string    JSON
 
 # storageArea   Returns an object representing the affected storage object  StorageEvent
 
-# substr()  Extracts the characters from a string, beginning at a specified start position, and through the specified number of character   String
-
-# substring()   Extracts the characters from a string, between two specified indices    String
-
 # switch    Marks a block of statements to be executed depending on different cases Statements
-
-# target    Returns the element that triggered the event    Event
 
 # targetTouches Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element    TouchEvent
 
@@ -1395,29 +1486,15 @@ class URL(object):
 
 # toFixed(x)    Formats a number with x numbers of digits after the decimal point   Number
 
-# toLocaleLowerCase()   Converts a string to lowercase letters, according to the host's locale  String
-
-# toLocaleUpperCase()   Converts a string to uppercase letters, according to the host's locale  String
-
-# toLowerCase() Converts a string to lowercase letters  String
-
 # toPrecision(x)    Formats a number to x length    Number
 
 # total Returns the total amount of work that will be loaded    ProgressEvent
 
 # touches   Returns a list of all the touch objects that are currently in contact with the surface  TouchEvent
 
-# toUpperCase() Converts a string to uppercase letters  String
-
-# trace()   Outputs a stack trace to the console    Console
-
 # transitionend The event occurs when a CSS transition has completed    TransitionEvent
 
-# trim()    Removes whitespace from both ends of a string   String
-
 # try ... catch ... finally Marks the block of statements to be executed when an error occurs in a try block, and implements error handling Statements
-
-# type  Returns the name of the event   Event
 
 # url   Returns the URL of the changed item's document  StorageEvent
 
@@ -1426,7 +1503,5 @@ class URL(object):
 # var   Declares a variable Statements
 
 # watchPosition()   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   Geolocation
-
-# width Returns the total width of the screen   Screen
 
 # while Marks a block of statements to be executed while a condition is true    Statements
