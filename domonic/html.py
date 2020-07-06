@@ -47,6 +47,7 @@ def render(inp, outp=''):
 
 
 class tag(object):
+
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
@@ -114,6 +115,7 @@ def tag_init(self, *args, **kwargs):
 
 
 html = type('html', (tag, Document), {'name': 'html', '__init__': tag_init})
+
 body = type('body', (tag, Element), {'name': 'body', '__init__': tag_init})
 head = type('head', (tag, Element), {'name': 'head', '__init__': tag_init})
 script = type('script', (tag, Element), {'name': 'script', '__init__': tag_init})

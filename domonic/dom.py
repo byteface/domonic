@@ -1,9 +1,7 @@
 """
     domonic.dom
     ~~~~~~~~~
-
     methods on the dom
-
 """
 
 from typing import *
@@ -99,12 +97,12 @@ class Node(EventTarget):
         # self.args = args
         # self.kwargs = kwargs
         self.baseURI = 'eventual.technology'
-        self.baseURIObject = None
-        self.isConnected = None
-        self.localName = None
-        self.namespaceURI = None
+        # self.baseURIObject = None
+        self.isConnected = True
+        # self.localName = None
+        self.namespaceURI = "http://www.w3.org/1999/xhtml"
         self.nextSibling = None
-        self.nodePrincipal = None
+        # self.nodePrincipal = None
         self.outerText = None
         self.ownerDocument = None
         self.parentElement = None
@@ -157,6 +155,10 @@ class Node(EventTarget):
         ''' Returns the node type of a node'''
         # pass
         return 1
+
+    @property
+    def localName(self):
+        return self.tagName
 
     @property
     def nodeName(self):
@@ -265,11 +267,11 @@ class Element(Node):
 
     def innerHTML(self, *args) -> str:
         ''' Sets or returns the content of an element'''
-        self.content = ''.join([each.__str__() for each in args])
+        self.args = args
         return self.content
 
     def html(self, *args) -> str: 
-        return self.innerHTML(*args)  # jquery
+        return self.innerHTML(*args)
 
     def blur(self):
         '''Removes focus from an element'''
@@ -409,10 +411,6 @@ class Element(Node):
             return True
         else:
             return False
-
-    # def hasChildNodes(self):
-        '''Returns true if an element has any child nodes, otherwise false'''
-        # return len(self.args)>1
 
     @property
     def id(self):
