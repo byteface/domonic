@@ -265,13 +265,25 @@ class Element(Node):
         ''' Returns a List of an element's attributes'''
         return self.attributes
 
-    def innerHTML(self, *args) -> str:
+    @property
+    def innerHTML(self) -> str:
         ''' Sets or returns the content of an element'''
-        self.args = args
+        # self.args = args
         return self.content
 
-    def html(self, *args) -> str: 
-        return self.innerHTML(*args)
+    @innerHTML.setter
+    def innerHTML(self, value):
+        
+        if value is not None:
+            self.args = (value,)  # TODO - will need the parser to work for this to work properly. for now shove all on first content node
+        
+        return self.content
+
+
+    def html(self, *args) -> str : 
+        self.args = args
+        return self
+
 
     def blur(self):
         '''Removes focus from an element'''

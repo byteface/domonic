@@ -227,15 +227,15 @@ or it will complain the params are in the wrong order. You have to instead put c
 
     div( p("Some content"), _class="container")
 
-which is annoying when a div gets long. You can get around this several ways.
+which is annoying when a div gets long.
 
-With 'innerHTML' which is available on every Node:
+You can get around this by using 'html' which is available on every Element:
 
-    div( _class="container" ).innerHTML("Some content")
+div( _class="container" ).html("Some content")
 
-With 'html' which is available on every Node:
+This is NOT like jQuery html func that returns just the inner content. use innerHTML for that.
 
-    div( _class="container" ).html("Some content")
+It is used specifically for rendering.
 
 
 ### Common Errors

@@ -22,9 +22,8 @@ class domonicTestCase(unittest.TestCase):
         self.assertEqual(str(sometag), '<div id="someid">asdfasdf<div></div><div>yo</div></div>')
         sometag.html('test')
         self.assertEqual(str(sometag), '<div id="someid">test</div>')
-        sometag.innerHTML('test2')
+        sometag.innerHTML = 'test2'
         self.assertEqual(str(sometag), '<div id="someid">test2</div>')
-
 
         # same test on body tag
         bodytag = body("test", _class="why")
@@ -40,6 +39,9 @@ class domonicTestCase(unittest.TestCase):
         self.assertEqual(sometag.getAttribute('_id'), 'someid')
         print(sometag.getAttribute('id'))
         self.assertEqual(sometag.getAttribute('_id'), 'someid')
+
+        mydiv = div("I like cake", div(_class='myclass').html(div("1"),div("2"),div("3")))
+        print(mydiv)
 
         # print(sometag.innerText())
         # print(sometag.nodeName)
@@ -92,7 +94,7 @@ class domonicTestCase(unittest.TestCase):
         somebody = body("test", _class="why")#.html("wn")
         print(somebody)
 
-        somebody = body("test", _class="why").html("fuck off")
+        somebody = body("test", _class="why").html("nope")
         print(somebody)
 
 
