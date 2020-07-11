@@ -262,6 +262,11 @@ TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
 Feel free to send pull requests. I'll merge and releaese asap.
 
 
+### EXAMPLE PROJECT
+A browser based file browser to test the project and see how components might work:
+https://github.com/byteface/Blueberry/
+
+
 ### disclaimer
 exerimental/learning project
 

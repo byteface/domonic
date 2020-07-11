@@ -134,12 +134,14 @@ def Atag(self, *args, **kwargs):
     # print('Atag: ', args, kwargs)
     tag.__init__(self, *args, **kwargs)
     Element.__init__(self, *args, **kwargs)
+    # TODO - fix BUG. this stops having no href on a tags
     URL.__init__(self, url=kwargs['_href'])
 
 def __update__(self, *args, **kwargs):
     # print('__update__: ', args, kwargs)
     URL.__update__(self)
 
+    # TODO - fix BUG. this stops having no href on a tags
     self.kwargs['_href'] = self.href
     tag.__init__(self, *self.args, **self.kwargs)
 
