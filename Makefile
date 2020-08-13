@@ -1,9 +1,9 @@
 test:
-	python3.7 -m unittest tests.test_html
-	python3.7 -m unittest tests.test_dom
-	python3.7 -m unittest tests.test_style
-	python3.7 -m unittest tests.test_javascript
-	python3.7 -m unittest tests.test_terminal
+	python3 -m unittest tests.test_html
+	python3 -m unittest tests.test_dom
+	python3 -m unittest tests.test_style
+	python3 -m unittest tests.test_javascript
+	python3 -m unittest tests.test_terminal
 
 build:
 	rm -r dist/
