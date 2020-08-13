@@ -266,6 +266,10 @@ Feel free to send pull requests. I'll merge and releaese asap.
 A browser based file browser to test the project and see how components might work:
 https://github.com/byteface/Blueberry/
 
+A cron viewer
+https://github.com/byteface/ezcron/
+
+
 
 ### disclaimer
 exerimental/learning project
