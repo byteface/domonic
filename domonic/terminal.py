@@ -89,6 +89,8 @@ less = type('less', (command,), {'name': 'less'})
 head = type('head', (command,), {'name': 'head'})
 tail = type('tail', (command,), {'name': 'tail'})
 
+uptime = type('uptime', (command,), {'name': 'uptime'})
+bash = type('bash', (command,), {'name': 'bash'})
 
 '''
 def Atag(self,*args,**kwargs):
