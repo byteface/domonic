@@ -9,6 +9,19 @@
 from .dom import Element, Document, URL
 from .javascript import *
 
+'''
+class DomonicIndexError(IndexError):
+    def __init__(self, error, message="Your templating code has a common error:"):
+        self.error = error
+        if self.error == "list index out of range":
+            hint = "hint: a domonic attribute maybe missing underline on line:"
+        self.message = message + hint
+        super().__init__(self.message)
+
+
+class DomonicSyntaxError(SyntaxError):
+
+class DomonicTypeError(TypeError):
 
 class DomonicParseError(Exception):
     """Exception raised due to incorrect formatting
@@ -17,13 +30,8 @@ class DomonicParseError(Exception):
         error -- what caused the error
         message -- explanation of the error
     """
-
-    def __init__(self, error, message="Your python templating code has a common error:"):
+    def __init__(self, error, message="Your templating code has a common error:"):
         self.error = error
-
-        hint = ""
-        if self.error == "IndexError: list index out of range":
-            hint = "hint: You most likely didn't put a underscore on an attribute."
 
         if self.error == "SyntaxError: invalid syntax":
             hint = "hint: You are Missing a comma between attributes"
@@ -36,7 +44,7 @@ class DomonicParseError(Exception):
 
         self.message = message + hint
         super().__init__(self.message)
-
+'''
 
 def render(inp, outp=''):
     # print(inp)
@@ -51,17 +59,21 @@ class tag(object):
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
+        # try:
 
         # print('tag: ', args, kwargs)
-
         # TODO - dont render until called? put these on a function?
         # self.name=""
         self.content = ''.join([each.__str__() for each in args])
         
         # try:
         self.attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in kwargs.items()])
+    
+        # except IndexError as e:
+        #     raise DomonicIndexError(e)
         # except Exception as e:
-            # raise DomonicParseError(e)
+        #     print(e)
+
 
     # TODO - test
     @property

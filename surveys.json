@@ -1,0 +1,34 @@
+{                                    
+	"surveys":[
+		{
+			"title": "Survey A",
+			"description": "A test survey 1",
+			"questions": [
+				{
+					"title": "Q1",
+					"description": "test question 1",
+					"content": {},
+					"rules": []
+				},
+				{
+					"title": "Q2",
+					"description": "test question 2",
+					"content": {},
+					"rules": [{"qid":"1","condition":{"option1":"true"}}]
+				}
+
+			]
+		},
+		{
+			"title": "Survey B",
+			"description": "A test survey 2",
+			"questions": []
+		},
+		{
+			"title": "Survey C",
+			"description": "A test survey 3",
+			"questions": []
+		}
+	]
+
+}

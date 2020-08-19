@@ -11,12 +11,13 @@
 [![PyPI version](https://badge.fury.io/py/domonic.svg)](https://badge.fury.io/py/domonic.svg) 
 [![Downloads](https://pepy.tech/badge/domonic)](https://pepy.tech/project/domonic)
 
-#### Now contains 4 main packages: (but by no means are any of them complete)
+#### Now contains 5 main packages: (but by no means are any of them complete)
 
 • html : Generate html with python3 😎 <br />
 • dom : DOM API in python3 😲 <br />
 • javascript : js API in python3 😳 <br />
-• terminal : call terminal commands with python3 😱 -NEW (*see at the end*)<br />
+• terminal : call terminal commands with python3 😱 - NEW (*see at the end*)<br />
+• JSON : utils for loading / decorating / transforming<br />
 
 
 ## HTML TEMPLATING
@@ -141,12 +142,22 @@ print(url.hash)
 # from domonic.javascript import Date
 # etc..
 
+def hi():
+    print('hi')
+
+window.setInterval( 1, hi )
+print('i ran')
+
+import time
+time.sleep(5)
+
+
 ```
 
 You can update a-tags the same way as it inherits from URL:
 
 ```python
-from domonic import *
+from domonic.html import *
 
 atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
 print('href:',atag.href)
@@ -159,6 +170,58 @@ print(atag)
 ```
 
 several other undocumented features. take a look at the code.
+
+
+### JSON (utils)
+
+decorate any function that return python objects to resturn json instead
+
+```python
+from domonic.JSON import *
+
+@return_json
+def somefunc():
+    myObj = {"hi":[1,2,3]}
+    return myObj
+
+print( somefunc() )
+print( is_json(somefunc())
+```
+
+convert json arrays into html tables...
+
+```python
+from domonic.JSON import *
+
+# i.e. containting flat json array of dicts... [{"id":"01","name": "some item"},{"id":"02","name": "some other item"}]
+
+json_data = JSON.parse_file('somefile.json')
+mytable = JSON.tablify(json_data)
+print(mytable)
+
+```
+
+convert json arrays into csv files...
+
+```python
+from domonic.JSON import *
+
+json_data = JSON.parse_file('somefile.json')
+JSON.csvify(json_data, 'data.csv')
+
+```
+
+convert csv files to json...
+
+```python
+from domonic.JSON import *
+
+json_data =JSON.csv2json("data.csv")
+print(json_data)
+
+```    
+
+more to come...
 
 
 ### terminal (NEW)

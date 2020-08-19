@@ -12,6 +12,7 @@ import time
 from urllib.parse import unquote, quote
 import math
 import random
+import typing
 
 # from domonic import dom
 # from .dom import *
@@ -523,6 +524,11 @@ class Date(js_object):
 
     def toJSON(self):
         """  Returns the date as a string, formatted as a JSON date """
+
+        # def default(o):
+        #     if isinstance(o, (datetime.date, datetime.datetime)):
+        #         return o.isoformat()
+
         pass
 
     def toISOString(self):
@@ -671,6 +677,44 @@ class Screen(object):
         raise NotImplementedError
 
 
+
+
+import threading, time, signal
+from datetime import timedelta
+
+class ProgramKilled(Exception):
+    pass
+
+class Job(threading.Thread):
+    def __init__(self, interval, execute, *args, **kwargs):
+        threading.Thread.__init__(self)
+        self.daemon = False
+        self.stopped = threading.Event()
+        self.interval = interval
+        self.execute = execute
+        self.args = args
+        self.kwargs = kwargs
+
+    def stop(self):
+        self.stopped.set()
+        self.join()
+    
+    def run(self):
+        while not self.stopped.wait(self.interval.total_seconds()):
+            self.execute(*self.args, **self.kwargs)
+
+class SetInterval(object):
+
+    def signal_handler(signum, frame):
+        raise ProgramKilled
+
+    def __init__(self, time, function, *args, **kwargs):
+        signal.signal(signal.SIGTERM, self.signal_handler)
+        signal.signal(signal.SIGINT, self.signal_handler)
+        self.job = Job(interval=timedelta(seconds=time), execute=function)
+        self.job.start()
+
+
 class Window(object):
 
     def __init__(self, *args, **kwargs):
@@ -685,12 +729,12 @@ class Window(object):
 
     @property
     def location(self):
-        print("@@@@@@@@@@@@@@@@@@@@@@")
+        # print("@@@@@@@@@@@@@@@@@@@@@@")
         return self.__location
 
     @location.setter
     def location(self, x):
-        print("====================>>>>>>>", x)
+        # print("====================>>>>>>>", x)
         # dom.location = x
         # dom.location = dom.location(x)#Location(x)
         # from .dom import Location
@@ -717,9 +761,18 @@ class Window(object):
     @staticmethod
     def setTimeout(time, function):
         """ Calls a function or evaluates an expression after a specified number of milliseconds """
-        time.delay(time)
+        time.sleep(time)  # blocks
         function()
         return
+
+    def clearInterval(job):
+        job.stop()
+
+    def setInterval(time, function, *args, **kwargs):
+        interval_ID = SetInterval(time, function, *args, **kwargs)
+        return interval_ID.job
+
+
 
     # @staticmethod
     # @getter
@@ -840,9 +893,11 @@ class Array(object):
         #         return count
         try:
             return self.args.index(value)
+        except ValueError:
+            return -1
         except Exception as e:
             print(e)
-            return None
+            return -1
 
     def isArray(self):
         """ Checks whether an object is an array  """
@@ -981,19 +1036,26 @@ class String(object):
         # return x[len(x)] == x
         self.x.endswith(x, start, end)
 
+    def toLowerCase() -> str:
+        '''Converts a string to lowercase letters'''
+        return self.x.lower()
+
+    def toUpperCase() -> str:
+        '''Converts a string to uppercase letters'''
+        return self.x.upper()
+
+    def trim() -> str:
+        '''Removes whitespace from both ends of a string'''
+        return self.x.strip()
+
 
 # fromCharCode()    Converts Unicode values to characters   String
 # localeCompare()   Compares two strings in the current locale  String
-# repeat()  Returns a new string with a specified number of copies of an existing string    String
 # replace() Searches a string for a specified value, or a regular expression, and returns a new string where the specified values are replaced  String
 # search()  Searches a string for a specified value, or regular expression, and returns the position of the match   String
 # substr()  Extracts the characters from a string, beginning at a specified start position, and through the specified number of character   String
 # toLocaleLowerCase()   Converts a string to lowercase letters, according to the host's locale  String
 # toLocaleUpperCase()   Converts a string to uppercase letters, according to the host's locale  String
-# toLowerCase() Converts a string to lowercase letters  String
-# toUpperCase() Converts a string to uppercase letters  String
-# trim()    Removes whitespace from both ends of a string   String
-
 # compile() Deprecated in version 1.5. Compiles a regular expression    RegExp
 # lastIndex Specifies the index at which to start the next match    RegExp
 # test()    Tests for a match in a string. Returns true or false    RegExp
@@ -1469,8 +1531,6 @@ class URL(object):
 # specified Returns true if the attribute has been specified, otherwise it returns false    Attribute
 
 # state Returns an object containing a copy of the history entries  PopStateEvent
-
-# stringify()   Convert a JavaScript object to a JSON string    JSON
 
 # storageArea   Returns an object representing the affected storage object  StorageEvent
 

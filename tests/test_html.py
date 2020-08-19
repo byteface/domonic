@@ -519,7 +519,6 @@ class domonicTestCase(unittest.TestCase):
 
 
     def test_domonic_render_bs5_dashboard(self):
-        '''
         root = html(_lang="en")
         test = root.html(
             head(
@@ -788,7 +787,6 @@ class domonicTestCase(unittest.TestCase):
         # print(type(root))
         # print(root.getElementsByTagName("button")[0].getAttribute("class"))
         # print(render(root))
-        '''
         pass
 
 
