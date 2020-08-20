@@ -11,6 +11,9 @@
 [![PyPI version](https://badge.fury.io/py/domonic.svg)](https://badge.fury.io/py/domonic.svg) 
 [![Downloads](https://pepy.tech/badge/domonic)](https://pepy.tech/project/domonic)
 
+![Python version](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)
+[![Build status](https://travis-ci.com/byteface/domonic.svg?branch=master)
+
 #### Now contains 5 main packages: (but by no means are any of them complete)
 
 • html : Generate html with python3 😎 <br />
