@@ -1516,8 +1516,6 @@ class URL(object):
 
 # repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent
 
-# return    Stops the execution of a function and returns a value from that function    Statements
-
 # prototype Allows you to add properties and methods to an object   Number
 
 # removeNamedItem() Removes a specified attribute node  Attribute
@@ -1554,13 +1552,9 @@ class URL(object):
 
 # transitionend The event occurs when a CSS transition has completed    TransitionEvent
 
-# try ... catch ... finally Marks the block of statements to be executed when an error occurs in a try block, and implements error handling Statements
-
 # url   Returns the URL of the changed item's document  StorageEvent
 
 # value Sets or returns the value of the attribute  Attribute
-
-# var   Declares a variable Statements
 
 # watchPosition()   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   Geolocation
 
