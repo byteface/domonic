@@ -20,3 +20,4 @@ script:
   python -m unittest tests.test_style
   python -m unittest tests.test_javascript
   python -m unittest tests.test_terminal
+  
