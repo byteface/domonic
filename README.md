@@ -141,15 +141,25 @@ print(url.hash)
 
 # from domonic.javascript import Date
 # etc..
+```
 
-def hi():
-    print('hi')
 
-window.setInterval( 1, hi )
-print('i ran')
+You can use setInterval and clearInterval with params
 
+```python
+
+x=0
+
+def hi(inc):
+    global x
+    x = x+inc
+    print(x)
+
+test = window.setInterval(1, hi, 2)
 import time
 time.sleep(5)
+window.clearInterval(test)
+print(f"Final value of x:{x}")
 
 
 ```
@@ -174,7 +184,7 @@ several other undocumented features. take a look at the code.
 
 ### JSON (utils)
 
-decorate any function that return python objects to resturn json instead
+decorate any function that returns python objects to return json instead
 
 ```python
 from domonic.JSON import *
@@ -185,7 +195,7 @@ def somefunc():
     return myObj
 
 print( somefunc() )
-print( is_json(somefunc())
+print( is_json(somefunc()) )
 ```
 
 convert json arrays into html tables...

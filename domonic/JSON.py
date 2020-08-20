@@ -33,8 +33,8 @@ class JSON(object):
         return data
 
     @staticmethod
-    def parse(json):
-        return json.loads(json)
+    def parse(json_string):
+        return json.loads(json_string)
 
     @staticmethod
     def stringify(data,filepath:str=None, **kwargs):

@@ -711,7 +711,7 @@ class SetInterval(object):
     def __init__(self, time, function, *args, **kwargs):
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
-        self.job = Job(interval=timedelta(seconds=time), execute=function)
+        self.job = Job(timedelta(seconds=time), function, *args, **kwargs)
         self.job.start()
 
 
