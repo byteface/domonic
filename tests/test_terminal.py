@@ -63,6 +63,7 @@ class domonicTestCase(unittest.TestCase):
             rm('somefile')
             self.assertTrue('somefile' not in ls())
 
+    @silence
     def test_bash_git(self):
         print(git('status'))
         self.assertTrue('master' in git('status'))
