@@ -385,12 +385,12 @@ class domonicTestCase(unittest.TestCase):
             print('hi')
             pass
 
-        test = window.setInterval( 0.1, hi )
+        test = window.setInterval( 1, hi )
         print('im going to do some stuff in the background')
         
         # keep the test open to see if the intervals fire
         import time
-        time.sleep(5)
+        time.sleep(2)
         
         print('running')
         window.clearInterval(test)

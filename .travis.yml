@@ -1,23 +1,9 @@
 language: python
 python:
-  - "3.6"
-  - "3.7"
-  - "3.8"
-  - "3.8-dev"
-  - "nightly"
-
-before_install:
-  - "pip install -U pip"
-  - "python setup.py install"
-
+- "3.6"
+- "3.7"
+- "3.8"
 install:
   - pip install -r requirements.txt
-
 script:
-  - pytest
-  python -m unittest tests.test_html
-  python -m unittest tests.test_dom
-  python -m unittest tests.test_style
-  python -m unittest tests.test_javascript
-  python -m unittest tests.test_terminal
-  
+  make test
