@@ -2,12 +2,25 @@
 """
     domonic.html
     ~~~~~
-    
     Generate HTML using python 3
 """
 
-from .dom import Element, Document, URL
+# from .dom import Element, Document
 from .javascript import *
+
+# from domonic import tag, closed_tag, tag_init
+# import domonic
+
+from domonic.dom import Element, Document
+
+
+def render(inp, outp=''):
+    # print(inp)
+    if outp != '':
+        with open(outp, "w+") as f:
+            f.write(str(inp))
+    return str(inp)
+
 
 '''
 class DomonicIndexError(IndexError):
@@ -46,13 +59,6 @@ class DomonicParseError(Exception):
         super().__init__(self.message)
 '''
 
-def render(inp, outp=''):
-    # print(inp)
-    if outp != '':
-        with open(outp, "w+") as f:
-            f.write(str(inp))
-    return str(inp)
-
 
 class tag(object):
 
@@ -65,19 +71,17 @@ class tag(object):
         # TODO - dont render until called? put these on a function?
         # self.name=""
         self.content = ''.join([each.__str__() for each in args])
-        
+
         # try:
         self.attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in kwargs.items()])
-    
+
         # except IndexError as e:
         #     raise DomonicIndexError(e)
         # except Exception as e:
         #     print(e)
 
-
-    # TODO - test
     @property
-    def content(self):
+    def content(self):  # TODO - test
         return ''.join([each.__str__() for each in self.args])
 
     @content.setter
@@ -127,7 +131,6 @@ def tag_init(self, *args, **kwargs):
 
 
 html = type('html', (tag, Document), {'name': 'html', '__init__': tag_init})
-
 body = type('body', (tag, Element), {'name': 'body', '__init__': tag_init})
 head = type('head', (tag, Element), {'name': 'head', '__init__': tag_init})
 script = type('script', (tag, Element), {'name': 'script', '__init__': tag_init})
@@ -142,12 +145,14 @@ p = type('p', (tag, Element), {'name': 'p', '__init__': tag_init})
 i = type('i', (tag, Element), {'name': 'i', '__init__': tag_init})
 b = type('b', (tag, Element), {'name': 'b', '__init__': tag_init})
 
+
 def Atag(self, *args, **kwargs):
     # print('Atag: ', args, kwargs)
     tag.__init__(self, *args, **kwargs)
     Element.__init__(self, *args, **kwargs)
     # TODO - fix BUG. this stops having no href on a tags
     URL.__init__(self, url=kwargs['_href'])
+
 
 def __update__(self, *args, **kwargs):
     # print('__update__: ', args, kwargs)
@@ -156,6 +161,7 @@ def __update__(self, *args, **kwargs):
     # TODO - fix BUG. this stops having no href on a tags
     self.kwargs['_href'] = self.href
     tag.__init__(self, *self.args, **self.kwargs)
+
 
 a = type('a', (tag, Element, URL), {'name': 'a', '__init__': Atag, '__update__': __update__})
 
@@ -260,20 +266,24 @@ input = type('input', (closed_tag, Element), {'name': 'input', '__init__': tag_i
 keygen = type('keygen', (closed_tag, Element), {'name': 'keygen', '__init__': tag_init})
 command = type('command', (closed_tag, Element), {'name': 'command', '__init__': tag_init})
 
-main = type('command', (tag, Element), {'name': 'main', '__init__': tag_init}) # TODO - y was this missing?
+main = type('command', (tag, Element), {'name': 'main', '__init__': tag_init})  # TODO - y was this missing?
+
 
 # TODO - this can't be added at the mo. need to push it
 class doctype():
     def __str__(self):
-        return f"<!DOCTYPE html>"
+        return "<!DOCTYPE html>"
+
 
 class comment():
-    def __init__(self,content=""):
+    def __init__(self, content=""):
         self.content = content
+
     def __str__(self):
         return f"<!-- {self.content} -->"
 
-# output = render( 
+
+# output = render(
 #     html(
 #         head(
 #             style(),script(),

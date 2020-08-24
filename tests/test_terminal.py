@@ -4,30 +4,22 @@
 """
 
 import unittest
+
 from domonic.terminal import *
+from domonic.decorators import silence
 
 
 class domonicTestCase(unittest.TestCase):
 
     def test_bash_ls(self):
-        # ls = ls()
-        print(ls())
-        # print(ls("-al"))
-        # print(ls("../"))
-
-        print(pwd())
-        print(cd('../'))  # < TODO - will need custom
-        # print(cd('archive'))
-        # print('---',pwd())
-
-        # print(mkdir('somedir'))
-        # print(touch('somefile'))
-
-        # print(git('status'))
-
-        # for file in ls( "-al" ):
-        #     print("LINE:",file)
-
+        files = ls()
+        print(files)
+        # return
+        self.assertTrue('domonic' in ls())
+        print(ls("-al"))
+        print(ls("../"))
+        for line in ls():
+            print("line:", line)
         # for f in ls():
         #     try:
         #         print(f)
@@ -35,26 +27,68 @@ class domonicTestCase(unittest.TestCase):
         #     except Exception as e:
         #         pass
 
-        # for i, l in enumerate(cat('LICENSE.txt')):
-        #     print(i,l)
+    def test_bash_pwd(self):
+        thedir = pwd()
+        print("OYI::", thedir)
+        self.assertTrue('domonic' in thedir)
 
-        # for l in history(): # print('ls'.l) # TODO
+    def test_bash_cd(self):
+        print(cd('../'))  # < CD does not run on terminal
+        thedir_aftercd = pwd()
+        print(thedir_aftercd)
+        self.assertTrue('domonic' not in thedir_aftercd)
+        print(cd('domonic'))
+        thedir_aftercd = pwd()
+        print(thedir_aftercd)
+        self.assertTrue('domonic' in thedir_aftercd)
 
-        # print(history())
-        # print(man("ls"))
-        # print(echo('test'))
-        # print(df())
-        # print(du())
+    def test_bash_mkdir(self):
+        try:
+            mkdir('somedir')
+            self.assertTrue('somedir' in ls())
+        except Exception as e:
+            print(e)
+        finally:
+            # rm('-r somedir')
+            rmdir('somedir')
+            self.assertTrue('somedir' not in ls())
 
-        # for thing in du():
-        #     print(thing)
+    def test_bash_touch(self):
+        try:
+            touch('somefile')
+            self.assertTrue('somefile' in ls())
+        except Exception as e:
+            print(e)
+        finally:
+            rm('somefile')
+            self.assertTrue('somefile' not in ls())
 
-        # print(find('.'))
-        # print(ping('eventual.technology'))# < TODO - need to strean output
+    def test_bash_git(self):
+        print(git('status'))
+        self.assertTrue('master' in git('status'))
+
+    def test_bash_general(self):
+        print(man("ls"))
+        print(echo('test'))
+        print(df())
+        print(du())
+        print(ps())
         # print(cowsay('moo'))
-        # print(wget('eventual.technology'))
         print(date())
         print(cal())
+        for i, l in enumerate(cat('LICENSE.txt')):
+            print(i, l)
+
+    def test_bash_history(self):
+        print(history())
+        for i, thing in enumerate(history(), 1):
+            print(i, thing)
+
+    @silence
+    def test_bash(self):
+        print("ran")
+        print(ping('http://eventual.technology'))  # < TODO - need to strean output
+        # print(wget('eventual.technology'))
 
 
 if __name__ == '__main__':

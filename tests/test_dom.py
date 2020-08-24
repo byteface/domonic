@@ -10,6 +10,7 @@ import unittest
 
 from domonic.html import *
 from domonic.style import *
+from domonic.dom import *
 
 
 class domonicTestCase(unittest.TestCase):
@@ -17,7 +18,7 @@ class domonicTestCase(unittest.TestCase):
     def test_dom(self):
 
         # test div html and innerhtml update content
-        sometag = div("asdfasdf", div(), div("yo"), _id="someid")        
+        sometag = div("asdfasdf", div(), div("yo"), _id="someid")
         self.assertEqual(sometag.tagName, 'div')
         self.assertEqual(str(sometag), '<div id="someid">asdfasdf<div></div><div>yo</div></div>')
         sometag.html('test')
@@ -40,14 +41,14 @@ class domonicTestCase(unittest.TestCase):
         print(sometag.getAttribute('id'))
         self.assertEqual(sometag.getAttribute('_id'), 'someid')
 
-        mydiv = div("I like cake", div(_class='myclass').html(div("1"),div("2"),div("3")))
+        mydiv = div("I like cake", div(_class='myclass').html(div("1"), div("2"), div("3")))
         print(mydiv)
 
         # print(sometag.innerText())
         # print(sometag.nodeName)
         # assert(sometag.nodeName, 'DIV') # TODO - i checked one site in chrome, was upper case. not sure if a standard?
 
-        print(sometag.setAttribute('id','newid'))
+        print(sometag.setAttribute('id', 'newid'))
         print(sometag)
 
         print(sometag.lastChild())
@@ -75,11 +76,11 @@ class domonicTestCase(unittest.TestCase):
         sometag = div("asdfasdf", div(), div("yo"), _id="test")
         somenewdiv = div('im new')
         sometag.appendChild(somenewdiv)
-        print('>>>>',sometag.args[0])
+        print('>>>>', sometag.args[0])
         # print('>>>>',sometag)
-        print('>>>>',sometag.lastChild())
-        print('>>>>',sometag.content)
-        
+        print('>>>>', sometag.lastChild())
+        print('>>>>', sometag.content)
+
         import gc
         import pprint
         for r in gc.get_referents(somenewdiv):
@@ -88,15 +89,24 @@ class domonicTestCase(unittest.TestCase):
         for r in gc.get_referents(sometag):
             pprint.pprint(r)
 
-
-
     def test_dom_node_again(self):
-        somebody = body("test", _class="why")#.html("wn")
+        somebody = body("test", _class="why")  # .html("wn")
         print(somebody)
 
         somebody = body("test", _class="why").html("nope")
         print(somebody)
 
+    def test_dom_create(self):
+        print(html().documentElement)
+        print(html().URL)
+        somebody = document.createElement('sometag')
+        print(str(somebody()))
+        comm = document.createComment('hi there here is a comment')
+        print(comm)
+
+        print(html().createElement('sometag'))
+        # somebody = document.createElement('sometag')
+        # print(str(somebody()))
 
 
 if __name__ == '__main__':

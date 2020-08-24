@@ -8,13 +8,13 @@
     - Call Terminal commands using python 3 (this one requires a nix machine)
 """
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 __license__ = 'MIT'
 
 # from typing import *
 
 # from .html import *
-# from .dom import *
+# from .dom import Element
 from .javascript import *
 # from .terminal import *
 

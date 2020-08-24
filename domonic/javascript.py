@@ -1,4 +1,4 @@
-"""    
+"""
     domonic.javascript
     ~~~~~~~~~~~~~~~~
     - https://www.w3schools.com/jsref/jsref_reference.asp
@@ -8,14 +8,14 @@
 import urllib.parse
 from dateutil.parser import parse
 import datetime
+from datetime import timedelta
 import time
 from urllib.parse import unquote, quote
 import math
 import random
+import threading
+import signal
 import typing
-
-# from domonic import dom
-# from .dom import *
 
 
 class js_object(object):
@@ -41,7 +41,7 @@ class Math(js_object):
     SQRT1_2 = 0.7071067811865476
     SQRT2 = 1.4142135623730951
 
-    # TODO - pass what types of validation?
+    # TODO - pass what types of validation? < may move to decorators
     # i.e force numbers
     # i.e positive/negative numbers allowed
     # convert bool/string to number?
@@ -677,11 +677,6 @@ class Screen(object):
         raise NotImplementedError
 
 
-
-
-import threading, time, signal
-from datetime import timedelta
-
 class ProgramKilled(Exception):
     pass
 
@@ -698,20 +693,20 @@ class Job(threading.Thread):
     def stop(self):
         self.stopped.set()
         self.join()
-    
+
     def run(self):
         while not self.stopped.wait(self.interval.total_seconds()):
             self.execute(*self.args, **self.kwargs)
 
 class SetInterval(object):
 
-    def signal_handler(signum, frame):
+    def signal_handler(self, signum, frame):
         raise ProgramKilled
 
     def __init__(self, time, function, *args, **kwargs):
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
-        self.job = Job(timedelta(microseconds=time*1000), function, *args, **kwargs)
+        self.job = Job(timedelta(microseconds=time * 1000), function, *args, **kwargs)
         self.job.start()
 
 
@@ -765,9 +760,11 @@ class Window(object):
         function()
         return
 
+    @staticmethod
     def clearInterval(job):
         job.stop()
 
+    @staticmethod
     def setInterval(time, function, *args, **kwargs):
         interval_ID = SetInterval(time, function, *args, **kwargs)
         return interval_ID.job
@@ -1012,7 +1009,7 @@ class String(object):
 
     def repeat(self, count):
         ''' Returns a new string with a specified number of copies of an existing string '''
-        return self.x*count
+        return self.x * count
 
     def startsWith(self, x, start, end):
         ''' Checks whether a string begins with specified characters '''
@@ -1036,15 +1033,15 @@ class String(object):
         # return x[len(x)] == x
         self.x.endswith(x, start, end)
 
-    def toLowerCase() -> str:
+    def toLowerCase(self):
         '''Converts a string to lowercase letters'''
         return self.x.lower()
 
-    def toUpperCase() -> str:
+    def toUpperCase(self):
         '''Converts a string to uppercase letters'''
         return self.x.upper()
 
-    def trim() -> str:
+    def trim(self):
         '''Removes whitespace from both ends of a string'''
         return self.x.strip()
 

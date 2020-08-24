@@ -8,8 +8,7 @@ from typing import *
 import re
 
 from domonic.style import Style
-# from domonic.javascript import *
-from .javascript import URL
+import domonic.javascript
 
 
 class Event(object):
@@ -82,7 +81,7 @@ class EventTarget:
             return True
 
         stack = self.listeners[event._type]
-        #.slice()
+        # .slice()
 
         for thing in stack:
             thing(event)
@@ -227,7 +226,7 @@ class Element(Node):
 
         # self.style = Style()
         if self.hasAttribute('id'):
-            self.id = self.id  #''#None
+            self.id = self.id  # ''#None
 
         self.lang = None
         self.tabIndex = None
@@ -273,17 +272,13 @@ class Element(Node):
 
     @innerHTML.setter
     def innerHTML(self, value):
-        
         if value is not None:
             self.args = (value,)  # TODO - will need the parser to work for this to work properly. for now shove all on first content node
-        
         return self.content
 
-
-    def html(self, *args) -> str : 
+    def html(self, *args) -> str:
         self.args = args
         return self
-
 
     def blur(self):
         '''Removes focus from an element'''
@@ -393,15 +388,15 @@ class Element(Node):
         pass
 
     def getElementsByTagName(self, tag: str) -> List:
-        '''Returns a collection of all child elements with the specified tag name'''
+        ''' Returns a collection of all child elements with the specified tag name '''
         reg = f"(<{tag}.*?>.+?</{tag}>)"
 
-        closed_tags = ["base","link","meta","hr","br","wbr","img","embed","param","source","track","area","col","input","keygen","command"]
+        closed_tags = ["base", "link", "meta", "hr", "br", "wbr", "img", "embed", "param", "source", "track", "area", "col", "input", "keygen", "command"]
         if tag in closed_tags:
             reg = f"(<{tag}.*?/>)"
 
         pattern = re.compile(reg)
-        tags = re.findall(pattern,str(self))
+        tags = re.findall(pattern, str(self))
         return tags
 
     def hasAttribute(self, attribute: str) -> str:
@@ -478,13 +473,12 @@ class Element(Node):
         ''' Sets or returns the value of the lang attribute of an element'''
         # pass
 
-
     # def lastChild(self):
         ''' Returns the last child node of an element'''
         # try:
-            # return self.args[len(self.args)-1]
+        # return self.args[len(self.args)-1]
         # except Exception as e:
-            # return None
+        # return None
 
     def lastElementChild(self):
         ''' Returns the last child element of an element'''
@@ -619,7 +613,7 @@ class Element(Node):
 
             self.kwargs[attribute] = value
         except Exception as e:
-            print('failed to set attribute')
+            print('failed to set attribute', e)
 
     def setAttributeNode(self):
         '''Sets or changes the specified attribute node'''
@@ -676,9 +670,18 @@ class Document(Element):
         # self.kwargs = kwargs
         # self.documentURI = uri
         # self.baseURI = ""
+        # self._documentElement
         # self.raw
-        self.body = "" # ??
+        self.body = ""  # ??
         pass
+
+    def __new__(cls, *args, **kwargs):
+        instance = super().__new__(cls)
+        instance.__init__(*args, **kwargs)
+        instance.documentElement = instance
+        instance.URL = domonic.javascript.URL().href
+        instance.baseURI = domonic.javascript.URL().href
+        return instance
 
     # TODO - still not great as it also returns 'links' when searching for 'li'
     # @property
@@ -686,14 +689,13 @@ class Document(Element):
         ''' returns the tags you want '''
         reg = f"(<{tag}.*?>.+?</{tag}>)"
 
-        closed_tags = ["base","link","meta","hr","br","wbr","img","embed","param","source","track","area","col","input","keygen","command"]
+        closed_tags = ["base", "link", "meta", "hr", "br", "wbr", "img", "embed", "param", "source", "track", "area", "col", "input", "keygen", "command"]
         if tag in closed_tags:
             reg = f"(<{tag}.*?/>)"
 
         pattern = re.compile(reg)
-        tags = re.findall(pattern,str(self))
+        tags = re.findall(pattern, str(self))
         return tags
-
 
     # def activeElement():
         ''' Returns the currently focused element in the document'''
@@ -715,10 +717,6 @@ class Document(Element):
     def applets(self):
         ''' Returns a collection of all <applet> elements in the document'''
         return
-
-    # def baseURI(self):
-        ''' Returns the absolute base URI of a document'''
-        # return self.uri
 
     @property
     def body(self):
@@ -762,17 +760,23 @@ class Document(Element):
         '''Creates an attribute node'''
         # return
 
-    # def createComment():
+    @staticmethod
+    def createComment(message):
         '''Creates a Comment node with the specified text'''
-        # return
+        from domonic.html import comment
+        return comment(message)
 
     # def createDocumentFragment():
         '''Creates an empty DocumentFragment node'''
         # return
 
-    # def createElement():
-        '''Creates an Element node'''
-        # return
+    @staticmethod
+    def createElement(_type):
+        ''' Creates an Element node - WARNING THIS WILL NOT CREATE A 'DOMONIC ELEMENT' (yet), so it wont have features '''
+        # TODO - self closing tags - need a 'tag' factory. need the tags in .html package to register with it.
+        from domonic.html import tag, tag_init
+        el = type(_type, (tag, Element), {'name': _type, '__init__': tag_init})
+        return el
 
     # def createEvent():
         '''Creates a new event'''
@@ -794,9 +798,9 @@ class Document(Element):
         ''' Returns the Document Type Declaration associated with the document'''
         return
 
-    def documentElement(self):
-        ''' Returns the Document Element of the document (the <html> element)'''
-        return
+    # def documentElement(self):
+        # ''' Returns the Document Element of the document (the <html> element)'''
+        # return self
 
     # def documentMode(self):
         ''' Returns the mode used by the browser to render the document'''
@@ -821,7 +825,6 @@ class Document(Element):
     @property
     def forms(self):
         ''' Returns a collection of all <form> elements in the document'''
-             # print(self)
         tag = "form"
         reg = f"(<{tag}.*?>.+?</{tag}>)"
         pattern = re.compile(reg)
@@ -862,7 +865,7 @@ class Document(Element):
         tag = "img"
         reg = f"(<{tag}.*?/>)"
         pattern = re.compile(reg)
-        tags = re.findall(pattern,str(self))
+        tags = re.findall(pattern, str(self))
         return tags
 
     # def implementation():
@@ -886,9 +889,8 @@ class Document(Element):
         tag = "a"
         reg = f"(<{tag}.*?/>)"
         pattern = re.compile(reg)
-        tags = re.findall(pattern,str(self))
+        tags = re.findall(pattern, str(self))
         return tags
-
 
     def normalize(self):
         '''Removes empty Text nodes, and joins adjacent nodes'''
@@ -932,7 +934,7 @@ class Document(Element):
         tag = "script"
         reg = f"(<{tag}.*?>.+?</{tag}>)"
         pattern = re.compile(reg)
-        tags = re.findall(pattern,str(self))
+        tags = re.findall(pattern, str(self))
         return tags
 
     # def strictErrorChecking():
@@ -946,15 +948,15 @@ class Document(Element):
             tag = "title"
             reg = f"(<{tag}.*?>.+?</{tag}>)"
             pattern = re.compile(reg)
-            tags = re.findall(pattern,str(self))
+            tags = re.findall(pattern, str(self))
             return tags[0]
         except Exception as e:
-            print('document has no title',e)
+            print('document has no title', e)
             return ''
 
-    def URL(self):
-        ''' Returns the full URL of the HTML document'''
-        pass
+    # def URL(self):
+    #     ''' Returns the full URL of the HTML document'''
+    #     pass
 
     def write(self, html: str = "") -> None:
         '''Writes HTML expressions or JavaScript code to a document'''
@@ -1010,7 +1012,7 @@ class Location():
 location = Location
 
 
-class dom(object):
+class dom(object):  # don't think this class is need now as the package is the 'dom'
     console = type('console', (console,), {'name': 'console'})
     location = type('location', (location,), {'name': 'location'})
     document = type('document', (document,), {'name': 'document'})

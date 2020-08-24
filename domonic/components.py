@@ -1,28 +1,29 @@
-# -*- coding: utf-8 -*-
 import base64
 from domonic.html import *
 
 # WARNING. you didn't see this. what is not documented is subject to lots of change!
 
-class Modal(object):
-    
+
+class Modal(object):  # TODO - shouldn't this extend dom?
+
     def __init__(self, reference=None, content=None):
         self.reference = reference
         self.content = content
 
     def __str__(self):
         return str(
-            div( 
+            div(
                 div(
-                    span("&times;", _class="close", **{"_data-ref":self.reference}),
+                    span("&times;", _class="close", **{"_data-ref": self.reference}),
                     div(self.content),
                     _class="modal-content"
                 ), _class="modal", _id=self.reference
             )
         )
 
-class Webpage(object):
-    
+
+class Webpage(object):  # TODO - shouldn't this extend html?
+
     def __init__(self, content=None):
         self.content = content
 
@@ -99,3 +100,28 @@ class Webpage(object):
                 body(div(self.content, _class="domonic-container"))
                 )
             )
+
+
+'''
+def create_element(_type, *args, **kwargs):
+    # TODO - check if a component exists..
+    # TODO - check if a div exists
+    # if not create a new tag type < orignal
+    new_tag = type(_type, (closed_tag, Element), {'name': _type, '__init__': tag_init})
+    return new_tag
+
+
+el = create_element
+
+
+def clone_element():
+    pass
+
+
+def is_valid_element():
+    pass
+
+
+def create_ref():
+    pass
+'''
