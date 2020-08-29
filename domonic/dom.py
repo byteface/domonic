@@ -13,7 +13,11 @@ import domonic.javascript
 
 class Event(object):
 
-    def __init__(self):
+    # Event("look", {"bubbles":true, "cancelable":false});
+    def __init__(self, _type=None, *args, **kwargs):
+        # print('type', _type)
+        self.type = _type
+
         self.bubbles = None
         self.cancelable = None
         self.cancelBubble = None
@@ -28,29 +32,28 @@ class Event(object):
         self.srcElement = None
         self.target = None
         self.timeStamp = None
-        self.type = None
+        
+
+    def composedPath(self):
         pass
 
-        def composedPath(self):
-            pass
+    def createEvent(self):
+        pass
 
-        def createEvent(self):
-            pass
+    def initEvent(self):
+        pass
 
-        def initEvent(self):
-            pass
+    def msConvertURL(self):
+        pass
 
-        def msConvertURL(self):
-            pass
+    def preventDefault(self):
+        pass
 
-        def preventDefault(self):
-            pass
+    def stopImmediatePropagation(self):
+        pass
 
-        def stopImmediatePropagation(self):
-            pass
-
-        def stopPropagation(self):
-            pass
+    def stopPropagation(self):
+        pass
 
 
 class EventTarget:
@@ -59,6 +62,7 @@ class EventTarget:
         self.listeners = {}
 
     # TODO - event: str, function, useCapture: bool
+    # def addEventListener(self, event: str, function, useCapture: bool) -> None:
     def addEventListener(self, _type, callback):
         if _type not in self.listeners:
             self.listeners[_type] = []
@@ -72,20 +76,24 @@ class EventTarget:
 
         for thing in stack:
             if thing == callback:
-                # stack.splice(i, 1)
                 stack.remove(thing)
                 return
 
     def dispatchEvent(self, event):
-        if event._type not in self.listeners:
-            return True
+        if event.type not in self.listeners:
+            return True  # huh?. surely false?
 
-        stack = self.listeners[event._type]
+        stack = self.listeners[event.type]
         # .slice()
+        event.target = self  # TODO/NOTE - is this correct? - cant think where else would set it
 
         for thing in stack:
-            thing(event)
-            # type(thing, (Event,), self)
+            try:
+                thing(event)
+                # type(thing, (Event,), self)
+            except Exception as e:
+                print(e)
+                thing() # try calling without params, user may not create param
 
         return not event.defaultPrevented
 
@@ -110,7 +118,7 @@ class Node(EventTarget):
         self.previousSibling = None
         self.rootNode = None
         self.textContent = None
-        pass
+        super().__init__()
 
     def appendChild(self, item):
         '''Adds a new child node, to an element, as the last child node'''
@@ -240,6 +248,7 @@ class Element(Node):
 
         self.tagName
         self.style = Style()  # = #'test'#Style()
+        super().__init__()
 
     # def accessKey( key: str ): -> None
         # ''' Sets or returns the accesskey attribute of an element'''
@@ -247,14 +256,14 @@ class Element(Node):
         # example
         # dom.getElementById("myAnchor").accessKey = "w";
 
-    def addEventListener(self, event: str, function, useCapture: bool) -> None:
+    # def addEventListener(self, event: str, function, useCapture: bool) -> None:
         '''Attaches an event handler to the specified element'''
         # return
         # example
         # document.getElementById("myBtn").addEventListener("click", function(){
         #   document.getElementById("demo").innerHTML = "Hello World";
         # });
-        pass
+        # pass
 
     # def appendChild(self, item):
         '''Adds a new child node, to an element, as the last child node'''
@@ -572,9 +581,9 @@ class Element(Node):
         '''Removes a child node from an element'''
         pass
 
-    def removeEventListener(self):
+    # def removeEventListener(self):
         '''Removes an event handler that has been attached with the addEventListener() method'''
-        pass
+        # pass
 
     def replaceChild(self):
         '''Replaces a child node in an element'''
@@ -776,7 +785,7 @@ class Document(Element):
         # TODO - self closing tags - need a 'tag' factory. need the tags in .html package to register with it.
         from domonic.html import tag, tag_init
         el = type(_type, (tag, Element), {'name': _type, '__init__': tag_init})
-        return el
+        return el()
 
     # def createEvent():
         '''Creates a new event'''

@@ -14,6 +14,15 @@ from functools import wraps
 #         return f()
 #     return wrap
 
+# def static(endpoint, update="11101"):
+#     '''
+#     render the endpoint to a cron timestamp. when user vists that function.
+#     it will load the rendered version instead of executing the function.
+#     '''
+#     def dont_do_it(f):
+#         return None
+#     return dont_do_it
+
 
 # https://www.python.org/dev/peps/pep-0318/
 # https://stackoverflow.com/questions/15299878/how-to-use-python-decorators-to-check-function-arguments

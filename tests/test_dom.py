@@ -100,13 +100,45 @@ class domonicTestCase(unittest.TestCase):
         print(html().documentElement)
         print(html().URL)
         somebody = document.createElement('sometag')
-        print(str(somebody()))
+        print(str(somebody))
         comm = document.createComment('hi there here is a comment')
         print(comm)
 
         print(html().createElement('sometag'))
         # somebody = document.createElement('sometag')
         # print(str(somebody()))
+
+    def test_dom_events(self):
+        print(html().documentElement)
+        print(html().URL)
+        site = html()
+        somebody = document.createElement('div')
+        site.appendChild(somebody)
+        print(site)
+        
+        def test(evt, *args,**kwargs):
+            print('test ran!')
+            print(evt)
+            print(evt.target)
+
+        site.addEventListener('click', test)
+        somebody.addEventListener('anything', test)
+        print( site.listeners )
+
+        # site.removeEventListener('click', test)
+        # print( site.listeners )
+
+        site.dispatchEvent( Event('click') ) 
+        somebody.dispatchEvent( Event('anything') ) 
+        
+
+        # document.getElementById("myBtn").addEventListener("click", function(){
+        #   document.getElementById("demo").innerHTML = "Hello World";
+        # });
+
+
+
+
 
 
 if __name__ == '__main__':

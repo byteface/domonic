@@ -23,7 +23,7 @@ def render(inp, outp=''):
 
 
 '''
-class DomonicIndexError(IndexError):
+class TemplateError(IndexError):
     def __init__(self, error, message="Your templating code has a common error:"):
         self.error = error
         if self.error == "list index out of range":
