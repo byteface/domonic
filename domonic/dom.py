@@ -9,8 +9,10 @@ import re
 
 from domonic.style import Style
 import domonic.javascript
+# import domonic.events
+from domonic.events import *
 
-
+'''
 class Event(object):
 
     # Event("look", {"bubbles":true, "cancelable":false});
@@ -54,7 +56,7 @@ class Event(object):
 
     def stopPropagation(self):
         pass
-
+'''
 
 class EventTarget:
 
@@ -316,7 +318,10 @@ class Element(Node):
 
     def click(self):
         '''Simulates a mouse-click on an element'''
-        pass
+        # evt = MouseEvent('click', {'bubbles': True,'cancelable': True,'view': window});
+        # TODO - don't if its cancelled
+        evt = Event('click');
+        return self.dispatchEvent(evt);
 
     def clientHeight(self):
         ''' Returns the height of an element, including padding'''

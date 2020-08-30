@@ -116,7 +116,24 @@ or to test a single function:
 python3.7 -m unittest tests.test_javascript.domonicTestCase.test_javascript_array
 ```
 
-### MORE
+## MORE
+
+### DOM
+
+#### createElement
+to create your own elements use the DOM API
+```python
+from domonic.dom import *
+
+site = html()
+el = document.createElement('myelement')
+site.appendChild(el)
+print(site)
+
+```
+
+addEventlisteners recently been started. There's several more DOM methods. Check code to see what's currently implemented.
+
 
 ### javascript
 
@@ -333,20 +350,24 @@ TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
 ##### TODO - catch these errors and raise a friendly custom ParseError that tells you what to fix
 
 
-### join in
-Feel free to send pull requests. I'll merge and releaese asap.
+### Join-in
+Feel free to join in if you find it useful.
+
+If there's any methods you want that are missing or not complete yet. Just update the code and send a pull request.
+
+I'll merge and releaese asap.
 
 
 ### EXAMPLE PROJECT
-A browser based file browser to test the project and see how components might work:
+A browser based file browser. Working example of how components can work:
 https://github.com/byteface/Blueberry/
 
 A cron viewer
 https://github.com/byteface/ezcron/
 
 
-
 ### disclaimer
-exerimental/learning project
 
-There's a complete more supported library I found already doing similar called 'dominate' . So if you want to do something like this, use that.
+There's several more widely supported libraries doing HTML generation, DOM reading/manipulation, terminal wrappers etc. Maybe use one of those for production due to strictness and support.
+
+This is becoming more of a fast prototyping library.

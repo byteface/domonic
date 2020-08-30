@@ -1,0 +1,88 @@
+"""
+    domonic.CDN
+    ~~~~~~~~~~~
+    Refs to some useful .js and .css libs.
+
+    use for prototyping. wget anything in later and create your own local references once ur happy
+
+    TODO - integrity/cross origin/module?
+
+    WARNING/NOTE - dont use. this isn't released or documented. just ideas atm...
+
+"""
+
+# class CDN_TEXT(object):
+    # lorem ipusm generator
+    # fake names
+
+class CDN_IMG(object):
+    # - icons
+    # - UI - emojis
+
+    # placeholder services
+    FLICKR = lambda x, y: f"https://loremflickr.com/{x}/{y}"
+'''
+PLACEHOLD = "http://placehold.it/350x150"
+http://unsplash.it/200/300
+http://lorempixel.com/400/200
+http://dummyimage.com/600x300/000/fff
+# https://dummyimage.com/420x320/ff7f7f/333333.png&text=Sample
+http://placekitten.com/200/300
+https://placeimg.com/640/480/any
+http://placebear.com/g/200/300
+https://ipsumimage.appspot.com/140x100, ff7700
+https://www.fillmurray.com/640/360
+https://baconmockup.com/640/360
+https://placebeard.it/640x360
+https://www.placecage.com/640/360
+https://www.stevensegallery.com/640/360
+https://fakeimg.pl/640x360
+# https://fakeimg.pl/420x320/ff0000,128/333333,255/?text=Sample&font=lobster
+https://picsum.photos/640/360
+https://via.placeholder.com/420x320/ff7f7f/333333?text=Sample
+https://keywordimg.com/420x320/random
+http://www.dummysrc.com/430x320.png/22c5fc/17202A
+'''
+
+class CDN_JS(object):
+    '''
+    You will need to append the lib version number if you add any libs here
+    '''
+    JQUERY_3_5_1 = "https://code.jquery.com/jquery-3.5.1.min.js"
+    JQUERY_UI = "https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
+    UNDERSCORE = "https://cdn.jsdelivr.net/npm/underscore@1.11.0/underscore-min.js"
+    BOOTSTRAP_4 = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    POPPER_1_16_1 = "https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    BOOTSTRAP_5_ALPHA = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+    D3_6_1_0 = "https://cdnjs.cloudflare.com/ajax/libs/d3/6.1.0/d3.min.js"
+    MODERNIZER_2_8_3 = "https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"
+    MOMENT_2_27_0 = "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"
+    PIXI_5_3_3 = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"
+    SOCKET_1_4_5 = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"
+    
+
+    #def find_on_cdn():
+    # https://cdn.jsdelivr.net/npm/
+    # https://cdnjs.cloudflare.com/ajax/libs/
+    
+    #def dl(self, path=None):  # download
+    #if path none domonic.JS_MASTER < strip off name to get default assets folder if non passed
+
+
+class CDN_CSS(object):
+    '''
+    Preferably use version numbers if available. user LATEST if it always gets the latest
+    '''
+    BOOTSTRAP_5_ALPHA = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.jshttps://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+    BOOTSTRAP_4 = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    MARX = "https://unpkg.com/marx-css/css/marx.min.css"  # version?
+    MVP = "https://unpkg.com/mvp.css"  # version?
+    WATER_LATEST = "https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css"  # note using 'latest' in cdn url
+    BALLOON = "https://unpkg.com/balloon-css/balloon.min.css"
+    THREE_DOTS_0_2_0 = "https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css"
+    MILLIGRAM_1_3_0 = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"
+    # find_on_cdn():
+    # https://unpkg.com/
+    # https://cdnjs.cloudflare.com/ajax/libs/
+
+    #def dl(self, path=domonic.JS_MASTER):  # download

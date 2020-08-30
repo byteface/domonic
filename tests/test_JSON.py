@@ -90,9 +90,9 @@ class domonicTestCase(unittest.TestCase):
         print( 'goat' )
         print( yo() )
 
-        json_data = JSON.parse_file('surveys.json')
-        mytable = JSON.tablify(json_data)
-        print(mytable)
+        # json_data = JSON.parse_file('surveys.json')
+        # mytable = JSON.tablify(json_data)
+        # print(mytable)
 
 
         # with JSON( data, 'items') as item:

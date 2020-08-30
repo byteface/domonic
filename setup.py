@@ -5,16 +5,16 @@ with open("README.md", "r") as f:
 
 setup(
   name = 'domonic',
-  version = '0.1.7',
+  version = '0.1.8',
   author="@byteface",
   author_email="byteface@gmail.com",
   license="MIT",
   url = 'https://github.com/byteface/domonic',
-  download_url = 'https://github.com/byteface/pypals/archive/0.1.7.tar.gz',
+  download_url = 'https://github.com/byteface/pypals/archive/0.1.8.tar.gz',
   description = 'generate html with python 3 and quite a bit more',
   long_description=long_description,
   long_description_content_type="text/markdown",
-  keywords = ['html', 'generate', 'templating', 'dom', 'terminal', 'json', 'web', 'template', 'javascript', 'DOM'],
+  keywords = ['html', 'generate', 'templating', 'dom', 'terminal', 'json', 'web', 'template', 'javascript', 'DOM', 'GUI'],
   classifiers=[
       "Programming Language :: Python :: 3",
       "Programming Language :: JavaScript",
