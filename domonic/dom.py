@@ -9,54 +9,8 @@ import re
 
 from domonic.style import Style
 import domonic.javascript
-# import domonic.events
 from domonic.events import *
 
-'''
-class Event(object):
-
-    # Event("look", {"bubbles":true, "cancelable":false});
-    def __init__(self, _type=None, *args, **kwargs):
-        # print('type', _type)
-        self.type = _type
-
-        self.bubbles = None
-        self.cancelable = None
-        self.cancelBubble = None
-        self.composed = None
-        self.currentTarget = None
-        self.defaultPrevented = False
-        self.eventPhase = None
-        self.explicitOriginalTarget = None
-        self.isTrusted = None
-        self.originalTarget = None
-        self.returnValue = None
-        self.srcElement = None
-        self.target = None
-        self.timeStamp = None
-        
-
-    def composedPath(self):
-        pass
-
-    def createEvent(self):
-        pass
-
-    def initEvent(self):
-        pass
-
-    def msConvertURL(self):
-        pass
-
-    def preventDefault(self):
-        pass
-
-    def stopImmediatePropagation(self):
-        pass
-
-    def stopPropagation(self):
-        pass
-'''
 
 class EventTarget:
 
@@ -116,7 +70,7 @@ class Node(EventTarget):
         self.ownerDocument = None
         self.parentElement = None
         self.parentNode = None
-        self.prefix = None
+        self.prefix = None  # 🗑️
         self.previousSibling = None
         self.rootNode = None
         self.textContent = None
@@ -178,28 +132,95 @@ class Node(EventTarget):
         ''' Sets or returns the value of a node'''
         pass
 
-        # cloneNode()
+
+    # - TODO - tests all below
+
+    def contains(self, node):
+        ''' Check whether a node is a descendant of a given node'''
+        # this will go crunch on big stuff... need to consider best way
+        for each in self.args:
+            if each == node:
+                return True
+            try:
+                if each.contains(node):
+                    return True
+            except Exception as e:
+                pass # TODO - dont interate strings
+
+        return False
+
+    def insertBefore(self, node):
+        ''' inserts a node before a reference node as a child of a specified parent node. '''
+        for count, each in enumerate(self.args):
+            if each == node:
+                self.args.insert(node,count)
+                return node
+        return node
+
+    def removeChild(self, node):
+        ''' removes a child node from the DOM and returns the removed node.'''
+        for count, each in enumerate(self.args):
+            if each == node:
+                n = node
+                self.args.remove(node)
+                return n
+
+            r = each.removeChild(node)
+            if r:
+                return r
+
+        return None
+
+    def replaceChild(self, newChild, oldChild):
+        ''' Replaces a child node within the given (parent) node. '''
+        for count, each in enumerate(self.args):
+            if each == oldChild:
+                n = oldChild
+                self.removeChild(newChild)
+                self.args.remove(oldChild)
+                self.args.insert(count, newChild)
+                return n
+
+            r = each.replaceChild(newChild, oldChild)
+            if r:
+                return r
+
+        return None
+
+    def cloneNode(self, deep=True):
+        ''' Returns a copy. '''
+        import copy
+        if deep == True:
+            return copy.deepcopy(self)
+        else:
+            return copy.copy(self) # shallow copy
+
+    def isSameNode(self, node):
+        ''' Checks if two elements are the same node '''
+        return (self == node)
+
+    def isEqualNode(self, node):
+        ''' Checks if two elements are equal '''
+        return (str(self) == str(node))
+
         # compareDocumentPosition()
-        # contains()
         # getRootNode()
-        # getUserData()
-        # insertBefore()
         # isDefaultNamespace()
-        # isEqualNode()
-        # isSameNode()
-        # isSupported()
         # lookupNamespaceURI()
         # lookupPrefix()
         # normalize()
-        # removeChild()
-        # replaceChild()
-        # setUserData()
+
+    # def isSupported(self): return False #  🗑
+    # getUserData() 🗑️
+    # setUserData() 🗑️
 
 
 class Console(object):
 
     @staticmethod
-    def log(msg: str):
+    def log(msg: str, substitute=None):
+        if substitute is not None:
+            msg = substitute.join(msg.split('%s'))
         print(msg)
 
     def __init__(self, *args, **kwargs):
@@ -223,6 +244,16 @@ class Console(object):
 
 
 console = Console
+
+
+class Attr(object):
+    
+    def __init__(self, name, *args, **kwargs):
+        # self.isId
+        self.name = name
+        self.value = ""
+        # self.value = value
+        # self.specified
 
 
 class Element(Node):
@@ -249,7 +280,7 @@ class Element(Node):
             self.classList = self.classList
 
         self.tagName
-        self.style = Style()  # = #'test'#Style()
+        self.style = Style(self)  # = #'test'#Style()
         super().__init__()
 
     # def accessKey( key: str ): -> None
@@ -257,19 +288,6 @@ class Element(Node):
         # return
         # example
         # dom.getElementById("myAnchor").accessKey = "w";
-
-    # def addEventListener(self, event: str, function, useCapture: bool) -> None:
-        '''Attaches an event handler to the specified element'''
-        # return
-        # example
-        # document.getElementById("myBtn").addEventListener("click", function(){
-        #   document.getElementById("demo").innerHTML = "Hello World";
-        # });
-        # pass
-
-    # def appendChild(self, item):
-        '''Adds a new child node, to an element, as the last child node'''
-        # self.args = self.args + (item,)
 
     def attributes(self) -> List:
         ''' Returns a List of an element's attributes'''
@@ -339,16 +357,8 @@ class Element(Node):
         ''' Returns the width of an element, including padding'''
         pass
 
-    def cloneNode(self):
-        '''Clones an element'''
-        pass
-
     def compareDocumentPosition(self):
         '''Compares the document position of two elements'''
-        pass
-
-    def contains(self):
-        '''Returns true if a node is a descendant of a node, otherwise false'''
         pass
 
     def contentEditable(self):
@@ -382,7 +392,7 @@ class Element(Node):
         except Exception as e:
             print('failed to get attribute')
             print(e)
-            return ''
+            return None
 
     def getAttributeNode(self, attribute: str) -> str:
         '''Returns the specified attribute node'''
@@ -459,10 +469,6 @@ class Element(Node):
         '''Inserts text into the specified position relative to the current element'''
         pass
 
-    def insertBefore(self):
-        '''Inserts a new child node before a specified, existing, child node'''
-        pass
-
     def isContentEditable(self):
         ''' Returns true if the content of an element is editable, otherwise false'''
         pass
@@ -471,28 +477,9 @@ class Element(Node):
         '''Returns true if a specified namespaceURI is the default, otherwise false'''
         pass
 
-    def isEqualNode(self):
-        '''Checks if two elements are equal'''
-        pass
-
-    def isSameNode(self):
-        '''Checks if two elements are the same node'''
-        pass
-
-    def isSupported(self):
-        '''Returns true if a specified feature is supported on the element'''
-        pass
-
     # def lang(self):
         ''' Sets or returns the value of the lang attribute of an element'''
         # pass
-
-    # def lastChild(self):
-        ''' Returns the last child node of an element'''
-        # try:
-        # return self.args[len(self.args)-1]
-        # except Exception as e:
-        # return None
 
     def lastElementChild(self):
         ''' Returns the last child element of an element'''
@@ -582,18 +569,6 @@ class Element(Node):
         '''Removes a specified attribute node, and returns the removed node'''
         pass
 
-    def removeChild(self):
-        '''Removes a child node from an element'''
-        pass
-
-    # def removeEventListener(self):
-        '''Removes an event handler that has been attached with the addEventListener() method'''
-        # pass
-
-    def replaceChild(self):
-        '''Replaces a child node in an element'''
-        pass
-
     def requestFullscreen(self):
         '''Shows an element in fullscreen mode'''
         pass
@@ -621,7 +596,6 @@ class Element(Node):
     def setAttribute(self, attribute, value):
         '''Sets or changes the specified attribute, to the specified value'''
         try:
-
             if attribute[0:1] != '_':
                 attribute = '_' + attribute
 
@@ -629,18 +603,19 @@ class Element(Node):
         except Exception as e:
             print('failed to set attribute', e)
 
-    def setAttributeNode(self):
-        '''Sets or changes the specified attribute node'''
-        pass
+    def setAttributeNode(self, attr):
+        ''' Sets or changes the specified attribute node '''
+        self.setAttribute( attr.name, attr.value )
 
     @property
     def style(self):
-        ''' Sets or returns the value of the style attribute of an element'''
+        ''' returns the value of the style attribute of an element'''
         return self.__style
 
     @style.setter
     def style(self, style):
         self.__style = style
+        self.__style.__init__(self)  # to set the parent
 
     # def tabIndex(self):
         ''' Sets or returns the value of the tabindex attribute of an element'''
@@ -675,15 +650,12 @@ class Element(Node):
 
 class Document(Element):
 
-    # baseURI = "eventual.technology"
-
     def __init__(self, *args, **kwargs):
         # self.doc = doc
         # self.uri = uri
         # self.args = args
         # self.kwargs = kwargs
         # self.documentURI = uri
-        # self.baseURI = ""
         # self._documentElement
         # self.raw
         self.body = ""  # ??
@@ -715,18 +687,14 @@ class Document(Element):
         ''' Returns the currently focused element in the document'''
         # return
 
-    # def addEventListener( event: str, function, useCapture: bool ) -> None:
-        '''Attaches an event handler to the document'''
-        # return
-
     # def adoptNode():
         '''Adopts a node from another document'''
         # return
 
     def anchors(self):
         ''' Returns a collection of all <a> elements in the document that have a name attribute'''
-        print('hi')
-        return
+        tags = self._get_tags('a')    
+        return [x for x in tags if x.hasAttribute('name')]
 
     def applets(self):
         ''' Returns a collection of all <applet> elements in the document'''
@@ -770,9 +738,9 @@ class Document(Element):
         ''' Returns the character encoding for the document'''
         # return
 
-    # def createAttribute():
-        '''Creates an attribute node'''
-        # return
+    def createAttribute(name):
+        ''' Creates an attribute node '''
+        return Attr(name)
 
     @staticmethod
     def createComment(message):
@@ -932,10 +900,6 @@ class Document(Element):
 
     # def referrer():
         ''' Returns the URL of the document that loaded the current document'''
-        # return
-
-    # def removeEventListener():
-        '''Removes an event handler from the document (that has been attached with the addEventListener() method)'''
         # return
 
     def renameNode(self, node, namespaceURI, nodename):

@@ -19,34 +19,45 @@ class CDN_IMG(object):
     # - icons
     # - UI - emojis
 
-    # placeholder services
-    FLICKR = lambda x, y: f"https://loremflickr.com/{x}/{y}"
-'''
-PLACEHOLD = "http://placehold.it/350x150"
-http://unsplash.it/200/300
-http://lorempixel.com/400/200
-http://dummyimage.com/600x300/000/fff
-# https://dummyimage.com/420x320/ff7f7f/333333.png&text=Sample
-http://placekitten.com/200/300
-https://placeimg.com/640/480/any
-http://placebear.com/g/200/300
-https://ipsumimage.appspot.com/140x100, ff7700
-https://www.fillmurray.com/640/360
-https://baconmockup.com/640/360
-https://placebeard.it/640x360
-https://www.placecage.com/640/360
-https://www.stevensegallery.com/640/360
-https://fakeimg.pl/640x360
-# https://fakeimg.pl/420x320/ff0000,128/333333,255/?text=Sample&font=lobster
-https://picsum.photos/640/360
-https://via.placeholder.com/420x320/ff7f7f/333333?text=Sample
-https://keywordimg.com/420x320/random
-http://www.dummysrc.com/430x320.png/22c5fc/17202A
-'''
+    '''
+    # SOME EXAMPLES. NOT ALL ARE HTTPS:
+    http://placehold.it/350x150
+    http://unsplash.it/200/300
+    http://lorempixel.com/400/200
+    http://dummyimage.com/600x300/000/fff
+    # https://dummyimage.com/420x320/ff7f7f/333333.png&text=Sample
+    http://placekitten.com/200/300
+    https://placeimg.com/640/480/any
+    http://placebear.com/g/200/300
+    https://ipsumimage.appspot.com/140x100, ff7700
+    https://www.fillmurray.com/640/360
+    https://baconmockup.com/640/360
+    https://placebeard.it/640x360
+    https://www.placecage.com/640/360
+    https://www.stevensegallery.com/640/360
+    https://fakeimg.pl/640x360
+    # https://fakeimg.pl/420x320/ff0000,128/333333,255/?text=Sample&font=lobster
+    https://picsum.photos/640/360
+    https://via.placeholder.com/420x320/ff7f7f/333333?text=Sample
+    https://keywordimg.com/420x320/random
+    http://www.dummysrc.com/430x320.png/22c5fc/17202A
+    '''
+    PLACEHOLDER_SERVICE = "loremflickr.com"
+    @staticmethod
+    def PLACEHOLDER(width=100, height=100, HTTP="", seperator='/'):
+        '''
+        i.e. to change it. do this... CDN_IMG.PLACEHOLDER_SERVICE = "placebear.com/g"
+        i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100))
+        i.e. default HTTP is none, to let the browser decide
+        i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100,'x')) # optional seperator if the site uses x instead of slash
+        '''
+        return f"{HTTP}://{CDN_IMG.PLACEHOLDER_SERVICE}/{width}{seperator}{height}"
+
 
 class CDN_JS(object):
     '''
     You will need to append the lib version number if you add any libs here
+    # obvious candidates... https://github.com/sorrycc/awesome-javascript
     '''
     JQUERY_3_5_1 = "https://code.jquery.com/jquery-3.5.1.min.js"
     JQUERY_UI = "https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"

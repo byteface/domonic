@@ -7,7 +7,6 @@ test:
 	python3 -m unittest tests.test_CDN
 	python3 -m unittest tests.test_JSON
 
-
 build:
 	rm -r dist/
 	python3 setup.py sdist

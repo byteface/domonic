@@ -137,9 +137,34 @@ class domonicTestCase(unittest.TestCase):
         # });
 
 
+    def test_dom_contains(self):
+        site = html()
+        somebody = document.createElement('div')
+        site.appendChild(somebody)
+        print(site)
+        another_div = div()
+        print(site.contains(somebody))
+        another_div = div()
+        print(site.contains(another_div))
+        another_div = document.createElement('div')
+        print(site.contains(another_div))
+        third_div = document.createElement('div')
+        another_div.appendChild(third_div)
+        site.appendChild(another_div)
+        print(site.contains(third_div))
 
 
-
+    # def test_dom_Node():  
+        # TODO - tests all below
+        # contains
+        # insertBefore
+        # removeChild
+        # replaceChild
+        # cloneNode
+        # isSameNode
+        # isEqualNode
+        # anchors
+            
 
 if __name__ == '__main__':
     unittest.main()

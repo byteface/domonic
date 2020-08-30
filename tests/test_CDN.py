@@ -24,7 +24,7 @@ class domonicTestCase(unittest.TestCase):
     	mycss = link(_rel="stylesheet", _href=CDN_JS.JQUERY_3_5_1)
     	print(mycss)
 
-    	myimg = img(_src=CDN_IMG.FLICKR(100,100))
+    	myimg = img(_src=CDN_IMG.PLACEHOLDER(100,100))
     	print(myimg)
 		
 

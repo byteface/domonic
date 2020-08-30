@@ -10,13 +10,13 @@ import unittest
 
 from domonic.html import *
 from domonic.style import *
+from domonic.dom import *
 
 
 class domonicTestCase(unittest.TestCase):
+    
     def test_domonic_css(self):
-        # h = html()
-        # print(h)
-
+    
         atag = a("linky", _href="https://eventual.technology")
         print(atag.style.alignContent)
 
@@ -24,6 +24,15 @@ class domonicTestCase(unittest.TestCase):
         print(sometag.style)
         sometag.style.alignContent = None
         print(sometag.style.alignContent)
+
+        sometag.style.backgroundColor = "black"
+        sometag.style.fontSize = "12px"
+
+        # huh = document.createAttribute("test")
+        # huh.value = "wtf"
+        # sometag.setAttributeNode(huh)
+        print(sometag.style.fontSize)
+        print(sometag)
 
         # dom.select('#test' ).dostuff() # TODO -
         # print(sometag.style)

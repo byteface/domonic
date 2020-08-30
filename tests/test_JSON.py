@@ -79,8 +79,8 @@ class domonicTestCase(unittest.TestCase):
         t = JSON.csvify(domonicTestCase.SOMEJSON)
         print(t)
 
-        t = JSON.csv2json("data.csv")
-        print(t)
+        # t = JSON.csv2json("data.csv")
+        # print(t)
     
         @return_json
         def yo():
