@@ -198,7 +198,17 @@ atag.port = 8983
 print(atag)
 ```
 
-several other undocumented features. take a look at the code.
+Styling is now supported...
+
+```python
+mytag = div("hi", _id="test")
+mytag.style.backgroundColor = "black"
+mytag.style.fontSize = "12px"
+print(mytag)
+# <div id="test" style="background-color:black;font-size:12px;">asdfasdf</div>
+```
+
+several other undocumented features. Take a look at the code.
 
 
 ### JSON (utils)
