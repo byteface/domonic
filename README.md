@@ -21,6 +21,7 @@
 • terminal : call terminal commands with python3 😱 - NEW (*see at the end*)<br />
 • JSON : utils for loading / decorating / transforming<br />
 
+https://domonic.readthedocs.io/
 
 ## HTML TEMPLATING
 
@@ -380,8 +381,11 @@ I'll merge and releaese asap.
 A browser based file browser. Working example of how components can work:
 https://github.com/byteface/Blueberry/
 
-A cron viewer
+A cron viewer:
 https://github.com/byteface/ezcron/
+
+docs:
+https://domonic.readthedocs.io/
 
 
 ### disclaimer

@@ -46,6 +46,8 @@ python doesn't allow hyphens in parameter names. so use variable keyword argumen
 
 	div("test", **{"_data-test":"test"} )
 
+DONT FORGET TO PREPEND THE UNDERSCORE.
+
 
 fugly
 ----------------

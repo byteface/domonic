@@ -161,3 +161,62 @@ You don't have to return JSON from an endpoint. You can just return html and ren
 	    });
 	}
 
+
+
+Notes on templating
+--------------------------------
+
+while you can create a div with content like :
+
+.. code-block :: python
+
+    div("some content")
+
+python doesn't allow named params before unamed ones. So you can't do this:
+
+.. code-block :: python
+
+    div(_class="container", p("Some content") )
+
+or it will complain the params are in the wrong order. You have to instead put content before attributes:
+
+.. code-block :: python
+
+    div( p("Some content"), _class="container")
+
+which is annoying when a div gets long.
+
+You can get around this by using 'html' which is available on every Element:
+
+.. code-block :: python
+
+	div( _class="container" ).html("Some content")
+
+This is NOT like jQuery html func that returns just the inner content. use innerHTML for that.
+
+It is used specifically for rendering.
+
+
+Common Errors
+----------------
+
+When you start templating this way you can make a lot of common mistakes. Refer back to this page until you get used to it. It's normally missing underscores or commas between attributes...
+
+Here are the 4 most common ones I experienced when creating large templates...
+
+( i.e. bootstrap5 examples in test_domonic.py )
+
+IndexError: list index out of range
+    - You most likely didn't put a underscore on an attribute.
+    - THIS ALSO APPLIES TO **{"_data-tags":"x"}
+
+SyntaxError: invalid syntax
+    - You are Missing a comma between attributes
+
+SyntaxError: positional argument follows keyword argument
+    - You have to pass attributes LAST. and strings and objects first. *see docs*
+
+TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
+    - You are Missing a comma between attributes. before the **{}
+
+

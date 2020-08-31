@@ -15,6 +15,7 @@
     <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Domonic: autodocs" href="autodocs.html" />
     <link rel="prev" title="Domonic: CDN" href="CDN.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -173,6 +174,53 @@ app/components/my_component.py</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+<div class="section" id="notes-on-templating">
+<h2>Notes on templating<a class="headerlink" href="#notes-on-templating" title="Permalink to this headline">¶</a></h2>
+<p>while you can create a div with content like :</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">div</span><span class="p">(</span><span class="s2">&quot;some content&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>python doesn’t allow named params before unamed ones. So you can’t do this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">div</span><span class="p">(</span><span class="n">_class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">(</span><span class="s2">&quot;Some content&quot;</span><span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>or it will complain the params are in the wrong order. You have to instead put content before attributes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">div</span><span class="p">(</span> <span class="n">p</span><span class="p">(</span><span class="s2">&quot;Some content&quot;</span><span class="p">),</span> <span class="n">_class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which is annoying when a div gets long.</p>
+<p>You can get around this by using ‘html’ which is available on every Element:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">div</span><span class="p">(</span> <span class="n">_class</span><span class="o">=</span><span class="s2">&quot;container&quot;</span> <span class="p">)</span><span class="o">.</span><span class="n">html</span><span class="p">(</span><span class="s2">&quot;Some content&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is NOT like jQuery html func that returns just the inner content. use innerHTML for that.</p>
+<p>It is used specifically for rendering.</p>
+</div>
+<div class="section" id="common-errors">
+<h2>Common Errors<a class="headerlink" href="#common-errors" title="Permalink to this headline">¶</a></h2>
+<p>When you start templating this way you can make a lot of common mistakes. Refer back to this page until you get used to it. It’s normally missing underscores or commas between attributes…</p>
+<p>Here are the 4 most common ones I experienced when creating large templates…</p>
+<p>( i.e. bootstrap5 examples in test_domonic.py )</p>
+<dl class="simple">
+<dt>IndexError: list index out of range</dt><dd><ul class="simple">
+<li><p>You most likely didn’t put a underscore on an attribute.</p></li>
+<li><p>THIS ALSO APPLIES TO <a href="#id1"><span class="problematic" id="id2">**</span></a>{“_data-tags”:”x”}</p></li>
+</ul>
+</dd>
+<dt>SyntaxError: invalid syntax</dt><dd><ul class="simple">
+<li><p>You are Missing a comma between attributes</p></li>
+</ul>
+</dd>
+<dt>SyntaxError: positional argument follows keyword argument</dt><dd><ul class="simple">
+<li><p>You have to pass attributes LAST. and strings and objects first. <em>see docs</em></p></li>
+</ul>
+</dd>
+<dt>TypeError: unsupported operand type(s) for ** or pow(): ‘str’ and ‘dict’</dt><dd><ul class="simple">
+<li><p>You are Missing a comma between attributes. before the <a href="#id3"><span class="problematic" id="id4">**</span></a>{}</p></li>
+</ul>
+</dd>
+</dl>
+</div>
 </div>
 
 
@@ -206,7 +254,12 @@ app/components/my_component.py</p>
 <li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: components</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#notes-on-templating">Notes on templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-errors">Common Errors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
 </ul>
 
 <div class="relations">
@@ -214,6 +267,7 @@ app/components/my_component.py</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="CDN.html" title="previous chapter">Domonic: CDN</a></li>
+      <li>Next: <a href="autodocs.html" title="next chapter">Domonic: autodocs</a></li>
   </ul></li>
 </ul>
 </div>
