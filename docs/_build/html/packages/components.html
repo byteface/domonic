@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Domonic: components &#8212; domonic 0.1.10 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Domonic: CDN" href="CDN.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="domonic-components">
+<h1>Domonic: components<a class="headerlink" href="#domonic-components" title="Permalink to this headline">¶</a></h1>
+<p>With all these pieces you can now build simple components, custom Elements or large templates.</p>
+<p>Components are re-usable pieces of code.</p>
+<p>A component ‘might’ look something like this…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">Math</span>
+<span class="kn">from</span> <span class="nn">domonic.terminal</span> <span class="kn">import</span> <span class="n">ifconfig</span>
+
+<span class="k">class</span> <span class="nc">My_Component</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;launcher&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">div</span><span class="p">(</span>
+                        <span class="n">div</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">html</span><span class="p">(</span>
+                        <span class="s2">&quot;CONTENT&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">script</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+
+<span class="s1">                    &#39;&#39;&#39;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>some notes on components</strong></p>
+<p>First you will need a server as domonic only provides a view.</p>
+<p>These example use Sanic. But it could be Flask or any other that can provide routing.</p>
+<p>A component could, for example, take a request directly as input and returns html</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/component/&lt;component&gt;&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">component</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;app.components.</span><span class="si">{</span><span class="n">component</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">my_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">component</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">html</span><span class="p">(</span> <span class="nb">str</span><span class="p">(</span> <span class="n">my_class</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">html</span><span class="p">(</span> <span class="nb">str</span><span class="p">(</span> <span class="n">div</span><span class="p">(</span><span class="s2">&quot;COMPONENT NOT FOUND!&quot;</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>for this to work the component would need to be in a file called:
+app/components/my_component.py</p>
+<p>Components can also be used to build larger templates.</p>
+<p>Here for example is a large template. It can take content as input.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Webpage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">classless_css</span> <span class="o">=</span> <span class="n">link</span><span class="p">(</span><span class="n">_rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span> <span class="n">_href</span><span class="o">=</span><span class="s2">&quot;https://unpkg.com/marx-css/css/marx.min.css&quot;</span><span class="p">)</span>
+        <span class="n">jquery</span> <span class="o">=</span> <span class="n">script</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="s2">&quot;https://code.jquery.com/jquery-3.5.1.min.js&quot;</span><span class="p">),</span>
+        <span class="n">script</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="n">domonic</span><span class="o">.</span><span class="n">JS_MASTER</span><span class="p">),</span>
+        <span class="n">link</span><span class="p">(</span><span class="n">_rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span><span class="p">,</span> <span class="n">_href</span><span class="o">=</span><span class="n">domonic</span><span class="o">.</span><span class="n">CSS_STYLE</span><span class="p">),</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">script</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            $(document).on( &quot;click&quot;, &quot;.close&quot;, function() {</span>
+<span class="s1">                var _id = $(this).data(&#39;ref&#39;);</span>
+<span class="s1">                $(&#39;#&#39;+_id).css(&quot;display&quot;,&quot;none&quot;);</span>
+<span class="s1">            });</span>
+<span class="s1">            $(document).on( &quot;click&quot;, &quot;.open&quot;, function() {</span>
+<span class="s1">                var _id = $(this).data(&#39;ref&#39;);</span>
+<span class="s1">                $(&#39;#&#39;+_id).css(&quot;display&quot;,&quot;block&quot;);</span>
+<span class="s1">            });</span>
+
+<span class="s1">            // pass an ElementID and an endpoint to redraw that div with the endpoints response</span>
+<span class="s1">            window.redraw = function( _id, endpoint ){</span>
+<span class="s1">                $.get( endpoint, function( data ) {</span>
+<span class="s1">                window.console.log(data)</span>
+<span class="s1">                $( &quot;#&quot;+_id ).html( $(data).html() );</span>
+<span class="s1">                });</span>
+<span class="s1">            }</span>
+
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
+        <span class="n">styles</span> <span class="o">=</span> <span class="n">style</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">            .domonic-container {</span>
+<span class="s1">                padding:20px;</span>
+<span class="s1">            }</span>
+<span class="s1">            .modal {</span>
+<span class="s1">                display: none;</span>
+<span class="s1">                position: fixed;</span>
+<span class="s1">                z-index: 1;</span>
+<span class="s1">                left: 0;</span>
+<span class="s1">                top: 0;</span>
+<span class="s1">                width: 100%;</span>
+<span class="s1">                height: 100%;</span>
+<span class="s1">                overflow: auto;</span>
+<span class="s1">                background-color: rgb(0,0,0);</span>
+<span class="s1">                background-color: rgba(0,0,0,0.4);</span>
+<span class="s1">            }</span>
+<span class="s1">            .modal-content {</span>
+<span class="s1">                background-color: #fefefe;</span>
+<span class="s1">                margin: 15</span><span class="si">% a</span><span class="s1">uto;</span>
+<span class="s1">                padding: 20px;</span>
+<span class="s1">                border: 1px solid #888;</span>
+<span class="s1">                width: 80%;</span>
+<span class="s1">            }</span>
+<span class="s1">            .btn-sm {</span>
+<span class="s1">                font-size:10px;</span>
+<span class="s1">                padding: 0px;</span>
+<span class="s1">                padding-left: 2px;</span>
+<span class="s1">                padding-right: 2px;</span>
+<span class="s1">            }</span>
+<span class="s1">            .del {</span>
+<span class="s1">                background-color:red;</span>
+<span class="s1">            }</span>
+<span class="s1">            .go {</span>
+<span class="s1">                background-color:green;</span>
+<span class="s1">            }</span>
+
+<span class="s1">        &#39;&#39;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
+            <span class="n">html</span><span class="p">(</span>
+                <span class="s1">&#39;&lt;!DOCTYPE HTML&gt;&#39;</span><span class="p">,</span>
+                <span class="n">head</span><span class="p">(</span><span class="n">classless_css</span><span class="p">,</span> <span class="n">jquery</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">styles</span><span class="p">),</span>
+                <span class="n">body</span><span class="p">(</span><span class="n">div</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">_class</span><span class="o">=</span><span class="s2">&quot;domonic-container&quot;</span><span class="p">))</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+</pre></div>
+</div>
+<p>You can now render your template. Which can take content as input.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">page</span> <span class="o">=</span> <span class="n">article</span><span class="p">(</span>
+        <span class="n">div</span><span class="p">(</span><span class="n">h1</span><span class="p">(</span><span class="s2">&quot;my homepage!&quot;</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">html</span><span class="p">(</span> <span class="n">render</span><span class="p">(</span> <span class="n">Webpage</span><span class="p">(</span><span class="n">page</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>You don’t have to return JSON from an endpoint. You can just return html and render it directly into your page.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// pass an ElementID and an endpoint to redraw that div with the endpoints response</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">redraw</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">_id</span><span class="p">,</span> <span class="nx">endpoint</span> <span class="p">){</span>
+    <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span> <span class="nx">endpoint</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">data</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+    <span class="nx">$</span><span class="p">(</span> <span class="s2">&quot;#&quot;</span><span class="o">+</span><span class="nx">_id</span> <span class="p">).</span><span class="nx">html</span><span class="p">(</span> <span class="nx">$</span><span class="p">(</span><span class="nx">data</span><span class="p">).</span><span class="nx">html</span><span class="p">()</span> <span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">domonic</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=requests&repo=requests&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: components</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="CDN.html" title="previous chapter">Domonic: CDN</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, byteface.
+      
+      |
+      <a href="../_sources/packages/components.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/requests/requests" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

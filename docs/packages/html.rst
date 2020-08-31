@@ -32,7 +32,7 @@ rendering
 ----------------
 render takes 2 parameters, some domonic and an optional output file.
 
-.. code-block  python
+.. code-block :: python
 
 	page = div(span('Hello World'))
 	render(page, 'index.html')

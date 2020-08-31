@@ -35,6 +35,7 @@ Indices and tables
 -------------------
 
 **Domonic contains several main packages:**
+
 (but by no means are any of them complete)
 
 - html : Generate html with python3 😎
@@ -110,9 +111,11 @@ Here you can find instructions for getting the most out of Domonic.
    packages/javascript
    packages/JSON
    packages/terminal
+   packages/CDN
+   packages/components
 
 
-Join-in
+Join-In
 ----------------
 Feel free to join in if you find it useful.
 
@@ -126,11 +129,11 @@ EXAMPLE PROJECT
 A browser based file browser. Working example of how components can work:
 https://github.com/byteface/Blueberry/
 
-A cron viewer
+A cron viewer:
 https://github.com/byteface/ezcron/
 
 
-disclaimer
+Disclaimer
 ----------------
 There's several more widely supported libraries doing HTML generation, DOM reading/manipulation, terminal wrappers etc. Maybe use one of those for production due to strictness and support.
 

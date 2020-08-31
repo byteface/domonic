@@ -1,7 +1,8 @@
 Domonic: terminal
 =================
 
-There is a command line package that can call bash/unix/posix and other apps on the command line: <br />
+There is a command line package that can call bash/unix/posix and other apps on the command line.
+
 This package only works on nix systems as it effectively just passes stuff off to subprocess.
 
 .. code-block :: python

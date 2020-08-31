@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Domonic: CDN &#8212; domonic 0.1.10 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="domonic-cdn">
+<h1>Domonic: CDN<a class="headerlink" href="#domonic-cdn" title="Permalink to this headline">¶</a></h1>
+<p>To quickly use and reference external assets when prototyping use the CDN package.</p>
+<p>Currently there are 3 types of CDN. .js, .css and .img</p>
+<p>Their features will be added here.</p>
+<p>To use features from CDN they must be imported.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.CDN</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>Or just class you need</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.CDN</span> <span class="kn">import</span> <span class="n">CDN_JS</span>
+</pre></div>
+</div>
+<div class="section" id="cdn-js">
+<h2>CDN_JS<a class="headerlink" href="#cdn-js" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">script</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="n">CDN_JS</span><span class="o">.</span><span class="n">JQUERY_3_5_1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>currently constants exist for:</p>
+<ul class="simple">
+<li><p>JQUERY_3_5_1</p></li>
+<li><p>JQUERY_UI</p></li>
+<li><p>UNDERSCORE</p></li>
+<li><p>BOOTSTRAP_4</p></li>
+<li><p>POPPER_1_16_1</p></li>
+<li><p>BOOTSTRAP_5_ALPHA</p></li>
+<li><p>D3_6_1_0</p></li>
+<li><p>MODERNIZER_2_8_3</p></li>
+<li><p>MOMENT_2_27_0</p></li>
+<li><p>PIXI_5_3_3</p></li>
+<li><p>SOCKET_1_4_5</p></li>
+</ul>
+</div>
+<div class="section" id="cdn-css">
+<h2>CDN_CSS<a class="headerlink" href="#cdn-css" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">classless_css</span> <span class="o">=</span> <span class="n">link</span><span class="p">(</span><span class="n">_rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span> <span class="n">_href</span><span class="o">=</span><span class="n">CDN_CSS</span><span class="o">.</span><span class="n">WATER_LATEST</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>currently constants exist for:</p>
+<p>-BOOTSTRAP_5_ALPHA
+-BOOTSTRAP_4
+-MARX
+-MVP
+-WATER_LATEST
+-BALLOON
+-THREE_DOTS_0_2_0
+-MILLIGRAM_1_3_0</p>
+</div>
+<div class="section" id="cdn-img">
+<h2>CDN_IMG<a class="headerlink" href="#cdn-img" title="Permalink to this headline">¶</a></h2>
+<p>CDN_IMG has a placeholder service.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># to change it. do this...</span>
+<span class="n">CDN_IMG</span><span class="o">.</span><span class="n">PLACEHOLDER_SERVICE</span> <span class="o">=</span> <span class="s2">&quot;placebear.com/g&quot;</span>
+
+<span class="n">img</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="n">CDN_IMG</span><span class="o">.</span><span class="n">PLACEHOLDER</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+
+<span class="c1"># optional seperator if the site uses x instead of slash between dimensions</span>
+<span class="n">img</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="n">CDN_IMG</span><span class="o">.</span><span class="n">PLACEHOLDER</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="s1">&#39;x&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p># there’s tons to pick from. (NOT ALL ARE HTTPS):
+- <a class="reference external" href="http://placehold.it/350x150">http://placehold.it/350x150</a>
+- <a class="reference external" href="http://unsplash.it/200/300">http://unsplash.it/200/300</a>
+- <a class="reference external" href="http://lorempixel.com/400/200">http://lorempixel.com/400/200</a>
+- <a class="reference external" href="http://dummyimage.com/600x300/000/fff">http://dummyimage.com/600x300/000/fff</a>
+- <a class="reference external" href="https://dummyimage.com/420x320/ff7f7f/333333.png&amp;text=Sample">https://dummyimage.com/420x320/ff7f7f/333333.png&amp;text=Sample</a>
+- <a class="reference external" href="http://placekitten.com/200/300">http://placekitten.com/200/300</a>
+- <a class="reference external" href="https://placeimg.com/640/480/any">https://placeimg.com/640/480/any</a>
+- <a class="reference external" href="http://placebear.com/g/200/300">http://placebear.com/g/200/300</a>
+- <a class="reference external" href="https://ipsumimage.appspot.com/140x100">https://ipsumimage.appspot.com/140x100</a>, ff7700
+- <a class="reference external" href="https://www.fillmurray.com/640/360">https://www.fillmurray.com/640/360</a>
+- <a class="reference external" href="https://baconmockup.com/640/360">https://baconmockup.com/640/360</a>
+- <a class="reference external" href="https://placebeard.it/640x360">https://placebeard.it/640x360</a>
+- <a class="reference external" href="https://www.placecage.com/640/360">https://www.placecage.com/640/360</a>
+- <a class="reference external" href="https://www.stevensegallery.com/640/360">https://www.stevensegallery.com/640/360</a>
+- <a class="reference external" href="https://fakeimg.pl/640x360">https://fakeimg.pl/640x360</a>
+- <a class="reference external" href="https://fakeimg.pl/420x320/ff0000,128/333333,255/?text=Sample&amp;font=lobster">https://fakeimg.pl/420x320/ff0000,128/333333,255/?text=Sample&amp;font=lobster</a>
+- <a class="reference external" href="https://picsum.photos/640/360">https://picsum.photos/640/360</a>
+- <a class="reference external" href="https://via.placeholder.com/420x320/ff7f7f/333333?text=Sample">https://via.placeholder.com/420x320/ff7f7f/333333?text=Sample</a>
+- <a class="reference external" href="https://keywordimg.com/420x320/random">https://keywordimg.com/420x320/random</a>
+- <a class="reference external" href="http://www.dummysrc.com/430x320.png/22c5fc/17202A">http://www.dummysrc.com/430x320.png/22c5fc/17202A</a></p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">domonic</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=requests&repo=requests&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, byteface.
+      
+      |
+      <a href="../_sources/packages/CDN.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/requests/requests" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
