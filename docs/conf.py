@@ -31,7 +31,14 @@ release = '0.1.10'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.viewcode",
 ]
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -49,9 +56,40 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 #
 html_theme = 'alabaster'
 
+html_theme_options = {
+    "show_powered_by": False,
+    "github_user": "requests",
+    "github_repo": "requests",
+    "github_banner": True,
+    "show_related": False,
+    "note_bg": "#FFF59C",
+}
+
+# If true, SmartyPants will be used to convert quotes and dashes to
+# typographically correct entities.
+html_use_smartypants = False
+
+# Custom sidebar templates, maps document names to template names.
+html_sidebars = {
+    "index": ["sidebarintro.html", "sourcelink.html", "searchbox.html", "hacks.html"],
+    "**": [
+        "sidebarlogo.html",
+        "localtoc.html",
+        "relations.html",
+        "sourcelink.html",
+        "searchbox.html",
+        "hacks.html",
+    ],
+}
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
 master_doc = 'index'
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "urllib3": ("https://urllib3.readthedocs.io/en/latest", None),
+}
