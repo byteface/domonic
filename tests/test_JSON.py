@@ -76,8 +76,8 @@ class domonicTestCase(unittest.TestCase):
         t = JSON.tablify(domonicTestCase.SOMEJSON)
         print(t)
 
-        t = JSON.csvify(domonicTestCase.SOMEJSON)
-        print(t)
+        # t = JSON.csvify(domonicTestCase.SOMEJSON)
+        # print(t)
 
         # t = JSON.csv2json("data.csv")
         # print(t)
