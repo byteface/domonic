@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 """
     domonic
-    ~~~~~
+    ====================================
     - Generate HTML using python 3
     - DOM-like API in python 3
     - JS-like API in python 3

@@ -2,7 +2,7 @@ import base64
 from domonic.html import *
 
 # WARNING. you didn't see this. what is not documented is subject to lots of change!
-
+# use this as example for building own components
 
 class Modal(object):  # TODO - shouldn't this extend dom?
 

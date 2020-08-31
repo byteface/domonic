@@ -1,15 +1,9 @@
-.. domonic documentation master file, created by
-   sphinx-quickstart on Mon Aug 31 15:08:04 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Domonic: Generate HTML with Python 3
 ====================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
 
 
 Indices and tables
@@ -113,7 +107,7 @@ Here you can find instructions for getting the most out of Domonic.
    packages/terminal
    packages/CDN
    packages/components
-
+   packages/autodocs
 
 Join-In
 ----------------

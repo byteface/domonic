@@ -1,6 +1,6 @@
 """
     domonic.javascript
-    ~~~~~~~~~~~~~~~~
+    ====================================
     - https://www.w3schools.com/jsref/jsref_reference.asp
 """
 
@@ -30,6 +30,7 @@ class js_object(object):
 
 
 class Math(js_object):
+    """ Math class that mirrors javascript implementation """
 
     # CONSTANTS
     PI = 3.141592653589793
@@ -999,6 +1000,8 @@ class String(object):
 # https://developer.mozilla.org/en-US/docs/Web/API/URL
 
 class URL(object):
+    """ a tag extends from URL """
+
     def __update__(self):
         # print( "update URL:", type(self), self  )
         try:
@@ -1032,6 +1035,13 @@ class URL(object):
             pass
 
     def __init__(self, url: str = "", *args, **kwargs):  # TODO - relative to
+        """URL
+
+        builds a url
+
+        Args:
+            url (str): a url
+        """
         self.url = urllib.parse.urlsplit(url)
         self.href = self.url.geturl()
 

@@ -1,0 +1,1461 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>domonic.javascript &#8212; domonic 0.1.10 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for domonic.javascript</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    domonic.javascript</span>
+<span class="sd">    ====================================</span>
+<span class="sd">    - https://www.w3schools.com/jsref/jsref_reference.asp</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># from typing import *</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+<span class="kn">from</span> <span class="nn">dateutil.parser</span> <span class="kn">import</span> <span class="n">parse</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">unquote</span><span class="p">,</span> <span class="n">quote</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+
+<span class="k">class</span> <span class="nc">js_object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">valueOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the primitive value of an array Array, Boolean, Date, Number, String&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># def prototype:</span>
+        <span class="sd">&quot;&quot;&quot; Allows you to add properties and methods to an Array object Array, Boolean, Date&quot;&quot;&quot;</span>
+        <span class="c1"># pass</span>
+
+
+<div class="viewcode-block" id="Math"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Math">[docs]</a><span class="k">class</span> <span class="nc">Math</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Math class that mirrors javascript implementation &quot;&quot;&quot;</span>
+
+    <span class="c1"># CONSTANTS</span>
+    <span class="n">PI</span> <span class="o">=</span> <span class="mf">3.141592653589793</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="mf">2.718281828459045</span>
+    <span class="n">LN2</span> <span class="o">=</span> <span class="mf">0.6931471805599453</span>
+    <span class="n">LN10</span> <span class="o">=</span> <span class="mf">2.302585092994046</span>
+    <span class="n">LOG2E</span> <span class="o">=</span> <span class="mf">1.4426950408889634</span>
+    <span class="n">LOG10E</span> <span class="o">=</span> <span class="mf">0.4342944819032518</span>
+    <span class="n">SQRT1_2</span> <span class="o">=</span> <span class="mf">0.7071067811865476</span>
+    <span class="n">SQRT2</span> <span class="o">=</span> <span class="mf">1.4142135623730951</span>
+
+    <span class="c1"># TODO - pass what types of validation? &lt; may move to decorators</span>
+    <span class="c1"># i.e force numbers</span>
+    <span class="c1"># i.e positive/negative numbers allowed</span>
+    <span class="c1"># convert bool/string to number?</span>
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">validation_decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">float</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value passed was NaN&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">validation_decorator</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the absolute value of x &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">acos</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the arccosine of x, in radians &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arccosine of x &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">asin</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the arcsine of x, in radians &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">asinh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arcsine of x &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">asinh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">atan</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the arctangent of x as a numeric value between -PI/2 and PI/2 radians &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">atan2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the arctangent of the quotient of its arguments &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">atanh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arctangent of x &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">atanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">cbrt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the cubic root of x &quot;&quot;&quot;</span>
+        <span class="c1"># return math.cbrt(x)</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">ceil</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns x, rounded upwards to the nearest integer &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">cos</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the cosine of x (x is in radians) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic cosine of x &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the value of Ex &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">floor</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns x, rounded downwards to the nearest integer &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the natural logarithm (base E) of x &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the number with the highest value &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the number with the lowest value &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">random</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot; Returns a random number between 0 and 1 &quot;&quot;&quot;</span>
+        <span class="c1"># return math.random(x)</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Rounds x to the nearest integer &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the value of x to the power of y &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">sin</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the sine of x (x is in radians) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic sine of x &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the square root of x &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">tan</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the tangent of an angle &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic tangent of a number &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@validate</span>
+    <span class="k">def</span> <span class="nf">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the integer part of a number (x) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<span class="c1"># import urllib</span>
+
+
+<span class="k">class</span> <span class="nc">Global</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="n">NaN</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
+
+    <span class="c1"># TODO - https://stackoverflow.com/questions/747641/what-is-the-difference-between-decodeuricomponent-and-decodeuri</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">decodeURI</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Decodes a URI &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">unquote</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">decodeURIComponent</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Decodes a URI component &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">unquote</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">encodeURI</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Encodes a URI &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;~@#$&amp;()*!+=:;,.?/</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">encodeURIComponent</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Encodes a URI component &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;~()*!.</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def escape():</span>
+        <span class="sd">&quot;&quot;&quot; Deprecated in version 1.5. Use encodeURI() or encodeURIComponent() &quot;&quot;&quot;</span>
+        <span class="c1"># pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def eval():</span>
+        <span class="sd">&quot;&quot;&quot; Evaluates a string and executes it as if it was script code &quot;&quot;&quot;</span>
+        <span class="c1"># pass</span>
+
+    <span class="c1"># def global</span>
+
+    <span class="c1"># def Infinity:</span>
+    <span class="c1"># pass</span>
+    <span class="sd">&quot;&quot;&quot;A numeric value that represents positive/negative infinity &quot;&quot;&quot;</span>
+    <span class="c1"># pass</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">isFinite</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot; Determines whether a value is a finite, legal number &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">isNaN</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Determines whether a value is an illegal number &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">float</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># TODO - math.isnan</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">NaN</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; &quot;Not-a-Number&quot; value &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">Number</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts an object&#39;s value to a number &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>  <span class="c1"># or type(x) == long:</span>
+                <span class="k">return</span> <span class="n">x</span>
+
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parseFloat</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Parses a string and returns a floating point number &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parseInt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Parses a string and returns an integer &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">String</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts an object&#39;s value to a string &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">undefined</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Indicates that a variable has not been assigned a value &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def unescape():</span>
+        <span class="sd">&quot;&quot;&quot; Deprecated in version 1.5. Use decodeURI() or decodeURIComponent() instead &quot;&quot;&quot;</span>
+        <span class="c1"># pass</span>
+
+
+<span class="k">class</span> <span class="nc">Date</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">parse_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_string</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">date_string</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span>
+
+    <span class="k">def</span> <span class="nf">getDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the day of the month (from 1-31) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">day</span>
+        <span class="c1"># TODO - do for a date object passed in. this only does today</span>
+
+    <span class="k">def</span> <span class="nf">getDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Returns the day of the week (from 0-6) &quot;&quot;&quot;</span>
+        <span class="n">day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">isoweekday</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">day</span> <span class="k">if</span> <span class="p">(</span><span class="n">day</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="c1"># TODO - do for a date object passed in. this only does today</span>
+
+    <span class="k">def</span> <span class="nf">getFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the year &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span>
+
+    <span class="k">def</span> <span class="nf">getHours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Returns the hour (from 0-23) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">hour</span>
+
+    <span class="k">def</span> <span class="nf">getMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the milliseconds (from 0-999) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">microsecond</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Returns the minutes (from 0-59) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">minute</span>
+
+    <span class="k">def</span> <span class="nf">getMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the month (from 0-11) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">getSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Returns the seconds (from 0-59) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">second</span>
+
+    <span class="k">def</span> <span class="nf">getTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds since midnight Jan 1 1970, and a specified date &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># TODO - whats difference between this and &#39;now()&#39; ?</span>
+
+    <span class="c1"># def getTimezoneOffset(self):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the time difference between UTC time and local time, in minutes &quot;&quot;&quot;</span>
+        <span class="c1"># pass</span>
+
+    <span class="k">def</span> <span class="nf">getUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the day of the month, according to universal time (from 1-31) &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">getUTCDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the day of the week, according to universal time (from 0-6) &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">getUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the year, according to universal time &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">year</span>
+
+    <span class="k">def</span> <span class="nf">getUTCHours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hour, according to universal time (from 0-23) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">hour</span>
+
+    <span class="k">def</span> <span class="nf">getUTCMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the milliseconds, according to universal time (from 0-999) &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">getUTCMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the minutes, according to universal time (from 0-59) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">minute</span>
+
+    <span class="k">def</span> <span class="nf">getUTCMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the month, according to universal time (from 0-11) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">getUTCSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the seconds, according to universal time (from 0-59) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">second</span>
+
+    <span class="k">def</span> <span class="nf">getYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Deprecated. Use the getFullYear() method instead &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span>
+
+    <span class="k">def</span> <span class="nf">now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds since midnight Jan 1, 1970 &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="c1"># def onstorage(self):</span>
+        <span class="sd">&quot;&quot;&quot; The event occurs when a Web Storage area is updated StorageEvent&quot;&quot;&quot;</span>
+        <span class="c1"># pass</span>
+
+    <span class="c1"># def ontimeupdate(self):</span>
+        <span class="sd">&quot;&quot;&quot; The event occurs when the playing position has changed (like when the user fast forwards to a different point in the media) Event&quot;&quot;&quot;</span>
+        <span class="c1"># pass</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Parses a date string and returns the number of milliseconds since January 1, 1970 &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_date</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">date_string</span><span class="p">))</span>
+        <span class="c1"># return self.date.getTime()</span>
+
+    <span class="k">def</span> <span class="nf">setDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the day of the month of a date object &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">day</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">))</span>
+        <span class="c1"># return self.date.getTime()</span>
+
+    <span class="k">def</span> <span class="nf">setFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the year of a date object &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">))</span>
+        <span class="c1"># return self.date.getTime()</span>
+
+    <span class="k">def</span> <span class="nf">setHours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hours</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the hour of a date object &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">hours</span><span class="p">))</span>
+        <span class="c1"># return self.date.getTime()</span>
+
+    <span class="c1"># def setItem(self):</span>
+        <span class="sd">&quot;&quot;&quot; Adds that key to the storage, or update that key&#39;s value if it already exists   Storage&quot;&quot;&quot;</span>
+        <span class="c1"># pass</span>
+
+    <span class="k">def</span> <span class="nf">setMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the milliseconds of a date object &quot;&quot;&quot;</span>
+        <span class="c1"># self.date.replace(millisecond=int(milliseconds))</span>
+        <span class="c1"># return self.now()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;TODO: setMilliseconds&#39;</span><span class="p">)</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># TODO - , seconds = None, milliseconds = None):</span>
+    <span class="k">def</span> <span class="nf">setMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minutes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Set the minutes of a date object &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">minute</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">minutes</span><span class="p">))</span>
+        <span class="c1"># return self.now()</span>
+
+    <span class="k">def</span> <span class="nf">setMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the month of a date object &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">month</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">))</span>
+        <span class="c1"># return self.now()</span>
+
+    <span class="k">def</span> <span class="nf">setSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the seconds of a date object &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">second</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">seconds</span><span class="p">))</span>
+        <span class="c1"># return self.now()</span>
+
+    <span class="k">def</span> <span class="nf">setTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets a date to a specified number of milliseconds after/before January 1, 1970 &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">setUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Sets the day of the month of a date object, according to universal time &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDate</span><span class="p">(</span><span class="n">day</span><span class="p">)</span>
+        <span class="c1"># return self.getTime()</span>
+
+    <span class="k">def</span> <span class="nf">setUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Sets the year of a date object, according to universal time &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFullYear</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+        <span class="c1"># return self.getTime()</span>
+
+    <span class="k">def</span> <span class="nf">setUTCHours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hour</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the hour of a date object, according to universal time &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHours</span><span class="p">(</span><span class="n">hour</span><span class="p">)</span>
+        <span class="c1"># return self.getTime()</span>
+
+    <span class="k">def</span> <span class="nf">setUTCMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Sets the milliseconds of a date object, according to universal time &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMilliseconds</span><span class="p">(</span><span class="n">milliseconds</span><span class="p">)</span>
+        <span class="c1"># return self.getTime()</span>
+
+    <span class="k">def</span> <span class="nf">setUTCMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minutes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;   Set the minutes of a date object, according to universal time &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinutes</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span>
+        <span class="c1"># return self.getTime()</span>
+
+    <span class="k">def</span> <span class="nf">setUTCMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the month of a date object, according to universal time &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMonth</span><span class="p">(</span><span class="n">month</span><span class="p">)</span>
+        <span class="c1"># return self.getTime()</span>
+
+    <span class="k">def</span> <span class="nf">setUTCSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;   Set the seconds of a date object, according to universal time &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSeconds</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>
+        <span class="c1"># return self.getTime()</span>
+
+    <span class="k">def</span> <span class="nf">setYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Deprecated. Use the setFullYear() method instead &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">))</span>
+        <span class="c1"># return self.getTime()</span>
+        <span class="c1"># TODO - there may not be a date object already?</span>
+
+    <span class="k">def</span> <span class="nf">toDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts the date portion of a Date object into a readable string &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">toGMTString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Deprecated. Use the toUTCString() method instead &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">toJSON</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Returns the date as a string, formatted as a JSON date &quot;&quot;&quot;</span>
+
+        <span class="c1"># def default(o):</span>
+        <span class="c1">#     if isinstance(o, (datetime.date, datetime.datetime)):</span>
+        <span class="c1">#         return o.isoformat()</span>
+
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">toISOString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the date as a string, using the ISO standard &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">toLocaleDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the date portion of a Date object as a string, using locale conventions &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">toLocaleString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts a Date object to a string, using locale conventions &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">toLocaleTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the time portion of a Date object as a string, using locale conventions &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">toTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts the time portion of a Date object to a string &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">toUTCString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts a Date object to a string, according to universal time &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">UTC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># def valueOf():</span>
+    <span class="sd">&quot;&quot;&quot; Returns the primitive value of an array Array, Boolean, Date, Number, String&quot;&quot;&quot;</span>
+    <span class="c1"># pass</span>
+
+
+<span class="k">class</span> <span class="nc">Screen</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="c1"># wrap a lib?</span>
+    <span class="c1"># https://github.com/rr-/screeninfo?</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># from sys import platform</span>
+        <span class="c1"># if platform == &quot;linux&quot; or platform == &quot;linux2&quot;:</span>
+        <span class="c1">#     # linux</span>
+        <span class="c1"># import subprocess</span>
+        <span class="c1"># resuls = subprocess.Popen([&#39;xrandr&#39;],stdout=subprocess.PIPE).communicate()[0].split(&quot;current&quot;)[1].split(&quot;,&quot;)[0]</span>
+        <span class="c1"># width = resuls.split(&quot;x&quot;)[0].strip()</span>
+        <span class="c1"># heigth = resuls.split(&quot;x&quot;)[1].strip()</span>
+        <span class="c1"># print width + &quot;x&quot; + heigth</span>
+        <span class="c1"># elif platform == &quot;darwin&quot;:</span>
+        <span class="c1">#     # OS X</span>
+        <span class="c1"># results = str(subprocess.Popen([&#39;system_profiler SPDisplaysDataType&#39;],stdout=subprocess.PIPE, shell=True).communicate()[0])</span>
+        <span class="c1"># res = re.search(&#39;Resolution: \d* x \d*&#39;, results).group(0).split(&#39; &#39;)</span>
+        <span class="c1"># width, height = res[1], res[3]</span>
+        <span class="c1"># return width, height</span>
+        <span class="c1"># elif platform == &quot;win32&quot;:</span>
+        <span class="c1"># from win32api import GetSystemMetrics</span>
+        <span class="c1"># print(&quot;Width =&quot;, GetSystemMetrics(0))</span>
+        <span class="c1"># print(&quot;Height =&quot;, GetSystemMetrics(1))</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">availHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns the height of the screen (excluding the Windows Taskbar) &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">availWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns the width of the screen (excluding the Windows Taskbar) &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">colorDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns the colorDepth &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns the total height of the screen &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">pixelDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns the pixelDepth &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns the total width of the screen  &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<div class="viewcode-block" id="ProgramKilled"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.ProgramKilled">[docs]</a><span class="k">class</span> <span class="nc">ProgramKilled</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Job"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Job">[docs]</a><span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">execute</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute</span> <span class="o">=</span> <span class="n">execute</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Job.run"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Job.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+<span class="k">class</span> <span class="nc">SetInterval</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">signal_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">ProgramKilled</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_handler</span><span class="p">)</span>
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_handler</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="n">timedelta</span><span class="p">(</span><span class="n">microseconds</span><span class="o">=</span><span class="n">time</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;window here!&#39;</span><span class="p">)</span>
+        <span class="c1"># print(type(dom))</span>
+        <span class="c1"># self.args = args</span>
+        <span class="c1"># self.kwargs = kwargs</span>
+        <span class="c1"># self.console = dom.console</span>
+        <span class="c1"># self.document = dom.document</span>
+        <span class="c1"># self.location = &#39;&#39;#dom.location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># print(&quot;@@@@@@@@@@@@@@@@@@@@@@&quot;)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__location</span>
+
+    <span class="nd">@location</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="c1"># print(&quot;====================&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot;, x)</span>
+        <span class="c1"># dom.location = x</span>
+        <span class="c1"># dom.location = dom.location(x)#Location(x)</span>
+        <span class="c1"># from .dom import Location</span>
+        <span class="c1"># print(&#39;test::::-------------------------------------------------------&#39;,Location)</span>
+        <span class="c1"># print(&quot;xxxxxxxx&gt;&gt;&gt;&gt;&gt;&gt;&quot;, dom.location)</span>
+        <span class="c1"># self.__location = dom.location</span>
+        <span class="c1"># import requests.</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">alert</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Displays an alert box with a message and an OK button &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">prompt</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">default_text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Displays a dialog box that prompts the visitor for input &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="c1"># TODO - clearTimeout.</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">setTimeout</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Calls a function or evaluates an expression after a specified number of milliseconds &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>  <span class="c1"># blocks</span>
+        <span class="n">function</span><span class="p">()</span>
+        <span class="k">return</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">clearInterval</span><span class="p">(</span><span class="n">job</span><span class="p">):</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">setInterval</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">interval_ID</span> <span class="o">=</span> <span class="n">SetInterval</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">interval_ID</span><span class="o">.</span><span class="n">job</span>
+
+
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># @getter</span>
+    <span class="c1"># def navigator():</span>
+        <span class="sd">&quot;&quot;&quot; Returns the Navigator object for the window (See Navigator object) &quot;&quot;&quot;</span>
+        <span class="c1"># return</span>
+
+<span class="c1"># WINDOW</span>
+<span class="c1"># localStorage  Allows to save key/value pairs in a web browser. Stores the data with no expiration date    Window</span>
+<span class="c1"># requestAnimationFrame()   Requests the browser to call a function to update an animation before the next repaint  Window</span>
+<span class="c1"># atob()    Decodes a base-64 encoded string    Window</span>
+<span class="c1"># blur()    Removes focus from an element   Element, Window</span>
+<span class="c1"># btoa()    Encodes a string in base-64 Window</span>
+<span class="c1"># clearInterval()   Clears a timer set with setInterval()   Window</span>
+<span class="c1"># clearTimeout()    Clears a timer set with setTimeout()    Window</span>
+<span class="c1"># closed    Returns a Boolean value indicating whether a window has been closed or not  Window</span>
+<span class="c1"># close()   Closes the output stream previously opened with document.open() Document, Window</span>
+<span class="c1"># confirm() Displays a dialog box with a message and an OK and a Cancel button  Window</span>
+<span class="c1"># defaultStatus Sets or returns the default text in the statusbar of a window   Window</span>
+<span class="c1"># defaultView   Returns the window object associated with a document, or null if none is available. Document</span>
+<span class="c1"># document  Returns the Document object for the window (See Document object)    Window</span>
+<span class="c1"># focus()   Gives focus to an element   Element, Window</span>
+<span class="c1"># frameElement  Returns the &lt;iframe&gt; element in which the current window is inserted    Window</span>
+<span class="c1"># getComputedStyle()    Gets the current computed CSS styles applied to an element  Window</span>
+<span class="c1"># getSelection()    Returns a Selection object representing the range of text selected by the user  Window</span>
+<span class="c1"># history   Returns the History object for the window (See History object)  Window</span>
+<span class="c1"># innerHeight   Returns the height of the window&#39;s content area (viewport) including scrollbars Window</span>
+<span class="c1"># innerWidth    Returns the width of a window&#39;s content area (viewport) including scrollbars    Window</span>
+<span class="c1"># location  Returns the Location object for the window (See Location object)    Window</span>
+<span class="c1"># matchMedia()  Returns a MediaQueryList object representing the specified CSS media query string   Window</span>
+<span class="c1"># moveBy()  Moves a window relative to its current position Window</span>
+<span class="c1"># moveTo()  Moves a window to the specified position    Window</span>
+<span class="c1"># name  Sets or returns an error name   Error, Attribute, Window</span>
+<span class="c1"># navigator Returns the Navigator object for the window (See Navigator object)  Window</span>
+<span class="c1"># onpopstate    The event occurs when the window&#39;s history changes  PopStateEvent</span>
+<span class="c1"># open()    Opens an HTML output stream to collect output from document.write() Document, Window</span>
+<span class="c1"># opener    Returns a reference to the window that created the window   Window</span>
+<span class="c1"># outerHeight   Returns the height of the browser window, including toolbars/scrollbars Window</span>
+<span class="c1"># outerWidth    Returns the width of the browser window, including toolbars/scrollbars  Window</span>
+<span class="c1"># pageXOffset   Returns the pixels the current document has been scrolled (horizontally) from the upper left corner of the window   Window</span>
+<span class="c1"># pageYOffset   Returns the pixels the current document has been scrolled (vertically) from the upper left corner of the window Window</span>
+<span class="c1"># parent    Returns the parent window of the current window Window</span>
+<span class="c1"># print()   Prints the content of the current window    Window</span>
+<span class="c1"># resizeBy()    Resizes the window by the specified pixels  Window</span>
+<span class="c1"># resizeTo()    Resizes the window to the specified width and height    Window</span>
+<span class="c1"># screen    Returns the Screen object for the window (See Screen object)    Window</span>
+<span class="c1"># screenLeft    Returns the horizontal coordinate of the window relative to the screen  Window</span>
+<span class="c1"># screenTop Returns the vertical coordinate of the window relative to the screen    Window</span>
+<span class="c1"># scroll()  Deprecated. This method has been replaced by the scrollTo() method. Window</span>
+<span class="c1"># scrollBy()    Scrolls the document by the specified number of pixels  Window</span>
+<span class="c1"># scrollIntoView()  Scrolls the specified element into the visible area of the browser window   Element</span>
+<span class="c1"># scrollTo()    Scrolls the document to the specified coordinates   Window</span>
+<span class="c1"># scrollX   An alias of pageXOffset Window</span>
+<span class="c1"># scrollY   An alias of pageYOffset Window</span>
+<span class="c1"># self  Returns the current window  Window</span>
+<span class="c1"># sessionStorage    Allows to save key/value pairs in a web browser. Stores the data for one session    Window</span>
+<span class="c1"># setInterval() Calls a function or evaluates an expression at specified intervals (in milliseconds)    Window</span>
+<span class="c1"># setTimeout()  Calls a function or evaluates an expression after a specified number of milliseconds    Window</span>
+<span class="c1"># stop()    Stops the window from loading   Window</span>
+<span class="c1"># status    Sets or returns the text in the statusbar of a window   Window</span>
+<span class="c1"># top   Returns the topmost browser window  Window</span>
+<span class="c1"># view  Returns a reference to the Window object where the event occurred   UiEvent</span>
+
+
+<span class="n">window</span> <span class="o">=</span> <span class="n">Window</span>
+
+
+<span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># TODO - all the dunder methods</span>
+
+    <span class="k">def</span> <span class="nf">__str___</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Converts an array to a string, and returns the result &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ars</span><span class="p">)</span>  <span class="c1"># TODO - check what js does</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns the number of elements in an array &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Joins two or more arrays, and returns a copy of the joined arrays &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Fill the elements in an array with a static value &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Check if an array contains the specified element &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">indexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Search the array for an element and returns its position &quot;&quot;&quot;</span>
+        <span class="c1"># for count, each in enumerate(self.args):</span>
+        <span class="c1">#     if each == value:</span>
+        <span class="c1">#         return count</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">isArray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks whether an object is an array  &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Joins all elements of an array into a string  &quot;&quot;&quot;</span>
+        <span class="c1"># TODO - get passed param names</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">lastIndexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Search the array for an element, starting at the end, and returns its position &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Creates a new array with the result of calling a function for each array element &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Removes the last element of an array, and returns that element &quot;&quot;&quot;</span>
+        <span class="c1"># item = self.args[len(self.args)-1]</span>
+        <span class="c1"># del self.args[len(self.args)-1]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Adds new elements to the end of an array, and returns the new length &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going left-to-right) &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">reduceRight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going right-to-left) &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Reverses the order of the elements in an array &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
+    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Selects a part of an array, and returns the new array &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">splice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">delete_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">items</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Selects a part of an array, and returns the new array &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">delete_count</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">delete_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span>
+
+        <span class="n">total</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">delete_count</span>
+        <span class="n">removed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">total</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">total</span><span class="p">]</span> <span class="o">=</span> <span class="n">items</span>
+        <span class="k">return</span> <span class="n">removed</span>
+        <span class="c1"># return self.args</span>
+
+    <span class="k">def</span> <span class="nf">some</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks if any of the elements in an array pass a test &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sorts the elements of an array &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">unshift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Adds new elements to the beginning of an array, and returns the new length &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; removes the first element from an array and returns that removed element &quot;&quot;&quot;</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">item</span>
+
+
+<span class="k">class</span> <span class="nc">Navigator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="c1"># Determines whether cookies are enabled in the browser</span>
+    <span class="n">cookieEnabled</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Determines whether the browser is online</span>
+    <span class="n">onLine</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># self.args = args</span>
+        <span class="c1"># self.kwargs = kwargs</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># appCodeName   Returns the code name of the browser    Navigator</span>
+    <span class="c1"># appName   Returns the name of the browser Navigator</span>
+    <span class="c1"># appVersion    Returns the version information of the browser  Navigator</span>
+    <span class="c1"># geolocation   Returns a Geolocation object that can be used to locate the user&#39;s position Navigator</span>
+    <span class="c1"># language  Returns the language of the browser Navigator</span>
+    <span class="c1"># platform  Returns for which platform the browser is compiled  Navigator</span>
+    <span class="c1"># product   Returns the engine name of the browser  Navigator</span>
+    <span class="c1"># userAgent Returns the user-agent header sent by the browser to the server Navigator</span>
+
+
+<span class="k">class</span> <span class="nc">String</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># self.args = args</span>
+        <span class="c1"># self.kwargs = kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+
+    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns a new string with a specified number of copies of an existing string &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">count</span>
+
+    <span class="k">def</span> <span class="nf">startsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Checks whether a string begins with specified characters &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">beg</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Extracts the characters from a string, between two specified indices &#39;&#39;&#39;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">endsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Checks whether a string ends with specified string/characters &#39;&#39;&#39;</span>
+
+        <span class="c1"># TODO - should take array. or any length string</span>
+        <span class="c1"># return x[len(x)] == x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">toLowerCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Converts a string to lowercase letters&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">toUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Converts a string to uppercase letters&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Removes whitespace from both ends of a string&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+
+<span class="c1"># fromCharCode()    Converts Unicode values to characters   String</span>
+<span class="c1"># localeCompare()   Compares two strings in the current locale  String</span>
+<span class="c1"># replace() Searches a string for a specified value, or a regular expression, and returns a new string where the specified values are replaced  String</span>
+<span class="c1"># search()  Searches a string for a specified value, or regular expression, and returns the position of the match   String</span>
+<span class="c1"># substr()  Extracts the characters from a string, beginning at a specified start position, and through the specified number of character   String</span>
+<span class="c1"># toLocaleLowerCase()   Converts a string to lowercase letters, according to the host&#39;s locale  String</span>
+<span class="c1"># toLocaleUpperCase()   Converts a string to uppercase letters, according to the host&#39;s locale  String</span>
+<span class="c1"># compile() Deprecated in version 1.5. Compiles a regular expression    RegExp</span>
+<span class="c1"># lastIndex Specifies the index at which to start the next match    RegExp</span>
+<span class="c1"># test()    Tests for a match in a string. Returns true or false    RegExp</span>
+
+
+<span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/URL</span>
+
+<div class="viewcode-block" id="URL"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.URL">[docs]</a><span class="k">class</span> <span class="nc">URL</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; a tag extends from URL &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__update__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># print( &quot;update URL:&quot;, type(self), self  )</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># make obj with all old props</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">scheme</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hostname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">hostname</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">port</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># self.url.hostname</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># self.url.hash</span>
+
+            <span class="c1"># update it with all the new ones</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hostname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathname</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash</span>  <span class="c1"># self.hash</span>
+
+            <span class="c1"># rebuild</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span>
+                <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;://&quot;</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">])</span>
+
+            <span class="c1"># reset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># print(&#39;fails on props called by init as they dont exist yet&#39;)</span>
+            <span class="c1"># print(e)</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># TODO - relative to</span>
+        <span class="sd">&quot;&quot;&quot;URL</span>
+
+<span class="sd">        builds a url</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url (str): a url</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">scheme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">hostname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">hostname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pathname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hash</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">href</span>
+
+    <span class="c1"># def toJson</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def href(self):</span>
+    <span class="c1">#     return self.href</span>
+
+    <span class="c1"># @href.setter</span>
+    <span class="c1"># def href(self, href:str):</span>
+    <span class="c1">#     self.url = href</span>
+    <span class="c1">#     self.href = href</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__protocol</span>
+
+    <span class="nd">@protocol</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__protocol</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="c1"># if self.ready : self.__update__() # TODO - this instead of silent err?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hostname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hostname</span>
+
+    <span class="nd">@hostname</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">hostname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">h</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hostname</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__port</span>
+
+    <span class="nd">@port</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__port</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span>
+
+    <span class="nd">@host</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span>
+        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">h</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__host</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pathname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pathname</span>
+
+    <span class="nd">@pathname</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">pathname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__pathname</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; hash Sets or returns the anchor part (#) of a URL &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="s1">&#39;#&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># return &#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hash</span>
+
+    <span class="nd">@hash</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hash</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def origin(self):</span>
+        <span class="sd">&#39;&#39;&#39;# origin    Returns the protocol, hostname and port number of a URL Location&#39;&#39;&#39;</span></div>
+
+
+
+<span class="c1"># BELOW is legacy data from a dump of ALL dom/js methods. was looking for useful things to port back when this was the only class.</span>
+<span class="c1"># -- leave here for now- ill delete stuff later. it reminds me what i haven&#39;t covered</span>
+
+<span class="c1"># clipboardData Returns an object containing the data affected by the clipboard operation   ClipboardData</span>
+
+<span class="c1"># animationName Returns the name of the animation   AnimationEvent</span>
+
+<span class="c1"># back()    Loads the previous URL in the history list  History</span>
+
+<span class="c1"># break Exits a switch or a loop    Statements</span>
+
+<span class="c1"># changeTouches Returns a list of all the touch objects whose state changed between the previous touch and this touch   TouchEvent</span>
+
+<span class="c1"># charAt()  Returns the character at the specified index (position) String</span>
+
+<span class="c1"># charCodeAt()  Returns the Unicode of the character at the specified index String</span>
+
+<span class="c1"># clear()   Clears the console  Console, Storage</span>
+
+<span class="c1"># clearWatch()  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    Geolocation</span>
+
+<span class="c1"># const Declares a variable with a constant value   Statements</span>
+
+<span class="c1"># continue  Breaks one iteration (in the loop) if a specified condition occurs, and continues with the next iteration in the loop   Statements</span>
+
+<span class="c1"># coordinates   Returns the position and altitude of the device on Earth    Geolocation</span>
+
+<span class="c1"># copyWithin()  Copies array elements within the array, to and from specified positions Array</span>
+
+<span class="c1"># data  Returns the inserted characters InputEvent</span>
+
+<span class="c1"># dataTransfer  Returns an object containing the data being dragged/dropped, or inserted/deleted    DragEvent, InputEvent</span>
+
+<span class="c1"># debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements</span>
+
+<span class="c1"># deltaX    Returns the horizontal scroll amount of a mouse wheel (x-axis)  WheelEvent</span>
+
+<span class="c1"># deltaY    Returns the vertical scroll amount of a mouse wheel (y-axis)    WheelEvent</span>
+
+<span class="c1"># deltaZ    Returns the scroll amount of a mouse wheel for the z-axis   WheelEvent</span>
+
+<span class="c1"># deltaMode Returns a number that represents the unit of measurements for delta values (pixels, lines or pages) WheelEvent</span>
+
+<span class="c1"># detail    Returns a number that indicates how many times the mouse was clicked    UiEvent</span>
+
+<span class="c1"># do ... while  Executes a block of statements and repeats the block while a condition is true  Statements</span>
+
+<span class="c1"># elapsedTime   Returns the number of seconds an animation has been running AnimationEvent</span>
+
+<span class="c1"># elapsedTime   Returns the number of seconds a transition has been running</span>
+
+<span class="c1"># entries() Returns a key/value pair Array Iteration Object Array</span>
+
+<span class="c1"># error()   Outputs an error message to the console Console</span>
+
+<span class="c1"># every()   Checks if every element in an array pass a test Array</span>
+
+<span class="c1"># exec()    Tests for a match in a string. Returns the first match  RegExp</span>
+
+<span class="c1"># filter()  Creates a new array with every element in an array that pass a test Array</span>
+
+<span class="c1"># find()    Returns the value of the first element in an array that pass a test Array</span>
+
+<span class="c1"># findIndex()   Returns the index of the first element in an array that pass a test Array</span>
+
+<span class="c1"># for   Marks a block of statements to be executed as long as a condition is true   Statements</span>
+
+<span class="c1"># for ... in    Marks a block of statements to be executed for each element of an object (or array) Statements</span>
+
+<span class="c1"># forEach() Calls a function for each array element Array</span>
+
+<span class="c1"># forms Returns a collection of all &lt;form&gt; elements in the document Document</span>
+
+<span class="c1"># forward() Loads the next URL in the history list  History</span>
+
+<span class="c1"># from()    Creates an array from an object Array</span>
+
+<span class="c1"># function  Declares a function Statements</span>
+
+<span class="c1"># geolocation   Returns a Geolocation object that can be used to locate the user&#39;s position Navigator</span>
+
+<span class="c1"># getCurrentPosition()  Returns the current position of the device  Geolocation</span>
+
+<span class="c1"># getItem() Returns the value of the specified key name Storage</span>
+
+<span class="c1"># getNamedItem()    Returns a specified attribute node from a NamedNodeMap  Attribute</span>
+
+<span class="c1"># getTargetRanges() Returns an array containing target ranges that will be affected by the insertion/deletion   InputEvent</span>
+
+<span class="c1"># go()  Loads a specific URL from the history list  History</span>
+
+<span class="c1"># id    Sets or returns the value of the id attribute of an element Element</span>
+
+<span class="c1"># if ... else ... else if   Marks a block of statements to be executed depending on a condition Statements</span>
+
+<span class="c1"># ignoreCase    Checks whether the &quot;i&quot; modifier is set  RegExp</span>
+
+<span class="c1"># inputType Returns the type of the change (i.e &quot;inserting&quot; or &quot;deleting&quot;)  InputEvent</span>
+
+<span class="c1"># isId  Returns true if the attribute is of type Id, otherwise it returns false Attribute</span>
+
+<span class="c1"># isInteger()   Checks whether a value is an integer    Number</span>
+
+<span class="c1"># isSafeInteger()   Checks whether a value is a safe integer    Number</span>
+
+<span class="c1"># item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection</span>
+
+<span class="c1"># key() Returns the name of the nth key in the storage  Storage</span>
+
+<span class="c1"># keys()    Returns a Array Iteration Object, containing the keys of the original array Array</span>
+
+<span class="c1"># language  Returns the language of the browser Navigator</span>
+
+<span class="c1"># lengthComputable  Returns whether the length of the progress can be computable or not ProgressEvent</span>
+
+<span class="c1"># let   Declares a variable inside brackets {} scope    Statements</span>
+
+<span class="c1"># loaded    Returns how much work has been loaded   ProgressEvent</span>
+
+<span class="c1"># match()   Searches a string for a match against a regular expression, and returns the matches String</span>
+
+<span class="c1"># MAX_VALUE Returns the largest number possible in JavaScript   Number</span>
+
+<span class="c1"># message   Sets or returns an error message (a string) Error</span>
+
+<span class="c1"># multiline Checks whether the &quot;m&quot; modifier is set  RegExp</span>
+
+<span class="c1"># MIN_VALUE Returns the smallest number possible in JavaScript  Number</span>
+
+<span class="c1"># namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection</span>
+
+<span class="c1"># NEGATIVE_INFINITY Represents negative infinity (returned on overflow) Number</span>
+
+<span class="c1"># newURL    Returns the URL of the document, after the hash has been changed    HasChangeEvent</span>
+
+<span class="c1"># newValue  Returns the new value of the changed storage item   StorageEvent</span>
+
+<span class="c1"># oldURL    Returns the URL of the document, before the hash was changed    HasChangeEvent</span>
+
+<span class="c1"># oldValue  Returns the old value of the changed storage item   StorageEvent</span>
+
+<span class="c1"># onLine    Determines whether the browser is online    Navigator</span>
+
+<span class="c1"># origin    Returns the protocol, hostname and port number of a URL Location</span>
+
+<span class="c1"># persisted Returns whether the webpage was cached by the browser   PageTransitionEvent</span>
+
+<span class="c1"># position  Returns the position of the concerned device at a given time    Geolocation</span>
+
+<span class="c1"># positionError Returns the reason of an error occurring when using the geolocating device  Geolocation</span>
+
+<span class="c1"># positionOptions   Describes an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition() and Geolocation.watchPosition() Geolocation</span>
+
+<span class="c1"># POSITIVE_INFINITY Represents infinity (returned on overflow)  Number</span>
+
+<span class="c1"># propertyName  Returns the name of the CSS property associated with the animation or transition    AnimationEvent, TransitionEvent</span>
+
+<span class="c1"># pseudoElement Returns the name of the pseudo-element of the animation or transition   AnimationEvent, TransitionEvent</span>
+
+<span class="c1"># removeItem()  Removes that key from the storage   Storage</span>
+
+<span class="c1"># prototype Allows you to add properties and methods to an object   Number</span>
+
+<span class="c1"># removeNamedItem() Removes a specified attribute node  Attribute</span>
+
+<span class="c1"># search    Sets or returns the querystring part of a URL   Location</span>
+
+<span class="c1"># setNamedItem()    Sets the specified attribute node (by name) Attribute</span>
+
+<span class="c1"># source    Returns the text of the RegExp pattern  RegExp</span>
+
+<span class="c1"># specified Returns true if the attribute has been specified, otherwise it returns false    Attribute</span>
+
+<span class="c1"># state Returns an object containing a copy of the history entries  PopStateEvent</span>
+
+<span class="c1"># storageArea   Returns an object representing the affected storage object  StorageEvent</span>
+
+<span class="c1"># switch    Marks a block of statements to be executed depending on different cases Statements</span>
+
+<span class="c1"># throw Throws (generates) an error Statements</span>
+
+<span class="c1"># toExponential()   Converts a number into an exponential notation  Number</span>
+
+<span class="c1"># toFixed(x)    Formats a number with x numbers of digits after the decimal point   Number</span>
+
+<span class="c1"># toPrecision(x)    Formats a number to x length    Number</span>
+
+<span class="c1"># total Returns the total amount of work that will be loaded    ProgressEvent</span>
+
+<span class="c1"># touches   Returns a list of all the touch objects that are currently in contact with the surface  TouchEvent</span>
+
+<span class="c1"># url   Returns the URL of the changed item&#39;s document  StorageEvent</span>
+
+<span class="c1"># value Sets or returns the value of the attribute  Attribute</span>
+
+<span class="c1"># watchPosition()   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   Geolocation</span>
+
+<span class="c1"># while Marks a block of statements to be executed while a condition is true    Statements</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">domonic</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=requests&repo=requests&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, byteface.
+      
+    </div>
+
+    
+    <a href="https://github.com/requests/requests" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

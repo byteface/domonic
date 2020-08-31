@@ -1,6 +1,6 @@
 """
     domonic.CDN
-    ~~~~~~~~~~~
+    ====================================
     Refs to some useful .js and .css libs.
 
     use for prototyping. wget anything in later and create your own local references once ur happy

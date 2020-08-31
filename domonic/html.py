@@ -1,21 +1,25 @@
-# -*- coding: utf-8 -*-
 """
     domonic.html
-    ~~~~~
+    ====================================
     Generate HTML using python 3
 """
 
-# from .dom import Element, Document
-from .javascript import *
-
-# from domonic import tag, closed_tag, tag_init
-# import domonic
-
+from domonic.javascript import URL
 from domonic.dom import Element, Document
 
 
 def render(inp, outp=''):
-    # print(inp)
+    """render
+
+    Renders the input to string or to a file.
+
+    Args:
+        inp (obj): A domonic tag. For example div()
+        outp (str): An optional output filename
+
+    Returns:
+        str: A HTML rendered string
+    """
     if outp != '':
         with open(outp, "w+") as f:
             f.write(str(inp))
@@ -61,6 +65,7 @@ class DomonicParseError(Exception):
 
 
 class tag(object):
+    """ The class from which all html tags extend """
 
     def __init__(self, *args, **kwargs):
         self.args = args

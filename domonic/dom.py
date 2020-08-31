@@ -1,6 +1,6 @@
 """
     domonic.dom
-    ~~~~~~~~~
+    ====================================
     methods on the dom
 """
 
@@ -13,6 +13,7 @@ from domonic.events import *
 
 
 class EventTarget:
+    """ Baseclass for Node """
 
     def __init__(self):
         self.listeners = {}
@@ -55,6 +56,7 @@ class EventTarget:
 
 
 class Node(EventTarget):
+    """ Element extends from Node """
 
     def __init__(self, *args, **kwargs):
         # self.args = args
@@ -219,6 +221,14 @@ class Console(object):
 
     @staticmethod
     def log(msg: str, substitute=None):
+        """log
+
+        prints a message to the console
+
+        Args:
+            msg (str): msg to log
+            substitute (str): replace %s with this
+        """
         if substitute is not None:
             msg = substitute.join(msg.split('%s'))
         print(msg)
@@ -257,11 +267,9 @@ class Attr(object):
 
 
 class Element(Node):
+    """ Baseclass for all html tags """
 
     def __init__(self, *args, **kwargs):
-
-        # print('ELEMENT RAN')
-
         # self.content = None
         # self.attributes = None
 
@@ -649,6 +657,7 @@ class Element(Node):
 
 
 class Document(Element):
+    """ Baseclass for the html tag """
 
     def __init__(self, *args, **kwargs):
         # self.doc = doc

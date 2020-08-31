@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 """
     domonic.terminal
-    ~~~~~~~~~~~~~~~~
+    ====================================
     - call command line functions in python 3
 """
 import subprocess
@@ -11,6 +10,8 @@ from domonic.javascript import window
 
 
 class TerminalException(Exception):
+    """ raised if the terminal throws an exception """
+
     def __init__(self, error, message="An error message was recieved from terminal"):
         print(error, message)
         self.message = message
@@ -18,9 +19,20 @@ class TerminalException(Exception):
 
 
 class command():
+    """ wrapper class for all terminal commands """
 
     @staticmethod
     def run(cmd):
+        """run
+
+        runs any command on the terminal
+
+        Args:
+            cmd (str): The command you want to run on the terminal
+
+        Returns:
+            str: the response as a string
+        """
         returned_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
         return returned_output.decode("utf-8")
 
@@ -109,9 +121,11 @@ class command():
 
 
 class cd(command):
-    ''' NOTE - does not run on terminal '''
-    # cd is pointless as session opens and closes
-    # so override run command and do something else
+    """
+    NOTE - 'cd' does not run on terminal
+    - cd is pointless as session opens and closes
+    - so is overridden to change dirs via pure python
+    """
     def run_command(self):
         os.chdir(self.params)
 

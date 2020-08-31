@@ -1,6 +1,6 @@
 """
     domonic.utils
-    ~~~~~~~~~~~~~
+    ====================================
     snippets etc
 """
 import typing

@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 """
     domonic.JSON
-    ~~~~~~~~~~~
+    ====================================
 """
 
 import json
@@ -12,15 +11,14 @@ from domonic.html import table, td, tr, th
 
 
 def return_json(func):
-    '''
-    decorate any function to return json instead of a python obj
-    '''
+    """ decorate any function to return json instead of a python obj """
     def JSON_decorator(*args, **kwargs):
         return json.dumps(func(*args, **kwargs))
     return JSON_decorator
 
 
 class JSON(object):
+    """ A class containing JSON utils """
 
     def __init__(self):
         pass
@@ -45,9 +43,17 @@ class JSON(object):
 
     @staticmethod
     def tablify(arr):
-        '''
-        # takes a json array and returns a html table. # TODO - reverse. table to json
-        '''
+        """tablify
+
+        takes a json array and returns a html table
+        # TODO - reverse. table to json
+
+        Args:
+            arr (list): the json array
+
+        Returns:
+            str: a html table
+        """
         def _get_headings(arr, t):
             headings = []
             row = tr()
@@ -72,9 +78,17 @@ class JSON(object):
 
     @staticmethod
     def csvify(arr, outfile="data.csv"):
-        '''
-        # takes a json array and dumps a csv file
-        '''
+        """csvify
+
+        takes a json array and dumps a csv file
+
+        Args:
+            arr (list): the json array
+            outfile (list): the output file
+
+        Returns:
+            str: a csv file
+        """
         if type(arr) == str: arr = json.loads(arr)  # leniency. allow for a string
         if type(arr) == dict: arr = arr[next(iter(arr))]  # leniency. allow for a dict wrapping a list
         if type(arr) != list: raise ValueError  # if it aint a list by now reject it

@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 """
     domonic.style
-    ~~~~~~~~~~~
+    ====================================
 """
 
 from .utils import Utils
