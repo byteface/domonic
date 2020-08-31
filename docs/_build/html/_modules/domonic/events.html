@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>domonic.events &#8212; domonic 0.1.10 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for domonic.events</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    domonic.events</span>
+<span class="sd">    ====================================</span>
+<span class="sd">    dom events</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; events &quot;&quot;&quot;</span>
+
+    <span class="c1"># Event(&quot;look&quot;, {&quot;bubbles&quot;:true, &quot;cancelable&quot;:false});</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># print(&#39;type&#39;, _type)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">_type</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bubbles</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancelable</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancelBubble</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">composed</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentTarget</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">defaultPrevented</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eventPhase</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">explicitOriginalTarget</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isTrusted</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">originalTarget</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">returnValue</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srcElement</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
+        
+        <span class="c1"># ms = time.time_ns() // 1000000 3.7 up</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeStamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
+        
+
+    <span class="k">def</span> <span class="nf">composedPath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">createEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">initEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">msConvertURL</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">preventDefault</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">stopImmediatePropagation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">stopPropagation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; mouse events &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># self.args = args</span>
+        <span class="c1"># self.kwargs = kwargs</span>
+        <span class="c1"># super().__init__()</span>
+        <span class="k">pass</span></div>
+
+    <span class="c1"># MOUSE_EVENT</span>
+    <span class="c1"># altKey    Returns whether the &quot;ALT&quot; key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent</span>
+    <span class="c1"># button    Returns which mouse button was pressed when the mouse event was triggered   MouseEvent</span>
+    <span class="c1"># buttons   Returns which mouse buttons were pressed when the mouse event was triggered MouseEvent</span>
+    <span class="c1"># ctrlKey   Returns whether the &quot;CTRL&quot; key was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent, TouchEvent</span>
+    <span class="c1"># getModifierState()    Returns an array containing target ranges that will be affected by the insertion/deletion   MouseEvent</span>
+    <span class="c1"># metaKey   Returns whether the &quot;META&quot; key was pressed when an event was triggered  MouseEvent, KeyboardEvent, TouchEvent</span>
+    <span class="c1"># MovementX Returns the horizontal coordinate of the mouse pointer relative to the position of the last mousemove event MouseEvent</span>
+    <span class="c1"># MovementY Returns the vertical coordinate of the mouse pointer relative to the position of the last mousemove event   MouseEvent</span>
+    <span class="c1"># offsetX   Returns the horizontal coordinate of the mouse pointer relative to the position of the edge of the target element   MouseEvent</span>
+    <span class="c1"># offsetY   Returns the vertical coordinate of the mouse pointer relative to the position of the edge of the target element MouseEvent</span>
+    <span class="c1"># onclick   The event occurs when the user clicks on an element MouseEvent</span>
+    <span class="c1"># oncontextmenu The event occurs when the user right-clicks on an element to open a context menu    MouseEvent</span>
+    <span class="c1"># ondblclick    The event occurs when the user double-clicks on an element  MouseEvent</span>
+    <span class="c1"># onmousedown   The event occurs when the user presses a mouse button over an element   MouseEvent</span>
+    <span class="c1"># onmouseenter  The event occurs when the pointer is moved onto an element  MouseEvent</span>
+    <span class="c1"># onmouseleave  The event occurs when the pointer is moved out of an element    MouseEvent</span>
+    <span class="c1"># onmousemove   The event occurs when the pointer is moving while it is over an element MouseEvent</span>
+    <span class="c1"># onmouseover   The event occurs when the pointer is moved onto an element, or onto one of its children MouseEvent</span>
+    <span class="c1"># onmouseout    The event occurs when a user moves the mouse pointer out of an element, or out of one of its children   MouseEvent</span>
+    <span class="c1"># onmouseup The event occurs when a user releases a mouse button over an element    MouseEvent</span>
+    <span class="c1"># pageX Returns the horizontal coordinate of the mouse pointer, relative to the document, when the mouse event was triggered    MouseEvent</span>
+    <span class="c1"># pageY Returns the vertical coordinate of the mouse pointer, relative to the document, when the mouse event was triggered  MouseEvent</span>
+    <span class="c1"># region        MouseEvent</span>
+    <span class="c1"># relatedTarget Returns the element related to the element that triggered the mouse event   MouseEvent, FocusEvent</span>
+    <span class="c1"># shiftKey  Returns whether the &quot;SHIFT&quot; key was pressed when an event was triggered MouseEvent, KeyboardEvent, TouchEvent</span>
+    <span class="c1"># which Returns which mouse button was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent</span>
+
+
+<div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; keyboard events &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># self.args = args</span>
+        <span class="c1"># self.kwargs = kwargs</span>
+        <span class="k">pass</span></div>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def location(self):</span>
+
+    <span class="c1"># KeyboardEvent</span>
+    <span class="c1"># altKey    Returns whether the &quot;ALT&quot; key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent</span>
+    <span class="c1"># ctrlKey   Returns whether the &quot;CTRL&quot; key was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent, TouchEvent</span>
+    <span class="c1"># metaKey   Returns whether the &quot;META&quot; key was pressed when an event was triggered  MouseEvent, KeyboardEvent, TouchEvent</span>
+    <span class="c1"># shiftKey  Returns whether the &quot;SHIFT&quot; key was pressed when an event was triggered MouseEvent, KeyboardEvent, TouchEvent</span>
+    <span class="c1"># which Returns which mouse button was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent</span>
+    <span class="c1"># charCode  Returns the Unicode character code of the key that triggered the onkeypress event   KeyboardEvent</span>
+    <span class="c1"># code  Returns the code of the key that triggered the event    KeyboardEvent</span>
+    <span class="c1"># isComposing   Returns whether the state of the event is composing or not  InputEvent, KeyboardEvent</span>
+    <span class="c1"># key   Returns the key value of the key represented by the event   KeyboardEvent, StorageEvent</span>
+    <span class="c1"># keyCode   Returns the Unicode character code of the key that triggered the onkeypress event, or the Unicode key code of the key that triggered the onkeydown or onkeyup event KeyboardEvent</span>
+    <span class="c1"># location  Returns the location of a key on the keyboard or device KeyboardEvent</span>
+    <span class="c1"># onkeydown The event occurs when the user is pressing a key    KeyboardEvent</span>
+    <span class="c1"># onkeypress    The event occurs when the user presses a key    KeyboardEvent</span>
+    <span class="c1"># onkeyup   The event occurs when the user releases a key   KeyboardEvent</span>
+    <span class="c1"># repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent</span>
+
+
+
+
+
+
+<span class="c1"># bubbles   Returns whether or not a specific event is a bubbling event Event</span>
+<span class="c1"># cancelable    Returns whether or not an event can have its default action prevented   Event</span>
+<span class="c1"># composed  Returns whether the event is composed or not    Event</span>
+<span class="c1"># currentTarget Returns the element whose event listeners triggered the event   Event</span>
+<span class="c1"># defaultPrevented  Returns whether or not the preventDefault() method was called for the event Event</span>
+<span class="c1"># eventPhase    Returns which phase of the event flow is currently being evaluated  Event</span>
+<span class="c1"># isTrusted Returns whether or not an event is trusted  Event</span>
+<span class="c1"># onabort   The event occurs when the loading of a media is aborted UiEvent, Event</span>
+<span class="c1"># onafterprint  The event occurs when a page has started printing, or if the print dialogue box has been closed Event</span>
+<span class="c1"># onanimationend    The event occurs when a CSS animation has completed AnimationEvent</span>
+<span class="c1"># onanimationiteration  The event occurs when a CSS animation is repeated   AnimationEvent</span>
+<span class="c1"># onanimationstart  The event occurs when a CSS animation has started   AnimationEvent</span>
+<span class="c1"># onbeforeprint The event occurs when a page is about to be printed Event</span>
+<span class="c1"># onbeforeunload    The event occurs before the document is about to be unloaded    UiEvent, Event</span>
+<span class="c1"># onblur    The event occurs when an element loses focus    FocusEvent</span>
+<span class="c1"># oncanplay The event occurs when the browser can start playing the media (when it has buffered enough to begin)    Event</span>
+<span class="c1"># oncanplaythrough  The event occurs when the browser can play through the media without stopping for buffering Event</span>
+<span class="c1"># onchange  The event occurs when the content of a form element, the selection, or the checked state have changed (for &lt;input&gt;, &lt;select&gt;, and &lt;textarea&gt;)   Event</span>
+<span class="c1"># oncopy    The event occurs when the user copies the content of an element ClipboardEvent</span>
+<span class="c1"># oncut The event occurs when the user cuts the content of an element   ClipboardEvent</span>
+<span class="c1"># ondrag    The event occurs when an element is being dragged   DragEvent</span>
+<span class="c1"># ondragend The event occurs when the user has finished dragging an element DragEvent</span>
+<span class="c1"># ondragenter   The event occurs when the dragged element enters the drop target    DragEvent</span>
+<span class="c1"># ondragleave   The event occurs when the dragged element leaves the drop target    DragEvent</span>
+<span class="c1"># ondragover    The event occurs when the dragged element is over the drop target   DragEvent</span>
+<span class="c1"># ondragstart   The event occurs when the user starts to drag an element    DragEvent</span>
+<span class="c1"># ondrop    The event occurs when the dragged element is dropped on the drop target DragEvent</span>
+<span class="c1"># ondurationchange  The event occurs when the duration of the media is changed  Event</span>
+<span class="c1"># onemptied The event occurs when something bad happens and the media file is suddenly unavailable (like unexpectedly disconnects)</span>
+<span class="c1"># onended   The event occurs when the media has reach the end (useful for messages like &quot;thanks for listening&quot;) Event</span>
+<span class="c1"># onerror   The event occurs when an error occurs while loading an external file    ProgressEvent, UiEvent, Event</span>
+<span class="c1"># onfocus   The event occurs when an element gets focus FocusEvent</span>
+<span class="c1"># onfocusin The event occurs when an element is about to get focus  FocusEvent</span>
+<span class="c1"># onfocusout    The event occurs when an element is about to lose focus FocusEvent</span>
+<span class="c1"># onfullscreenchange    The event occurs when an element is displayed in fullscreen mode    Event</span>
+<span class="c1"># onfullscreenerror The event occurs when an element can not be displayed in fullscreen mode    Event</span>
+<span class="c1"># onhashchange  The event occurs when there has been changes to the anchor part of a URL    HashChangeEvent</span>
+<span class="c1"># oninput   The event occurs when an element gets user input    InputEvent, Event</span>
+<span class="c1"># oninvalid The event occurs when an element is invalid Event</span>
+<span class="c1"># onload    The event occurs when an object has loaded  UiEvent, Event</span>
+<span class="c1"># onloadeddata  The event occurs when media data is loaded  Event</span>
+<span class="c1"># onloadedmetadata  The event occurs when meta data (like dimensions and duration) are loaded   Event</span>
+<span class="c1"># onloadstart   The event occurs when the browser starts looking for the specified media    ProgressEvent</span>
+<span class="c1"># onmessage The event occurs when a message is received through the event source    Event</span>
+<span class="c1"># onmousewheel  Deprecated. Use the wheel event instead WheelEvent</span>
+<span class="c1"># onoffline The event occurs when the browser starts to work offline    Event</span>
+<span class="c1"># ononline  The event occurs when the browser starts to work online Event</span>
+<span class="c1"># onopen    The event occurs when a connection with the event source is opened  Event</span>
+<span class="c1"># onpagehide    The event occurs when the user navigates away from a webpage    PageTransitionEvent</span>
+<span class="c1"># onpageshow    The event occurs when the user navigates to a webpage   PageTransitionEvent</span>
+<span class="c1"># onpaste   The event occurs when the user pastes some content in an element    ClipboardEvent</span>
+<span class="c1"># onpause   The event occurs when the media is paused either by the user or programmatically    Event</span>
+<span class="c1"># onplay    The event occurs when the media has been started or is no longer paused Event</span>
+<span class="c1"># onplaying The event occurs when the media is playing after having been paused or stopped for buffering    Event</span>
+<span class="c1"># onprogress    The event occurs when the browser is in the process of getting the media data (downloading the media)   Event</span>
+<span class="c1"># onratechange  The event occurs when the playing speed of the media is changed Event</span>
+<span class="c1"># onresize  The event occurs when the document view is resized  UiEvent, Event</span>
+<span class="c1"># onreset   The event occurs when a form is reset   Event</span>
+<span class="c1"># onscroll  The event occurs when an element&#39;s scrollbar is being scrolled  UiEvent, Event</span>
+<span class="c1"># onsearch  The event occurs when the user writes something in a search field (for &lt;input=&quot;search&quot;&gt;)    Event</span>
+<span class="c1"># onseeked  The event occurs when the user is finished moving/skipping to a new position in the media   Event</span>
+<span class="c1"># onseeking The event occurs when the user starts moving/skipping to a new position in the media    Event</span>
+<span class="c1"># onselect  The event occurs after the user selects some text (for &lt;input&gt; and &lt;textarea&gt;)  UiEvent, Event</span>
+<span class="c1"># onshow    The event occurs when a &lt;menu&gt; element is shown as a context menu   Event</span>
+<span class="c1"># onstalled The event occurs when the browser is trying to get media data, but data is not available    Event</span>
+<span class="c1"># onsubmit  The event occurs when a form is submitted   Event</span>
+<span class="c1"># onsuspend The event occurs when the browser is intentionally not getting media data   Event</span>
+<span class="c1"># ontoggle  The event occurs when the user opens or closes the &lt;details&gt; element    Event</span>
+<span class="c1"># ontouchcancel The event occurs when the touch is interrupted  TouchEvent</span>
+<span class="c1"># ontouchend    The event occurs when a finger is removed from a touch screen   TouchEvent</span>
+<span class="c1"># ontouchmove   The event occurs when a finger is dragged across the screen TouchEvent</span>
+<span class="c1"># ontouchstart  The event occurs when a finger is placed on a touch screen  TouchEvent</span>
+<span class="c1"># ontransitionend   The event occurs when a CSS transition has completed    TransitionEvent</span>
+<span class="c1"># onunload  The event occurs once a page has unloaded (for &lt;body&gt;)  UiEvent, Event</span>
+<span class="c1"># onvolumechange    The event occurs when the volume of the media has changed (includes setting the volume to &quot;mute&quot;)   Event</span>
+<span class="c1"># onwaiting The event occurs when the media has paused but is expected to resume (like when the media pauses to buffer more data)   Event</span>
+<span class="c1"># onwheel   The event occurs when the mouse wheel rolls up or down over an element  WheelEvent</span>
+<span class="c1"># preventDefault()  Cancels the event if it is cancelable, meaning that the default action that belongs to the event will not occur Event</span>
+<span class="c1"># targetTouches Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element    TouchEvent</span>
+<span class="c1"># timeStamp Returns the time (in milliseconds relative to the epoch) at which the event was created Event</span>
+<span class="c1"># transitionend The event occurs when a CSS transition has completed    TransitionEvent</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">domonic</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=requests&repo=requests&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, byteface.
+      
+    </div>
+
+    
+    <a href="https://github.com/requests/requests" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
