@@ -34,6 +34,55 @@
             
   <div class="section" id="domonic-terminal">
 <h1>Domonic: terminal<a class="headerlink" href="#domonic-terminal" title="Permalink to this headline">¶</a></h1>
+<p>There is a command line package that can call bash/unix/posix and other apps on the command line: &lt;br /&gt;
+This package only works on nix systems as it effectively just passes stuff off to subprocess.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.terminal</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">ls</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ls</span><span class="p">(</span><span class="s2">&quot;-al&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ls</span><span class="p">(</span><span class="s2">&quot;../&quot;</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">pwd</span><span class="p">())</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;somedir&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">touch</span><span class="p">(</span><span class="s1">&#39;somefile&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">git</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">ls</span><span class="p">(</span> <span class="s2">&quot;-al&quot;</span> <span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Line : &quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ls</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">cat</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cat</span><span class="p">(</span><span class="s1">&#39;LICENSE.txt&#39;</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">l</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">man</span><span class="p">(</span><span class="s2">&quot;ls&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">echo</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">du</span><span class="p">())</span>
+
+<span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">du</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+<span class="c1"># print(ping(&#39;eventual.technology&#39;))# &lt; TODO - need to strean output</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cowsay</span><span class="p">(</span><span class="s1">&#39;moo&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">wget</span><span class="p">(</span><span class="s1">&#39;eventual.technology&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">date</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cal</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>or just run arbitrary commands…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.terminal</span> <span class="kn">import</span> <span class="n">command</span>
+<span class="n">command</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;echo hi&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Take a look at the code in ‘terminal.py’ to see all the commands as there’s loads. (Disclaimer: not all tested.)</p>
 </div>
 
 

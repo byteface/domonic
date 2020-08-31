@@ -35,6 +35,19 @@
             
   <div class="section" id="domonic-dom">
 <h1>Domonic: DOM<a class="headerlink" href="#domonic-dom" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="createelement">
+<h2>createElement<a class="headerlink" href="#createelement" title="Permalink to this headline">¶</a></h2>
+<p>to create your own elements use the DOM API</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">site</span> <span class="o">=</span> <span class="n">html</span><span class="p">()</span>
+<span class="n">el</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;myelement&#39;</span><span class="p">)</span>
+<span class="n">site</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>addEventlisteners recently been started. There’s several more DOM methods. Check code to see what’s currently implemented.</p>
+</div>
 </div>
 
 
@@ -63,7 +76,10 @@
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: DOM</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: DOM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#createelement">createElement</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>

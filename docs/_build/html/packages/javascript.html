@@ -35,6 +35,66 @@
             
   <div class="section" id="domonic-javascript">
 <h1>Domonic: Javascript<a class="headerlink" href="#domonic-javascript" title="Permalink to this headline">¶</a></h1>
+<p>There is a javascript package being started that mirrors the js API:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">Math</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">Math</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
+
+<span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">Array</span>
+<span class="n">myArr</span><span class="o">=</span><span class="n">Array</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myArr</span><span class="o">.</span><span class="n">splice</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">URL</span>
+<span class="n">url</span> <span class="o">=</span> <span class="n">URL</span><span class="p">(</span><span class="s1">&#39;https://somesite.com/blog/article-one#some-hash&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">pathname</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">hash</span><span class="p">)</span>
+
+<span class="c1"># from domonic.javascript import Global</span>
+<span class="c1"># Global.decodeURIComponent(...</span>
+<span class="c1"># Global.encodeComponent(...</span>
+
+<span class="c1"># from domonic.javascript import Date</span>
+<span class="c1"># etc..</span>
+</pre></div>
+</div>
+<p>You can use setInterval and clearInterval with params</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">=</span><span class="mi">0</span>
+
+<span class="k">def</span> <span class="nf">hi</span><span class="p">(</span><span class="n">inc</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">x</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">+</span><span class="n">inc</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">test</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">setInterval</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">window</span><span class="o">.</span><span class="n">clearInterval</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final value of x:</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can update a-tags the same way as it inherits from URL:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">atag</span> <span class="o">=</span> <span class="n">a</span><span class="p">(</span><span class="n">_href</span><span class="o">=</span><span class="s2">&quot;https://somesite.com:8000/blog/article-one#some-hash&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;href:&#39;</span><span class="p">,</span><span class="n">atag</span><span class="o">.</span><span class="n">href</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;protocol:&#39;</span><span class="p">,</span><span class="n">atag</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;port:&#39;</span><span class="p">,</span><span class="n">atag</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+
+<span class="n">atag</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="s2">&quot;http&quot;</span>
+<span class="n">atag</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="mi">8983</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">atag</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Styling is now supported…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mytag</span> <span class="o">=</span> <span class="n">div</span><span class="p">(</span><span class="s2">&quot;hi&quot;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="n">mytag</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span>
+<span class="n">mytag</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">fontSize</span> <span class="o">=</span> <span class="s2">&quot;12px&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mytag</span><span class="p">)</span>
+<span class="c1"># &lt;div id=&quot;test&quot; style=&quot;background-color:black;font-size:12px;&quot;&gt;hi&lt;/div&gt;</span>
+</pre></div>
+</div>
+<p>several other undocumented features. Take a look at the code.</p>
 </div>
 
 

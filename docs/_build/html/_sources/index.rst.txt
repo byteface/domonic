@@ -47,7 +47,7 @@ Indices and tables
 HTML TEMPLATING
 ----------------
 
-::
+.. code-block :: python
 
   from domonic import *
 
@@ -66,7 +66,7 @@ HTML TEMPLATING
         )
     )
 
-::
+.. code-block :: html
 
   <html><head><style></style><script></script></head><body><div>hello world</div><a href="http://www.somesite.com" style="font-size:10px;">this is a link</a><ol><li></li><li></li><li></li><li></li><li></li></ol><h1 class="test">test</h1></body></html>
 
@@ -74,14 +74,14 @@ HTML TEMPLATING
 
 install
 ----------------
-::
+.. code-block :: python
 
   python3 -m pip install domonic
 
 
 or if you had it before upgrade:
 
-::
+.. code-block :: python
 
   python3 -m pip install domonic --upgrade
 
