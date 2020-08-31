@@ -801,11 +801,17 @@
         <span class="c1"># TODO - self closing tags - need a &#39;tag&#39; factory. need the tags in .html package to register with it.</span>
         <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="n">tag</span><span class="p">,</span> <span class="n">tag_init</span>
         <span class="n">el</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">_type</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
-        <span class="k">return</span> <span class="n">el</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">el</span><span class="p">()</span></div>
 
-    <span class="c1"># def createEvent():</span>
+<div class="viewcode-block" id="Document.createEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.createEvent">[docs]</a>    <span class="k">def</span> <span class="nf">createEvent</span><span class="p">(</span><span class="n">event_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Creates a new event&#39;&#39;&#39;</span>
-        <span class="c1"># return</span>
+        <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="s2">&quot;MouseEvent&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MouseEvent</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="s2">&quot;KeyboardEvent&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MouseEvent</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">event_type</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Event</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Event</span><span class="p">()</span>
 
     <span class="c1"># def createTextNode():</span>
         <span class="sd">&#39;&#39;&#39;Creates a Text node&#39;&#39;&#39;</span>

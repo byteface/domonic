@@ -23,7 +23,7 @@
 
 https://domonic.readthedocs.io/
 
-## HTML TEMPLATING
+## HTML Templating with Python 3
 
 ```python
 from domonic import *
@@ -40,7 +40,8 @@ output = render(
             ol(''.join([f'{li()}' for thing in range(5)])),
             h1("test", _class="test"),
         )
-    )
+
+    ), 'index.html'
 )
 ```
 ```html
@@ -369,7 +370,7 @@ TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
 ##### TODO - catch these errors and raise a friendly custom ParseError that tells you what to fix
 
 
-### Join-in
+### Join-In
 Feel free to join in if you find it useful.
 
 If there's any methods you want that are missing or not complete yet. Just update the code and send a pull request.
@@ -388,7 +389,7 @@ docs:
 https://domonic.readthedocs.io/
 
 
-### disclaimer
+### Disclaimer
 
 There's several more widely supported libraries doing HTML generation, DOM reading/manipulation, terminal wrappers etc. Maybe use one of those for production due to strictness and support.
 

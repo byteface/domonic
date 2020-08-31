@@ -35,6 +35,48 @@
             
   <div class="section" id="domonic-html">
 <h1>Domonic: HTML<a class="headerlink" href="#domonic-html" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="rendering">
+<h2>rendering<a class="headerlink" href="#rendering" title="Permalink to this headline">¶</a></h2>
+<p>render takes 2 parameters, some domonic and an optional output file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">page</span> <span class="o">=</span> <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s1">&#39;Hello World&#39;</span><span class="p">))</span>
+<span class="n">render</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="templating">
+<h2>templating<a class="headerlink" href="#templating" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic</span> <span class="kn">import</span> <span class="o">*</span>
+
+  <span class="n">output</span> <span class="o">=</span> <span class="n">render</span><span class="p">(</span>
+      <span class="n">html</span><span class="p">(</span>
+          <span class="n">head</span><span class="p">(</span>
+              <span class="n">style</span><span class="p">(),</span>
+              <span class="n">script</span><span class="p">(),</span>
+          <span class="p">),</span>
+          <span class="n">body</span><span class="p">(</span>
+              <span class="n">div</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">),</span>
+              <span class="n">a</span><span class="p">(</span><span class="s2">&quot;this is a link&quot;</span><span class="p">,</span> <span class="n">_href</span><span class="o">=</span><span class="s2">&quot;http://www.somesite.com&quot;</span><span class="p">,</span> <span class="n">_style</span><span class="o">=</span><span class="s2">&quot;font-size:10px;&quot;</span><span class="p">),</span>
+              <span class="n">ol</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">li</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])),</span>
+              <span class="n">h1</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">_class</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">),</span>
+          <span class="p">)</span>
+      <span class="p">)</span>
+  <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;&lt;</span><span class="nt">head</span><span class="p">&gt;&lt;</span><span class="nt">style</span><span class="p">&gt;&lt;/</span><span class="nt">style</span><span class="p">&gt;&lt;</span><span class="nt">script</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;&lt;/</span><span class="nt">head</span><span class="p">&gt;&lt;</span><span class="nt">body</span><span class="p">&gt;&lt;</span><span class="nt">div</span><span class="p">&gt;</span>hello world<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://www.somesite.com&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;font-size:10px;&quot;</span><span class="p">&gt;</span>this is a link<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;</span><span class="nt">ol</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ol</span><span class="p">&gt;&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">&gt;</span>test<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;/</span><span class="nt">body</span><span class="p">&gt;&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Take a look in tests/test_html.py at the bootstrap5 alpha examples. All tests passed on several templates.</p>
+</div>
+<div class="section" id="usage">
+<h2>usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">html</span><span class="p">(</span><span class="n">body</span><span class="p">(</span><span class="n">h1</span><span class="p">(</span><span class="s1">&#39;Hello, World!&#39;</span><span class="p">))))</span>
+</pre></div>
+</div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;&lt;</span><span class="nt">body</span><span class="p">&gt;&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello, World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;/</span><span class="nt">body</span><span class="p">&gt;&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="attributes">
 <h2>attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
 <p>prepend attributes with an underscore ( avoids clashing with python keywords )</p>
@@ -53,14 +95,6 @@
 </pre></div>
 </div>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="rendering">
-<h2>rendering<a class="headerlink" href="#rendering" title="Permalink to this headline">¶</a></h2>
-<p>render takes 2 parameters, some domonic and an optional output file.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">page</span> <span class="o">=</span> <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s1">&#39;Hello World&#39;</span><span class="p">))</span>
-<span class="n">render</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -85,6 +119,7 @@
 <h2>createElement<a class="headerlink" href="#createelement" title="Permalink to this headline">¶</a></h2>
 <p>to create your own elements use the DOM API</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">site</span> <span class="o">=</span> <span class="n">html</span><span class="p">()</span>
 <span class="n">el</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;myelement&#39;</span><span class="p">)</span>
@@ -122,9 +157,11 @@
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: HTML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rendering">rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#templating">templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#attributes">attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#lists">lists</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#rendering">rendering</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-tags">data-tags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fugly">fugly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#createelement">createElement</a></li>

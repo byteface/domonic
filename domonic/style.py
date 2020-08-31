@@ -18,46 +18,46 @@ class Style(object):
 
         self._parent_node = parent_node # so I can update a tags returned style attributes if a style gets set
 
-        self.alignContent = 'stretch'
+        self.alignContent = 'normal'
         '''Sets or returns the alignment between the lines inside a flexible container when the items do not use all available space   3'''
 
-        self.alignItems = None
+        self.alignItems = 'normal'
         '''Sets or returns the alignment for items inside a flexible container 3'''
 
-        self.alignSelf = None
+        self.alignSelf = 'auto'
         '''Sets or returns the alignment for selected items inside a flexible container    3'''
 
-        self.animation = None
+        self.animation = 'normal'
         ''' shorthand property for all the animation properties below, except the animationPlayState property 3'''
 
-        self.animationDelay = None
+        self.animationDelay = 0
         '''Sets or returns when the animation will start   3'''
 
-        self.animationDirection = None
+        self.animationDirection = 'normal'
         '''Sets or returns whether or not the animation should play in reverse on alternate cycles 3'''
 
-        self.animationDuration = None
+        self.animationDuration = 0
         '''Sets or returns how many seconds or milliseconds an animation takes to complete one cycle   3'''
 
         self.animationFillMode = None
         '''Sets or returns what values are applied by the animation outside the time it is executing   3'''
 
-        self.animationIterationCount = None
+        self.animationIterationCount = 1
         '''Sets or returns the number of times an animation should be played   3'''
 
         self.animationName = None
         '''Sets or returns a name for the @keyframes animation 3'''
 
-        self.animationTimingFunction = None
+        self.animationTimingFunction = 'ease'
         '''Sets or returns the speed curve of the animation    3'''
 
-        self.animationPlayState = None
+        self.animationPlayState = 'running'
         '''Sets or returns whether the animation is running or paused  3'''
 
         self.background = None
         '''Sets or returns all the background properties in one declaration    1'''
 
-        self.backgroundAttachment = None
+        self.backgroundAttachment = 'scroll'
         '''Sets or returns whether a background-image is fixed or scrolls with the page    1'''
 
         self.backgroundColor = None
@@ -84,19 +84,19 @@ class Style(object):
         self.backfaceVisibility = None
         '''Sets or returns whether or not an element should be visible when not facing the screen  3'''
 
-        self.border = None
+        self.border = 'medium none black'
         '''Sets or returns borderWidth, borderStyle, and borderColor in one declaration    1'''
 
-        self.borderBottom = None
+        self.borderBottom = 'medium none black'
         '''Sets or returns all the borderBottom properties in one declaration  1'''
 
         self.borderBottomColor = None
         '''Sets or returns the color of the bottom border  1 '''
 
-        self.borderBottomLeftRadius = None
+        self.borderBottomLeftRadius = 0
         '''Sets or returns the shape of the border of the bottom-left corner   3'''
 
-        self.borderBottomRightRadius = None
+        self.borderBottomRightRadius = 0
         '''Sets or returns the shape of the border of the bottom-right corner  3'''
 
         self.borderBottomStyle = None
@@ -141,7 +141,7 @@ class Style(object):
         self.borderLeftWidth = None
         '''Sets or returns the width of the left border    1'''
 
-        self.borderRadius = None
+        self.borderRadius = 0
         '''A shorthand property for setting or returning all the four borderRadius properties  3'''
 
         self.borderRight = None
@@ -168,10 +168,10 @@ class Style(object):
         self.borderTopColor = None
         '''Sets or returns the color of the top border 1'''
 
-        self.borderTopLeftRadius = None
+        self.borderTopLeftRadius = 0
         '''Sets or returns the shape of the border of the top-left corner  3'''
 
-        self.borderTopRightRadius = None
+        self.borderTopRightRadius = 0
         '''Sets or returns the shape of the border of the top-right corner 3'''
 
         self.borderTopStyle = None
@@ -213,7 +213,7 @@ class Style(object):
         self.columnFill = None
         '''Sets or returns how to fill columns 3'''
 
-        self.columnGap = None
+        self.columnGap = 'normal'
         '''Sets or returns the gap between the columns 3'''
 
         self.columnRule = None
@@ -293,16 +293,16 @@ class Style(object):
         self.fontFamily = None
         '''Sets or returns the font family for text    1'''
 
-        self.fontSize = None
+        self.fontSize = 'medium'
         '''Sets or returns the font size of the text   1'''
 
-        self.fontStyle = None
+        self.fontStyle = 'normal'
         '''Sets or returns whether the style of the font is normal, italic or oblique  1'''
 
         self.fontVariant = None
         '''Sets or returns whether the font should be displayed in small capital letters   1'''
 
-        self.fontWeight = None
+        self.fontWeight = 'normal'
         '''Sets or returns the boldness of the font    1'''
 
         self.fontSizeAdjust = None
@@ -314,7 +314,7 @@ class Style(object):
         self.hangingPunctuation = None
         '''ecifies whether a punctuation character may be placed outside the line box    3'''
 
-        self.height = None
+        self.height = 'auto'
         '''Sets or returns the height of an element    1'''
 
         self.hyphens = None
@@ -329,10 +329,10 @@ class Style(object):
         self.isolation = None
         '''efines whether an element must create a new stacking content   3'''
 
-        self.justifyContent = None
+        self.justifyContent = 'normal'
         '''Sets or returns the alignment between the items inside a flexible container when the items do not use all available space.  3'''
 
-        self.left = None
+        self.left = 'auto'
         '''Sets or returns the left position of a positioned element   2'''
 
         self.letterSpacing = None
@@ -353,19 +353,19 @@ class Style(object):
         self.listStyleType = None
         '''Sets or returns the list-item marker type   1'''
 
-        self.margin = None
+        self.margin = 0
         '''Sets or returns the margins of an element (can have up to four values)  1'''
 
-        self.marginBottom = None
+        self.marginBottom = 0
         '''Sets or returns the bottom margin of an element 1'''
 
-        self.marginLeft = None
+        self.marginLeft = 0
         '''Sets or returns the left margin of an element   1'''
 
-        self.marginRight = None
+        self.marginRight = 0
         '''Sets or returns the right margin of an element  1'''
 
-        self.marginTop = None
+        self.marginTop = 0
         '''Sets or returns the top margin of an element    1'''
 
         self.maxHeight = None
@@ -425,7 +425,7 @@ class Style(object):
         self.outlineWidth = None
         '''Sets or returns the width of the outline around an element  2'''
 
-        self.overflow = None
+        self.overflow = 'visible'
         '''Sets or returns what to do with content that renders outside the element box    2'''
 
         self.overflowX = None
@@ -434,28 +434,28 @@ class Style(object):
         self.overflowY = None
         '''pecifies what to do with the top/bottom edges of the content, if it overflows the element's content area   3'''
 
-        self.padding = None
+        self.padding = 0
         '''Sets or returns the padding of an element (can have up to four values)  1'''
 
-        self.paddingBottom = None
+        self.paddingBottom = 0
         '''Sets or returns the bottom padding of an element    1'''
 
-        self.paddingLeft = None
+        self.paddingLeft = 0
         '''Sets or returns the left padding of an element  1'''
 
-        self.paddingRight = None
+        self.paddingRight = 0
         '''Sets or returns the right padding of an element 1'''
 
-        self.paddingTop = None
+        self.paddingTop = 0
         '''Sets or returns the top padding of an element   1'''
 
-        self.pageBreakAfter = None
+        self.pageBreakAfter = 'auto'
         '''Sets or returns the page-break behavior after an element    2'''
 
-        self.pageBreakBefore = None
+        self.pageBreakBefore = 'auto'
         '''Sets or returns the page-break behavior before an element   2'''
 
-        self.pageBreakInside = None
+        self.pageBreakInside = 'auto'
         '''Sets or returns the page-break behavior inside an element   2'''
 
         self.perspective = None
@@ -473,19 +473,19 @@ class Style(object):
         self.resize = None
         '''Sets or returns whether or not an element is resizable by the user  3'''
 
-        self.right = None
+        self.right = 'auto'
         '''Sets or returns the right position of a positioned element  2'''
 
-        self.tableLayout = None
+        self.tableLayout = 'auto'
         '''Sets or returns the way to lay out table cells, rows, and columns   2'''
 
         self.tabSize = None
         '''Sets or returns the length of the tab-character 3'''
 
-        self.textAlign = None
+        self.textAlign = 'left'
         '''Sets or returns the horizontal alignment of text    1'''
 
-        self.textAlignLast = None
+        self.textAlignLast = 'auto'
         '''Sets or returns how the last line of a block or a line right before a forced line break is aligned when text-align is "justify" 3'''
 
         self.textDecoration = None
@@ -506,7 +506,7 @@ class Style(object):
         self.textJustify = None
         '''Sets or returns the justification method used when text-align is "justify"  3'''
 
-        self.textOverflow = None
+        self.textOverflow = 'clip'
         '''Sets or returns what should happen when text overflows the containing element   3'''
 
         self.textShadow = None
@@ -533,13 +533,13 @@ class Style(object):
         self.transitionProperty = None
         '''Sets or returns the CSS property that the transition effect is for  3'''
 
-        self.transitionDuration = None
+        self.transitionDuration = 0
         '''Sets or returns how many seconds or milliseconds a transition effect takes to complete  3'''
 
         self.transitionTimingFunction = None
         '''Sets or returns the speed curve of the transition effect    3'''
 
-        self.transitionDelay = None
+        self.transitionDelay = 0
         '''Sets or returns when the transition effect will start   3'''
 
         self.unicodeBidi = None
@@ -551,28 +551,28 @@ class Style(object):
         self.verticalAlign = None
         '''Sets or returns the vertical alignment of the content in an element 1'''
 
-        self.visibility = None
+        self.visibility = 'visible'
         '''Sets or returns whether an element should be visible 2'''
 
-        self.whiteSpace = None
+        self.whiteSpace = 'normal'
         """ Sets or returns how to handle tabs, line breaks and whitespace in a text 1 """
 
-        self.width = None
+        self.width = 'auto'
         '''Sets or returns the width of an element 1'''
 
-        self.wordBreak = None
+        self.wordBreak = 'normal'
         '''Sets or returns line breaking rules for non-CJK scripts 3'''
 
         self.wordSpacing = None
         '''Sets or returns the spacing between words in a text 1'''
 
-        self.wordWrap = None
+        self.wordWrap = 'normal'
         '''Allows long, unbreakable words to be broken and wrap to the next line   3'''
 
         self.widows = None
         '''Sets or returns the minimum number of lines for an element that must be visible at the top of a page    2'''
 
-        self.zIndex = None
+        self.zIndex = 'auto'
         '''Sets or returns the stack order of a positioned element 2'''
 
 

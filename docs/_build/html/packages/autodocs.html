@@ -649,6 +649,12 @@
 </dd></dl>
 
 <dl class="py method">
+<dt id="domonic.dom.Document.createEvent">
+<code class="sig-name descname">createEvent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.createEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.createEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new event</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="domonic.dom.Document.doctype">
 <code class="sig-name descname">doctype</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.doctype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.doctype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the Document Type Declaration associated with the document</p>
@@ -2585,6 +2591,1161 @@ i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’)) # optional seperator if the 
 </dd></dl>
 
 </div>
+<span class="target" id="module-domonic.events"></span><div class="section" id="domonic-events">
+<h2>domonic.events<a class="headerlink" href="#domonic-events" title="Permalink to this headline">¶</a></h2>
+<p>dom events</p>
+<dl class="py class">
+<dt id="domonic.events.Event">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">Event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.Event" title="Permalink to this definition">¶</a></dt>
+<dd><p>events</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="domonic.events.KeyboardEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">KeyboardEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#KeyboardEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.KeyboardEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>keyboard events</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="domonic.events.MouseEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">MouseEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#MouseEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.MouseEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>mouse events</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-domonic.style"></span><div class="section" id="domonic-style">
+<h2>domonic.style<a class="headerlink" href="#domonic-style" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="domonic.style.Style">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.style.</code><code class="sig-name descname">Style</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent_node</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#Style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.style.Style" title="Permalink to this definition">¶</a></dt>
+<dd><p>[ js syntax styles ]
+# TODO - just add normal float?
+# TODO - consider camel case for hyphen params?</p>
+<dl class="py method">
+<dt id="domonic.style.Style.alignContent">
+<em class="property">property </em><code class="sig-name descname">alignContent</code><a class="headerlink" href="#domonic.style.Style.alignContent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the alignment between the lines inside a flexible container when the items do not use all available space   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.alignItems">
+<em class="property">property </em><code class="sig-name descname">alignItems</code><a class="headerlink" href="#domonic.style.Style.alignItems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the alignment for items inside a flexible container 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.alignSelf">
+<em class="property">property </em><code class="sig-name descname">alignSelf</code><a class="headerlink" href="#domonic.style.Style.alignSelf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the alignment for selected items inside a flexible container    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.animation">
+<em class="property">property </em><code class="sig-name descname">animation</code><a class="headerlink" href="#domonic.style.Style.animation" title="Permalink to this definition">¶</a></dt>
+<dd><p>shorthand property for all the animation properties below, except the animationPlayState property 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.animationDelay">
+<em class="property">property </em><code class="sig-name descname">animationDelay</code><a class="headerlink" href="#domonic.style.Style.animationDelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns when the animation will start   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.animationDirection">
+<em class="property">property </em><code class="sig-name descname">animationDirection</code><a class="headerlink" href="#domonic.style.Style.animationDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether or not the animation should play in reverse on alternate cycles 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.animationDuration">
+<em class="property">property </em><code class="sig-name descname">animationDuration</code><a class="headerlink" href="#domonic.style.Style.animationDuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns how many seconds or milliseconds an animation takes to complete one cycle   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.animationFillMode">
+<em class="property">property </em><code class="sig-name descname">animationFillMode</code><a class="headerlink" href="#domonic.style.Style.animationFillMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns what values are applied by the animation outside the time it is executing   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.animationIterationCount">
+<em class="property">property </em><code class="sig-name descname">animationIterationCount</code><a class="headerlink" href="#domonic.style.Style.animationIterationCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the number of times an animation should be played   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.animationName">
+<em class="property">property </em><code class="sig-name descname">animationName</code><a class="headerlink" href="#domonic.style.Style.animationName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns a name for the &#64;keyframes animation 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.animationPlayState">
+<em class="property">property </em><code class="sig-name descname">animationPlayState</code><a class="headerlink" href="#domonic.style.Style.animationPlayState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether the animation is running or paused  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.animationTimingFunction">
+<em class="property">property </em><code class="sig-name descname">animationTimingFunction</code><a class="headerlink" href="#domonic.style.Style.animationTimingFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the speed curve of the animation    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.backfaceVisibility">
+<em class="property">property </em><code class="sig-name descname">backfaceVisibility</code><a class="headerlink" href="#domonic.style.Style.backfaceVisibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether or not an element should be visible when not facing the screen  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.background">
+<em class="property">property </em><code class="sig-name descname">background</code><a class="headerlink" href="#domonic.style.Style.background" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns all the background properties in one declaration    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.backgroundAttachment">
+<em class="property">property </em><code class="sig-name descname">backgroundAttachment</code><a class="headerlink" href="#domonic.style.Style.backgroundAttachment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether a background-image is fixed or scrolls with the page    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.backgroundClip">
+<em class="property">property </em><code class="sig-name descname">backgroundClip</code><a class="headerlink" href="#domonic.style.Style.backgroundClip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the painting area of the background 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.backgroundColor">
+<em class="property">property </em><code class="sig-name descname">backgroundColor</code><a class="headerlink" href="#domonic.style.Style.backgroundColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the background-color of an element  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.backgroundImage">
+<em class="property">property </em><code class="sig-name descname">backgroundImage</code><a class="headerlink" href="#domonic.style.Style.backgroundImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the background-image for an element 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.backgroundOrigin">
+<em class="property">property </em><code class="sig-name descname">backgroundOrigin</code><a class="headerlink" href="#domonic.style.Style.backgroundOrigin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the positioning area of the background images   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.backgroundPosition">
+<em class="property">property </em><code class="sig-name descname">backgroundPosition</code><a class="headerlink" href="#domonic.style.Style.backgroundPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the starting position of a background-image 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.backgroundRepeat">
+<em class="property">property </em><code class="sig-name descname">backgroundRepeat</code><a class="headerlink" href="#domonic.style.Style.backgroundRepeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns how to repeat (tile) a background-image 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.backgroundSize">
+<em class="property">property </em><code class="sig-name descname">backgroundSize</code><a class="headerlink" href="#domonic.style.Style.backgroundSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the size of the background image    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.border">
+<em class="property">property </em><code class="sig-name descname">border</code><a class="headerlink" href="#domonic.style.Style.border" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns borderWidth, borderStyle, and borderColor in one declaration    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderBottom">
+<em class="property">property </em><code class="sig-name descname">borderBottom</code><a class="headerlink" href="#domonic.style.Style.borderBottom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns all the borderBottom properties in one declaration  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderBottomColor">
+<em class="property">property </em><code class="sig-name descname">borderBottomColor</code><a class="headerlink" href="#domonic.style.Style.borderBottomColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the color of the bottom border  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderBottomLeftRadius">
+<em class="property">property </em><code class="sig-name descname">borderBottomLeftRadius</code><a class="headerlink" href="#domonic.style.Style.borderBottomLeftRadius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the shape of the border of the bottom-left corner   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderBottomRightRadius">
+<em class="property">property </em><code class="sig-name descname">borderBottomRightRadius</code><a class="headerlink" href="#domonic.style.Style.borderBottomRightRadius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the shape of the border of the bottom-right corner  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderBottomStyle">
+<em class="property">property </em><code class="sig-name descname">borderBottomStyle</code><a class="headerlink" href="#domonic.style.Style.borderBottomStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the style of the bottom border  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderBottomWidth">
+<em class="property">property </em><code class="sig-name descname">borderBottomWidth</code><a class="headerlink" href="#domonic.style.Style.borderBottomWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the width of the bottom border  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderCollapse">
+<em class="property">property </em><code class="sig-name descname">borderCollapse</code><a class="headerlink" href="#domonic.style.Style.borderCollapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether the table border should be collapsed into a single border, or not   2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderColor">
+<em class="property">property </em><code class="sig-name descname">borderColor</code><a class="headerlink" href="#domonic.style.Style.borderColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the color of an element’s border (can have up to four values)   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderImage">
+<em class="property">property </em><code class="sig-name descname">borderImage</code><a class="headerlink" href="#domonic.style.Style.borderImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>horthand property for setting or returning all the borderImage properties    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderImageOutset">
+<em class="property">property </em><code class="sig-name descname">borderImageOutset</code><a class="headerlink" href="#domonic.style.Style.borderImageOutset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the amount by which the border image area extends beyond the border box 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderImageRepeat">
+<em class="property">property </em><code class="sig-name descname">borderImageRepeat</code><a class="headerlink" href="#domonic.style.Style.borderImageRepeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether the image-border should be repeated, rounded or stretched   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderImageSlice">
+<em class="property">property </em><code class="sig-name descname">borderImageSlice</code><a class="headerlink" href="#domonic.style.Style.borderImageSlice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the inward offsets of the image-border  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderImageSource">
+<em class="property">property </em><code class="sig-name descname">borderImageSource</code><a class="headerlink" href="#domonic.style.Style.borderImageSource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the image to be used as a border    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderImageWidth">
+<em class="property">property </em><code class="sig-name descname">borderImageWidth</code><a class="headerlink" href="#domonic.style.Style.borderImageWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the widths of the image-border  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderLeft">
+<em class="property">property </em><code class="sig-name descname">borderLeft</code><a class="headerlink" href="#domonic.style.Style.borderLeft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns all the borderLeft properties in one declaration    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderLeftColor">
+<em class="property">property </em><code class="sig-name descname">borderLeftColor</code><a class="headerlink" href="#domonic.style.Style.borderLeftColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the color of the left border    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderLeftStyle">
+<em class="property">property </em><code class="sig-name descname">borderLeftStyle</code><a class="headerlink" href="#domonic.style.Style.borderLeftStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the style of the left border    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderLeftWidth">
+<em class="property">property </em><code class="sig-name descname">borderLeftWidth</code><a class="headerlink" href="#domonic.style.Style.borderLeftWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the width of the left border    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderRadius">
+<em class="property">property </em><code class="sig-name descname">borderRadius</code><a class="headerlink" href="#domonic.style.Style.borderRadius" title="Permalink to this definition">¶</a></dt>
+<dd><p>A shorthand property for setting or returning all the four borderRadius properties  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderRight">
+<em class="property">property </em><code class="sig-name descname">borderRight</code><a class="headerlink" href="#domonic.style.Style.borderRight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns all the borderRight properties in one declaration   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderRightColor">
+<em class="property">property </em><code class="sig-name descname">borderRightColor</code><a class="headerlink" href="#domonic.style.Style.borderRightColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the color of the right border   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderRightStyle">
+<em class="property">property </em><code class="sig-name descname">borderRightStyle</code><a class="headerlink" href="#domonic.style.Style.borderRightStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the style of the right border   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderRightWidth">
+<em class="property">property </em><code class="sig-name descname">borderRightWidth</code><a class="headerlink" href="#domonic.style.Style.borderRightWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the width of the right border   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderSpacing">
+<em class="property">property </em><code class="sig-name descname">borderSpacing</code><a class="headerlink" href="#domonic.style.Style.borderSpacing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the space between cells in a table  2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderStyle">
+<em class="property">property </em><code class="sig-name descname">borderStyle</code><a class="headerlink" href="#domonic.style.Style.borderStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the style of an element’s border (can have up to four values)   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderTop">
+<em class="property">property </em><code class="sig-name descname">borderTop</code><a class="headerlink" href="#domonic.style.Style.borderTop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns all the borderTop properties in one declaration 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderTopColor">
+<em class="property">property </em><code class="sig-name descname">borderTopColor</code><a class="headerlink" href="#domonic.style.Style.borderTopColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the color of the top border 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderTopLeftRadius">
+<em class="property">property </em><code class="sig-name descname">borderTopLeftRadius</code><a class="headerlink" href="#domonic.style.Style.borderTopLeftRadius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the shape of the border of the top-left corner  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderTopRightRadius">
+<em class="property">property </em><code class="sig-name descname">borderTopRightRadius</code><a class="headerlink" href="#domonic.style.Style.borderTopRightRadius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the shape of the border of the top-right corner 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderTopStyle">
+<em class="property">property </em><code class="sig-name descname">borderTopStyle</code><a class="headerlink" href="#domonic.style.Style.borderTopStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the style of the top border 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderTopWidth">
+<em class="property">property </em><code class="sig-name descname">borderTopWidth</code><a class="headerlink" href="#domonic.style.Style.borderTopWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the width of the top border 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.borderWidth">
+<em class="property">property </em><code class="sig-name descname">borderWidth</code><a class="headerlink" href="#domonic.style.Style.borderWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the width of an element’s border (can have up to four values)   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.bottom">
+<em class="property">property </em><code class="sig-name descname">bottom</code><a class="headerlink" href="#domonic.style.Style.bottom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the bottom position of a positioned element 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.boxDecorationBreak">
+<em class="property">property </em><code class="sig-name descname">boxDecorationBreak</code><a class="headerlink" href="#domonic.style.Style.boxDecorationBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the behaviour of the background and border of an element at page-break, or, for in-line elements, at line-break.    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.boxShadow">
+<em class="property">property </em><code class="sig-name descname">boxShadow</code><a class="headerlink" href="#domonic.style.Style.boxShadow" title="Permalink to this definition">¶</a></dt>
+<dd><p>ttaches one or more drop-shadows to the box    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.boxSizing">
+<em class="property">property </em><code class="sig-name descname">boxSizing</code><a class="headerlink" href="#domonic.style.Style.boxSizing" title="Permalink to this definition">¶</a></dt>
+<dd><p>llows you to define certain elements to fit an area in a certain way   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.captionSide">
+<em class="property">property </em><code class="sig-name descname">captionSide</code><a class="headerlink" href="#domonic.style.Style.captionSide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the position of the table caption   2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.clear">
+<em class="property">property </em><code class="sig-name descname">clear</code><a class="headerlink" href="#domonic.style.Style.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the position of the element relative to floating objects    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.clip">
+<em class="property">property </em><code class="sig-name descname">clip</code><a class="headerlink" href="#domonic.style.Style.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns which part of a positioned element is visible   2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.color">
+<em class="property">property </em><code class="sig-name descname">color</code><a class="headerlink" href="#domonic.style.Style.color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the color of the text   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.columnCount">
+<em class="property">property </em><code class="sig-name descname">columnCount</code><a class="headerlink" href="#domonic.style.Style.columnCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the number of columns an element should be divided into 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.columnFill">
+<em class="property">property </em><code class="sig-name descname">columnFill</code><a class="headerlink" href="#domonic.style.Style.columnFill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns how to fill columns 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.columnGap">
+<em class="property">property </em><code class="sig-name descname">columnGap</code><a class="headerlink" href="#domonic.style.Style.columnGap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the gap between the columns 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.columnRule">
+<em class="property">property </em><code class="sig-name descname">columnRule</code><a class="headerlink" href="#domonic.style.Style.columnRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>shorthand property for setting or returning all the columnRule properties 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.columnRuleColor">
+<em class="property">property </em><code class="sig-name descname">columnRuleColor</code><a class="headerlink" href="#domonic.style.Style.columnRuleColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the color of the rule between columns   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.columnRuleStyle">
+<em class="property">property </em><code class="sig-name descname">columnRuleStyle</code><a class="headerlink" href="#domonic.style.Style.columnRuleStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the style of the rule between columns   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.columnRuleWidth">
+<em class="property">property </em><code class="sig-name descname">columnRuleWidth</code><a class="headerlink" href="#domonic.style.Style.columnRuleWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the width of the rule between columns   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.columnSpan">
+<em class="property">property </em><code class="sig-name descname">columnSpan</code><a class="headerlink" href="#domonic.style.Style.columnSpan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns how many columns an element should span across  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.columnWidth">
+<em class="property">property </em><code class="sig-name descname">columnWidth</code><a class="headerlink" href="#domonic.style.Style.columnWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the width of the columns    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.columns">
+<em class="property">property </em><code class="sig-name descname">columns</code><a class="headerlink" href="#domonic.style.Style.columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>horthand property for setting or returning columnWidth and columnCount   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.content">
+<em class="property">property </em><code class="sig-name descname">content</code><a class="headerlink" href="#domonic.style.Style.content" title="Permalink to this definition">¶</a></dt>
+<dd><p>after pseudo-elements, to insert generated content   2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>d with the</p>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p>before and</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.counterIncrement">
+<em class="property">property </em><code class="sig-name descname">counterIncrement</code><a class="headerlink" href="#domonic.style.Style.counterIncrement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increments one or more counters 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.counterReset">
+<em class="property">property </em><code class="sig-name descname">counterReset</code><a class="headerlink" href="#domonic.style.Style.counterReset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates or resets one or more counters  2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.cssFloat">
+<em class="property">property </em><code class="sig-name descname">cssFloat</code><a class="headerlink" href="#domonic.style.Style.cssFloat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the horizontal alignment of an element  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.cursor">
+<em class="property">property </em><code class="sig-name descname">cursor</code><a class="headerlink" href="#domonic.style.Style.cursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the type of cursor to display for the mouse pointer 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.direction">
+<em class="property">property </em><code class="sig-name descname">direction</code><a class="headerlink" href="#domonic.style.Style.direction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the text direction  2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.display">
+<em class="property">property </em><code class="sig-name descname">display</code><a class="headerlink" href="#domonic.style.Style.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns an element’s display type   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.emptyCells">
+<em class="property">property </em><code class="sig-name descname">emptyCells</code><a class="headerlink" href="#domonic.style.Style.emptyCells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether to show the border and background of empty cells, or not    2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.filter">
+<em class="property">property </em><code class="sig-name descname">filter</code><a class="headerlink" href="#domonic.style.Style.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns image filters (visual effects, like blur and saturation)    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.flex">
+<em class="property">property </em><code class="sig-name descname">flex</code><a class="headerlink" href="#domonic.style.Style.flex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the length of the item, relative to the rest    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.flexBasis">
+<em class="property">property </em><code class="sig-name descname">flexBasis</code><a class="headerlink" href="#domonic.style.Style.flexBasis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the initial length of a flexible item   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.flexDirection">
+<em class="property">property </em><code class="sig-name descname">flexDirection</code><a class="headerlink" href="#domonic.style.Style.flexDirection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the direction of the flexible items 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.flexFlow">
+<em class="property">property </em><code class="sig-name descname">flexFlow</code><a class="headerlink" href="#domonic.style.Style.flexFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>A shorthand property for the flexDirection and the flexWrap properties  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.flexGrow">
+<em class="property">property </em><code class="sig-name descname">flexGrow</code><a class="headerlink" href="#domonic.style.Style.flexGrow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns how much the item will grow relative to the rest    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.flexShrink">
+<em class="property">property </em><code class="sig-name descname">flexShrink</code><a class="headerlink" href="#domonic.style.Style.flexShrink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns how the item will shrink relative to the rest   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.flexWrap">
+<em class="property">property </em><code class="sig-name descname">flexWrap</code><a class="headerlink" href="#domonic.style.Style.flexWrap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether the flexible items should wrap or not   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.font">
+<em class="property">property </em><code class="sig-name descname">font</code><a class="headerlink" href="#domonic.style.Style.font" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns fontStyle, fontVariant, fontWeight, fontSize, lineHeight, and fontFamily in one declaration 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.fontFamily">
+<em class="property">property </em><code class="sig-name descname">fontFamily</code><a class="headerlink" href="#domonic.style.Style.fontFamily" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the font family for text    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.fontSize">
+<em class="property">property </em><code class="sig-name descname">fontSize</code><a class="headerlink" href="#domonic.style.Style.fontSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the font size of the text   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.fontSizeAdjust">
+<em class="property">property </em><code class="sig-name descname">fontSizeAdjust</code><a class="headerlink" href="#domonic.style.Style.fontSizeAdjust" title="Permalink to this definition">¶</a></dt>
+<dd><p>eserves the readability of text when font fallback occurs 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.fontStretch">
+<em class="property">property </em><code class="sig-name descname">fontStretch</code><a class="headerlink" href="#domonic.style.Style.fontStretch" title="Permalink to this definition">¶</a></dt>
+<dd><p>ects a normal, condensed, or expanded face from a font family    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.fontStyle">
+<em class="property">property </em><code class="sig-name descname">fontStyle</code><a class="headerlink" href="#domonic.style.Style.fontStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether the style of the font is normal, italic or oblique  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.fontVariant">
+<em class="property">property </em><code class="sig-name descname">fontVariant</code><a class="headerlink" href="#domonic.style.Style.fontVariant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether the font should be displayed in small capital letters   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.fontWeight">
+<em class="property">property </em><code class="sig-name descname">fontWeight</code><a class="headerlink" href="#domonic.style.Style.fontWeight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the boldness of the font    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.hangingPunctuation">
+<em class="property">property </em><code class="sig-name descname">hangingPunctuation</code><a class="headerlink" href="#domonic.style.Style.hangingPunctuation" title="Permalink to this definition">¶</a></dt>
+<dd><p>ecifies whether a punctuation character may be placed outside the line box    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.height">
+<em class="property">property </em><code class="sig-name descname">height</code><a class="headerlink" href="#domonic.style.Style.height" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the height of an element    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.hyphens">
+<em class="property">property </em><code class="sig-name descname">hyphens</code><a class="headerlink" href="#domonic.style.Style.hyphens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets how to split words to improve the layout of paragraphs 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.icon">
+<em class="property">property </em><code class="sig-name descname">icon</code><a class="headerlink" href="#domonic.style.Style.icon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides the author the ability to style an element with an iconic equivalent   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.imageOrientation">
+<em class="property">property </em><code class="sig-name descname">imageOrientation</code><a class="headerlink" href="#domonic.style.Style.imageOrientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies a rotation in the right or clockwise direction that a user agent applies to an image  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.isolation">
+<em class="property">property </em><code class="sig-name descname">isolation</code><a class="headerlink" href="#domonic.style.Style.isolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>efines whether an element must create a new stacking content   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.justifyContent">
+<em class="property">property </em><code class="sig-name descname">justifyContent</code><a class="headerlink" href="#domonic.style.Style.justifyContent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the alignment between the items inside a flexible container when the items do not use all available space.  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.left">
+<em class="property">property </em><code class="sig-name descname">left</code><a class="headerlink" href="#domonic.style.Style.left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the left position of a positioned element   2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.letterSpacing">
+<em class="property">property </em><code class="sig-name descname">letterSpacing</code><a class="headerlink" href="#domonic.style.Style.letterSpacing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the space between characters in a text  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.lineHeight">
+<em class="property">property </em><code class="sig-name descname">lineHeight</code><a class="headerlink" href="#domonic.style.Style.lineHeight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the distance between lines in a text    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.listStyle">
+<em class="property">property </em><code class="sig-name descname">listStyle</code><a class="headerlink" href="#domonic.style.Style.listStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns listStyleImage, listStylePosition, and listStyleType in one declaration 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.listStyleImage">
+<em class="property">property </em><code class="sig-name descname">listStyleImage</code><a class="headerlink" href="#domonic.style.Style.listStyleImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns an image as the list-item marker    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.listStylePosition">
+<em class="property">property </em><code class="sig-name descname">listStylePosition</code><a class="headerlink" href="#domonic.style.Style.listStylePosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the position of the list-item marker    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.listStyleType">
+<em class="property">property </em><code class="sig-name descname">listStyleType</code><a class="headerlink" href="#domonic.style.Style.listStyleType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the list-item marker type   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.margin">
+<em class="property">property </em><code class="sig-name descname">margin</code><a class="headerlink" href="#domonic.style.Style.margin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the margins of an element (can have up to four values)  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.marginBottom">
+<em class="property">property </em><code class="sig-name descname">marginBottom</code><a class="headerlink" href="#domonic.style.Style.marginBottom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the bottom margin of an element 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.marginLeft">
+<em class="property">property </em><code class="sig-name descname">marginLeft</code><a class="headerlink" href="#domonic.style.Style.marginLeft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the left margin of an element   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.marginRight">
+<em class="property">property </em><code class="sig-name descname">marginRight</code><a class="headerlink" href="#domonic.style.Style.marginRight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the right margin of an element  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.marginTop">
+<em class="property">property </em><code class="sig-name descname">marginTop</code><a class="headerlink" href="#domonic.style.Style.marginTop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the top margin of an element    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.maxHeight">
+<em class="property">property </em><code class="sig-name descname">maxHeight</code><a class="headerlink" href="#domonic.style.Style.maxHeight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the maximum height of an element    2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.maxWidth">
+<em class="property">property </em><code class="sig-name descname">maxWidth</code><a class="headerlink" href="#domonic.style.Style.maxWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the maximum width of an element 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.minHeight">
+<em class="property">property </em><code class="sig-name descname">minHeight</code><a class="headerlink" href="#domonic.style.Style.minHeight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the minimum height of an element    2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.minWidth">
+<em class="property">property </em><code class="sig-name descname">minWidth</code><a class="headerlink" href="#domonic.style.Style.minWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the minimum width of an element 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.navDown">
+<em class="property">property </em><code class="sig-name descname">navDown</code><a class="headerlink" href="#domonic.style.Style.navDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns where to navigate when using the arrow-down navigation key  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.navIndex">
+<em class="property">property </em><code class="sig-name descname">navIndex</code><a class="headerlink" href="#domonic.style.Style.navIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the tabbing order for an element    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.navLeft">
+<em class="property">property </em><code class="sig-name descname">navLeft</code><a class="headerlink" href="#domonic.style.Style.navLeft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns where to navigate when using the arrow-left navigation key  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.navRight">
+<em class="property">property </em><code class="sig-name descname">navRight</code><a class="headerlink" href="#domonic.style.Style.navRight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns where to navigate when using the arrow-right navigation key 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.navUp">
+<em class="property">property </em><code class="sig-name descname">navUp</code><a class="headerlink" href="#domonic.style.Style.navUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns where to navigate when using the arrow-up navigation key    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.objectFit">
+<em class="property">property </em><code class="sig-name descname">objectFit</code><a class="headerlink" href="#domonic.style.Style.objectFit" title="Permalink to this definition">¶</a></dt>
+<dd><p>pecifies how the contents of a replaced element should be fitted to the box established by its used height and width   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.objectPosition">
+<em class="property">property </em><code class="sig-name descname">objectPosition</code><a class="headerlink" href="#domonic.style.Style.objectPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>ecifies the alignment of the replaced element inside its box  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.opacity">
+<em class="property">property </em><code class="sig-name descname">opacity</code><a class="headerlink" href="#domonic.style.Style.opacity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the opacity level for an element    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.order">
+<em class="property">property </em><code class="sig-name descname">order</code><a class="headerlink" href="#domonic.style.Style.order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the order of the flexible item, relative to the rest    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.orphans">
+<em class="property">property </em><code class="sig-name descname">orphans</code><a class="headerlink" href="#domonic.style.Style.orphans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the minimum number of lines for an element that must be left at the bottom of a page when a page break occurs inside an element 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.outline">
+<em class="property">property </em><code class="sig-name descname">outline</code><a class="headerlink" href="#domonic.style.Style.outline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns all the outline properties in one declaration   2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.outlineColor">
+<em class="property">property </em><code class="sig-name descname">outlineColor</code><a class="headerlink" href="#domonic.style.Style.outlineColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the color of the outline around a element   2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.outlineOffset">
+<em class="property">property </em><code class="sig-name descname">outlineOffset</code><a class="headerlink" href="#domonic.style.Style.outlineOffset" title="Permalink to this definition">¶</a></dt>
+<dd><p>ffsets an outline, and draws it beyond the border edge 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.outlineStyle">
+<em class="property">property </em><code class="sig-name descname">outlineStyle</code><a class="headerlink" href="#domonic.style.Style.outlineStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the style of the outline around an element  2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.outlineWidth">
+<em class="property">property </em><code class="sig-name descname">outlineWidth</code><a class="headerlink" href="#domonic.style.Style.outlineWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the width of the outline around an element  2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.overflow">
+<em class="property">property </em><code class="sig-name descname">overflow</code><a class="headerlink" href="#domonic.style.Style.overflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns what to do with content that renders outside the element box    2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.overflowX">
+<em class="property">property </em><code class="sig-name descname">overflowX</code><a class="headerlink" href="#domonic.style.Style.overflowX" title="Permalink to this definition">¶</a></dt>
+<dd><p>pecifies what to do with the left/right edges of the content, if it overflows the element’s content area   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.overflowY">
+<em class="property">property </em><code class="sig-name descname">overflowY</code><a class="headerlink" href="#domonic.style.Style.overflowY" title="Permalink to this definition">¶</a></dt>
+<dd><p>pecifies what to do with the top/bottom edges of the content, if it overflows the element’s content area   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.padding">
+<em class="property">property </em><code class="sig-name descname">padding</code><a class="headerlink" href="#domonic.style.Style.padding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the padding of an element (can have up to four values)  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.paddingBottom">
+<em class="property">property </em><code class="sig-name descname">paddingBottom</code><a class="headerlink" href="#domonic.style.Style.paddingBottom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the bottom padding of an element    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.paddingLeft">
+<em class="property">property </em><code class="sig-name descname">paddingLeft</code><a class="headerlink" href="#domonic.style.Style.paddingLeft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the left padding of an element  1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.paddingRight">
+<em class="property">property </em><code class="sig-name descname">paddingRight</code><a class="headerlink" href="#domonic.style.Style.paddingRight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the right padding of an element 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.paddingTop">
+<em class="property">property </em><code class="sig-name descname">paddingTop</code><a class="headerlink" href="#domonic.style.Style.paddingTop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the top padding of an element   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.pageBreakAfter">
+<em class="property">property </em><code class="sig-name descname">pageBreakAfter</code><a class="headerlink" href="#domonic.style.Style.pageBreakAfter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the page-break behavior after an element    2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.pageBreakBefore">
+<em class="property">property </em><code class="sig-name descname">pageBreakBefore</code><a class="headerlink" href="#domonic.style.Style.pageBreakBefore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the page-break behavior before an element   2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.pageBreakInside">
+<em class="property">property </em><code class="sig-name descname">pageBreakInside</code><a class="headerlink" href="#domonic.style.Style.pageBreakInside" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the page-break behavior inside an element   2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.perspective">
+<em class="property">property </em><code class="sig-name descname">perspective</code><a class="headerlink" href="#domonic.style.Style.perspective" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the perspective on how 3D elements are viewed   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.perspectiveOrigin">
+<em class="property">property </em><code class="sig-name descname">perspectiveOrigin</code><a class="headerlink" href="#domonic.style.Style.perspectiveOrigin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the bottom position of 3D elements  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.position">
+<em class="property">property </em><code class="sig-name descname">position</code><a class="headerlink" href="#domonic.style.Style.position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the type of positioning method used for an element (static, relative, absolute or fixed)    2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.quotes">
+<em class="property">property </em><code class="sig-name descname">quotes</code><a class="headerlink" href="#domonic.style.Style.quotes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the type of quotation marks for embedded quotations 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.resize">
+<em class="property">property </em><code class="sig-name descname">resize</code><a class="headerlink" href="#domonic.style.Style.resize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether or not an element is resizable by the user  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.right">
+<em class="property">property </em><code class="sig-name descname">right</code><a class="headerlink" href="#domonic.style.Style.right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the right position of a positioned element  2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.tabSize">
+<em class="property">property </em><code class="sig-name descname">tabSize</code><a class="headerlink" href="#domonic.style.Style.tabSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the length of the tab-character 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.tableLayout">
+<em class="property">property </em><code class="sig-name descname">tableLayout</code><a class="headerlink" href="#domonic.style.Style.tableLayout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the way to lay out table cells, rows, and columns   2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textAlign">
+<em class="property">property </em><code class="sig-name descname">textAlign</code><a class="headerlink" href="#domonic.style.Style.textAlign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the horizontal alignment of text    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textAlignLast">
+<em class="property">property </em><code class="sig-name descname">textAlignLast</code><a class="headerlink" href="#domonic.style.Style.textAlignLast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns how the last line of a block or a line right before a forced line break is aligned when text-align is “justify” 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textDecoration">
+<em class="property">property </em><code class="sig-name descname">textDecoration</code><a class="headerlink" href="#domonic.style.Style.textDecoration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the decoration of a text    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textDecorationColor">
+<em class="property">property </em><code class="sig-name descname">textDecorationColor</code><a class="headerlink" href="#domonic.style.Style.textDecorationColor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the color of the text-decoration    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textDecorationLine">
+<em class="property">property </em><code class="sig-name descname">textDecorationLine</code><a class="headerlink" href="#domonic.style.Style.textDecorationLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the type of line in a text-decoration   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textDecorationStyle">
+<em class="property">property </em><code class="sig-name descname">textDecorationStyle</code><a class="headerlink" href="#domonic.style.Style.textDecorationStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the style of the line in a text decoration  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textIndent">
+<em class="property">property </em><code class="sig-name descname">textIndent</code><a class="headerlink" href="#domonic.style.Style.textIndent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the indentation of the first line of text   1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textJustify">
+<em class="property">property </em><code class="sig-name descname">textJustify</code><a class="headerlink" href="#domonic.style.Style.textJustify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the justification method used when text-align is “justify”  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textOverflow">
+<em class="property">property </em><code class="sig-name descname">textOverflow</code><a class="headerlink" href="#domonic.style.Style.textOverflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns what should happen when text overflows the containing element   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textShadow">
+<em class="property">property </em><code class="sig-name descname">textShadow</code><a class="headerlink" href="#domonic.style.Style.textShadow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the shadow effect of a text 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.textTransform">
+<em class="property">property </em><code class="sig-name descname">textTransform</code><a class="headerlink" href="#domonic.style.Style.textTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the capitalization of a text    1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.top">
+<em class="property">property </em><code class="sig-name descname">top</code><a class="headerlink" href="#domonic.style.Style.top" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the top position of a positioned element    2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.transform">
+<em class="property">property </em><code class="sig-name descname">transform</code><a class="headerlink" href="#domonic.style.Style.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>pplies a 2D or 3D transformation to an element 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.transformOrigin">
+<em class="property">property </em><code class="sig-name descname">transformOrigin</code><a class="headerlink" href="#domonic.style.Style.transformOrigin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the position of transformed elements    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.transformStyle">
+<em class="property">property </em><code class="sig-name descname">transformStyle</code><a class="headerlink" href="#domonic.style.Style.transformStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns how nested elements are rendered in 3D space    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.transition">
+<em class="property">property </em><code class="sig-name descname">transition</code><a class="headerlink" href="#domonic.style.Style.transition" title="Permalink to this definition">¶</a></dt>
+<dd><p>shorthand property for setting or returning the four transition properties    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.transitionDelay">
+<em class="property">property </em><code class="sig-name descname">transitionDelay</code><a class="headerlink" href="#domonic.style.Style.transitionDelay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns when the transition effect will start   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.transitionDuration">
+<em class="property">property </em><code class="sig-name descname">transitionDuration</code><a class="headerlink" href="#domonic.style.Style.transitionDuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns how many seconds or milliseconds a transition effect takes to complete  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.transitionProperty">
+<em class="property">property </em><code class="sig-name descname">transitionProperty</code><a class="headerlink" href="#domonic.style.Style.transitionProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the CSS property that the transition effect is for  3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.transitionTimingFunction">
+<em class="property">property </em><code class="sig-name descname">transitionTimingFunction</code><a class="headerlink" href="#domonic.style.Style.transitionTimingFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the speed curve of the transition effect    3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.unicodeBidi">
+<em class="property">property </em><code class="sig-name descname">unicodeBidi</code><a class="headerlink" href="#domonic.style.Style.unicodeBidi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether the text should be overridden to support multiple languages in the same document    2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.userSelect">
+<em class="property">property </em><code class="sig-name descname">userSelect</code><a class="headerlink" href="#domonic.style.Style.userSelect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether the text of an element can be selected or not   2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.verticalAlign">
+<em class="property">property </em><code class="sig-name descname">verticalAlign</code><a class="headerlink" href="#domonic.style.Style.verticalAlign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the vertical alignment of the content in an element 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.visibility">
+<em class="property">property </em><code class="sig-name descname">visibility</code><a class="headerlink" href="#domonic.style.Style.visibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns whether an element should be visible 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.whiteSpace">
+<em class="property">property </em><code class="sig-name descname">whiteSpace</code><a class="headerlink" href="#domonic.style.Style.whiteSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns how to handle tabs, line breaks and whitespace in a text 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.widows">
+<em class="property">property </em><code class="sig-name descname">widows</code><a class="headerlink" href="#domonic.style.Style.widows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the minimum number of lines for an element that must be visible at the top of a page    2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.width">
+<em class="property">property </em><code class="sig-name descname">width</code><a class="headerlink" href="#domonic.style.Style.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the width of an element 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.wordBreak">
+<em class="property">property </em><code class="sig-name descname">wordBreak</code><a class="headerlink" href="#domonic.style.Style.wordBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns line breaking rules for non-CJK scripts 3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.wordSpacing">
+<em class="property">property </em><code class="sig-name descname">wordSpacing</code><a class="headerlink" href="#domonic.style.Style.wordSpacing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the spacing between words in a text 1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.wordWrap">
+<em class="property">property </em><code class="sig-name descname">wordWrap</code><a class="headerlink" href="#domonic.style.Style.wordWrap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows long, unbreakable words to be broken and wrap to the next line   3</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.style.Style.zIndex">
+<em class="property">property </em><code class="sig-name descname">zIndex</code><a class="headerlink" href="#domonic.style.Style.zIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets or returns the stack order of a positioned element 2</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-domonic.utils"></span><div class="section" id="domonic-utils">
+<h2>domonic.utils<a class="headerlink" href="#domonic-utils" title="Permalink to this headline">¶</a></h2>
+<p>snippets etc</p>
+</div>
 </div>
 
 
@@ -2626,6 +3787,9 @@ i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’)) # optional seperator if the 
 <li class="toctree-l2"><a class="reference internal" href="#domonic-terminal">domonic.terminal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#domonic-json">domonic.JSON</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#domonic-cdn">domonic.CDN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#domonic-events">domonic.events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#domonic-style">domonic.style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#domonic-utils">domonic.utils</a></li>
 </ul>
 </li>
 </ul>

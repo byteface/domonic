@@ -6,9 +6,10 @@
 """
 
 from typing import *
-
+import time
 
 class Event(object):
+    """ events """
 
     # Event("look", {"bubbles":true, "cancelable":false});
     def __init__(self, _type=None, *args, **kwargs):
@@ -28,7 +29,9 @@ class Event(object):
         self.returnValue = None
         self.srcElement = None
         self.target = None
-        self.timeStamp = None
+        
+        # ms = time.time_ns() // 1000000 3.7 up
+        self.timeStamp = int(round(time.time() * 1000))
         
 
     def composedPath(self):
@@ -37,8 +40,8 @@ class Event(object):
     def createEvent(self):
         pass
 
-    def initEvent(self):
-        pass
+    def initEvent(self, _type=None, *args, **kwargs):
+        self.__init__(_type, args, kwargs)
 
     def msConvertURL(self):
         pass
@@ -54,6 +57,8 @@ class Event(object):
 
 
 class MouseEvent(Event):
+    """ mouse events """
+
     def __init__(self, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
@@ -90,6 +95,8 @@ class MouseEvent(Event):
 
 
 class KeyboardEvent(object):
+    """ keyboard events """
+
     def __init__(self, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs

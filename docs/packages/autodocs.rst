@@ -18,3 +18,12 @@ Domonic: autodocs
 
 .. automodule:: domonic.CDN
     :members:
+
+.. automodule:: domonic.events
+    :members:
+
+.. automodule:: domonic.style
+    :members:
+
+.. automodule:: domonic.utils
+    :members:

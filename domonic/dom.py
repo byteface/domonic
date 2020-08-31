@@ -769,9 +769,15 @@ class Document(Element):
         el = type(_type, (tag, Element), {'name': _type, '__init__': tag_init})
         return el()
 
-    # def createEvent():
+    def createEvent(event_type=None):
         '''Creates a new event'''
-        # return
+        if event_type == "MouseEvent":
+            return MouseEvent()
+        elif event_type == "KeyboardEvent":
+            return MouseEvent()
+        elif event_type == None:
+            return Event()
+        return Event()
 
     # def createTextNode():
         '''Creates a Text node'''
