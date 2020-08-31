@@ -34,62 +34,82 @@ Indices and tables
 
 -------------------
 
-Contains several main packages: (but by no means are any of them complete)
-----------------
+**Domonic contains several main packages:**
+(but by no means are any of them complete)
 
-- html : Generate html with python3 😎 <br />
-- dom : DOM API in python3 😲 <br />
-- javascript : js API in python3 😳 <br />
-- terminal : call terminal commands with python3 😱 - NEW (*see at the end*)<br />
-- JSON : utils for loading / decorating / transforming<br />
+- html : Generate html with python3 😎
+- dom : DOM API in python3 😲
+- javascript : js API in python3 😳
+- terminal : call terminal commands with python3 😱 - NEW (*see at the end*)
+- JSON : utils for loading / decorating / transforming
 
 
 HTML TEMPLATING
 ----------------
 
-```python
-from domonic import *
+::
 
-output = render( 
-    html(
-        head(
-            style(),
-            script(),
-        ),
-        body(
-            div("hello world"),
-            a("this is a link", _href="http://www.somesite.com", _style="font-size:10px;"),
-            ol(''.join([f'{li()}' for thing in range(5)])),
-            h1("test", _class="test"),
+  from domonic import *
+
+    output = render( 
+        html(
+            head(
+                style(),
+                script(),
+            ),
+            body(
+                div("hello world"),
+                a("this is a link", _href="http://www.somesite.com", _style="font-size:10px;"),
+                ol(''.join([f'{li()}' for thing in range(5)])),
+                h1("test", _class="test"),
+            )
         )
     )
-)
-```
-```html
-<html><head><style></style><script></script></head><body><div>hello world</div><a href="http://www.somesite.com" style="font-size:10px;">this is a link</a><ol><li></li><li></li><li></li><li></li><li></li></ol><h1 class="test">test</h1></body></html>
-```
+
+::
+
+  <html><head><style></style><script></script></head><body><div>hello world</div><a href="http://www.somesite.com" style="font-size:10px;">this is a link</a><ol><li></li><li></li><li></li><li></li><li></li></ol><h1 class="test">test</h1></body></html>
+
 
 
 install
--------
-```bash
-    python3 -m pip install domonic
-```
+----------------
+::
+
+  python3 -m pip install domonic
+
 
 or if you had it before upgrade:
 
-```bash
-    python3 -m pip install domonic --upgrade
-```
+::
+
+  python3 -m pip install domonic --upgrade
+
 
 usage
 ----------------
-```python
-    print(html(body(h1('Hello, World!'))))
-```
-```html
-<html><body><h1>Hello, World!</h1></body></html>
-```
+
+::
+
+  print(html(body(h1('Hello, World!'))))
+
+  <html><body><h1>Hello, World!</h1></body></html>
+
+
+
+The User Guide
+----------------
+
+Here you can find instructions for getting the most out of Domonic.
+
+.. toctree::
+   :maxdepth: 2
+
+   packages/html
+   packages/dom
+   packages/javascript
+   packages/JSON
+   packages/terminal
 
 
 Join-in
@@ -112,7 +132,6 @@ https://github.com/byteface/ezcron/
 
 disclaimer
 ----------------
-
 There's several more widely supported libraries doing HTML generation, DOM reading/manipulation, terminal wrappers etc. Maybe use one of those for production due to strictness and support.
 
 This is becoming more of a fast prototyping library.

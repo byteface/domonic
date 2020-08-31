@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to domonic’s documentation! &#8212; domonic 0.1.10 documentation</title>
+    <title>Domonic: Generate HTML with Python 3 &#8212; domonic 0.1.10 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -15,6 +15,7 @@
     <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Domonic: HTML" href="packages/html.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -31,8 +32,8 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-domonic-s-documentation">
-<h1>Welcome to domonic’s documentation!<a class="headerlink" href="#welcome-to-domonic-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="domonic-generate-html-with-python-3">
+<h1>Domonic: Generate HTML with Python 3<a class="headerlink" href="#domonic-generate-html-with-python-3" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
 </div>
@@ -43,6 +44,94 @@
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
+<hr class="docutils" />
+<a class="reference external image-reference" href="https://pepy.tech/project/domonic"><img alt="https://pepy.tech/badge/domonic" src="https://pepy.tech/badge/domonic" /></a>
+<a class="reference external image-reference" href="https://pypi.org/project/domonic/"><img alt="https://img.shields.io/pypi/pyversions/domonic.svg" src="https://img.shields.io/pypi/pyversions/domonic.svg" /></a>
+<a class="reference external image-reference" href="https://travis-ci.com/byteface/domonic.svg?branch=master"><img alt="https://travis-ci.com/byteface/domonic.svg?branch=master" src="https://travis-ci.com/byteface/domonic.svg?branch=master" /></a>
+<p><strong>Domonic</strong> is a HTML library for Python 3.</p>
+<hr class="docutils" />
+<p><strong>Domonic contains several main packages:</strong>
+(but by no means are any of them complete)</p>
+<ul class="simple">
+<li><p>html : Generate html with python3 😎</p></li>
+<li><p>dom : DOM API in python3 😲</p></li>
+<li><p>javascript : js API in python3 😳</p></li>
+<li><p>terminal : call terminal commands with python3 😱 - NEW (<em>see at the end</em>)</p></li>
+<li><p>JSON : utils for loading / decorating / transforming</p></li>
+</ul>
+<div class="section" id="html-templating">
+<h2>HTML TEMPLATING<a class="headerlink" href="#html-templating" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic</span> <span class="kn">import</span> <span class="o">*</span>
+
+  <span class="n">output</span> <span class="o">=</span> <span class="n">render</span><span class="p">(</span>
+      <span class="n">html</span><span class="p">(</span>
+          <span class="n">head</span><span class="p">(</span>
+              <span class="n">style</span><span class="p">(),</span>
+              <span class="n">script</span><span class="p">(),</span>
+          <span class="p">),</span>
+          <span class="n">body</span><span class="p">(</span>
+              <span class="n">div</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">),</span>
+              <span class="n">a</span><span class="p">(</span><span class="s2">&quot;this is a link&quot;</span><span class="p">,</span> <span class="n">_href</span><span class="o">=</span><span class="s2">&quot;http://www.somesite.com&quot;</span><span class="p">,</span> <span class="n">_style</span><span class="o">=</span><span class="s2">&quot;font-size:10px;&quot;</span><span class="p">),</span>
+              <span class="n">ol</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">li</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])),</span>
+              <span class="n">h1</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">_class</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">),</span>
+          <span class="p">)</span>
+      <span class="p">)</span>
+  <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;&lt;</span><span class="n">head</span><span class="o">&gt;&lt;</span><span class="n">style</span><span class="o">&gt;&lt;/</span><span class="n">style</span><span class="o">&gt;&lt;</span><span class="n">script</span><span class="o">&gt;&lt;/</span><span class="n">script</span><span class="o">&gt;&lt;/</span><span class="n">head</span><span class="o">&gt;&lt;</span><span class="n">body</span><span class="o">&gt;&lt;</span><span class="n">div</span><span class="o">&gt;</span><span class="n">hello</span> <span class="n">world</span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;http://www.somesite.com&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;font-size:10px;&quot;</span><span class="o">&gt;</span><span class="n">this</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">link</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;&lt;</span><span class="n">ol</span><span class="o">&gt;&lt;</span><span class="n">li</span><span class="o">&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;&lt;</span><span class="n">li</span><span class="o">&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;&lt;</span><span class="n">li</span><span class="o">&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;&lt;</span><span class="n">li</span><span class="o">&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;&lt;</span><span class="n">li</span><span class="o">&gt;&lt;/</span><span class="n">li</span><span class="o">&gt;&lt;/</span><span class="n">ol</span><span class="o">&gt;&lt;</span><span class="n">h1</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="o">&gt;</span><span class="n">test</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;&lt;/</span><span class="n">body</span><span class="o">&gt;&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="install">
+<h2>install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">domonic</span>
+</pre></div>
+</div>
+<p>or if you had it before upgrade:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">domonic</span> <span class="o">--</span><span class="n">upgrade</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>print(html(body(h1(&#39;Hello, World!&#39;))))
+
+&lt;html&gt;&lt;body&gt;&lt;h1&gt;Hello, World!&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-user-guide">
+<h2>The User Guide<a class="headerlink" href="#the-user-guide" title="Permalink to this headline">¶</a></h2>
+<p>Here you can find instructions for getting the most out of Domonic.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="packages/html.html">Domonic: HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/dom.html">Domonic: DOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/terminal.html">Domonic: terminal</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="join-in">
+<h2>Join-in<a class="headerlink" href="#join-in" title="Permalink to this headline">¶</a></h2>
+<p>Feel free to join in if you find it useful.</p>
+<p>If there’s any methods you want that are missing or not complete yet. Just update the code and send a pull request.</p>
+<p>I’ll merge and releaese asap.</p>
+</div>
+<div class="section" id="example-project">
+<h2>EXAMPLE PROJECT<a class="headerlink" href="#example-project" title="Permalink to this headline">¶</a></h2>
+<p>A browser based file browser. Working example of how components can work:
+<a class="reference external" href="https://github.com/byteface/Blueberry/">https://github.com/byteface/Blueberry/</a></p>
+<p>A cron viewer
+<a class="reference external" href="https://github.com/byteface/ezcron/">https://github.com/byteface/ezcron/</a></p>
+</div>
+<div class="section" id="disclaimer">
+<h2>disclaimer<a class="headerlink" href="#disclaimer" title="Permalink to this headline">¶</a></h2>
+<p>There’s several more widely supported libraries doing HTML generation, DOM reading/manipulation, terminal wrappers etc. Maybe use one of those for production due to strictness and support.</p>
+<p>This is becoming more of a fast prototyping library.</p>
+</div>
 </div>
 
 
@@ -59,14 +148,29 @@
 
 
 
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=requests&repo=requests&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
 
 
 <h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="packages/html.html">Domonic: HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/dom.html">Domonic: DOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/terminal.html">Domonic: terminal</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="packages/html.html" title="next chapter">Domonic: HTML</a></li>
   </ul></li>
 </ul>
 </div>
@@ -96,14 +200,14 @@
       &copy;2020, byteface.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.2.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
       <a href="_sources/index.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
+    
+    <a href="https://github.com/requests/requests" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
     
 
     

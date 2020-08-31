@@ -321,6 +321,8 @@ Take a look at the code in 'terminal.py' to see all the commands as there's load
 
 ## DOCS
 
+https://domonic.readthedocs.io/
+
 ### notes on templating
 
 while you can create a div with content like :
