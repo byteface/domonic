@@ -19,6 +19,11 @@ class TerminalException(Exception):
 
 class command():
 
+    @staticmethod
+    def run(cmd):
+        returned_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+        return returned_output.decode("utf-8")
+
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs

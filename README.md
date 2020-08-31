@@ -205,7 +205,7 @@ mytag = div("hi", _id="test")
 mytag.style.backgroundColor = "black"
 mytag.style.fontSize = "12px"
 print(mytag)
-# <div id="test" style="background-color:black;font-size:12px;">asdfasdf</div>
+# <div id="test" style="background-color:black;font-size:12px;">hi</div>
 ```
 
 several other undocumented features. Take a look at the code.
@@ -265,7 +265,7 @@ more to come...
 
 ### terminal (NEW)
 
-There is a command line package being started that can call bash/unix/posix and other apps on the command line: <br />
+There is a command line package that can call bash/unix/posix and other apps on the command line: <br />
 This package only works on nix systems as it effectively just passes stuff off to subprocess.
 
 ```python
@@ -308,6 +308,12 @@ print(cowsay('moo'))
 print(wget('eventual.technology'))
 print(date())
 print(cal())
+```
+
+or just run arbitrary commands...
+```python
+from domonic.terminal import command
+command.run("echo hi")
 ```
 
 Take a look at the code in 'terminal.py' to see all the commands as there's loads. (Disclaimer: not all tested.)

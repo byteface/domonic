@@ -13,6 +13,17 @@ from collections import Counter
 class Utils(object):
 
     @staticmethod
+    def init_assets():
+        from domonic.terminal import mkdir, touch
+        mkdir("assets")
+        mkdir("assets/js")
+        mkdir("assets/css")
+        mkdir("assets/img")
+        touch("assets/js/master.js")
+        touch("assets/css/style.css")
+        return
+
+    @staticmethod
     def case_camel(s: str):
         ''' case_camel('camel-case') > 'camelCase' '''
         s = sub(r"(_|-)+", " ", s).title().replace(" ", "")
@@ -37,11 +48,6 @@ class Utils(object):
             sub(r"(\s|_|-)+", " ",
             sub(r"[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+",
             lambda mo: ' ' + mo.group(0).lower(), s)).split())
-
-    @staticmethod
-    def unless(value, condition):
-        return value if condition else not value
-        # if any(pred(x.item) for x in sequence):
 
     @staticmethod
     def squash(the_list):
@@ -124,6 +130,11 @@ class Utils(object):
     #     ''' given a list. returns random until expired '''
     #     random.shuffle(arr)
     #     return (x for x in arr)
+
+    # @staticmethod
+    # def unless(value, condition):
+        # return value if condition else not value
+        # if any(pred(x.item) for x in sequence):
 
 
     # TODO -
