@@ -5,12 +5,12 @@ with open("README.md", "r") as f:
 
 setup(
   name = 'domonic',
-  version = '0.1.10',
+  version = '0.1.11',
   author="@byteface",
   author_email="byteface@gmail.com",
   license="MIT",
   url = 'https://github.com/byteface/domonic',
-  download_url = 'https://github.com/byteface/pypals/archive/0.1.10.tar.gz',
+  download_url = 'https://github.com/byteface/pypals/archive/0.1.11.tar.gz',
   description = 'generate html with python 3 and quite a bit more',
   long_description=long_description,
   long_description_content_type="text/markdown",
