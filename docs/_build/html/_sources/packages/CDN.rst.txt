@@ -118,3 +118,16 @@ CDN_IMG has a placeholder service.
 - https://keywordimg.com/420x320/random
 
 - http://www.dummysrc.com/430x320.png/22c5fc/17202A
+
+
+.. automodule:: domonic.CDN
+    :members:
+    :noindex:
+
+.. automodule:: domonic.utils
+    :members:
+    :noindex:
+
+.. automodule:: domonic.decorators
+    :members:
+    :noindex:

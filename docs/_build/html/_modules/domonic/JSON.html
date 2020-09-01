@@ -44,14 +44,14 @@
 <span class="c1"># from domonic.javascript import Array</span>
 
 
-<div class="viewcode-block" id="return_json"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.return_json">[docs]</a><span class="k">def</span> <span class="nf">return_json</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="return_json"><a class="viewcode-back" href="../../packages/JSON.html#domonic.JSON.return_json">[docs]</a><span class="k">def</span> <span class="nf">return_json</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; decorate any function to return json instead of a python obj &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">JSON_decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">JSON_decorator</span></div>
 
 
-<div class="viewcode-block" id="JSON"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON">[docs]</a><span class="k">class</span> <span class="nc">JSON</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="JSON"><a class="viewcode-back" href="../../packages/JSON.html#domonic.JSON.JSON">[docs]</a><span class="k">class</span> <span class="nc">JSON</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A class containing JSON utils &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -75,7 +75,7 @@
             <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># indent=4, sort_keys=True, default=str</span>
 
-<div class="viewcode-block" id="JSON.tablify"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON.tablify">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="JSON.tablify"><a class="viewcode-back" href="../../packages/JSON.html#domonic.JSON.JSON.tablify">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">tablify</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;tablify</span>
 
@@ -110,7 +110,7 @@
             <span class="n">t</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">t</span></div>
 
-<div class="viewcode-block" id="JSON.csvify"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON.csvify">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="JSON.csvify"><a class="viewcode-back" href="../../packages/JSON.html#domonic.JSON.JSON.csvify">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">csvify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;data.csv&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;csvify</span>
 
@@ -141,7 +141,7 @@
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
                 <span class="n">output</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="JSON.csv2json"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON.csv2json">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="JSON.csv2json"><a class="viewcode-back" href="../../packages/JSON.html#domonic.JSON.JSON.csv2json">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">csv2json</span><span class="p">(</span><span class="n">csv_filepath</span><span class="p">,</span> <span class="n">json_filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        convert a CSV to JSON.</span>
@@ -177,7 +177,7 @@
 <span class="sd">            # TODO - streamwrite to json file.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="JSON.flatten"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON.flatten">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="JSON.flatten"><a class="viewcode-back" href="../../packages/JSON.html#domonic.JSON.JSON.flatten">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        # i.e. input = map( lambda x: JSON.flatten( x, &quot;__&quot; ), input )</span>

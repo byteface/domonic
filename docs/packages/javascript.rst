@@ -78,3 +78,9 @@ Styling
 
 
 several other undocumented features. Take a look at the code.
+
+
+.. automodule:: domonic.javascript
+    :members:
+    :noindex:
+

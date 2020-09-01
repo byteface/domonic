@@ -17,3 +17,12 @@ to create your own elements use the DOM API
 
 
 addEventlisteners recently been started. There's several more DOM methods. Check code to see what's currently implemented.
+
+
+.. automodule:: domonic.dom
+    :members:
+    :noindex:
+
+.. automodule:: domonic.events
+    :members:
+    :noindex:

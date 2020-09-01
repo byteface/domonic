@@ -58,3 +58,9 @@ run arbitrary commands...
 
 
 Take a look at the code in 'terminal.py' to see all the commands as there's loads. (Disclaimer: not all tested.)
+
+
+.. automodule:: domonic.terminal
+    :members:
+    :noindex:
+

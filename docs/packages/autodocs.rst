@@ -27,3 +27,6 @@ Domonic: autodocs
 
 .. automodule:: domonic.utils
     :members:
+
+.. automodule:: domonic.decorators
+    :members:

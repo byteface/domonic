@@ -340,7 +340,7 @@
 <dl class="py attribute">
 <dt id="domonic.html.main">
 <code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">main</code><a class="headerlink" href="#domonic.html.main" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#domonic.html.command" title="domonic.html.command"><code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.html.command</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="html.html#domonic.html.command" title="domonic.html.command"><code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.html.command</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
@@ -1265,7 +1265,7 @@
 <dl class="py attribute">
 <dt id="domonic.dom.document">
 <code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">document</code><a class="headerlink" href="#domonic.dom.document" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#domonic.dom.Document" title="domonic.dom.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.dom.Document</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="dom.html#domonic.dom.Document" title="domonic.dom.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.dom.Document</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -1938,7 +1938,7 @@ from the args and kwargs arguments, respectively.</p>
 <dl class="py attribute">
 <dt id="domonic.javascript.window">
 <code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">window</code><a class="headerlink" href="#domonic.javascript.window" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#domonic.javascript.Window" title="domonic.javascript.Window"><code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.javascript.Window</span></code></a></p>
+<dd><p>alias of <a class="reference internal" href="javascript.html#domonic.javascript.Window" title="domonic.javascript.Window"><code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.javascript.Window</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -4480,6 +4480,33 @@ i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’)) # optional seperator if the 
 </dd></dl>
 
 </div>
+<span class="target" id="module-domonic.decorators"></span><div class="section" id="domonic-decorators">
+<h2>domonic.decorators<a class="headerlink" href="#domonic-decorators" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="domonic.decorators.check">
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.decorators.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>logs entry and exit of a function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="domonic.decorators.instead">
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">instead</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">somethingelse</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#instead"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.decorators.instead" title="Permalink to this definition">¶</a></dt>
+<dd><p>what to return if it fails</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="domonic.decorators.log">
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'info'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.decorators.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#64;log(logging.getLogger(‘main’), level=’warning’)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="domonic.decorators.silence">
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">silence</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#silence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.decorators.silence" title="Permalink to this definition">¶</a></dt>
+<dd><p>stop a function from doing anything</p>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -4524,6 +4551,7 @@ i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’)) # optional seperator if the 
 <li class="toctree-l2"><a class="reference internal" href="#domonic-events">domonic.events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#domonic-style">domonic.style</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#domonic-utils">domonic.utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#domonic-decorators">domonic.decorators</a></li>
 </ul>
 </li>
 </ul>

@@ -41,7 +41,7 @@ def accepts(*types):
 
 
 def silence(*args, **kwargs):
-    ''' stop a function from doing anything '''
+    """ stop a function from doing anything """
     def dont_do_it(f):
         return None
     return dont_do_it
@@ -49,7 +49,7 @@ def silence(*args, **kwargs):
 
 
 def check(f):
-    ''' logs entry and exit of a function '''
+    """ logs entry and exit of a function """
     def new_f():
         print("Entering", f.__name__)
         f()
@@ -59,7 +59,7 @@ def check(f):
 
 
 def log(logger, level='info'):
-    ''' @log(logging.getLogger('main'), level='warning') '''
+    """ @log(logging.getLogger('main'), level='warning') """
     def log_decorator(fn):
         @functools.wraps(fn)
         def wrapper(*a, **kwa):
@@ -70,7 +70,7 @@ def log(logger, level='info'):
 
 
 def instead(f, somethingelse):
-    ''' what to return if it fails '''
+    """ what to return if it fails """
     def new_f():
         try:
             return f()

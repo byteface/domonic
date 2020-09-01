@@ -116,6 +116,132 @@
 <li><p><a class="reference external" href="https://keywordimg.com/420x320/random">https://keywordimg.com/420x320/random</a></p></li>
 <li><p><a class="reference external" href="http://www.dummysrc.com/430x320.png/22c5fc/17202A">http://www.dummysrc.com/430x320.png/22c5fc/17202A</a></p></li>
 </ul>
+<div class="section" id="id1">
+<h3>domonic.CDN<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Refs to some useful .js and .css libs.</p>
+<p>use for prototyping. wget anything in later and create your own local references once ur happy</p>
+<p>TODO - integrity/cross origin/module?</p>
+<p>WARNING/NOTE - dont use. this isn’t released or documented. just ideas atm…</p>
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.CDN.</code><code class="sig-name descname">CDN_CSS</code><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_CSS"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Preferably use version numbers if available. user LATEST if it always gets the latest</p>
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.CDN.</code><code class="sig-name descname">CDN_IMG</code><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_IMG"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>CDN images</p>
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">PLACEHOLDER</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">HTTP</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">seperator</span><span class="o">=</span><span class="default_value">'/'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_IMG.PLACEHOLDER"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>i.e. to change it. do this… CDN_IMG.PLACEHOLDER_SERVICE = “placebear.com/g”
+i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100))
+i.e. default HTTP is none, to let the browser decide
+i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’)) # optional seperator if the site uses x instead of slash</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.CDN.</code><code class="sig-name descname">CDN_JS</code><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_JS"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>You will need to append the lib version number if you add any libs here
+# obvious candidates… <a class="reference external" href="https://github.com/sorrycc/awesome-javascript">https://github.com/sorrycc/awesome-javascript</a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="domonic-utils">
+<h3>domonic.utils<a class="headerlink" href="#domonic-utils" title="Permalink to this headline">¶</a></h3>
+<p>snippets etc</p>
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.utils.</code><code class="sig-name descname">Utils</code><a class="reference internal" href="../_modules/domonic/utils.html#Utils"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>utils</p>
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">case_camel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_camel"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>case_camel(‘camel-case’) &gt; ‘camelCase’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">case_kebab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_kebab"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>kebab(‘camelCase’) # ‘camel-case’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">case_snake</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_snake"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>snake(‘camelCase’) # ‘camel_case’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">chunk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list</span></em>, <em class="sig-param"><span class="n">size</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.chunk"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>chunk a list into batches</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">chunks</code><span class="sig-paren">(</span><em class="sig-param">iterable</em>, <em class="sig-param">size</em>, <em class="sig-param">format=&lt;built-in function iter&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.chunks"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">clean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lst</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.clean"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>removes falsy values (False, None, 0 and “”) from a list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">dictify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.dictify"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>turns a list into a dictionary where the list items are the keys</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">squash</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">the_list</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.squash"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>turns a 2d array into a flat one</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">untitle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.untitle"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>fooBar</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="domonic-decorators">
+<h3>domonic.decorators<a class="headerlink" href="#domonic-decorators" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#check"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>logs entry and exit of a function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">instead</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">somethingelse</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#instead"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>what to return if it fails</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'info'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#log"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>&#64;log(logging.getLogger(‘main’), level=’warning’)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">silence</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#silence"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>stop a function from doing anything</p>
+</dd></dl>
+
+</div>
 </div>
 </div>
 

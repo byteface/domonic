@@ -47,6 +47,757 @@
 </pre></div>
 </div>
 <p>addEventlisteners recently been started. There’s several more DOM methods. Check code to see what’s currently implemented.</p>
+<div class="section" id="id1">
+<h3>domonic.dom<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>methods on the dom</p>
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">Document</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Baseclass for the html tag</p>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">anchors</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.anchors"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a collection of all &lt;a&gt; elements in the document that have a name attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">applets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.applets"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a collection of all &lt;applet&gt; elements in the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">body</code></dt>
+<dd><p>Sets or returns the document’s body (the &lt;body&gt; element)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">createAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.createAttribute"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Creates an attribute node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">createComment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.createComment"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Creates a Comment node with the specified text</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">createElement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.createElement"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Creates an Element node - WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">createEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_type</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.createEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Creates a new event</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">doctype</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.doctype"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the Document Type Declaration associated with the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">domain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.domain"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the domain name of the server that loaded the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">embeds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.embeds"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a collection of all &lt;embed&gt; elements the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">forms</code></dt>
+<dd><p>Returns a collection of all &lt;form&gt; elements in the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getElementById</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementById"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the element that has the ID attribute with the specified value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getElementsByClassName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementsByClassName"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a NodeList containing all elements with the specified class name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getElementsByName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementsByName"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a NodeList containing all elements with a specified name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">head</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.head"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the &lt;head&gt; element of the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">images</code></dt>
+<dd><p>Returns a collection of all &lt;img&gt; elements in the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">links</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.links"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a collection of all &lt;a&gt; and &lt;area&gt; elements in the document that have a href attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.normalize"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes empty Text nodes, and joins adjacent nodes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">normalizeDocument</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.normalizeDocument"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes empty Text nodes, and joins adjacent nodes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">querySelector</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.querySelector"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the first element that matches a specified CSS selector(s) in the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">querySelectorAll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.querySelectorAll"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">renameNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em>, <em class="sig-param"><span class="n">namespaceURI</span></em>, <em class="sig-param"><span class="n">nodename</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.renameNode"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Renames the specified node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">scripts</code></dt>
+<dd><p>Returns a collection of &lt;script&gt; elements in the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">title</code></dt>
+<dd><p>Sets or returns the title of the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/domonic/dom.html#Document.write"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Writes HTML expressions or JavaScript code to a document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">writeln</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/domonic/dom.html#Document.writeln"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Same as write(), but adds a newline character after each statement</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">Element</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Baseclass for all html tags</p>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/domonic/dom.html#Element.attributes"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a List of an element’s attributes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">blur</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.blur"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes focus from an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">classList</code></dt>
+<dd><p>Sets or returns the value of the classList attribute of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">className</code></dt>
+<dd><p>Sets or returns the value of the className attribute of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">click</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.click"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Simulates a mouse-click on an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">clientHeight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.clientHeight"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the height of an element, including padding</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">clientLeft</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.clientLeft"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the width of the left border of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">clientTop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.clientTop"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the width of the top border of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">clientWidth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.clientWidth"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the width of an element, including padding</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">compareDocumentPosition</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.compareDocumentPosition"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Compares the document position of two elements</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">contentEditable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.contentEditable"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets or returns whether the content of an element is editable or not</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.dir"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets or returns the value of the dir attribute of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">exitFullscreen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.exitFullscreen"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Cancels an element in fullscreen mode</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">firstElementChild</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.firstElementChild"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the first child element of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">focus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.focus"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Gives focus to an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttribute"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the specified attribute value of an element node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getAttributeNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNode"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the specified attribute node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getBoundingClientRect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getBoundingClientRect"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the size of an element and its position relative to the viewport</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getElementsByClassName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getElementsByClassName"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a collection of all child elements with the specified class name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getElementsByTagName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/domonic/dom.html#Element.getElementsByTagName"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a collection of all child elements with the specified tag name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">hasAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.hasAttribute"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns true if an element has the specified attribute, otherwise false</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">hasAttributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.hasAttributes"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns true if an element has any attributes, otherwise false</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">id</code></dt>
+<dd><p>Sets or returns the value of the id attribute of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">innerHTML</code></dt>
+<dd><p>Sets or returns the content of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">innerText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.innerText"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets or returns the text content of a node and its descendants</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">insertAdjacentElement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.insertAdjacentElement"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Inserts a HTML element at the specified position relative to the current element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">insertAdjacentHTML</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.insertAdjacentHTML"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Inserts a HTML formatted text at the specified position relative to the current element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">insertAdjacentText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.insertAdjacentText"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Inserts text into the specified position relative to the current element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">isContentEditable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.isContentEditable"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns true if the content of an element is editable, otherwise false</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">isDefaultNamespace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.isDefaultNamespace"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns true if a specified namespaceURI is the default, otherwise false</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">lastElementChild</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.lastElementChild"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the last child element of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">namespaceURI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.namespaceURI"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the namespace URI of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">nextElementSibling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.nextElementSibling"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the next element at the same node tree level</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">nextSibling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.nextSibling"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the next node at the same node tree level</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.normalize"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Joins adjacent text nodes and removes empty text nodes in an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">offsetHeight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.offsetHeight"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the height of an element, including padding, border and scrollbar</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">offsetLeft</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.offsetLeft"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the horizontal offset position of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">offsetParent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.offsetParent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the offset container of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">offsetTop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.offsetTop"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the vertical offset position of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">offsetWidth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.offsetWidth"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the width of an element, including padding, border and scrollbar</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">ownerDocument</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.ownerDocument"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the root element (document object) for an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">parentElement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.parentElement"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the parent element node of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">parentNode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.parentNode"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the parent node of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">previousElementSibling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.previousElementSibling"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the previous element at the same node tree level</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">previousSibling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.previousSibling"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the previous node at the same node tree level</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">querySelector</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.querySelector"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the first child element that matches a specified CSS selector(s) of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">querySelectorAll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.querySelectorAll"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns all child elements that matches a specified CSS selector(s) of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">remove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.remove"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes the element from the DOM</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">removeAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttribute"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes a specified attribute from an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">removeAttributeNode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttributeNode"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes a specified attribute node, and returns the removed node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">requestFullscreen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.requestFullscreen"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Shows an element in fullscreen mode</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">scrollHeight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.scrollHeight"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the entire height of an element, including padding</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">scrollIntoView</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.scrollIntoView"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Scrolls the specified element into the visible area of the browser window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">scrollLeft</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.scrollLeft"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets or returns the number of pixels an element’s content is scrolled horizontally</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">scrollTop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.scrollTop"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets or returns the number of pixels an element’s content is scrolled vertically</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">scrollWidth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.scrollWidth"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the entire width of an element, including padding</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">setAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.setAttribute"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets or changes the specified attribute, to the specified value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">setAttributeNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.setAttributeNode"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets or changes the specified attribute node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">style</code></dt>
+<dd><p>returns the value of the style attribute of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">textContent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.textContent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets or returns the textual content of a node and its descendants</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">title</code></dt>
+<dd><p>Sets or returns the value of the title attribute of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.toString"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Converts an element to a string</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">EventTarget</code><a class="reference internal" href="../_modules/domonic/dom.html#EventTarget"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Baseclass for Node</p>
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">Node</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Element extends from Node</p>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">appendChild</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.appendChild"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Adds a new child node, to an element, as the last child node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">childElementCount</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.childElementCount"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the number of child elements an element has</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">childNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.childNodes"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a collection of an element’s child nodes (including text and comment nodes)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.children"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a collection of an element’s child element (excluding text and comment nodes)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">cloneNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.cloneNode"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a copy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">contains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.contains"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Check whether a node is a descendant of a given node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">firstChild</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.firstChild"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the first child node of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">hasChildNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.hasChildNodes"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns true if an element has any child nodes, otherwise false</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">insertBefore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.insertBefore"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>inserts a node before a reference node as a child of a specified parent node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">isEqualNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.isEqualNode"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Checks if two elements are equal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">isSameNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.isSameNode"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Checks if two elements are the same node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">lastChild</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.lastChild"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the last child node of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">nodeName</code></dt>
+<dd><p>Returns the name of a node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">nodeType</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.nodeType"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the node type of a node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">nodeValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.nodeValue"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets or returns the value of a node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">removeChild</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.removeChild"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>removes a child node from the DOM and returns the removed node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">replaceChild</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newChild</span></em>, <em class="sig-param"><span class="n">oldChild</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.replaceChild"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Replaces a child node within the given (parent) node.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">document</code></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.dom.Document</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="domonic-events">
+<h3>domonic.events<a class="headerlink" href="#domonic-events" title="Permalink to this headline">¶</a></h3>
+<p>dom events</p>
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">AnimationEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#AnimationEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">ClipboardEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ClipboardEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">DragEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#DragEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">Event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#Event"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>events</p>
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">FocusEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FocusEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">HashChangeEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#HashChangeEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">InputEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#InputEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">KeyboardEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#KeyboardEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>keyboard events</p>
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">MouseEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#MouseEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>mouse events</p>
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">PageTransitionEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PageTransitionEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">PopStateEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PopStateEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">StorageEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#StorageEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">TouchEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TouchEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">TransitionEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TransitionEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">UiEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#UiEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">WheelEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#WheelEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+</div>
 </div>
 </div>
 
@@ -85,6 +836,7 @@
 <li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">Domonic: components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
 </ul>
 
 <div class="relations">

@@ -117,6 +117,11 @@ or to test a single function:
 ```bash
 python3.7 -m unittest tests.test_javascript.domonicTestCase.test_javascript_array
 ```
+see coverage
+```bash
+coverage run -m unittest discover tests/
+coverage report
+```
 
 ## MORE
 

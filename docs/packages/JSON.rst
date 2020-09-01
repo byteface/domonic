@@ -50,3 +50,8 @@ convert csv files to json...
 
 
 more to come...
+
+.. automodule:: domonic.JSON
+    :members:
+    :noindex:
+    

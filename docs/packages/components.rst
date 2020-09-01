@@ -219,4 +219,3 @@ SyntaxError: positional argument follows keyword argument
 TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
     - You are Missing a comma between attributes. before the **{}
 
-

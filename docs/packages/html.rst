@@ -119,3 +119,8 @@ to create your own elements use the DOM API
 
 
 For more info about the DOM API navigate to that section...
+
+
+.. automodule:: domonic.html
+    :members:
+    :noindex:
