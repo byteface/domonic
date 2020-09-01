@@ -12,10 +12,11 @@
 """
 
 # class CDN_TEXT(object):
-    # lorem ipusm generator
-    # fake names
+# lorem ipusm generator
+# fake names
 
 class CDN_IMG(object):
+    """ CDN images """
     # - icons
     # - UI - emojis
 
@@ -55,10 +56,10 @@ class CDN_IMG(object):
 
 
 class CDN_JS(object):
-    '''
+    """
     You will need to append the lib version number if you add any libs here
     # obvious candidates... https://github.com/sorrycc/awesome-javascript
-    '''
+    """
     JQUERY_3_5_1 = "https://code.jquery.com/jquery-3.5.1.min.js"
     JQUERY_UI = "https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
     UNDERSCORE = "https://cdn.jsdelivr.net/npm/underscore@1.11.0/underscore-min.js"
@@ -70,7 +71,6 @@ class CDN_JS(object):
     MOMENT_2_27_0 = "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"
     PIXI_5_3_3 = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"
     SOCKET_1_4_5 = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"
-    
 
     #def find_on_cdn():
     # https://cdn.jsdelivr.net/npm/

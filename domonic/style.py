@@ -14,9 +14,9 @@ class Style(object):
 
     def __init__(self, parent_node=None):
 
-        self._members_checked = 0  
+        self._members_checked = 0
 
-        self._parent_node = parent_node # so I can update a tags returned style attributes if a style gets set
+        self._parent_node = parent_node  # so I can update a tags returned style attributes if a style gets set
 
         self.alignContent = 'normal'
         '''Sets or returns the alignment between the lines inside a flexible container when the items do not use all available space   3'''
@@ -575,7 +575,6 @@ class Style(object):
         self.zIndex = 'auto'
         '''Sets or returns the stack order of a positioned element 2'''
 
-
     def style_set_decorator(func):
         from functools import wraps
         @wraps(func)
@@ -585,8 +584,9 @@ class Style(object):
                 value = 'none'
             func(self, value, *args, **kwargs)
 
-            self._members_checked+=1
-            if self._members_checked < len(vars(self))-1: return
+            self._members_checked += 1
+            if self._members_checked < len(vars(self))-1:
+                return
 
             if self._parent_node is not None:
                 s = f'{Utils.case_kebab(func.__name__)}:{value};'
@@ -595,7 +595,7 @@ class Style(object):
 
                 if styles is not None:
                     # TODO - replace if exists
-                    styles = styles+s
+                    styles = styles + s
                 else:
                     styles = s
 
@@ -628,7 +628,7 @@ class Style(object):
     @style_get_decorator
     def alignItems(self):
         return self.__alignItems
-            
+
     @alignItems.setter
     @style_set_decorator
     def alignItems(self, value=None, *args, **kwargs):
@@ -638,7 +638,7 @@ class Style(object):
     @style_get_decorator
     def alignSelf(self):
         return self.__alignSelf
-            
+
     @alignSelf.setter
     @style_set_decorator
     def alignSelf(self, value=None, *args, **kwargs):
@@ -648,7 +648,7 @@ class Style(object):
     @style_get_decorator
     def animation(self):
         return self.__animation
-            
+
     @animation.setter
     @style_set_decorator
     def animation(self, value=None, *args, **kwargs):
@@ -658,7 +658,7 @@ class Style(object):
     @style_get_decorator
     def animationDelay(self):
         return self.__animationDelay
-            
+
     @animationDelay.setter
     @style_set_decorator
     def animationDelay(self, value=None, *args, **kwargs):
@@ -668,7 +668,7 @@ class Style(object):
     @style_get_decorator
     def animationDirection(self):
         return self.__animationDirection
-            
+
     @animationDirection.setter
     @style_set_decorator
     def animationDirection(self, value=None, *args, **kwargs):
@@ -678,7 +678,7 @@ class Style(object):
     @style_get_decorator
     def animationDuration(self):
         return self.__animationDuration
-            
+
     @animationDuration.setter
     @style_set_decorator
     def animationDuration(self, value=None, *args, **kwargs):
@@ -688,7 +688,7 @@ class Style(object):
     @style_get_decorator
     def animationFillMode(self):
         return self.__animationFillMode
-            
+
     @animationFillMode.setter
     @style_set_decorator
     def animationFillMode(self, value=None, *args, **kwargs):
@@ -698,7 +698,7 @@ class Style(object):
     @style_get_decorator
     def animationIterationCount(self):
         return self.__animationIterationCount
-            
+
     @animationIterationCount.setter
     @style_set_decorator
     def animationIterationCount(self, value=None, *args, **kwargs):
@@ -708,7 +708,7 @@ class Style(object):
     @style_get_decorator
     def animationName(self):
         return self.__animationName
-            
+
     @animationName.setter
     @style_set_decorator
     def animationName(self, value=None, *args, **kwargs):
@@ -718,7 +718,7 @@ class Style(object):
     @style_get_decorator
     def animationTimingFunction(self):
         return self.__animationTimingFunction
-            
+
     @animationTimingFunction.setter
     @style_set_decorator
     def animationTimingFunction(self, value=None, *args, **kwargs):
@@ -728,7 +728,7 @@ class Style(object):
     @style_get_decorator
     def animationPlayState(self):
         return self.__animationPlayState
-            
+
     @animationPlayState.setter
     @style_set_decorator
     def animationPlayState(self, value=None, *args, **kwargs):
@@ -738,7 +738,7 @@ class Style(object):
     @style_get_decorator
     def background(self):
         return self.__background
-            
+
     @background.setter
     @style_set_decorator
     def background(self, value=None, *args, **kwargs):
@@ -748,7 +748,7 @@ class Style(object):
     @style_get_decorator
     def backgroundAttachment(self):
         return self.__backgroundAttachment
-            
+
     @backgroundAttachment.setter
     @style_set_decorator
     def backgroundAttachment(self, value=None, *args, **kwargs):
@@ -758,7 +758,7 @@ class Style(object):
     @style_get_decorator
     def backgroundColor(self):
         return self.__backgroundColor
-            
+
     @backgroundColor.setter
     @style_set_decorator
     def backgroundColor(self, value=None, *args, **kwargs):
@@ -768,7 +768,7 @@ class Style(object):
     @style_get_decorator
     def backgroundImage(self):
         return self.__backgroundImage
-            
+
     @backgroundImage.setter
     @style_set_decorator
     def backgroundImage(self, value=None, *args, **kwargs):
@@ -778,7 +778,7 @@ class Style(object):
     @style_get_decorator
     def backgroundPosition(self):
         return self.__backgroundPosition
-            
+
     @backgroundPosition.setter
     @style_set_decorator
     def backgroundPosition(self, value=None, *args, **kwargs):
@@ -788,7 +788,7 @@ class Style(object):
     @style_get_decorator
     def backgroundRepeat(self):
         return self.__backgroundRepeat
-            
+
     @backgroundRepeat.setter
     @style_set_decorator
     def backgroundRepeat(self, value=None, *args, **kwargs):
@@ -798,7 +798,7 @@ class Style(object):
     @style_get_decorator
     def backgroundClip(self):
         return self.__backgroundClip
-            
+
     @backgroundClip.setter
     @style_set_decorator
     def backgroundClip(self, value=None, *args, **kwargs):
@@ -808,7 +808,7 @@ class Style(object):
     @style_get_decorator
     def backgroundOrigin(self):
         return self.__backgroundOrigin
-            
+
     @backgroundOrigin.setter
     @style_set_decorator
     def backgroundOrigin(self, value=None, *args, **kwargs):
@@ -818,7 +818,7 @@ class Style(object):
     @style_get_decorator
     def backgroundSize(self):
         return self.__backgroundSize
-            
+
     @backgroundSize.setter
     @style_set_decorator
     def backgroundSize(self, value=None, *args, **kwargs):
@@ -828,7 +828,7 @@ class Style(object):
     @style_get_decorator
     def backfaceVisibility(self):
         return self.__backfaceVisibility
-            
+
     @backfaceVisibility.setter
     @style_set_decorator
     def backfaceVisibility(self, value=None, *args, **kwargs):
@@ -838,7 +838,7 @@ class Style(object):
     @style_get_decorator
     def border(self):
         return self.__border
-            
+
     @border.setter
     @style_set_decorator
     def border(self, value=None, *args, **kwargs):
@@ -848,7 +848,7 @@ class Style(object):
     @style_get_decorator
     def borderBottom(self):
         return self.__borderBottom
-            
+
     @borderBottom.setter
     @style_set_decorator
     def borderBottom(self, value=None, *args, **kwargs):
@@ -858,7 +858,7 @@ class Style(object):
     @style_get_decorator
     def borderBottomColor(self):
         return self.__borderBottomColor
-            
+
     @borderBottomColor.setter
     @style_set_decorator
     def borderBottomColor(self, value=None, *args, **kwargs):
@@ -868,7 +868,7 @@ class Style(object):
     @style_get_decorator
     def borderBottomLeftRadius(self):
         return self.__borderBottomLeftRadius
-            
+
     @borderBottomLeftRadius.setter
     @style_set_decorator
     def borderBottomLeftRadius(self, value=None, *args, **kwargs):
@@ -878,7 +878,7 @@ class Style(object):
     @style_get_decorator
     def borderBottomRightRadius(self):
         return self.__borderBottomRightRadius
-            
+
     @borderBottomRightRadius.setter
     @style_set_decorator
     def borderBottomRightRadius(self, value=None, *args, **kwargs):
@@ -888,7 +888,7 @@ class Style(object):
     @style_get_decorator
     def borderBottomStyle(self):
         return self.__borderBottomStyle
-            
+
     @borderBottomStyle.setter
     @style_set_decorator
     def borderBottomStyle(self, value=None, *args, **kwargs):
@@ -898,7 +898,7 @@ class Style(object):
     @style_get_decorator
     def borderBottomWidth(self):
         return self.__borderBottomWidth
-            
+
     @borderBottomWidth.setter
     @style_set_decorator
     def borderBottomWidth(self, value=None, *args, **kwargs):
@@ -908,7 +908,7 @@ class Style(object):
     @style_get_decorator
     def borderCollapse(self):
         return self.__borderCollapse
-            
+
     @borderCollapse.setter
     @style_set_decorator
     def borderCollapse(self, value=None, *args, **kwargs):
@@ -918,7 +918,7 @@ class Style(object):
     @style_get_decorator
     def borderColor(self):
         return self.__borderColor
-            
+
     @borderColor.setter
     @style_set_decorator
     def borderColor(self, value=None, *args, **kwargs):
@@ -928,7 +928,7 @@ class Style(object):
     @style_get_decorator
     def borderImage(self):
         return self.__borderImage
-            
+
     @borderImage.setter
     @style_set_decorator
     def borderImage(self, value=None, *args, **kwargs):
@@ -938,7 +938,7 @@ class Style(object):
     @style_get_decorator
     def borderImageOutset(self):
         return self.__borderImageOutset
-            
+
     @borderImageOutset.setter
     @style_set_decorator
     def borderImageOutset(self, value=None, *args, **kwargs):
@@ -948,7 +948,7 @@ class Style(object):
     @style_get_decorator
     def borderImageRepeat(self):
         return self.__borderImageRepeat
-            
+
     @borderImageRepeat.setter
     @style_set_decorator
     def borderImageRepeat(self, value=None, *args, **kwargs):
@@ -958,7 +958,7 @@ class Style(object):
     @style_get_decorator
     def borderImageSlice(self):
         return self.__borderImageSlice
-            
+
     @borderImageSlice.setter
     @style_set_decorator
     def borderImageSlice(self, value=None, *args, **kwargs):
@@ -968,7 +968,7 @@ class Style(object):
     @style_get_decorator
     def borderImageSource(self):
         return self.__borderImageSource
-            
+
     @borderImageSource.setter
     @style_set_decorator
     def borderImageSource(self, value=None, *args, **kwargs):
@@ -978,7 +978,7 @@ class Style(object):
     @style_get_decorator
     def borderImageWidth(self):
         return self.__borderImageWidth
-            
+
     @borderImageWidth.setter
     @style_set_decorator
     def borderImageWidth(self, value=None, *args, **kwargs):
@@ -988,7 +988,7 @@ class Style(object):
     @style_get_decorator
     def borderLeft(self):
         return self.__borderLeft
-            
+
     @borderLeft.setter
     @style_set_decorator
     def borderLeft(self, value=None, *args, **kwargs):
@@ -998,7 +998,7 @@ class Style(object):
     @style_get_decorator
     def borderLeftColor(self):
         return self.__borderLeftColor
-            
+
     @borderLeftColor.setter
     @style_set_decorator
     def borderLeftColor(self, value=None, *args, **kwargs):
@@ -1008,7 +1008,7 @@ class Style(object):
     @style_get_decorator
     def borderLeftStyle(self):
         return self.__borderLeftStyle
-            
+
     @borderLeftStyle.setter
     @style_set_decorator
     def borderLeftStyle(self, value=None, *args, **kwargs):
@@ -1018,7 +1018,7 @@ class Style(object):
     @style_get_decorator
     def borderLeftWidth(self):
         return self.__borderLeftWidth
-            
+
     @borderLeftWidth.setter
     @style_set_decorator
     def borderLeftWidth(self, value=None, *args, **kwargs):
@@ -1028,7 +1028,7 @@ class Style(object):
     @style_get_decorator
     def borderRadius(self):
         return self.__borderRadius
-            
+
     @borderRadius.setter
     @style_set_decorator
     def borderRadius(self, value=None, *args, **kwargs):
@@ -1038,7 +1038,7 @@ class Style(object):
     @style_get_decorator
     def borderRight(self):
         return self.__borderRight
-            
+
     @borderRight.setter
     @style_set_decorator
     def borderRight(self, value=None, *args, **kwargs):
@@ -1048,7 +1048,7 @@ class Style(object):
     @style_get_decorator
     def borderRightColor(self):
         return self.__borderRightColor
-            
+
     @borderRightColor.setter
     @style_set_decorator
     def borderRightColor(self, value=None, *args, **kwargs):
@@ -1058,7 +1058,7 @@ class Style(object):
     @style_get_decorator
     def borderRightStyle(self):
         return self.__borderRightStyle
-            
+
     @borderRightStyle.setter
     @style_set_decorator
     def borderRightStyle(self, value=None, *args, **kwargs):
@@ -1068,7 +1068,7 @@ class Style(object):
     @style_get_decorator
     def borderRightWidth(self):
         return self.__borderRightWidth
-            
+
     @borderRightWidth.setter
     @style_set_decorator
     def borderRightWidth(self, value=None, *args, **kwargs):
@@ -1078,7 +1078,7 @@ class Style(object):
     @style_get_decorator
     def borderSpacing(self):
         return self.__borderSpacing
-            
+
     @borderSpacing.setter
     @style_set_decorator
     def borderSpacing(self, value=None, *args, **kwargs):
@@ -1088,7 +1088,7 @@ class Style(object):
     @style_get_decorator
     def borderStyle(self):
         return self.__borderStyle
-            
+
     @borderStyle.setter
     @style_set_decorator
     def borderStyle(self, value=None, *args, **kwargs):
@@ -1098,7 +1098,7 @@ class Style(object):
     @style_get_decorator
     def borderTop(self):
         return self.__borderTop
-            
+
     @borderTop.setter
     @style_set_decorator
     def borderTop(self, value=None, *args, **kwargs):
@@ -1108,7 +1108,7 @@ class Style(object):
     @style_get_decorator
     def borderTopColor(self):
         return self.__borderTopColor
-            
+
     @borderTopColor.setter
     @style_set_decorator
     def borderTopColor(self, value=None, *args, **kwargs):
@@ -1118,7 +1118,7 @@ class Style(object):
     @style_get_decorator
     def borderTopLeftRadius(self):
         return self.__borderTopLeftRadius
-            
+
     @borderTopLeftRadius.setter
     @style_set_decorator
     def borderTopLeftRadius(self, value=None, *args, **kwargs):
@@ -1128,7 +1128,7 @@ class Style(object):
     @style_get_decorator
     def borderTopRightRadius(self):
         return self.__borderTopRightRadius
-            
+
     @borderTopRightRadius.setter
     @style_set_decorator
     def borderTopRightRadius(self, value=None, *args, **kwargs):
@@ -1138,7 +1138,7 @@ class Style(object):
     @style_get_decorator
     def borderTopStyle(self):
         return self.__borderTopStyle
-            
+
     @borderTopStyle.setter
     @style_set_decorator
     def borderTopStyle(self, value=None, *args, **kwargs):
@@ -1148,7 +1148,7 @@ class Style(object):
     @style_get_decorator
     def borderTopWidth(self):
         return self.__borderTopWidth
-            
+
     @borderTopWidth.setter
     @style_set_decorator
     def borderTopWidth(self, value=None, *args, **kwargs):
@@ -1158,7 +1158,7 @@ class Style(object):
     @style_get_decorator
     def borderWidth(self):
         return self.__borderWidth
-            
+
     @borderWidth.setter
     @style_set_decorator
     def borderWidth(self, value=None, *args, **kwargs):
@@ -1168,7 +1168,7 @@ class Style(object):
     @style_get_decorator
     def bottom(self):
         return self.__bottom
-            
+
     @bottom.setter
     @style_set_decorator
     def bottom(self, value=None, *args, **kwargs):
@@ -1178,7 +1178,7 @@ class Style(object):
     @style_get_decorator
     def boxDecorationBreak(self):
         return self.__boxDecorationBreak
-            
+
     @boxDecorationBreak.setter
     @style_set_decorator
     def boxDecorationBreak(self, value=None, *args, **kwargs):
@@ -1188,7 +1188,7 @@ class Style(object):
     @style_get_decorator
     def boxShadow(self):
         return self.__boxShadow
-            
+
     @boxShadow.setter
     @style_set_decorator
     def boxShadow(self, value=None, *args, **kwargs):
@@ -1198,7 +1198,7 @@ class Style(object):
     @style_get_decorator
     def boxSizing(self):
         return self.__boxSizing
-            
+
     @boxSizing.setter
     @style_set_decorator
     def boxSizing(self, value=None, *args, **kwargs):
@@ -1208,7 +1208,7 @@ class Style(object):
     @style_get_decorator
     def captionSide(self):
         return self.__captionSide
-            
+
     @captionSide.setter
     @style_set_decorator
     def captionSide(self, value=None, *args, **kwargs):
@@ -1218,7 +1218,7 @@ class Style(object):
     @style_get_decorator
     def clear(self):
         return self.__clear
-            
+
     @clear.setter
     @style_set_decorator
     def clear(self, value=None, *args, **kwargs):
@@ -1228,7 +1228,7 @@ class Style(object):
     @style_get_decorator
     def clip(self):
         return self.__clip
-            
+
     @clip.setter
     @style_set_decorator
     def clip(self, value=None, *args, **kwargs):
@@ -1238,7 +1238,7 @@ class Style(object):
     @style_get_decorator
     def color(self):
         return self.__color
-            
+
     @color.setter
     @style_set_decorator
     def color(self, value=None, *args, **kwargs):
@@ -1248,7 +1248,7 @@ class Style(object):
     @style_get_decorator
     def columnCount(self):
         return self.__columnCount
-            
+
     @columnCount.setter
     @style_set_decorator
     def columnCount(self, value=None, *args, **kwargs):
@@ -1258,7 +1258,7 @@ class Style(object):
     @style_get_decorator
     def columnFill(self):
         return self.__columnFill
-            
+
     @columnFill.setter
     @style_set_decorator
     def columnFill(self, value=None, *args, **kwargs):
@@ -1268,7 +1268,7 @@ class Style(object):
     @style_get_decorator
     def columnGap(self):
         return self.__columnGap
-            
+
     @columnGap.setter
     @style_set_decorator
     def columnGap(self, value=None, *args, **kwargs):
@@ -1278,7 +1278,7 @@ class Style(object):
     @style_get_decorator
     def columnRule(self):
         return self.__columnRule
-            
+
     @columnRule.setter
     @style_set_decorator
     def columnRule(self, value=None, *args, **kwargs):
@@ -1288,7 +1288,7 @@ class Style(object):
     @style_get_decorator
     def columnRuleColor(self):
         return self.__columnRuleColor
-            
+
     @columnRuleColor.setter
     @style_set_decorator
     def columnRuleColor(self, value=None, *args, **kwargs):
@@ -1298,7 +1298,7 @@ class Style(object):
     @style_get_decorator
     def columnRuleStyle(self):
         return self.__columnRuleStyle
-            
+
     @columnRuleStyle.setter
     @style_set_decorator
     def columnRuleStyle(self, value=None, *args, **kwargs):
@@ -1308,7 +1308,7 @@ class Style(object):
     @style_get_decorator
     def columnRuleWidth(self):
         return self.__columnRuleWidth
-            
+
     @columnRuleWidth.setter
     @style_set_decorator
     def columnRuleWidth(self, value=None, *args, **kwargs):
@@ -1318,7 +1318,7 @@ class Style(object):
     @style_get_decorator
     def columns(self):
         return self.__columns
-            
+
     @columns.setter
     @style_set_decorator
     def columns(self, value=None, *args, **kwargs):
@@ -1328,7 +1328,7 @@ class Style(object):
     @style_get_decorator
     def columnSpan(self):
         return self.__columnSpan
-            
+
     @columnSpan.setter
     @style_set_decorator
     def columnSpan(self, value=None, *args, **kwargs):
@@ -1338,7 +1338,7 @@ class Style(object):
     @style_get_decorator
     def columnWidth(self):
         return self.__columnWidth
-            
+
     @columnWidth.setter
     @style_set_decorator
     def columnWidth(self, value=None, *args, **kwargs):
@@ -1348,7 +1348,7 @@ class Style(object):
     @style_get_decorator
     def content(self):
         return self.__content
-            
+
     @content.setter
     @style_set_decorator
     def content(self, value=None, *args, **kwargs):
@@ -1358,7 +1358,7 @@ class Style(object):
     @style_get_decorator
     def counterIncrement(self):
         return self.__counterIncrement
-            
+
     @counterIncrement.setter
     @style_set_decorator
     def counterIncrement(self, value=None, *args, **kwargs):
@@ -1368,7 +1368,7 @@ class Style(object):
     @style_get_decorator
     def counterReset(self):
         return self.__counterReset
-            
+
     @counterReset.setter
     @style_set_decorator
     def counterReset(self, value=None, *args, **kwargs):
@@ -1378,7 +1378,7 @@ class Style(object):
     @style_get_decorator
     def cursor(self):
         return self.__cursor
-            
+
     @cursor.setter
     @style_set_decorator
     def cursor(self, value=None, *args, **kwargs):
@@ -1388,7 +1388,7 @@ class Style(object):
     @style_get_decorator
     def direction(self):
         return self.__direction
-            
+
     @direction.setter
     @style_set_decorator
     def direction(self, value=None, *args, **kwargs):
@@ -1398,7 +1398,7 @@ class Style(object):
     @style_get_decorator
     def display(self):
         return self.__display
-            
+
     @display.setter
     @style_set_decorator
     def display(self, value=None, *args, **kwargs):
@@ -1408,7 +1408,7 @@ class Style(object):
     @style_get_decorator
     def emptyCells(self):
         return self.__emptyCells
-            
+
     @emptyCells.setter
     @style_set_decorator
     def emptyCells(self, value=None, *args, **kwargs):
@@ -1418,7 +1418,7 @@ class Style(object):
     @style_get_decorator
     def filter(self):
         return self.__filter
-            
+
     @filter.setter
     @style_set_decorator
     def filter(self, value=None, *args, **kwargs):
@@ -1428,7 +1428,7 @@ class Style(object):
     @style_get_decorator
     def flex(self):
         return self.__flex
-            
+
     @flex.setter
     @style_set_decorator
     def flex(self, value=None, *args, **kwargs):
@@ -1438,7 +1438,7 @@ class Style(object):
     @style_get_decorator
     def flexBasis(self):
         return self.__flexBasis
-            
+
     @flexBasis.setter
     @style_set_decorator
     def flexBasis(self, value=None, *args, **kwargs):
@@ -1448,7 +1448,7 @@ class Style(object):
     @style_get_decorator
     def flexDirection(self):
         return self.__flexDirection
-            
+
     @flexDirection.setter
     @style_set_decorator
     def flexDirection(self, value=None, *args, **kwargs):
@@ -1458,7 +1458,7 @@ class Style(object):
     @style_get_decorator
     def flexFlow(self):
         return self.__flexFlow
-            
+
     @flexFlow.setter
     @style_set_decorator
     def flexFlow(self, value=None, *args, **kwargs):
@@ -1468,7 +1468,7 @@ class Style(object):
     @style_get_decorator
     def flexGrow(self):
         return self.__flexGrow
-            
+
     @flexGrow.setter
     @style_set_decorator
     def flexGrow(self, value=None, *args, **kwargs):
@@ -1478,7 +1478,7 @@ class Style(object):
     @style_get_decorator
     def flexShrink(self):
         return self.__flexShrink
-            
+
     @flexShrink.setter
     @style_set_decorator
     def flexShrink(self, value=None, *args, **kwargs):
@@ -1488,7 +1488,7 @@ class Style(object):
     @style_get_decorator
     def flexWrap(self):
         return self.__flexWrap
-            
+
     @flexWrap.setter
     @style_set_decorator
     def flexWrap(self, value=None, *args, **kwargs):
@@ -1508,7 +1508,7 @@ class Style(object):
     @style_get_decorator
     def cssFloat(self):
         return self.__cssFloat
-            
+
     @cssFloat.setter
     @style_set_decorator
     def cssFloat(self, value=None, *args, **kwargs):
@@ -1518,7 +1518,7 @@ class Style(object):
     @style_get_decorator
     def font(self):
         return self.__font
-            
+
     @font.setter
     @style_set_decorator
     def font(self, value=None, *args, **kwargs):
@@ -1528,7 +1528,7 @@ class Style(object):
     @style_get_decorator
     def fontFamily(self):
         return self.__fontFamily
-            
+
     @fontFamily.setter
     @style_set_decorator
     def fontFamily(self, value=None, *args, **kwargs):
@@ -1538,7 +1538,7 @@ class Style(object):
     @style_get_decorator
     def fontSize(self):
         return self.__fontSize
-            
+
     @fontSize.setter
     @style_set_decorator
     def fontSize(self, value=None, *args, **kwargs):
@@ -1548,7 +1548,7 @@ class Style(object):
     @style_get_decorator
     def fontStyle(self):
         return self.__fontStyle
-            
+
     @fontStyle.setter
     @style_set_decorator
     def fontStyle(self, value=None, *args, **kwargs):
@@ -1558,7 +1558,7 @@ class Style(object):
     @style_get_decorator
     def fontVariant(self):
         return self.__fontVariant
-            
+
     @fontVariant.setter
     @style_set_decorator
     def fontVariant(self, value=None, *args, **kwargs):
@@ -1568,7 +1568,7 @@ class Style(object):
     @style_get_decorator
     def fontWeight(self):
         return self.__fontWeight
-            
+
     @fontWeight.setter
     @style_set_decorator
     def fontWeight(self, value=None, *args, **kwargs):
@@ -1578,7 +1578,7 @@ class Style(object):
     @style_get_decorator
     def fontSizeAdjust(self):
         return self.__fontSizeAdjust
-            
+
     @fontSizeAdjust.setter
     @style_set_decorator
     def fontSizeAdjust(self, value=None, *args, **kwargs):
@@ -1588,7 +1588,7 @@ class Style(object):
     @style_get_decorator
     def fontStretch(self):
         return self.__fontStretch
-            
+
     @fontStretch.setter
     @style_set_decorator
     def fontStretch(self, value=None, *args, **kwargs):
@@ -1598,7 +1598,7 @@ class Style(object):
     @style_get_decorator
     def hangingPunctuation(self):
         return self.__hangingPunctuation
-            
+
     @hangingPunctuation.setter
     @style_set_decorator
     def hangingPunctuation(self, value=None, *args, **kwargs):
@@ -1608,7 +1608,7 @@ class Style(object):
     @style_get_decorator
     def height(self):
         return self.__height
-            
+
     @height.setter
     @style_set_decorator
     def height(self, value=None, *args, **kwargs):
@@ -1618,7 +1618,7 @@ class Style(object):
     @style_get_decorator
     def hyphens(self):
         return self.__hyphens
-            
+
     @hyphens.setter
     @style_set_decorator
     def hyphens(self, value=None, *args, **kwargs):
@@ -1628,7 +1628,7 @@ class Style(object):
     @style_get_decorator
     def icon(self):
         return self.__icon
-            
+
     @icon.setter
     @style_set_decorator
     def icon(self, value=None, *args, **kwargs):
@@ -1638,7 +1638,7 @@ class Style(object):
     @style_get_decorator
     def imageOrientation(self):
         return self.__imageOrientation
-            
+
     @imageOrientation.setter
     @style_set_decorator
     def imageOrientation(self, value=None, *args, **kwargs):
@@ -1648,7 +1648,7 @@ class Style(object):
     @style_get_decorator
     def isolation(self):
         return self.__isolation
-            
+
     @isolation.setter
     @style_set_decorator
     def isolation(self, value=None, *args, **kwargs):
@@ -1658,7 +1658,7 @@ class Style(object):
     @style_get_decorator
     def justifyContent(self):
         return self.__justifyContent
-            
+
     @justifyContent.setter
     @style_set_decorator
     def justifyContent(self, value=None, *args, **kwargs):
@@ -1668,7 +1668,7 @@ class Style(object):
     @style_get_decorator
     def left(self):
         return self.__left
-            
+
     @left.setter
     @style_set_decorator
     def left(self, value=None, *args, **kwargs):
@@ -1678,7 +1678,7 @@ class Style(object):
     @style_get_decorator
     def letterSpacing(self):
         return self.__letterSpacing
-            
+
     @letterSpacing.setter
     @style_set_decorator
     def letterSpacing(self, value=None, *args, **kwargs):
@@ -1688,7 +1688,7 @@ class Style(object):
     @style_get_decorator
     def lineHeight(self):
         return self.__lineHeight
-            
+
     @lineHeight.setter
     @style_set_decorator
     def lineHeight(self, value=None, *args, **kwargs):
@@ -1698,7 +1698,7 @@ class Style(object):
     @style_get_decorator
     def listStyle(self):
         return self.__listStyle
-            
+
     @listStyle.setter
     @style_set_decorator
     def listStyle(self, value=None, *args, **kwargs):
@@ -1708,7 +1708,7 @@ class Style(object):
     @style_get_decorator
     def listStyleImage(self):
         return self.__listStyleImage
-            
+
     @listStyleImage.setter
     @style_set_decorator
     def listStyleImage(self, value=None, *args, **kwargs):
@@ -1718,7 +1718,7 @@ class Style(object):
     @style_get_decorator
     def listStylePosition(self):
         return self.__listStylePosition
-            
+
     @listStylePosition.setter
     @style_set_decorator
     def listStylePosition(self, value=None, *args, **kwargs):
@@ -1728,7 +1728,7 @@ class Style(object):
     @style_get_decorator
     def listStyleType(self):
         return self.__listStyleType
-            
+
     @listStyleType.setter
     @style_set_decorator
     def listStyleType(self, value=None, *args, **kwargs):
@@ -1738,7 +1738,7 @@ class Style(object):
     @style_get_decorator
     def margin(self):
         return self.__margin
-            
+
     @margin.setter
     @style_set_decorator
     def margin(self, value=None, *args, **kwargs):
@@ -1748,7 +1748,7 @@ class Style(object):
     @style_get_decorator
     def marginBottom(self):
         return self.__marginBottom
-            
+
     @marginBottom.setter
     @style_set_decorator
     def marginBottom(self, value=None, *args, **kwargs):
@@ -1758,7 +1758,7 @@ class Style(object):
     @style_get_decorator
     def marginLeft(self):
         return self.__marginLeft
-            
+
     @marginLeft.setter
     @style_set_decorator
     def marginLeft(self, value=None, *args, **kwargs):
@@ -1768,7 +1768,7 @@ class Style(object):
     @style_get_decorator
     def marginRight(self):
         return self.__marginRight
-            
+
     @marginRight.setter
     @style_set_decorator
     def marginRight(self, value=None, *args, **kwargs):
@@ -1778,7 +1778,7 @@ class Style(object):
     @style_get_decorator
     def marginTop(self):
         return self.__marginTop
-            
+
     @marginTop.setter
     @style_set_decorator
     def marginTop(self, value=None, *args, **kwargs):
@@ -1788,7 +1788,7 @@ class Style(object):
     @style_get_decorator
     def maxHeight(self):
         return self.__maxHeight
-            
+
     @maxHeight.setter
     @style_set_decorator
     def maxHeight(self, value=None, *args, **kwargs):
@@ -1798,7 +1798,7 @@ class Style(object):
     @style_get_decorator
     def maxWidth(self):
         return self.__maxWidth
-            
+
     @maxWidth.setter
     @style_set_decorator
     def maxWidth(self, value=None, *args, **kwargs):
@@ -1808,7 +1808,7 @@ class Style(object):
     @style_get_decorator
     def minHeight(self):
         return self.__minHeight
-            
+
     @minHeight.setter
     @style_set_decorator
     def minHeight(self, value=None, *args, **kwargs):
@@ -1818,7 +1818,7 @@ class Style(object):
     @style_get_decorator
     def minWidth(self):
         return self.__minWidth
-            
+
     @minWidth.setter
     @style_set_decorator
     def minWidth(self, value=None, *args, **kwargs):
@@ -1828,7 +1828,7 @@ class Style(object):
     @style_get_decorator
     def navDown(self):
         return self.__navDown
-            
+
     @navDown.setter
     @style_set_decorator
     def navDown(self, value=None, *args, **kwargs):
@@ -1838,7 +1838,7 @@ class Style(object):
     @style_get_decorator
     def navIndex(self):
         return self.__navIndex
-            
+
     @navIndex.setter
     @style_set_decorator
     def navIndex(self, value=None, *args, **kwargs):
@@ -1848,7 +1848,7 @@ class Style(object):
     @style_get_decorator
     def navLeft(self):
         return self.__navLeft
-            
+
     @navLeft.setter
     @style_set_decorator
     def navLeft(self, value=None, *args, **kwargs):
@@ -1858,7 +1858,7 @@ class Style(object):
     @style_get_decorator
     def navRight(self):
         return self.__navRight
-            
+
     @navRight.setter
     @style_set_decorator
     def navRight(self, value=None, *args, **kwargs):
@@ -1868,7 +1868,7 @@ class Style(object):
     @style_get_decorator
     def navUp(self):
         return self.__navUp
-            
+
     @navUp.setter
     @style_set_decorator
     def navUp(self, value=None, *args, **kwargs):
@@ -1878,7 +1878,7 @@ class Style(object):
     @style_get_decorator
     def objectFit(self):
         return self.__objectFit
-            
+
     @objectFit.setter
     @style_set_decorator
     def objectFit(self, value=None, *args, **kwargs):
@@ -1888,7 +1888,7 @@ class Style(object):
     @style_get_decorator
     def objectPosition(self):
         return self.__objectPosition
-            
+
     @objectPosition.setter
     @style_set_decorator
     def objectPosition(self, value=None, *args, **kwargs):
@@ -1898,7 +1898,7 @@ class Style(object):
     @style_get_decorator
     def opacity(self):
         return self.__opacity
-            
+
     @opacity.setter
     @style_set_decorator
     def opacity(self, value=None, *args, **kwargs):
@@ -1908,7 +1908,7 @@ class Style(object):
     @style_get_decorator
     def order(self):
         return self.__order
-            
+
     @order.setter
     @style_set_decorator
     def order(self, value=None, *args, **kwargs):
@@ -1918,7 +1918,7 @@ class Style(object):
     @style_get_decorator
     def orphans(self):
         return self.__orphans
-            
+
     @orphans.setter
     @style_set_decorator
     def orphans(self, value=None, *args, **kwargs):
@@ -1928,7 +1928,7 @@ class Style(object):
     @style_get_decorator
     def outline(self):
         return self.__outline
-            
+
     @outline.setter
     @style_set_decorator
     def outline(self, value=None, *args, **kwargs):
@@ -1938,7 +1938,7 @@ class Style(object):
     @style_get_decorator
     def outlineColor(self):
         return self.__outlineColor
-            
+
     @outlineColor.setter
     @style_set_decorator
     def outlineColor(self, value=None, *args, **kwargs):
@@ -1948,7 +1948,7 @@ class Style(object):
     @style_get_decorator
     def outlineOffset(self):
         return self.__outlineOffset
-            
+
     @outlineOffset.setter
     @style_set_decorator
     def outlineOffset(self, value=None, *args, **kwargs):
@@ -1958,7 +1958,7 @@ class Style(object):
     @style_get_decorator
     def outlineStyle(self):
         return self.__outlineStyle
-            
+
     @outlineStyle.setter
     @style_set_decorator
     def outlineStyle(self, value=None, *args, **kwargs):
@@ -1968,7 +1968,7 @@ class Style(object):
     @style_get_decorator
     def outlineWidth(self):
         return self.__outlineWidth
-            
+
     @outlineWidth.setter
     @style_set_decorator
     def outlineWidth(self, value=None, *args, **kwargs):
@@ -1978,7 +1978,7 @@ class Style(object):
     @style_get_decorator
     def overflow(self):
         return self.__overflow
-            
+
     @overflow.setter
     @style_set_decorator
     def overflow(self, value=None, *args, **kwargs):
@@ -1988,7 +1988,7 @@ class Style(object):
     @style_get_decorator
     def overflowX(self):
         return self.__overflowX
-            
+
     @overflowX.setter
     @style_set_decorator
     def overflowX(self, value=None, *args, **kwargs):
@@ -1998,7 +1998,7 @@ class Style(object):
     @style_get_decorator
     def overflowY(self):
         return self.__overflowY
-            
+
     @overflowY.setter
     @style_set_decorator
     def overflowY(self, value=None, *args, **kwargs):
@@ -2008,7 +2008,7 @@ class Style(object):
     @style_get_decorator
     def padding(self):
         return self.__padding
-            
+
     @padding.setter
     @style_set_decorator
     def padding(self, value=None, *args, **kwargs):
@@ -2018,7 +2018,7 @@ class Style(object):
     @style_get_decorator
     def paddingBottom(self):
         return self.__paddingBottom
-            
+
     @paddingBottom.setter
     @style_set_decorator
     def paddingBottom(self, value=None, *args, **kwargs):
@@ -2028,7 +2028,7 @@ class Style(object):
     @style_get_decorator
     def paddingLeft(self):
         return self.__paddingLeft
-            
+
     @paddingLeft.setter
     @style_set_decorator
     def paddingLeft(self, value=None, *args, **kwargs):
@@ -2038,7 +2038,7 @@ class Style(object):
     @style_get_decorator
     def paddingRight(self):
         return self.__paddingRight
-            
+
     @paddingRight.setter
     @style_set_decorator
     def paddingRight(self, value=None, *args, **kwargs):
@@ -2048,7 +2048,7 @@ class Style(object):
     @style_get_decorator
     def paddingTop(self):
         return self.__paddingTop
-            
+
     @paddingTop.setter
     @style_set_decorator
     def paddingTop(self, value=None, *args, **kwargs):
@@ -2058,7 +2058,7 @@ class Style(object):
     @style_get_decorator
     def pageBreakAfter(self):
         return self.__pageBreakAfter
-            
+
     @pageBreakAfter.setter
     @style_set_decorator
     def pageBreakAfter(self, value=None, *args, **kwargs):
@@ -2068,7 +2068,7 @@ class Style(object):
     @style_get_decorator
     def pageBreakBefore(self):
         return self.__pageBreakBefore
-            
+
     @pageBreakBefore.setter
     @style_set_decorator
     def pageBreakBefore(self, value=None, *args, **kwargs):
@@ -2078,7 +2078,7 @@ class Style(object):
     @style_get_decorator
     def pageBreakInside(self):
         return self.__pageBreakInside
-            
+
     @pageBreakInside.setter
     @style_set_decorator
     def pageBreakInside(self, value=None, *args, **kwargs):
@@ -2088,7 +2088,7 @@ class Style(object):
     @style_get_decorator
     def perspective(self):
         return self.__perspective
-            
+
     @perspective.setter
     @style_set_decorator
     def perspective(self, value=None, *args, **kwargs):
@@ -2098,7 +2098,7 @@ class Style(object):
     @style_get_decorator
     def perspectiveOrigin(self):
         return self.__perspectiveOrigin
-            
+
     @perspectiveOrigin.setter
     @style_set_decorator
     def perspectiveOrigin(self, value=None, *args, **kwargs):
@@ -2108,7 +2108,7 @@ class Style(object):
     @style_get_decorator
     def position(self):
         return self.__position
-            
+
     @position.setter
     @style_set_decorator
     def position(self, value=None, *args, **kwargs):
@@ -2118,7 +2118,7 @@ class Style(object):
     @style_get_decorator
     def quotes(self):
         return self.__quotes
-            
+
     @quotes.setter
     @style_set_decorator
     def quotes(self, value=None, *args, **kwargs):
@@ -2128,7 +2128,7 @@ class Style(object):
     @style_get_decorator
     def resize(self):
         return self.__resize
-            
+
     @resize.setter
     @style_set_decorator
     def resize(self, value=None, *args, **kwargs):
@@ -2138,7 +2138,7 @@ class Style(object):
     @style_get_decorator
     def right(self):
         return self.__right
-            
+
     @right.setter
     @style_set_decorator
     def right(self, value=None, *args, **kwargs):
@@ -2148,7 +2148,7 @@ class Style(object):
     @style_get_decorator
     def tableLayout(self):
         return self.__tableLayout
-            
+
     @tableLayout.setter
     @style_set_decorator
     def tableLayout(self, value=None, *args, **kwargs):
@@ -2158,7 +2158,7 @@ class Style(object):
     @style_get_decorator
     def tabSize(self):
         return self.__tabSize
-            
+
     @tabSize.setter
     @style_set_decorator
     def tabSize(self, value=None, *args, **kwargs):
@@ -2168,7 +2168,7 @@ class Style(object):
     @style_get_decorator
     def textAlign(self):
         return self.__textAlign
-            
+
     @textAlign.setter
     @style_set_decorator
     def textAlign(self, value=None, *args, **kwargs):
@@ -2178,7 +2178,7 @@ class Style(object):
     @style_get_decorator
     def textAlignLast(self):
         return self.__textAlignLast
-            
+
     @textAlignLast.setter
     @style_set_decorator
     def textAlignLast(self, value=None, *args, **kwargs):
@@ -2188,7 +2188,7 @@ class Style(object):
     @style_get_decorator
     def textDecoration(self):
         return self.__textDecoration
-            
+
     @textDecoration.setter
     @style_set_decorator
     def textDecoration(self, value=None, *args, **kwargs):
@@ -2198,7 +2198,7 @@ class Style(object):
     @style_get_decorator
     def textDecorationColor(self):
         return self.__textDecorationColor
-            
+
     @textDecorationColor.setter
     @style_set_decorator
     def textDecorationColor(self, value=None, *args, **kwargs):
@@ -2208,7 +2208,7 @@ class Style(object):
     @style_get_decorator
     def textDecorationLine(self):
         return self.__textDecorationLine
-            
+
     @textDecorationLine.setter
     @style_set_decorator
     def textDecorationLine(self, value=None, *args, **kwargs):
@@ -2218,7 +2218,7 @@ class Style(object):
     @style_get_decorator
     def textDecorationStyle(self):
         return self.__textDecorationStyle
-            
+
     @textDecorationStyle.setter
     @style_set_decorator
     def textDecorationStyle(self, value=None, *args, **kwargs):
@@ -2228,7 +2228,7 @@ class Style(object):
     @style_get_decorator
     def textIndent(self):
         return self.__textIndent
-            
+
     @textIndent.setter
     @style_set_decorator
     def textIndent(self, value=None, *args, **kwargs):
@@ -2238,7 +2238,7 @@ class Style(object):
     @style_get_decorator
     def textJustify(self):
         return self.__textJustify
-            
+
     @textJustify.setter
     @style_set_decorator
     def textJustify(self, value=None, *args, **kwargs):
@@ -2248,7 +2248,7 @@ class Style(object):
     @style_get_decorator
     def textOverflow(self):
         return self.__textOverflow
-            
+
     @textOverflow.setter
     @style_set_decorator
     def textOverflow(self, value=None, *args, **kwargs):
@@ -2258,7 +2258,7 @@ class Style(object):
     @style_get_decorator
     def textShadow(self):
         return self.__textShadow
-            
+
     @textShadow.setter
     @style_set_decorator
     def textShadow(self, value=None, *args, **kwargs):
@@ -2268,7 +2268,7 @@ class Style(object):
     @style_get_decorator
     def textTransform(self):
         return self.__textTransform
-            
+
     @textTransform.setter
     @style_set_decorator
     def textTransform(self, value=None, *args, **kwargs):
@@ -2278,7 +2278,7 @@ class Style(object):
     @style_get_decorator
     def top(self):
         return self.__top
-            
+
     @top.setter
     @style_set_decorator
     def top(self, value=None, *args, **kwargs):
@@ -2288,7 +2288,7 @@ class Style(object):
     @style_get_decorator
     def transform(self):
         return self.__transform
-            
+
     @transform.setter
     @style_set_decorator
     def transform(self, value=None, *args, **kwargs):
@@ -2298,7 +2298,7 @@ class Style(object):
     @style_get_decorator
     def transformOrigin(self):
         return self.__transformOrigin
-            
+
     @transformOrigin.setter
     @style_set_decorator
     def transformOrigin(self, value=None, *args, **kwargs):
@@ -2308,7 +2308,7 @@ class Style(object):
     @style_get_decorator
     def transformStyle(self):
         return self.__transformStyle
-            
+
     @transformStyle.setter
     @style_set_decorator
     def transformStyle(self, value=None, *args, **kwargs):
@@ -2318,7 +2318,7 @@ class Style(object):
     @style_get_decorator
     def transition(self):
         return self.__transition
-            
+
     @transition.setter
     @style_set_decorator
     def transition(self, value=None, *args, **kwargs):
@@ -2328,7 +2328,7 @@ class Style(object):
     @style_get_decorator
     def transitionProperty(self):
         return self.__transitionProperty
-            
+
     @transitionProperty.setter
     @style_set_decorator
     def transitionProperty(self, value=None, *args, **kwargs):
@@ -2338,7 +2338,7 @@ class Style(object):
     @style_get_decorator
     def transitionDuration(self):
         return self.__transitionDuration
-            
+
     @transitionDuration.setter
     @style_set_decorator
     def transitionDuration(self, value=None, *args, **kwargs):
@@ -2348,7 +2348,7 @@ class Style(object):
     @style_get_decorator
     def transitionTimingFunction(self):
         return self.__transitionTimingFunction
-            
+
     @transitionTimingFunction.setter
     @style_set_decorator
     def transitionTimingFunction(self, value=None, *args, **kwargs):
@@ -2358,7 +2358,7 @@ class Style(object):
     @style_get_decorator
     def transitionDelay(self):
         return self.__transitionDelay
-            
+
     @transitionDelay.setter
     @style_set_decorator
     def transitionDelay(self, value=None, *args, **kwargs):
@@ -2368,7 +2368,7 @@ class Style(object):
     @style_get_decorator
     def unicodeBidi(self):
         return self.__unicodeBidi
-            
+
     @unicodeBidi.setter
     @style_set_decorator
     def unicodeBidi(self, value=None, *args, **kwargs):
@@ -2378,7 +2378,7 @@ class Style(object):
     @style_get_decorator
     def userSelect(self):
         return self.__userSelect
-            
+
     @userSelect.setter
     @style_set_decorator
     def userSelect(self, value=None, *args, **kwargs):
@@ -2388,7 +2388,7 @@ class Style(object):
     @style_get_decorator
     def verticalAlign(self):
         return self.__verticalAlign
-            
+
     @verticalAlign.setter
     @style_set_decorator
     def verticalAlign(self, value=None, *args, **kwargs):
@@ -2398,7 +2398,7 @@ class Style(object):
     @style_get_decorator
     def visibility(self):
         return self.__visibility
-            
+
     @visibility.setter
     @style_set_decorator
     def visibility(self, value=None, *args, **kwargs):
@@ -2408,7 +2408,7 @@ class Style(object):
     @style_get_decorator
     def whiteSpace(self):
         return self.__whiteSpace
-            
+
     @whiteSpace.setter
     @style_set_decorator
     def whiteSpace(self, value=None, *args, **kwargs):
@@ -2418,7 +2418,7 @@ class Style(object):
     @style_get_decorator
     def width(self):
         return self.__width
-            
+
     @width.setter
     @style_set_decorator
     def width(self, value=None, *args, **kwargs):
@@ -2428,7 +2428,7 @@ class Style(object):
     @style_get_decorator
     def wordBreak(self):
         return self.__wordBreak
-            
+
     @wordBreak.setter
     @style_set_decorator
     def wordBreak(self, value=None, *args, **kwargs):
@@ -2438,7 +2438,7 @@ class Style(object):
     @style_get_decorator
     def wordSpacing(self):
         return self.__wordSpacing
-            
+
     @wordSpacing.setter
     @style_set_decorator
     def wordSpacing(self, value=None, *args, **kwargs):
@@ -2448,7 +2448,7 @@ class Style(object):
     @style_get_decorator
     def wordWrap(self):
         return self.__wordWrap
-            
+
     @wordWrap.setter
     @style_set_decorator
     def wordWrap(self, value=None, *args, **kwargs):
@@ -2458,7 +2458,7 @@ class Style(object):
     @style_get_decorator
     def widows(self):
         return self.__widows
-            
+
     @widows.setter
     @style_set_decorator
     def widows(self, value=None, *args, **kwargs):
@@ -2468,9 +2468,8 @@ class Style(object):
     @style_get_decorator
     def zIndex(self):
         return self.__zIndex
-            
+
     @zIndex.setter
     @style_set_decorator
     def zIndex(self, value=None, *args, **kwargs):
         self.__zIndex = value
-

@@ -136,7 +136,6 @@ class Utils(object):
         # return value if condition else not value
         # if any(pred(x.item) for x in sequence):
 
-
     # TODO -
     # def beautfiy(): # make nice
     # def uglify(): # make not nice

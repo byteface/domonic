@@ -50,7 +50,7 @@ class EventTarget:
                 # type(thing, (Event,), self)
             except Exception as e:
                 print(e)
-                thing() # try calling without params, user may not create param
+                thing()  # try calling without params, user may not create param
 
         return not event.defaultPrevented
 
@@ -134,7 +134,6 @@ class Node(EventTarget):
         ''' Sets or returns the value of a node'''
         pass
 
-
     # - TODO - tests all below
 
     def contains(self, node):
@@ -155,7 +154,7 @@ class Node(EventTarget):
         ''' inserts a node before a reference node as a child of a specified parent node. '''
         for count, each in enumerate(self.args):
             if each == node:
-                self.args.insert(node,count)
+                self.args.insert(node, count)
                 return node
         return node
 
@@ -192,10 +191,10 @@ class Node(EventTarget):
     def cloneNode(self, deep=True):
         ''' Returns a copy. '''
         import copy
-        if deep == True:
+        if deep:
             return copy.deepcopy(self)
         else:
-            return copy.copy(self) # shallow copy
+            return copy.copy(self)  # shallow copy
 
     def isSameNode(self, node):
         ''' Checks if two elements are the same node '''
@@ -257,7 +256,7 @@ console = Console
 
 
 class Attr(object):
-    
+
     def __init__(self, name, *args, **kwargs):
         # self.isId
         self.name = name
@@ -613,7 +612,7 @@ class Element(Node):
 
     def setAttributeNode(self, attr):
         ''' Sets or changes the specified attribute node '''
-        self.setAttribute( attr.name, attr.value )
+        self.setAttribute(attr.name, attr.value)
 
     @property
     def style(self):
@@ -747,6 +746,7 @@ class Document(Element):
         ''' Returns the character encoding for the document'''
         # return
 
+    @staticmethod
     def createAttribute(name):
         ''' Creates an attribute node '''
         return Attr(name)
@@ -769,6 +769,7 @@ class Document(Element):
         el = type(_type, (tag, Element), {'name': _type, '__init__': tag_init})
         return el()
 
+    @staticmethod
     def createEvent(event_type=None):
         '''Creates a new event'''
         if event_type == "MouseEvent":
