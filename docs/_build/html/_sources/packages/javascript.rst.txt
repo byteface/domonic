@@ -27,6 +27,9 @@ There is a javascript package being started that mirrors the js API:
 	# etc..
 
 
+setInterval
+----------------
+
 You can use setInterval and clearInterval with params
 
 .. code-block :: python
@@ -62,7 +65,8 @@ You can update a-tags the same way as it inherits from URL:
 	print(atag)
 
 
-Styling is now supported...
+Styling
+----------------
 
 .. code-block :: python
 

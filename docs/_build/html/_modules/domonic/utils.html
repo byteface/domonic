@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>domonic.utils &#8212; domonic 0.1.10 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for domonic.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    domonic.utils</span>
+<span class="sd">    ====================================</span>
+<span class="sd">    snippets etc</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">sub</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">islice</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+
+<div class="viewcode-block" id="Utils"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils">[docs]</a><span class="k">class</span> <span class="nc">Utils</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; utils &quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">init_assets</span><span class="p">():</span>
+        <span class="kn">from</span> <span class="nn">domonic.terminal</span> <span class="kn">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">touch</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;assets&quot;</span><span class="p">)</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;assets/js&quot;</span><span class="p">)</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;assets/css&quot;</span><span class="p">)</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;assets/img&quot;</span><span class="p">)</span>
+        <span class="n">touch</span><span class="p">(</span><span class="s2">&quot;assets/js/master.js&quot;</span><span class="p">)</span>
+        <span class="n">touch</span><span class="p">(</span><span class="s2">&quot;assets/css/style.css&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="Utils.case_camel"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.case_camel">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">case_camel</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; case_camel(&#39;camel-case&#39;) &gt; &#39;camelCase&#39; &#39;&#39;&#39;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(_|-)+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
+
+<div class="viewcode-block" id="Utils.case_snake"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.case_snake">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">case_snake</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        snake(&#39;camelCase&#39;) # &#39;camel_case&#39;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">sub</span><span class="p">(</span><span class="s1">&#39;([A-Z][a-z]+)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39; \1&#39;</span><span class="p">,</span>
+            <span class="n">sub</span><span class="p">(</span><span class="s1">&#39;([A-Z]+)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39; \1&#39;</span><span class="p">,</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">split</span><span class="p">())</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Utils.case_kebab"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.case_kebab">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">case_kebab</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        kebab(&#39;camelCase&#39;) # &#39;camel-case&#39;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\s|_|-)+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
+            <span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+&quot;</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">mo</span><span class="p">:</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">mo</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">s</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Utils.squash"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.squash">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">squash</span><span class="p">(</span><span class="n">the_list</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; turns a 2d array into a flat one &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">inner</span> <span class="k">for</span> <span class="n">outer</span> <span class="ow">in</span> <span class="n">the_list</span> <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="n">outer</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Utils.chunk"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.chunk">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; chunk a list into batches &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">),</span> <span class="n">size</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="Utils.dictify"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.dictify">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">dictify</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; turns a list into a dictionary where the list items are the keys &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="n">some_str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="ow">not</span> <span class="n">some_str</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="n">some_arr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">some_arr</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Utils.chunks"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.chunks">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">chunks</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">iter</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size &#39;&#39;&#39;</span>
+        <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="nb">format</span><span class="p">(</span><span class="n">chain</span><span class="p">((</span><span class="n">it</span><span class="o">.</span><span class="n">next</span><span class="p">(),),</span> <span class="n">islice</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span></div>
+    <span class="c1"># &gt;&gt;&gt; l = [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;, &quot;f&quot;, &quot;g&quot;]</span>
+    <span class="c1"># &gt;&gt;&gt; for chunk in chunks(l, 3, tuple):</span>
+    <span class="c1"># ...         print chunk</span>
+
+<div class="viewcode-block" id="Utils.clean"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.clean">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; removes falsy values (False, None, 0 and “”) from a list &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">lst</span><span class="p">))</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_vowels</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">each</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">string</span> <span class="k">if</span> <span class="n">each</span> <span class="ow">in</span> <span class="s1">&#39;aeiou&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Utils.untitle"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.untitle">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">untitle</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; fooBar &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="nb">str</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">merge_dictionaries</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">to_dictionary</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">most_frequent</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">list</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="nb">list</span><span class="o">.</span><span class="n">count</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">anagram</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Counter</span><span class="p">(</span><span class="n">first</span><span class="p">)</span> <span class="o">==</span> <span class="n">Counter</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">frequency</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">freq</span><span class="p">:</span>
+                <span class="n">freq</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">freq</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">freq</span></div>
+
+    <span class="c1"># def any(arr):</span>
+    <span class="c1">#     &quot;&quot;&quot; given a list. return 1 random item &quot;&quot;&quot;</span>
+    <span class="c1">#     return random.choice(arr)</span>
+
+    <span class="c1"># def any_iter(arr):</span>
+    <span class="c1">#     &#39;&#39;&#39; given a list. returns random until expired &#39;&#39;&#39;</span>
+    <span class="c1">#     random.shuffle(arr)</span>
+    <span class="c1">#     return (x for x in arr)</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def unless(value, condition):</span>
+        <span class="c1"># return value if condition else not value</span>
+        <span class="c1"># if any(pred(x.item) for x in sequence):</span>
+
+    <span class="c1"># TODO -</span>
+    <span class="c1"># def beautfiy(): # make nice</span>
+    <span class="c1"># def uglify(): # make not nice</span>
+    <span class="c1"># def simplify(sentence): # reduce a sentence to its meaning. remove uneeded words.</span>
+    <span class="c1"># def factualise():  # returns json document of modelled info from general text</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">domonic</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=requests&repo=requests&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, byteface.
+      
+    </div>
+
+    
+    <a href="https://github.com/requests/requests" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

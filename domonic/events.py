@@ -124,6 +124,120 @@ class KeyboardEvent(object):
     # repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent
 
 
+class UiEvent(object):
+    """ UiEvent """
+    def __init__(self, *args, **kwargs):
+        self.detail = None
+        self.view = None
+
+
+class FocusEvent(object):
+    """ FocusEvent """
+    def __init__(self, *args, **kwargs):
+        self.relatedTarget = None
+
+
+class TouchEvent(object):
+    """ TouchEvent """
+    def __init__(self, *args, **kwargs):
+        self.shiftKey = None
+
+# altKey  Returns whether the "ALT" key was pressed when the touch event was triggered
+# changedTouches  Returns a list of all the touch objects whose state changed between the previous touch and this touch
+# ctrlKey Returns whether the "CTRL" key was pressed when the touch event was triggered
+# metaKey Returns whether the "meta" key was pressed when the touch event was triggered
+# shiftKey    Returns whether the "SHIFT" key was pressed when the touch event was triggered
+# targetTouches   Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element
+# touches Returns a list of all the touch objects that are currently in contact with the surface
+
+
+class WheelEvent(object):
+    """ WheelEvent """
+    def __init__(self, *args, **kwargs):
+        self.deltaX = None
+
+# deltaX  Returns the horizontal scroll amount of a mouse wheel (x-axis)
+# deltaY  Returns the vertical scroll amount of a mouse wheel (y-axis)
+# deltaZ  Returns the scroll amount of a mouse wheel for the z-axis
+# deltaMode   Returns a number that represents the unit of measurements for delta values (pixels, lines or pages)
+
+
+class AnimationEvent(object):
+    """ AnimationEvent """
+    def __init__(self, *args, **kwargs):
+        self.animationName = None
+# animationName   Returns the name of the animation
+# elapsedTime Returns the number of seconds an animation has been running
+# pseudoElement   Returns the name of the pseudo-element of the animation
+
+
+class ClipboardEvent(object):
+    """ ClipboardEvent """
+    def __init__(self, *args, **kwargs):
+        self.clipboardData = None
+# clipboardData   Returns an object containing the data affected by the clipboard operation
+
+
+class DragEvent(object):
+    """ DragEvent """
+    def __init__(self, *args, **kwargs):
+        self.dataTransfer = None
+
+# dataTransfer    Returns the data that is dragged/dropped
+
+
+class HashChangeEvent(object):
+    """ HashChangeEvent """
+    def __init__(self, *args, **kwargs):
+        self.newURL = None
+# newURL  Returns the URL of the document, after the hash has been changed
+# oldURL  Returns the URL of the document, before the hash was changed
+
+
+class InputEvent(object):
+    """ InputEvent """
+    def __init__(self, *args, **kwargs):
+        self.data = None
+# data    Returns the inserted characters
+# dataTransfer    Returns an object containing information about the inserted/deleted data
+# getTargetRanges()   Returns an array containing target ranges that will be affected by the insertion/deletion
+# inputType   Returns the type of the change (i.e "inserting" or "deleting")
+# isComposing Returns whether the state of the event is composing or not
+
+
+class PageTransitionEvent(object):
+    """ PageTransitionEvent """
+    def __init__(self, *args, **kwargs):
+        self.persisted = None
+# persisted   Returns whether the webpage was cached by the browser
+
+
+class PopStateEvent(object):
+    """ PopStateEvent """
+    def __init__(self, *args, **kwargs):
+        self.state = None
+# state   Returns an object containing a copy of the history entries
+
+
+class StorageEvent(object):
+    """ StorageEvent """
+    def __init__(self, *args, **kwargs):
+        self.key = None
+# key Returns the key of the changed storage item
+# newValue    Returns the new value of the changed storage item
+# oldValue    Returns the old value of the changed storage item
+# storageArea Returns an object representing the affected storage object
+# url Returns the URL of the changed item's document
+
+
+class TransitionEvent(object):
+    """ TransitionEvent """
+    def __init__(self, *args, **kwargs):
+        self.propertyName = None
+# propertyName    Returns the name of the transition
+# elapsedTime Returns the number of seconds a transition has been running
+# pseudoElement   Returns the name of the pseudo-element of the transition
+
 
 
 

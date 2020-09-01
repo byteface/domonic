@@ -84,7 +84,7 @@
                 <span class="c1"># type(thing, (Event,), self)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                <span class="n">thing</span><span class="p">()</span> <span class="c1"># try calling without params, user may not create param</span>
+                <span class="n">thing</span><span class="p">()</span>  <span class="c1"># try calling without params, user may not create param</span>
 
         <span class="k">return</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">defaultPrevented</span></div>
 
@@ -168,7 +168,6 @@
         <span class="sd">&#39;&#39;&#39; Sets or returns the value of a node&#39;&#39;&#39;</span>
         <span class="k">pass</span></div>
 
-
     <span class="c1"># - TODO - tests all below</span>
 
 <div class="viewcode-block" id="Node.contains"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
@@ -189,7 +188,7 @@
         <span class="sd">&#39;&#39;&#39; inserts a node before a reference node as a child of a specified parent node. &#39;&#39;&#39;</span>
         <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">each</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">each</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="n">count</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">node</span>
         <span class="k">return</span> <span class="n">node</span></div>
 
@@ -226,10 +225,10 @@
 <div class="viewcode-block" id="Node.cloneNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.cloneNode">[docs]</a>    <span class="k">def</span> <span class="nf">cloneNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a copy. &#39;&#39;&#39;</span>
         <span class="kn">import</span> <span class="nn">copy</span>
-        <span class="k">if</span> <span class="n">deep</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">deep</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="c1"># shallow copy</span></div>
+            <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># shallow copy</span></div>
 
 <div class="viewcode-block" id="Node.isSameNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.isSameNode">[docs]</a>    <span class="k">def</span> <span class="nf">isSameNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Checks if two elements are the same node &#39;&#39;&#39;</span>
@@ -291,7 +290,7 @@
 
 
 <span class="k">class</span> <span class="nc">Attr</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.isId</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
@@ -647,7 +646,7 @@
 
 <div class="viewcode-block" id="Element.setAttributeNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.setAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">setAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Sets or changes the specified attribute node &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span> <span class="n">attr</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span> <span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -781,7 +780,8 @@
         <span class="sd">&#39;&#39;&#39; Returns the character encoding for the document&#39;&#39;&#39;</span>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.createAttribute"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.createAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">createAttribute</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.createAttribute"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.createAttribute">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">createAttribute</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Creates an attribute node &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
@@ -803,7 +803,8 @@
         <span class="n">el</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">_type</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">el</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Document.createEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.createEvent">[docs]</a>    <span class="k">def</span> <span class="nf">createEvent</span><span class="p">(</span><span class="n">event_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.createEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.createEvent">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">createEvent</span><span class="p">(</span><span class="n">event_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Creates a new event&#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="s2">&quot;MouseEvent&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">MouseEvent</span><span class="p">()</span>

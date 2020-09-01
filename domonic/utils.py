@@ -11,6 +11,7 @@ from collections import Counter
 
 
 class Utils(object):
+    """ utils """
 
     @staticmethod
     def init_assets():

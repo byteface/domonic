@@ -48,7 +48,8 @@ This package only works on nix systems as it effectively just passes stuff off t
 	print(cal())
 
 
-or just run arbitrary commands...
+run arbitrary commands...
+--------------------------------
 
 .. code-block :: python
 
