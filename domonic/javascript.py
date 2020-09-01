@@ -19,6 +19,7 @@ import typing
 
 
 class js_object(object):
+    """ js_object """
 
     def valueOf(self):
         """ Returns the primitive value of an array Array, Boolean, Date, Number, String"""
@@ -217,6 +218,7 @@ class Math(js_object):
 
 
 class Global(object):
+    """ javascript global methods """
 
     NaN = "NaN"
 
@@ -320,6 +322,7 @@ class Global(object):
 
 
 class Date(js_object):
+    """ javascript date """
 
     def __init__(self, date: str = None, formatter='python'):
         if date is None:
@@ -566,6 +569,7 @@ class Date(js_object):
 
 
 class Screen(object):
+    """ screen """
 
     # wrap a lib?
     # https://github.com/rr-/screeninfo?
@@ -620,6 +624,7 @@ class ProgramKilled(Exception):
     pass
 
 class Job(threading.Thread):
+
     def __init__(self, interval, execute, *args, **kwargs):
         threading.Thread.__init__(self)
         self.daemon = False
@@ -650,6 +655,7 @@ class SetInterval(object):
 
 
 class Window(object):
+    """ window """
 
     def __init__(self, *args, **kwargs):
         print('window here!')
@@ -708,8 +714,6 @@ class Window(object):
         interval_ID = SetInterval(time, function, *args, **kwargs)
         return interval_ID.job
 
-
-
     # @staticmethod
     # @getter
     # def navigator():
@@ -722,7 +726,6 @@ class Window(object):
 # atob()    Decodes a base-64 encoded string    Window
 # blur()    Removes focus from an element   Element, Window
 # btoa()    Encodes a string in base-64 Window
-# clearInterval()   Clears a timer set with setInterval()   Window
 # clearTimeout()    Clears a timer set with setTimeout()    Window
 # closed    Returns a Boolean value indicating whether a window has been closed or not  Window
 # close()   Closes the output stream previously opened with document.open() Document, Window
@@ -765,7 +768,6 @@ class Window(object):
 # scrollY   An alias of pageYOffset Window
 # self  Returns the current window  Window
 # sessionStorage    Allows to save key/value pairs in a web browser. Stores the data for one session    Window
-# setInterval() Calls a function or evaluates an expression at specified intervals (in milliseconds)    Window
 # setTimeout()  Calls a function or evaluates an expression after a specified number of milliseconds    Window
 # stop()    Stops the window from loading   Window
 # status    Sets or returns the text in the statusbar of a window   Window
@@ -777,6 +779,7 @@ window = Window
 
 
 class Array(object):
+    """ javascript array """
 
     def __init__(self, *args):
         self.args = list(args)
@@ -917,6 +920,7 @@ class Array(object):
 
 
 class Navigator(object):
+    """ navigator """
 
     # Determines whether cookies are enabled in the browser
     cookieEnabled = False
@@ -940,6 +944,7 @@ class Navigator(object):
 
 
 class String(object):
+    """ javascript string """
 
     def __init__(self, x="", *args, **kwargs):
         # self.args = args
@@ -1129,7 +1134,7 @@ class URL(object):
 
     @property
     def hash(self):
-        ''' hash Sets or returns the anchor part (#) of a URL '''
+        """" hash Sets or returns the anchor part (#) of a URL """
         if '#' in self.href:
             return '#'+self.href.split('#')[1]
         # return ''
@@ -1151,13 +1156,7 @@ class URL(object):
 
 # clipboardData Returns an object containing the data affected by the clipboard operation   ClipboardData
 
-# animationName Returns the name of the animation   AnimationEvent
-
 # back()    Loads the previous URL in the history list  History
-
-# break Exits a switch or a loop    Statements
-
-# changeTouches Returns a list of all the touch objects whose state changed between the previous touch and this touch   TouchEvent
 
 # charAt()  Returns the character at the specified index (position) String
 
@@ -1167,33 +1166,13 @@ class URL(object):
 
 # clearWatch()  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    Geolocation
 
-# const Declares a variable with a constant value   Statements
-
-# continue  Breaks one iteration (in the loop) if a specified condition occurs, and continues with the next iteration in the loop   Statements
-
 # coordinates   Returns the position and altitude of the device on Earth    Geolocation
 
 # copyWithin()  Copies array elements within the array, to and from specified positions Array
 
-# data  Returns the inserted characters InputEvent
-
-# dataTransfer  Returns an object containing the data being dragged/dropped, or inserted/deleted    DragEvent, InputEvent
-
 # debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements
 
-# deltaX    Returns the horizontal scroll amount of a mouse wheel (x-axis)  WheelEvent
-
-# deltaY    Returns the vertical scroll amount of a mouse wheel (y-axis)    WheelEvent
-
-# deltaZ    Returns the scroll amount of a mouse wheel for the z-axis   WheelEvent
-
-# deltaMode Returns a number that represents the unit of measurements for delta values (pixels, lines or pages) WheelEvent
-
 # detail    Returns a number that indicates how many times the mouse was clicked    UiEvent
-
-# do ... while  Executes a block of statements and repeats the block while a condition is true  Statements
-
-# elapsedTime   Returns the number of seconds an animation has been running AnimationEvent
 
 # elapsedTime   Returns the number of seconds a transition has been running
 
@@ -1211,19 +1190,11 @@ class URL(object):
 
 # findIndex()   Returns the index of the first element in an array that pass a test Array
 
-# for   Marks a block of statements to be executed as long as a condition is true   Statements
-
-# for ... in    Marks a block of statements to be executed for each element of an object (or array) Statements
-
 # forEach() Calls a function for each array element Array
-
-# forms Returns a collection of all <form> elements in the document Document
 
 # forward() Loads the next URL in the history list  History
 
 # from()    Creates an array from an object Array
-
-# function  Declares a function Statements
 
 # geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
 
@@ -1233,17 +1204,11 @@ class URL(object):
 
 # getNamedItem()    Returns a specified attribute node from a NamedNodeMap  Attribute
 
-# getTargetRanges() Returns an array containing target ranges that will be affected by the insertion/deletion   InputEvent
-
 # go()  Loads a specific URL from the history list  History
 
 # id    Sets or returns the value of the id attribute of an element Element
 
-# if ... else ... else if   Marks a block of statements to be executed depending on a condition Statements
-
 # ignoreCase    Checks whether the "i" modifier is set  RegExp
-
-# inputType Returns the type of the change (i.e "inserting" or "deleting")  InputEvent
 
 # isId  Returns true if the attribute is of type Id, otherwise it returns false Attribute
 
@@ -1259,12 +1224,6 @@ class URL(object):
 
 # language  Returns the language of the browser Navigator
 
-# lengthComputable  Returns whether the length of the progress can be computable or not ProgressEvent
-
-# let   Declares a variable inside brackets {} scope    Statements
-
-# loaded    Returns how much work has been loaded   ProgressEvent
-
 # match()   Searches a string for a match against a regular expression, and returns the matches String
 
 # MAX_VALUE Returns the largest number possible in JavaScript   Number
@@ -1279,19 +1238,9 @@ class URL(object):
 
 # NEGATIVE_INFINITY Represents negative infinity (returned on overflow) Number
 
-# newURL    Returns the URL of the document, after the hash has been changed    HasChangeEvent
-
-# newValue  Returns the new value of the changed storage item   StorageEvent
-
-# oldURL    Returns the URL of the document, before the hash was changed    HasChangeEvent
-
-# oldValue  Returns the old value of the changed storage item   StorageEvent
-
 # onLine    Determines whether the browser is online    Navigator
 
 # origin    Returns the protocol, hostname and port number of a URL Location
-
-# persisted Returns whether the webpage was cached by the browser   PageTransitionEvent
 
 # position  Returns the position of the concerned device at a given time    Geolocation
 
@@ -1300,10 +1249,6 @@ class URL(object):
 # positionOptions   Describes an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition() and Geolocation.watchPosition() Geolocation
 
 # POSITIVE_INFINITY Represents infinity (returned on overflow)  Number
-
-# propertyName  Returns the name of the CSS property associated with the animation or transition    AnimationEvent, TransitionEvent
-
-# pseudoElement Returns the name of the pseudo-element of the animation or transition   AnimationEvent, TransitionEvent
 
 # removeItem()  Removes that key from the storage   Storage
 
@@ -1319,28 +1264,10 @@ class URL(object):
 
 # specified Returns true if the attribute has been specified, otherwise it returns false    Attribute
 
-# state Returns an object containing a copy of the history entries  PopStateEvent
-
-# storageArea   Returns an object representing the affected storage object  StorageEvent
-
-# switch    Marks a block of statements to be executed depending on different cases Statements
-
-# throw Throws (generates) an error Statements
-
 # toExponential()   Converts a number into an exponential notation  Number
 
 # toFixed(x)    Formats a number with x numbers of digits after the decimal point   Number
 
 # toPrecision(x)    Formats a number to x length    Number
 
-# total Returns the total amount of work that will be loaded    ProgressEvent
-
-# touches   Returns a list of all the touch objects that are currently in contact with the surface  TouchEvent
-
-# url   Returns the URL of the changed item's document  StorageEvent
-
-# value Sets or returns the value of the attribute  Attribute
-
 # watchPosition()   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   Geolocation
-
-# while Marks a block of statements to be executed while a condition is true    Statements
