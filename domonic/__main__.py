@@ -6,11 +6,11 @@
 
 import argparse
 def parse_args():
-    parser = argparse.ArgumentParser( prog="domonic", usage="%(prog)s [options]", description="Generate HTML with Python 3")
+    parser = argparse.ArgumentParser(add_help=False, prog="domonic", usage="%(prog)s [options]", description="Generate HTML with Python 3")
     parser.add_argument('-a', '--assets', help="generate as assets directory with common files", action='store_true')
     parser.add_argument('-d', '--download', help="Attempts to to generate domonic template from a webpage", type=str)
     # parser.add_argument('-t', '--tree', default=False, help="generate a tree view from a component", type=str)
-    # parser.add_argument('-h', '--help')  # launch the docs
+    parser.add_argument('-h', '--help', action='store_true')  # launch the docs
 
     # -- ideas
     # -- change all file extensions. from, to
@@ -40,6 +40,11 @@ def do_things(arguments):
         from domonic.utils import Utils
         print("filename:", Utils.url2file(arguments.download) )
         render(page, Utils.url2file(arguments.download) )
+
+    if arguments.help is not None:
+        import webbrowser
+        webbrowser.open_new("https://domonic.readthedocs.io/")
+
 
 if __name__ == "__main__":
     args = parse_args()

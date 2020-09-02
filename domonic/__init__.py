@@ -81,7 +81,7 @@ class domonic:
                     "thead", "tfoot", "tbody", "table", "style", "small", "param", "meter", "label", "input", "embed",
                     "audio", "aside", "time", "span", "span", "samp", "ruby", "meta", "meta", "menu", "mark", "link",
                     "html", "head", "form", "font", "code", "cite", "body", "base", "area", "abbr", "wbr", "var", "sup",
-                    "sub", "pre", "nav", "map", "main""kbd", "ins", "img", "div", "dfn", "del", "col", "bdo", "bdi",
+                    "sub", "pre", "nav", "map", "main", "kbd", "ins", "img", "div", "dfn", "del", "col", "bdo", "bdi",
                     "ul", "tr", "th", "td", "rt", "rp", "ol", "li", "hr", "hr", "h6", "h5", "h4", "h3", "h2", "h1", "em",
                     "dt", "dl", "dd", "br", "u", "s", "q", "p", "i", "b", "a"]
 
