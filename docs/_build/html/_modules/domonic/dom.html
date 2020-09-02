@@ -113,37 +113,37 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Node.appendChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.appendChild">[docs]</a>    <span class="k">def</span> <span class="nf">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Adds a new child node, to an element, as the last child node&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Adds a new child node, to an element, as the last child node &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">+</span> <span class="p">(</span><span class="n">item</span><span class="p">,)</span></div>
 
 <div class="viewcode-block" id="Node.hasChildNodes"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.hasChildNodes">[docs]</a>    <span class="k">def</span> <span class="nf">hasChildNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Returns true if an element has any child nodes, otherwise false&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns true if an element has any child nodes, otherwise false &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="Node.lastChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.lastChild">[docs]</a>    <span class="k">def</span> <span class="nf">lastChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the last child node of an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns the last child node of an element &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Node.firstChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.firstChild">[docs]</a>    <span class="k">def</span> <span class="nf">firstChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the first child node of an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns the first child node of an element &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># TODO - check if this means includes content</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Node.childElementCount"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.childElementCount">[docs]</a>    <span class="k">def</span> <span class="nf">childElementCount</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the number of child elements an element has&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns the number of child elements an element has &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Node.childNodes"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.childNodes">[docs]</a>    <span class="k">def</span> <span class="nf">childNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns a collection of an element&#39;s child nodes (including text and comment nodes)&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns a collection of an element&#39;s child nodes (including text and comment nodes) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span></div>
 
 <div class="viewcode-block" id="Node.children"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.children">[docs]</a>    <span class="k">def</span> <span class="nf">children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns a collection of an element&#39;s child element (excluding text and comment nodes)&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns a collection of an element&#39;s child element (excluding text and comment nodes) &quot;&quot;&quot;</span>
         <span class="n">newlist</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="k">if</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">each</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">):</span>
@@ -151,7 +151,7 @@
         <span class="k">return</span> <span class="n">newlist</span></div>
 
 <div class="viewcode-block" id="Node.nodeType"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.nodeType">[docs]</a>    <span class="k">def</span> <span class="nf">nodeType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the node type of a node&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns the node type of a node &quot;&quot;&quot;</span>
         <span class="c1"># pass</span>
         <span class="k">return</span> <span class="mi">1</span></div>
 
@@ -161,17 +161,17 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodeName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the name of a node&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns the name of a node &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tagName</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Node.nodeValue"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.nodeValue">[docs]</a>    <span class="k">def</span> <span class="nf">nodeValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Sets or returns the value of a node&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns the value of a node &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
     <span class="c1"># - TODO - tests all below</span>
 
 <div class="viewcode-block" id="Node.contains"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Check whether a node is a descendant of a given node&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Check whether a node is a descendant of a given node &quot;&quot;&quot;</span>
         <span class="c1"># this will go crunch on big stuff... need to consider best way</span>
         <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">each</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
@@ -180,12 +180,12 @@
                 <span class="k">if</span> <span class="n">each</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">True</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">pass</span> <span class="c1"># TODO - dont iterate strings</span>
+                <span class="k">pass</span>  <span class="c1"># TODO - dont iterate strings</span>
 
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Node.insertBefore"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.insertBefore">[docs]</a>    <span class="k">def</span> <span class="nf">insertBefore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; inserts a node before a reference node as a child of a specified parent node. &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; inserts a node before a reference node as a child of a specified parent node. &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">each</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">each</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>

@@ -41,7 +41,7 @@ You can use setInterval and clearInterval with params
 	    x = x+inc
 	    print(x)
 
-	test = window.setInterval(1000, hi, 2)
+	test = window.setInterval(hi, 1000, 2)
 	import time
 	time.sleep(5)
 	window.clearInterval(test)

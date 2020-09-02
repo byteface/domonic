@@ -642,12 +642,13 @@ class Job(threading.Thread):
         while not self.stopped.wait(self.interval.total_seconds()):
             self.execute(*self.args, **self.kwargs)
 
+
 class SetInterval(object):
 
     def signal_handler(self, signum, frame):
         raise ProgramKilled
 
-    def __init__(self, time, function, *args, **kwargs):
+    def __init__(self, function, time, *args, **kwargs):
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
         self.job = Job(timedelta(microseconds=time * 1000), function, *args, **kwargs)
@@ -710,8 +711,8 @@ class Window(object):
         job.stop()
 
     @staticmethod
-    def setInterval(time, function, *args, **kwargs):
-        interval_ID = SetInterval(time, function, *args, **kwargs)
+    def setInterval(function, time, *args, **kwargs):
+        interval_ID = SetInterval(function, time, *args, **kwargs)
         return interval_ID.job
 
     # @staticmethod

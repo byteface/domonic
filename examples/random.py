@@ -10,7 +10,7 @@ def hi(inc):
 	x = (x+inc)
 	print(x)
 
-test = window.setInterval(1000, hi, 1)
+test = window.setInterval(hi, 1000, 1)
 import time
 time.sleep(5)
 window.clearInterval(test)
@@ -53,7 +53,7 @@ def animate():
 	scene.render(f"spheres{x}.png", width=1200, height=780)
 
 
-test = window.setInterval(0.0001, animate) # max_iterations
+test = window.setInterval(animate, 0.0001) # max_iterations
 import time
 time.sleep(10)
 window.clearInterval(test)
