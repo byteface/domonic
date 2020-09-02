@@ -74,7 +74,7 @@
 <span class="c1"># @accepts(int)</span>
 
 
-<div class="viewcode-block" id="silence"><a class="viewcode-back" href="../../packages/CDN.html#domonic.decorators.silence">[docs]</a><span class="k">def</span> <span class="nf">silence</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="silence"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.decorators.silence">[docs]</a><span class="k">def</span> <span class="nf">silence</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; stop a function from doing anything &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">dont_do_it</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -82,7 +82,7 @@
 <span class="c1"># @silence</span>
 
 
-<div class="viewcode-block" id="check"><a class="viewcode-back" href="../../packages/CDN.html#domonic.decorators.check">[docs]</a><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+<div class="viewcode-block" id="check"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.decorators.check">[docs]</a><span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; logs entry and exit of a function &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">new_f</span><span class="p">():</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Entering&quot;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
@@ -92,7 +92,7 @@
 <span class="c1"># @check()</span>
 
 
-<div class="viewcode-block" id="log"><a class="viewcode-back" href="../../packages/CDN.html#domonic.decorators.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="log"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.decorators.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">&#39;info&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; @log(logging.getLogger(&#39;main&#39;), level=&#39;warning&#39;) &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">log_decorator</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
@@ -103,7 +103,7 @@
     <span class="k">return</span> <span class="n">log_decorator</span></div>
 
 
-<div class="viewcode-block" id="instead"><a class="viewcode-back" href="../../packages/CDN.html#domonic.decorators.instead">[docs]</a><span class="k">def</span> <span class="nf">instead</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">somethingelse</span><span class="p">):</span>
+<div class="viewcode-block" id="instead"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.decorators.instead">[docs]</a><span class="k">def</span> <span class="nf">instead</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">somethingelse</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; what to return if it fails &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">new_f</span><span class="p">():</span>
         <span class="k">try</span><span class="p">:</span>

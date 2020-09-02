@@ -10,6 +10,7 @@ class Style(object):
     """[ js syntax styles ]
         # TODO - just add normal float?
         # TODO - consider camel case for hyphen params?
+        # TODO - not json serialisable due to the decorators.
     """
 
     def __init__(self, parent_node=None):
@@ -585,7 +586,7 @@ class Style(object):
             func(self, value, *args, **kwargs)
 
             self._members_checked += 1
-            if self._members_checked < len(vars(self))-1:
+            if self._members_checked < len(vars(self)) - 1:
                 return
 
             if self._parent_node is not None:

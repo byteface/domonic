@@ -308,33 +308,30 @@
 <span class="n">main</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;command&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>  <span class="c1"># TODO - y was this missing?</span>
 
 
-<span class="c1"># TODO - this can&#39;t be added at the mo. need to push it</span>
-<span class="k">class</span> <span class="nc">doctype</span><span class="p">():</span>
+<div class="viewcode-block" id="doctype"><a class="viewcode-back" href="../../packages/html.html#domonic.html.doctype">[docs]</a><span class="k">class</span> <span class="nc">doctype</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;doctype</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: &lt;!DOCTYPE html&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span></div>
 
 
-<span class="k">class</span> <span class="nc">comment</span><span class="p">():</span>
+<div class="viewcode-block" id="comment"><a class="viewcode-back" href="../../packages/html.html#domonic.html.comment">[docs]</a><span class="k">class</span> <span class="nc">comment</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;comment</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        content (str): Message to be rendered inside the comment tag</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: &quot;&lt;!-- {self.content} --&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;!-- </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2"> --&gt;&quot;</span>
-
-
-<span class="c1"># output = render(</span>
-<span class="c1">#     html(</span>
-<span class="c1">#         head(</span>
-<span class="c1">#             style(),script(),</span>
-<span class="c1">#         ),</span>
-<span class="c1">#         body(</span>
-<span class="c1">#             div(&quot;hello world&quot;),</span>
-<span class="c1">#             a(&quot;this is a link&quot;, _href=&quot;http://www.somesite.com&quot;, _style=&quot;font-size:10px;&quot;),</span>
-<span class="c1">#             ol(&#39;&#39;.join([f&#39;{li()}&#39; for thing in range(5)])),</span>
-<span class="c1">#             h1(&quot;test&quot;, _class=&quot;test&quot;),</span>
-<span class="c1">#         )</span>
-<span class="c1">#     )</span>
-<span class="c1"># )</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;!-- </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2"> --&gt;&quot;</span></div>
 </pre></div>
 
           </div>

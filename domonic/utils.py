@@ -14,27 +14,16 @@ class Utils(object):
     """ utils """
 
     @staticmethod
-    def init_assets():
-        from domonic.terminal import mkdir, touch
-        mkdir("assets")
-        mkdir("assets/js")
-        mkdir("assets/css")
-        mkdir("assets/img")
-        touch("assets/js/master.js")
-        touch("assets/css/style.css")
-        return
-
-    @staticmethod
     def case_camel(s: str):
-        ''' case_camel('camel-case') > 'camelCase' '''
+        """ case_camel('camel-case') > 'camelCase' """
         s = sub(r"(_|-)+", " ", s).title().replace(" ", "")
         return s[0].lower() + s[1:]
 
     @staticmethod
     def case_snake(s: str):
-        '''
+        """
         snake('camelCase') # 'camel_case'
-        '''
+        """
         return '_'.join(
             sub('([A-Z][a-z]+)', r' \1',
             sub('([A-Z]+)', r' \1',
@@ -42,9 +31,9 @@ class Utils(object):
 
     @staticmethod
     def case_kebab(s: str):
-        '''
+        """
         kebab('camelCase') # 'camel-case'
-        '''
+        """
         return '-'.join(
             sub(r"(\s|_|-)+", " ",
             sub(r"[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+",
@@ -52,17 +41,17 @@ class Utils(object):
 
     @staticmethod
     def squash(the_list):
-        ''' turns a 2d array into a flat one '''
+        """ turns a 2d array into a flat one """
         return [inner for outer in the_list for inner in outer]
 
     @staticmethod
     def chunk(list, size):
-        ''' chunk a list into batches '''
+        """ chunk a list into batches """
         return [list[i:i + size] for i in range(0, len(list), size)]
 
     @staticmethod
     def dictify(arr):
-        ''' turns a list into a dictionary where the list items are the keys '''
+        """ turns a list into a dictionary where the list items are the keys """
         return dict().fromkeys(arr, 0)
 
     @staticmethod
@@ -75,7 +64,7 @@ class Utils(object):
 
     @staticmethod
     def chunks(iterable, size, format=iter):
-        ''' Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size '''
+        """ Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size """
         it = iter(iterable)
         while True:
             yield format(chain((it.next(),), islice(it, size - 1)))
@@ -85,7 +74,7 @@ class Utils(object):
 
     @staticmethod
     def clean(lst):
-        ''' removes falsy values (False, None, 0 and “”) from a list '''
+        """ removes falsy values (False, None, 0 and “”) from a list """
         return list(filter(None, lst))
 
     @staticmethod
@@ -94,7 +83,7 @@ class Utils(object):
 
     @staticmethod
     def untitle(str):
-        ''' fooBar '''
+        """ fooBar """
         return str[:1].lower() + str[1:]
 
     @staticmethod
@@ -122,6 +111,28 @@ class Utils(object):
             else:
                 freq[elem] = 1
         return freq
+
+    @staticmethod
+    def init_assets():
+        from domonic.terminal import mkdir, touch
+        mkdir("assets")
+        mkdir("assets/js")
+        mkdir("assets/css")
+        mkdir("assets/img")
+        touch("assets/js/master.js")
+        touch("assets/css/style.css")
+        return
+
+    @staticmethod
+    def url2file(url):
+        """
+        gen a safe filename from a url
+        """
+        import urllib
+        url = "_".join(url.split("/"))
+        url = "__".join(url.split(":"))
+        filename = urllib.parse.quote_plus(url, '')
+        return filename
 
     # def any(arr):
     #     """ given a list. return 1 random item """

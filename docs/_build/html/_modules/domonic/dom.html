@@ -54,7 +54,7 @@
 
     <span class="c1"># TODO - event: str, function, useCapture: bool</span>
     <span class="c1"># def addEventListener(self, event: str, function, useCapture: bool) -&gt; None:</span>
-    <span class="k">def</span> <span class="nf">addEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">addEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="p">[</span><span class="n">_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="p">[</span><span class="n">_type</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
@@ -180,7 +180,7 @@
                 <span class="k">if</span> <span class="n">each</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
                     <span class="k">return</span> <span class="kc">True</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">pass</span> <span class="c1"># TODO - dont interate strings</span>
+                <span class="k">pass</span> <span class="c1"># TODO - dont iterate strings</span>
 
         <span class="k">return</span> <span class="kc">False</span></div>
 
@@ -305,8 +305,6 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.content = None</span>
         <span class="c1"># self.attributes = None</span>
-
-        <span class="c1"># self.style = Style()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasAttribute</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>  <span class="c1"># &#39;&#39;#None</span>
 
@@ -321,7 +319,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">classList</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classList</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tagName</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># = #&#39;test&#39;#Style()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Style(self)  # = #&#39;test&#39;#Style()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="c1"># def accessKey( key: str ): -&gt; None</span>
@@ -331,12 +329,12 @@
         <span class="c1"># dom.getElementById(&quot;myAnchor&quot;).accessKey = &quot;w&quot;;</span>
 
 <div class="viewcode-block" id="Element.attributes"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.attributes">[docs]</a>    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39; Returns a List of an element&#39;s attributes&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns a List of an element&#39;s attributes &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39; Sets or returns the content of an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns the content of an element &quot;&quot;&quot;</span>
         <span class="c1"># self.args = args</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span>
 
@@ -351,75 +349,75 @@
         <span class="k">return</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="Element.blur"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.blur">[docs]</a>    <span class="k">def</span> <span class="nf">blur</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Removes focus from an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Removes focus from an element &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">classList</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Sets or returns the value of the classList attribute of an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns the value of the classList attribute of an element &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
 
     <span class="nd">@classList</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">classList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newname</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Sets or returns the value of the classList attribute of an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns the value of the classList attribute of an element &quot;&quot;&quot;</span>
         <span class="c1"># self.setAttribute(&#39;class&#39;, newid)</span>
         <span class="k">return</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">className</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Sets or returns the value of the className attribute of an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns the value of the className attribute of an element &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">)</span>
 
     <span class="nd">@className</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">className</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newname</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Sets or returns the value of the className attribute of an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns the value of the className attribute of an element &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">newname</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Element.click"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.click">[docs]</a>    <span class="k">def</span> <span class="nf">click</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Simulates a mouse-click on an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Simulates a mouse-click on an element &quot;&quot;&quot;</span>
         <span class="c1"># evt = MouseEvent(&#39;click&#39;, {&#39;bubbles&#39;: True,&#39;cancelable&#39;: True,&#39;view&#39;: window});</span>
         <span class="c1"># TODO - don&#39;t if its cancelled</span>
-        <span class="n">evt</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">);</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">evt</span><span class="p">);</span></div>
+        <span class="n">evt</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">evt</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Element.clientHeight"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.clientHeight">[docs]</a>    <span class="k">def</span> <span class="nf">clientHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the height of an element, including padding&#39;&#39;&#39;</span>
-        <span class="k">pass</span></div>
+        <span class="sd">&quot;&quot;&quot; Returns the height of an element, including padding &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">height</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">paddingTop</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">paddingBottom</span></div>
 
 <div class="viewcode-block" id="Element.clientLeft"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.clientLeft">[docs]</a>    <span class="k">def</span> <span class="nf">clientLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the width of the left border of an element&#39;&#39;&#39;</span>
-        <span class="k">pass</span></div>
+        <span class="sd">&quot;&quot;&quot; Returns the width of the left border of an element &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">left</span></div>
 
 <div class="viewcode-block" id="Element.clientTop"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.clientTop">[docs]</a>    <span class="k">def</span> <span class="nf">clientTop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the width of the top border of an element&#39;&#39;&#39;</span>
-        <span class="k">pass</span></div>
+        <span class="sd">&quot;&quot;&quot; Returns the width of the top border of an element &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">top</span></div>
 
 <div class="viewcode-block" id="Element.clientWidth"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.clientWidth">[docs]</a>    <span class="k">def</span> <span class="nf">clientWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the width of an element, including padding&#39;&#39;&#39;</span>
-        <span class="k">pass</span></div>
+        <span class="sd">&quot;&quot;&quot; Returns the width of an element, including padding &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">paddingLeft</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">paddingRight</span></div>
 
 <div class="viewcode-block" id="Element.compareDocumentPosition"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.compareDocumentPosition">[docs]</a>    <span class="k">def</span> <span class="nf">compareDocumentPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Compares the document position of two elements&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Compares the document position of two elements &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Element.contentEditable"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.contentEditable">[docs]</a>    <span class="k">def</span> <span class="nf">contentEditable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Sets or returns whether the content of an element is editable or not&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns whether the content of an element is editable or not &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Element.dir"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.dir">[docs]</a>    <span class="k">def</span> <span class="nf">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Sets or returns the value of the dir attribute of an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns the value of the dir attribute of an element &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Element.exitFullscreen"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.exitFullscreen">[docs]</a>    <span class="k">def</span> <span class="nf">exitFullscreen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Cancels an element in fullscreen mode&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Cancels an element in fullscreen mode &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Element.firstElementChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.firstElementChild">[docs]</a>    <span class="k">def</span> <span class="nf">firstElementChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the first child element of an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns the first child element of an element &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Element.focus"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.focus">[docs]</a>    <span class="k">def</span> <span class="nf">focus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Gives focus to an element&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Gives focus to an element &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Element.getAttribute"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -651,6 +649,8 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; returns the value of the style attribute of an element&#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__style</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__style</span>
 
     <span class="nd">@style</span><span class="o">.</span><span class="n">setter</span>
@@ -735,7 +735,7 @@
 
 <div class="viewcode-block" id="Document.anchors"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.anchors">[docs]</a>    <span class="k">def</span> <span class="nf">anchors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a collection of all &lt;a&gt; elements in the document that have a name attribute&#39;&#39;&#39;</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tags</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>    
+        <span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tags</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tags</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">hasAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="Document.applets"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.applets">[docs]</a>    <span class="k">def</span> <span class="nf">applets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -20,7 +20,7 @@ class EventTarget:
 
     # TODO - event: str, function, useCapture: bool
     # def addEventListener(self, event: str, function, useCapture: bool) -> None:
-    def addEventListener(self, _type, callback):
+    def addEventListener(self, _type, callback, *args, **kwargs):
         if _type not in self.listeners:
             self.listeners[_type] = []
         self.listeners[_type].append(callback)
@@ -79,37 +79,37 @@ class Node(EventTarget):
         super().__init__()
 
     def appendChild(self, item):
-        '''Adds a new child node, to an element, as the last child node'''
+        """ Adds a new child node, to an element, as the last child node """
         self.args = self.args + (item,)
 
     def hasChildNodes(self):
-        '''Returns true if an element has any child nodes, otherwise false'''
+        """ Returns true if an element has any child nodes, otherwise false """
         return len(self.args) > 1
 
     def lastChild(self):
-        ''' Returns the last child node of an element'''
+        """ Returns the last child node of an element """
         try:
             return self.args[len(self.args) - 1]
         except Exception:
             return None
 
     def firstChild(self):
-        ''' Returns the first child node of an element'''
+        """ Returns the first child node of an element """
         try:
             return self.args[0]  # TODO - check if this means includes content
         except Exception:
             return None
 
     def childElementCount(self):
-        ''' Returns the number of child elements an element has'''
+        """ Returns the number of child elements an element has """
         return len(self.args)
 
     def childNodes(self):
-        ''' Returns a collection of an element's child nodes (including text and comment nodes)'''
+        """ Returns a collection of an element's child nodes (including text and comment nodes) """
         return self.args
 
     def children(self):
-        ''' Returns a collection of an element's child element (excluding text and comment nodes)'''
+        """ Returns a collection of an element's child element (excluding text and comment nodes) """
         newlist = []
         for each in self.args:
             if(type(each) != str):
@@ -117,7 +117,7 @@ class Node(EventTarget):
         return newlist
 
     def nodeType(self):
-        ''' Returns the node type of a node'''
+        """ Returns the node type of a node """
         # pass
         return 1
 
@@ -127,17 +127,17 @@ class Node(EventTarget):
 
     @property
     def nodeName(self):
-        ''' Returns the name of a node'''
+        """ Returns the name of a node """
         return self.tagName.upper()
 
     def nodeValue(self):
-        ''' Sets or returns the value of a node'''
+        """ Sets or returns the value of a node """
         pass
 
     # - TODO - tests all below
 
     def contains(self, node):
-        ''' Check whether a node is a descendant of a given node'''
+        """ Check whether a node is a descendant of a given node """
         # this will go crunch on big stuff... need to consider best way
         for each in self.args:
             if each == node:
@@ -146,12 +146,12 @@ class Node(EventTarget):
                 if each.contains(node):
                     return True
             except Exception as e:
-                pass # TODO - dont interate strings
+                pass  # TODO - dont iterate strings
 
         return False
 
     def insertBefore(self, node):
-        ''' inserts a node before a reference node as a child of a specified parent node. '''
+        """ inserts a node before a reference node as a child of a specified parent node. """
         for count, each in enumerate(self.args):
             if each == node:
                 self.args.insert(node, count)
@@ -271,8 +271,6 @@ class Element(Node):
     def __init__(self, *args, **kwargs):
         # self.content = None
         # self.attributes = None
-
-        # self.style = Style()
         if self.hasAttribute('id'):
             self.id = self.id  # ''#None
 
@@ -287,7 +285,7 @@ class Element(Node):
             self.classList = self.classList
 
         self.tagName
-        self.style = Style(self)  # = #'test'#Style()
+        self.style = None  # Style(self)  # = #'test'#Style()
         super().__init__()
 
     # def accessKey( key: str ): -> None
@@ -297,12 +295,12 @@ class Element(Node):
         # dom.getElementById("myAnchor").accessKey = "w";
 
     def attributes(self) -> List:
-        ''' Returns a List of an element's attributes'''
+        """ Returns a List of an element's attributes """
         return self.attributes
 
     @property
     def innerHTML(self) -> str:
-        ''' Sets or returns the content of an element'''
+        """ Sets or returns the content of an element """
         # self.args = args
         return self.content
 
@@ -317,75 +315,75 @@ class Element(Node):
         return self
 
     def blur(self):
-        '''Removes focus from an element'''
+        """ Removes focus from an element """
         pass
 
     @property
     def classList(self):
-        ''' Sets or returns the value of the classList attribute of an element'''
+        """ Sets or returns the value of the classList attribute of an element """
         return self.getAttribute('class').split(' ')
 
     @classList.setter
     def classList(self, newname: str):
-        ''' Sets or returns the value of the classList attribute of an element'''
+        """ Sets or returns the value of the classList attribute of an element """
         # self.setAttribute('class', newid)
         return
 
     @property
     def className(self):
-        ''' Sets or returns the value of the className attribute of an element'''
+        """ Sets or returns the value of the className attribute of an element """
         return self.getAttribute('class')
 
     @className.setter
     def className(self, newname: str):
-        ''' Sets or returns the value of the className attribute of an element'''
+        """ Sets or returns the value of the className attribute of an element """
         self.setAttribute('class', newname)
 
     def click(self):
-        '''Simulates a mouse-click on an element'''
+        """ Simulates a mouse-click on an element """
         # evt = MouseEvent('click', {'bubbles': True,'cancelable': True,'view': window});
         # TODO - don't if its cancelled
-        evt = Event('click');
-        return self.dispatchEvent(evt);
+        evt = Event('click')
+        return self.dispatchEvent(evt)
 
     def clientHeight(self):
-        ''' Returns the height of an element, including padding'''
-        pass
+        """ Returns the height of an element, including padding """
+        return self.style.height + self.style.paddingTop + self.style.paddingBottom
 
     def clientLeft(self):
-        ''' Returns the width of the left border of an element'''
-        pass
+        """ Returns the width of the left border of an element """
+        return self.style.left
 
     def clientTop(self):
-        ''' Returns the width of the top border of an element'''
-        pass
+        """ Returns the width of the top border of an element """
+        return self.style.top
 
     def clientWidth(self):
-        ''' Returns the width of an element, including padding'''
-        pass
+        """ Returns the width of an element, including padding """
+        return self.style.width + self.style.paddingLeft + self.style.paddingRight
 
     def compareDocumentPosition(self):
-        '''Compares the document position of two elements'''
+        """ Compares the document position of two elements """
         pass
 
     def contentEditable(self):
-        ''' Sets or returns whether the content of an element is editable or not'''
+        """ Sets or returns whether the content of an element is editable or not """
         pass
 
     def dir(self):
-        ''' Sets or returns the value of the dir attribute of an element'''
+        """ Sets or returns the value of the dir attribute of an element """
         pass
 
     def exitFullscreen(self):
-        '''Cancels an element in fullscreen mode'''
+        """ Cancels an element in fullscreen mode """
         pass
 
     def firstElementChild(self):
-        ''' Returns the first child element of an element'''
+        """ Returns the first child element of an element """
         pass
 
     def focus(self):
-        '''Gives focus to an element'''
+        """ Gives focus to an element """
         pass
 
     def getAttribute(self, attribute: str) -> str:
@@ -617,6 +615,8 @@ class Element(Node):
     @property
     def style(self):
         ''' returns the value of the style attribute of an element'''
+        if self.__style is None:
+            self.style = Style()
         return self.__style
 
     @style.setter
@@ -701,7 +701,7 @@ class Document(Element):
 
     def anchors(self):
         ''' Returns a collection of all <a> elements in the document that have a name attribute'''
-        tags = self._get_tags('a')    
+        tags = self._get_tags('a')
         return [x for x in tags if x.hasAttribute('name')]
 
     def applets(self):

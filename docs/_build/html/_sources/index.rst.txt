@@ -6,9 +6,6 @@ Domonic: Generate HTML with Python 3
    :caption: Contents:
 
 
-Indices and tables
-==================
-
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
@@ -24,7 +21,7 @@ Indices and tables
 .. image:: https://travis-ci.com/byteface/domonic.svg?branch=master
     :target: https://travis-ci.com/byteface/domonic.svg?branch=master
 
-**Domonic** is a HTML library for Python 3.
+**Domonic** Not only a Python library for generating HTML
 
 -------------------
 
@@ -108,6 +105,21 @@ Here you can find instructions for getting the most out of Domonic.
    packages/CDN
    packages/components
    packages/autodocs
+
+
+CLI
+----------------
+
+There's a few args you can pass to domonic to help you out.
+
+This command will attempt to generate a template from a webpage. (only simple pages for now)
+
+.. code-block :: python
+
+  python3 -m domonic -d http://eventual.technology
+
+Then you can tweak it to get what you need and build new components quicker.
+
 
 Join-In
 ----------------

@@ -274,30 +274,27 @@ command = type('command', (closed_tag, Element), {'name': 'command', '__init__':
 main = type('command', (tag, Element), {'name': 'main', '__init__': tag_init})  # TODO - y was this missing?
 
 
-# TODO - this can't be added at the mo. need to push it
 class doctype():
+    """doctype
+
+    Returns:
+        str: <!DOCTYPE html>
+    """
     def __str__(self):
         return "<!DOCTYPE html>"
 
 
 class comment():
+    """comment
+
+    Args:
+        content (str): Message to be rendered inside the comment tag
+
+    Returns:
+        str: "<!-- {self.content} -->
+    """
     def __init__(self, content=""):
         self.content = content
 
     def __str__(self):
         return f"<!-- {self.content} -->"
-
-
-# output = render(
-#     html(
-#         head(
-#             style(),script(),
-#         ),
-#         body(
-#             div("hello world"),
-#             a("this is a link", _href="http://www.somesite.com", _style="font-size:10px;"),
-#             ol(''.join([f'{li()}' for thing in range(5)])),
-#             h1("test", _class="test"),
-#         )
-#     )
-# )

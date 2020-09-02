@@ -141,104 +141,133 @@ class TouchEvent(object):
     """ TouchEvent """
     def __init__(self, *args, **kwargs):
         self.shiftKey = None
-
-# altKey  Returns whether the "ALT" key was pressed when the touch event was triggered
-# changedTouches  Returns a list of all the touch objects whose state changed between the previous touch and this touch
-# ctrlKey Returns whether the "CTRL" key was pressed when the touch event was triggered
-# metaKey Returns whether the "meta" key was pressed when the touch event was triggered
-# shiftKey    Returns whether the "SHIFT" key was pressed when the touch event was triggered
-# targetTouches   Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element
-# touches Returns a list of all the touch objects that are currently in contact with the surface
+        self.altKey = None
+        """  Returns whether the "ALT" key was pressed when the touch event was triggered """
+        self.changedTouches = None
+        """  Returns a list of all the touch objects whose state changed between the previous touch and this touch """
+        self.ctrlKey = None
+        """ Returns whether the "CTRL" key was pressed when the touch event was triggered """
+        self.metaKey = None
+        """ Returns whether the "meta" key was pressed when the touch event was triggered """
+        self.shiftKey = None
+        """    Returns whether the "SHIFT" key was pressed when the touch event was triggered """
+        self.targetTouches = None
+        """   Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element """
+        self.touches = None
+        """ Returns a list of all the touch objects that are currently in contact with the surface """
 
 
 class WheelEvent(object):
     """ WheelEvent """
     def __init__(self, *args, **kwargs):
         self.deltaX = None
-
-# deltaX  Returns the horizontal scroll amount of a mouse wheel (x-axis)
-# deltaY  Returns the vertical scroll amount of a mouse wheel (y-axis)
-# deltaZ  Returns the scroll amount of a mouse wheel for the z-axis
-# deltaMode   Returns a number that represents the unit of measurements for delta values (pixels, lines or pages)
+        """ Returns the horizontal scroll amount of a mouse wheel (x-axis) """
+        self.deltaY = None
+        """ Returns the vertical scroll amount of a mouse wheel (y-axis) """
+        self.deltaZ = None
+        """ Returns the scroll amount of a mouse wheel for the z-axis """
+        self.deltaMode = None
+        """ Returns a number that represents the unit of measurements for delta values (pixels, lines or pages) """
 
 
 class AnimationEvent(object):
     """ AnimationEvent """
     def __init__(self, *args, **kwargs):
         self.animationName = None
-# animationName   Returns the name of the animation
-# elapsedTime Returns the number of seconds an animation has been running
-# pseudoElement   Returns the name of the pseudo-element of the animation
+        """ Returns the name of the animation """
+        self.elapsedTime = None
+        """ Returns the number of seconds an animation has been running """
+        self.pseudoElement = None
+        """ Returns the name of the pseudo-element of the animation """
 
 
 class ClipboardEvent(object):
     """ ClipboardEvent """
+    COPY = "oncopy"  # The event occurs when the user copies the content of an element
+    CUT = "oncut"  # The event occurs when the user cuts the content of an element
+    PASTE = "onpaste"  # The event occurs when the user pastes some content in an element
     def __init__(self, *args, **kwargs):
         self.clipboardData = None
-# clipboardData   Returns an object containing the data affected by the clipboard operation
+        """ Returns an object containing the data affected by the clipboard operation """
 
 
 class DragEvent(object):
     """ DragEvent """
+    DRAG = "ondrag"  # The event occurs when an element is being dragged
+    END = "ondragend"  # The event occurs when the user has finished dragging an element
+    ENTER = "ondragenter"  # The event occurs when the dragged element enters the drop target
+    LEAVE = "ondragleave"  # The event occurs when the dragged element leaves the drop target
+    OVER = "ondragover"  # The event occurs when the dragged element is over the drop target
+    START = "ondragstart"  # The event occurs when the user starts to drag an element
+    DROP = "ondrop"  # The event occurs when the dragged element is dropped on the drop target
     def __init__(self, *args, **kwargs):
         self.dataTransfer = None
-
-# dataTransfer    Returns the data that is dragged/dropped
+        """ Returns the data that is dragged/dropped """
 
 
 class HashChangeEvent(object):
     """ HashChangeEvent """
+    CHANGE = "onhashchange"  # The event occurs when there has been changes to the anchor part of a URL
     def __init__(self, *args, **kwargs):
         self.newURL = None
-# newURL  Returns the URL of the document, after the hash has been changed
-# oldURL  Returns the URL of the document, before the hash was changed
+        """ Returns the URL of the document, after the hash has been changed """
+        self.oldURL
+        """ Returns the URL of the document, before the hash was changed """
 
 
 class InputEvent(object):
     """ InputEvent """
     def __init__(self, *args, **kwargs):
         self.data = None
-# data    Returns the inserted characters
-# dataTransfer    Returns an object containing information about the inserted/deleted data
-# getTargetRanges()   Returns an array containing target ranges that will be affected by the insertion/deletion
-# inputType   Returns the type of the change (i.e "inserting" or "deleting")
-# isComposing Returns whether the state of the event is composing or not
+        """ Returns the inserted characters """
+        self.dataTransfer
+        """ Returns an object containing information about the inserted/deleted data """
+        self.getTargetRanges 
+        """ Returns an array containing target ranges that will be affected by the insertion/deletion """
+        self.inputType
+        """ Returns the type of the change (i.e "inserting" or "deleting") """
+        self.isComposing
+        """ Returns whether the state of the event is composing or not """
 
 
 class PageTransitionEvent(object):
     """ PageTransitionEvent """
     def __init__(self, *args, **kwargs):
         self.persisted = None
-# persisted   Returns whether the webpage was cached by the browser
+        """ Returns whether the webpage was cached by the browser """
 
 
 class PopStateEvent(object):
     """ PopStateEvent """
     def __init__(self, *args, **kwargs):
         self.state = None
-# state   Returns an object containing a copy of the history entries
+        """ Returns an object containing a copy of the history entries """
 
 
 class StorageEvent(object):
     """ StorageEvent """
     def __init__(self, *args, **kwargs):
         self.key = None
-# key Returns the key of the changed storage item
-# newValue    Returns the new value of the changed storage item
-# oldValue    Returns the old value of the changed storage item
-# storageArea Returns an object representing the affected storage object
-# url Returns the URL of the changed item's document
+        """ Returns the key of the changed storage item """
+        self.newValue = None
+        """ Returns the new value of the changed storage item """
+        self.oldValue = None
+        """ Returns the old value of the changed storage item """
+        self.storageArea = None
+        """ Returns an object representing the affected storage object """
+        self.url = None
+        """ Returns the URL of the changed item's document """
 
 
 class TransitionEvent(object):
     """ TransitionEvent """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):        
         self.propertyName = None
-# propertyName    Returns the name of the transition
-# elapsedTime Returns the number of seconds a transition has been running
-# pseudoElement   Returns the name of the pseudo-element of the transition
-
-
+        """ Returns the name of the transition""" 
+        self.elapsedTime = None
+        """  Returns the number of seconds a transition has been running """
+        self.pseudoElement = None
+        """ Returns the name of the pseudo-element of the transition """
 
 
 
@@ -260,15 +289,6 @@ class TransitionEvent(object):
 # oncanplay The event occurs when the browser can start playing the media (when it has buffered enough to begin)    Event
 # oncanplaythrough  The event occurs when the browser can play through the media without stopping for buffering Event
 # onchange  The event occurs when the content of a form element, the selection, or the checked state have changed (for <input>, <select>, and <textarea>)   Event
-# oncopy    The event occurs when the user copies the content of an element ClipboardEvent
-# oncut The event occurs when the user cuts the content of an element   ClipboardEvent
-# ondrag    The event occurs when an element is being dragged   DragEvent
-# ondragend The event occurs when the user has finished dragging an element DragEvent
-# ondragenter   The event occurs when the dragged element enters the drop target    DragEvent
-# ondragleave   The event occurs when the dragged element leaves the drop target    DragEvent
-# ondragover    The event occurs when the dragged element is over the drop target   DragEvent
-# ondragstart   The event occurs when the user starts to drag an element    DragEvent
-# ondrop    The event occurs when the dragged element is dropped on the drop target DragEvent
 # ondurationchange  The event occurs when the duration of the media is changed  Event
 # onemptied The event occurs when something bad happens and the media file is suddenly unavailable (like unexpectedly disconnects)
 # onended   The event occurs when the media has reach the end (useful for messages like "thanks for listening") Event
@@ -278,7 +298,6 @@ class TransitionEvent(object):
 # onfocusout    The event occurs when an element is about to lose focus FocusEvent
 # onfullscreenchange    The event occurs when an element is displayed in fullscreen mode    Event
 # onfullscreenerror The event occurs when an element can not be displayed in fullscreen mode    Event
-# onhashchange  The event occurs when there has been changes to the anchor part of a URL    HashChangeEvent
 # oninput   The event occurs when an element gets user input    InputEvent, Event
 # oninvalid The event occurs when an element is invalid Event
 # onload    The event occurs when an object has loaded  UiEvent, Event
@@ -292,7 +311,6 @@ class TransitionEvent(object):
 # onopen    The event occurs when a connection with the event source is opened  Event
 # onpagehide    The event occurs when the user navigates away from a webpage    PageTransitionEvent
 # onpageshow    The event occurs when the user navigates to a webpage   PageTransitionEvent
-# onpaste   The event occurs when the user pastes some content in an element    ClipboardEvent
 # onpause   The event occurs when the media is paused either by the user or programmatically    Event
 # onplay    The event occurs when the media has been started or is no longer paused Event
 # onplaying The event occurs when the media is playing after having been paused or stopped for buffering    Event

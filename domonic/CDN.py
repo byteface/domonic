@@ -75,7 +75,6 @@ class CDN_JS(object):
     #def find_on_cdn():
     # https://cdn.jsdelivr.net/npm/
     # https://cdnjs.cloudflare.com/ajax/libs/
-    
     #def dl(self, path=None):  # download
     #if path none domonic.JS_MASTER < strip off name to get default assets folder if non passed
 

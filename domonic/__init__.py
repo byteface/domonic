@@ -7,7 +7,7 @@
     - Call Terminal commands using python 3 (this one requires a nix machine)
 """
 
-__version__ = "0.1.11"
+__version__ = "0.1.12"
 __license__ = 'MIT'
 
 # from typing import *
@@ -27,13 +27,13 @@ class domonic:
 
     @staticmethod
     def get(url: str):
-        ''' downloads html and converts to domonic '''
+        """ downloads html and converts to domonic """
         r = requests.get(url)
         return domonic.parse(r.text)
 
     @staticmethod
     def output(domonic):
-        ''' outputs HTML str '''
+        """ outputs HTML str """
         # TODO - prettify using newlines to save installing this?
         # from html5print import HTMLBeautifier
         # render(HTMLBeautifier.beautify(render(output), 4), 'index.html')
@@ -41,7 +41,7 @@ class domonic:
 
     @staticmethod
     def parse(html: str) -> str:
-        ''' HTML as input and returns python '''
+        """ HTML as input and returns python """
 
         # NOTE - not working/finished.
 
@@ -54,18 +54,39 @@ class domonic:
 
         # html = "<html><body>some content</body></html>"
 
-        htmltags = ["html", "span", "button", "link", "form", "nav",
-                    "details", "summary", "header", "head", "body", "meta",
-                    "title", "div", "footer", "img", "a", "p", "h1", "h2",
-                    "h3", "h4", "h5", "h6", "hr", "ul", "ol", "li", "time",
-                    "template", "label", "input", "small", "strong", "option",
-                    "select", "main", "td", "tr", "thead", "th", "table",
-                    "tbody", "canvas", "b", "center", "br"]
+        # htmltags = ["html", "span", "button", "link", "form", "nav",
+        #             "details", "summary", "header", "head", "body", "meta",
+        #             "title", "div", "footer", "img", "a", "p", "h1", "h2",
+        #             "h3", "h4", "h5", "h6", "hr", "ul", "ol", "li", "time",
+        #             "template", "label", "input", "small", "strong", "option",
+        #             "select", "main", "td", "tr", "thead", "th", "table",
+        #             "tbody", "canvas", "b", "center", "br"]
+
+        # htmltags = ["html", "body", "head", "script", "style", "h1", "h2", "h3", "h4", "h5", "h6", "p", "i", "b",
+        #             "a", "ul", "ol", "li", "hr", "div", "span", "strong", "blockquote",
+        #             "table", "tr", "td", "title", "meta", "form", "label", "submit", "title", "noscript",
+        #             "section", "nav", "article", "aside", "hgroup", "address", "pre", "dl", "dt", "dd", "figure",
+        #             "figcaption", "em", "small", "s", "cite", "q", "dfn", "abbr", "code", "var", "samp", "kbd", "sub",
+        #             "sup", "u", "mark", "ruby", "rt", "rp", "bdi", "bdo", "span", "ins", "iframe", "video", "audio",
+        #             "canvas", "caption", "colgroup", "tbody", "thead", "tfoot", "th", "fieldset", "legend", "button",
+        #             "select", "datalist", "optgroup", "option", "textarea", "output", "progress", "meter", "details",
+        #             "summary", "menu", "font", "header", "footer", "map", "object", "del", "time", "base", "link",
+        #             "meta", "hr", "br", "wbr", "img", "embed", "param", "source", "track", "area", "col", "input",
+        #             "keygen", "command", "main"]
+
+        htmltags = ["figcaption", "blockquote", "textarea", "progress", "optgroup", "noscript", "fieldset", "datalist", 
+                    "colgroup", "summary", "section", "details", "command", "caption", "article", "address", "submit",
+                    "strong", "source", "select", "script", "output", "option", "object", "legend", "keygen", "iframe",
+                    "hgroup", "header", "footer", "figure", "canvas", "button", "video", "track", "title", "title",
+                    "thead", "tfoot", "tbody", "table", "style", "small", "param", "meter", "label", "input", "embed",
+                    "audio", "aside", "time", "span", "span", "samp", "ruby", "meta", "meta", "menu", "mark", "link",
+                    "html", "head", "form", "font", "code", "cite", "body", "base", "area", "abbr", "wbr", "var", "sup",
+                    "sub", "pre", "nav", "map", "main""kbd", "ins", "img", "div", "dfn", "del", "col", "bdo", "bdi",
+                    "ul", "tr", "th", "td", "rt", "rp", "ol", "li", "hr", "hr", "h6", "h5", "h4", "h3", "h2", "h1", "em",
+                    "dt", "dl", "dd", "br", "u", "s", "q", "p", "i", "b", "a"]
 
         for tag in htmltags:
-
-            print(tag)
-
+            # print(tag)
             reg = f"<{tag}>"
             pattern = re.compile(reg)
             html = re.sub(pattern, f'{tag}(', html)  # , flags=re.IGNORECASE )
@@ -113,10 +134,31 @@ class domonic:
             cleaned.append(line)
         html = '\n'.join(cleaned)
 
-        attributes = ["alt", "integrity", "crossorigin", "charset", "lang",
-                      "class", "id", "style", "placeholder", "text", "value",
-                      "href", "width", "height", "src", "name", "content",
-                      "rel", "color", "type", "size"]
+        # attributes = ["alt", "integrity", "crossorigin", "charset", "lang",
+        #               "class", "id", "style", "placeholder", "text", "value",
+        #               "href", "width", "height", "src", "name", "content",
+        #               "rel", "color", "type", "size"]
+
+        attributes = [
+            "accept", "accesskey", "action", "align", "alt", "async", "autocomplete", "autofocus",
+            "autoplay", "bgcolor", "border", "charset", "checked", "cite", "class", "color",
+            "cols", "colspan", "content", "contenteditable", "controls", "coords", "data", "datetime", "default",
+            "defer", "dir", "dirname", "disabled", "download", "draggable", "enctype", "for", "form", "formaction",
+            "headers", "height", "hidden", "high", "href", "hreflang", "id", "ismap", "kind", "label", "lang", "list",
+            "loop", "low", "max", "maxlength", "media", "method", "min", "multiple", "muted", "name", "novalidate",
+            "onabort", "onafterprint", "onbeforeprint", "onbeforeunload", "onblur", "oncanplay", "oncanplaythrough",
+            "onchange", "onclick", "oncontextmenu", "oncopy", "oncuechange", "oncut", "ondblclick", "ondrag",
+            "ondragend", "ondragenter", "ondragleave", "ondragover", "ondragstart", "ondrop", "ondurationchange",
+            "onemptied", "onended", "onerror", "onfocus", "onhashchange", "oninput", "oninvalid", "onkeydown",
+            "onkeypress", "onkeyup", "onload", "onloadeddata", "onloadedmetadata", "onloadstart", "onmousedown",
+            "onmousemove", "onmouseout", "onmouseover", "onmouseup", "onmousewheel", "onoffline", "ononline",
+            "onpagehide", "onpageshow", "onpaste", "onpause", "onplay", "onplaying", "onpopstate", "onprogress",
+            "onratechange", "onreset", "onresize", "onscroll", "onsearch", "onseeked", "onseeking", "onselect",
+            "onstalled", "onstorage", "onsubmit", "onsuspend", "ontimeupdate", "ontoggle", "onunload", "onvolumechange",
+            "onwaiting", "onwheel", "open", "optimum", "pattern", "placeholder", "poster", "preload", "readonly",
+            "rel", "required", "reversed", "rows", "rowspan", "sandbox", "scope", "selected", "shape", "size", "sizes",
+            "span", "spellcheck", "src", "srcdoc", "srclang", "srcset", "start", "step", "style", "tabindex", "target",
+            "title", "translate", "type", "usemap", "value", "width", "wrap", "property"]
 
         # put underscores on all the attributes
         for attr in attributes:

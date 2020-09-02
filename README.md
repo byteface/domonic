@@ -383,6 +383,20 @@ If there's any methods you want that are missing or not complete yet. Just updat
 I'll merge and releaese asap.
 
 
+### CLI
+There's a few args you can pass to domonic on the command line to help you out.
+
+This command will attempt to generate a template from a webpage. (only simple pages for now)
+
+```python
+
+python3 -m domonic -d http://eventual.technology
+
+```
+
+Then you can tweak it to get what you need and build new components quicker.
+
+
 ### EXAMPLE PROJECT
 A browser based file browser. Working example of how components can work:
 https://github.com/byteface/Blueberry/
