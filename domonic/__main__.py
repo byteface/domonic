@@ -41,7 +41,7 @@ def do_things(arguments):
         print("filename:", Utils.url2file(arguments.download) )
         render(page, Utils.url2file(arguments.download) )
 
-    if arguments.help is not None:
+    if arguments.help is True:
         import webbrowser
         webbrowser.open_new("https://domonic.readthedocs.io/")
 
