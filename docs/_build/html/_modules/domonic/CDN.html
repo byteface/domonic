@@ -49,6 +49,7 @@
 <span class="c1"># lorem ipusm generator</span>
 <span class="c1"># fake names</span>
 
+
 <div class="viewcode-block" id="CDN_IMG"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.CDN.CDN_IMG">[docs]</a><span class="k">class</span> <span class="nc">CDN_IMG</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; CDN images &quot;&quot;&quot;</span>
     <span class="c1"># - icons</span>
@@ -78,14 +79,16 @@
 <span class="sd">    http://www.dummysrc.com/430x320.png/22c5fc/17202A</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">PLACEHOLDER_SERVICE</span> <span class="o">=</span> <span class="s2">&quot;loremflickr.com&quot;</span>
+
 <div class="viewcode-block" id="CDN_IMG.PLACEHOLDER"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.CDN.CDN_IMG.PLACEHOLDER">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">PLACEHOLDER</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">HTTP</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">seperator</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        i.e. to change it. do this... CDN_IMG.PLACEHOLDER_SERVICE = &quot;placebear.com/g&quot;</span>
-<span class="sd">        i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100))</span>
-<span class="sd">        i.e. default HTTP is none, to let the browser decide</span>
-<span class="sd">        i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100,&#39;x&#39;)) # optional seperator if the site uses x instead of slash</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        to update do CDN_IMG.PLACEHOLDER_SERVICE = &quot;placebear.com/g&quot;</span>
+<span class="sd">        usage : img(_src=CDN_IMG.PLACEHOLDER(300,100))</span>
+<span class="sd">        default HTTP is none, to let the browser decide</span>
+<span class="sd">        # use optional seperator if the site uses x instead of slash</span>
+<span class="sd">        img(_src=CDN_IMG.PLACEHOLDER(300,100,&#39;x&#39;))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">HTTP</span><span class="si">}</span><span class="s2">://</span><span class="si">{</span><span class="n">CDN_IMG</span><span class="o">.</span><span class="n">PLACEHOLDER_SERVICE</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">width</span><span class="si">}{</span><span class="n">seperator</span><span class="si">}{</span><span class="n">height</span><span class="si">}</span><span class="s2">&quot;</span></div></div>
 
 
@@ -106,22 +109,22 @@
     <span class="n">PIXI_5_3_3</span> <span class="o">=</span> <span class="s2">&quot;https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js&quot;</span>
     <span class="n">SOCKET_1_4_5</span> <span class="o">=</span> <span class="s2">&quot;https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js&quot;</span></div>
 
-    <span class="c1">#def find_on_cdn():</span>
+    <span class="c1"># def find_on_cdn():</span>
     <span class="c1"># https://cdn.jsdelivr.net/npm/</span>
     <span class="c1"># https://cdnjs.cloudflare.com/ajax/libs/</span>
-    <span class="c1">#def dl(self, path=None):  # download</span>
-    <span class="c1">#if path none domonic.JS_MASTER &lt; strip off name to get default assets folder if non passed</span>
+    <span class="c1"># def dl(self, path=None):  # download</span>
+    <span class="c1"># if path none domonic.JS_MASTER &lt; strip off name to get default assets folder if non passed</span>
 
 
 <div class="viewcode-block" id="CDN_CSS"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.CDN.CDN_CSS">[docs]</a><span class="k">class</span> <span class="nc">CDN_CSS</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Preferably use version numbers if available. user LATEST if it always gets the latest</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">BOOTSTRAP_5_ALPHA</span> <span class="o">=</span> <span class="s2">&quot;https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.jshttps://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js&quot;</span>
     <span class="n">BOOTSTRAP_4</span> <span class="o">=</span> <span class="s2">&quot;https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css&quot;</span>
     <span class="n">MARX</span> <span class="o">=</span> <span class="s2">&quot;https://unpkg.com/marx-css/css/marx.min.css&quot;</span>  <span class="c1"># version?</span>
     <span class="n">MVP</span> <span class="o">=</span> <span class="s2">&quot;https://unpkg.com/mvp.css&quot;</span>  <span class="c1"># version?</span>
-    <span class="n">WATER_LATEST</span> <span class="o">=</span> <span class="s2">&quot;https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css&quot;</span>  <span class="c1"># note using &#39;latest&#39; in cdn url</span>
+    <span class="n">WATER_LATEST</span> <span class="o">=</span> <span class="s2">&quot;https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css&quot;</span>  <span class="c1"># note &#39;latest&#39; in cdn url</span>
     <span class="n">BALLOON</span> <span class="o">=</span> <span class="s2">&quot;https://unpkg.com/balloon-css/balloon.min.css&quot;</span>
     <span class="n">THREE_DOTS_0_2_0</span> <span class="o">=</span> <span class="s2">&quot;https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css&quot;</span>
     <span class="n">MILLIGRAM_1_3_0</span> <span class="o">=</span> <span class="s2">&quot;https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css&quot;</span></div>
@@ -129,7 +132,7 @@
     <span class="c1"># https://unpkg.com/</span>
     <span class="c1"># https://cdnjs.cloudflare.com/ajax/libs/</span>
 
-    <span class="c1">#def dl(self, path=domonic.JS_MASTER):  # download</span>
+    <span class="c1"># def dl(self, path=domonic.JS_MASTER):  # download</span>
 </pre></div>
 
           </div>

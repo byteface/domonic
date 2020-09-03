@@ -137,10 +137,11 @@
 <dl class="py method">
 <dt>
 <em class="property">static </em><code class="sig-name descname">PLACEHOLDER</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">HTTP</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">seperator</span><span class="o">=</span><span class="default_value">'/'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_IMG.PLACEHOLDER"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>i.e. to change it. do this… CDN_IMG.PLACEHOLDER_SERVICE = “placebear.com/g”
-i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100))
-i.e. default HTTP is none, to let the browser decide
-i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’)) # optional seperator if the site uses x instead of slash</p>
+<dd><p>to update do CDN_IMG.PLACEHOLDER_SERVICE = “placebear.com/g”
+usage : img(_src=CDN_IMG.PLACEHOLDER(300,100))
+default HTTP is none, to let the browser decide
+# use optional seperator if the site uses x instead of slash
+img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 </dd></dl>

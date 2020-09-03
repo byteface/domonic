@@ -52,10 +52,10 @@
 <span class="kn">import</span> <span class="nn">typing</span>
 
 
-<div class="viewcode-block" id="js_object"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.js_object">[docs]</a><span class="k">class</span> <span class="nc">js_object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="js_object"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.js_object">[docs]</a><span class="k">class</span> <span class="nc">js_object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; js_object &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="js_object.valueOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.js_object.valueOf">[docs]</a>    <span class="k">def</span> <span class="nf">valueOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="js_object.valueOf"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.js_object.valueOf">[docs]</a>    <span class="k">def</span> <span class="nf">valueOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the primitive value of an array Array, Boolean, Date, Number, String&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
@@ -64,7 +64,7 @@
         <span class="c1"># pass</span>
 
 
-<div class="viewcode-block" id="Math"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Math">[docs]</a><span class="k">class</span> <span class="nc">Math</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
+<div class="viewcode-block" id="Math"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Math">[docs]</a><span class="k">class</span> <span class="nc">Math</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Math class that mirrors javascript implementation &quot;&quot;&quot;</span>
 
     <span class="c1"># CONSTANTS</span>
@@ -251,29 +251,29 @@
 <span class="c1"># import urllib</span>
 
 
-<div class="viewcode-block" id="Global"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global">[docs]</a><span class="k">class</span> <span class="nc">Global</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Global"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global">[docs]</a><span class="k">class</span> <span class="nc">Global</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; javascript global methods &quot;&quot;&quot;</span>
 
     <span class="n">NaN</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
 
     <span class="c1"># TODO - https://stackoverflow.com/questions/747641/what-is-the-difference-between-decodeuricomponent-and-decodeuri</span>
 
-<div class="viewcode-block" id="Global.decodeURI"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.decodeURI">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.decodeURI"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.decodeURI">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">decodeURI</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Decodes a URI &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">unquote</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.decodeURIComponent"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.decodeURIComponent">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.decodeURIComponent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.decodeURIComponent">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">decodeURIComponent</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Decodes a URI component &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">unquote</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.encodeURI"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.encodeURI">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.encodeURI"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.encodeURI">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">encodeURI</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Encodes a URI &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;~@#$&amp;()*!+=:;,.?/</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.encodeURIComponent"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.encodeURIComponent">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.encodeURIComponent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.encodeURIComponent">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">encodeURIComponent</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Encodes a URI component &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;~()*!.</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -295,12 +295,12 @@
     <span class="sd">&quot;&quot;&quot;A numeric value that represents positive/negative infinity &quot;&quot;&quot;</span>
     <span class="c1"># pass</span>
 
-<div class="viewcode-block" id="Global.isFinite"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.isFinite">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.isFinite"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.isFinite">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isFinite</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Determines whether a value is a finite, legal number &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Global.isNaN"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.isNaN">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.isNaN"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.isNaN">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isNaN</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Determines whether a value is an illegal number &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">float</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
@@ -310,11 +310,11 @@
 
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Global.NaN"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.NaN">[docs]</a>    <span class="k">def</span> <span class="nf">NaN</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Global.NaN"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.NaN">[docs]</a>    <span class="k">def</span> <span class="nf">NaN</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; &quot;Not-a-Number&quot; value &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span></div>
 
-<div class="viewcode-block" id="Global.Number"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.Number">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.Number"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.Number">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">Number</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts an object&#39;s value to a number &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -330,22 +330,22 @@
             <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span></div>
 
-<div class="viewcode-block" id="Global.parseFloat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.parseFloat">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.parseFloat"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.parseFloat">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">parseFloat</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parses a string and returns a floating point number &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.parseInt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.parseInt">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.parseInt"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.parseInt">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">parseInt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parses a string and returns an integer &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.String"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.String">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.String"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.String">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">String</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts an object&#39;s value to a string &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.undefined"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.undefined">[docs]</a>    <span class="k">def</span> <span class="nf">undefined</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Global.undefined"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.undefined">[docs]</a>    <span class="k">def</span> <span class="nf">undefined</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Indicates that a variable has not been assigned a value &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">None</span>
 
@@ -355,7 +355,7 @@
         <span class="c1"># pass</span>
 
 
-<div class="viewcode-block" id="Date"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date">[docs]</a><span class="k">class</span> <span class="nc">Date</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
+<div class="viewcode-block" id="Date"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date">[docs]</a><span class="k">class</span> <span class="nc">Date</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; javascript date &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">):</span>
@@ -368,42 +368,42 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">date_string</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span>
 
-<div class="viewcode-block" id="Date.getDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getDate">[docs]</a>    <span class="k">def</span> <span class="nf">getDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getDate"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getDate">[docs]</a>    <span class="k">def</span> <span class="nf">getDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the day of the month (from 1-31) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">day</span></div>
         <span class="c1"># TODO - do for a date object passed in. this only does today</span>
 
-<div class="viewcode-block" id="Date.getDay"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getDay">[docs]</a>    <span class="k">def</span> <span class="nf">getDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getDay"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getDay">[docs]</a>    <span class="k">def</span> <span class="nf">getDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Returns the day of the week (from 0-6) &quot;&quot;&quot;</span>
         <span class="n">day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">isoweekday</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">day</span> <span class="k">if</span> <span class="p">(</span><span class="n">day</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span></div>
         <span class="c1"># TODO - do for a date object passed in. this only does today</span>
 
-<div class="viewcode-block" id="Date.getFullYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">getFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getFullYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">getFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the year &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span></div>
 
-<div class="viewcode-block" id="Date.getHours"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getHours">[docs]</a>    <span class="k">def</span> <span class="nf">getHours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getHours"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getHours">[docs]</a>    <span class="k">def</span> <span class="nf">getHours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Returns the hour (from 0-23) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">hour</span></div>
 
-<div class="viewcode-block" id="Date.getMilliseconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">getMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getMilliseconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">getMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the milliseconds (from 0-999) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">microsecond</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Date.getMinutes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">getMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getMinutes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">getMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Returns the minutes (from 0-59) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">minute</span></div>
 
-<div class="viewcode-block" id="Date.getMonth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getMonth">[docs]</a>    <span class="k">def</span> <span class="nf">getMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getMonth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getMonth">[docs]</a>    <span class="k">def</span> <span class="nf">getMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the month (from 0-11) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="Date.getSeconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">getSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getSeconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">getSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Returns the seconds (from 0-59) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">second</span></div>
 
-<div class="viewcode-block" id="Date.getTime"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getTime">[docs]</a>    <span class="k">def</span> <span class="nf">getTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getTime"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getTime">[docs]</a>    <span class="k">def</span> <span class="nf">getTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds since midnight Jan 1 1970, and a specified date &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
         <span class="c1"># TODO - whats difference between this and &#39;now()&#39; ?</span>
@@ -412,43 +412,43 @@
         <span class="sd">&quot;&quot;&quot; Returns the time difference between UTC time and local time, in minutes &quot;&quot;&quot;</span></div>
         <span class="c1"># pass</span>
 
-<div class="viewcode-block" id="Date.getUTCDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCDate">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCDate"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCDate">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the day of the month, according to universal time (from 1-31) &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.getUTCDay"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCDay">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCDay"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCDay">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the day of the week, according to universal time (from 0-6) &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.getUTCFullYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCFullYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the year, according to universal time &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">year</span></div>
 
-<div class="viewcode-block" id="Date.getUTCHours"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCHours">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCHours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCHours"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCHours">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCHours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the hour, according to universal time (from 0-23) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">hour</span></div>
 
-<div class="viewcode-block" id="Date.getUTCMilliseconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCMilliseconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the milliseconds, according to universal time (from 0-999) &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.getUTCMinutes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCMinutes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the minutes, according to universal time (from 0-59) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">minute</span></div>
 
-<div class="viewcode-block" id="Date.getUTCMonth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCMonth">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCMonth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCMonth">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the month, according to universal time (from 0-11) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="Date.getUTCSeconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCSeconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the seconds, according to universal time (from 0-59) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">second</span></div>
 
-<div class="viewcode-block" id="Date.getYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getYear">[docs]</a>    <span class="k">def</span> <span class="nf">getYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getYear">[docs]</a>    <span class="k">def</span> <span class="nf">getYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Deprecated. Use the getFullYear() method instead &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span></div>
 
-<div class="viewcode-block" id="Date.now"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.now">[docs]</a>    <span class="k">def</span> <span class="nf">now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.now"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.now">[docs]</a>    <span class="k">def</span> <span class="nf">now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds since midnight Jan 1, 1970 &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
 
@@ -460,22 +460,22 @@
         <span class="sd">&quot;&quot;&quot; The event occurs when the playing position has changed (like when the user fast forwards to a different point in the media) Event&quot;&quot;&quot;</span></div>
         <span class="c1"># pass</span>
 
-<div class="viewcode-block" id="Date.parse"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_string</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.parse"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_string</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parses a date string and returns the number of milliseconds since January 1, 1970 &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_date</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">date_string</span><span class="p">))</span></div>
         <span class="c1"># return self.date.getTime()</span>
 
-<div class="viewcode-block" id="Date.setDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setDate">[docs]</a>    <span class="k">def</span> <span class="nf">setDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setDate"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setDate">[docs]</a>    <span class="k">def</span> <span class="nf">setDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the day of the month of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">day</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">))</span></div>
         <span class="c1"># return self.date.getTime()</span>
 
-<div class="viewcode-block" id="Date.setFullYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">setFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setFullYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">setFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the year of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">))</span></div>
         <span class="c1"># return self.date.getTime()</span>
 
-<div class="viewcode-block" id="Date.setHours"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setHours">[docs]</a>    <span class="k">def</span> <span class="nf">setHours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hours</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setHours"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setHours">[docs]</a>    <span class="k">def</span> <span class="nf">setHours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hours</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the hour of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">hours</span><span class="p">))</span>
         <span class="c1"># return self.date.getTime()</span>
@@ -484,7 +484,7 @@
         <span class="sd">&quot;&quot;&quot; Adds that key to the storage, or update that key&#39;s value if it already exists   Storage&quot;&quot;&quot;</span></div>
         <span class="c1"># pass</span>
 
-<div class="viewcode-block" id="Date.setMilliseconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">setMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setMilliseconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">setMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the milliseconds of a date object &quot;&quot;&quot;</span>
         <span class="c1"># self.date.replace(millisecond=int(milliseconds))</span>
         <span class="c1"># return self.now()</span>
@@ -492,75 +492,75 @@
         <span class="k">pass</span></div>
 
     <span class="c1"># TODO - , seconds = None, milliseconds = None):</span>
-<div class="viewcode-block" id="Date.setMinutes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">setMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minutes</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setMinutes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">setMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minutes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Set the minutes of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">minute</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">minutes</span><span class="p">))</span></div>
         <span class="c1"># return self.now()</span>
 
-<div class="viewcode-block" id="Date.setMonth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setMonth">[docs]</a>    <span class="k">def</span> <span class="nf">setMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setMonth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setMonth">[docs]</a>    <span class="k">def</span> <span class="nf">setMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the month of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">month</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">))</span></div>
         <span class="c1"># return self.now()</span>
 
-<div class="viewcode-block" id="Date.setSeconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">setSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setSeconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">setSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the seconds of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">second</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">seconds</span><span class="p">))</span></div>
         <span class="c1"># return self.now()</span>
 
-<div class="viewcode-block" id="Date.setTime"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setTime">[docs]</a>    <span class="k">def</span> <span class="nf">setTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setTime"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setTime">[docs]</a>    <span class="k">def</span> <span class="nf">setTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets a date to a specified number of milliseconds after/before January 1, 1970 &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.setUTCDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCDate">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCDate"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCDate">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Sets the day of the month of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setDate</span><span class="p">(</span><span class="n">day</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCFullYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCFullYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Sets the year of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setFullYear</span><span class="p">(</span><span class="n">year</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCHours"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCHours">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCHours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hour</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCHours"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCHours">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCHours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hour</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the hour of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setHours</span><span class="p">(</span><span class="n">hour</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCMilliseconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCMilliseconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Sets the milliseconds of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setMilliseconds</span><span class="p">(</span><span class="n">milliseconds</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCMinutes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minutes</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCMinutes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minutes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;   Set the minutes of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setMinutes</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCMonth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCMonth">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCMonth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCMonth">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the month of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setMonth</span><span class="p">(</span><span class="n">month</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCSeconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCSeconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;   Set the seconds of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setSeconds</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setYear">[docs]</a>    <span class="k">def</span> <span class="nf">setYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setYear">[docs]</a>    <span class="k">def</span> <span class="nf">setYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Deprecated. Use the setFullYear() method instead &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">))</span></div>
         <span class="c1"># return self.getTime()</span>
         <span class="c1"># TODO - there may not be a date object already?</span>
 
-<div class="viewcode-block" id="Date.toDateString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toDateString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts the date portion of a Date object into a readable string &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toGMTString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toGMTString">[docs]</a>    <span class="k">def</span> <span class="nf">toGMTString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toGMTString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toGMTString">[docs]</a>    <span class="k">def</span> <span class="nf">toGMTString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Deprecated. Use the toUTCString() method instead &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toJSON"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toJSON">[docs]</a>    <span class="k">def</span> <span class="nf">toJSON</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toJSON"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toJSON">[docs]</a>    <span class="k">def</span> <span class="nf">toJSON</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Returns the date as a string, formatted as a JSON date &quot;&quot;&quot;</span>
 
         <span class="c1"># def default(o):</span>
@@ -569,31 +569,31 @@
 
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toISOString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toISOString">[docs]</a>    <span class="k">def</span> <span class="nf">toISOString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toISOString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toISOString">[docs]</a>    <span class="k">def</span> <span class="nf">toISOString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the date as a string, using the ISO standard &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toLocaleDateString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toLocaleDateString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toLocaleDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the date portion of a Date object as a string, using locale conventions &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toLocaleString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toLocaleString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toLocaleString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts a Date object to a string, using locale conventions &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toLocaleTimeString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toLocaleTimeString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toLocaleTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the time portion of a Date object as a string, using locale conventions &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toTimeString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toTimeString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts the time portion of a Date object to a string &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toUTCString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toUTCString">[docs]</a>    <span class="k">def</span> <span class="nf">toUTCString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toUTCString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toUTCString">[docs]</a>    <span class="k">def</span> <span class="nf">toUTCString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts a Date object to a string, according to universal time &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.UTC"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.UTC">[docs]</a>    <span class="k">def</span> <span class="nf">UTC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.UTC"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.UTC">[docs]</a>    <span class="k">def</span> <span class="nf">UTC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
@@ -602,7 +602,7 @@
     <span class="c1"># pass</span>
 
 
-<div class="viewcode-block" id="Screen"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen">[docs]</a><span class="k">class</span> <span class="nc">Screen</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen">[docs]</a><span class="k">class</span> <span class="nc">Screen</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; screen &quot;&quot;&quot;</span>
 
     <span class="c1"># wrap a lib?</span>
@@ -629,35 +629,35 @@
         <span class="c1"># print(&quot;Height =&quot;, GetSystemMetrics(1))</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="Screen.availHeight"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.availHeight">[docs]</a>    <span class="k">def</span> <span class="nf">availHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.availHeight"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.availHeight">[docs]</a>    <span class="k">def</span> <span class="nf">availHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the height of the screen (excluding the Windows Taskbar) &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Screen.availWidth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.availWidth">[docs]</a>    <span class="k">def</span> <span class="nf">availWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.availWidth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.availWidth">[docs]</a>    <span class="k">def</span> <span class="nf">availWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the width of the screen (excluding the Windows Taskbar) &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Screen.colorDepth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.colorDepth">[docs]</a>    <span class="k">def</span> <span class="nf">colorDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.colorDepth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.colorDepth">[docs]</a>    <span class="k">def</span> <span class="nf">colorDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the colorDepth &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Screen.height"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.height">[docs]</a>    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.height"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.height">[docs]</a>    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the total height of the screen &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Screen.pixelDepth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.pixelDepth">[docs]</a>    <span class="k">def</span> <span class="nf">pixelDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.pixelDepth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.pixelDepth">[docs]</a>    <span class="k">def</span> <span class="nf">pixelDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the pixelDepth &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Screen.width"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.width">[docs]</a>    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.width"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.width">[docs]</a>    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the total width of the screen  &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="ProgramKilled"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.ProgramKilled">[docs]</a><span class="k">class</span> <span class="nc">ProgramKilled</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="ProgramKilled"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.ProgramKilled">[docs]</a><span class="k">class</span> <span class="nc">ProgramKilled</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Job"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Job">[docs]</a><span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+<div class="viewcode-block" id="Job"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Job">[docs]</a><span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">execute</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -672,7 +672,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Job.run"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Job.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Job.run"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Job.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
@@ -689,7 +689,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="Window"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window">[docs]</a><span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Window"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Window">[docs]</a><span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; window &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -719,13 +719,13 @@
         <span class="c1"># import requests.</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="Window.alert"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.alert">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Window.alert"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Window.alert">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">alert</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Displays an alert box with a message and an OK button &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span></div>
 
-<div class="viewcode-block" id="Window.prompt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.prompt">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Window.prompt"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Window.prompt">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">prompt</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">default_text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Displays a dialog box that prompts the visitor for input &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -733,7 +733,7 @@
         <span class="k">return</span> <span class="n">data</span></div>
 
     <span class="c1"># TODO - clearTimeout.</span>
-<div class="viewcode-block" id="Window.setTimeout"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.setTimeout">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Window.setTimeout"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Window.setTimeout">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">setTimeout</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Calls a function or evaluates an expression after a specified number of milliseconds &quot;&quot;&quot;</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>  <span class="c1"># blocks</span>
@@ -813,7 +813,7 @@
 <span class="n">window</span> <span class="o">=</span> <span class="n">Window</span>
 
 
-<div class="viewcode-block" id="Array"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array">[docs]</a><span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Array"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array">[docs]</a><span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; javascript array &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -836,7 +836,7 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Array.toString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.toString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Converts an array to a string, and returns the result &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ars</span><span class="p">)</span>  <span class="c1"># TODO - check what js does</span></div>
 
@@ -845,22 +845,22 @@
         <span class="sd">&quot;&quot;&quot; Sets or returns the number of elements in an array &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Array.concat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.concat">[docs]</a>    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.concat"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.concat">[docs]</a>    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Joins two or more arrays, and returns a copy of the joined arrays &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Array.fill"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.fill">[docs]</a>    <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.fill"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.fill">[docs]</a>    <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Fill the elements in an array with a static value &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.includes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.includes">[docs]</a>    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.includes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.includes">[docs]</a>    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Check if an array contains the specified element &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Array.indexOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.indexOf">[docs]</a>    <span class="k">def</span> <span class="nf">indexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.indexOf"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.indexOf">[docs]</a>    <span class="k">def</span> <span class="nf">indexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Search the array for an element and returns its position &quot;&quot;&quot;</span>
         <span class="c1"># for count, each in enumerate(self.args):</span>
         <span class="c1">#     if each == value:</span>
@@ -873,16 +873,16 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="Array.isArray"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.isArray">[docs]</a>    <span class="k">def</span> <span class="nf">isArray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.isArray"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.isArray">[docs]</a>    <span class="k">def</span> <span class="nf">isArray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks whether an object is an array  &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.join"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.join"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Joins all elements of an array into a string  &quot;&quot;&quot;</span>
         <span class="c1"># TODO - get passed param names</span>
         <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Array.lastIndexOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.lastIndexOf">[docs]</a>    <span class="k">def</span> <span class="nf">lastIndexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.lastIndexOf"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.lastIndexOf">[docs]</a>    <span class="k">def</span> <span class="nf">lastIndexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Search the array for an element, starting at the end, and returns its position &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
@@ -890,39 +890,39 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Array.map"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.map"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Creates a new array with the result of calling a function for each array element &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.pop"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.pop"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Removes the last element of an array, and returns that element &quot;&quot;&quot;</span>
         <span class="c1"># item = self.args[len(self.args)-1]</span>
         <span class="c1"># del self.args[len(self.args)-1]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Array.push"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.push"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adds new elements to the end of an array, and returns the new length &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Array.reduce"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reduce">[docs]</a>    <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.reduce"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.reduce">[docs]</a>    <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going left-to-right) &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.reduceRight"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reduceRight">[docs]</a>    <span class="k">def</span> <span class="nf">reduceRight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.reduceRight"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.reduceRight">[docs]</a>    <span class="k">def</span> <span class="nf">reduceRight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going right-to-left) &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.reverse"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.reverse"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reverses the order of the elements in an array &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span></div>
 
-<div class="viewcode-block" id="Array.slice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.slice"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Selects a part of an array, and returns the new array &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Array.splice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.splice">[docs]</a>    <span class="k">def</span> <span class="nf">splice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">delete_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">items</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.splice"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.splice">[docs]</a>    <span class="k">def</span> <span class="nf">splice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">delete_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">items</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Selects a part of an array, and returns the new array &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">delete_count</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">delete_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span>
@@ -933,28 +933,28 @@
         <span class="k">return</span> <span class="n">removed</span></div>
         <span class="c1"># return self.args</span>
 
-<div class="viewcode-block" id="Array.some"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.some">[docs]</a>    <span class="k">def</span> <span class="nf">some</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.some"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.some">[docs]</a>    <span class="k">def</span> <span class="nf">some</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks if any of the elements in an array pass a test &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.sort"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.sort"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sorts the elements of an array &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.unshift"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.unshift">[docs]</a>    <span class="k">def</span> <span class="nf">unshift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.unshift"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.unshift">[docs]</a>    <span class="k">def</span> <span class="nf">unshift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adds new elements to the beginning of an array, and returns the new length &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Array.shift"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.shift"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; removes the first element from an array and returns that removed element &quot;&quot;&quot;</span>
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">item</span></div></div>
 
 
-<div class="viewcode-block" id="Navigator"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Navigator">[docs]</a><span class="k">class</span> <span class="nc">Navigator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Navigator"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Navigator">[docs]</a><span class="k">class</span> <span class="nc">Navigator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; navigator &quot;&quot;&quot;</span>
 
     <span class="c1"># Determines whether cookies are enabled in the browser</span>
@@ -978,7 +978,7 @@
     <span class="c1"># userAgent Returns the user-agent header sent by the browser to the server Navigator</span>
 
 
-<div class="viewcode-block" id="String"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String">[docs]</a><span class="k">class</span> <span class="nc">String</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="String"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String">[docs]</a><span class="k">class</span> <span class="nc">String</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; javascript string &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -986,11 +986,11 @@
         <span class="c1"># self.kwargs = kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
 
-<div class="viewcode-block" id="String.repeat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+<div class="viewcode-block" id="String.repeat"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a new string with a specified number of copies of an existing string &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">count</span></div>
 
-<div class="viewcode-block" id="String.startsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.startsWith">[docs]</a>    <span class="k">def</span> <span class="nf">startsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+<div class="viewcode-block" id="String.startsWith"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.startsWith">[docs]</a>    <span class="k">def</span> <span class="nf">startsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Checks whether a string begins with specified characters &#39;&#39;&#39;</span>
 
         <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1001,26 +1001,26 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">beg</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="String.substring"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.substring">[docs]</a>    <span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="String.substring"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.substring">[docs]</a>    <span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Extracts the characters from a string, between two specified indices &#39;&#39;&#39;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="String.endsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.endsWith">[docs]</a>    <span class="k">def</span> <span class="nf">endsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+<div class="viewcode-block" id="String.endsWith"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.endsWith">[docs]</a>    <span class="k">def</span> <span class="nf">endsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Checks whether a string ends with specified string/characters &#39;&#39;&#39;</span>
 
         <span class="c1"># TODO - should take array. or any length string</span>
         <span class="c1"># return x[len(x)] == x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="String.toLowerCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toLowerCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLowerCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="String.toLowerCase"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.toLowerCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLowerCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Converts a string to lowercase letters&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.toUpperCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toUpperCase">[docs]</a>    <span class="k">def</span> <span class="nf">toUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="String.toUpperCase"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.toUpperCase">[docs]</a>    <span class="k">def</span> <span class="nf">toUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Converts a string to uppercase letters&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.trim"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trim">[docs]</a>    <span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="String.trim"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.trim">[docs]</a>    <span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Removes whitespace from both ends of a string&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div></div>
 
@@ -1039,7 +1039,7 @@
 
 <span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/URL</span>
 
-<div class="viewcode-block" id="URL"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URL">[docs]</a><span class="k">class</span> <span class="nc">URL</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="URL"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.URL">[docs]</a><span class="k">class</span> <span class="nc">URL</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; a tag extends from URL &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__update__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

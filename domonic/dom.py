@@ -15,7 +15,7 @@ from domonic.events import *
 class EventTarget:
     """ Baseclass for Node """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.listeners = {}
 
     # TODO - event: str, function, useCapture: bool
@@ -42,7 +42,7 @@ class EventTarget:
 
         stack = self.listeners[event.type]
         # .slice()
-        event.target = self  # TODO/NOTE - is this correct? - cant think where else would set it
+        event.target = self  # TODO/NOTE - is this correct? - cant think where else would set it
 
         for thing in stack:
             try:
@@ -59,8 +59,8 @@ class Node(EventTarget):
     """ Element extends from Node """
 
     def __init__(self, *args, **kwargs):
-        # self.args = args
-        # self.kwargs = kwargs
+        self.args = args
+        self.kwargs = kwargs
         self.baseURI = 'eventual.technology'
         # self.baseURIObject = None
         self.isConnected = True
@@ -75,8 +75,7 @@ class Node(EventTarget):
         self.prefix = None  # 🗑️
         self.previousSibling = None
         self.rootNode = None
-        self.textContent = None
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
     def appendChild(self, item):
         """ Adds a new child node, to an element, as the last child node """
@@ -84,7 +83,7 @@ class Node(EventTarget):
 
     def hasChildNodes(self):
         """ Returns true if an element has any child nodes, otherwise false """
-        return len(self.args) > 1
+        return len(self.args) > 0
 
     def lastChild(self):
         """ Returns the last child node of an element """
@@ -123,16 +122,23 @@ class Node(EventTarget):
 
     @property
     def localName(self):
-        return self.tagName
+        try:
+            return self.tagName
+        except Exception:
+            return None
 
     @property
     def nodeName(self):
         """ Returns the name of a node """
         return self.tagName.upper()
 
+    @property
     def nodeValue(self):
         """ Sets or returns the value of a node """
-        pass
+        # TODO - attribute nodes
+        # all domonic Nodes are Elements so always returns non for now
+        # not going to bother with a setter for now either
+        return None
 
     # - TODO - tests all below
 
@@ -145,27 +151,34 @@ class Node(EventTarget):
             try:
                 if each.contains(node):
                     return True
-            except Exception as e:
+            except Exception:
                 pass  # TODO - dont iterate strings
 
         return False
 
-    def insertBefore(self, node):
+    def insertBefore(self, new_node, reference_node):
         """ inserts a node before a reference node as a child of a specified parent node. """
         for count, each in enumerate(self.args):
-            if each == node:
-                self.args.insert(node, count)
-                return node
-        return node
+            if each == reference_node:
+                replace_args = list(self.args)
+                replace_args.insert(count, new_node)
+                self.args = tuple(replace_args)
+                return new_node
+        return new_node
 
     def removeChild(self, node):
         ''' removes a child node from the DOM and returns the removed node.'''
         for count, each in enumerate(self.args):
+            if type(each) == str:
+                continue
+
             if each == node:
                 n = node
-                self.args.remove(node)
-                return n
+                replace_args = list(self.args)
+                replace_args.remove(node)
+                self.args = tuple(replace_args)
 
+                return n
             r = each.removeChild(node)
             if r:
                 return r
@@ -265,6 +278,36 @@ class Attr(object):
         # self.specified
 
 
+class ShadowRoot(Node):
+    """ propert on element that has hidden DOM """
+    def __init__(self, host, mode='open'):
+        self.delegatesFocus = False
+        self.host = host
+        self.mode = mode
+
+    def getSelection(self):
+        """
+        Returns a Selection object representing the range of text selected by the user,
+        or the current position of the caret.
+        """
+        pass
+
+    def elementFromPoint(self):
+        """ Returns the topmost element at the specified coordinates. """
+        pass
+
+    def elementsFromPoint(self):
+        """ Returns an array of all elements at the specified coordinates. """
+        pass
+
+    def caretPositionFromPoint(self):
+        """
+        Returns a CaretPosition object containing the DOM node containing the caret,
+        and caret's character offset within that node.
+        """
+        pass
+
+
 class Element(Node):
     """ Baseclass for all html tags """
 
@@ -286,7 +329,13 @@ class Element(Node):
 
         self.tagName
         self.style = None  # Style(self)  # = #'test'#Style()
-        super().__init__()
+        self.shadowRoot = None
+        super().__init__(*args, **kwargs)
+
+    # elem.attachShadow({mode: open|closed})
+    def attachShadow(self, obj):
+        self.shadowRoot = ShadowRoot(self, obj['mode'])
+        return self.shadowRoot
 
     # def accessKey( key: str ): -> None
         # ''' Sets or returns the accesskey attribute of an element'''
@@ -307,7 +356,8 @@ class Element(Node):
     @innerHTML.setter
     def innerHTML(self, value):
         if value is not None:
-            self.args = (value,)  # TODO - will need the parser to work for this to work properly. for now shove all on first content node
+            # TODO - will need the parser to work for this to work properly. for now shove all on first content node
+            self.args = (value,)
         return self.content
 
     def html(self, *args) -> str:
@@ -776,7 +826,7 @@ class Document(Element):
             return MouseEvent()
         elif event_type == "KeyboardEvent":
             return MouseEvent()
-        elif event_type == None:
+        elif event_type is None:
             return Event()
         return Event()
 

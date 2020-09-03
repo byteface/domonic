@@ -2,6 +2,7 @@
     test_domonic
     ~~~~~~~~~~~~
     - unit tests for domonic.dom
+
 """
 
 import unittest
@@ -14,6 +15,101 @@ from domonic.dom import *
 
 
 class domonicTestCase(unittest.TestCase):
+    """ Tests for the dom package """
+
+    def test_dom_Node(self):
+
+        n = Node()
+        # print(n)
+        self.assertIsInstance(n, Node)
+        # n.assertEqual(str(sometag), '<div id="someid">asdfasdf<div></div><div>yo</div></div>')
+        # n.baseURI = 'eventual.technology'
+        # n.baseURIObject = None
+        # n.isConnected = True
+        # n.localName = None
+        # n.namespaceURI = "http://www.w3.org/1999/xhtml"
+        # n.nextSibling = None
+        # n.nodePrincipal = None
+        # n.outerText = None
+        # n.ownerDocument = None
+        # n.parentElement = None
+        # n.parentNode = None
+        # n.prefix = None  # 🗑️
+        # n.previousSibling = None
+        # n.rootNode = None
+
+        b = Node()
+        n.appendChild(b)
+        self.assertEqual(True, n.hasChildNodes())
+
+        c = Node()
+        n.appendChild(c)
+        self.assertEqual(c, n.lastChild())
+        self.assertEqual(b, n.firstChild())
+        self.assertEqual(2, n.childElementCount())
+        self.assertEqual(True, b in n.childNodes())
+        self.assertEqual(True, c in n.childNodes())
+        self.assertEqual(None, n.localName)  # obsolete if not a tag or attribute should return none
+        self.assertEqual(2, len(n.children()))
+        # print(n.nodeType())
+        d = div("test")
+        # print(type(d))
+        # print(d.nodeName)
+        self.assertEqual("DIV", d.nodeName)
+        self.assertEqual(None, d.nodeValue)
+        self.assertEqual(True, n.contains(c))
+
+        n.insertBefore(d, c)
+        self.assertEqual(True, n.children()[1] == d)
+
+        self.assertEqual(True, n.contains(c))
+        n.removeChild(c)
+        self.assertEqual(False, n.contains(c))
+
+        # print( n.replaceChild(self, newChild, oldChild) )
+        n2 = n.cloneNode()
+        # print(len(n2.children()))
+        self.assertEqual(True, len(n2.children()) == 2)
+        self.assertEqual(False, n.children() == n2.children())
+        self.assertEqual(True, n.isSameNode(n))
+        self.assertEqual(False, n.isSameNode(n2))
+        a1 = div()
+        a2 = div()
+        self.assertEqual(True, a1.isEqualNode(a2))
+
+        # compareDocumentPosition()
+        # getRootNode()
+        # isDefaultNamespace()
+        # lookupNamespaceURI()
+        # lookupPrefix()
+        # normalize()
+        # def isSupported(self): return False #  🗑
+        # getUserData() 🗑️
+        # setUserData() 🗑️
+
+    def test_dom_node(self):
+        sometag = div("asdfasdf", div(), div("yo"), _id="test")
+        somenewdiv = div('im new')
+        sometag.appendChild(somenewdiv)
+        print('>>>>', sometag.args[0])
+        # print('>>>>',sometag)
+        print('>>>>', sometag.lastChild())
+        print('>>>>', sometag.content)
+
+        import gc
+        import pprint
+        for r in gc.get_referents(somenewdiv):
+            pprint.pprint(r)
+
+        for r in gc.get_referents(sometag):
+            pprint.pprint(r)
+
+    def test_dom_node_again(self):
+        somebody = body("test", _class="why")  # .html("wn")
+        print(somebody)
+
+        somebody = body("test", _class="why").html("nope")
+        print(somebody)
 
     def test_dom(self):
 
@@ -69,32 +165,7 @@ class domonicTestCase(unittest.TestCase):
         htmltag.write('sup!')
         htmltag.className = "my_cool_css"
         print(htmltag)
-
         print('-END-')
-
-    def test_dom_node(self):
-        sometag = div("asdfasdf", div(), div("yo"), _id="test")
-        somenewdiv = div('im new')
-        sometag.appendChild(somenewdiv)
-        print('>>>>', sometag.args[0])
-        # print('>>>>',sometag)
-        print('>>>>', sometag.lastChild())
-        print('>>>>', sometag.content)
-
-        import gc
-        import pprint
-        for r in gc.get_referents(somenewdiv):
-            pprint.pprint(r)
-
-        for r in gc.get_referents(sometag):
-            pprint.pprint(r)
-
-    def test_dom_node_again(self):
-        somebody = body("test", _class="why")  # .html("wn")
-        print(somebody)
-
-        somebody = body("test", _class="why").html("nope")
-        print(somebody)
 
     def test_dom_create(self):
         print(html().documentElement)
@@ -115,27 +186,24 @@ class domonicTestCase(unittest.TestCase):
         somebody = document.createElement('div')
         site.appendChild(somebody)
         print(site)
-        
-        def test(evt, *args,**kwargs):
+
+        def test(evt, *args, **kwargs):
             print('test ran!')
             print(evt)
             print(evt.target)
 
         site.addEventListener('click', test)
         somebody.addEventListener('anything', test)
-        print( site.listeners )
-
+        print(site.listeners)
         # site.removeEventListener('click', test)
         # print( site.listeners )
 
-        site.dispatchEvent( Event('click') ) 
-        somebody.dispatchEvent( Event('anything') ) 
-        
+        site.dispatchEvent(Event('click'))
+        somebody.dispatchEvent(Event('anything'))
 
         # document.getElementById("myBtn").addEventListener("click", function(){
         #   document.getElementById("demo").innerHTML = "Hello World";
         # });
-
 
     def test_dom_contains(self):
         site = html()
@@ -154,7 +222,7 @@ class domonicTestCase(unittest.TestCase):
         print(site.contains(third_div))
 
 
-    # def test_dom_Node():  
+    # def test_dom_Node():
         # TODO - tests all below
         # contains
         # insertBefore
@@ -164,7 +232,6 @@ class domonicTestCase(unittest.TestCase):
         # isSameNode
         # isEqualNode
         # anchors
-            
 
 if __name__ == '__main__':
     unittest.main()

@@ -592,7 +592,7 @@
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">EventTarget</code><a class="reference internal" href="../_modules/domonic/dom.html#EventTarget"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">EventTarget</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#EventTarget"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Baseclass for Node</p>
 </dd></dl>
 
@@ -650,7 +650,7 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">insertBefore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.insertBefore"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">insertBefore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_node</span></em>, <em class="sig-param"><span class="n">reference_node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.insertBefore"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>inserts a node before a reference node as a child of a specified parent node.</p>
 </dd></dl>
 
@@ -686,7 +686,7 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">nodeValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.nodeValue"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">nodeValue</code></dt>
 <dd><p>Sets or returns the value of a node</p>
 </dd></dl>
 
@@ -700,6 +700,38 @@
 <dt>
 <code class="sig-name descname">replaceChild</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newChild</span></em>, <em class="sig-param"><span class="n">oldChild</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.replaceChild"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Replaces a child node within the given (parent) node.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">ShadowRoot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'open'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ShadowRoot"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>propert on element that has hidden DOM</p>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">caretPositionFromPoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ShadowRoot.caretPositionFromPoint"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a CaretPosition object containing the DOM node containing the caret,
+and caret’s character offset within that node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">elementFromPoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ShadowRoot.elementFromPoint"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the topmost element at the specified coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">elementsFromPoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ShadowRoot.elementsFromPoint"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an array of all elements at the specified coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getSelection</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ShadowRoot.getSelection"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a Selection object representing the range of text selected by the user,
+or the current position of the caret.</p>
 </dd></dl>
 
 </dd></dl>

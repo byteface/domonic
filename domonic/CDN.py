@@ -15,6 +15,7 @@
 # lorem ipusm generator
 # fake names
 
+
 class CDN_IMG(object):
     """ CDN images """
     # - icons
@@ -44,14 +45,16 @@ class CDN_IMG(object):
     http://www.dummysrc.com/430x320.png/22c5fc/17202A
     '''
     PLACEHOLDER_SERVICE = "loremflickr.com"
+
     @staticmethod
     def PLACEHOLDER(width=100, height=100, HTTP="", seperator='/'):
-        '''
-        i.e. to change it. do this... CDN_IMG.PLACEHOLDER_SERVICE = "placebear.com/g"
-        i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100))
-        i.e. default HTTP is none, to let the browser decide
-        i.e. img(_src=CDN_IMG.PLACEHOLDER(300,100,'x')) # optional seperator if the site uses x instead of slash
-        '''
+        """
+        to update do CDN_IMG.PLACEHOLDER_SERVICE = "placebear.com/g"
+        usage : img(_src=CDN_IMG.PLACEHOLDER(300,100))
+        default HTTP is none, to let the browser decide
+        # use optional seperator if the site uses x instead of slash
+        img(_src=CDN_IMG.PLACEHOLDER(300,100,'x'))
+        """
         return f"{HTTP}://{CDN_IMG.PLACEHOLDER_SERVICE}/{width}{seperator}{height}"
 
 
@@ -72,22 +75,22 @@ class CDN_JS(object):
     PIXI_5_3_3 = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"
     SOCKET_1_4_5 = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"
 
-    #def find_on_cdn():
+    # def find_on_cdn():
     # https://cdn.jsdelivr.net/npm/
     # https://cdnjs.cloudflare.com/ajax/libs/
-    #def dl(self, path=None):  # download
-    #if path none domonic.JS_MASTER < strip off name to get default assets folder if non passed
+    # def dl(self, path=None):  # download
+    # if path none domonic.JS_MASTER < strip off name to get default assets folder if non passed
 
 
 class CDN_CSS(object):
-    '''
+    """
     Preferably use version numbers if available. user LATEST if it always gets the latest
-    '''
+    """
     BOOTSTRAP_5_ALPHA = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.jshttps://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
     BOOTSTRAP_4 = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     MARX = "https://unpkg.com/marx-css/css/marx.min.css"  # version?
     MVP = "https://unpkg.com/mvp.css"  # version?
-    WATER_LATEST = "https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css"  # note using 'latest' in cdn url
+    WATER_LATEST = "https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css"  # note 'latest' in cdn url
     BALLOON = "https://unpkg.com/balloon-css/balloon.min.css"
     THREE_DOTS_0_2_0 = "https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css"
     MILLIGRAM_1_3_0 = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"
@@ -95,4 +98,4 @@ class CDN_CSS(object):
     # https://unpkg.com/
     # https://cdnjs.cloudflare.com/ajax/libs/
 
-    #def dl(self, path=domonic.JS_MASTER):  # download
+    # def dl(self, path=domonic.JS_MASTER):  # download
