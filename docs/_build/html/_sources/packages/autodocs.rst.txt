@@ -1,6 +1,9 @@
 Domonic: autodocs
 =================
 
+.. automodule:: domonic
+    :members:
+
 .. automodule:: domonic.html
     :members:
 

@@ -7,12 +7,12 @@
     - Call Terminal commands using python 3 (this one requires a nix machine)
 """
 
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 __license__ = 'MIT'
 
 # from typing import *
 
-# from .html import *
+from .html import *
 # from .dom import Element
 from .javascript import *
 # from .terminal import *
@@ -24,6 +24,20 @@ class domonic:
 
     JS_MASTER = "assets/js/master.js"
     CSS_STYLE = "assets/css/style.css"
+
+    @staticmethod
+    def domonify(domonic_string: str):
+        """ [
+            domonify attempts to turn a domonic_string string back into a python object.
+        ]
+
+        Args:
+            dominc_string (str): [a string in the form div(_class="123")]
+
+        Returns:
+            a python object
+        """
+        return eval(domonic_string)
 
     @staticmethod
     def get(url: str):
@@ -98,11 +112,11 @@ class domonic:
 
             reg = f"</{tag}>"
             pattern = re.compile(reg)
-            html = re.sub(pattern, ')', html)  # , flags=re.IGNORECASE )
+            html = re.sub(pattern, '),', html)  # , flags=re.IGNORECASE )
 
             reg = '/>'
             pattern = re.compile(reg)
-            html = re.sub(pattern, ')', html)  # , flags=re.IGNORECASE )
+            html = re.sub(pattern, '),', html)  # , flags=re.IGNORECASE )
 
         # close any tags that arent properly self closing
         flag = False
@@ -191,11 +205,11 @@ class domonic:
 
             reg = f"</{tag}>"
             pattern = re.compile(reg)
-            html = re.sub(pattern, '""")', html)  # , flags=re.IGNORECASE )
+            html = re.sub(pattern, '"""),', html)  # , flags=re.IGNORECASE )
 
             reg = '/>'
             pattern = re.compile(reg)
-            html = re.sub(pattern, '""")', html)  # , flags=re.IGNORECASE )
+            html = re.sub(pattern, '"""),', html)  # , flags=re.IGNORECASE )
 
         html = ')'.join(html.split(',)'))
 

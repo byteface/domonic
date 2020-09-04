@@ -130,6 +130,13 @@ class tag(object):
             reproducer.append(copy.deepcopy(self))
         return reproducer
 
+    def __truediv__(self, other):
+        """ use to render clones without having to parse commas yourself """
+        reproducer = []
+        for i in range(other):
+            reproducer.append(str(self))
+        return ''.join(reproducer)
+
     def __div__(self, other):
         """
         useful for prototyping as renders. to retain objects use multiply

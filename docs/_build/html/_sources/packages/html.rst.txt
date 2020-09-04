@@ -151,6 +151,14 @@ A divisor also creates more but will instead call render and give a list of stri
 
 but this means they are now rendered and can't be edited.
 
+Although you could convert them back by calling parser then domonify. i.e.
+
+.. code-block :: python
+
+    mylist = li()/10
+    myobj = domonic.domonify(domonic.parse(mylist))
+    print(myobj)
+
 
 **OR**
 

@@ -12,6 +12,7 @@ import unittest
 from domonic.html import *
 from domonic.style import *
 from domonic.dom import *
+from domonic import *
 
 
 class domonicTestCase(unittest.TestCase):
@@ -85,12 +86,22 @@ class domonicTestCase(unittest.TestCase):
         self.assertEqual(True, a1.nodeValue == "something else")
         print(a1.nodeValue)
 
-        
         a1.textContent = "something new"
         self.assertEqual(True, a1.textContent == "something new")
         print(a1.textContent)
 
+        myobj = domonic.domonify('div(_class="mytest")')
+        print('---')
+        print(type(myobj))
+        myobj.style.float = "left"
+        print('---')
+        print(myobj)
+        self.assertEqual(True, str(myobj) == '<div class="mytest" style="float:left;"></div>')
 
+        mylist = li()/10
+        myobj = domonic.domonify(domonic.parse(mylist))
+        print(myobj)
+        
         # compareDocumentPosition()
         # getRootNode()
         # isDefaultNamespace()
