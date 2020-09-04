@@ -386,6 +386,14 @@ I'll merge and releaese asap.
 ### CLI
 There's a few args you can pass to domonic on the command line to help you out.
 
+To launch the docs for a quick reference to the APIs use:
+
+```python
+
+python3 -m domonic -h
+
+```
+
 This command will attempt to generate a template from a webpage. (only simple pages for now)
 
 ```python
@@ -394,7 +402,7 @@ python3 -m domonic -d http://eventual.technology
 
 ```
 
-Then you can tweak it to get what you need and build new components quicker.
+Then you can edit/tweak it to get what you need and build new components quicker.
 
 
 ### EXAMPLE PROJECT

@@ -110,7 +110,14 @@ Here you can find instructions for getting the most out of Domonic.
 CLI
 ----------------
 
-There's a few args you can pass to domonic to help you out.
+There's a few args you can pass to domonic on the command line to help you out.
+
+To launch the docs for a quick reference to the APIs use:
+
+.. code-block :: python
+
+  python3 -m domonic -h
+
 
 This command will attempt to generate a template from a webpage. (only simple pages for now)
 
@@ -118,7 +125,8 @@ This command will attempt to generate a template from a webpage. (only simple pa
 
   python3 -m domonic -d http://eventual.technology
 
-Then you can tweak it to get what you need and build new components quicker.
+
+Then you can edit/tweak it to get what you need and build new components quicker.
 
 
 Join-In
