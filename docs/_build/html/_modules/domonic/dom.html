@@ -169,12 +169,25 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodeValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or returns the value of a node &quot;&quot;&quot;</span>
-        <span class="c1"># TODO - attribute nodes</span>
-        <span class="c1"># all domonic Nodes are Elements so always returns non for now</span>
-        <span class="c1"># not going to bother with a setter for now either</span>
-        <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">outp</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">each</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="n">outp</span> <span class="o">=</span> <span class="n">outp</span> <span class="o">+</span> <span class="n">each</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">each</span><span class="o">.</span><span class="n">nodeValue</span>
+                <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">outp</span> <span class="o">=</span> <span class="n">outp</span> <span class="o">+</span> <span class="n">val</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">outp</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">outp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">outp</span>
 
-    <span class="c1"># - TODO - tests all below</span>
+    <span class="nd">@nodeValue</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">nodeValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns the value of a node &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">content</span><span class="p">,)</span>
+        <span class="k">return</span> <span class="n">content</span>
 
 <div class="viewcode-block" id="Node.contains"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Check whether a node is a descendant of a given node &quot;&quot;&quot;</span>
@@ -464,7 +477,10 @@
 
 <div class="viewcode-block" id="Element.firstElementChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.firstElementChild">[docs]</a>    <span class="k">def</span> <span class="nf">firstElementChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the first child element of an element &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Element.focus"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.focus">[docs]</a>    <span class="k">def</span> <span class="nf">focus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Gives focus to an element &quot;&quot;&quot;</span>
@@ -572,7 +588,10 @@
 
 <div class="viewcode-block" id="Element.lastElementChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.lastElementChild">[docs]</a>    <span class="k">def</span> <span class="nf">lastElementChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the last child element of an element&#39;&#39;&#39;</span>
-        <span class="k">pass</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Element.namespaceURI"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.namespaceURI">[docs]</a>    <span class="k">def</span> <span class="nf">namespaceURI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the namespace URI of an element&#39;&#39;&#39;</span>
@@ -716,13 +735,18 @@
     <span class="k">def</span> <span class="nf">tagName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
-<div class="viewcode-block" id="Element.textContent"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.textContent">[docs]</a>    <span class="k">def</span> <span class="nf">textContent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">textContent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Sets or returns the textual content of a node and its descendants&#39;&#39;&#39;</span>
-        <span class="c1"># pass</span>
-        <span class="c1"># def __str__(self):</span>
+        <span class="c1"># return f&quot; {&#39; &#39;*len(self.name)}{&#39; &#39;*len(self.attributes)} {self.content}  {&#39; &#39;*len(self.name)} &quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodeValue</span>
 
-        <span class="c1"># TODO - not finished. this wont work</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}{</span><span class="s1">&#39; &#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span></div>
+    <span class="nd">@textContent</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">textContent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Sets or returns the textual content of a node and its descendants&#39;&#39;&#39;</span>
+        <span class="c1"># if type(content) is not str:</span>
+            <span class="c1"># raise ValueError()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodeValue</span> <span class="o">=</span> <span class="n">content</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

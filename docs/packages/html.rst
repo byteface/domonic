@@ -17,7 +17,7 @@ templating
 
 .. code-block :: python
 
-  from domonic import *
+  from domonic.html import *
 
     output = render( 
         html(
