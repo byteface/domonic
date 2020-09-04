@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: components &#8212; domonic 0.1.10 documentation</title>
+    <title>Domonic: templates and components &#8212; domonic 0.1.10 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -33,53 +33,24 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="domonic-components">
-<h1>Domonic: components<a class="headerlink" href="#domonic-components" title="Permalink to this headline">¶</a></h1>
-<p>With all these pieces you can now build simple components, custom Elements or large templates.</p>
-<p>Components are re-usable pieces of code.</p>
-<p>A component ‘might’ look something like this…</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">Math</span>
-<span class="kn">from</span> <span class="nn">domonic.terminal</span> <span class="kn">import</span> <span class="n">ifconfig</span>
-
-<span class="k">class</span> <span class="nc">My_Component</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;launcher&#39;</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
-                <span class="n">div</span><span class="p">(</span>
-                        <span class="n">div</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">html</span><span class="p">(</span>
-                        <span class="s2">&quot;CONTENT&quot;</span>
-                    <span class="p">),</span>
-                    <span class="n">script</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
-
-<span class="s1">                    &#39;&#39;&#39;</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
+  <div class="section" id="domonic-templates-and-components">
+<h1>Domonic: templates and components<a class="headerlink" href="#domonic-templates-and-components" title="Permalink to this headline">¶</a></h1>
+<p>With all these pieces you can now build templates or components…</p>
+<div class="section" id="templates">
+<h2>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h2>
+<p><strong>Some notes on tepmlates</strong></p>
+<p>using domonic mixed with lambdas can create templates without needing to make a class…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a template</span>
+<span class="n">some_tmpl</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">somevar</span><span class="p">:</span> <span class="n">div</span><span class="p">(</span> <span class="n">_style</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;display:inline;margin:</span><span class="si">{</span><span class="n">MARGIN</span><span class="si">}</span><span class="s2">px;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">html</span><span class="p">(</span>
+    <span class="n">button</span><span class="p">(</span><span class="n">somevar</span><span class="p">,</span> <span class="n">_style</span><span class="o">=</span><span class="s2">&quot;background-color:white;color:black;&quot;</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>some notes on components</strong></p>
-<p>First you will need a server as domonic only provides a view.</p>
-<p>These example use Sanic. But it could be Flask or any other that can provide routing.</p>
-<p>A component could, for example, take a request directly as input and returns html</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/component/&lt;component&gt;&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">component</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;app.components.</span><span class="si">{</span><span class="n">component</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">my_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">component</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">html</span><span class="p">(</span> <span class="nb">str</span><span class="p">(</span> <span class="n">my_class</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">html</span><span class="p">(</span> <span class="nb">str</span><span class="p">(</span> <span class="n">div</span><span class="p">(</span><span class="s2">&quot;COMPONENT NOT FOUND!&quot;</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+<p>then you can us it like this…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">some_tmpl</span><span class="p">(</span><span class="s2">&quot;some content&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>for this to work the component would need to be in a file called:
-app/components/my_component.py</p>
-<p>Components can also be used to build larger templates.</p>
-<p>Here for example is a large template. It can take content as input.</p>
+<p>Here is another template. This one is larger and uses a Class. It can take content as input.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Webpage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -164,18 +135,9 @@ app/components/my_component.py</p>
     <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">html</span><span class="p">(</span> <span class="n">render</span><span class="p">(</span> <span class="n">Webpage</span><span class="p">(</span><span class="n">page</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
 </pre></div>
 </div>
-<p>You don’t have to return JSON from an endpoint. You can just return html and render it directly into your page.</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// pass an ElementID and an endpoint to redraw that div with the endpoints response</span>
-<span class="nb">window</span><span class="p">.</span><span class="nx">redraw</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">_id</span><span class="p">,</span> <span class="nx">endpoint</span> <span class="p">){</span>
-    <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span> <span class="nx">endpoint</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">data</span> <span class="p">)</span> <span class="p">{</span>
-    <span class="nb">window</span><span class="p">.</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
-    <span class="nx">$</span><span class="p">(</span> <span class="s2">&quot;#&quot;</span><span class="o">+</span><span class="nx">_id</span> <span class="p">).</span><span class="nx">html</span><span class="p">(</span> <span class="nx">$</span><span class="p">(</span><span class="nx">data</span><span class="p">).</span><span class="nx">html</span><span class="p">()</span> <span class="p">);</span>
-    <span class="p">});</span>
-<span class="p">}</span>
-</pre></div>
 </div>
-<div class="section" id="notes-on-templating">
-<h2>Notes on templating<a class="headerlink" href="#notes-on-templating" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="important-notes-on-templating">
+<h2>Important notes on templating<a class="headerlink" href="#important-notes-on-templating" title="Permalink to this headline">¶</a></h2>
 <p>while you can create a div with content like :</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">div</span><span class="p">(</span><span class="s2">&quot;some content&quot;</span><span class="p">)</span>
 </pre></div>
@@ -198,7 +160,8 @@ app/components/my_component.py</p>
 </div>
 <div class="section" id="common-errors">
 <h2>Common Errors<a class="headerlink" href="#common-errors" title="Permalink to this headline">¶</a></h2>
-<p>When you first start templating this way you can make a lot of common mistakes. Refer back to this page until you get used to it. It’s normally missing underscores or commas between attributes…</p>
+<p>When you first start templating this way you can make a lot of common mistakes. Usually missing underscores or commas between attributes.</p>
+<p>Refer back to this page for a few days until you get used to it.</p>
 <p>Here are the 4 most common ones I experienced when creating large templates…</p>
 <p>( i.e. bootstrap5 examples in test_domonic.py )</p>
 <dl class="simple">
@@ -220,6 +183,60 @@ app/components/my_component.py</p>
 </ul>
 </dd>
 </dl>
+</div>
+<div class="section" id="components">
+<h2>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
+<p><strong>Some notes on components</strong></p>
+<p>A component ‘might’ look something like this…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">Math</span>
+<span class="kn">from</span> <span class="nn">domonic.terminal</span> <span class="kn">import</span> <span class="n">ifconfig</span>
+
+<span class="k">class</span> <span class="nc">My_Component</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="s1">&#39;launcher&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">div</span><span class="p">(</span>
+                        <span class="n">div</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">html</span><span class="p">(</span>
+                        <span class="s2">&quot;CONTENT&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">script</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;</span>
+
+<span class="s1">                    &#39;&#39;&#39;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+</pre></div>
+</div>
+<p>Now you will need a server as domonic only provides a view.</p>
+<p>These example use Sanic. But it could be Flask or any other that can provide routing.</p>
+<p>A component could, for example, take a request directly as input and returns html</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/component/&lt;component&gt;&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">component</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;app.components.</span><span class="si">{</span><span class="n">component</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">my_class</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">component</span><span class="o">.</span><span class="n">title</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">html</span><span class="p">(</span> <span class="nb">str</span><span class="p">(</span> <span class="n">my_class</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">html</span><span class="p">(</span> <span class="nb">str</span><span class="p">(</span> <span class="n">div</span><span class="p">(</span><span class="s2">&quot;COMPONENT NOT FOUND!&quot;</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>for this to work the component would need to be in a file called:
+app/components/my_component.py</p>
+<p>Then a given component or template can just return html and render directly into your page using a bit of javascript.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="c1">// pass an ElementID and an endpoint to redraw that div with the endpoints response</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">redraw</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">_id</span><span class="p">,</span> <span class="nx">endpoint</span> <span class="p">){</span>
+    <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span> <span class="nx">endpoint</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">data</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
+    <span class="nx">$</span><span class="p">(</span> <span class="s2">&quot;#&quot;</span><span class="o">+</span><span class="nx">_id</span> <span class="p">).</span><span class="nx">html</span><span class="p">(</span> <span class="nx">$</span><span class="p">(</span><span class="nx">data</span><span class="p">).</span><span class="nx">html</span><span class="p">()</span> <span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -254,9 +271,11 @@ app/components/my_component.py</p>
 <li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: components</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#notes-on-templating">Notes on templating</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: templates and components</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#templates">Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#important-notes-on-templating">Important notes on templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#common-errors">Common Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#components">Components</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>

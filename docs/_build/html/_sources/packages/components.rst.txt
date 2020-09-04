@@ -1,64 +1,30 @@
-Domonic: components
-===================
+Domonic: templates and components
+======================================
 
-With all these pieces you can now build simple components, custom Elements or large templates.
-
-Components are re-usable pieces of code.
-
-A component 'might' look something like this...
-
-.. code-block :: python
-
-	from domonic.html import *
-	from domonic.javascript import Math
-	from domonic.terminal import ifconfig
-
-	class My_Component(object):
-	    
-	    def __init__(self, request, *args, **kwargs):
-	        self.id = 'launcher'
-
-	    def __str__(self):
-	        return str(
-	        	div(
-		        	div(_id=self.id).html(
-		        	"CONTENT"
-		            ),
-		            script('''
-
-		            '''
-		            )
-		        )
-		    )
+With all these pieces you can now build templates or components...
 
 
-**some notes on components**
+Templates
+----------------
+**Some notes on tepmlates**
 
-First you will need a server as domonic only provides a view.
-
-These example use Sanic. But it could be Flask or any other that can provide routing.
-
-A component could, for example, take a request directly as input and returns html
+using domonic mixed with lambdas can create templates without needing to make a class...
 
 .. code-block :: python
 
-	@app.route("/component/<component>")
-	async def component(request, component):
-	    try:
-	        module = __import__(f'app.components.{component}')
-	        my_class = getattr(module, component.title())
-	        return response.html( str( my_class(request) ) )
-	    except Exception as e:
-	        print(e)
-	        return response.html( str( div("COMPONENT NOT FOUND!") ) )
+	# create a template
+	some_tmpl = lambda somevar: div( _style=f"display:inline;margin:{MARGIN}px;").html(
+	    button(somevar, _style="background-color:white;color:black;")
+	)
 
-for this to work the component would need to be in a file called:
-app/components/my_component.py
+then you can us it like this...
+
+.. code-block :: python
+
+	some_tmpl("some content")
 
 
-Components can also be used to build larger templates.
-
-Here for example is a large template. It can take content as input.
+Here is another template. This one is larger and uses a Class. It can take content as input.
 
 .. code-block :: python
 
@@ -149,21 +115,8 @@ You can now render your template. Which can take content as input.
 	    return response.html( render( Webpage(page) ) )
 
 
-You don't have to return JSON from an endpoint. You can just return html and render it directly into your page.
 
-.. code-block :: javascript
-
-	// pass an ElementID and an endpoint to redraw that div with the endpoints response
-	window.redraw = function( _id, endpoint ){
-	    $.get( endpoint, function( data ) {
-	    window.console.log(data)
-	    $( "#"+_id ).html( $(data).html() );
-	    });
-	}
-
-
-
-Notes on templating
+Important notes on templating
 --------------------------------
 
 while you can create a div with content like :
@@ -197,10 +150,13 @@ This is NOT like jQuery html func that returns just the inner content. use inner
 It is used specifically for rendering.
 
 
+
 Common Errors
 ----------------
 
-When you first start templating this way you can make a lot of common mistakes. Refer back to this page until you get used to it. It's normally missing underscores or commas between attributes...
+When you first start templating this way you can make a lot of common mistakes. Usually missing underscores or commas between attributes.
+
+Refer back to this page for a few days until you get used to it.
 
 Here are the 4 most common ones I experienced when creating large templates...
 
@@ -218,4 +174,71 @@ SyntaxError: positional argument follows keyword argument
 
 TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
     - You are Missing a comma between attributes. before the **{}
+
+
+
+Components
+----------------
+**Some notes on components**
+
+A component 'might' look something like this...
+
+.. code-block :: python
+
+	from domonic.html import *
+	from domonic.javascript import Math
+	from domonic.terminal import ifconfig
+
+	class My_Component(object):
+	    
+	    def __init__(self, request, *args, **kwargs):
+	        self.id = 'launcher'
+
+	    def __str__(self):
+	        return str(
+	        	div(
+		        	div(_id=self.id).html(
+		        	"CONTENT"
+		            ),
+		            script('''
+
+		            '''
+		            )
+		        )
+		    )
+
+
+Now you will need a server as domonic only provides a view.
+
+These example use Sanic. But it could be Flask or any other that can provide routing.
+
+A component could, for example, take a request directly as input and returns html
+
+.. code-block :: python
+
+	@app.route("/component/<component>")
+	async def component(request, component):
+	    try:
+	        module = __import__(f'app.components.{component}')
+	        my_class = getattr(module, component.title())
+	        return response.html( str( my_class(request) ) )
+	    except Exception as e:
+	        print(e)
+	        return response.html( str( div("COMPONENT NOT FOUND!") ) )
+
+for this to work the component would need to be in a file called:
+app/components/my_component.py
+
+
+Then a given component or template can just return html and render directly into your page using a bit of javascript.
+
+.. code-block :: javascript
+
+	// pass an ElementID and an endpoint to redraw that div with the endpoints response
+	window.redraw = function( _id, endpoint ){
+	    $.get( endpoint, function( data ) {
+	    window.console.log(data)
+	    $( "#"+_id ).html( $(data).html() );
+	    });
+	}
 
