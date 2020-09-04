@@ -6,9 +6,9 @@ With all these pieces you can now build templates or components...
 
 Templates
 ----------------
-**Some notes on tepmlates**
+**Some notes on templates**
 
-using domonic mixed with lambdas can create templates without needing to make a class...
+domonic mixed with lambdas can create templates without needing to make a class...
 
 .. code-block :: python
 

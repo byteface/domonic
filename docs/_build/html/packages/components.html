@@ -38,8 +38,8 @@
 <p>With all these pieces you can now build templates or components…</p>
 <div class="section" id="templates">
 <h2>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h2>
-<p><strong>Some notes on tepmlates</strong></p>
-<p>using domonic mixed with lambdas can create templates without needing to make a class…</p>
+<p><strong>Some notes on templates</strong></p>
+<p>domonic mixed with lambdas can create templates without needing to make a class…</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># create a template</span>
 <span class="n">some_tmpl</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">somevar</span><span class="p">:</span> <span class="n">div</span><span class="p">(</span> <span class="n">_style</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;display:inline;margin:</span><span class="si">{</span><span class="n">MARGIN</span><span class="si">}</span><span class="s2">px;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">html</span><span class="p">(</span>
     <span class="n">button</span><span class="p">(</span><span class="n">somevar</span><span class="p">,</span> <span class="n">_style</span><span class="o">=</span><span class="s2">&quot;background-color:white;color:black;&quot;</span><span class="p">)</span>
