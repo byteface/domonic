@@ -135,12 +135,25 @@ class Node(EventTarget):
     @property
     def nodeValue(self):
         """ Sets or returns the value of a node """
-        # TODO - attribute nodes
-        # all domonic Nodes are Elements so always returns non for now
-        # not going to bother with a setter for now either
-        return None
+        outp = ""
+        for each in self.args:
+            if type(each) is str:
+                outp = outp + each
+            else:
+                val = each.nodeValue
+                if val is not None:
+                    outp = outp + val
+                else:
+                    return None
+        if outp == '':
+            outp = None
+        return outp
 
-    # - TODO - tests all below
+    @nodeValue.setter
+    def nodeValue(self, content):
+        """ Sets or returns the value of a node """
+        self.args = (content,)
+        return content
 
     def contains(self, node):
         """ Check whether a node is a descendant of a given node """
@@ -430,7 +443,10 @@ class Element(Node):
 
     def firstElementChild(self):
         """ Returns the first child element of an element """
-        pass
+        try:
+            return self.args[0]
+        except Exception:
+            return None
 
     def focus(self):
         """ Gives focus to an element """
@@ -538,7 +554,10 @@ class Element(Node):
 
     def lastElementChild(self):
         ''' Returns the last child element of an element'''
-        pass
+        try:
+            return self.args[len(self.args) - 1]
+        except Exception:
+            return None
 
     def namespaceURI(self):
         ''' Returns the namespace URI of an element'''
@@ -682,13 +701,18 @@ class Element(Node):
     def tagName(self):
         return self.name
 
+    @property
     def textContent(self):
         ''' Sets or returns the textual content of a node and its descendants'''
-        # pass
-        # def __str__(self):
+        # return f" {' '*len(self.name)}{' '*len(self.attributes)} {self.content}  {' '*len(self.name)} "
+        return self.nodeValue
 
-        # TODO - not finished. this wont work
-        return f" {' '*len(self.name)}{' '*len(self.attributes)} {self.content}  {' '*len(self.name)} "
+    @textContent.setter
+    def textContent(self, content):
+        ''' Sets or returns the textual content of a node and its descendants'''
+        # if type(content) is not str:
+            # raise ValueError()
+        self.nodeValue = content
 
     @property
     def title(self):

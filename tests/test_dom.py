@@ -51,12 +51,13 @@ class domonicTestCase(unittest.TestCase):
         self.assertEqual(True, c in n.childNodes())
         self.assertEqual(None, n.localName)  # obsolete if not a tag or attribute should return none
         self.assertEqual(2, len(n.children()))
+        self.assertEqual(None, n.nodeValue)
         # print(n.nodeType())
         d = div("test")
         # print(type(d))
         # print(d.nodeName)
         self.assertEqual("DIV", d.nodeName)
-        self.assertEqual(None, d.nodeValue)
+        self.assertEqual("test", d.nodeValue)
         self.assertEqual(True, n.contains(c))
 
         n.insertBefore(d, c)
@@ -73,9 +74,22 @@ class domonicTestCase(unittest.TestCase):
         self.assertEqual(False, n.children() == n2.children())
         self.assertEqual(True, n.isSameNode(n))
         self.assertEqual(False, n.isSameNode(n2))
-        a1 = div()
-        a2 = div()
+        a1 = div("hi")
+        a2 = div("hi")
         self.assertEqual(True, a1.isEqualNode(a2))
+
+        print(a1.nodeValue)
+        self.assertEqual(True, a1.nodeValue == "hi")
+
+        a1.nodeValue = "something else"
+        self.assertEqual(True, a1.nodeValue == "something else")
+        print(a1.nodeValue)
+
+        
+        a1.textContent = "something new"
+        self.assertEqual(True, a1.textContent == "something new")
+        print(a1.textContent)
+
 
         # compareDocumentPosition()
         # getRootNode()
