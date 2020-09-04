@@ -26,7 +26,7 @@ https://domonic.readthedocs.io/
 ## HTML Templating with Python 3
 
 ```python
-from domonic import *
+from domonic.html import *
 
 output = render( 
     html(
