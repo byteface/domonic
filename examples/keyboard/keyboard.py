@@ -17,16 +17,16 @@ key_tmpl = lambda key: div( _style=f"display:inline;margin:{MARGIN}px;").html(
 )
 
 # generate keyboard
-col = div()
+kb = div()
 for rows in keyboard:
     row = div(_style=f"margin:{MARGIN*2}px;")
     for key in rows:
         row.appendChild(key_tmpl(key))
-    col.appendChild(str(row))
+    kb.appendChild(str(row))
 
 # render webpage
 css = link(_rel="stylesheet", _href=CDN_CSS.MARX)
 render( html(
         head(css),
-        body(col, _style="background-color:#d1d5db;") ),
+        body(kb, _style="background-color:#d1d5db;") ),
     "keyboard.html" )
