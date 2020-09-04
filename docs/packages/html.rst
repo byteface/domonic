@@ -121,6 +121,56 @@ to create your own elements use the DOM API
 For more info about the DOM API navigate to that section...
 
 
+Magic methods
+--------------------------------
+
+**Multiply**
+
+You can quickly clone nodes with a multiplier which will return a list...
+
+.. code-block :: python
+
+	from domonic.html import *
+	mydivs = div()*100
+
+but you will have to render them yourself by interating and calling string...
+
+.. code-block :: python
+
+    print(''.join([str(c) for c in mydivs]))
+
+
+**Divide**
+
+A divisor also creates more but will instead call render and give a list of strings...
+
+.. code-block :: python
+
+	from domonic.html import *
+	print(div()/100)
+
+but this means they are now rendered and can't be edited.
+
+
+**OR**
+
+If other is antying it is returned. Othewise it returns self
+
+.. code-block :: python
+
+	from domonic.html import *
+
+	print(div() | False)
+    print(div() | True)
+
+
+Another way is to use ternary i.e.
+
+.. code-block :: python
+
+	mything = div() if True else span(class-'warning')
+
+
 .. automodule:: domonic.html
     :members:
     :noindex:

@@ -106,6 +106,45 @@ class tag(object):
     def __str__(self):
         return f"<{self.name}{self.attributes}>{self.content}</{self.name}>"
 
+    def __mul__(self, other):
+        """
+        requires you to render yourself i.e.
+        cells = cell()*10
+        print(''.join([str(c) for c in cells]))
+        """
+        import copy
+        reproducer = []
+        for i in range(other):
+            reproducer.append(copy.deepcopy(self))
+        return reproducer
+
+    def __rmul__(self, other):
+        """
+        requires you to render yourself i.e.
+        cells = cell()*10
+        print(''.join([str(c) for c in cells]))
+        """
+        import copy
+        reproducer = []
+        for i in range(other):
+            reproducer.append(copy.deepcopy(self))
+        return reproducer
+
+    def __div__(self, other):
+        """
+        useful for prototyping as renders. to retain objects use multiply
+        """
+        reproducer = []
+        for i in range(other):
+            reproducer.append(str(self))
+        return ''.join(reproducer)
+
+    def __or__(self, other):
+        """ return self unless other is something """
+        if other is not False:
+            return other
+        return self
+
     # def __repr__(self):
     #     return f"<{self.name}{self.attributes}>{self.content}</{self.name}>"
 

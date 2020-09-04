@@ -128,6 +128,38 @@
 </pre></div>
 </div>
 <p>For more info about the DOM API navigate to that section…</p>
+</div>
+<div class="section" id="magic-methods">
+<h2>Magic methods<a class="headerlink" href="#magic-methods" title="Permalink to this headline">¶</a></h2>
+<p><strong>Multiply</strong></p>
+<p>You can quickly clone nodes with a multiplier which will return a list…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">mydivs</span> <span class="o">=</span> <span class="n">div</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+</pre></div>
+</div>
+<p>but you will have to render them yourself by interating and calling string…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">mydivs</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p><strong>Divide</strong></p>
+<p>A divisor also creates more but will instead call render and give a list of strings…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">div</span><span class="p">()</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>but this means they are now rendered and can’t be edited.</p>
+<p><strong>OR</strong></p>
+<p>If other is antying it is returned. Othewise it returns self</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">div</span><span class="p">()</span> <span class="o">|</span> <span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">div</span><span class="p">()</span> <span class="o">|</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another way is to use ternary i.e.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mything</span> <span class="o">=</span> <span class="n">div</span><span class="p">()</span> <span class="k">if</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">span</span><span class="p">(</span><span class="n">class</span><span class="o">-</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="section" id="id1">
 <h3>domonic.html<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Generate HTML using python 3</p>
@@ -765,6 +797,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#data-tags">data-tags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fugly">fugly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#createelement">createElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#magic-methods">Magic methods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
