@@ -154,13 +154,12 @@ but this means they are now rendered and can't be edited.
 
 **OR**
 
-If other is antying it is returned. Othewise it returns self
+If other is anything, it is returned. Otherwise it returns self
 
 .. code-block :: python
 
-	from domonic.html import *
-
-	print(div() | False)
+    from domonic.html import *
+    print(div() | False)
     print(div() | True)
 
 
