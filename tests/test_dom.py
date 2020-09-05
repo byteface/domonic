@@ -27,31 +27,26 @@ class domonicTestCase(unittest.TestCase):
         # n.baseURI = 'eventual.technology'
         # n.baseURIObject = None
         # n.isConnected = True
-        # n.localName = None
         # n.namespaceURI = "http://www.w3.org/1999/xhtml"
-        # n.nextSibling = None
         # n.nodePrincipal = None
         # n.outerText = None
         # n.ownerDocument = None
-        # n.parentElement = None
-        # n.parentNode = None
         # n.prefix = None  # 🗑️
-        # n.previousSibling = None
         # n.rootNode = None
 
         b = Node()
         n.appendChild(b)
-        self.assertEqual(True, n.hasChildNodes())
+        self.assertEqual(True, n.hasChildNodes)
 
         c = Node()
         n.appendChild(c)
-        self.assertEqual(c, n.lastChild())
-        self.assertEqual(b, n.firstChild())
-        self.assertEqual(2, n.childElementCount())
-        self.assertEqual(True, b in n.childNodes())
-        self.assertEqual(True, c in n.childNodes())
+        self.assertEqual(c, n.lastChild)
+        self.assertEqual(b, n.firstChild)
+        self.assertEqual(2, n.childElementCount)
+        self.assertEqual(True, b in n.childNodes)
+        self.assertEqual(True, c in n.childNodes)
         self.assertEqual(None, n.localName)  # obsolete if not a tag or attribute should return none
-        self.assertEqual(2, len(n.children()))
+        self.assertEqual(2, len(n.children))
         self.assertEqual(None, n.nodeValue)
         # print(n.nodeType())
         d = div("test")
@@ -62,7 +57,7 @@ class domonicTestCase(unittest.TestCase):
         self.assertEqual(True, n.contains(c))
 
         n.insertBefore(d, c)
-        self.assertEqual(True, n.children()[1] == d)
+        self.assertEqual(True, n.children[1] == d)
 
         self.assertEqual(True, n.contains(c))
         n.removeChild(c)
@@ -70,9 +65,9 @@ class domonicTestCase(unittest.TestCase):
 
         # print( n.replaceChild(self, newChild, oldChild) )
         n2 = n.cloneNode()
-        # print(len(n2.children()))
-        self.assertEqual(True, len(n2.children()) == 2)
-        self.assertEqual(False, n.children() == n2.children())
+        # print(len(n2.children))
+        self.assertEqual(True, len(n2.children) == 2)
+        self.assertEqual(False, n.children == n2.children)
         self.assertEqual(True, n.isSameNode(n))
         self.assertEqual(False, n.isSameNode(n2))
         a1 = div("hi")
@@ -98,10 +93,14 @@ class domonicTestCase(unittest.TestCase):
         print(myobj)
         self.assertEqual(True, str(myobj) == '<div class="mytest" style="float:left;"></div>')
 
-        mylist = li()/10
+        mylist = li() / 10
         myobj = domonic.domonify(domonic.parse(mylist))
         print(myobj)
-        
+
+        myorderedlist = ol()
+        myorderedlist += str(li() / 10)
+        print(myorderedlist)
+
         # compareDocumentPosition()
         # getRootNode()
         # isDefaultNamespace()
@@ -116,18 +115,27 @@ class domonicTestCase(unittest.TestCase):
         sometag = div("asdfasdf", div(), div("yo"), _id="test")
         somenewdiv = div('im new')
         sometag.appendChild(somenewdiv)
-        print('>>>>', sometag.args[0])
+
+        print("parent tests")
+        print(somenewdiv.parentNode)
+        print(type(somenewdiv.parentNode))
+        print(somenewdiv.parentNode.id)
+        print(somenewdiv.parentElement)
+        print(somenewdiv.previousSibling)
+        print(somenewdiv.previousSibling.nextSibling)
+        
+        # print('>>>>', sometag.args[0])
         # print('>>>>',sometag)
-        print('>>>>', sometag.lastChild())
-        print('>>>>', sometag.content)
+        # print('>>>>', sometag.lastChild())
+        # print('>>>>', sometag.content)
 
-        import gc
-        import pprint
-        for r in gc.get_referents(somenewdiv):
-            pprint.pprint(r)
+        # import gc
+        # import pprint
+        # for r in gc.get_referents(somenewdiv):
+        #     pprint.pprint(r)
 
-        for r in gc.get_referents(sometag):
-            pprint.pprint(r)
+        # for r in gc.get_referents(sometag):
+        #     pprint.pprint(r)
 
     def test_dom_node_again(self):
         somebody = body("test", _class="why")  # .html("wn")
@@ -172,8 +180,8 @@ class domonicTestCase(unittest.TestCase):
         print(sometag.setAttribute('id', 'newid'))
         print(sometag)
 
-        print(sometag.lastChild())
-        print(sometag.hasChildNodes())
+        print(sometag.lastChild)
+        print(sometag.hasChildNodes)
         # print('>>',sometag.textContent()) # TODO - will have a think. either strip or render tagless somehow
 
         sometag.removeAttribute('id')
@@ -182,8 +190,8 @@ class domonicTestCase(unittest.TestCase):
         sometag.appendChild(footer('test'))
         print(sometag)
 
-        print(sometag.children())
-        print(sometag.firstChild())
+        print(sometag.children)
+        print(sometag.firstChild)
 
         htmltag = html()
         print(htmltag)
@@ -249,13 +257,8 @@ class domonicTestCase(unittest.TestCase):
 
     # def test_dom_Node():
         # TODO - tests all below
-        # contains
-        # insertBefore
-        # removeChild
+        # contains - probably need more recursive testing
         # replaceChild
-        # cloneNode
-        # isSameNode
-        # isEqualNode
         # anchors
 
 if __name__ == '__main__':

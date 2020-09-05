@@ -43,14 +43,13 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 
-<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; events &quot;&quot;&quot;</span>
 
     <span class="c1"># Event(&quot;look&quot;, {&quot;bubbles&quot;:true, &quot;cancelable&quot;:false});</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># print(&#39;type&#39;, _type)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">_type</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">bubbles</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cancelable</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cancelBubble</span> <span class="o">=</span> <span class="kc">None</span>
@@ -64,10 +63,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">returnValue</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">srcElement</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
-        
         <span class="c1"># ms = time.time_ns() // 1000000 3.7 up</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timeStamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
-        
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeStamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span> 
 
     <span class="k">def</span> <span class="nf">composedPath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
@@ -91,7 +88,7 @@
         <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; mouse events &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -129,7 +126,7 @@
     <span class="c1"># which Returns which mouse button was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent</span>
 
 
-<div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; keyboard events &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -158,20 +155,20 @@
     <span class="c1"># repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent</span>
 
 
-<div class="viewcode-block" id="UiEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.UiEvent">[docs]</a><span class="k">class</span> <span class="nc">UiEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="UiEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.UiEvent">[docs]</a><span class="k">class</span> <span class="nc">UiEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; UiEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="FocusEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.FocusEvent">[docs]</a><span class="k">class</span> <span class="nc">FocusEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="FocusEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.FocusEvent">[docs]</a><span class="k">class</span> <span class="nc">FocusEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; FocusEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="TouchEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.TouchEvent">[docs]</a><span class="k">class</span> <span class="nc">TouchEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TouchEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.TouchEvent">[docs]</a><span class="k">class</span> <span class="nc">TouchEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; TouchEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shiftKey</span> <span class="o">=</span> <span class="kc">None</span>
@@ -191,7 +188,7 @@
         <span class="sd">&quot;&quot;&quot; Returns a list of all the touch objects that are currently in contact with the surface &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="WheelEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.WheelEvent">[docs]</a><span class="k">class</span> <span class="nc">WheelEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="WheelEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.WheelEvent">[docs]</a><span class="k">class</span> <span class="nc">WheelEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; WheelEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deltaX</span> <span class="o">=</span> <span class="kc">None</span>
@@ -204,7 +201,7 @@
         <span class="sd">&quot;&quot;&quot; Returns a number that represents the unit of measurements for delta values (pixels, lines or pages) &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="AnimationEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.AnimationEvent">[docs]</a><span class="k">class</span> <span class="nc">AnimationEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="AnimationEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.AnimationEvent">[docs]</a><span class="k">class</span> <span class="nc">AnimationEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; AnimationEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">animationName</span> <span class="o">=</span> <span class="kc">None</span>
@@ -215,17 +212,18 @@
         <span class="sd">&quot;&quot;&quot; Returns the name of the pseudo-element of the animation &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="ClipboardEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.ClipboardEvent">[docs]</a><span class="k">class</span> <span class="nc">ClipboardEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ClipboardEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.ClipboardEvent">[docs]</a><span class="k">class</span> <span class="nc">ClipboardEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ClipboardEvent &quot;&quot;&quot;</span>
     <span class="n">COPY</span> <span class="o">=</span> <span class="s2">&quot;oncopy&quot;</span>  <span class="c1"># The event occurs when the user copies the content of an element</span>
     <span class="n">CUT</span> <span class="o">=</span> <span class="s2">&quot;oncut&quot;</span>  <span class="c1"># The event occurs when the user cuts the content of an element</span>
     <span class="n">PASTE</span> <span class="o">=</span> <span class="s2">&quot;onpaste&quot;</span>  <span class="c1"># The event occurs when the user pastes some content in an element</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clipboardData</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns an object containing the data affected by the clipboard operation &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; DragEvent &quot;&quot;&quot;</span>
     <span class="n">DRAG</span> <span class="o">=</span> <span class="s2">&quot;ondrag&quot;</span>  <span class="c1"># The event occurs when an element is being dragged</span>
     <span class="n">END</span> <span class="o">=</span> <span class="s2">&quot;ondragend&quot;</span>  <span class="c1"># The event occurs when the user has finished dragging an element</span>
@@ -234,14 +232,16 @@
     <span class="n">OVER</span> <span class="o">=</span> <span class="s2">&quot;ondragover&quot;</span>  <span class="c1"># The event occurs when the dragged element is over the drop target</span>
     <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;ondragstart&quot;</span>  <span class="c1"># The event occurs when the user starts to drag an element</span>
     <span class="n">DROP</span> <span class="o">=</span> <span class="s2">&quot;ondrop&quot;</span>  <span class="c1"># The event occurs when the dragged element is dropped on the drop target</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataTransfer</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the data that is dragged/dropped &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="HashChangeEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.HashChangeEvent">[docs]</a><span class="k">class</span> <span class="nc">HashChangeEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="HashChangeEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.HashChangeEvent">[docs]</a><span class="k">class</span> <span class="nc">HashChangeEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; HashChangeEvent &quot;&quot;&quot;</span>
     <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;onhashchange&quot;</span>  <span class="c1"># The event occurs when there has been changes to the anchor part of a URL</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">newURL</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the URL of the document, after the hash has been changed &quot;&quot;&quot;</span>
@@ -249,7 +249,7 @@
         <span class="sd">&quot;&quot;&quot; Returns the URL of the document, before the hash was changed &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="InputEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.InputEvent">[docs]</a><span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="InputEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.InputEvent">[docs]</a><span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; InputEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
@@ -264,21 +264,21 @@
         <span class="sd">&quot;&quot;&quot; Returns whether the state of the event is composing or not &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="PageTransitionEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.PageTransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">PageTransitionEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PageTransitionEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.PageTransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">PageTransitionEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; PageTransitionEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persisted</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns whether the webpage was cached by the browser &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="PopStateEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.PopStateEvent">[docs]</a><span class="k">class</span> <span class="nc">PopStateEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PopStateEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.PopStateEvent">[docs]</a><span class="k">class</span> <span class="nc">PopStateEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; PopStateEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns an object containing a copy of the history entries &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="StorageEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.StorageEvent">[docs]</a><span class="k">class</span> <span class="nc">StorageEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="StorageEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.StorageEvent">[docs]</a><span class="k">class</span> <span class="nc">StorageEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; StorageEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
@@ -293,16 +293,24 @@
         <span class="sd">&quot;&quot;&quot; Returns the URL of the changed item&#39;s document &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="TransitionEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.TransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">TransitionEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TransitionEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.TransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">TransitionEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; TransitionEvent &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>        
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">propertyName</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot; Returns the name of the transition&quot;&quot;&quot;</span> 
+        <span class="sd">&quot;&quot;&quot; Returns the name of the transition&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elapsedTime</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot;  Returns the number of seconds a transition has been running &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pseudoElement</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the name of the pseudo-element of the transition &quot;&quot;&quot;</span></div>
 
+
+<div class="viewcode-block" id="CustomEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.CustomEvent">[docs]</a><span class="k">class</span> <span class="nc">CustomEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; CustomEvent &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">initCustomEvent</span><span class="p">():</span>
+        <span class="k">pass</span></div>
 
 
 <span class="c1"># bubbles   Returns whether or not a specific event is a bubbling event Event</span>

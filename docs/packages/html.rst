@@ -178,6 +178,17 @@ Another way is to use ternary i.e.
 	mything = div() if True else span(class-'warning')
 
 
+**In place add/minus**
+
+You can add to or remove from the children of a Node with the inplace operators
+
+.. code-block :: python
+
+    myorderedlist = ol()
+    myorderedlist += str(li() / 10)
+    print(myorderedlist)
+
+
 .. automodule:: domonic.html
     :members:
     :noindex:

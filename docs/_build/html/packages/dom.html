@@ -69,7 +69,24 @@
 <dl class="py method">
 <dt>
 <em class="property">property </em><code class="sig-name descname">body</code></dt>
-<dd><p>Sets or returns the document’s body (the &lt;body&gt; element)</p>
+<dd><p>returns the document’s body (the &lt;body&gt; element)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">characterSet</code></dt>
+<dd><p>Returns the character encoding for the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">charset</code></dt>
+<dd><p>Use characterSet instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Returns the character encoding for the document. Deprecated</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -87,7 +104,8 @@
 <dl class="py method">
 <dt>
 <em class="property">static </em><code class="sig-name descname">createElement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.createElement"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Creates an Element node - WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have features</p>
+<dd><p>Creates an Element node -
+WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have features</p>
 </dd></dl>
 
 <dl class="py method">
@@ -148,6 +166,12 @@
 <dt>
 <em class="property">property </em><code class="sig-name descname">images</code></dt>
 <dd><p>Returns a collection of all &lt;img&gt; elements in the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.implementation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the DOMImplementation object that handles this document</p>
 </dd></dl>
 
 <dl class="py method">
@@ -218,7 +242,7 @@
 <dd><p>Baseclass for all html tags</p>
 <dl class="py method">
 <dt>
-<code class="sig-name descname">attributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/domonic/dom.html#Element.attributes"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">attributes</code></dt>
 <dd><p>Returns a List of an element’s attributes</p>
 </dd></dl>
 
@@ -231,7 +255,7 @@
 <dl class="py method">
 <dt>
 <em class="property">property </em><code class="sig-name descname">classList</code></dt>
-<dd><p>Sets or returns the value of the classList attribute of an element</p>
+<dd><p>Returns the value of the classList attribute of an element</p>
 </dd></dl>
 
 <dl class="py method">
@@ -248,25 +272,25 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">clientHeight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.clientHeight"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">clientHeight</code></dt>
 <dd><p>Returns the height of an element, including padding</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">clientLeft</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.clientLeft"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">clientLeft</code></dt>
 <dd><p>Returns the width of the left border of an element</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">clientTop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.clientTop"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">clientTop</code></dt>
 <dd><p>Returns the width of the top border of an element</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">clientWidth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.clientWidth"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">clientWidth</code></dt>
 <dd><p>Returns the width of an element, including padding</p>
 </dd></dl>
 
@@ -398,6 +422,12 @@
 
 <dl class="py method">
 <dt>
+<code class="sig-name descname">lang</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.lang"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets or returns the value of the lang attribute of an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname">lastElementChild</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.lastElementChild"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns the last child element of an element</p>
 </dd></dl>
@@ -410,13 +440,13 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">nextElementSibling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.nextElementSibling"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">nextElementSibling</code></dt>
 <dd><p>Returns the next element at the same node tree level</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">nextSibling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.nextSibling"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">nextSibling</code></dt>
 <dd><p>Returns the next node at the same node tree level</p>
 </dd></dl>
 
@@ -464,25 +494,19 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">parentElement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.parentElement"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">parentElement</code></dt>
 <dd><p>Returns the parent element node of an element</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">parentNode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.parentNode"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns the parent node of an element</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">previousElementSibling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.previousElementSibling"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">previousElementSibling</code></dt>
 <dd><p>Returns the previous element at the same node tree level</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">previousSibling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.previousSibling"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">previousSibling</code></dt>
 <dd><p>Returns the previous node at the same node tree level</p>
 </dd></dl>
 
@@ -512,7 +536,7 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">removeAttributeNode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttributeNode"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">removeAttributeNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttributeNode"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Removes a specified attribute node, and returns the removed node</p>
 </dd></dl>
 
@@ -608,19 +632,19 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">childElementCount</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.childElementCount"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">childElementCount</code></dt>
 <dd><p>Returns the number of child elements an element has</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">childNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.childNodes"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">childNodes</code></dt>
 <dd><p>Returns a collection of an element’s child nodes (including text and comment nodes)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.children"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">children</code></dt>
 <dd><p>Returns a collection of an element’s child element (excluding text and comment nodes)</p>
 </dd></dl>
 
@@ -638,13 +662,13 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">firstChild</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.firstChild"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">firstChild</code></dt>
 <dd><p>Returns the first child node of an element</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">hasChildNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.hasChildNodes"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">hasChildNodes</code></dt>
 <dd><p>Returns true if an element has any child nodes, otherwise false</p>
 </dd></dl>
 
@@ -668,7 +692,7 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">lastChild</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.lastChild"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">lastChild</code></dt>
 <dd><p>Returns the last child node of an element</p>
 </dd></dl>
 
@@ -680,7 +704,7 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">nodeType</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.nodeType"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">property </em><code class="sig-name descname">nodeType</code></dt>
 <dd><p>Returns the node type of a node</p>
 </dd></dl>
 
@@ -702,12 +726,33 @@
 <dd><p>Replaces a child node within the given (parent) node.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">rootNode</code></dt>
+<dd><p>[read-only property returns a Node object representing the topmost node in the tree,
+or the current node if it’s the topmost node in the tree]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the topmost Node in the tree]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference internal" href="autodocs.html#domonic.dom.Node" title="domonic.dom.Node">Node</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">ParentNode</code><a class="reference internal" href="../_modules/domonic/dom.html#ParentNode"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>not tested yet</p>
 </dd></dl>
 
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">ShadowRoot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">host</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'open'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ShadowRoot"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>propert on element that has hidden DOM</p>
+<dd><p>property on element that has hidden DOM</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname">caretPositionFromPoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ShadowRoot.caretPositionFromPoint"><span class="viewcode-link">[source]</span></a></dt>
@@ -779,6 +824,11 @@ or the current position of the caret.</p>
 </dd></dl>
 
 </dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">CustomEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#CustomEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
 
 <dl class="py class">
 <dt>

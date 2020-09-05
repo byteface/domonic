@@ -19,7 +19,6 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-
 def do_things(arguments):
     from domonic.terminal import TerminalException
     try:
@@ -38,8 +37,8 @@ def do_things(arguments):
 
         from domonic.html import render
         from domonic.utils import Utils
-        print("filename:", Utils.url2file(arguments.download) )
-        render(page, Utils.url2file(arguments.download) )
+        print("filename:", Utils.url2file(arguments.download))
+        render(page, Utils.url2file(arguments.download))
 
     if arguments.help is True:
         import webbrowser

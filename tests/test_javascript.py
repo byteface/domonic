@@ -378,7 +378,6 @@ class domonicTestCase(unittest.TestCase):
         # myarr.some()
         pass
 
-
     def test_javascript_interval(self):
 
         def hi():
@@ -387,14 +386,18 @@ class domonicTestCase(unittest.TestCase):
 
         test = window.setInterval( hi, 1 )
         print('im going to do some stuff in the background')
-        
+
         # keep the test open to see if the intervals fire
         import time
         time.sleep(2)
-        
+
         print('running')
         window.clearInterval(test)
         print('ran')
+
+    def test_javascript_Number(self):
+        print(Number.MAX_VALUE)
+        pass
 
 
 if __name__ == '__main__':

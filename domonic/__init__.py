@@ -7,7 +7,7 @@
     - Call Terminal commands using python 3 (this one requires a nix machine)
 """
 
-__version__ = "0.2.5"
+__version__ = "0.2.6"
 __license__ = 'MIT'
 
 # from typing import *
@@ -43,7 +43,8 @@ class domonic:
     def get(url: str):
         """ downloads html and converts to domonic """
         r = requests.get(url)
-        return domonic.parse(r.text)
+        # print(r.text.decode("utf-8"))
+        return domonic.parse(r.content.decode("utf-8"))
 
     @staticmethod
     def output(domonic):

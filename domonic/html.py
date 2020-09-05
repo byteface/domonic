@@ -152,6 +152,18 @@ class tag(object):
             return other
         return self
 
+    def __iadd__(self, item):
+        """ adds an item to the nodes of children """
+        self.args = self.args + (item,)
+        return self
+
+    def __isub__(self, item):
+        """ removes an item from the list of children """
+        replace_args = list(self.args)
+        replace_args.remove(item)
+        self.args = tuple(replace_args)
+        return self
+
     # def __repr__(self):
     #     return f"<{self.name}{self.attributes}>{self.content}</{self.name}>"
 

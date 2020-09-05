@@ -5,6 +5,7 @@
 """
 
 # from typing import *
+import sys
 import urllib.parse
 from dateutil.parser import parse
 import datetime
@@ -944,6 +945,31 @@ class Navigator(object):
     # userAgent Returns the user-agent header sent by the browser to the server Navigator
 
 
+class Number(float):
+    """ javascript Number """
+
+    # print(sys.float_info)
+    MAX_VALUE = list(sys.float_info)[0]
+    MIN_VALUE = list(sys.float_info)[3]
+    # NEGATIVE_INFINITY Represents negative infinity (returned on overflow) Number
+    # POSITIVE_INFINITY Represents infinity (returned on overflow)  Number
+
+    # def __init__(self, x="", *args, **kwargs):
+    # self.x = x
+
+    # def isInteger(self):
+    # """ Checks whether a value is an integer """
+    # if type(x) == int:
+    # return True
+    # return False
+
+# isSafeInteger()   Checks whether a value is a safe integer    Number
+# prototype Allows you to add properties and methods to an object   Number
+# toExponential()   Converts a number into an exponential notation  Number
+# toFixed(x)    Formats a number with x numbers of digits after the decimal point   Number
+# toPrecision(x)    Formats a number to x length    Number
+
+
 class String(object):
     """ javascript string """
 
@@ -1059,7 +1085,7 @@ class URL(object):
         self.hash = ''
 
     def toString(self):
-        return self.href
+        return str(self.href)
 
     # def toJson
 
@@ -1155,120 +1181,51 @@ class URL(object):
 # BELOW is legacy data from a dump of ALL dom/js methods. was looking for useful things to port back when this was the only class.
 # -- leave here for now- ill delete stuff later. it reminds me what i haven't covered
 
-# clipboardData Returns an object containing the data affected by the clipboard operation   ClipboardData
-
-# back()    Loads the previous URL in the history list  History
-
-# charAt()  Returns the character at the specified index (position) String
-
-# charCodeAt()  Returns the Unicode of the character at the specified index String
-
-# clear()   Clears the console  Console, Storage
-
-# clearWatch()  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    Geolocation
-
-# coordinates   Returns the position and altitude of the device on Earth    Geolocation
-
-# copyWithin()  Copies array elements within the array, to and from specified positions Array
-
-# debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements
-
-# detail    Returns a number that indicates how many times the mouse was clicked    UiEvent
-
-# elapsedTime   Returns the number of seconds a transition has been running
-
-# entries() Returns a key/value pair Array Iteration Object Array
-
-# error()   Outputs an error message to the console Console
-
-# every()   Checks if every element in an array pass a test Array
-
-# exec()    Tests for a match in a string. Returns the first match  RegExp
-
-# filter()  Creates a new array with every element in an array that pass a test Array
-
-# find()    Returns the value of the first element in an array that pass a test Array
-
-# findIndex()   Returns the index of the first element in an array that pass a test Array
-
-# forEach() Calls a function for each array element Array
-
-# forward() Loads the next URL in the history list  History
-
-# from()    Creates an array from an object Array
-
-# geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
-
-# getCurrentPosition()  Returns the current position of the device  Geolocation
-
-# getItem() Returns the value of the specified key name Storage
-
-# getNamedItem()    Returns a specified attribute node from a NamedNodeMap  Attribute
-
-# go()  Loads a specific URL from the history list  History
-
-# id    Sets or returns the value of the id attribute of an element Element
-
-# ignoreCase    Checks whether the "i" modifier is set  RegExp
-
-# isId  Returns true if the attribute is of type Id, otherwise it returns false Attribute
-
-# isInteger()   Checks whether a value is an integer    Number
-
-# isSafeInteger()   Checks whether a value is a safe integer    Number
-
-# item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection
-
-# key() Returns the name of the nth key in the storage  Storage
-
-# keys()    Returns a Array Iteration Object, containing the keys of the original array Array
-
-# language  Returns the language of the browser Navigator
-
-# match()   Searches a string for a match against a regular expression, and returns the matches String
-
-# MAX_VALUE Returns the largest number possible in JavaScript   Number
-
-# message   Sets or returns an error message (a string) Error
-
-# multiline Checks whether the "m" modifier is set  RegExp
-
-# MIN_VALUE Returns the smallest number possible in JavaScript  Number
-
-# namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection
-
-# NEGATIVE_INFINITY Represents negative infinity (returned on overflow) Number
-
-# onLine    Determines whether the browser is online    Navigator
-
 # origin    Returns the protocol, hostname and port number of a URL Location
-
+# clipboardData Returns an object containing the data affected by the clipboard operation   ClipboardData
+# back()    Loads the previous URL in the history list  History
+# charAt()  Returns the character at the specified index (position) String
+# charCodeAt()  Returns the Unicode of the character at the specified index String
+# clear()   Clears the console  Console, Storage
+# clearWatch()  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    Geolocation
+# coordinates   Returns the position and altitude of the device on Earth    Geolocation
+# copyWithin()  Copies array elements within the array, to and from specified positions Array
+# debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements
+# detail    Returns a number that indicates how many times the mouse was clicked    UiEvent
+# elapsedTime   Returns the number of seconds a transition has been running
+# entries() Returns a key/value pair Array Iteration Object Array
+# error()   Outputs an error message to the console Console
+# every()   Checks if every element in an array pass a test Array
+# exec()    Tests for a match in a string. Returns the first match  RegExp
+# filter()  Creates a new array with every element in an array that pass a test Array
+# find()    Returns the value of the first element in an array that pass a test Array
+# findIndex()   Returns the index of the first element in an array that pass a test Array
+# forEach() Calls a function for each array element Array
+# forward() Loads the next URL in the history list  History
+# from()    Creates an array from an object Array
+# geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
+# getCurrentPosition()  Returns the current position of the device  Geolocation
+# getItem() Returns the value of the specified key name Storage
+# getNamedItem()    Returns a specified attribute node from a NamedNodeMap  Attribute
+# go()  Loads a specific URL from the history list  History
+# id    Sets or returns the value of the id attribute of an element Element
+# ignoreCase    Checks whether the "i" modifier is set  RegExp
+# item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection
+# key() Returns the name of the nth key in the storage  Storage
+# keys()    Returns a Array Iteration Object, containing the keys of the original array Array
+# language  Returns the language of the browser Navigator
+# match()   Searches a string for a match against a regular expression, and returns the matches String
+# message   Sets or returns an error message (a string) Error
+# multiline Checks whether the "m" modifier is set  RegExp
+# namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection
+# onLine    Determines whether the browser is online    Navigator
 # position  Returns the position of the concerned device at a given time    Geolocation
-
 # positionError Returns the reason of an error occurring when using the geolocating device  Geolocation
-
 # positionOptions   Describes an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition() and Geolocation.watchPosition() Geolocation
-
-# POSITIVE_INFINITY Represents infinity (returned on overflow)  Number
-
 # removeItem()  Removes that key from the storage   Storage
-
-# prototype Allows you to add properties and methods to an object   Number
-
 # removeNamedItem() Removes a specified attribute node  Attribute
-
 # search    Sets or returns the querystring part of a URL   Location
-
 # setNamedItem()    Sets the specified attribute node (by name) Attribute
-
 # source    Returns the text of the RegExp pattern  RegExp
-
 # specified Returns true if the attribute has been specified, otherwise it returns false    Attribute
-
-# toExponential()   Converts a number into an exponential notation  Number
-
-# toFixed(x)    Formats a number with x numbers of digits after the decimal point   Number
-
-# toPrecision(x)    Formats a number to x length    Number
-
 # watchPosition()   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   Geolocation

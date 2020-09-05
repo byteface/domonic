@@ -16,7 +16,6 @@ class Event(object):
     def __init__(self, _type=None, *args, **kwargs):
         # print('type', _type)
         self.type = _type
-
         self.bubbles = None
         self.cancelable = None
         self.cancelBubble = None
@@ -30,10 +29,8 @@ class Event(object):
         self.returnValue = None
         self.srcElement = None
         self.target = None
-        
         # ms = time.time_ns() // 1000000 3.7 up
-        self.timeStamp = int(round(time.time() * 1000))
-        
+        self.timeStamp = int(round(time.time() * 1000)) 
 
     def composedPath(self):
         pass
@@ -186,6 +183,7 @@ class ClipboardEvent(object):
     COPY = "oncopy"  # The event occurs when the user copies the content of an element
     CUT = "oncut"  # The event occurs when the user cuts the content of an element
     PASTE = "onpaste"  # The event occurs when the user pastes some content in an element
+
     def __init__(self, *args, **kwargs):
         self.clipboardData = None
         """ Returns an object containing the data affected by the clipboard operation """
@@ -200,6 +198,7 @@ class DragEvent(object):
     OVER = "ondragover"  # The event occurs when the dragged element is over the drop target
     START = "ondragstart"  # The event occurs when the user starts to drag an element
     DROP = "ondrop"  # The event occurs when the dragged element is dropped on the drop target
+
     def __init__(self, *args, **kwargs):
         self.dataTransfer = None
         """ Returns the data that is dragged/dropped """
@@ -208,6 +207,7 @@ class DragEvent(object):
 class HashChangeEvent(object):
     """ HashChangeEvent """
     CHANGE = "onhashchange"  # The event occurs when there has been changes to the anchor part of a URL
+
     def __init__(self, *args, **kwargs):
         self.newURL = None
         """ Returns the URL of the document, after the hash has been changed """
@@ -261,14 +261,22 @@ class StorageEvent(object):
 
 class TransitionEvent(object):
     """ TransitionEvent """
-    def __init__(self, *args, **kwargs):        
+    def __init__(self, *args, **kwargs):
         self.propertyName = None
-        """ Returns the name of the transition""" 
+        """ Returns the name of the transition"""
         self.elapsedTime = None
         """  Returns the number of seconds a transition has been running """
         self.pseudoElement = None
         """ Returns the name of the pseudo-element of the transition """
 
+
+class CustomEvent(object):
+    """ CustomEvent """
+    def __init__(self, *args, **kwargs):
+        self.detail = None
+
+    def initCustomEvent():
+        pass
 
 
 # bubbles   Returns whether or not a specific event is a bubbling event Event

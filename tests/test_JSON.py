@@ -15,7 +15,7 @@ from domonic.JSON import *
 
 
 class domonicTestCase(unittest.TestCase):
-    
+
     SOMEJSON = '''
     { "items": [  
         {
@@ -60,10 +60,8 @@ class domonicTestCase(unittest.TestCase):
     ]
     '''
 
-
-
     def test_domonic_JSON(self):
-        
+
         #data = JSON.parse(SOMEJSON)
         #print(data)
 

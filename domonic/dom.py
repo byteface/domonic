@@ -58,33 +58,84 @@ class EventTarget:
 class Node(EventTarget):
     """ Element extends from Node """
 
+    ELEMENT_NODE = 1
+    TEXT_NODE = 3
+    CDATA_SECTION_NODE = 4
+    PROCESSING_INSTRUCTION_NODE = 7
+    COMMENT_NODE = 8
+    DOCUMENT_NODE = 9
+    DOCUMENT_TYPE_NODE = 10
+    DOCUMENT_FRAGMENT_NODE = 11
+
+    # The following constants have been deprecated and should not be used anymore.
+    # ATTRIBUTE_NODE = 2
+    # ENTITY_REFERENCE_NODE = 5
+    # ENTITY_NODE = 6
+    # NOTATION_NODE = 12
+
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
         self.baseURI = 'eventual.technology'
         # self.baseURIObject = None
         self.isConnected = True
-        # self.localName = None
         self.namespaceURI = "http://www.w3.org/1999/xhtml"
-        self.nextSibling = None
         # self.nodePrincipal = None
         self.outerText = None
         self.ownerDocument = None
-        self.parentElement = None
         self.parentNode = None
         self.prefix = None  # 🗑️
-        self.previousSibling = None
-        self.rootNode = None
+        self._update_parents()
         super().__init__(*args, **kwargs)
+
+    def __setattr__(self, name, value):
+        try:
+            if name == "args":
+                super(Node, self).__setattr__(name, value)
+                self._update_parents()
+                return
+        except Exception as e:
+            print(e)
+        super(Node, self).__setattr__(name, value)
+
+    def _update_parents(self):
+        ''' private. - TODO < check these docstrings don't export in docs
+        loops all children and sets self as parent.
+        cant do as decorator for now as that seems to breaks potential for json serialisation (see Style)
+        so will have to call manually whenever self.args are ammended.
+        '''
+        try:
+            for el in self.args:
+                if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
+                    el.parentNode = self
+        except Exception as e:
+            print('unable to update parent', e)
+
+    @property
+    def rootNode(self):
+        """[read-only property returns a Node object representing the topmost node in the tree,
+        or the current node if it's the topmost node in the tree]
+
+        Returns:
+            [Node]: [the topmost Node in the tree]
+        """
+        node = self
+        nxt = self.parentNode
+        while nxt is not None:
+            node = nxt
+            nxt = nxt.parentNode
+        return node
 
     def appendChild(self, item):
         """ Adds a new child node, to an element, as the last child node """
         self.args = self.args + (item,)
 
+    @property
     def hasChildNodes(self):
         """ Returns true if an element has any child nodes, otherwise false """
         return len(self.args) > 0
 
+    @property
     def lastChild(self):
         """ Returns the last child node of an element """
         try:
@@ -92,6 +143,7 @@ class Node(EventTarget):
         except Exception:
             return None
 
+    @property
     def firstChild(self):
         """ Returns the first child node of an element """
         try:
@@ -99,14 +151,17 @@ class Node(EventTarget):
         except Exception:
             return None
 
+    @property
     def childElementCount(self):
         """ Returns the number of child elements an element has """
         return len(self.args)
 
+    @property
     def childNodes(self):
         """ Returns a collection of an element's child nodes (including text and comment nodes) """
         return self.args
 
+    @property
     def children(self):
         """ Returns a collection of an element's child element (excluding text and comment nodes) """
         newlist = []
@@ -115,6 +170,7 @@ class Node(EventTarget):
                 newlist.append(each)
         return newlist
 
+    @property
     def nodeType(self):
         """ Returns the node type of a node """
         # pass
@@ -180,13 +236,14 @@ class Node(EventTarget):
         return new_node
 
     def removeChild(self, node):
-        ''' removes a child node from the DOM and returns the removed node.'''
+        """ removes a child node from the DOM and returns the removed node."""
         for count, each in enumerate(self.args):
             if type(each) == str:
                 continue
 
             if each == node:
                 n = node
+                n.parentNode = None
                 replace_args = list(self.args)
                 replace_args.remove(node)
                 self.args = tuple(replace_args)
@@ -199,11 +256,11 @@ class Node(EventTarget):
         return None
 
     def replaceChild(self, newChild, oldChild):
-        ''' Replaces a child node within the given (parent) node. '''
+        """ Replaces a child node within the given (parent) node. """
         for count, each in enumerate(self.args):
             if each == oldChild:
                 n = oldChild
-                self.removeChild(newChild)
+                self.removeChild(newChild)  # doc remove child?
                 self.args.remove(oldChild)
                 self.args.insert(count, newChild)
                 return n
@@ -215,7 +272,7 @@ class Node(EventTarget):
         return None
 
     def cloneNode(self, deep=True):
-        ''' Returns a copy. '''
+        """ Returns a copy. """
         import copy
         if deep:
             return copy.deepcopy(self)
@@ -223,15 +280,19 @@ class Node(EventTarget):
             return copy.copy(self)  # shallow copy
 
     def isSameNode(self, node):
-        ''' Checks if two elements are the same node '''
+        """ Checks if two elements are the same node """
         return (self == node)
 
     def isEqualNode(self, node):
-        ''' Checks if two elements are equal '''
+        """ Checks if two elements are equal """
         return (str(self) == str(node))
 
+    def getRootNode(options=None):
+        # if options is not None:
+        # if options['composed'] = True:
+        return self.rootNode
+
         # compareDocumentPosition()
-        # getRootNode()
         # isDefaultNamespace()
         # lookupNamespaceURI()
         # lookupPrefix()
@@ -242,57 +303,55 @@ class Node(EventTarget):
     # setUserData() 🗑️
 
 
-class Console(object):
+class ParentNode(object):
+    """ not tested yet """
 
-    @staticmethod
-    def log(msg: str, substitute=None):
-        """log
+    def __init__(self):
+        super().__init__(*args, **kwargs)
 
-        prints a message to the console
+    # @property
+    # def childElementCount(self):
+    #     return len(self.args)
 
-        Args:
-            msg (str): msg to log
-            substitute (str): replace %s with this
-        """
-        if substitute is not None:
-            msg = substitute.join(msg.split('%s'))
-        print(msg)
+    # @property
+    # def children(self):
+    #     return self.args
 
-    def __init__(self, *args, **kwargs):
-        # self.args = args
-        # self.kwargs = kwargs
-        # self.log = lambda msg : print(msg)
-        # assert()
-        # clear()
-        # count()
-        # error()
-        # group()
-        # groupCollapsed()
-        # groupEnd()
-        # info()
-        # table()
-        # time()
-        # timeEnd()
-        # trace()
-        # warn()
-        pass
+    # @property
+    # def firstElementChild(self):
+    #     raise NotImplementedError
 
+    # @property
+    # def lastElementChild(self):
+    #     raise NotImplementedError
 
-console = Console
+    def append(self, items):
+        self.args.extend(items)
+
+    def prepend(self):
+        self.args = items.extend(self.args)
+
+    def replaceChildren(self, children):
+        self.args = args
 
 
 class Attr(object):
 
     def __init__(self, name, *args, **kwargs):
-        # self.isId
         self.name = name
         self.value = ""
-        # self.value = value
         # self.specified
 
+    @property
+    def isId(self):
+        if self.name == "id":
+            return True
+        else:
+            return False
 
-class ShadowRoot(Node):
-    """ propert on element that has hidden DOM """
+
+class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the args/kwargs
+    """ property on element that has hidden DOM """
     def __init__(self, host, mode='open'):
         self.delegatesFocus = False
         self.host = host
@@ -303,22 +362,22 @@ class ShadowRoot(Node):
         Returns a Selection object representing the range of text selected by the user,
         or the current position of the caret.
         """
-        pass
+        raise NotImplementedError
 
     def elementFromPoint(self):
         """ Returns the topmost element at the specified coordinates. """
-        pass
+        raise NotImplementedError
 
     def elementsFromPoint(self):
         """ Returns an array of all elements at the specified coordinates. """
-        pass
+        raise NotImplementedError
 
     def caretPositionFromPoint(self):
         """
         Returns a CaretPosition object containing the DOM node containing the caret,
         and caret's character offset within that node.
         """
-        pass
+        raise NotImplementedError
 
 
 class Element(Node):
@@ -356,6 +415,7 @@ class Element(Node):
         # example
         # dom.getElementById("myAnchor").accessKey = "w";
 
+    @property
     def attributes(self) -> List:
         """ Returns a List of an element's attributes """
         return self.attributes
@@ -383,14 +443,14 @@ class Element(Node):
 
     @property
     def classList(self):
-        """ Sets or returns the value of the classList attribute of an element """
+        """ Returns the value of the classList attribute of an element """
         return self.getAttribute('class').split(' ')
 
     @classList.setter
     def classList(self, newname: str):
         """ Sets or returns the value of the classList attribute of an element """
-        # self.setAttribute('class', newid)
-        return
+        self.setAttribute('class', newname)
+        # raise NotImplementedError
 
     @property
     def className(self):
@@ -406,40 +466,44 @@ class Element(Node):
         """ Simulates a mouse-click on an element """
         # evt = MouseEvent('click', {'bubbles': True,'cancelable': True,'view': window});
         # TODO - don't if its cancelled
-        evt = Event('click')
+        evt = MouseEvent('click')
         return self.dispatchEvent(evt)
 
+    @property
     def clientHeight(self):
         """ Returns the height of an element, including padding """
         return self.style.height + self.style.paddingTop + self.style.paddingBottom
 
+    @property
     def clientLeft(self):
         """ Returns the width of the left border of an element """
         return self.style.left
 
+    @property
     def clientTop(self):
         """ Returns the width of the top border of an element """
         return self.style.top
 
+    @property
     def clientWidth(self):
         """ Returns the width of an element, including padding """
         return self.style.width + self.style.paddingLeft + self.style.paddingRight
 
     def compareDocumentPosition(self):
         """ Compares the document position of two elements """
-        pass
+        raise NotImplementedError
 
     def contentEditable(self):
         """ Sets or returns whether the content of an element is editable or not """
-        pass
+        raise NotImplementedError
 
     def dir(self):
         """ Sets or returns the value of the dir attribute of an element """
-        pass
+        raise NotImplementedError
 
     def exitFullscreen(self):
         """ Cancels an element in fullscreen mode """
-        pass
+        raise NotImplementedError
 
     def firstElementChild(self):
         """ Returns the first child element of an element """
@@ -450,7 +514,7 @@ class Element(Node):
 
     def focus(self):
         """ Gives focus to an element """
-        pass
+        raise NotImplementedError
 
     def getAttribute(self, attribute: str) -> str:
         '''Returns the specified attribute value of an element node'''
@@ -466,9 +530,9 @@ class Element(Node):
             return None
 
     def getAttributeNode(self, attribute: str) -> str:
-        '''Returns the specified attribute node'''
+        """ Returns the specified attribute node """
         try:
-            return f"{attribute}={self.kwargs[attribute]}"
+            return f"{attribute}={self.kwargs[attribute]}"  # TODO - Attr
         except Exception as e:
             print('failed to get attribute')
             print(e)
@@ -476,11 +540,11 @@ class Element(Node):
 
     def getBoundingClientRect(self):
         '''Returns the size of an element and its position relative to the viewport'''
-        pass
+        raise NotImplementedError
 
     def getElementsByClassName(self):
         '''Returns a collection of all child elements with the specified class name'''
-        pass
+        raise NotImplementedError
 
     def getElementsByTagName(self, tag: str) -> List:
         ''' Returns a collection of all child elements with the specified tag name '''
@@ -497,10 +561,8 @@ class Element(Node):
     def hasAttribute(self, attribute: str) -> str:
         '''Returns true if an element has the specified attribute, otherwise false'''
         try:
-
             if attribute[0:1] != '_':
                 attribute = '_' + attribute
-
             return attribute in self.kwargs.keys()
         except Exception as e:
             print('failed to get attribute')
@@ -530,27 +592,27 @@ class Element(Node):
 
     def insertAdjacentElement(self):
         '''Inserts a HTML element at the specified position relative to the current element'''
-        pass
+        raise NotImplementedError
 
     def insertAdjacentHTML(self):
         '''Inserts a HTML formatted text at the specified position relative to the current element'''
-        pass
+        raise NotImplementedError
 
     def insertAdjacentText(self):
         '''Inserts text into the specified position relative to the current element'''
-        pass
+        raise NotImplementedError
 
     def isContentEditable(self):
         ''' Returns true if the content of an element is editable, otherwise false'''
-        pass
+        raise NotImplementedError
 
     def isDefaultNamespace(self):
         '''Returns true if a specified namespaceURI is the default, otherwise false'''
-        pass
+        raise NotImplementedError
 
-    # def lang(self):
-        ''' Sets or returns the value of the lang attribute of an element'''
-        # pass
+    def lang(self):
+        """ Sets or returns the value of the lang attribute of an element """
+        return self.getAttribute('lang')
 
     def lastElementChild(self):
         ''' Returns the last child element of an element'''
@@ -563,72 +625,91 @@ class Element(Node):
         ''' Returns the namespace URI of an element'''
         pass
 
+    @property
     def nextSibling(self):
-        ''' Returns the next node at the same node tree level'''
-        pass
+        """ Returns the next node at the same node tree level """
+        if self.parentNode is not None:
+            for count, el in enumerate(self.parentNode.args):
+                if el is self and count < len(self.parentNode.args) - 1:
+                    return self.parentNode.args[count + 1]
+        return None
 
+    @property
     def nextElementSibling(self):
-        ''' Returns the next element at the same node tree level'''
-        pass
+        """ Returns the next element at the same node tree level """
+        if self.parentNode is not None:
+            for count, el in enumerate(self.parentNode.args):
+                if el is self and count < len(self.parentNode.args) - 1:
+                    if type(self.parentNode.args[count + 1]) is not str:
+                        return self.parentNode.args[count + 1]
+        return None
 
     def normalize(self):
         '''Joins adjacent text nodes and removes empty text nodes in an element'''
-        pass
+        raise NotImplementedError
 
     def offsetHeight(self):
         ''' Returns the height of an element, including padding, border and scrollbar'''
-        pass
+        raise NotImplementedError
 
     def offsetWidth(self):
         ''' Returns the width of an element, including padding, border and scrollbar'''
-        pass
+        raise NotImplementedError
 
     def offsetLeft(self):
         ''' Returns the horizontal offset position of an element'''
-        pass
+        raise NotImplementedError
 
     def offsetParent(self):
         ''' Returns the offset container of an element'''
-        pass
+        raise NotImplementedError
 
     def offsetTop(self):
         ''' Returns the vertical offset position of an element'''
-        pass
+        raise NotImplementedError
 
     def ownerDocument(self):
-        ''' Returns the root element (document object) for an element'''
-        pass
+        """ Returns the root element (document object) for an element """
+        return self.rootNode
 
-    def parentNode(self):
-        ''' Returns the parent node of an element'''
-        pass
-
+    @property
     def parentElement(self):
-        ''' Returns the parent element node of an element'''
-        pass
+        """ Returns the parent element node of an element """
+        return self.parentNode
 
+    @property
     def previousSibling(self):
-        ''' Returns the previous node at the same node tree level'''
-        pass
+        """ Returns the previous node at the same node tree level """
+        if self.parentNode is not None:
+            for count, el in enumerate(self.parentNode.args):
+                if el is self and count > 1:
+                    return self.parentNode.args[count - 1]
+        return None
 
+    @property
     def previousElementSibling(self):
-        ''' Returns the previous element at the same node tree level'''
-        pass
+        """ Returns the previous element at the same node tree level """
+        if self.parentNode is not None:
+            for count, el in enumerate(self.parentNode.args):
+                if el is self and count > 1:
+                    if type(self.parentNode.args[count - 1]) is not str:
+                        return self.parentNode.args[count - 1]
+        return None
 
     def querySelector(self):
         '''Returns the first child element that matches a specified CSS selector(s) of an element'''
-        pass
+        raise NotImplementedError
 
     def querySelectorAll(self):
-        '''Returns all child elements that matches a specified CSS selector(s) of an element'''
-        pass
+        """ Returns all child elements that matches a specified CSS selector(s) of an element """
+        raise NotImplementedError
 
     def remove(self):
-        '''Removes the element from the DOM'''
-        pass
+        """ Removes the element from the DOM """
+        raise NotImplementedError
 
     def removeAttribute(self, attribute: str):
-        '''Removes a specified attribute from an element'''
+        """ Removes a specified attribute from an element """
         try:
 
             if attribute[0:1] != '_':
@@ -639,36 +720,40 @@ class Element(Node):
             print('failed to remove!', e)
             pass
 
-    def removeAttributeNode(self):
-        '''Removes a specified attribute node, and returns the removed node'''
-        pass
+    def removeAttributeNode(self, attribute):  # untested
+        """ Removes a specified attribute node, and returns the removed node """
+        for each in self.kwargs:
+            if attribute == each:
+                val = self.kwargs[each]
+                del self.kwargs[each]
+                return Attr(attribute, val)
 
     def requestFullscreen(self):
-        '''Shows an element in fullscreen mode'''
-        pass
+        ''' Shows an element in fullscreen mode '''
+        raise NotImplementedError
 
     def scrollHeight(self):
-        ''' Returns the entire height of an element, including padding'''
-        pass
+        ''' Returns the entire height of an element, including padding '''
+        raise NotImplementedError
 
     def scrollIntoView(self):
         '''Scrolls the specified element into the visible area of the browser window'''
-        pass
+        raise NotImplementedError
 
     def scrollLeft(self):
         ''' Sets or returns the number of pixels an element's content is scrolled horizontally'''
-        pass
+        raise NotImplementedError
 
     def scrollTop(self):
         ''' Sets or returns the number of pixels an element's content is scrolled vertically'''
-        pass
+        raise NotImplementedError
 
     def scrollWidth(self):
         ''' Returns the entire width of an element, including padding'''
-        pass
+        raise NotImplementedError
 
     def setAttribute(self, attribute, value):
-        '''Sets or changes the specified attribute, to the specified value'''
+        """ Sets or changes the specified attribute, to the specified value """
         try:
             if attribute[0:1] != '_':
                 attribute = '_' + attribute
@@ -678,12 +763,12 @@ class Element(Node):
             print('failed to set attribute', e)
 
     def setAttributeNode(self, attr):
-        ''' Sets or changes the specified attribute node '''
+        """ Sets or changes the specified attribute node """
         self.setAttribute(attr.name, attr.value)
 
     @property
     def style(self):
-        ''' returns the value of the style attribute of an element'''
+        """ returns the value of the style attribute of an element """
         if self.__style is None:
             self.style = Style()
         return self.__style
@@ -694,7 +779,7 @@ class Element(Node):
         self.__style.__init__(self)  # to set the parent
 
     # def tabIndex(self):
-        ''' Sets or returns the value of the tabindex attribute of an element'''
+        # ''' Sets or returns the value of the tabindex attribute of an element'''
         # pass
 
     @property
@@ -703,30 +788,51 @@ class Element(Node):
 
     @property
     def textContent(self):
-        ''' Sets or returns the textual content of a node and its descendants'''
+        """ Sets or returns the textual content of a node and its descendants """
         # return f" {' '*len(self.name)}{' '*len(self.attributes)} {self.content}  {' '*len(self.name)} "
         return self.nodeValue
 
     @textContent.setter
     def textContent(self, content):
-        ''' Sets or returns the textual content of a node and its descendants'''
+        """ Sets or returns the textual content of a node and its descendants """
         # if type(content) is not str:
-            # raise ValueError()
+        # raise ValueError()
         self.nodeValue = content
 
     @property
     def title(self):
-        ''' Sets or returns the value of the title attribute of an element'''
+        """ Sets or returns the value of the title attribute of an element """
         return self.getAttribute('title')
 
     @title.setter
     def title(self, newtitle: str):
-        ''' Sets or returns the value of the title attribute of an element'''
+        """ Sets or returns the value of the title attribute of an element """
         self.setAttribute('title', newtitle)
 
     def toString(self):
-        '''Converts an element to a string'''
+        """ Converts an element to a string """
+        return str(self)
+
+
+class DOMImplementation(object):
+
+    def __init__(self):
         pass
+
+    def createDocument(self):
+        # return Document()
+        raise NotImplementedError
+
+    def createDocumentType():
+        raise NotImplementedError
+
+    def createHTMLDocument(self, title=None):
+        # return Document()
+        raise NotImplementedError
+
+    def hasFeatures(self):
+        # return Document()
+        raise NotImplementedError
 
 
 class Document(Element):
@@ -735,13 +841,11 @@ class Document(Element):
     def __init__(self, *args, **kwargs):
         # self.doc = doc
         # self.uri = uri
-        # self.args = args
-        # self.kwargs = kwargs
         # self.documentURI = uri
-        # self._documentElement
+        # self.documentElement = self
         # self.raw
         self.body = ""  # ??
-        pass
+        super().__init__(*args, **kwargs)
 
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)
@@ -784,7 +888,7 @@ class Document(Element):
 
     @property
     def body(self):
-        ''' Sets or returns the document's body (the <body> element)'''
+        """ returns the document's body (the <body> element) """
         # print("TESTING:::")
         # print(self)
         tag = "body"
@@ -795,7 +899,7 @@ class Document(Element):
 
     @body.setter
     def body(self, content):
-        ''' Sets or returns the document's body (the <body> element)'''
+        """ Sets the document's body (the <body> element) """
         # tag = "body"
         # reg = f"<{tag}.*?>(.+?)</{tag}>"
         # pattern = re.compile(reg)
@@ -805,20 +909,22 @@ class Document(Element):
         return
 
     # def close():
-        '''Closes the output stream previously opened with document.open()'''
+        """ Closes the output stream previously opened with document.open() """
         # return
 
     # def cookie():
-        ''' Returns all name/value pairs of cookies in the document'''
+        """ Returns all name/value pairs of cookies in the document """
         # return
 
-    # def charset():
-        ''' Deprecated. Use characterSet instead. Returns the character encoding for the document'''
-        # return
+    @property
+    def charset(self):
+        """ Returns the character encoding for the document. Deprecated: Use characterSet instead. """
+        return "UTF-8"
 
-    # def characterSet():
-        ''' Returns the character encoding for the document'''
-        # return
+    @property
+    def characterSet(self):
+        """ Returns the character encoding for the document """
+        return "UTF-8"
 
     @staticmethod
     def createAttribute(name):
@@ -837,7 +943,8 @@ class Document(Element):
 
     @staticmethod
     def createElement(_type):
-        ''' Creates an Element node - WARNING THIS WILL NOT CREATE A 'DOMONIC ELEMENT' (yet), so it wont have features '''
+        """ Creates an Element node -
+        WARNING THIS WILL NOT CREATE A 'DOMONIC ELEMENT' (yet), so it wont have features """
         # TODO - self closing tags - need a 'tag' factory. need the tags in .html package to register with it.
         from domonic.html import tag, tag_init
         el = type(_type, (tag, Element), {'name': _type, '__init__': tag_init})
@@ -904,32 +1011,32 @@ class Document(Element):
         return tags
 
     # def fullscreenElement():
-        ''' Returns the current element that is displayed in fullscreen mode'''
+        # ''' Returns the current element that is displayed in fullscreen mode'''
         # return
 
     # def fullscreenEnabled():
-        '''Returns a Boolean value indicating whether the document can be viewed in fullscreen mode'''
+        # '''Returns a Boolean value indicating whether the document can be viewed in fullscreen mode'''
         # return
 
     def getElementById(self):
         '''Returns the element that has the ID attribute with the specified value'''
-        return
+        raise NotImplementedError
 
     def getElementsByClassName(self):
         '''Returns a NodeList containing all elements with the specified class name'''
-        return
+        raise NotImplementedError
 
     def getElementsByName(self):
         '''Returns a NodeList containing all elements with a specified name'''
-        return
+        raise NotImplementedError
 
     # def hasFocus():
-        '''Returns a Boolean value indicating whether the document has focus'''
+        # '''Returns a Boolean value indicating whether the document has focus'''
         # return
 
     def head(self):
         ''' Returns the <head> element of the document'''
-        return
+        raise NotImplementedError
 
     @property
     def images(self):
@@ -940,20 +1047,20 @@ class Document(Element):
         tags = re.findall(pattern, str(self))
         return tags
 
-    # def implementation():
-        ''' Returns the DOMImplementation object that handles this document'''
-        # return
+    def implementation():
+        """ Returns the DOMImplementation object that handles this document """
+        return DOMImplementation()
 
     # def importNode():
-        '''Imports a node from another document'''
+        # '''Imports a node from another document'''
         # return
 
     # def inputEncoding():
-        ''' Returns the encoding, character set, used for the document'''
+        # ''' Returns the encoding, character set, used for the document'''
         # return
 
     # def lastModified():
-        ''' Returns the date and time the document was last modified'''
+        # ''' Returns the date and time the document was last modified'''
         # return
 
     def links(self):
@@ -966,11 +1073,11 @@ class Document(Element):
 
     def normalize(self):
         '''Removes empty Text nodes, and joins adjacent nodes'''
-        return
+        raise NotImplementedError
 
     def normalizeDocument(self):
         '''Removes empty Text nodes, and joins adjacent nodes'''
-        return
+        raise NotImplementedError
 
     # def open(self):
         '''Opens an HTML output stream to collect output from document.write()'''
@@ -978,11 +1085,11 @@ class Document(Element):
 
     def querySelector(self):
         '''Returns the first element that matches a specified CSS selector(s) in the document'''
-        return
+        raise NotImplementedError
 
     def querySelectorAll(self):
         '''Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document'''
-        return
+        raise NotImplementedError
 
     # def readyState(self):
         ''' Returns the (loading) status of the document'''
@@ -994,7 +1101,7 @@ class Document(Element):
 
     def renameNode(self, node, namespaceURI, nodename):
         '''Renames the specified node'''
-        return
+        raise NotImplementedError
 
     @property
     def scripts(self):
@@ -1056,11 +1163,11 @@ class Location():
 
     def origin(self):
         ''' Returns the protocol, hostname and port number of a URL'''
-        return
+        raise NotImplementedError
 
     def search(self):
         ''' Sets or returns the querystring part of a URL'''
-        return
+        raise NotImplementedError
 
     def assign(self, url: str = "") -> None:
         '''Loads a new document'''
@@ -1070,30 +1177,59 @@ class Location():
 
     def reload(self):
         '''Reloads the current document'''
-        return
+        raise NotImplementedError
 
     def replace(self):
         '''Replaces the current document with a new one'''
-        return
+        raise NotImplementedError
 
 
 location = Location
+
+
+class Console(object):
+
+    @staticmethod
+    def log(msg: str, substitute=None):
+        """log
+
+        prints a message to the console
+
+        Args:
+            msg (str): msg to log
+            substitute (str): replace %s with this
+        """
+        if substitute is not None:
+            msg = substitute.join(msg.split('%s'))
+        print(msg)
+
+    def __init__(self, *args, **kwargs):
+        # self.args = args
+        # self.kwargs = kwargs
+        # self.log = lambda msg : print(msg)
+        # assert()
+        # clear()
+        # count()
+        # error()
+        # group()
+        # groupCollapsed()
+        # groupEnd()
+        # info()
+        # table()
+        # time()
+        # timeEnd()
+        # trace()
+        # warn()
+        pass
+
+
+console = Console
 
 
 class dom(object):  # don't think this class is need now as the package is the 'dom'
     console = type('console', (console,), {'name': 'console'})
     location = type('location', (location,), {'name': 'location'})
     document = type('document', (document,), {'name': 'document'})
-
-    # @property
-    # def location(self):
-    #     print("! ===== ======= ============= ================= ============= !")
-    #     return self.location
-
-    # @location.setter
-    # def location(self, uri: str):
-    #     print("! ====== =========== ============== ============ ============ !")
-    #     self.location.uri = uri
 
     @property
     def console(self):
@@ -1123,10 +1259,4 @@ class dom(object):  # don't think this class is need now as the package is the '
         # self.window = type('window', (DOM,), {'name':'window'})
         # self.webstorage = type('webstorage', (DOM,), {'name':'webstorage'})
 
-        # self.element = self.el
-        # self.document = self.doc
-        # self.attribute = self.attr
         pass
-
-    # def __str__(self):
-        # return "<!DOCTYPE html>"

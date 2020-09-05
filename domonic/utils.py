@@ -134,6 +134,11 @@ class Utils(object):
         filename = urllib.parse.quote_plus(url, '')
         return filename
 
+    @staticmethod
+    def random_color(self):
+        r = lambda: random.randint(0, 255)
+        return str('#%02X%02X%02X' % (r(), r(), r()))
+
     # def any(arr):
     #     """ given a list. return 1 random item """
     #     return random.choice(arr)
