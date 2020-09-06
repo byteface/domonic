@@ -1,22 +1,22 @@
 from setuptools import setup
 
 with open("README.md", "r") as f:
-        long_description = f.read()
+        long_description=f.read()
 
-version = '0.2.6'
+version = '0.2.7'
 
 setup(
-  name = 'domonic',
-  version = version,
+  name='domonic',
+  version=version,
   author="@byteface",
   author_email="byteface@gmail.com",
   license="MIT",
-  url = 'https://github.com/byteface/domonic',
-  download_url = 'https://github.com/byteface/pypals/archive/'+version+'.tar.gz',
-  description = 'Generate html with python 3. DOM API and more...',
+  url='https://github.com/byteface/domonic',
+  download_url='https://github.com/byteface/pypals/archive/' + version + ' .tar.gz',
+  description='Generate html with python 3. DOM API and more...',
   long_description=long_description,
   long_description_content_type="text/markdown",
-  keywords = ['html', 'generate', 'templating', 'dom', 'terminal', 'json', 'web', 'template', 'javascript', 'DOM', 'GUI', 'render', 'website', 'apps', 'html5', 'template', 'framework'],
+  keywords=['html', 'generate', 'templating', 'dom', 'terminal', 'json', 'web', 'template', 'javascript', 'DOM', 'GUI', 'render', 'website', 'apps', 'html5', 'template', 'framework'],
   python_requires='>=3.6',
   classifiers=[
       "Programming Language :: Python :: 3",
@@ -46,6 +46,6 @@ setup(
   install_requires=[
           'requests', 'python-dateutil', 'urllib3'
   ],
-  packages = ['domonic'],
-  include_package_data = True,
+  packages=['domonic'],
+  include_package_data=True,
 )

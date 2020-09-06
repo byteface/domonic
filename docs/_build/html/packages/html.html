@@ -166,15 +166,52 @@
 </pre></div>
 </div>
 <p><strong>In place add/minus</strong></p>
-<p>You can add to or remove from the children of a Node with the inplace operators</p>
+<p>You can add to or remove from the children of a Node with the in-place operators…</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">myorderedlist</span> <span class="o">=</span> <span class="n">ol</span><span class="p">()</span>
 <span class="n">myorderedlist</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">li</span><span class="p">()</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">myorderedlist</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>This also works for text nodes but be aware the will be irreversibly flattened if you render…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a1</span> <span class="o">=</span> <span class="n">button</span><span class="p">()</span>
+<span class="n">a1</span> <span class="o">+=</span> <span class="s2">&quot;hi&quot;</span>
+<span class="n">a1</span> <span class="o">+=</span> <span class="s2">&quot;how&quot;</span>
+<span class="n">a1</span> <span class="o">+=</span> <span class="s2">&quot;are&quot;</span>
+<span class="n">a1</span> <span class="o">+=</span> <span class="s2">&quot;you&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+<span class="n">a1</span> <span class="o">-=</span> <span class="s2">&quot;hi&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You pass a dictionary to the right shift operator to add/update an attribute…
+(don’t forget underscore or it will error)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a1</span> <span class="o">=</span> <span class="n">img</span><span class="p">()</span>
+<span class="n">a1</span> <span class="o">&gt;&gt;</span> <span class="p">{</span><span class="s1">&#39;_src&#39;</span><span class="p">:</span> <span class="s2">&quot;http://www.someurl.com&quot;</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Access an elements children as if it was an array…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mylist</span> <span class="o">=</span> <span class="n">ul</span><span class="p">(</span><span class="n">li</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">li</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">li</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mylist</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>unpack children…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mylist</span> <span class="o">=</span> <span class="n">ul</span><span class="p">(</span><span class="n">li</span><span class="p">(),</span> <span class="n">li</span><span class="p">(),</span> <span class="n">li</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">mylist</span><span class="p">)</span>
+<span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">c1</span> <span class="o">=</span> <span class="n">ul</span><span class="p">(</span><span class="n">li</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">li</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">li</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+<span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">e1</span> <span class="o">=</span> <span class="n">button</span><span class="p">()</span> <span class="o">*</span> <span class="mi">5</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="section" id="id1">
 <h3>domonic.html<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Generate HTML using python 3</p>
+<dl class="py exception">
+<dt>
+<em class="property">exception </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">TemplateError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">error</span></em>, <em class="sig-param"><span class="n">message</span><span class="o">=</span><span class="default_value">'Templating error: '</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/html.html#TemplateError"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">a</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span></dt>

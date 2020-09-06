@@ -11,6 +11,7 @@ def parse_args():
     parser.add_argument('-d', '--download', help="Attempts to to generate domonic template from a webpage", type=str)
     # parser.add_argument('-t', '--tree', default=False, help="generate a tree view from a component", type=str)
     parser.add_argument('-h', '--help', action='store_true')  # launch the docs
+    parser.add_argument('-v', '--version', action='store_true')  # launch the docs
 
     # -- ideas
     # -- change all file extensions. from, to
@@ -43,6 +44,11 @@ def do_things(arguments):
     if arguments.help is True:
         import webbrowser
         webbrowser.open_new("https://domonic.readthedocs.io/")
+
+    if arguments.version is True:
+        from domonic import __version__
+        print(__version__)
+        return __version__
 
 
 if __name__ == "__main__":

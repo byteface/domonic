@@ -123,7 +123,34 @@ class domonicTestCase(unittest.TestCase):
         print(somenewdiv.parentElement)
         print(somenewdiv.previousSibling)
         print(somenewdiv.previousSibling.nextSibling)
-        
+
+        mylist = ul(li(1), li(2), li(3))
+        print(mylist[1])
+
+        mylist = ul(li(), li(), li())
+        print(*mylist)
+
+        a1, b1, c1 = ul(li(1), li(2), li(3))
+        print(a1)
+
+        a1, b1, c1, d1, e1 = button() * 5
+        print(a1, b1, c1, d1, e1)
+
+        # print(mylist[1] != mylist[1])
+        a1 = img()
+        a1 >> {'_src': "http://www.someurl.com"}
+        print(a1)
+
+        a1 = button()
+        a1 += "hi"
+        a1 += "how"
+        a1 += "are"
+        a1 += "you"
+        print(a1)
+        a1 -= "hi"
+        print(a1)
+        print(div(_test="1", **{"_brest-test":""}))
+
         # print('>>>>', sometag.args[0])
         # print('>>>>',sometag)
         # print('>>>>', sometag.lastChild())

@@ -3,7 +3,7 @@
     ====================================
     Generate HTML using python 3
 """
-
+import copy
 from domonic.javascript import URL
 from domonic.dom import Element, Document
 
@@ -26,42 +26,15 @@ def render(inp, outp=''):
     return str(inp)
 
 
-'''
 class TemplateError(IndexError):
-    def __init__(self, error, message="Your templating code has a common error:"):
+    def __init__(self, error, message="Templating error: "):
         self.error = error
-        if self.error == "list index out of range":
-            hint = "hint: a domonic attribute maybe missing underline on line:"
-        self.message = message + hint
+        self.hint = ""
+        print(self.error)
+        if str(self.error) == "list index out of range":
+            self.hint = "MISSING UNDERSCORE ON AN ATTRIBUTE"
+        self.message = message + self.hint
         super().__init__(self.message)
-
-
-class DomonicSyntaxError(SyntaxError):
-
-class DomonicTypeError(TypeError):
-
-class DomonicParseError(Exception):
-    """Exception raised due to incorrect formatting
-
-    Attributes:
-        error -- what caused the error
-        message -- explanation of the error
-    """
-    def __init__(self, error, message="Your templating code has a common error:"):
-        self.error = error
-
-        if self.error == "SyntaxError: invalid syntax":
-            hint = "hint: You are Missing a comma between attributes"
-
-        if self.error == "SyntaxError: positional argument follows keyword argument":
-            hint = "hint: You have to pass attributes LAST. and strings and objects first. *see docs*"
-
-        if self.error == "TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'":
-            hint = "hint: You are Missing a comma between attributes. i.e before the **{}"
-
-        self.message = message + hint
-        super().__init__(self.message)
-'''
 
 
 class tag(object):
@@ -70,20 +43,14 @@ class tag(object):
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
-        # try:
 
-        # print('tag: ', args, kwargs)
-        # TODO - dont render until called? put these on a function?
-        # self.name=""
-        self.content = ''.join([each.__str__() for each in args])
-
-        # try:
-        self.attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in kwargs.items()])
-
-        # except IndexError as e:
-        #     raise DomonicIndexError(e)
+        try:
+            self.content = ''.join([each.__str__() for each in args])
+            self.attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in kwargs.items()])
+        except IndexError as e:
+            raise TemplateError(e)
         # except Exception as e:
-        #     print(e)
+            # print(e)
 
     @property
     def content(self):  # TODO - test
@@ -96,12 +63,21 @@ class tag(object):
 
     @property
     def attributes(self):
-        return ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
+        try:
+            return ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
+        except IndexError as e:
+            raise TemplateError(e)
+        # except Exception as e:
+            # print(e)
 
     @attributes.setter
     def attributes(self, ignore):
-        self.__attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
-        return
+        try:
+            self.__attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
+        except IndexError as e:
+            raise TemplateError(e)
+        # except Exception as e:
+            # print(e)
 
     def __str__(self):
         return f"<{self.name}{self.attributes}>{self.content}</{self.name}>"
@@ -112,7 +88,6 @@ class tag(object):
         cells = cell()*10
         print(''.join([str(c) for c in cells]))
         """
-        import copy
         reproducer = []
         for i in range(other):
             reproducer.append(copy.deepcopy(self))
@@ -124,7 +99,6 @@ class tag(object):
         cells = cell()*10
         print(''.join([str(c) for c in cells]))
         """
-        import copy
         reproducer = []
         for i in range(other):
             reproducer.append(copy.deepcopy(self))
@@ -164,15 +138,24 @@ class tag(object):
         self.args = tuple(replace_args)
         return self
 
+    def __getitem__(self, index):
+        return self.args[index]
+
+    def __rshift__(self, item):
+        try:
+            for key in item.keys():
+                self.kwargs[key] = item[key]
+            return self
+        except Exception as e:
+            print(e)
+            raise ValueError
+
     # def __repr__(self):
     #     return f"<{self.name}{self.attributes}>{self.content}</{self.name}>"
 
-    # taken from my rank array on gist to use array accessors for reading content
     # def __repr__(self):
+        # """ use array accessors for reading children """
         # return repr([self.args])
-
-    # def __getitem__(self,index):
-        # return self.args[index]
 
     # def __setitem__(self,key,value):
         # self.args[key] = value
@@ -214,7 +197,10 @@ def Atag(self, *args, **kwargs):
     tag.__init__(self, *args, **kwargs)
     Element.__init__(self, *args, **kwargs)
     # TODO - fix BUG. this stops having no href on a tags
-    URL.__init__(self, url=kwargs['_href'])
+    if kwargs.get('_href', None) is not None:
+        URL.__init__(self, url=kwargs['_href'])
+    else:
+        URL.__init__(self, *args, **kwargs)
 
 
 def __update__(self, *args, **kwargs):

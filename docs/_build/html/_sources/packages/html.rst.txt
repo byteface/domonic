@@ -180,13 +180,57 @@ Another way is to use ternary i.e.
 
 **In place add/minus**
 
-You can add to or remove from the children of a Node with the inplace operators
+You can add to or remove from the children of a Node with the in-place operators...
 
 .. code-block :: python
 
     myorderedlist = ol()
     myorderedlist += str(li() / 10)
     print(myorderedlist)
+
+
+This also works for text nodes but be aware the will be irreversibly flattened if you render...
+
+.. code-block :: python
+
+    a1 = button()
+    a1 += "hi"
+    a1 += "how"
+    a1 += "are"
+    a1 += "you"
+    print(a1)
+    a1 -= "hi"
+    print(a1)
+
+
+You pass a dictionary to the right shift operator to add/update an attribute...
+(don't forget underscore or it will error)
+
+.. code-block :: python
+
+        a1 = img()
+        a1 >> {'_src': "http://www.someurl.com"}
+        print(a1)
+
+
+Access an elements children as if it was an array...
+
+.. code-block :: python
+
+        mylist = ul(li(1), li(2), li(3))
+        print(mylist[1])
+
+
+unpack children...
+
+.. code-block :: python
+
+        mylist = ul(li(), li(), li())
+        print(*mylist)
+        a1, b1, c1 = ul(li(1), li(2), li(3))
+        print(a1)
+        a1, b1, c1, d1, e1 = button() * 5
+        print(a1, b1, c1, d1, e1)
 
 
 .. automodule:: domonic.html
