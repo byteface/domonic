@@ -112,7 +112,7 @@ class domonicTestCase(unittest.TestCase):
         # setUserData() 🗑️
 
     def test_dom_node(self):
-        sometag = div("asdfasdf", div(), div("yo"), _id="test")
+        sometag = div("asdfasdf", div(), div("yo"), _id="test", _thingy="test22")
         somenewdiv = div('im new')
         sometag.appendChild(somenewdiv)
 
@@ -148,8 +148,16 @@ class domonicTestCase(unittest.TestCase):
         a1 += "you"
         print(a1)
         a1 -= "hi"
-        print(a1)
-        print(div(_test="1", **{"_brest-test":""}))
+        # print(a1)
+        # print(div(_test="1", **{"_data-test": ""}))
+
+        print(sometag.id)
+        # print(sometag.style.color)  # TODO - get on style
+
+        print(sometag._thingy)
+        print(sometag.thingy)
+        # print(10/sometag)
+
 
         # print('>>>>', sometag.args[0])
         # print('>>>>',sometag)

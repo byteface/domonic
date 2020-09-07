@@ -111,7 +111,23 @@ class tag(object):
             reproducer.append(str(self))
         return ''.join(reproducer)
 
+    def __rtruediv__(self, other):
+        """ use to render clones without having to parse commas yourself """
+        reproducer = []
+        for i in range(other):
+            reproducer.append(str(self))
+        return ''.join(reproducer)
+
     def __div__(self, other):
+        """
+        useful for prototyping as renders. to retain objects use multiply
+        """
+        reproducer = []
+        for i in range(other):
+            reproducer.append(str(self))
+        return ''.join(reproducer)
+
+    def __rdiv__(self, other):
         """
         useful for prototyping as renders. to retain objects use multiply
         """
@@ -150,20 +166,36 @@ class tag(object):
             print(e)
             raise ValueError
 
-    # def __repr__(self):
-    #     return f"<{self.name}{self.attributes}>{self.content}</{self.name}>"
+    def __getattr__(self, attr):
+        """
+        allows dot notation for reading attributes
+        *credit to the peeps on discord/python for this one*
+        """
+        kwargs = super().__getattribute__('kwargs')
+
+        if attr in kwargs:
+            return kwargs[attr]
+
+        retry = "_" + attr
+        if retry in kwargs:
+            return kwargs[retry]
+
+        retry = attr[1:len(attr)]
+        if retry in kwargs:
+            return kwargs[retry]
+
+        raise AttributeError
 
     # def __repr__(self):
-        # """ use array accessors for reading children """
-        # return repr([self.args])
+    #     return f"<{self.name}{self.attributes}>{self.content}</{self.name}>"
 
     # def __setitem__(self,key,value):
         # self.args[key] = value
         # print(self.args[key])
 
-    # TODO - consider with?
     # def __enter__(self):
     # def __exit__(self ,type, value, traceback):
+    # def __dir__/__getattr__/__getattribute)) - .... dot notation for attributes
 
 
 class closed_tag(tag):
