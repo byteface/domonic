@@ -139,6 +139,9 @@ class Utils(object):
         r = lambda: random.randint(0, 255)
         return str('#%02X%02X%02X' % (r(), r(), r()))
 
+    # truncate()
+    # return mystr + "..."
+
     # def any(arr):
     #     """ given a list. return 1 random item """
     #     return random.choice(arr)

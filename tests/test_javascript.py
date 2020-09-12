@@ -399,6 +399,75 @@ class domonicTestCase(unittest.TestCase):
         print(Number.MAX_VALUE)
         pass
 
+    def test_javascript_fetch(self):
+        # return
+
+        urls = ['http://www.google.com']
+
+        # print('run 1')
+        # results = window.fetch( urls )
+        # print(results)
+        # for r in results:
+            # print(r)
+
+        # print('run 2')
+        # results = window.fetch_threaded( urls )
+        # print(results)
+        # for r in results:
+            # print(r)
+
+        # print('run 3')
+        # results = window.fetch_pooled( urls )
+        # print(results)
+        # for r in results:
+            # print(r)
+
+        # print('run 4')
+        # results = window.fetch( urls )
+        # print(results)
+        # for r in results:
+            # print(r)
+
+        print('ran ===')
+
+        # TEST REGULAR
+
+        # def get_things():
+        #     global _results
+        #     _results = window.fetch( urls )
+        #     print('sup::', _results)
+        # print('BEFORE')
+        # test = window.setTimeout( get_things, 2000 )
+        # test = window.setInterval( get_things, 2000 )
+        # print('AFTER')
+        # print(_results)
+        # import time
+        # time.sleep(4)
+        # print('LATER')
+        # print(_results)
+
+        # TEST - Threaded interval triggering a CPU pool
+        def get_things():
+            global _results
+            _results = window.fetch_pooled( urls )
+            print('sup::', _results)
+
+        print('Are you ready')
+        # test = window.setTimeout( get_things, 2000 )
+        test = window.setInterval( get_things, 2000 )
+        print("wait, where my results?")
+        print(_results)
+        import time
+        time.sleep(4)
+        print("Ahhh nice")
+        print(_results)
+        window.clearInterval( test )
+
+        # nice 😎
+
+
+_results = []
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -189,7 +189,7 @@ You can add to or remove from the children of a Node with the in-place operators
     print(myorderedlist)
 
 
-This also works for text nodes but be aware the will be irreversibly flattened if you render...
+This also works for text nodes but be aware they will be irreversibly flattened if you render...
 
 .. code-block :: python
 
@@ -203,7 +203,7 @@ This also works for text nodes but be aware the will be irreversibly flattened i
     print(a1)
 
 
-You pass a dictionary to the right shift operator to add/update an attribute...
+Pass a dictionary to the right shift operator to add/update an attribute...
 (don't forget underscore or it will error)
 
 .. code-block :: python
@@ -213,7 +213,7 @@ You pass a dictionary to the right shift operator to add/update an attribute...
         print(a1)
 
 
-Access an elements children as if it was an array...
+Access an elements children as if it were a list...
 
 .. code-block :: python
 

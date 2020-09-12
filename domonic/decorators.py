@@ -89,3 +89,11 @@ def cash(func, currency="£"):
         return formatted
     return wrapper
 # @cash("12.1")
+
+
+# def lenient(*args, **kwargs):
+""" can try to remap args if passed incorrectly. 
+    i.e. if expecting array but gets string, puts string in arr
+    should never switch order probably. just re-type
+    prints warning and runs
+"""

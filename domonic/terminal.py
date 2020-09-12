@@ -247,6 +247,7 @@ banner = type('banner', (command,), {'name': 'banner'})
 # vim = type('vim', (command,), {'name': 'vim'})
 # mail = type('mail', (command,), {'name': 'mail'})
 # vncserver = type('vncserver', (command,), {'name': 'vncserver'})
+# tmux
 
 # https://en.wikipedia.org/wiki/List_of_Unix_commands
 # admin = type('admin', (command,), {'name': 'admin'})

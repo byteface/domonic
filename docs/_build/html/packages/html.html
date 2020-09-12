@@ -172,7 +172,7 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">myorderedlist</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This also works for text nodes but be aware the will be irreversibly flattened if you render…</p>
+<p>This also works for text nodes but be aware they will be irreversibly flattened if you render…</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a1</span> <span class="o">=</span> <span class="n">button</span><span class="p">()</span>
 <span class="n">a1</span> <span class="o">+=</span> <span class="s2">&quot;hi&quot;</span>
 <span class="n">a1</span> <span class="o">+=</span> <span class="s2">&quot;how&quot;</span>
@@ -183,14 +183,14 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You pass a dictionary to the right shift operator to add/update an attribute…
+<p>Pass a dictionary to the right shift operator to add/update an attribute…
 (don’t forget underscore or it will error)</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a1</span> <span class="o">=</span> <span class="n">img</span><span class="p">()</span>
 <span class="n">a1</span> <span class="o">&gt;&gt;</span> <span class="p">{</span><span class="s1">&#39;_src&#39;</span><span class="p">:</span> <span class="s2">&quot;http://www.someurl.com&quot;</span><span class="p">}</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Access an elements children as if it was an array…</p>
+<p>Access an elements children as if it were a list…</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mylist</span> <span class="o">=</span> <span class="n">ul</span><span class="p">(</span><span class="n">li</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">li</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">li</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">mylist</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>

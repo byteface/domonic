@@ -17,6 +17,11 @@ import random
 import threading
 import signal
 import typing
+import requests
+import gc
+import multiprocessing
+from multiprocessing.pool import ThreadPool as Pool
+
 
 
 class js_object(object):
@@ -656,6 +661,43 @@ class SetInterval(object):
         self.job.start()
 
 
+class FetchReponse(object):
+
+    def __init__(self, *args, **kwargs):
+        self.results = []
+
+    def __getitem__(self, index):
+        return self.results[index]
+
+    # def __setattr__(self, name, value):
+    #     try:
+    #         if name == "results":
+    #             super(FetchReponse, self).__setattr__(name, value)
+    #             try:
+    #                 self.then(response)
+    #             except Exception as e:
+    #                 self.catch()
+    #             return
+    #     except Exception as e:
+    #         print(e)
+    #     super(FetchReponse, self).__setattr__(name, value)
+
+    def then(self):  # runs immediately after each one
+        # print('called per item')
+        # return self
+        raise NotImplementedError
+
+    def catch(self, func):  # runs immediately after each one
+        # print('called per item')
+        # return
+        raise NotImplementedError
+        
+    def oncomplete(self):  # runs once all results are back
+        # print('called on complete')
+        # return self
+        raise NotImplementedError
+
+
 class Window(object):
     """ window """
 
@@ -699,13 +741,19 @@ class Window(object):
         data = input()
         return data
 
-    # TODO - clearTimeout.
     @staticmethod
-    def setTimeout(time, function):
+    def setTimeout(function, t, *args, **kwargs):
         """ Calls a function or evaluates an expression after a specified number of milliseconds """
-        time.sleep(time)  # blocks
+        import time
+        time.sleep(t/1000)  # TODO - blocks
         function()
         return
+
+    # TODO - clearTimeout.
+    @staticmethod
+    def clearTimeout(job):
+        # job.stop()
+        pass
 
     @staticmethod
     def clearInterval(job):
@@ -715,6 +763,75 @@ class Window(object):
     def setInterval(function, time, *args, **kwargs):
         interval_ID = SetInterval(function, time, *args, **kwargs)
         return interval_ID.job
+
+    @staticmethod
+    def _do_request(url, results = None):
+        try:
+            r = requests.get(url, timeout=3)
+            if r.ok:
+                print(f'{url} result --------------------->>>>>>>>>>>!!!!!!!!!!')
+                if results is not None:
+                    results.append(r.text)
+                return r.text
+        except Exception as e:
+            print(f'Request Failed for URL: {url}', e)
+
+    @staticmethod
+    def fetch(urls, options={}):
+        print('fetch start')
+        if type(urls) is str: urls = [urls]  # leniency
+        f = FetchReponse()
+        for url in urls:
+            Window._do_request(url, f.results)
+        print('fetch end')
+        return f
+    
+    @staticmethod
+    def fetch_threaded(urls, options={}):
+        print('fetch threaded')
+        if type(urls) is str: urls = [urls]  # leniency
+        jobs=[]
+        f = FetchReponse()
+        for url in urls:
+            thread = threading.Thread(target=Window._do_request( url, f.results ))
+            thread.setDaemon(True)
+            jobs.append(thread)
+
+        # print("Let's do this!")
+        map( lambda j: j.start(), jobs )
+        map( lambda j: j.join(), jobs )
+        # print("ALL GOOD!")
+        # print(jobs)
+        # print("---------------------------------------")
+        # print(f.results)
+        # if len(_results)>0:
+        #     print(f"ADDING:{_results[0]}")
+        #     return _results[0]
+        print('fetch threaded end')
+        return f
+
+    @staticmethod
+    def fetch_pooled(urls: list, options={}):
+        print('fetch_pooled')
+        if type(urls) is str: urls = [urls]  # leniency
+        jobs=[]
+        f = FetchReponse()
+        p = Pool()
+        f.results = p.map( Window._do_request, urls )
+        p.close()
+        p.join()
+        # print(_results)
+        # _results = [x for x in _results if x is not None ]
+        # print(f.results)
+        # if len(_results)>0:
+        #     print(f"ADDING:{_results[0]}")
+        #     return _results[0]
+        print('fetch_pooled end')
+        return f
+
+    # def fetch_aysnc( urls: list, options={}, type="async" ):
+        # TODO - a version using async/await
+
 
     # @staticmethod
     # @getter
