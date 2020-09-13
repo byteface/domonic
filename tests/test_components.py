@@ -5,7 +5,6 @@
 """
 
 import unittest
-
 import json
 # import requests
 # from mock import patch

@@ -158,7 +158,6 @@ class domonicTestCase(unittest.TestCase):
         print(sometag.thingy)
         # print(10/sometag)
 
-
         # print('>>>>', sometag.args[0])
         # print('>>>>',sometag)
         # print('>>>>', sometag.lastChild())
@@ -289,12 +288,12 @@ class domonicTestCase(unittest.TestCase):
         site.appendChild(another_div)
         print(site.contains(third_div))
 
-
     # def test_dom_Node():
         # TODO - tests all below
         # contains - probably need more recursive testing
         # replaceChild
         # anchors
+
 
 if __name__ == '__main__':
     unittest.main()

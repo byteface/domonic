@@ -33,3 +33,6 @@ Domonic: autodocs
 
 .. automodule:: domonic.decorators
     :members:
+
+.. automodule:: domonic.svg
+    :members:

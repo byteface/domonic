@@ -44,7 +44,49 @@
 
 
 <div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; events &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; event &quot;&quot;&quot;</span>
+    <span class="n">EMPTIED</span> <span class="o">=</span> <span class="s2">&quot;onemptied&quot;</span>
+    <span class="n">ABORT</span> <span class="o">=</span> <span class="s2">&quot;onabort&quot;</span>
+    <span class="n">AFTERPRINT</span> <span class="o">=</span> <span class="s2">&quot;onafterprint&quot;</span>
+    <span class="n">BEFOREPRINT</span> <span class="o">=</span> <span class="s2">&quot;onbeforeprint&quot;</span>
+    <span class="n">BEFOREUNLOAD</span> <span class="o">=</span> <span class="s2">&quot;onbeforeunload&quot;</span>
+    <span class="n">CANPLAY</span> <span class="o">=</span> <span class="s2">&quot;oncanplay&quot;</span>
+    <span class="n">CANPLAYTHROUGH</span> <span class="o">=</span> <span class="s2">&quot;oncanplaythrough&quot;</span>
+    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;onchange&quot;</span>
+    <span class="n">DURATIONCHANGE</span> <span class="o">=</span> <span class="s2">&quot;ondurationchange&quot;</span>
+    <span class="n">ENDED</span> <span class="o">=</span> <span class="s2">&quot;onended&quot;</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;onerror&quot;</span>
+    <span class="n">FULLSCREENCHANGE</span> <span class="o">=</span> <span class="s2">&quot;onfullscreenchange&quot;</span>
+    <span class="n">FULLSCREENERROR</span> <span class="o">=</span> <span class="s2">&quot;onfullscreenerror&quot;</span>
+    <span class="n">INPUT</span> <span class="o">=</span> <span class="s2">&quot;oninput&quot;</span>
+    <span class="n">INVALID</span> <span class="o">=</span> <span class="s2">&quot;oninvalid&quot;</span>
+    <span class="n">LOAD</span> <span class="o">=</span> <span class="s2">&quot;onload&quot;</span>
+    <span class="n">LOADEDDATA</span> <span class="o">=</span> <span class="s2">&quot;onloadeddata&quot;</span>
+    <span class="n">LOADEDMETADATA</span> <span class="o">=</span> <span class="s2">&quot;onloadedmetadata&quot;</span>
+    <span class="n">MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;onmessage&quot;</span>
+    <span class="n">OFFLINE</span> <span class="o">=</span> <span class="s2">&quot;onoffline&quot;</span>
+    <span class="n">ONLINE</span> <span class="o">=</span> <span class="s2">&quot;ononline&quot;</span>
+    <span class="n">OPEN</span> <span class="o">=</span> <span class="s2">&quot;onopen&quot;</span>
+    <span class="n">PAUSE</span> <span class="o">=</span> <span class="s2">&quot;onpause&quot;</span>
+    <span class="n">PLAY</span> <span class="o">=</span> <span class="s2">&quot;onplay&quot;</span>
+    <span class="n">PLAYING</span> <span class="o">=</span> <span class="s2">&quot;onplaying&quot;</span>
+    <span class="n">PROGRESS</span> <span class="o">=</span> <span class="s2">&quot;onprogress&quot;</span>
+    <span class="n">RATECHANGE</span> <span class="o">=</span> <span class="s2">&quot;onratechange&quot;</span>
+    <span class="n">RESIZE</span> <span class="o">=</span> <span class="s2">&quot;onresize&quot;</span>
+    <span class="n">RESET</span> <span class="o">=</span> <span class="s2">&quot;onreset&quot;</span>
+    <span class="n">SCROLL</span> <span class="o">=</span> <span class="s2">&quot;onscroll&quot;</span>
+    <span class="n">SEARCH</span> <span class="o">=</span> <span class="s2">&quot;onsearch&quot;</span>
+    <span class="n">SEEKED</span> <span class="o">=</span> <span class="s2">&quot;onseeked&quot;</span>
+    <span class="n">SEEKING</span> <span class="o">=</span> <span class="s2">&quot;onseeking&quot;</span>
+    <span class="n">SELECT</span> <span class="o">=</span> <span class="s2">&quot;onselect&quot;</span>
+    <span class="n">SHOW</span> <span class="o">=</span> <span class="s2">&quot;onshow&quot;</span>
+    <span class="n">STALLED</span> <span class="o">=</span> <span class="s2">&quot;onstalled&quot;</span>
+    <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;onsubmit&quot;</span>
+    <span class="n">SUSPEND</span> <span class="o">=</span> <span class="s2">&quot;onsuspend&quot;</span>
+    <span class="n">TOGGLE</span> <span class="o">=</span> <span class="s2">&quot;ontoggle&quot;</span>
+    <span class="n">UNLOAD</span> <span class="o">=</span> <span class="s2">&quot;onunload&quot;</span>
+    <span class="n">VOLUMECHANGE</span> <span class="o">=</span> <span class="s2">&quot;onvolumechange&quot;</span>
+    <span class="n">WAITING</span> <span class="o">=</span> <span class="s2">&quot;onwaiting&quot;</span>
 
     <span class="c1"># Event(&quot;look&quot;, {&quot;bubbles&quot;:true, &quot;cancelable&quot;:false});</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -64,7 +106,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">srcElement</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># ms = time.time_ns() // 1000000 3.7 up</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timeStamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeStamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">composedPath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
@@ -90,6 +132,16 @@
 
 <div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; mouse events &quot;&quot;&quot;</span>
+    <span class="n">CLICK</span> <span class="o">=</span> <span class="s2">&quot;onclick&quot;</span>
+    <span class="n">CONTEXTMENU</span> <span class="o">=</span> <span class="s2">&quot;oncontextmenu&quot;</span>
+    <span class="n">DBLCLICK</span> <span class="o">=</span> <span class="s2">&quot;ondblclick&quot;</span>
+    <span class="n">MOUSEDOWN</span> <span class="o">=</span> <span class="s2">&quot;onmousedown&quot;</span>
+    <span class="n">MOUSEENTER</span> <span class="o">=</span> <span class="s2">&quot;onmouseenter&quot;</span>
+    <span class="n">MOUSELEAVE</span> <span class="o">=</span> <span class="s2">&quot;onmouseleave&quot;</span>
+    <span class="n">MOUSEMOVE</span> <span class="o">=</span> <span class="s2">&quot;onmousemove&quot;</span>
+    <span class="n">MOUSEOVER</span> <span class="o">=</span> <span class="s2">&quot;onmouseover&quot;</span>
+    <span class="n">MOUSEOUT</span> <span class="o">=</span> <span class="s2">&quot;onmouseout&quot;</span>
+    <span class="n">MOUSEUP</span> <span class="o">=</span> <span class="s2">&quot;onmouseup&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
@@ -108,16 +160,6 @@
     <span class="c1"># MovementY Returns the vertical coordinate of the mouse pointer relative to the position of the last mousemove event   MouseEvent</span>
     <span class="c1"># offsetX   Returns the horizontal coordinate of the mouse pointer relative to the position of the edge of the target element   MouseEvent</span>
     <span class="c1"># offsetY   Returns the vertical coordinate of the mouse pointer relative to the position of the edge of the target element MouseEvent</span>
-    <span class="c1"># onclick   The event occurs when the user clicks on an element MouseEvent</span>
-    <span class="c1"># oncontextmenu The event occurs when the user right-clicks on an element to open a context menu    MouseEvent</span>
-    <span class="c1"># ondblclick    The event occurs when the user double-clicks on an element  MouseEvent</span>
-    <span class="c1"># onmousedown   The event occurs when the user presses a mouse button over an element   MouseEvent</span>
-    <span class="c1"># onmouseenter  The event occurs when the pointer is moved onto an element  MouseEvent</span>
-    <span class="c1"># onmouseleave  The event occurs when the pointer is moved out of an element    MouseEvent</span>
-    <span class="c1"># onmousemove   The event occurs when the pointer is moving while it is over an element MouseEvent</span>
-    <span class="c1"># onmouseover   The event occurs when the pointer is moved onto an element, or onto one of its children MouseEvent</span>
-    <span class="c1"># onmouseout    The event occurs when a user moves the mouse pointer out of an element, or out of one of its children   MouseEvent</span>
-    <span class="c1"># onmouseup The event occurs when a user releases a mouse button over an element    MouseEvent</span>
     <span class="c1"># pageX Returns the horizontal coordinate of the mouse pointer, relative to the document, when the mouse event was triggered    MouseEvent</span>
     <span class="c1"># pageY Returns the vertical coordinate of the mouse pointer, relative to the document, when the mouse event was triggered  MouseEvent</span>
     <span class="c1"># region        MouseEvent</span>
@@ -126,16 +168,16 @@
     <span class="c1"># which Returns which mouse button was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent</span>
 
 
-<div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; keyboard events &quot;&quot;&quot;</span>
+    <span class="n">KEYDOWN</span> <span class="o">=</span> <span class="s2">&quot;onkeydown&quot;</span>
+    <span class="n">KEYPRESS</span> <span class="o">=</span> <span class="s2">&quot;onkeypress&quot;</span>
+    <span class="n">KEYUP</span> <span class="o">=</span> <span class="s2">&quot;onkeyup&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
         <span class="c1"># self.kwargs = kwargs</span>
         <span class="k">pass</span></div>
-
-    <span class="c1"># @property</span>
-    <span class="c1"># def location(self):</span>
 
     <span class="c1"># KeyboardEvent</span>
     <span class="c1"># altKey    Returns whether the &quot;ALT&quot; key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent</span>
@@ -149,27 +191,34 @@
     <span class="c1"># key   Returns the key value of the key represented by the event   KeyboardEvent, StorageEvent</span>
     <span class="c1"># keyCode   Returns the Unicode character code of the key that triggered the onkeypress event, or the Unicode key code of the key that triggered the onkeydown or onkeyup event KeyboardEvent</span>
     <span class="c1"># location  Returns the location of a key on the keyboard or device KeyboardEvent</span>
-    <span class="c1"># onkeydown The event occurs when the user is pressing a key    KeyboardEvent</span>
-    <span class="c1"># onkeypress    The event occurs when the user presses a key    KeyboardEvent</span>
-    <span class="c1"># onkeyup   The event occurs when the user releases a key   KeyboardEvent</span>
     <span class="c1"># repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent</span>
 
 
-<div class="viewcode-block" id="UiEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.UiEvent">[docs]</a><span class="k">class</span> <span class="nc">UiEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="UiEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.UiEvent">[docs]</a><span class="k">class</span> <span class="nc">UiEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; UiEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="FocusEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.FocusEvent">[docs]</a><span class="k">class</span> <span class="nc">FocusEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="FocusEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.FocusEvent">[docs]</a><span class="k">class</span> <span class="nc">FocusEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; FocusEvent &quot;&quot;&quot;</span>
+    <span class="n">BLUR</span> <span class="o">=</span> <span class="s2">&quot;onblur&quot;</span>
+    <span class="n">FOCUS</span> <span class="o">=</span> <span class="s2">&quot;onfocus&quot;</span>
+    <span class="n">FOCUSIN</span> <span class="o">=</span> <span class="s2">&quot;onfocusin&quot;</span>
+    <span class="n">FOCUSOUT</span> <span class="o">=</span> <span class="s2">&quot;onfocusout&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="TouchEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.TouchEvent">[docs]</a><span class="k">class</span> <span class="nc">TouchEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TouchEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.TouchEvent">[docs]</a><span class="k">class</span> <span class="nc">TouchEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; TouchEvent &quot;&quot;&quot;</span>
+    <span class="n">TOUCHCANCEL</span> <span class="o">=</span> <span class="s2">&quot;ontouchcancel&quot;</span>
+    <span class="n">TOUCHEND</span> <span class="o">=</span> <span class="s2">&quot;ontouchend&quot;</span>
+    <span class="n">TOUCHMOVE</span> <span class="o">=</span> <span class="s2">&quot;ontouchmove&quot;</span>
+    <span class="n">TOUCHSTART</span> <span class="o">=</span> <span class="s2">&quot;ontouchstart&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shiftKey</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">altKey</span> <span class="o">=</span> <span class="kc">None</span>
@@ -181,15 +230,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">metaKey</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns whether the &quot;meta&quot; key was pressed when the touch event was triggered &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shiftKey</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;    Returns whether the &quot;SHIFT&quot; key was pressed when the touch event was triggered &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;  Returns whether the &quot;SHIFT&quot; key was pressed when the touch event was triggered &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">targetTouches</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot;   Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">touches</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns a list of all the touch objects that are currently in contact with the surface &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="WheelEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.WheelEvent">[docs]</a><span class="k">class</span> <span class="nc">WheelEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="WheelEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.WheelEvent">[docs]</a><span class="k">class</span> <span class="nc">WheelEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; WheelEvent &quot;&quot;&quot;</span>
+    <span class="n">MOUSEWHEEL</span> <span class="o">=</span> <span class="s2">&quot;onmousewheel&quot;</span>  <span class="c1"># DEPRECATED - USE ONWHEEL</span>
+    <span class="n">WHEEL</span> <span class="o">=</span> <span class="s2">&quot;onwheel&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deltaX</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the horizontal scroll amount of a mouse wheel (x-axis) &quot;&quot;&quot;</span>
@@ -201,8 +253,12 @@
         <span class="sd">&quot;&quot;&quot; Returns a number that represents the unit of measurements for delta values (pixels, lines or pages) &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="AnimationEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.AnimationEvent">[docs]</a><span class="k">class</span> <span class="nc">AnimationEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="AnimationEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.AnimationEvent">[docs]</a><span class="k">class</span> <span class="nc">AnimationEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; AnimationEvent &quot;&quot;&quot;</span>
+    <span class="n">ANIMATIONEND</span> <span class="o">=</span> <span class="s2">&quot;onanimationend&quot;</span>
+    <span class="n">ANIMATIONITERATION</span> <span class="o">=</span> <span class="s2">&quot;onanimationiteration&quot;</span>
+    <span class="n">ANIMATIONSTART</span> <span class="o">=</span> <span class="s2">&quot;onanimationstart&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">animationName</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the name of the animation &quot;&quot;&quot;</span>
@@ -212,35 +268,35 @@
         <span class="sd">&quot;&quot;&quot; Returns the name of the pseudo-element of the animation &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="ClipboardEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.ClipboardEvent">[docs]</a><span class="k">class</span> <span class="nc">ClipboardEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ClipboardEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.ClipboardEvent">[docs]</a><span class="k">class</span> <span class="nc">ClipboardEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ClipboardEvent &quot;&quot;&quot;</span>
-    <span class="n">COPY</span> <span class="o">=</span> <span class="s2">&quot;oncopy&quot;</span>  <span class="c1"># The event occurs when the user copies the content of an element</span>
-    <span class="n">CUT</span> <span class="o">=</span> <span class="s2">&quot;oncut&quot;</span>  <span class="c1"># The event occurs when the user cuts the content of an element</span>
-    <span class="n">PASTE</span> <span class="o">=</span> <span class="s2">&quot;onpaste&quot;</span>  <span class="c1"># The event occurs when the user pastes some content in an element</span>
+    <span class="n">COPY</span> <span class="o">=</span> <span class="s2">&quot;oncopy&quot;</span>
+    <span class="n">CUT</span> <span class="o">=</span> <span class="s2">&quot;oncut&quot;</span>
+    <span class="n">PASTE</span> <span class="o">=</span> <span class="s2">&quot;onpaste&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clipboardData</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns an object containing the data affected by the clipboard operation &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; DragEvent &quot;&quot;&quot;</span>
-    <span class="n">DRAG</span> <span class="o">=</span> <span class="s2">&quot;ondrag&quot;</span>  <span class="c1"># The event occurs when an element is being dragged</span>
-    <span class="n">END</span> <span class="o">=</span> <span class="s2">&quot;ondragend&quot;</span>  <span class="c1"># The event occurs when the user has finished dragging an element</span>
-    <span class="n">ENTER</span> <span class="o">=</span> <span class="s2">&quot;ondragenter&quot;</span>  <span class="c1"># The event occurs when the dragged element enters the drop target</span>
-    <span class="n">LEAVE</span> <span class="o">=</span> <span class="s2">&quot;ondragleave&quot;</span>  <span class="c1"># The event occurs when the dragged element leaves the drop target</span>
-    <span class="n">OVER</span> <span class="o">=</span> <span class="s2">&quot;ondragover&quot;</span>  <span class="c1"># The event occurs when the dragged element is over the drop target</span>
-    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;ondragstart&quot;</span>  <span class="c1"># The event occurs when the user starts to drag an element</span>
-    <span class="n">DROP</span> <span class="o">=</span> <span class="s2">&quot;ondrop&quot;</span>  <span class="c1"># The event occurs when the dragged element is dropped on the drop target</span>
+    <span class="n">DRAG</span> <span class="o">=</span> <span class="s2">&quot;ondrag&quot;</span>
+    <span class="n">END</span> <span class="o">=</span> <span class="s2">&quot;ondragend&quot;</span>
+    <span class="n">ENTER</span> <span class="o">=</span> <span class="s2">&quot;ondragenter&quot;</span>
+    <span class="n">LEAVE</span> <span class="o">=</span> <span class="s2">&quot;ondragleave&quot;</span>
+    <span class="n">OVER</span> <span class="o">=</span> <span class="s2">&quot;ondragover&quot;</span>
+    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;ondragstart&quot;</span>
+    <span class="n">DROP</span> <span class="o">=</span> <span class="s2">&quot;ondrop&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataTransfer</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the data that is dragged/dropped &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="HashChangeEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.HashChangeEvent">[docs]</a><span class="k">class</span> <span class="nc">HashChangeEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="HashChangeEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.HashChangeEvent">[docs]</a><span class="k">class</span> <span class="nc">HashChangeEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; HashChangeEvent &quot;&quot;&quot;</span>
-    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;onhashchange&quot;</span>  <span class="c1"># The event occurs when there has been changes to the anchor part of a URL</span>
+    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;onhashchange&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">newURL</span> <span class="o">=</span> <span class="kc">None</span>
@@ -249,14 +305,14 @@
         <span class="sd">&quot;&quot;&quot; Returns the URL of the document, before the hash was changed &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="InputEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.InputEvent">[docs]</a><span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="InputEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.InputEvent">[docs]</a><span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; InputEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the inserted characters &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataTransfer</span>
         <span class="sd">&quot;&quot;&quot; Returns an object containing information about the inserted/deleted data &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">getTargetRanges</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">getTargetRanges</span>
         <span class="sd">&quot;&quot;&quot; Returns an array containing target ranges that will be affected by the insertion/deletion &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inputType</span>
         <span class="sd">&quot;&quot;&quot; Returns the type of the change (i.e &quot;inserting&quot; or &quot;deleting&quot;) &quot;&quot;&quot;</span>
@@ -264,21 +320,23 @@
         <span class="sd">&quot;&quot;&quot; Returns whether the state of the event is composing or not &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="PageTransitionEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.PageTransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">PageTransitionEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PageTransitionEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.PageTransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">PageTransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="n">PAGEHIDE</span> <span class="o">=</span> <span class="s2">&quot;onpagehide&quot;</span>
+    <span class="n">PAGESHOW</span> <span class="o">=</span> <span class="s2">&quot;onpageshow&quot;</span>
     <span class="sd">&quot;&quot;&quot; PageTransitionEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persisted</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns whether the webpage was cached by the browser &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="PopStateEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.PopStateEvent">[docs]</a><span class="k">class</span> <span class="nc">PopStateEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PopStateEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.PopStateEvent">[docs]</a><span class="k">class</span> <span class="nc">PopStateEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; PopStateEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns an object containing a copy of the history entries &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="StorageEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.StorageEvent">[docs]</a><span class="k">class</span> <span class="nc">StorageEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="StorageEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.StorageEvent">[docs]</a><span class="k">class</span> <span class="nc">StorageEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; StorageEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
@@ -293,7 +351,8 @@
         <span class="sd">&quot;&quot;&quot; Returns the URL of the changed item&#39;s document &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="TransitionEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.TransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">TransitionEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TransitionEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.TransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">TransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="n">TRANSITIONEND</span> <span class="o">=</span> <span class="s2">&quot;ontransitionend&quot;</span>
     <span class="sd">&quot;&quot;&quot; TransitionEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">propertyName</span> <span class="o">=</span> <span class="kc">None</span>
@@ -304,85 +363,21 @@
         <span class="sd">&quot;&quot;&quot; Returns the name of the pseudo-element of the transition &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="CustomEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.CustomEvent">[docs]</a><span class="k">class</span> <span class="nc">CustomEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ProgressEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.ProgressEvent">[docs]</a><span class="k">class</span> <span class="nc">ProgressEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; CustomEvent &quot;&quot;&quot;</span>
+    <span class="n">LOADSTART</span> <span class="o">=</span> <span class="s2">&quot;onloadstart&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="CustomEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.CustomEvent">[docs]</a><span class="k">class</span> <span class="nc">CustomEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; CustomEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">initCustomEvent</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">initCustomEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
-
-
-<span class="c1"># bubbles   Returns whether or not a specific event is a bubbling event Event</span>
-<span class="c1"># cancelable    Returns whether or not an event can have its default action prevented   Event</span>
-<span class="c1"># composed  Returns whether the event is composed or not    Event</span>
-<span class="c1"># currentTarget Returns the element whose event listeners triggered the event   Event</span>
-<span class="c1"># defaultPrevented  Returns whether or not the preventDefault() method was called for the event Event</span>
-<span class="c1"># eventPhase    Returns which phase of the event flow is currently being evaluated  Event</span>
-<span class="c1"># isTrusted Returns whether or not an event is trusted  Event</span>
-<span class="c1"># onabort   The event occurs when the loading of a media is aborted UiEvent, Event</span>
-<span class="c1"># onafterprint  The event occurs when a page has started printing, or if the print dialogue box has been closed Event</span>
-<span class="c1"># onanimationend    The event occurs when a CSS animation has completed AnimationEvent</span>
-<span class="c1"># onanimationiteration  The event occurs when a CSS animation is repeated   AnimationEvent</span>
-<span class="c1"># onanimationstart  The event occurs when a CSS animation has started   AnimationEvent</span>
-<span class="c1"># onbeforeprint The event occurs when a page is about to be printed Event</span>
-<span class="c1"># onbeforeunload    The event occurs before the document is about to be unloaded    UiEvent, Event</span>
-<span class="c1"># onblur    The event occurs when an element loses focus    FocusEvent</span>
-<span class="c1"># oncanplay The event occurs when the browser can start playing the media (when it has buffered enough to begin)    Event</span>
-<span class="c1"># oncanplaythrough  The event occurs when the browser can play through the media without stopping for buffering Event</span>
-<span class="c1"># onchange  The event occurs when the content of a form element, the selection, or the checked state have changed (for &lt;input&gt;, &lt;select&gt;, and &lt;textarea&gt;)   Event</span>
-<span class="c1"># ondurationchange  The event occurs when the duration of the media is changed  Event</span>
-<span class="c1"># onemptied The event occurs when something bad happens and the media file is suddenly unavailable (like unexpectedly disconnects)</span>
-<span class="c1"># onended   The event occurs when the media has reach the end (useful for messages like &quot;thanks for listening&quot;) Event</span>
-<span class="c1"># onerror   The event occurs when an error occurs while loading an external file    ProgressEvent, UiEvent, Event</span>
-<span class="c1"># onfocus   The event occurs when an element gets focus FocusEvent</span>
-<span class="c1"># onfocusin The event occurs when an element is about to get focus  FocusEvent</span>
-<span class="c1"># onfocusout    The event occurs when an element is about to lose focus FocusEvent</span>
-<span class="c1"># onfullscreenchange    The event occurs when an element is displayed in fullscreen mode    Event</span>
-<span class="c1"># onfullscreenerror The event occurs when an element can not be displayed in fullscreen mode    Event</span>
-<span class="c1"># oninput   The event occurs when an element gets user input    InputEvent, Event</span>
-<span class="c1"># oninvalid The event occurs when an element is invalid Event</span>
-<span class="c1"># onload    The event occurs when an object has loaded  UiEvent, Event</span>
-<span class="c1"># onloadeddata  The event occurs when media data is loaded  Event</span>
-<span class="c1"># onloadedmetadata  The event occurs when meta data (like dimensions and duration) are loaded   Event</span>
-<span class="c1"># onloadstart   The event occurs when the browser starts looking for the specified media    ProgressEvent</span>
-<span class="c1"># onmessage The event occurs when a message is received through the event source    Event</span>
-<span class="c1"># onmousewheel  Deprecated. Use the wheel event instead WheelEvent</span>
-<span class="c1"># onoffline The event occurs when the browser starts to work offline    Event</span>
-<span class="c1"># ononline  The event occurs when the browser starts to work online Event</span>
-<span class="c1"># onopen    The event occurs when a connection with the event source is opened  Event</span>
-<span class="c1"># onpagehide    The event occurs when the user navigates away from a webpage    PageTransitionEvent</span>
-<span class="c1"># onpageshow    The event occurs when the user navigates to a webpage   PageTransitionEvent</span>
-<span class="c1"># onpause   The event occurs when the media is paused either by the user or programmatically    Event</span>
-<span class="c1"># onplay    The event occurs when the media has been started or is no longer paused Event</span>
-<span class="c1"># onplaying The event occurs when the media is playing after having been paused or stopped for buffering    Event</span>
-<span class="c1"># onprogress    The event occurs when the browser is in the process of getting the media data (downloading the media)   Event</span>
-<span class="c1"># onratechange  The event occurs when the playing speed of the media is changed Event</span>
-<span class="c1"># onresize  The event occurs when the document view is resized  UiEvent, Event</span>
-<span class="c1"># onreset   The event occurs when a form is reset   Event</span>
-<span class="c1"># onscroll  The event occurs when an element&#39;s scrollbar is being scrolled  UiEvent, Event</span>
-<span class="c1"># onsearch  The event occurs when the user writes something in a search field (for &lt;input=&quot;search&quot;&gt;)    Event</span>
-<span class="c1"># onseeked  The event occurs when the user is finished moving/skipping to a new position in the media   Event</span>
-<span class="c1"># onseeking The event occurs when the user starts moving/skipping to a new position in the media    Event</span>
-<span class="c1"># onselect  The event occurs after the user selects some text (for &lt;input&gt; and &lt;textarea&gt;)  UiEvent, Event</span>
-<span class="c1"># onshow    The event occurs when a &lt;menu&gt; element is shown as a context menu   Event</span>
-<span class="c1"># onstalled The event occurs when the browser is trying to get media data, but data is not available    Event</span>
-<span class="c1"># onsubmit  The event occurs when a form is submitted   Event</span>
-<span class="c1"># onsuspend The event occurs when the browser is intentionally not getting media data   Event</span>
-<span class="c1"># ontoggle  The event occurs when the user opens or closes the &lt;details&gt; element    Event</span>
-<span class="c1"># ontouchcancel The event occurs when the touch is interrupted  TouchEvent</span>
-<span class="c1"># ontouchend    The event occurs when a finger is removed from a touch screen   TouchEvent</span>
-<span class="c1"># ontouchmove   The event occurs when a finger is dragged across the screen TouchEvent</span>
-<span class="c1"># ontouchstart  The event occurs when a finger is placed on a touch screen  TouchEvent</span>
-<span class="c1"># ontransitionend   The event occurs when a CSS transition has completed    TransitionEvent</span>
-<span class="c1"># onunload  The event occurs once a page has unloaded (for &lt;body&gt;)  UiEvent, Event</span>
-<span class="c1"># onvolumechange    The event occurs when the volume of the media has changed (includes setting the volume to &quot;mute&quot;)   Event</span>
-<span class="c1"># onwaiting The event occurs when the media has paused but is expected to resume (like when the media pauses to buffer more data)   Event</span>
-<span class="c1"># onwheel   The event occurs when the mouse wheel rolls up or down over an element  WheelEvent</span>
-<span class="c1"># preventDefault()  Cancels the event if it is cancelable, meaning that the default action that belongs to the event will not occur Event</span>
-<span class="c1"># targetTouches Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element    TouchEvent</span>
-<span class="c1"># timeStamp Returns the time (in milliseconds relative to the epoch) at which the event was created Event</span>
-<span class="c1"># transitionend The event occurs when a CSS transition has completed    TransitionEvent</span>
 </pre></div>
 
           </div>

@@ -116,8 +116,51 @@
 
 <dl class="py method">
 <dt>
+<code class="sig-name descname">copyWithin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.copyWithin"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Copies array elements within the array, to and from specified positions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.entries"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a key/value pair Array Iteration Object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">every</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.every"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Checks if every element in an array pass a test</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname">fill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.fill"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Fill the elements in an array with a static value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.filter"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Creates a new array with every element in an array that pass a test
+even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">find</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.find"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the value of the first element in an array that pass a test</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">findIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.findIndex"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the index of the first element in an array that pass a test</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">forEach</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.forEach"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Calls a function for each array element</p>
 </dd></dl>
 
 <dl class="py method">
@@ -142,6 +185,12 @@
 <dt>
 <code class="sig-name descname">join</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.join"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Joins all elements of an array into a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.keys"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a Array Iteration Object, containing the keys of the original array</p>
 </dd></dl>
 
 <dl class="py method">
@@ -625,8 +674,38 @@ from the args and kwargs arguments, respectively.</p>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Number</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">/</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>javascript Number</p>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Number</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>javascript Number methods</p>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">isInteger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.isInteger"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Checks whether a value is an integer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">isSafeInteger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.isSafeInteger"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Checks whether a value is a safe integer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">toExponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toExponential"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Converts a number into an exponential notation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">toFixed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toFixed"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Formats a number with x numbers of digits after the decimal point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">toPrecision</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toPrecision"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Formats a number to x length</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py exception">
@@ -679,7 +758,19 @@ from the args and kwargs arguments, respectively.</p>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">String</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>javascript string</p>
+<dd><p>javascript string method</p>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">charAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charAt"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the character at the specified index (position)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">charCodeAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charCodeAt"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the Unicode of the character at the specified index</p>
+</dd></dl>
+
 <dl class="py method">
 <dt>
 <code class="sig-name descname">endsWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.endsWith"><span class="viewcode-link">[source]</span></a></dt>
@@ -688,8 +779,21 @@ from the args and kwargs arguments, respectively.</p>
 
 <dl class="py method">
 <dt>
+<code class="sig-name descname">fromCharCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCharCode"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Converts Unicode values to characters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname">repeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">count</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.repeat"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns a new string with a specified number of copies of an existing string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">old</span></em>, <em class="sig-param"><span class="n">new</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.replace"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Searches a string for a specified value, or a regular expression,
+and returns a new string where the specified values are replaced</p>
 </dd></dl>
 
 <dl class="py method">
@@ -754,7 +858,7 @@ from the args and kwargs arguments, respectively.</p>
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">setTimeout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">function</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Window.setTimeout"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">setTimeout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">function</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Window.setTimeout"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Calls a function or evaluates an expression after a specified number of milliseconds</p>
 </dd></dl>
 

@@ -14,9 +14,9 @@ from domonic.dom import *
 
 
 class domonicTestCase(unittest.TestCase):
-    
+
     def test_domonic_css(self):
-    
+
         atag = a("linky", _href="https://eventual.technology")
         print(atag.style.alignContent)
 

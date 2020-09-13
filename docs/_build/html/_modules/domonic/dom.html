@@ -321,7 +321,7 @@
         <span class="sd">&quot;&quot;&quot; Checks if two elements are equal &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">getRootNode</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">getRootNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># if options is not None:</span>
         <span class="c1"># if options[&#39;composed&#39;] = True:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rootNode</span></div>
@@ -340,7 +340,7 @@
 <div class="viewcode-block" id="ParentNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.ParentNode">[docs]</a><span class="k">class</span> <span class="nc">ParentNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; not tested yet &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="c1"># @property</span>
@@ -362,7 +362,7 @@
     <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">replaceChildren</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">children</span><span class="p">):</span>
@@ -551,7 +551,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Element.getAttribute"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.getAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Returns the specified attribute value of an element node&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns the specified attribute value of an element node &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
 
             <span class="k">if</span> <span class="n">attribute</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;_&#39;</span><span class="p">:</span>
@@ -581,10 +581,11 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Element.getElementsByTagName"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.getElementsByTagName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByTagName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39; Returns a collection of all child elements with the specified tag name &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns a collection of all child elements with the specified tag name &quot;&quot;&quot;</span>
         <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?&gt;.+?&lt;/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&gt;)&quot;</span>
 
-        <span class="n">closed_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;hr&quot;</span><span class="p">,</span> <span class="s2">&quot;br&quot;</span><span class="p">,</span> <span class="s2">&quot;wbr&quot;</span><span class="p">,</span> <span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="s2">&quot;embed&quot;</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;track&quot;</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;col&quot;</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="s2">&quot;keygen&quot;</span><span class="p">,</span> <span class="s2">&quot;command&quot;</span><span class="p">]</span>
+        <span class="n">closed_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;hr&quot;</span><span class="p">,</span> <span class="s2">&quot;br&quot;</span><span class="p">,</span> <span class="s2">&quot;wbr&quot;</span><span class="p">,</span> <span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="s2">&quot;embed&quot;</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;track&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;col&quot;</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="s2">&quot;keygen&quot;</span><span class="p">,</span> <span class="s2">&quot;command&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">closed_tags</span><span class="p">:</span>
             <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?/&gt;)&quot;</span>
 
@@ -593,7 +594,7 @@
         <span class="k">return</span> <span class="n">tags</span></div>
 
 <div class="viewcode-block" id="Element.hasAttribute"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.hasAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">hasAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Returns true if an element has the specified attribute, otherwise false&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns true if an element has the specified attribute, otherwise false &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">attribute</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;_&#39;</span><span class="p">:</span>
                 <span class="n">attribute</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">attribute</span>
@@ -604,7 +605,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Element.hasAttributes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.hasAttributes">[docs]</a>    <span class="k">def</span> <span class="nf">hasAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Returns true if an element has any attributes, otherwise false&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns true if an element has any attributes, otherwise false &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
@@ -857,7 +858,7 @@
         <span class="c1"># return Document()</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">createDocumentType</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">createDocumentType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">createHTMLDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -895,7 +896,8 @@
         <span class="sd">&#39;&#39;&#39; returns the tags you want &#39;&#39;&#39;</span>
         <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?&gt;.+?&lt;/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&gt;)&quot;</span>
 
-        <span class="n">closed_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;hr&quot;</span><span class="p">,</span> <span class="s2">&quot;br&quot;</span><span class="p">,</span> <span class="s2">&quot;wbr&quot;</span><span class="p">,</span> <span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="s2">&quot;embed&quot;</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;track&quot;</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;col&quot;</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="s2">&quot;keygen&quot;</span><span class="p">,</span> <span class="s2">&quot;command&quot;</span><span class="p">]</span>
+        <span class="n">closed_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;hr&quot;</span><span class="p">,</span> <span class="s2">&quot;br&quot;</span><span class="p">,</span> <span class="s2">&quot;wbr&quot;</span><span class="p">,</span> <span class="s2">&quot;img&quot;</span><span class="p">,</span>
+                       <span class="s2">&quot;embed&quot;</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;track&quot;</span><span class="p">,</span> <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;col&quot;</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="s2">&quot;keygen&quot;</span><span class="p">,</span> <span class="s2">&quot;command&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">closed_tags</span><span class="p">:</span>
             <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?/&gt;)&quot;</span>
 
@@ -1074,16 +1076,17 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">images</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns a collection of all &lt;img&gt; elements in the document&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns a collection of all &lt;img&gt; elements in the document &quot;&quot;&quot;</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;img&quot;</span>
         <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?/&gt;)&quot;</span>
         <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">tags</span>
 
-<div class="viewcode-block" id="Document.implementation"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.implementation">[docs]</a>    <span class="k">def</span> <span class="nf">implementation</span><span class="p">():</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">implementation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the DOMImplementation object that handles this document &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">DOMImplementation</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">DOMImplementation</span><span class="p">()</span>
 
     <span class="c1"># def importNode():</span>
         <span class="c1"># &#39;&#39;&#39;Imports a node from another document&#39;&#39;&#39;</span>
@@ -1196,25 +1199,25 @@
     <span class="c1">#     return self.uri</span>
 
     <span class="k">def</span> <span class="nf">origin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the protocol, hostname and port number of a URL&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Returns the protocol, hostname and port number of a URL &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Sets or returns the querystring part of a URL&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot; Sets or returns the querystring part of a URL &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">assign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Loads a new document&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Loads a new document &quot;&quot;&quot;</span>
         <span class="c1"># TODO - if different download?</span>
         <span class="c1"># dom.baseURI = url</span>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">reload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Reloads the current document&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Reloads the current document &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Replaces the current document with a new one&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Replaces the current document with a new one &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 

@@ -5,6 +5,8 @@
 """
 
 import argparse
+
+
 def parse_args():
     parser = argparse.ArgumentParser(add_help=False, prog="domonic", usage="%(prog)s [options]", description="Generate HTML with Python 3")
     parser.add_argument('-a', '--assets', help="generate as assets directory with common files", action='store_true')
@@ -19,6 +21,7 @@ def parse_args():
 
     args = parser.parse_args()
     return args
+
 
 def do_things(arguments):
     from domonic.terminal import TerminalException

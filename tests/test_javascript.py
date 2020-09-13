@@ -4,6 +4,7 @@
     unit tests for domonic.javascript
 """
 
+import time
 import unittest
 # import requests
 # from mock import patch
@@ -384,11 +385,10 @@ class domonicTestCase(unittest.TestCase):
             print('hi')
             pass
 
-        test = window.setInterval( hi, 1 )
+        test = window.setInterval(hi, 1)
         print('im going to do some stuff in the background')
 
         # keep the test open to see if the intervals fire
-        import time
         time.sleep(2)
 
         print('running')
@@ -400,72 +400,113 @@ class domonicTestCase(unittest.TestCase):
         pass
 
     def test_javascript_fetch(self):
-        # return
 
-        urls = ['http://www.google.com']
+        TEST_DOMAIN = 'http://eventual.technology'
+        urls = ['http://google.com', 'http://linkedin.com', 'http://eventual.technology']  # use your own domains
 
-        # print('run 1')
-        # results = window.fetch( urls )
-        # print(results)
-        # for r in results:
-            # print(r)
+        print('run 1')
+        results = window.fetch(TEST_DOMAIN)
+        results.then(lambda r: print(r.text))
+        print('run 1 FINISHED')
 
-        # print('run 2')
-        # results = window.fetch_threaded( urls )
-        # print(results)
-        # for r in results:
-            # print(r)
+        def somefunc(response):
+            print("I'm a callback", response.ok)
+            return response
 
-        # print('run 3')
-        # results = window.fetch_pooled( urls )
-        # print(results)
-        # for r in results:
-            # print(r)
+        mydata = window.fetch(TEST_DOMAIN).then(somefunc)
+        print(mydata)
+        print(mydata.data)
+        print(mydata.data.text)
 
-        # print('run 4')
-        # results = window.fetch( urls )
-        # print(results)
-        # for r in results:
-            # print(r)
+        print('run 1111')
+        results = window.fetch_set(urls)
+        print(results)
+        print(list(results))
+        for r in results:
+            if r is not None:
+                print(r.ok)
+                # print(r.text)
+
+        print('run 2')
+        results = window.fetch_threaded(urls)
+        print(results)
+        print(list(results))
+        for r in results:
+            if r is not None:
+                print(r.ok)
+                # print(r.text)
+
+        print('run 3')
+        results = window.fetch_pooled(urls, timeout=2)
+        print(results)
+        for r in results:
+            if r is not None:
+                print(r.ok)
+                # print(r.text)
+
+        print('run 4')
+        results = window.fetch(urls[0])
+        print(results)
+        results.then(lambda r: print(r.text) if r is not None else None)
 
         print('ran ===')
+        # return
 
         # TEST REGULAR
 
-        # def get_things():
-        #     global _results
-        #     _results = window.fetch( urls )
-        #     print('sup::', _results)
-        # print('BEFORE')
-        # test = window.setTimeout( get_things, 2000 )
-        # test = window.setInterval( get_things, 2000 )
-        # print('AFTER')
-        # print(_results)
-        # import time
-        # time.sleep(4)
-        # print('LATER')
-        # print(_results)
+        global _results
+
+        def get_things():
+            global _results
+            _results = window.fetch(urls[0])
+            print('sup::', _results)
+
+        print('BEFORE')
+        test = window.setInterval(get_things, 2000)
+        print('AFTER')
+        print(_results)
+        time.sleep(4)
+        print('LATER')
+        print(_results)
+
+        print('MAKE SURE TO CLEAR INTERVAL AND RESET RESULTS!')
+        window.clearInterval(test)
+        _results = []
 
         # TEST - Threaded interval triggering a CPU pool
         def get_things():
             global _results
-            _results = window.fetch_pooled( urls )
+            _results = window.fetch_pooled(urls)
             print('sup::', _results)
 
         print('Are you ready')
-        # test = window.setTimeout( get_things, 2000 )
-        test = window.setInterval( get_things, 2000 )
+        test = window.setInterval(get_things, 1000)
         print("wait, where my results?")
         print(_results)
-        import time
         time.sleep(4)
         print("Ahhh nice")
         print(_results)
-        window.clearInterval( test )
+        for r in _results:
+            print(r.ok)
+            # print(r.text)
+
+        window.clearInterval(test)
 
         # nice 😎
 
+    def test_javascript_promise(self):
+        def do_test(resolve, reject):
+            global _intID
+            _intID = window.setInterval(resolve, 2000, 'amazing!')
+            resolve("once!")
+        myPromise = Promise(lambda resolve, reject: do_test(resolve, reject))
+        myPromise.then(lambda successMessage: str(successMessage))
+        time.sleep(3)
+        window.clearInterval(_intID)
+        myPromise.then(lambda successMessage: print("Yay! " + str(successMessage)))
 
+
+_intID = None
 _results = []
 
 

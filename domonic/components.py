@@ -1,8 +1,9 @@
 import base64
 from domonic.html import *
 
-# WARNING. you didn't see this. what is not documented is subject to lots of change!
-# use this as example for building own components
+# WARNING. What is not documented is subject to lots of change!
+# these are just examples of how to build your own components
+
 
 class Modal(object):  # TODO - shouldn't this extend dom?
 
@@ -98,8 +99,8 @@ class Webpage(object):  # TODO - shouldn't this extend html?
                 '<!DOCTYPE HTML>',
                 head(classless_css, jquery, code, styles),
                 body(div(self.content, _class="domonic-container"))
-                )
             )
+        )
 
 
 '''

@@ -28,7 +28,7 @@ from functools import wraps
 def accepts(*types):
     def check_accepts(f):
         assert len(types) == f.__code__.co_argcount
-        
+
         def new_f(*args, **kwds):
             for (a, t) in zip(args, types):
                 assert isinstance(a, t), \
@@ -92,8 +92,8 @@ def cash(func, currency="£"):
 
 
 # def lenient(*args, **kwargs):
-""" can try to remap args if passed incorrectly. 
-    i.e. if expecting array but gets string, puts string in arr
-    should never switch order probably. just re-type
-    prints warning and runs
-"""
+# """ can try to remap args if passed incorrectly.
+    # i.e. if expecting array but gets string, puts string in arr
+    # should never switch order probably. just re-type
+    # prints warning and runs
+# """

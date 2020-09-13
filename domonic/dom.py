@@ -287,7 +287,7 @@ class Node(EventTarget):
         """ Checks if two elements are equal """
         return (str(self) == str(node))
 
-    def getRootNode(options=None):
+    def getRootNode(self, options=None):
         # if options is not None:
         # if options['composed'] = True:
         return self.rootNode
@@ -306,7 +306,7 @@ class Node(EventTarget):
 class ParentNode(object):
     """ not tested yet """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     # @property
@@ -328,7 +328,7 @@ class ParentNode(object):
     def append(self, items):
         self.args.extend(items)
 
-    def prepend(self):
+    def prepend(self, items):
         self.args = items.extend(self.args)
 
     def replaceChildren(self, children):
@@ -517,7 +517,7 @@ class Element(Node):
         raise NotImplementedError
 
     def getAttribute(self, attribute: str) -> str:
-        '''Returns the specified attribute value of an element node'''
+        """ Returns the specified attribute value of an element node """
         try:
 
             if attribute[0:1] != '_':
@@ -547,10 +547,11 @@ class Element(Node):
         raise NotImplementedError
 
     def getElementsByTagName(self, tag: str) -> List:
-        ''' Returns a collection of all child elements with the specified tag name '''
+        """ Returns a collection of all child elements with the specified tag name """
         reg = f"(<{tag}.*?>.+?</{tag}>)"
 
-        closed_tags = ["base", "link", "meta", "hr", "br", "wbr", "img", "embed", "param", "source", "track", "area", "col", "input", "keygen", "command"]
+        closed_tags = ["base", "link", "meta", "hr", "br", "wbr", "img", "embed", "param", "source", "track",
+                       "area", "col", "input", "keygen", "command"]
         if tag in closed_tags:
             reg = f"(<{tag}.*?/>)"
 
@@ -559,7 +560,7 @@ class Element(Node):
         return tags
 
     def hasAttribute(self, attribute: str) -> str:
-        '''Returns true if an element has the specified attribute, otherwise false'''
+        """ Returns true if an element has the specified attribute, otherwise false """
         try:
             if attribute[0:1] != '_':
                 attribute = '_' + attribute
@@ -570,7 +571,7 @@ class Element(Node):
             return False
 
     def hasAttributes(self) -> bool:
-        '''Returns true if an element has any attributes, otherwise false'''
+        """ Returns true if an element has any attributes, otherwise false """
         if len(self.kwargs) > 0:
             return True
         else:
@@ -823,7 +824,7 @@ class DOMImplementation(object):
         # return Document()
         raise NotImplementedError
 
-    def createDocumentType():
+    def createDocumentType(self):
         raise NotImplementedError
 
     def createHTMLDocument(self, title=None):
@@ -861,7 +862,8 @@ class Document(Element):
         ''' returns the tags you want '''
         reg = f"(<{tag}.*?>.+?</{tag}>)"
 
-        closed_tags = ["base", "link", "meta", "hr", "br", "wbr", "img", "embed", "param", "source", "track", "area", "col", "input", "keygen", "command"]
+        closed_tags = ["base", "link", "meta", "hr", "br", "wbr", "img",
+                       "embed", "param", "source", "track", "area", "col", "input", "keygen", "command"]
         if tag in closed_tags:
             reg = f"(<{tag}.*?/>)"
 
@@ -1040,14 +1042,15 @@ class Document(Element):
 
     @property
     def images(self):
-        ''' Returns a collection of all <img> elements in the document'''
+        """ Returns a collection of all <img> elements in the document """
         tag = "img"
         reg = f"(<{tag}.*?/>)"
         pattern = re.compile(reg)
         tags = re.findall(pattern, str(self))
         return tags
 
-    def implementation():
+    @property
+    def implementation(self):
         """ Returns the DOMImplementation object that handles this document """
         return DOMImplementation()
 
@@ -1162,25 +1165,25 @@ class Location():
     #     return self.uri
 
     def origin(self):
-        ''' Returns the protocol, hostname and port number of a URL'''
+        """ Returns the protocol, hostname and port number of a URL """
         raise NotImplementedError
 
     def search(self):
-        ''' Sets or returns the querystring part of a URL'''
+        """ Sets or returns the querystring part of a URL """
         raise NotImplementedError
 
     def assign(self, url: str = "") -> None:
-        '''Loads a new document'''
+        """Loads a new document """
         # TODO - if different download?
         # dom.baseURI = url
         pass
 
     def reload(self):
-        '''Reloads the current document'''
+        """Reloads the current document """
         raise NotImplementedError
 
     def replace(self):
-        '''Replaces the current document with a new one'''
+        """Replaces the current document with a new one """
         raise NotImplementedError
 
 

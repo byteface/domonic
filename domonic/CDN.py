@@ -86,7 +86,7 @@ class CDN_CSS(object):
     """
     Preferably use version numbers if available. user LATEST if it always gets the latest
     """
-    BOOTSTRAP_5_ALPHA = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.jshttps://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+    BOOTSTRAP_5_ALPHA = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
     BOOTSTRAP_4 = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     MARX = "https://unpkg.com/marx-css/css/marx.min.css"  # version?
     MVP = "https://unpkg.com/mvp.css"  # version?

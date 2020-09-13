@@ -51,12 +51,17 @@
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">signal</span>
 <span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span> <span class="k">as</span> <span class="n">Pool</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
 
-<div class="viewcode-block" id="js_object"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.js_object">[docs]</a><span class="k">class</span> <span class="nc">js_object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="js_object"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.js_object">[docs]</a><span class="k">class</span> <span class="nc">js_object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; js_object &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="js_object.valueOf"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.js_object.valueOf">[docs]</a>    <span class="k">def</span> <span class="nf">valueOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="js_object.valueOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.js_object.valueOf">[docs]</a>    <span class="k">def</span> <span class="nf">valueOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the primitive value of an array Array, Boolean, Date, Number, String&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
@@ -65,7 +70,7 @@
         <span class="c1"># pass</span>
 
 
-<div class="viewcode-block" id="Math"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Math">[docs]</a><span class="k">class</span> <span class="nc">Math</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
+<div class="viewcode-block" id="Math"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Math">[docs]</a><span class="k">class</span> <span class="nc">Math</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Math class that mirrors javascript implementation &quot;&quot;&quot;</span>
 
     <span class="c1"># CONSTANTS</span>
@@ -252,29 +257,29 @@
 <span class="c1"># import urllib</span>
 
 
-<div class="viewcode-block" id="Global"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global">[docs]</a><span class="k">class</span> <span class="nc">Global</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Global"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global">[docs]</a><span class="k">class</span> <span class="nc">Global</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; javascript global methods &quot;&quot;&quot;</span>
 
     <span class="n">NaN</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
 
     <span class="c1"># TODO - https://stackoverflow.com/questions/747641/what-is-the-difference-between-decodeuricomponent-and-decodeuri</span>
 
-<div class="viewcode-block" id="Global.decodeURI"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.decodeURI">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.decodeURI"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.decodeURI">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">decodeURI</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Decodes a URI &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">unquote</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.decodeURIComponent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.decodeURIComponent">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.decodeURIComponent"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.decodeURIComponent">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">decodeURIComponent</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Decodes a URI component &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">unquote</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.encodeURI"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.encodeURI">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.encodeURI"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.encodeURI">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">encodeURI</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Encodes a URI &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;~@#$&amp;()*!+=:;,.?/</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.encodeURIComponent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.encodeURIComponent">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.encodeURIComponent"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.encodeURIComponent">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">encodeURIComponent</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Encodes a URI component &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">quote</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">safe</span><span class="o">=</span><span class="s1">&#39;~()*!.</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -296,12 +301,12 @@
     <span class="sd">&quot;&quot;&quot;A numeric value that represents positive/negative infinity &quot;&quot;&quot;</span>
     <span class="c1"># pass</span>
 
-<div class="viewcode-block" id="Global.isFinite"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.isFinite">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.isFinite"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.isFinite">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isFinite</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Determines whether a value is a finite, legal number &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Global.isNaN"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.isNaN">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.isNaN"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.isNaN">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isNaN</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Determines whether a value is an illegal number &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">float</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
@@ -311,11 +316,11 @@
 
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Global.NaN"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.NaN">[docs]</a>    <span class="k">def</span> <span class="nf">NaN</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Global.NaN"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.NaN">[docs]</a>    <span class="k">def</span> <span class="nf">NaN</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; &quot;Not-a-Number&quot; value &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span></div>
 
-<div class="viewcode-block" id="Global.Number"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.Number">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.Number"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.Number">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">Number</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts an object&#39;s value to a number &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -331,22 +336,22 @@
             <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span></div>
 
-<div class="viewcode-block" id="Global.parseFloat"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.parseFloat">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.parseFloat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.parseFloat">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">parseFloat</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parses a string and returns a floating point number &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.parseInt"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.parseInt">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.parseInt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.parseInt">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">parseInt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parses a string and returns an integer &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.String"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.String">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Global.String"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.String">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">String</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts an object&#39;s value to a string &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Global.undefined"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Global.undefined">[docs]</a>    <span class="k">def</span> <span class="nf">undefined</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Global.undefined"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.undefined">[docs]</a>    <span class="k">def</span> <span class="nf">undefined</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Indicates that a variable has not been assigned a value &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">None</span>
 
@@ -356,7 +361,7 @@
         <span class="c1"># pass</span>
 
 
-<div class="viewcode-block" id="Date"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date">[docs]</a><span class="k">class</span> <span class="nc">Date</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
+<div class="viewcode-block" id="Date"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date">[docs]</a><span class="k">class</span> <span class="nc">Date</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; javascript date &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">):</span>
@@ -369,42 +374,42 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">date_string</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span>
 
-<div class="viewcode-block" id="Date.getDate"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getDate">[docs]</a>    <span class="k">def</span> <span class="nf">getDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getDate">[docs]</a>    <span class="k">def</span> <span class="nf">getDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the day of the month (from 1-31) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">day</span></div>
         <span class="c1"># TODO - do for a date object passed in. this only does today</span>
 
-<div class="viewcode-block" id="Date.getDay"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getDay">[docs]</a>    <span class="k">def</span> <span class="nf">getDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getDay"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getDay">[docs]</a>    <span class="k">def</span> <span class="nf">getDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Returns the day of the week (from 0-6) &quot;&quot;&quot;</span>
         <span class="n">day</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">isoweekday</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">day</span> <span class="k">if</span> <span class="p">(</span><span class="n">day</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span></div>
         <span class="c1"># TODO - do for a date object passed in. this only does today</span>
 
-<div class="viewcode-block" id="Date.getFullYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">getFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getFullYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">getFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the year &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span></div>
 
-<div class="viewcode-block" id="Date.getHours"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getHours">[docs]</a>    <span class="k">def</span> <span class="nf">getHours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getHours"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getHours">[docs]</a>    <span class="k">def</span> <span class="nf">getHours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Returns the hour (from 0-23) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">hour</span></div>
 
-<div class="viewcode-block" id="Date.getMilliseconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">getMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getMilliseconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">getMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the milliseconds (from 0-999) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">microsecond</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Date.getMinutes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">getMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getMinutes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">getMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Returns the minutes (from 0-59) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">minute</span></div>
 
-<div class="viewcode-block" id="Date.getMonth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getMonth">[docs]</a>    <span class="k">def</span> <span class="nf">getMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getMonth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getMonth">[docs]</a>    <span class="k">def</span> <span class="nf">getMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the month (from 0-11) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="Date.getSeconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">getSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getSeconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">getSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Returns the seconds (from 0-59) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">second</span></div>
 
-<div class="viewcode-block" id="Date.getTime"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getTime">[docs]</a>    <span class="k">def</span> <span class="nf">getTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getTime"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getTime">[docs]</a>    <span class="k">def</span> <span class="nf">getTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds since midnight Jan 1 1970, and a specified date &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
         <span class="c1"># TODO - whats difference between this and &#39;now()&#39; ?</span>
@@ -413,79 +418,75 @@
         <span class="sd">&quot;&quot;&quot; Returns the time difference between UTC time and local time, in minutes &quot;&quot;&quot;</span></div>
         <span class="c1"># pass</span>
 
-<div class="viewcode-block" id="Date.getUTCDate"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCDate">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCDate">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the day of the month, according to universal time (from 1-31) &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.getUTCDay"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCDay">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCDay"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCDay">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the day of the week, according to universal time (from 0-6) &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.getUTCFullYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCFullYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the year, according to universal time &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">year</span></div>
 
-<div class="viewcode-block" id="Date.getUTCHours"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCHours">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCHours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCHours"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCHours">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCHours</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the hour, according to universal time (from 0-23) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">hour</span></div>
 
-<div class="viewcode-block" id="Date.getUTCMilliseconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCMilliseconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the milliseconds, according to universal time (from 0-999) &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.getUTCMinutes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCMinutes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the minutes, according to universal time (from 0-59) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">minute</span></div>
 
-<div class="viewcode-block" id="Date.getUTCMonth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCMonth">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCMonth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCMonth">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the month, according to universal time (from 0-11) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">month</span> <span class="o">-</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="Date.getUTCSeconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getUTCSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getUTCSeconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the seconds, according to universal time (from 0-59) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">second</span></div>
 
-<div class="viewcode-block" id="Date.getYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.getYear">[docs]</a>    <span class="k">def</span> <span class="nf">getYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.getYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getYear">[docs]</a>    <span class="k">def</span> <span class="nf">getYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Deprecated. Use the getFullYear() method instead &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span></div>
 
-<div class="viewcode-block" id="Date.now"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.now">[docs]</a>    <span class="k">def</span> <span class="nf">now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.now"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.now">[docs]</a>    <span class="k">def</span> <span class="nf">now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds since midnight Jan 1, 1970 &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span></div>
 
     <span class="c1"># def onstorage(self):</span>
-        <span class="sd">&quot;&quot;&quot; The event occurs when a Web Storage area is updated StorageEvent&quot;&quot;&quot;</span>
+        <span class="c1"># &quot;&quot;&quot; The event occurs when a Web Storage area is updated StorageEvent&quot;&quot;&quot;</span>
         <span class="c1"># pass</span>
 
     <span class="c1"># def ontimeupdate(self):</span>
-        <span class="sd">&quot;&quot;&quot; The event occurs when the playing position has changed (like when the user fast forwards to a different point in the media) Event&quot;&quot;&quot;</span></div>
+        <span class="c1"># &quot;&quot;&quot; The event occurs when the playing position has changed (like when the user fast forwards to a different point in the media) Event&quot;&quot;&quot;</span>
         <span class="c1"># pass</span>
 
-<div class="viewcode-block" id="Date.parse"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_string</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.parse"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_string</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parses a date string and returns the number of milliseconds since January 1, 1970 &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_date</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">date_string</span><span class="p">))</span></div>
         <span class="c1"># return self.date.getTime()</span>
 
-<div class="viewcode-block" id="Date.setDate"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setDate">[docs]</a>    <span class="k">def</span> <span class="nf">setDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setDate">[docs]</a>    <span class="k">def</span> <span class="nf">setDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the day of the month of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">day</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">))</span></div>
         <span class="c1"># return self.date.getTime()</span>
 
-<div class="viewcode-block" id="Date.setFullYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">setFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setFullYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">setFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the year of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">))</span></div>
         <span class="c1"># return self.date.getTime()</span>
 
-<div class="viewcode-block" id="Date.setHours"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setHours">[docs]</a>    <span class="k">def</span> <span class="nf">setHours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hours</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setHours"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setHours">[docs]</a>    <span class="k">def</span> <span class="nf">setHours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hours</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the hour of a date object &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">hours</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">hours</span><span class="p">))</span></div>
         <span class="c1"># return self.date.getTime()</span>
 
-    <span class="c1"># def setItem(self):</span>
-        <span class="sd">&quot;&quot;&quot; Adds that key to the storage, or update that key&#39;s value if it already exists   Storage&quot;&quot;&quot;</span></div>
-        <span class="c1"># pass</span>
-
-<div class="viewcode-block" id="Date.setMilliseconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">setMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setMilliseconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">setMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the milliseconds of a date object &quot;&quot;&quot;</span>
         <span class="c1"># self.date.replace(millisecond=int(milliseconds))</span>
         <span class="c1"># return self.now()</span>
@@ -493,75 +494,75 @@
         <span class="k">pass</span></div>
 
     <span class="c1"># TODO - , seconds = None, milliseconds = None):</span>
-<div class="viewcode-block" id="Date.setMinutes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">setMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minutes</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setMinutes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">setMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minutes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Set the minutes of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">minute</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">minutes</span><span class="p">))</span></div>
         <span class="c1"># return self.now()</span>
 
-<div class="viewcode-block" id="Date.setMonth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setMonth">[docs]</a>    <span class="k">def</span> <span class="nf">setMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setMonth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setMonth">[docs]</a>    <span class="k">def</span> <span class="nf">setMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the month of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">month</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">))</span></div>
         <span class="c1"># return self.now()</span>
 
-<div class="viewcode-block" id="Date.setSeconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">setSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setSeconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">setSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the seconds of a date object &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">second</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">seconds</span><span class="p">))</span></div>
         <span class="c1"># return self.now()</span>
 
-<div class="viewcode-block" id="Date.setTime"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setTime">[docs]</a>    <span class="k">def</span> <span class="nf">setTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setTime"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setTime">[docs]</a>    <span class="k">def</span> <span class="nf">setTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets a date to a specified number of milliseconds after/before January 1, 1970 &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.setUTCDate"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCDate">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCDate">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Sets the day of the month of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setDate</span><span class="p">(</span><span class="n">day</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCFullYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCFullYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Sets the year of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setFullYear</span><span class="p">(</span><span class="n">year</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCHours"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCHours">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCHours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hour</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCHours"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCHours">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCHours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hour</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the hour of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setHours</span><span class="p">(</span><span class="n">hour</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCMilliseconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCMilliseconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCMilliseconds">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMilliseconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Sets the milliseconds of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setMilliseconds</span><span class="p">(</span><span class="n">milliseconds</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCMinutes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minutes</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCMinutes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCMinutes">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMinutes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minutes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;   Set the minutes of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setMinutes</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCMonth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCMonth">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCMonth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCMonth">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCMonth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">month</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the month of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setMonth</span><span class="p">(</span><span class="n">month</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setUTCSeconds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setUTCSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setUTCSeconds"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setUTCSeconds">[docs]</a>    <span class="k">def</span> <span class="nf">setUTCSeconds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;   Set the seconds of a date object, according to universal time &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setSeconds</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span></div>
         <span class="c1"># return self.getTime()</span>
 
-<div class="viewcode-block" id="Date.setYear"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.setYear">[docs]</a>    <span class="k">def</span> <span class="nf">setYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.setYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setYear">[docs]</a>    <span class="k">def</span> <span class="nf">setYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Deprecated. Use the setFullYear() method instead &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">))</span></div>
         <span class="c1"># return self.getTime()</span>
         <span class="c1"># TODO - there may not be a date object already?</span>
 
-<div class="viewcode-block" id="Date.toDateString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toDateString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts the date portion of a Date object into a readable string &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toGMTString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toGMTString">[docs]</a>    <span class="k">def</span> <span class="nf">toGMTString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toGMTString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toGMTString">[docs]</a>    <span class="k">def</span> <span class="nf">toGMTString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Deprecated. Use the toUTCString() method instead &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toJSON"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toJSON">[docs]</a>    <span class="k">def</span> <span class="nf">toJSON</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toJSON"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toJSON">[docs]</a>    <span class="k">def</span> <span class="nf">toJSON</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;  Returns the date as a string, formatted as a JSON date &quot;&quot;&quot;</span>
 
         <span class="c1"># def default(o):</span>
@@ -570,31 +571,31 @@
 
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toISOString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toISOString">[docs]</a>    <span class="k">def</span> <span class="nf">toISOString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toISOString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toISOString">[docs]</a>    <span class="k">def</span> <span class="nf">toISOString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the date as a string, using the ISO standard &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toLocaleDateString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toLocaleDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toLocaleDateString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the date portion of a Date object as a string, using locale conventions &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toLocaleString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toLocaleString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toLocaleString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts a Date object to a string, using locale conventions &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toLocaleTimeString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toLocaleTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toLocaleTimeString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the time portion of a Date object as a string, using locale conventions &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toTimeString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toTimeString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts the time portion of a Date object to a string &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.toUTCString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.toUTCString">[docs]</a>    <span class="k">def</span> <span class="nf">toUTCString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.toUTCString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toUTCString">[docs]</a>    <span class="k">def</span> <span class="nf">toUTCString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts a Date object to a string, according to universal time &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Date.UTC"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Date.UTC">[docs]</a>    <span class="k">def</span> <span class="nf">UTC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.UTC"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.UTC">[docs]</a>    <span class="k">def</span> <span class="nf">UTC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
@@ -603,7 +604,7 @@
     <span class="c1"># pass</span>
 
 
-<div class="viewcode-block" id="Screen"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen">[docs]</a><span class="k">class</span> <span class="nc">Screen</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen">[docs]</a><span class="k">class</span> <span class="nc">Screen</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; screen &quot;&quot;&quot;</span>
 
     <span class="c1"># wrap a lib?</span>
@@ -630,35 +631,36 @@
         <span class="c1"># print(&quot;Height =&quot;, GetSystemMetrics(1))</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="Screen.availHeight"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.availHeight">[docs]</a>    <span class="k">def</span> <span class="nf">availHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.availHeight"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.availHeight">[docs]</a>    <span class="k">def</span> <span class="nf">availHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the height of the screen (excluding the Windows Taskbar) &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Screen.availWidth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.availWidth">[docs]</a>    <span class="k">def</span> <span class="nf">availWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.availWidth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.availWidth">[docs]</a>    <span class="k">def</span> <span class="nf">availWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the width of the screen (excluding the Windows Taskbar) &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Screen.colorDepth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.colorDepth">[docs]</a>    <span class="k">def</span> <span class="nf">colorDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.colorDepth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.colorDepth">[docs]</a>    <span class="k">def</span> <span class="nf">colorDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the colorDepth &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Screen.height"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.height">[docs]</a>    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.height"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.height">[docs]</a>    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the total height of the screen &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Screen.pixelDepth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.pixelDepth">[docs]</a>    <span class="k">def</span> <span class="nf">pixelDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.pixelDepth"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.pixelDepth">[docs]</a>    <span class="k">def</span> <span class="nf">pixelDepth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the pixelDepth &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Screen.width"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Screen.width">[docs]</a>    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Screen.width"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen.width">[docs]</a>    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the total width of the screen  &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="ProgramKilled"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.ProgramKilled">[docs]</a><span class="k">class</span> <span class="nc">ProgramKilled</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="ProgramKilled"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.ProgramKilled">[docs]</a><span class="k">class</span> <span class="nc">ProgramKilled</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Job"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Job">[docs]</a><span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Job"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Job">[docs]</a><span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">,</span> <span class="n">execute</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -673,7 +675,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Job.run"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Job.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Job.run"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Job.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopped</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span></div></div>
 
@@ -690,18 +692,68 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="Window"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Window">[docs]</a><span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Promise</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="c1"># undocumented - warning. use at own risk</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># print(&#39;init&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;pending&#39;</span>  <span class="c1"># fullfilled, rejected</span>
+        <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">resolve</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">then</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># print(&#39;---&gt;&#39;,self.data)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="c1"># print(&#39;--&gt;&#39;,self.data)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">catch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+        <span class="c1"># func(error)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># print( &#39;resolve called::&#39;, data )</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;fulfilled&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">reject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;rejected&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    <span class="c1"># def __str__(self):</span>
+    <span class="c1">#     try:</span>
+    <span class="c1">#         return self.data.text</span>
+    <span class="c1">#     except Exception as e:</span>
+    <span class="c1">#         print(e)</span>
+    <span class="c1">#     return str(self)</span>
+
+
+<span class="k">class</span> <span class="nc">FetchedSet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>  <span class="c1"># not a promise</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">oncomplete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>  <span class="c1"># runs once all results are back</span>
+        <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+        <span class="k">return</span>
+
+
+<div class="viewcode-block" id="Window"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window">[docs]</a><span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; window &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;window here!&#39;</span><span class="p">)</span>
-        <span class="c1"># print(type(dom))</span>
-        <span class="c1"># self.args = args</span>
-        <span class="c1"># self.kwargs = kwargs</span>
         <span class="c1"># self.console = dom.console</span>
         <span class="c1"># self.document = dom.document</span>
         <span class="c1"># self.location = &#39;&#39;#dom.location</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># globals()?</span>
+        <span class="c1"># dir()?</span>
+        <span class="c1"># locals()?</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -720,26 +772,32 @@
         <span class="c1"># import requests.</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="Window.alert"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Window.alert">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Window.alert"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.alert">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">alert</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Displays an alert box with a message and an OK button &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span></div>
 
-<div class="viewcode-block" id="Window.prompt"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Window.prompt">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Window.prompt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.prompt">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">prompt</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">default_text</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Displays a dialog box that prompts the visitor for input &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="nb">input</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">data</span></div>
 
-    <span class="c1"># TODO - clearTimeout.</span>
-<div class="viewcode-block" id="Window.setTimeout"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Window.setTimeout">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">setTimeout</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+<div class="viewcode-block" id="Window.setTimeout"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.setTimeout">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">setTimeout</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Calls a function or evaluates an expression after a specified number of milliseconds &quot;&quot;&quot;</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>  <span class="c1"># blocks</span>
+        <span class="kn">import</span> <span class="nn">time</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">t</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>  <span class="c1"># TODO - still blocks</span>
         <span class="n">function</span><span class="p">()</span>
         <span class="k">return</span></div>
+
+    <span class="c1"># TODO - clearTimeout.</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">clearTimeout</span><span class="p">(</span><span class="n">job</span><span class="p">):</span>
+        <span class="c1"># job.stop()</span>
+        <span class="k">pass</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">clearInterval</span><span class="p">(</span><span class="n">job</span><span class="p">):</span>
@@ -749,6 +807,107 @@
     <span class="k">def</span> <span class="nf">setInterval</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">interval_ID</span> <span class="o">=</span> <span class="n">SetInterval</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">interval_ID</span><span class="o">.</span><span class="n">job</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_do_request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># private - don&#39;t use directly. use one of the fetch methods</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># r = requests.get(url, timeout=3)</span>
+            <span class="kn">from</span> <span class="nn">requests</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Session</span>
+
+            <span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span>
+            <span class="k">if</span> <span class="s2">&quot;method&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">method</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s2">&quot;callback_function&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;callback_function&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s2">&quot;error_handler&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;error_handler&quot;</span><span class="p">]</span>
+
+            <span class="n">s</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+            <span class="n">prepped</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">prepare_request</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">prepped</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="c1"># print(r.status_code)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">is</span> <span class="n">FetchedSet</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">r</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Request Failed for URL: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># undocumented - warning. use at own risk</span>
+        <span class="c1"># note - kinda pointless atm. just use requests directly and you wont have to muck about with a Promise</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;fetch takes a single url string. For batches use fetch_set, fetch_threaded or fetch_pooled&#39;</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">Promise</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">_do_request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">fetch_set</span><span class="p">(</span><span class="n">urls</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">callback_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error_handler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># undocumented - warning. use at own risk</span>
+        <span class="c1"># note - still blocks. just gets all before continuing</span>
+        <span class="c1"># problems - all urls can only have 1 associated callback, error and set of kwargs</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">urls</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="n">urls</span><span class="p">]</span>  <span class="c1"># leniency</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">FetchedSet</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">then</span><span class="p">(</span><span class="n">callback_function</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">fetch_threaded</span><span class="p">(</span><span class="n">urls</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">callback_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error_handler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># undocumented - warning. use at own risk</span>
+        <span class="c1"># note - still blocks. just gets all before continuing using threads</span>
+        <span class="c1"># problems - all urls can only have 1 associated callback, error and set of kwargs</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">urls</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="n">urls</span><span class="p">]</span>  <span class="c1"># leniency</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">FetchedSet</span><span class="p">()</span>
+        <span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
+            <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">window</span><span class="o">.</span><span class="n">_do_request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+            <span class="n">thread</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thread</span><span class="p">)</span>
+        <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">j</span><span class="p">:</span> <span class="n">j</span><span class="o">.</span><span class="n">start</span><span class="p">(),</span> <span class="n">jobs</span><span class="p">)</span>
+        <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">j</span><span class="p">:</span> <span class="n">j</span><span class="o">.</span><span class="n">join</span><span class="p">(),</span> <span class="n">jobs</span><span class="p">)</span>
+        <span class="c1"># f = FetchedSet()</span>
+        <span class="k">return</span> <span class="n">f</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">fetch_pooled</span><span class="p">(</span><span class="n">urls</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">callback_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error_handler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># undocumented - warning. use at own risk</span>
+        <span class="c1"># note - still blocks. just gets all before continuing using a pool</span>
+        <span class="c1"># problems - all urls can only have 1 associated callback, error and set of kwargs</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">urls</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="n">urls</span><span class="p">]</span>  <span class="c1"># leniency</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">FetchedSet</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">_do_request_wrapper</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">]</span>
+            <span class="n">kwargs</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;callback_function&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">]</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;error_handler&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">]</span>
+            <span class="n">window</span><span class="o">.</span><span class="n">_do_request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">()</span>
+        <span class="n">urls</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">:</span> <span class="n">f</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="n">callback_function</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">:</span> <span class="n">error_handler</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">}</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">]</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_do_request_wrapper</span><span class="p">,</span> <span class="n">urls</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">f</span>
+
+    <span class="c1"># def fetch_aysnc( urls: list, options={}, type=&quot;async&quot; ):</span>
+        <span class="c1"># TODO - a version using async/await</span>
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># @getter</span>
@@ -790,7 +949,7 @@
 <span class="c1"># pageXOffset   Returns the pixels the current document has been scrolled (horizontally) from the upper left corner of the window   Window</span>
 <span class="c1"># pageYOffset   Returns the pixels the current document has been scrolled (vertically) from the upper left corner of the window Window</span>
 <span class="c1"># parent    Returns the parent window of the current window Window</span>
-<span class="c1"># print()   Prints the content of the current window    Window</span>
+<span class="c1"># _print()   Prints the content of the current window    Window</span>
 <span class="c1"># resizeBy()    Resizes the window by the specified pixels  Window</span>
 <span class="c1"># resizeTo()    Resizes the window to the specified width and height    Window</span>
 <span class="c1"># screen    Returns the Screen object for the window (See Screen object)    Window</span>
@@ -802,7 +961,6 @@
 <span class="c1"># scrollTo()    Scrolls the document to the specified coordinates   Window</span>
 <span class="c1"># scrollX   An alias of pageXOffset Window</span>
 <span class="c1"># scrollY   An alias of pageYOffset Window</span>
-<span class="c1"># self  Returns the current window  Window</span>
 <span class="c1"># sessionStorage    Allows to save key/value pairs in a web browser. Stores the data for one session    Window</span>
 <span class="c1"># setTimeout()  Calls a function or evaluates an expression after a specified number of milliseconds    Window</span>
 <span class="c1"># stop()    Stops the window from loading   Window</span>
@@ -814,7 +972,7 @@
 <span class="n">window</span> <span class="o">=</span> <span class="n">Window</span>
 
 
-<div class="viewcode-block" id="Array"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array">[docs]</a><span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Array"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array">[docs]</a><span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; javascript array &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -837,7 +995,7 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Array.toString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.toString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Converts an array to a string, and returns the result &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ars</span><span class="p">)</span>  <span class="c1"># TODO - check what js does</span></div>
 
@@ -846,22 +1004,22 @@
         <span class="sd">&quot;&quot;&quot; Sets or returns the number of elements in an array &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Array.concat"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.concat">[docs]</a>    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.concat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.concat">[docs]</a>    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Joins two or more arrays, and returns a copy of the joined arrays &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Array.fill"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.fill">[docs]</a>    <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.fill"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.fill">[docs]</a>    <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Fill the elements in an array with a static value &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.includes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.includes">[docs]</a>    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.includes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.includes">[docs]</a>    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Check if an array contains the specified element &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Array.indexOf"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.indexOf">[docs]</a>    <span class="k">def</span> <span class="nf">indexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.indexOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.indexOf">[docs]</a>    <span class="k">def</span> <span class="nf">indexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Search the array for an element and returns its position &quot;&quot;&quot;</span>
         <span class="c1"># for count, each in enumerate(self.args):</span>
         <span class="c1">#     if each == value:</span>
@@ -874,16 +1032,16 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="Array.isArray"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.isArray">[docs]</a>    <span class="k">def</span> <span class="nf">isArray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.isArray"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.isArray">[docs]</a>    <span class="k">def</span> <span class="nf">isArray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks whether an object is an array  &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.join"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.join"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Joins all elements of an array into a string  &quot;&quot;&quot;</span>
         <span class="c1"># TODO - get passed param names</span>
         <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Array.lastIndexOf"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.lastIndexOf">[docs]</a>    <span class="k">def</span> <span class="nf">lastIndexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.lastIndexOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.lastIndexOf">[docs]</a>    <span class="k">def</span> <span class="nf">lastIndexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Search the array for an element, starting at the end, and returns its position &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
@@ -891,41 +1049,29 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Array.map"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Creates a new array with the result of calling a function for each array element &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Array.pop"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.pop"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Removes the last element of an array, and returns that element &quot;&quot;&quot;</span>
         <span class="c1"># item = self.args[len(self.args)-1]</span>
         <span class="c1"># del self.args[len(self.args)-1]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Array.push"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.push"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.push">[docs]</a>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adds new elements to the end of an array, and returns the new length &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Array.reduce"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.reduce">[docs]</a>    <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going left-to-right) &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Array.reduceRight"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.reduceRight">[docs]</a>    <span class="k">def</span> <span class="nf">reduceRight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going right-to-left) &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Array.reverse"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.reverse"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reverse">[docs]</a>    <span class="k">def</span> <span class="nf">reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reverses the order of the elements in an array &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span></div>
 
-<div class="viewcode-block" id="Array.slice"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.slice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Selects a part of an array, and returns the new array &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Array.splice"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.splice">[docs]</a>    <span class="k">def</span> <span class="nf">splice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">delete_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">items</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.splice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.splice">[docs]</a>    <span class="k">def</span> <span class="nf">splice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">delete_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">items</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Selects a part of an array, and returns the new array &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">delete_count</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">delete_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">delete_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="n">start</span>
 
         <span class="n">total</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">delete_count</span>
@@ -934,28 +1080,81 @@
         <span class="k">return</span> <span class="n">removed</span></div>
         <span class="c1"># return self.args</span>
 
-<div class="viewcode-block" id="Array.some"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.some">[docs]</a>    <span class="k">def</span> <span class="nf">some</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Checks if any of the elements in an array pass a test &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Array.sort"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Sorts the elements of an array &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Array.unshift"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.unshift">[docs]</a>    <span class="k">def</span> <span class="nf">unshift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.unshift"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.unshift">[docs]</a>    <span class="k">def</span> <span class="nf">unshift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adds new elements to the beginning of an array, and returns the new length &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Array.shift"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Array.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.shift"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; removes the first element from an array and returns that removed element &quot;&quot;&quot;</span>
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">item</span></div></div>
+        <span class="k">return</span> <span class="n">item</span></div>
+
+<div class="viewcode-block" id="Array.map"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Creates a new array with the result of calling a function for each array element &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Array.some"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.some">[docs]</a>    <span class="k">def</span> <span class="nf">some</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks if any of the elements in an array pass a test &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Array.sort"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sorts the elements of an array &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Array.reduce"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reduce">[docs]</a>    <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going left-to-right) &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Array.reduceRight"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reduceRight">[docs]</a>    <span class="k">def</span> <span class="nf">reduceRight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going right-to-left) &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Array.filter"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new array with every element in an array that pass a test</span>
+<span class="sd">        even_numbers = someArr.filter( lambda x: x % 2 == 0 )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="c1"># return list(filter(func, self.args))</span>
+
+<div class="viewcode-block" id="Array.find"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.find">[docs]</a>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the value of the first element in an array that pass a test &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Array.findIndex"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.findIndex">[docs]</a>    <span class="k">def</span> <span class="nf">findIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the index of the first element in an array that pass a test &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Array.forEach"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.forEach">[docs]</a>    <span class="k">def</span> <span class="nf">forEach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Calls a function for each array element &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1"># def from():</span>
+        <span class="sd">&quot;&quot;&quot; Creates an array from an object &quot;&quot;&quot;</span></div>
+        <span class="c1"># raise NotImplementedError</span>
+
+<div class="viewcode-block" id="Array.keys"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a Array Iteration Object, containing the keys of the original array &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Array.copyWithin"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.copyWithin">[docs]</a>    <span class="k">def</span> <span class="nf">copyWithin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Copies array elements within the array, to and from specified positions &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Array.entries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.entries">[docs]</a>    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a key/value pair Array Iteration Object &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Array.every"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.every">[docs]</a>    <span class="k">def</span> <span class="nf">every</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks if every element in an array pass a test &quot;&quot;&quot;</span>
+        <span class="c1"># return all(test for x in self.args)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="Navigator"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Navigator">[docs]</a><span class="k">class</span> <span class="nc">Navigator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Navigator"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Navigator">[docs]</a><span class="k">class</span> <span class="nc">Navigator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; navigator &quot;&quot;&quot;</span>
 
     <span class="c1"># Determines whether cookies are enabled in the browser</span>
@@ -964,61 +1163,82 @@
     <span class="c1"># Determines whether the browser is online</span>
     <span class="n">onLine</span> <span class="o">=</span> <span class="kc">False</span>
 
+    <span class="c1"># Returns the name of the browser Navigator</span>
+    <span class="n">appName</span> <span class="o">=</span> <span class="s2">&quot;domonic&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
         <span class="c1"># self.kwargs = kwargs</span>
-        <span class="k">pass</span></div>
+        <span class="k">pass</span>
 
-    <span class="c1"># appCodeName   Returns the code name of the browser    Navigator</span>
-    <span class="c1"># appName   Returns the name of the browser Navigator</span>
-    <span class="c1"># appVersion    Returns the version information of the browser  Navigator</span>
-    <span class="c1"># geolocation   Returns a Geolocation object that can be used to locate the user&#39;s position Navigator</span>
-    <span class="c1"># language  Returns the language of the browser Navigator</span>
+    <span class="c1"># @property</span>
+    <span class="c1"># def appVersion():</span>
+        <span class="sd">&quot;&quot;&quot; Returns the version information of the browser &quot;&quot;&quot;</span>
+        <span class="c1"># from domonic import __version__</span>
+        <span class="c1"># return __version__</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def language():</span>
+        <span class="sd">&quot;&quot;&quot; Returns the language of the browser Navigator &quot;&quot;&quot;</span></div>
+        <span class="c1"># import locale</span>
+        <span class="c1"># return locale.getdefaultlocale()</span>
+
     <span class="c1"># platform  Returns for which platform the browser is compiled  Navigator</span>
     <span class="c1"># product   Returns the engine name of the browser  Navigator</span>
     <span class="c1"># userAgent Returns the user-agent header sent by the browser to the server Navigator</span>
+    <span class="c1"># geolocation   Returns a Geolocation object that can be used to locate the user&#39;s position Navigator</span>
+    <span class="c1"># appCodeName   Returns the code name of the browser    Navigator</span>
 
 
-<div class="viewcode-block" id="Number"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.Number">[docs]</a><span class="k">class</span> <span class="nc">Number</span><span class="p">(</span><span class="nb">float</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; javascript Number &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Number"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number">[docs]</a><span class="k">class</span> <span class="nc">Number</span><span class="p">(</span><span class="nb">float</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; javascript Number methods &quot;&quot;&quot;</span>
 
     <span class="c1"># print(sys.float_info)</span>
     <span class="n">MAX_VALUE</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">MIN_VALUE</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span></div>
+    <span class="n">MIN_VALUE</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
     <span class="c1"># NEGATIVE_INFINITY Represents negative infinity (returned on overflow) Number</span>
     <span class="c1"># POSITIVE_INFINITY Represents infinity (returned on overflow)  Number</span>
+    <span class="c1"># prototype Allows you to add properties and methods to an object   Number</span>
 
-    <span class="c1"># def __init__(self, x=&quot;&quot;, *args, **kwargs):</span>
-    <span class="c1"># self.x = x</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
 
-    <span class="c1"># def isInteger(self):</span>
-    <span class="c1"># &quot;&quot;&quot; Checks whether a value is an integer &quot;&quot;&quot;</span>
-    <span class="c1"># if type(x) == int:</span>
-    <span class="c1"># return True</span>
-    <span class="c1"># return False</span>
+<div class="viewcode-block" id="Number.isInteger"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.isInteger">[docs]</a>    <span class="k">def</span> <span class="nf">isInteger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks whether a value is an integer &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">)</span></div>
 
-<span class="c1"># isSafeInteger()   Checks whether a value is a safe integer    Number</span>
-<span class="c1"># prototype Allows you to add properties and methods to an object   Number</span>
-<span class="c1"># toExponential()   Converts a number into an exponential notation  Number</span>
-<span class="c1"># toFixed(x)    Formats a number with x numbers of digits after the decimal point   Number</span>
-<span class="c1"># toPrecision(x)    Formats a number to x length    Number</span>
+<div class="viewcode-block" id="Number.isSafeInteger"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.isSafeInteger">[docs]</a>    <span class="k">def</span> <span class="nf">isSafeInteger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks whether a value is a safe integer &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Number.toExponential"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.toExponential">[docs]</a>    <span class="k">def</span> <span class="nf">toExponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts a number into an exponential notation &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">num</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Number.toFixed"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.toFixed">[docs]</a>    <span class="k">def</span> <span class="nf">toFixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Formats a number with x numbers of digits after the decimal point &quot;&quot;&quot;</span>
+        <span class="c1"># return float(f&quot;{0:.{{num}}f}&quot;.format(self.x))  # TODO - test</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Number.toPrecision"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.toPrecision">[docs]</a>    <span class="k">def</span> <span class="nf">toPrecision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Formats a number to x length &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="String"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String">[docs]</a><span class="k">class</span> <span class="nc">String</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; javascript string &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="String"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String">[docs]</a><span class="k">class</span> <span class="nc">String</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; javascript string method &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
         <span class="c1"># self.kwargs = kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
 
-<div class="viewcode-block" id="String.repeat"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Returns a new string with a specified number of copies of an existing string &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="String.repeat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a new string with a specified number of copies of an existing string &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">count</span></div>
 
-<div class="viewcode-block" id="String.startsWith"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.startsWith">[docs]</a>    <span class="k">def</span> <span class="nf">startsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Checks whether a string begins with specified characters &#39;&#39;&#39;</span>
-
+<div class="viewcode-block" id="String.startsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.startsWith">[docs]</a>    <span class="k">def</span> <span class="nf">startsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks whether a string begins with specified characters &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
@@ -1027,45 +1247,93 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">beg</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="String.substring"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.substring">[docs]</a>    <span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Extracts the characters from a string, between two specified indices &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="String.substring"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.substring">[docs]</a>    <span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extracts the characters from a string, between two specified indices &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="String.endsWith"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.endsWith">[docs]</a>    <span class="k">def</span> <span class="nf">endsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Checks whether a string ends with specified string/characters &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="String.endsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.endsWith">[docs]</a>    <span class="k">def</span> <span class="nf">endsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks whether a string ends with specified string/characters &quot;&quot;&quot;</span>
 
         <span class="c1"># TODO - should take array. or any length string</span>
         <span class="c1"># return x[len(x)] == x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="String.toLowerCase"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.toLowerCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLowerCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Converts a string to lowercase letters&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="String.toLowerCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toLowerCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLowerCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts a string to lowercase letters &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.toUpperCase"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.toUpperCase">[docs]</a>    <span class="k">def</span> <span class="nf">toUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Converts a string to uppercase letters&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="String.toUpperCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toUpperCase">[docs]</a>    <span class="k">def</span> <span class="nf">toUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts a string to uppercase letters &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.trim"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.String.trim">[docs]</a>    <span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Removes whitespace from both ends of a string&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div></div>
+<div class="viewcode-block" id="String.trim"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trim">[docs]</a>    <span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Removes whitespace from both ends of a string &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="String.charAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charAt">[docs]</a>    <span class="k">def</span> <span class="nf">charAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the character at the specified index (position) &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
-<span class="c1"># fromCharCode()    Converts Unicode values to characters   String</span>
-<span class="c1"># localeCompare()   Compares two strings in the current locale  String</span>
-<span class="c1"># replace() Searches a string for a specified value, or a regular expression, and returns a new string where the specified values are replaced  String</span>
-<span class="c1"># search()  Searches a string for a specified value, or regular expression, and returns the position of the match   String</span>
-<span class="c1"># substr()  Extracts the characters from a string, beginning at a specified start position, and through the specified number of character   String</span>
-<span class="c1"># toLocaleLowerCase()   Converts a string to lowercase letters, according to the host&#39;s locale  String</span>
-<span class="c1"># toLocaleUpperCase()   Converts a string to uppercase letters, according to the host&#39;s locale  String</span>
-<span class="c1"># compile() Deprecated in version 1.5. Compiles a regular expression    RegExp</span>
-<span class="c1"># lastIndex Specifies the index at which to start the next match    RegExp</span>
-<span class="c1"># test()    Tests for a match in a string. Returns true or false    RegExp</span>
+<div class="viewcode-block" id="String.charCodeAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charCodeAt">[docs]</a>    <span class="k">def</span> <span class="nf">charCodeAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the Unicode of the character at the specified index &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="String.fromCharCode"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.fromCharCode">[docs]</a>    <span class="k">def</span> <span class="nf">fromCharCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts Unicode values to characters &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">chr</span><span class="p">(</span><span class="n">code</span><span class="p">)</span></div>
+
+    <span class="c1"># def test():</span>
+        <span class="c1"># r = (re.search(r&quot;regexp&quot;, &quot;someString&quot;) != None)</span>
+        <span class="c1"># return r</span>
+
+<div class="viewcode-block" id="String.replace"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Searches a string for a specified value, or a regular expression,</span>
+<span class="sd">        and returns a new string where the specified values are replaced</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span></div>
+        <span class="c1"># re.sub(r&quot;regepx&quot;, &quot;old&quot;, &quot;new&quot;) # TODO - js one also takes a regex</span>
+
+    <span class="c1"># def localeCompare():</span>
+    <span class="c1"># &quot;&quot;&quot; Compares two strings in the current locale &quot;&quot;&quot;</span>
+    <span class="c1"># pass</span>
+
+    <span class="c1"># def search():</span>
+    <span class="c1"># &quot;&quot;&quot; Searches a string for a specified value, or regular expression, and returns the position of the match  &quot;&quot;&quot;</span>
+    <span class="c1"># if re.search(r&quot;\d&quot;, &quot;iphone 8&quot;):</span>
+    <span class="c1"># print(&quot;Has a number&quot;)</span>
+
+    <span class="c1"># pass</span>
+    <span class="c1"># def substr():</span>
+    <span class="c1"># &quot;&quot;&quot; Extracts the characters from a string, beginning at a specified start position, and through the specified number of character  &quot;&quot;&quot;</span>
+    <span class="c1"># pass</span>
+
+    <span class="k">def</span> <span class="nf">toLocaleLowerCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># &quot;&quot;&quot; Converts a string to lowercase letters, according to the host&#39;s locale &quot;&quot;&quot;</span>
+        <span class="c1"># locale.setlocale()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">toLocaleUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># &quot;&quot;&quot; Converts a string to uppercase letters, according to the host&#39;s locale &quot;&quot;&quot;</span>
+        <span class="c1"># locale.setlocale()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
+
+    <span class="c1"># def compile():</span>
+    <span class="c1"># &quot;&quot;&quot; Deprecated in version 1.5. Compiles a regular expression    RegExp &quot;&quot;&quot;</span>
+    <span class="c1"># pass</span>
+    <span class="c1"># def lastIndex Specifies:</span>
+    <span class="c1"># &quot;&quot;&quot; the index at which to start the next match    RegExp &quot;&quot;&quot;</span>
+    <span class="c1"># def test():</span>
+    <span class="c1"># &quot;&quot;&quot; Tests for a match in a string. Returns true or false    RegExp &quot;&quot;&quot;</span>
+    <span class="c1"># pass</span>
+
+    <span class="c1"># match()   Searches a string for a match against a regular expression, and returns the matches String</span>
 
 
 <span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/URL</span>
 
-<div class="viewcode-block" id="URL"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.javascript.URL">[docs]</a><span class="k">class</span> <span class="nc">URL</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="URL"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URL">[docs]</a><span class="k">class</span> <span class="nc">URL</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; a tag extends from URL &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__update__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1095,7 +1363,7 @@
 
             <span class="c1"># reset</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># as e:</span>
             <span class="c1"># print(&#39;fails on props called by init as they dont exist yet&#39;)</span>
             <span class="c1"># print(e)</span>
             <span class="k">pass</span>
@@ -1197,7 +1465,7 @@
     <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;&quot; hash Sets or returns the anchor part (#) of a URL &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s1">&#39;#&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="c1"># return &#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hash</span>
 
@@ -1211,58 +1479,85 @@
         <span class="sd">&#39;&#39;&#39;# origin    Returns the protocol, hostname and port number of a URL Location&#39;&#39;&#39;</span></div>
 
 
+<span class="sd">&#39;&#39;&#39;</span>
 
-<span class="c1"># BELOW is legacy data from a dump of ALL dom/js methods. was looking for useful things to port back when this was the only class.</span>
-<span class="c1"># -- leave here for now- ill delete stuff later. it reminds me what i haven&#39;t covered</span>
+<span class="sd"># BELOW is legacy data from a dump of ALL dom/js methods. was looking for useful things to port back when this was the only class.</span>
+<span class="sd"># -- leave here for now - ill delete stuff later. it reminds me what i haven&#39;t covered</span>
 
-<span class="c1"># origin    Returns the protocol, hostname and port number of a URL Location</span>
-<span class="c1"># clipboardData Returns an object containing the data affected by the clipboard operation   ClipboardData</span>
-<span class="c1"># back()    Loads the previous URL in the history list  History</span>
-<span class="c1"># charAt()  Returns the character at the specified index (position) String</span>
-<span class="c1"># charCodeAt()  Returns the Unicode of the character at the specified index String</span>
-<span class="c1"># clear()   Clears the console  Console, Storage</span>
-<span class="c1"># clearWatch()  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    Geolocation</span>
-<span class="c1"># coordinates   Returns the position and altitude of the device on Earth    Geolocation</span>
-<span class="c1"># copyWithin()  Copies array elements within the array, to and from specified positions Array</span>
-<span class="c1"># debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements</span>
-<span class="c1"># detail    Returns a number that indicates how many times the mouse was clicked    UiEvent</span>
-<span class="c1"># elapsedTime   Returns the number of seconds a transition has been running</span>
-<span class="c1"># entries() Returns a key/value pair Array Iteration Object Array</span>
-<span class="c1"># error()   Outputs an error message to the console Console</span>
-<span class="c1"># every()   Checks if every element in an array pass a test Array</span>
-<span class="c1"># exec()    Tests for a match in a string. Returns the first match  RegExp</span>
-<span class="c1"># filter()  Creates a new array with every element in an array that pass a test Array</span>
-<span class="c1"># find()    Returns the value of the first element in an array that pass a test Array</span>
-<span class="c1"># findIndex()   Returns the index of the first element in an array that pass a test Array</span>
-<span class="c1"># forEach() Calls a function for each array element Array</span>
-<span class="c1"># forward() Loads the next URL in the history list  History</span>
-<span class="c1"># from()    Creates an array from an object Array</span>
-<span class="c1"># geolocation   Returns a Geolocation object that can be used to locate the user&#39;s position Navigator</span>
-<span class="c1"># getCurrentPosition()  Returns the current position of the device  Geolocation</span>
-<span class="c1"># getItem() Returns the value of the specified key name Storage</span>
-<span class="c1"># getNamedItem()    Returns a specified attribute node from a NamedNodeMap  Attribute</span>
-<span class="c1"># go()  Loads a specific URL from the history list  History</span>
-<span class="c1"># id    Sets or returns the value of the id attribute of an element Element</span>
-<span class="c1"># ignoreCase    Checks whether the &quot;i&quot; modifier is set  RegExp</span>
-<span class="c1"># item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection</span>
-<span class="c1"># key() Returns the name of the nth key in the storage  Storage</span>
-<span class="c1"># keys()    Returns a Array Iteration Object, containing the keys of the original array Array</span>
-<span class="c1"># language  Returns the language of the browser Navigator</span>
-<span class="c1"># match()   Searches a string for a match against a regular expression, and returns the matches String</span>
-<span class="c1"># message   Sets or returns an error message (a string) Error</span>
-<span class="c1"># multiline Checks whether the &quot;m&quot; modifier is set  RegExp</span>
-<span class="c1"># namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection</span>
-<span class="c1"># onLine    Determines whether the browser is online    Navigator</span>
-<span class="c1"># position  Returns the position of the concerned device at a given time    Geolocation</span>
-<span class="c1"># positionError Returns the reason of an error occurring when using the geolocating device  Geolocation</span>
-<span class="c1"># positionOptions   Describes an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition() and Geolocation.watchPosition() Geolocation</span>
-<span class="c1"># removeItem()  Removes that key from the storage   Storage</span>
-<span class="c1"># removeNamedItem() Removes a specified attribute node  Attribute</span>
-<span class="c1"># search    Sets or returns the querystring part of a URL   Location</span>
-<span class="c1"># setNamedItem()    Sets the specified attribute node (by name) Attribute</span>
-<span class="c1"># source    Returns the text of the RegExp pattern  RegExp</span>
-<span class="c1"># specified Returns true if the attribute has been specified, otherwise it returns false    Attribute</span>
-<span class="c1"># watchPosition()   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   Geolocation</span>
+<span class="sd"># class Error():</span>
+<span class="sd">    # message   Sets or returns an error message (a string) Error</span>
+<span class="sd">    # message = &quot;&quot;</span>
+<span class="sd">    # def __init__():</span>
+<span class="sd">        # pass</span>
+
+<span class="sd"># class ClipboardData():</span>
+<span class="sd">    # clipboardData Returns an object containing the data affected by the clipboard operation</span>
+<span class="sd">    # def __init__():</span>
+<span class="sd">        # pass</span>
+
+<span class="sd"># class History():</span>
+<span class="sd">    # def __init__():</span>
+<span class="sd">        # pass</span>
+<span class="sd">    # def back():</span>
+<span class="sd">    #     &quot;&quot;&quot; Loads the previous URL in the history list &quot;&quot;&quot;</span>
+<span class="sd">    #     raise NotImplementedError</span>
+<span class="sd">    # def forward():</span>
+<span class="sd">    #     &quot;&quot;&quot; Loads the next URL in the history list &quot;&quot;&quot;</span>
+<span class="sd">    #     raise NotImplementedError</span>
+<span class="sd">    # def go():</span>
+<span class="sd">    #     &quot;&quot;&quot; Loads a specific URL from the history list &quot;&quot;&quot;</span>
+<span class="sd">    #     raise NotImplementedError</span>
+
+<span class="sd"># class Storage():</span>
+<span class="sd">    # def __init__():</span>
+<span class="sd">        # pass</span>
+<span class="sd">    # def setItem(self):</span>
+<span class="sd">        # &quot;&quot;&quot; Adds that key to the storage, or update that key&#39;s value if it already exists &quot;&quot;&quot;</span>
+<span class="sd">        # raise NotImplementedError</span>
+<span class="sd">    # def key():</span>
+<span class="sd">    #     &quot;&quot;&quot; Returns the name of the nth key in the storage &quot;&quot;&quot;</span>
+<span class="sd">    #     raise NotImplementedError</span>
+<span class="sd">    # def removeItem():</span>
+<span class="sd">    #     &quot;&quot;&quot;  Removes that key from the storage &quot;&quot;&quot;</span>
+<span class="sd">    #     raise NotImplementedError</span>
+
+<span class="sd"># class Geolocation():</span>
+<span class="sd">    # def __init__():</span>
+<span class="sd">        # pass</span>
+<span class="sd">    def clearWatch():</span>
+<span class="sd">    &quot;&quot;&quot;  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    &quot;&quot;&quot;</span>
+<span class="sd">    def coordinates   Returns:</span>
+<span class="sd">    &quot;&quot;&quot; the position and altitude of the device on Earth    &quot;&quot;&quot;</span>
+<span class="sd">    def getCurrentPosition():</span>
+<span class="sd">    &quot;&quot;&quot;  Returns the current position of the device  &quot;&quot;&quot;</span>
+<span class="sd">    def position  Returns:</span>
+<span class="sd">    &quot;&quot;&quot; the position of the concerned device at a given time    &quot;&quot;&quot;</span>
+<span class="sd">    def positionError Returns:</span>
+<span class="sd">    &quot;&quot;&quot; the reason of an error occurring when using the geolocating device  &quot;&quot;&quot;</span>
+<span class="sd">    def positionOptions   Describes:</span>
+<span class="sd">    &quot;&quot;&quot; an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition() and Geolocation.watchPosition() &quot;&quot;&quot;</span>
+<span class="sd">    def watchPosition():</span>
+<span class="sd">    &quot;&quot;&quot;   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   &quot;&quot;&quot;</span>
+
+<span class="sd"># clear()   Clears the console  Console, Storage</span>
+<span class="sd"># debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements</span>
+<span class="sd"># detail    Returns a number that indicates how many times the mouse was clicked    UiEvent</span>
+<span class="sd"># elapsedTime   Returns the number of seconds a transition has been running</span>
+<span class="sd"># error()   Outputs an error message to the console Console</span>
+<span class="sd"># exec()    Tests for a match in a string. Returns the first match  RegExp</span>
+<span class="sd"># getItem() Returns the value of the specified key name Storage</span>
+<span class="sd"># getNamedItem()    Returns a specified attribute node from a NamedNodeMap  Attribute</span>
+<span class="sd"># ignoreCase    Checks whether the &quot;i&quot; modifier is set  RegExp</span>
+<span class="sd"># item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection</span>
+<span class="sd"># multiline Checks whether the &quot;m&quot; modifier is set  RegExp</span>
+<span class="sd"># namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection</span>
+<span class="sd"># removeNamedItem() Removes a specified attribute node  Attribute</span>
+<span class="sd"># search    Sets or returns the querystring part of a URL   Location</span>
+<span class="sd"># setNamedItem()    Sets the specified attribute node (by name) Attribute</span>
+<span class="sd"># source    Returns the text of the RegExp pattern  RegExp</span>
+<span class="sd"># specified Returns true if the attribute has been specified, otherwise it returns false    Attribute</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
           </div>

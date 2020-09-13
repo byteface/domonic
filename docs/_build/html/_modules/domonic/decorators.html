@@ -62,7 +62,7 @@
 <span class="k">def</span> <span class="nf">accepts</span><span class="p">(</span><span class="o">*</span><span class="n">types</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">check_accepts</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_argcount</span>
-        
+
         <span class="k">def</span> <span class="nf">new_f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
             <span class="k">for</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">types</span><span class="p">):</span>
                 <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> \
@@ -123,6 +123,14 @@
         <span class="k">return</span> <span class="n">formatted</span>
     <span class="k">return</span> <span class="n">wrapper</span>
 <span class="c1"># @cash(&quot;12.1&quot;)</span>
+
+
+<span class="c1"># def lenient(*args, **kwargs):</span>
+<span class="c1"># &quot;&quot;&quot; can try to remap args if passed incorrectly.</span>
+    <span class="c1"># i.e. if expecting array but gets string, puts string in arr</span>
+    <span class="c1"># should never switch order probably. just re-type</span>
+    <span class="c1"># prints warning and runs</span>
+<span class="c1"># &quot;&quot;&quot;</span>
 </pre></div>
 
           </div>

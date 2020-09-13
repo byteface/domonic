@@ -17,14 +17,13 @@ from domonic.JSON import *
 class domonicTestCase(unittest.TestCase):
 
     SOMEJSON = '''
-    { "items": [  
+    { "items": [
         {
             "id":"01",
             "name": "Java",
             "thing":{},
             "list":[]
         },
-        
         {
             "id":"07",
             "name": "C++",
@@ -33,23 +32,20 @@ class domonicTestCase(unittest.TestCase):
         }
     ]}
     '''
-    
     SOMEJSON2 = '''
-    [  
+    [
         {
             "id":"01",
             "name": "Java",
             "thing":{},
             "list":[]
         },
-        
         {
             "id":"07",
             "name": "C++",
             "thing":{},
             "list":[]
         },
-        
         {
             "id":"08",
             "name": "DDD",
@@ -61,9 +57,8 @@ class domonicTestCase(unittest.TestCase):
     '''
 
     def test_domonic_JSON(self):
-
-        #data = JSON.parse(SOMEJSON)
-        #print(data)
+        # data = JSON.parse(SOMEJSON)
+        # print(data)
 
         t = JSON.tablify(domonicTestCase.SOMEJSON2)
         print(t)
@@ -79,23 +74,22 @@ class domonicTestCase(unittest.TestCase):
 
         # t = JSON.csv2json("data.csv")
         # print(t)
-    
+
         @return_json
         def yo():
-            myObj = {"hi":[1,2,3]}
+            myObj = {"hi": [1, 2, 3]}
             return myObj
 
-        print( 'goat' )
-        print( yo() )
+        print('goat')
+        print(yo())
 
         # json_data = JSON.parse_file('surveys.json')
         # mytable = JSON.tablify(json_data)
         # print(mytable)
 
-
         # with JSON( data, 'items') as item:
-            # print(item)
-            # print(item.id)
+        # print(item)
+        # print(item.id)
 
         # iterator = JSON( data, 'items.age', lambda i: i<30 )
 

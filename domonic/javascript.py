@@ -21,7 +21,7 @@ import requests
 import gc
 import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
-
+import re
 
 
 class js_object(object):
@@ -425,11 +425,11 @@ class Date(js_object):
         return round(time.time() * 1000)
 
     # def onstorage(self):
-        """ The event occurs when a Web Storage area is updated StorageEvent"""
+        # """ The event occurs when a Web Storage area is updated StorageEvent"""
         # pass
 
     # def ontimeupdate(self):
-        """ The event occurs when the playing position has changed (like when the user fast forwards to a different point in the media) Event"""
+        # """ The event occurs when the playing position has changed (like when the user fast forwards to a different point in the media) Event"""
         # pass
 
     def parse(self, date_string):
@@ -451,10 +451,6 @@ class Date(js_object):
         """ Sets the hour of a date object """
         self.date.replace(hour=int(hours))
         # return self.date.getTime()
-
-    # def setItem(self):
-        """ Adds that key to the storage, or update that key's value if it already exists   Storage"""
-        # pass
 
     def setMilliseconds(self, milliseconds):
         """ Sets the milliseconds of a date object """
@@ -629,6 +625,7 @@ class Screen(object):
 class ProgramKilled(Exception):
     pass
 
+
 class Job(threading.Thread):
 
     def __init__(self, interval, execute, *args, **kwargs):
@@ -661,55 +658,68 @@ class SetInterval(object):
         self.job.start()
 
 
-class FetchReponse(object):
+class Promise(object):
+    # undocumented - warning. use at own risk
+    def __init__(self, func=None, *args, **kwargs):
+        # print('init')
+        self.data = None
+        self.state = 'pending'  # fullfilled, rejected
+        if func is not None:
+            func(self.resolve, self.reject)
 
+    def then(self, func):
+        if func is not None:
+            # print('--->',self.data)
+            self.data = func(self.data)
+            # print('-->',self.data)
+        return self
+
+    def catch(self, error):
+        # func(error)
+        print(error)
+        return self
+
+    def resolve(self, data):
+        # print( 'resolve called::', data )
+        self.data = data
+        self.state = "fulfilled"
+        return self
+
+    def reject(self, data):
+        self.data = data
+        self.state = "rejected"
+        return self
+    # def __str__(self):
+    #     try:
+    #         return self.data.text
+    #     except Exception as e:
+    #         print(e)
+    #     return str(self)
+
+
+class FetchedSet(object):  # not a promise
     def __init__(self, *args, **kwargs):
         self.results = []
 
     def __getitem__(self, index):
         return self.results[index]
 
-    # def __setattr__(self, name, value):
-    #     try:
-    #         if name == "results":
-    #             super(FetchReponse, self).__setattr__(name, value)
-    #             try:
-    #                 self.then(response)
-    #             except Exception as e:
-    #                 self.catch()
-    #             return
-    #     except Exception as e:
-    #         print(e)
-    #     super(FetchReponse, self).__setattr__(name, value)
-
-    def then(self):  # runs immediately after each one
-        # print('called per item')
-        # return self
-        raise NotImplementedError
-
-    def catch(self, func):  # runs immediately after each one
-        # print('called per item')
-        # return
-        raise NotImplementedError
-        
-    def oncomplete(self):  # runs once all results are back
-        # print('called on complete')
-        # return self
-        raise NotImplementedError
+    def oncomplete(self, func):  # runs once all results are back
+        func(self.results)
+        return
 
 
 class Window(object):
     """ window """
 
     def __init__(self, *args, **kwargs):
-        print('window here!')
-        # print(type(dom))
-        # self.args = args
-        # self.kwargs = kwargs
         # self.console = dom.console
         # self.document = dom.document
         # self.location = ''#dom.location
         self.location = None
+        # globals()?
+        # dir()?
+        # locals()?
 
     @property
     def location(self):
@@ -745,7 +755,7 @@ class Window(object):
     def setTimeout(function, t, *args, **kwargs):
         """ Calls a function or evaluates an expression after a specified number of milliseconds """
         import time
-        time.sleep(t/1000)  # TODO - blocks
+        time.sleep(t / 1000)  # TODO - still blocks
         function()
         return
 
@@ -765,73 +775,105 @@ class Window(object):
         return interval_ID.job
 
     @staticmethod
-    def _do_request(url, results = None):
+    def _do_request(url, f=None, **kwargs):
+        # private - don't use directly. use one of the fetch methods
         try:
-            r = requests.get(url, timeout=3)
-            if r.ok:
-                print(f'{url} result --------------------->>>>>>>>>>>!!!!!!!!!!')
-                if results is not None:
-                    results.append(r.text)
-                return r.text
+            # r = requests.get(url, timeout=3)
+            from requests import Request, Session
+
+            method = "GET"
+            if "method" in kwargs:
+                method = kwargs["method"]
+
+            if "callback_function" in kwargs:
+                del kwargs["callback_function"]
+
+            if "error_handler" in kwargs:
+                del kwargs["error_handler"]
+
+            s = Session()
+            req = Request(method, url)
+            prepped = s.prepare_request(req)
+            r = s.send(prepped, **kwargs)
+            # print(r.status_code)
+            s.close()
+
+            if f is not None and type(f) is FetchedSet:
+                f.results.append(r)
+
+            return r
         except Exception as e:
             print(f'Request Failed for URL: {url}', e)
+            return None
 
     @staticmethod
-    def fetch(urls, options={}):
-        print('fetch start')
-        if type(urls) is str: urls = [urls]  # leniency
-        f = FetchReponse()
-        for url in urls:
-            Window._do_request(url, f.results)
-        print('fetch end')
-        return f
-    
+    def fetch(url: str, **kwargs):
+        # undocumented - warning. use at own risk
+        # note - kinda pointless atm. just use requests directly and you wont have to muck about with a Promise
+        if type(url) is not str:
+            raise ValueError('fetch takes a single url string. For batches use fetch_set, fetch_threaded or fetch_pooled')
+        f = Promise()
+        r = window._do_request(url, f, *kwargs)
+        return f.resolve(r)
+
     @staticmethod
-    def fetch_threaded(urls, options={}):
-        print('fetch threaded')
-        if type(urls) is str: urls = [urls]  # leniency
-        jobs=[]
-        f = FetchReponse()
+    def fetch_set(urls: list, callback_function=None, error_handler=None, **kwargs):
+        # undocumented - warning. use at own risk
+        # note - still blocks. just gets all before continuing
+        # problems - all urls can only have 1 associated callback, error and set of kwargs
+        if type(urls) is str:
+            urls = [urls]  # leniency
+        f = FetchedSet()
         for url in urls:
-            thread = threading.Thread(target=Window._do_request( url, f.results ))
+            r = window.fetch(url, **kwargs).then(callback_function)
+            f.results.append(r.data)
+        return f
+
+    @staticmethod
+    def fetch_threaded(urls: list, callback_function=None, error_handler=None, **kwargs):
+        # undocumented - warning. use at own risk
+        # note - still blocks. just gets all before continuing using threads
+        # problems - all urls can only have 1 associated callback, error and set of kwargs
+        if type(urls) is str:
+            urls = [urls]  # leniency
+        f = FetchedSet()
+        jobs = []
+        for url in urls:
+            thread = threading.Thread(target=window._do_request(url, f, **kwargs))
             thread.setDaemon(True)
             jobs.append(thread)
-
-        # print("Let's do this!")
-        map( lambda j: j.start(), jobs )
-        map( lambda j: j.join(), jobs )
-        # print("ALL GOOD!")
-        # print(jobs)
-        # print("---------------------------------------")
-        # print(f.results)
-        # if len(_results)>0:
-        #     print(f"ADDING:{_results[0]}")
-        #     return _results[0]
-        print('fetch threaded end')
+        map(lambda j: j.start(), jobs)
+        map(lambda j: j.join(), jobs)
+        # f = FetchedSet()
         return f
 
     @staticmethod
-    def fetch_pooled(urls: list, options={}):
-        print('fetch_pooled')
-        if type(urls) is str: urls = [urls]  # leniency
-        jobs=[]
-        f = FetchReponse()
+    def fetch_pooled(urls: list, callback_function=None, error_handler=None, **kwargs):
+        # undocumented - warning. use at own risk
+        # note - still blocks. just gets all before continuing using a pool
+        # problems - all urls can only have 1 associated callback, error and set of kwargs
+        if type(urls) is str:
+            urls = [urls]  # leniency
+        f = FetchedSet()
+
+        def _do_request_wrapper(obj):
+            url = obj['url']
+            f = obj['f']
+            kwargs = obj['k']
+            kwargs['callback_function'] = obj['c']
+            kwargs['error_handler'] = obj['e']
+            window._do_request(url, f, **kwargs)
+
+        jobs = []
         p = Pool()
-        f.results = p.map( Window._do_request, urls )
+        urls = [{'url': url, 'f': f, 'c': callback_function, 'e': error_handler, 'k': kwargs} for url in urls]
+        results = p.map(_do_request_wrapper, urls)
         p.close()
         p.join()
-        # print(_results)
-        # _results = [x for x in _results if x is not None ]
-        # print(f.results)
-        # if len(_results)>0:
-        #     print(f"ADDING:{_results[0]}")
-        #     return _results[0]
-        print('fetch_pooled end')
         return f
 
     # def fetch_aysnc( urls: list, options={}, type="async" ):
         # TODO - a version using async/await
-
 
     # @staticmethod
     # @getter
@@ -873,7 +915,7 @@ class Window(object):
 # pageXOffset   Returns the pixels the current document has been scrolled (horizontally) from the upper left corner of the window   Window
 # pageYOffset   Returns the pixels the current document has been scrolled (vertically) from the upper left corner of the window Window
 # parent    Returns the parent window of the current window Window
-# print()   Prints the content of the current window    Window
+# _print()   Prints the content of the current window    Window
 # resizeBy()    Resizes the window by the specified pixels  Window
 # resizeTo()    Resizes the window to the specified width and height    Window
 # screen    Returns the Screen object for the window (See Screen object)    Window
@@ -885,7 +927,6 @@ class Window(object):
 # scrollTo()    Scrolls the document to the specified coordinates   Window
 # scrollX   An alias of pageXOffset Window
 # scrollY   An alias of pageYOffset Window
-# self  Returns the current window  Window
 # sessionStorage    Allows to save key/value pairs in a web browser. Stores the data for one session    Window
 # setTimeout()  Calls a function or evaluates an expression after a specified number of milliseconds    Window
 # stop()    Stops the window from loading   Window
@@ -974,10 +1015,6 @@ class Array(object):
             print(e)
             return None
 
-    def map(self):
-        """ Creates a new array with the result of calling a function for each array element """
-        raise NotImplementedError
-
     def pop(self):
         """ Removes the last element of an array, and returns that element """
         # item = self.args[len(self.args)-1]
@@ -988,14 +1025,6 @@ class Array(object):
         """ Adds new elements to the end of an array, and returns the new length """
         self.args.append(value)
         return len(self.args)
-
-    def reduce(self):
-        """ Reduce the values of an array to a single value (going left-to-right) """
-        raise NotImplementedError
-
-    def reduceRight(self):
-        """ Reduce the values of an array to a single value (going right-to-left) """
-        raise NotImplementedError
 
     def reverse(self):
         """ Reverses the order of the elements in an array """
@@ -1008,7 +1037,7 @@ class Array(object):
 
     def splice(self, start, delete_count=None, *items):
         """ Selects a part of an array, and returns the new array """
-        if delete_count == None:
+        if delete_count is None:
             delete_count = len(self.args) - start
 
         total = start + delete_count
@@ -1016,14 +1045,6 @@ class Array(object):
         self.args[start:total] = items
         return removed
         # return self.args
-
-    def some(self):
-        """ Checks if any of the elements in an array pass a test """
-        raise NotImplementedError
-
-    def sort(self):
-        """ Sorts the elements of an array """
-        raise NotImplementedError
 
     def unshift(self, *args):
         """ Adds new elements to the beginning of an array, and returns the new length """
@@ -1037,6 +1058,67 @@ class Array(object):
         del self.args[0]
         return item
 
+    def map(self):
+        """ Creates a new array with the result of calling a function for each array element """
+        raise NotImplementedError
+
+    def some(self):
+        """ Checks if any of the elements in an array pass a test """
+        raise NotImplementedError
+
+    def sort(self):
+        """ Sorts the elements of an array """
+        raise NotImplementedError
+
+    def reduce(self):
+        """ Reduce the values of an array to a single value (going left-to-right) """
+        raise NotImplementedError
+
+    def reduceRight(self):
+        """ Reduce the values of an array to a single value (going right-to-left) """
+        raise NotImplementedError
+
+    def filter(self, func):
+        """
+        Creates a new array with every element in an array that pass a test
+        even_numbers = someArr.filter( lambda x: x % 2 == 0 )
+        """
+        raise NotImplementedError
+        # return list(filter(func, self.args))
+
+    def find(self):
+        """ Returns the value of the first element in an array that pass a test """
+        raise NotImplementedError
+
+    def findIndex(self):
+        """ Returns the index of the first element in an array that pass a test """
+        raise NotImplementedError
+
+    def forEach(self):
+        """ Calls a function for each array element """
+        raise NotImplementedError
+
+    # def from():
+        """ Creates an array from an object """
+        # raise NotImplementedError
+
+    def keys(self):
+        """ Returns a Array Iteration Object, containing the keys of the original array """
+        raise NotImplementedError
+
+    def copyWithin(self):
+        """ Copies array elements within the array, to and from specified positions """
+        raise NotImplementedError
+
+    def entries(self):
+        """ Returns a key/value pair Array Iteration Object """
+        raise NotImplementedError
+
+    def every(self, test):
+        """ Checks if every element in an array pass a test """
+        # return all(test for x in self.args)
+        raise NotImplementedError
+
 
 class Navigator(object):
     """ navigator """
@@ -1047,48 +1129,70 @@ class Navigator(object):
     # Determines whether the browser is online
     onLine = False
 
+    # Returns the name of the browser Navigator
+    appName = "domonic"
+
     def __init__(self, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
         pass
 
-    # appCodeName   Returns the code name of the browser    Navigator
-    # appName   Returns the name of the browser Navigator
-    # appVersion    Returns the version information of the browser  Navigator
-    # geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
-    # language  Returns the language of the browser Navigator
+    # @property
+    # def appVersion():
+        """ Returns the version information of the browser """
+        # from domonic import __version__
+        # return __version__
+
+    # @property
+    # def language():
+        """ Returns the language of the browser Navigator """
+        # import locale
+        # return locale.getdefaultlocale()
+
     # platform  Returns for which platform the browser is compiled  Navigator
     # product   Returns the engine name of the browser  Navigator
     # userAgent Returns the user-agent header sent by the browser to the server Navigator
+    # geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
+    # appCodeName   Returns the code name of the browser    Navigator
 
 
 class Number(float):
-    """ javascript Number """
+    """ javascript Number methods """
 
     # print(sys.float_info)
     MAX_VALUE = list(sys.float_info)[0]
     MIN_VALUE = list(sys.float_info)[3]
     # NEGATIVE_INFINITY Represents negative infinity (returned on overflow) Number
     # POSITIVE_INFINITY Represents infinity (returned on overflow)  Number
+    # prototype Allows you to add properties and methods to an object   Number
 
-    # def __init__(self, x="", *args, **kwargs):
-    # self.x = x
+    def __init__(self, x="", *args, **kwargs):
+        self.x = x
 
-    # def isInteger(self):
-    # """ Checks whether a value is an integer """
-    # if type(x) == int:
-    # return True
-    # return False
+    def isInteger(self):
+        """ Checks whether a value is an integer """
+        return (type(self.x) == int)
 
-# isSafeInteger()   Checks whether a value is a safe integer    Number
-# prototype Allows you to add properties and methods to an object   Number
-# toExponential()   Converts a number into an exponential notation  Number
-# toFixed(x)    Formats a number with x numbers of digits after the decimal point   Number
-# toPrecision(x)    Formats a number to x length    Number
+    def isSafeInteger(self):
+        """ Checks whether a value is a safe integer """
+        raise NotImplementedError
+
+    def toExponential(self, num):
+        """ Converts a number into an exponential notation """
+        return math.exp(num)
+
+    def toFixed(self, num):
+        """ Formats a number with x numbers of digits after the decimal point """
+        # return float(f"{0:.{{num}}f}".format(self.x))  # TODO - test
+        raise NotImplementedError
+
+    def toPrecision(self, num):
+        """ Formats a number to x length """
+        raise NotImplementedError
 
 
 class String(object):
-    """ javascript string """
+    """ javascript string method """
 
     def __init__(self, x="", *args, **kwargs):
         # self.args = args
@@ -1096,12 +1200,11 @@ class String(object):
         self.x = x
 
     def repeat(self, count):
-        ''' Returns a new string with a specified number of copies of an existing string '''
+        """ Returns a new string with a specified number of copies of an existing string """
         return self.x * count
 
     def startsWith(self, x, start, end):
-        ''' Checks whether a string begins with specified characters '''
-
+        """ Checks whether a string begins with specified characters """
         if end is None:
             end = len(x)
 
@@ -1111,42 +1214,90 @@ class String(object):
         self.x.startswith(x, beg=start, end=end)
 
     def substring(self):
-        ''' Extracts the characters from a string, between two specified indices '''
+        """ Extracts the characters from a string, between two specified indices """
         pass
 
     def endsWith(self, x, start, end):
-        ''' Checks whether a string ends with specified string/characters '''
+        """ Checks whether a string ends with specified string/characters """
 
         # TODO - should take array. or any length string
         # return x[len(x)] == x
         self.x.endswith(x, start, end)
 
     def toLowerCase(self):
-        '''Converts a string to lowercase letters'''
+        """ Converts a string to lowercase letters """
         return self.x.lower()
 
     def toUpperCase(self):
-        '''Converts a string to uppercase letters'''
+        """ Converts a string to uppercase letters """
         return self.x.upper()
 
     def trim(self):
-        '''Removes whitespace from both ends of a string'''
+        """ Removes whitespace from both ends of a string """
         return self.x.strip()
 
+    def charAt(self, index):
+        """ Returns the character at the specified index (position) """
+        return self.x[index]
 
-# fromCharCode()    Converts Unicode values to characters   String
-# localeCompare()   Compares two strings in the current locale  String
-# replace() Searches a string for a specified value, or a regular expression, and returns a new string where the specified values are replaced  String
-# search()  Searches a string for a specified value, or regular expression, and returns the position of the match   String
-# substr()  Extracts the characters from a string, beginning at a specified start position, and through the specified number of character   String
-# toLocaleLowerCase()   Converts a string to lowercase letters, according to the host's locale  String
-# toLocaleUpperCase()   Converts a string to uppercase letters, according to the host's locale  String
-# compile() Deprecated in version 1.5. Compiles a regular expression    RegExp
-# lastIndex Specifies the index at which to start the next match    RegExp
-# test()    Tests for a match in a string. Returns true or false    RegExp
+    def charCodeAt(self, index):
+        """ Returns the Unicode of the character at the specified index """
+        return ord(self.x[index])
+
+    def fromCharCode(self, code):
+        """ Converts Unicode values to characters """
+        return chr(code)
+
+    # def test():
+        # r = (re.search(r"regexp", "someString") != None)
+        # return r
+
+    def replace(self, old, new):
+        """
+        Searches a string for a specified value, or a regular expression,
+        and returns a new string where the specified values are replaced
+        """
+        return self.x.replace(old, new)
+        # re.sub(r"regepx", "old", "new") # TODO - js one also takes a regex
+
+    # def localeCompare():
+    # """ Compares two strings in the current locale """
+    # pass
+
+    # def search():
+    # """ Searches a string for a specified value, or regular expression, and returns the position of the match  """
+    # if re.search(r"\d", "iphone 8"):
+    # print("Has a number")
+
+    # pass
+    # def substr():
+    # """ Extracts the characters from a string, beginning at a specified start position, and through the specified number of character  """
+    # pass
+
+    def toLocaleLowerCase(self):
+        # """ Converts a string to lowercase letters, according to the host's locale """
+        # locale.setlocale()
+        return self.x.lower()
+
+    def toLocaleUpperCase(self):
+        # """ Converts a string to uppercase letters, according to the host's locale """
+        # locale.setlocale()
+        return self.x.upper()
+
+    # def compile():
+    # """ Deprecated in version 1.5. Compiles a regular expression    RegExp """
+    # pass
+    # def lastIndex Specifies:
+    # """ the index at which to start the next match    RegExp """
+    # def test():
+    # """ Tests for a match in a string. Returns true or false    RegExp """
+    # pass
+
+    # match()   Searches a string for a match against a regular expression, and returns the matches String
 
 
 # https://developer.mozilla.org/en-US/docs/Web/API/URL
+
 
 class URL(object):
     """ a tag extends from URL """
@@ -1178,7 +1329,7 @@ class URL(object):
 
             # reset
             self.href = self.url.geturl()
-        except Exception as e:
+        except Exception:  # as e:
             # print('fails on props called by init as they dont exist yet')
             # print(e)
             pass
@@ -1280,7 +1431,7 @@ class URL(object):
     def hash(self):
         """" hash Sets or returns the anchor part (#) of a URL """
         if '#' in self.href:
-            return '#'+self.href.split('#')[1]
+            return '#' + self.href.split('#')[1]
         # return ''
         return self.__hash
 
@@ -1294,55 +1445,82 @@ class URL(object):
         '''# origin    Returns the protocol, hostname and port number of a URL Location'''
 
 
+'''
 
 # BELOW is legacy data from a dump of ALL dom/js methods. was looking for useful things to port back when this was the only class.
-# -- leave here for now- ill delete stuff later. it reminds me what i haven't covered
+# -- leave here for now - ill delete stuff later. it reminds me what i haven't covered
 
-# origin    Returns the protocol, hostname and port number of a URL Location
-# clipboardData Returns an object containing the data affected by the clipboard operation   ClipboardData
-# back()    Loads the previous URL in the history list  History
-# charAt()  Returns the character at the specified index (position) String
-# charCodeAt()  Returns the Unicode of the character at the specified index String
+# class Error():
+    # message   Sets or returns an error message (a string) Error
+    # message = ""
+    # def __init__():
+        # pass
+
+# class ClipboardData():
+    # clipboardData Returns an object containing the data affected by the clipboard operation
+    # def __init__():
+        # pass
+
+# class History():
+    # def __init__():
+        # pass
+    # def back():
+    #     """ Loads the previous URL in the history list """
+    #     raise NotImplementedError
+    # def forward():
+    #     """ Loads the next URL in the history list """
+    #     raise NotImplementedError
+    # def go():
+    #     """ Loads a specific URL from the history list """
+    #     raise NotImplementedError
+
+# class Storage():
+    # def __init__():
+        # pass
+    # def setItem(self):
+        # """ Adds that key to the storage, or update that key's value if it already exists """
+        # raise NotImplementedError
+    # def key():
+    #     """ Returns the name of the nth key in the storage """
+    #     raise NotImplementedError
+    # def removeItem():
+    #     """  Removes that key from the storage """
+    #     raise NotImplementedError
+
+# class Geolocation():
+    # def __init__():
+        # pass
+    def clearWatch():
+    """  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    """
+    def coordinates   Returns:
+    """ the position and altitude of the device on Earth    """
+    def getCurrentPosition():
+    """  Returns the current position of the device  """
+    def position  Returns:
+    """ the position of the concerned device at a given time    """
+    def positionError Returns:
+    """ the reason of an error occurring when using the geolocating device  """
+    def positionOptions   Describes:
+    """ an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition() and Geolocation.watchPosition() """
+    def watchPosition():
+    """   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   """
+
 # clear()   Clears the console  Console, Storage
-# clearWatch()  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    Geolocation
-# coordinates   Returns the position and altitude of the device on Earth    Geolocation
-# copyWithin()  Copies array elements within the array, to and from specified positions Array
 # debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements
 # detail    Returns a number that indicates how many times the mouse was clicked    UiEvent
 # elapsedTime   Returns the number of seconds a transition has been running
-# entries() Returns a key/value pair Array Iteration Object Array
 # error()   Outputs an error message to the console Console
-# every()   Checks if every element in an array pass a test Array
 # exec()    Tests for a match in a string. Returns the first match  RegExp
-# filter()  Creates a new array with every element in an array that pass a test Array
-# find()    Returns the value of the first element in an array that pass a test Array
-# findIndex()   Returns the index of the first element in an array that pass a test Array
-# forEach() Calls a function for each array element Array
-# forward() Loads the next URL in the history list  History
-# from()    Creates an array from an object Array
-# geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
-# getCurrentPosition()  Returns the current position of the device  Geolocation
 # getItem() Returns the value of the specified key name Storage
 # getNamedItem()    Returns a specified attribute node from a NamedNodeMap  Attribute
-# go()  Loads a specific URL from the history list  History
-# id    Sets or returns the value of the id attribute of an element Element
 # ignoreCase    Checks whether the "i" modifier is set  RegExp
 # item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection
-# key() Returns the name of the nth key in the storage  Storage
-# keys()    Returns a Array Iteration Object, containing the keys of the original array Array
-# language  Returns the language of the browser Navigator
-# match()   Searches a string for a match against a regular expression, and returns the matches String
-# message   Sets or returns an error message (a string) Error
 # multiline Checks whether the "m" modifier is set  RegExp
 # namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection
-# onLine    Determines whether the browser is online    Navigator
-# position  Returns the position of the concerned device at a given time    Geolocation
-# positionError Returns the reason of an error occurring when using the geolocating device  Geolocation
-# positionOptions   Describes an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition() and Geolocation.watchPosition() Geolocation
-# removeItem()  Removes that key from the storage   Storage
 # removeNamedItem() Removes a specified attribute node  Attribute
 # search    Sets or returns the querystring part of a URL   Location
 # setNamedItem()    Sets the specified attribute node (by name) Attribute
 # source    Returns the text of the RegExp pattern  RegExp
 # specified Returns true if the attribute has been specified, otherwise it returns false    Attribute
-# watchPosition()   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   Geolocation
+
+'''

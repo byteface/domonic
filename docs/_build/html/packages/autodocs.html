@@ -771,7 +771,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt id="domonic.dom.Document.implementation">
-<code class="sig-name descname">implementation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.implementation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.implementation" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">implementation</code><a class="headerlink" href="#domonic.dom.Document.implementation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the DOMImplementation object that handles this document</p>
 </dd></dl>
 
@@ -1346,7 +1346,7 @@ or the current node if it’s the topmost node in the tree]</p>
 
 <dl class="py class">
 <dt id="domonic.dom.ParentNode">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">ParentNode</code><a class="reference internal" href="../_modules/domonic/dom.html#ParentNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.ParentNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">ParentNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ParentNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.ParentNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>not tested yet</p>
 </dd></dl>
 
@@ -1405,9 +1405,52 @@ or the current position of the caret.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="domonic.javascript.Array.copyWithin">
+<code class="sig-name descname">copyWithin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.copyWithin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.copyWithin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies array elements within the array, to and from specified positions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Array.entries">
+<code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a key/value pair Array Iteration Object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Array.every">
+<code class="sig-name descname">every</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.every"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.every" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if every element in an array pass a test</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="domonic.javascript.Array.fill">
 <code class="sig-name descname">fill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.fill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.fill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fill the elements in an array with a static value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Array.filter">
+<code class="sig-name descname">filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new array with every element in an array that pass a test
+even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Array.find">
+<code class="sig-name descname">find</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the first element in an array that pass a test</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Array.findIndex">
+<code class="sig-name descname">findIndex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.findIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.findIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the index of the first element in an array that pass a test</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Array.forEach">
+<code class="sig-name descname">forEach</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.forEach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.forEach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls a function for each array element</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1432,6 +1475,12 @@ or the current position of the caret.</p>
 <dt id="domonic.javascript.Array.join">
 <code class="sig-name descname">join</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.join"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.join" title="Permalink to this definition">¶</a></dt>
 <dd><p>Joins all elements of an array into a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Array.keys">
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Array Iteration Object, containing the keys of the original array</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1915,8 +1964,38 @@ from the args and kwargs arguments, respectively.</p>
 
 <dl class="py class">
 <dt id="domonic.javascript.Number">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Number</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">/</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number" title="Permalink to this definition">¶</a></dt>
-<dd><p>javascript Number</p>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Number</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number" title="Permalink to this definition">¶</a></dt>
+<dd><p>javascript Number methods</p>
+<dl class="py method">
+<dt id="domonic.javascript.Number.isInteger">
+<code class="sig-name descname">isInteger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.isInteger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.isInteger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a value is an integer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Number.isSafeInteger">
+<code class="sig-name descname">isSafeInteger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.isSafeInteger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.isSafeInteger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether a value is a safe integer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Number.toExponential">
+<code class="sig-name descname">toExponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toExponential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toExponential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a number into an exponential notation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Number.toFixed">
+<code class="sig-name descname">toFixed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toFixed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toFixed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats a number with x numbers of digits after the decimal point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Number.toPrecision">
+<code class="sig-name descname">toPrecision</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toPrecision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toPrecision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats a number to x length</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py exception">
@@ -1969,7 +2048,19 @@ from the args and kwargs arguments, respectively.</p>
 <dl class="py class">
 <dt id="domonic.javascript.String">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">String</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String" title="Permalink to this definition">¶</a></dt>
-<dd><p>javascript string</p>
+<dd><p>javascript string method</p>
+<dl class="py method">
+<dt id="domonic.javascript.String.charAt">
+<code class="sig-name descname">charAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charAt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.charAt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the character at the specified index (position)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.String.charCodeAt">
+<code class="sig-name descname">charCodeAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charCodeAt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.charCodeAt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Unicode of the character at the specified index</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="domonic.javascript.String.endsWith">
 <code class="sig-name descname">endsWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.endsWith"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.endsWith" title="Permalink to this definition">¶</a></dt>
@@ -1977,9 +2068,22 @@ from the args and kwargs arguments, respectively.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="domonic.javascript.String.fromCharCode">
+<code class="sig-name descname">fromCharCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCharCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.fromCharCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts Unicode values to characters</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="domonic.javascript.String.repeat">
 <code class="sig-name descname">repeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">count</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.repeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a new string with a specified number of copies of an existing string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.String.replace">
+<code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">old</span></em>, <em class="sig-param"><span class="n">new</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.replace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches a string for a specified value, or a regular expression,
+and returns a new string where the specified values are replaced</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2044,7 +2148,7 @@ from the args and kwargs arguments, respectively.</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.Window.setTimeout">
-<em class="property">static </em><code class="sig-name descname">setTimeout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">function</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Window.setTimeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Window.setTimeout" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">setTimeout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">function</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Window.setTimeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Window.setTimeout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls a function or evaluates an expression after a specified number of milliseconds</p>
 </dd></dl>
 
@@ -3383,7 +3487,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dl class="py class">
 <dt id="domonic.events.Event">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">Event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.Event" title="Permalink to this definition">¶</a></dt>
-<dd><p>events</p>
+<dd><p>event</p>
 </dd></dl>
 
 <dl class="py class">
@@ -3429,6 +3533,12 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dt id="domonic.events.PageTransitionEvent">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">PageTransitionEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PageTransitionEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.PageTransitionEvent" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py attribute">
+<dt id="domonic.events.PageTransitionEvent.PAGESHOW">
+<code class="sig-name descname">PAGESHOW</code><em class="property"> = 'onpageshow'</em><a class="headerlink" href="#domonic.events.PageTransitionEvent.PAGESHOW" title="Permalink to this definition">¶</a></dt>
+<dd><p>PageTransitionEvent</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="domonic.events.PageTransitionEvent.persisted">
 <code class="sig-name descname">persisted</code><a class="headerlink" href="#domonic.events.PageTransitionEvent.persisted" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns whether the webpage was cached by the browser</p>
@@ -3445,6 +3555,12 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd><p>Returns an object containing a copy of the history entries</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt id="domonic.events.ProgressEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">ProgressEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ProgressEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.ProgressEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>CustomEvent</p>
 </dd></dl>
 
 <dl class="py class">
@@ -3533,6 +3649,12 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dt id="domonic.events.TransitionEvent">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">TransitionEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TransitionEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.TransitionEvent" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py attribute">
+<dt id="domonic.events.TransitionEvent.TRANSITIONEND">
+<code class="sig-name descname">TRANSITIONEND</code><em class="property"> = 'ontransitionend'</em><a class="headerlink" href="#domonic.events.TransitionEvent.TRANSITIONEND" title="Permalink to this definition">¶</a></dt>
+<dd><p>TransitionEvent</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="domonic.events.TransitionEvent.elapsedTime">
 <code class="sig-name descname">elapsedTime</code><a class="headerlink" href="#domonic.events.TransitionEvent.elapsedTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of seconds a transition has been running</p>
@@ -4814,6 +4936,377 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 </div>
+<span class="target" id="module-domonic.svg"></span><div class="section" id="domonic-svg">
+<h2>domonic.svg<a class="headerlink" href="#domonic-svg" title="Permalink to this headline">¶</a></h2>
+<p>Generate SVG with python 3</p>
+<p>WARNING - totally not tested. except circle. I just assumed it would work…</p>
+<p># <a class="reference external" href="https://www.w3.org/TR/SVG2/eltindex.html">https://www.w3.org/TR/SVG2/eltindex.html</a></p>
+<dl class="py class">
+<dt id="domonic.svg.altGlyph">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">altGlyph</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.altGlyph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.altGlyphDef">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">altGlyphDef</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.altGlyphDef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.altGlyphItem">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">altGlyphItem</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.altGlyphItem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.animate">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">animate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.animate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.animateColor">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">animateColor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.animateColor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.animateMotion">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">animateMotion</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.animateMotion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.animateTransform">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">animateTransform</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.animateTransform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.circle">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">circle</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.circle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.clipPath">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">clipPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.clipPath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.cursor">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">cursor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.cursor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.defs">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">defs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.defs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.desc">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">desc</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.desc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.discard">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">discard</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.discard" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.ellipse">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">ellipse</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.ellipse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feBlend">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feBlend</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feBlend" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feColorMatrix">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feColorMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feColorMatrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feComponentTransfer">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feComponentTransfer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feComponentTransfer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feComposite">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feComposite</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feComposite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feConvolveMatrix">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feConvolveMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feConvolveMatrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feDiffuseLighting">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feDiffuseLighting</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feDiffuseLighting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feDisplacementMap">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feDisplacementMap</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feDisplacementMap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feDistantLight">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feDistantLight</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feDistantLight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feDropShadow">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feDropShadow</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feDropShadow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feFlood">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feFlood</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feFlood" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feFuncA">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feFuncA</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feFuncA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feFuncB">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feFuncB</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feFuncB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feFuncG">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feFuncG</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feFuncG" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feFuncR">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feFuncR</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feFuncR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feGaussianBlur">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feGaussianBlur</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feGaussianBlur" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feImage">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feImage</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feImage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feMerge">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feMerge</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feMerge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feMergeNode">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feMergeNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feMergeNode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feMorphology">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feMorphology</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feMorphology" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feOffset">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feOffset</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feOffset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.fePointLight">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">fePointLight</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.fePointLight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feSpecularLighting">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feSpecularLighting</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feSpecularLighting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feSpotLight">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feSpotLight</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feSpotLight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feTile">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feTile</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feTile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.feTurbulence">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">feTurbulence</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.feTurbulence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.font">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">font</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.font" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.foreignObject">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">foreignObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.foreignObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.g">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">g</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.g" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.glyph">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">glyph</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.glyph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.glyphRef">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">glyphRef</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.glyphRef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.hatch">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">hatch</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.hatch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.hatchpath">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">hatchpath</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.hatchpath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.hkern">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">hkern</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.hkern" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.image">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">image</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.line">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">line</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.linearGradient">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">linearGradient</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.linearGradient" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.marker">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">marker</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.marker" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.mask">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">mask</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.mpath">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">mpath</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.mpath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.path">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">path</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.pattern">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">pattern</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.pattern" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.polygon">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">polygon</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.polygon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.polyline">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">polyline</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.polyline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.radialGradient">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">radialGradient</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.radialGradient" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.rect">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">rect</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.rect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.solidcolor">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">solidcolor</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.solidcolor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.stop">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">stop</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.svg">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">svg</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.svg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.switch">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">switch</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.switch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.symbol">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">symbol</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.text">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">text</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.textPath">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">textPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.textPath" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.title">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">title</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.tref">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">tref</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.tref" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.tspan">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">tspan</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.tspan" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.unknown">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">unknown</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.unknown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.use">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">use</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.use" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.view">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">view</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.svg.vkern">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.svg.</code><code class="sig-name descname">vkern</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.svg.vkern" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 </div>
 
 
@@ -4860,6 +5353,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <li class="toctree-l2"><a class="reference internal" href="#domonic-style">domonic.style</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#domonic-utils">domonic.utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#domonic-decorators">domonic.decorators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#domonic-svg">domonic.svg</a></li>
 </ul>
 </li>
 </ul>
