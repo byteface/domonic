@@ -42,7 +42,7 @@
 <span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="n">Element</span><span class="p">,</span> <span class="n">Document</span>
 
 
-<div class="viewcode-block" id="render"><a class="viewcode-back" href="../../packages/html.html#domonic.html.render">[docs]</a><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">outp</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="render"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.html.render">[docs]</a><span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">outp</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;render</span>
 
 <span class="sd">    Renders the input to string or to a file.</span>
@@ -60,7 +60,7 @@
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TemplateError"><a class="viewcode-back" href="../../packages/html.html#domonic.html.TemplateError">[docs]</a><span class="k">class</span> <span class="nc">TemplateError</span><span class="p">(</span><span class="ne">IndexError</span><span class="p">):</span>
+<div class="viewcode-block" id="TemplateError"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.html.TemplateError">[docs]</a><span class="k">class</span> <span class="nc">TemplateError</span><span class="p">(</span><span class="ne">IndexError</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Templating error: &quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">error</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hint</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -71,7 +71,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="tag"><a class="viewcode-back" href="../../packages/html.html#domonic.html.tag">[docs]</a><span class="k">class</span> <span class="nc">tag</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="tag"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.html.tag">[docs]</a><span class="k">class</span> <span class="nc">tag</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; The class from which all html tags extend &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -234,7 +234,7 @@
     <span class="c1"># def __dir__/__getattr__/__getattribute)) - .... dot notation for attributes</span>
 
 
-<div class="viewcode-block" id="closed_tag"><a class="viewcode-back" href="../../packages/html.html#domonic.html.closed_tag">[docs]</a><span class="k">class</span> <span class="nc">closed_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">):</span>
+<div class="viewcode-block" id="closed_tag"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.html.closed_tag">[docs]</a><span class="k">class</span> <span class="nc">closed_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="si">}</span><span class="s2"> /&gt;&quot;</span></div>
 
@@ -387,7 +387,7 @@
 <span class="n">main</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;command&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>  <span class="c1"># TODO - y was this missing?</span>
 
 
-<div class="viewcode-block" id="doctype"><a class="viewcode-back" href="../../packages/html.html#domonic.html.doctype">[docs]</a><span class="k">class</span> <span class="nc">doctype</span><span class="p">():</span>
+<div class="viewcode-block" id="doctype"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.html.doctype">[docs]</a><span class="k">class</span> <span class="nc">doctype</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;doctype</span>
 
 <span class="sd">    Returns:</span>
@@ -397,7 +397,7 @@
         <span class="k">return</span> <span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span></div>
 
 
-<div class="viewcode-block" id="comment"><a class="viewcode-back" href="../../packages/html.html#domonic.html.comment">[docs]</a><span class="k">class</span> <span class="nc">comment</span><span class="p">():</span>
+<div class="viewcode-block" id="comment"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.html.comment">[docs]</a><span class="k">class</span> <span class="nc">comment</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;comment</span>
 
 <span class="sd">    Args:</span>
@@ -444,6 +444,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

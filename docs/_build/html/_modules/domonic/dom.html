@@ -46,7 +46,7 @@
 <span class="kn">from</span> <span class="nn">domonic.events</span> <span class="kn">import</span> <span class="o">*</span>
 
 
-<div class="viewcode-block" id="EventTarget"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.EventTarget">[docs]</a><span class="k">class</span> <span class="nc">EventTarget</span><span class="p">:</span>
+<div class="viewcode-block" id="EventTarget"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.EventTarget">[docs]</a><span class="k">class</span> <span class="nc">EventTarget</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Baseclass for Node &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -89,7 +89,7 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">defaultPrevented</span></div>
 
 
-<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="n">EventTarget</span><span class="p">):</span>
+<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="n">EventTarget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Element extends from Node &quot;&quot;&quot;</span>
 
     <span class="n">ELEMENT_NODE</span> <span class="o">=</span> <span class="mi">1</span>
@@ -160,7 +160,7 @@
             <span class="n">nxt</span> <span class="o">=</span> <span class="n">nxt</span><span class="o">.</span><span class="n">parentNode</span>
         <span class="k">return</span> <span class="n">node</span>
 
-<div class="viewcode-block" id="Node.appendChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.appendChild">[docs]</a>    <span class="k">def</span> <span class="nf">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.appendChild"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.appendChild">[docs]</a>    <span class="k">def</span> <span class="nf">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adds a new child node, to an element, as the last child node &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">+</span> <span class="p">(</span><span class="n">item</span><span class="p">,)</span></div>
         <span class="c1"># return item  # causes max recursion when called chained</span>
@@ -246,7 +246,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">content</span><span class="p">,)</span>
         <span class="k">return</span> <span class="n">content</span>
 
-<div class="viewcode-block" id="Node.contains"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.contains"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Check whether a node is a descendant of a given node &quot;&quot;&quot;</span>
         <span class="c1"># this will go crunch on big stuff... need to consider best way</span>
         <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
@@ -260,7 +260,7 @@
 
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Node.insertBefore"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.insertBefore">[docs]</a>    <span class="k">def</span> <span class="nf">insertBefore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_node</span><span class="p">,</span> <span class="n">reference_node</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.insertBefore"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.insertBefore">[docs]</a>    <span class="k">def</span> <span class="nf">insertBefore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_node</span><span class="p">,</span> <span class="n">reference_node</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; inserts a node before a reference node as a child of a specified parent node. &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">each</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">each</span> <span class="o">==</span> <span class="n">reference_node</span><span class="p">:</span>
@@ -270,7 +270,7 @@
                 <span class="k">return</span> <span class="n">new_node</span>
         <span class="k">return</span> <span class="n">new_node</span></div>
 
-<div class="viewcode-block" id="Node.removeChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.removeChild">[docs]</a>    <span class="k">def</span> <span class="nf">removeChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.removeChild"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.removeChild">[docs]</a>    <span class="k">def</span> <span class="nf">removeChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; removes a child node from the DOM and returns the removed node.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">each</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">each</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
@@ -290,7 +290,7 @@
 
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Node.replaceChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.replaceChild">[docs]</a>    <span class="k">def</span> <span class="nf">replaceChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newChild</span><span class="p">,</span> <span class="n">oldChild</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.replaceChild"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.replaceChild">[docs]</a>    <span class="k">def</span> <span class="nf">replaceChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newChild</span><span class="p">,</span> <span class="n">oldChild</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Replaces a child node within the given (parent) node. &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">each</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">each</span> <span class="o">==</span> <span class="n">oldChild</span><span class="p">:</span>
@@ -306,7 +306,7 @@
 
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Node.cloneNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.cloneNode">[docs]</a>    <span class="k">def</span> <span class="nf">cloneNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.cloneNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.cloneNode">[docs]</a>    <span class="k">def</span> <span class="nf">cloneNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a copy. &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">copy</span>
         <span class="k">if</span> <span class="n">deep</span><span class="p">:</span>
@@ -314,11 +314,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># shallow copy</span></div>
 
-<div class="viewcode-block" id="Node.isSameNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.isSameNode">[docs]</a>    <span class="k">def</span> <span class="nf">isSameNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.isSameNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.isSameNode">[docs]</a>    <span class="k">def</span> <span class="nf">isSameNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks if two elements are the same node &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span> <span class="o">==</span> <span class="n">node</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Node.isEqualNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.isEqualNode">[docs]</a>    <span class="k">def</span> <span class="nf">isEqualNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.isEqualNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Node.isEqualNode">[docs]</a>    <span class="k">def</span> <span class="nf">isEqualNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks if two elements are equal &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">))</span></div>
 
@@ -338,7 +338,7 @@
     <span class="c1"># setUserData() 🗑️</span>
 
 
-<div class="viewcode-block" id="ParentNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ParentNode">[docs]</a><span class="k">class</span> <span class="nc">ParentNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ParentNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.ParentNode">[docs]</a><span class="k">class</span> <span class="nc">ParentNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; not tested yet &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -387,29 +387,29 @@
             <span class="k">return</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="ShadowRoot"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ShadowRoot">[docs]</a><span class="k">class</span> <span class="nc">ShadowRoot</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>  <span class="c1"># TODO - this may need to extend tag also to get the args/kwargs</span>
+<div class="viewcode-block" id="ShadowRoot"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.ShadowRoot">[docs]</a><span class="k">class</span> <span class="nc">ShadowRoot</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>  <span class="c1"># TODO - this may need to extend tag also to get the args/kwargs</span>
     <span class="sd">&quot;&quot;&quot; property on element that has hidden DOM &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;open&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delegatesFocus</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
 
-<div class="viewcode-block" id="ShadowRoot.getSelection"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ShadowRoot.getSelection">[docs]</a>    <span class="k">def</span> <span class="nf">getSelection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ShadowRoot.getSelection"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.ShadowRoot.getSelection">[docs]</a>    <span class="k">def</span> <span class="nf">getSelection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a Selection object representing the range of text selected by the user,</span>
 <span class="sd">        or the current position of the caret.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="ShadowRoot.elementFromPoint"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ShadowRoot.elementFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">elementFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ShadowRoot.elementFromPoint"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.ShadowRoot.elementFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">elementFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the topmost element at the specified coordinates. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="ShadowRoot.elementsFromPoint"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ShadowRoot.elementsFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">elementsFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ShadowRoot.elementsFromPoint"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.ShadowRoot.elementsFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">elementsFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns an array of all elements at the specified coordinates. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="ShadowRoot.caretPositionFromPoint"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ShadowRoot.caretPositionFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">caretPositionFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ShadowRoot.caretPositionFromPoint"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.ShadowRoot.caretPositionFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">caretPositionFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a CaretPosition object containing the DOM node containing the caret,</span>
 <span class="sd">        and caret&#39;s character offset within that node.</span>
@@ -417,7 +417,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="Element"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element">[docs]</a><span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+<div class="viewcode-block" id="Element"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element">[docs]</a><span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Baseclass for all html tags &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -474,7 +474,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-<div class="viewcode-block" id="Element.blur"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.blur">[docs]</a>    <span class="k">def</span> <span class="nf">blur</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.blur"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.blur">[docs]</a>    <span class="k">def</span> <span class="nf">blur</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Removes focus from an element &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
@@ -499,7 +499,7 @@
         <span class="sd">&quot;&quot;&quot; Sets or returns the value of the className attribute of an element &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">newname</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Element.click"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.click">[docs]</a>    <span class="k">def</span> <span class="nf">click</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.click"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.click">[docs]</a>    <span class="k">def</span> <span class="nf">click</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Simulates a mouse-click on an element &quot;&quot;&quot;</span>
         <span class="c1"># evt = MouseEvent(&#39;click&#39;, {&#39;bubbles&#39;: True,&#39;cancelable&#39;: True,&#39;view&#39;: window});</span>
         <span class="c1"># TODO - don&#39;t if its cancelled</span>
@@ -526,34 +526,34 @@
         <span class="sd">&quot;&quot;&quot; Returns the width of an element, including padding &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">paddingLeft</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">paddingRight</span>
 
-<div class="viewcode-block" id="Element.compareDocumentPosition"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.compareDocumentPosition">[docs]</a>    <span class="k">def</span> <span class="nf">compareDocumentPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.compareDocumentPosition"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.compareDocumentPosition">[docs]</a>    <span class="k">def</span> <span class="nf">compareDocumentPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Compares the document position of two elements &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.contentEditable"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.contentEditable">[docs]</a>    <span class="k">def</span> <span class="nf">contentEditable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.contentEditable"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.contentEditable">[docs]</a>    <span class="k">def</span> <span class="nf">contentEditable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or returns whether the content of an element is editable or not &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.dir"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.dir">[docs]</a>    <span class="k">def</span> <span class="nf">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.dir"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.dir">[docs]</a>    <span class="k">def</span> <span class="nf">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or returns the value of the dir attribute of an element &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.exitFullscreen"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.exitFullscreen">[docs]</a>    <span class="k">def</span> <span class="nf">exitFullscreen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.exitFullscreen"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.exitFullscreen">[docs]</a>    <span class="k">def</span> <span class="nf">exitFullscreen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Cancels an element in fullscreen mode &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.firstElementChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.firstElementChild">[docs]</a>    <span class="k">def</span> <span class="nf">firstElementChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.firstElementChild"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.firstElementChild">[docs]</a>    <span class="k">def</span> <span class="nf">firstElementChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the first child element of an element &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Element.focus"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.focus">[docs]</a>    <span class="k">def</span> <span class="nf">focus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.focus"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.focus">[docs]</a>    <span class="k">def</span> <span class="nf">focus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Gives focus to an element &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.getAttribute"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Element.getAttribute"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.getAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns the specified attribute value of an element node &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
 
@@ -566,7 +566,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Element.getAttributeNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">getAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Element.getAttributeNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.getAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">getAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns the specified attribute node &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># TODO - Attr</span>
@@ -575,15 +575,15 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
 
-<div class="viewcode-block" id="Element.getBoundingClientRect"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getBoundingClientRect">[docs]</a>    <span class="k">def</span> <span class="nf">getBoundingClientRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.getBoundingClientRect"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.getBoundingClientRect">[docs]</a>    <span class="k">def</span> <span class="nf">getBoundingClientRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns the size of an element and its position relative to the viewport&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.getElementsByClassName"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getElementsByClassName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByClassName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.getElementsByClassName"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.getElementsByClassName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByClassName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns a collection of all child elements with the specified class name&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.getElementsByTagName"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getElementsByTagName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByTagName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<div class="viewcode-block" id="Element.getElementsByTagName"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.getElementsByTagName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByTagName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns a collection of all child elements with the specified tag name &quot;&quot;&quot;</span>
         <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?&gt;.+?&lt;/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&gt;)&quot;</span>
 
@@ -596,7 +596,7 @@
         <span class="n">tags</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">tags</span></div>
 
-<div class="viewcode-block" id="Element.hasAttribute"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.hasAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">hasAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Element.hasAttribute"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.hasAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">hasAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns true if an element has the specified attribute, otherwise false &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">attribute</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;_&#39;</span><span class="p">:</span>
@@ -607,7 +607,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Element.hasAttributes"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.hasAttributes">[docs]</a>    <span class="k">def</span> <span class="nf">hasAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Element.hasAttributes"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.hasAttributes">[docs]</a>    <span class="k">def</span> <span class="nf">hasAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns true if an element has any attributes, otherwise false &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -624,42 +624,42 @@
         <span class="sd">&#39;&#39;&#39; Sets or returns the value of the id attribute of an element&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">newid</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Element.innerText"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.innerText">[docs]</a>    <span class="k">def</span> <span class="nf">innerText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.innerText"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.innerText">[docs]</a>    <span class="k">def</span> <span class="nf">innerText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Sets or returns the text content of a node and its descendants&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">each</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Element.insertAdjacentElement"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentElement">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentElement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.insertAdjacentElement"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.insertAdjacentElement">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentElement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Inserts a HTML element at the specified position relative to the current element&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.insertAdjacentHTML"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentHTML">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.insertAdjacentHTML"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.insertAdjacentHTML">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Inserts a HTML formatted text at the specified position relative to the current element&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.insertAdjacentText"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentText">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.insertAdjacentText"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.insertAdjacentText">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Inserts text into the specified position relative to the current element&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.isContentEditable"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.isContentEditable">[docs]</a>    <span class="k">def</span> <span class="nf">isContentEditable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.isContentEditable"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.isContentEditable">[docs]</a>    <span class="k">def</span> <span class="nf">isContentEditable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns true if the content of an element is editable, otherwise false&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.isDefaultNamespace"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.isDefaultNamespace">[docs]</a>    <span class="k">def</span> <span class="nf">isDefaultNamespace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.isDefaultNamespace"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.isDefaultNamespace">[docs]</a>    <span class="k">def</span> <span class="nf">isDefaultNamespace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns true if a specified namespaceURI is the default, otherwise false&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.lang"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.lang">[docs]</a>    <span class="k">def</span> <span class="nf">lang</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.lang"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.lang">[docs]</a>    <span class="k">def</span> <span class="nf">lang</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or returns the value of the lang attribute of an element &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;lang&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Element.lastElementChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.lastElementChild">[docs]</a>    <span class="k">def</span> <span class="nf">lastElementChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.lastElementChild"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.lastElementChild">[docs]</a>    <span class="k">def</span> <span class="nf">lastElementChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the last child element of an element&#39;&#39;&#39;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Element.namespaceURI"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.namespaceURI">[docs]</a>    <span class="k">def</span> <span class="nf">namespaceURI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.namespaceURI"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.namespaceURI">[docs]</a>    <span class="k">def</span> <span class="nf">namespaceURI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the namespace URI of an element&#39;&#39;&#39;</span>
         <span class="k">pass</span></div>
 
@@ -682,31 +682,31 @@
                         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Element.normalize"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.normalize"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Joins adjacent text nodes and removes empty text nodes in an element&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.offsetHeight"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.offsetHeight">[docs]</a>    <span class="k">def</span> <span class="nf">offsetHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.offsetHeight"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.offsetHeight">[docs]</a>    <span class="k">def</span> <span class="nf">offsetHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the height of an element, including padding, border and scrollbar&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.offsetWidth"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.offsetWidth">[docs]</a>    <span class="k">def</span> <span class="nf">offsetWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.offsetWidth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.offsetWidth">[docs]</a>    <span class="k">def</span> <span class="nf">offsetWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the width of an element, including padding, border and scrollbar&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.offsetLeft"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.offsetLeft">[docs]</a>    <span class="k">def</span> <span class="nf">offsetLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.offsetLeft"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.offsetLeft">[docs]</a>    <span class="k">def</span> <span class="nf">offsetLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the horizontal offset position of an element&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.offsetParent"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.offsetParent">[docs]</a>    <span class="k">def</span> <span class="nf">offsetParent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.offsetParent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.offsetParent">[docs]</a>    <span class="k">def</span> <span class="nf">offsetParent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the offset container of an element&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.offsetTop"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.offsetTop">[docs]</a>    <span class="k">def</span> <span class="nf">offsetTop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.offsetTop"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.offsetTop">[docs]</a>    <span class="k">def</span> <span class="nf">offsetTop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the vertical offset position of an element&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.ownerDocument"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.ownerDocument">[docs]</a>    <span class="k">def</span> <span class="nf">ownerDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.ownerDocument"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.ownerDocument">[docs]</a>    <span class="k">def</span> <span class="nf">ownerDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the root element (document object) for an element &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rootNode</span></div>
 
@@ -734,19 +734,19 @@
                         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Element.querySelector"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.querySelector">[docs]</a>    <span class="k">def</span> <span class="nf">querySelector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.querySelector"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.querySelector">[docs]</a>    <span class="k">def</span> <span class="nf">querySelector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns the first child element that matches a specified CSS selector(s) of an element&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.querySelectorAll"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.querySelectorAll">[docs]</a>    <span class="k">def</span> <span class="nf">querySelectorAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.querySelectorAll"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.querySelectorAll">[docs]</a>    <span class="k">def</span> <span class="nf">querySelectorAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns all child elements that matches a specified CSS selector(s) of an element &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.remove"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.remove"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Removes the element from the DOM &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.removeAttribute"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.removeAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">removeAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.removeAttribute"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.removeAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">removeAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Removes a specified attribute from an element &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
 
@@ -758,7 +758,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to remove!&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
             <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Element.removeAttributeNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.removeAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">removeAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">):</span>  <span class="c1"># untested</span>
+<div class="viewcode-block" id="Element.removeAttributeNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.removeAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">removeAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">):</span>  <span class="c1"># untested</span>
         <span class="sd">&quot;&quot;&quot; Removes a specified attribute node, and returns the removed node &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">attribute</span> <span class="o">==</span> <span class="n">each</span><span class="p">:</span>
@@ -766,31 +766,31 @@
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="n">each</span><span class="p">]</span>
                 <span class="k">return</span> <span class="n">Attr</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Element.requestFullscreen"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.requestFullscreen">[docs]</a>    <span class="k">def</span> <span class="nf">requestFullscreen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.requestFullscreen"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.requestFullscreen">[docs]</a>    <span class="k">def</span> <span class="nf">requestFullscreen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Shows an element in fullscreen mode &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.scrollHeight"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.scrollHeight">[docs]</a>    <span class="k">def</span> <span class="nf">scrollHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.scrollHeight"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.scrollHeight">[docs]</a>    <span class="k">def</span> <span class="nf">scrollHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the entire height of an element, including padding &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.scrollIntoView"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.scrollIntoView">[docs]</a>    <span class="k">def</span> <span class="nf">scrollIntoView</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.scrollIntoView"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.scrollIntoView">[docs]</a>    <span class="k">def</span> <span class="nf">scrollIntoView</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Scrolls the specified element into the visible area of the browser window&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.scrollLeft"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.scrollLeft">[docs]</a>    <span class="k">def</span> <span class="nf">scrollLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.scrollLeft"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.scrollLeft">[docs]</a>    <span class="k">def</span> <span class="nf">scrollLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Sets or returns the number of pixels an element&#39;s content is scrolled horizontally&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.scrollTop"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.scrollTop">[docs]</a>    <span class="k">def</span> <span class="nf">scrollTop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.scrollTop"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.scrollTop">[docs]</a>    <span class="k">def</span> <span class="nf">scrollTop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Sets or returns the number of pixels an element&#39;s content is scrolled vertically&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.scrollWidth"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.scrollWidth">[docs]</a>    <span class="k">def</span> <span class="nf">scrollWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.scrollWidth"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.scrollWidth">[docs]</a>    <span class="k">def</span> <span class="nf">scrollWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the entire width of an element, including padding&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.setAttribute"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.setAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">setAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.setAttribute"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.setAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">setAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or changes the specified attribute, to the specified value &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">attribute</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;_&#39;</span><span class="p">:</span>
@@ -800,7 +800,7 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to set attribute&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Element.setAttributeNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.setAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">setAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.setAttributeNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.setAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">setAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or changes the specified attribute node &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
@@ -847,7 +847,7 @@
         <span class="sd">&quot;&quot;&quot; Sets or returns the value of the title attribute of an element &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="n">newtitle</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Element.toString"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.toString"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Element.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts an element to a string &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
 
@@ -873,7 +873,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 
-<div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
+<div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Baseclass for the html tag &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -916,12 +916,12 @@
         <span class="sd">&#39;&#39;&#39;Adopts a node from another document&#39;&#39;&#39;</span>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.anchors"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.anchors">[docs]</a>    <span class="k">def</span> <span class="nf">anchors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.anchors"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.anchors">[docs]</a>    <span class="k">def</span> <span class="nf">anchors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a collection of all &lt;a&gt; elements in the document that have a name attribute&#39;&#39;&#39;</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tags</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tags</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">hasAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="Document.applets"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.applets">[docs]</a>    <span class="k">def</span> <span class="nf">applets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.applets"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.applets">[docs]</a>    <span class="k">def</span> <span class="nf">applets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a collection of all &lt;applet&gt; elements in the document&#39;&#39;&#39;</span>
         <span class="k">return</span></div>
 
@@ -965,12 +965,12 @@
         <span class="sd">&quot;&quot;&quot; Returns the character encoding for the document &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;UTF-8&quot;</span>
 
-<div class="viewcode-block" id="Document.createAttribute"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.createAttribute">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Document.createAttribute"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.createAttribute">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">createAttribute</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Creates an attribute node &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Document.createComment"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.createComment">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Document.createComment"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.createComment">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">createComment</span><span class="p">(</span><span class="n">message</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Creates a Comment node with the specified text&#39;&#39;&#39;</span>
         <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="n">comment</span>
@@ -980,7 +980,7 @@
         <span class="sd">&#39;&#39;&#39;Creates an empty DocumentFragment node&#39;&#39;&#39;</span></div>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.createElement"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.createElement">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Document.createElement"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.createElement">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">createElement</span><span class="p">(</span><span class="n">_type</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Creates an Element node -</span>
 <span class="sd">        WARNING THIS WILL NOT CREATE A &#39;DOMONIC ELEMENT&#39; (yet), so it wont have features &quot;&quot;&quot;</span>
@@ -989,7 +989,7 @@
         <span class="n">el</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">_type</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">el</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Document.createEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.createEvent">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Document.createEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.createEvent">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">createEvent</span><span class="p">(</span><span class="n">event_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Creates a new event&#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">event_type</span> <span class="o">==</span> <span class="s2">&quot;MouseEvent&quot;</span><span class="p">:</span>
@@ -1012,7 +1012,7 @@
         <span class="sd">&#39;&#39;&#39; Controls whether the entire document should be editable or not.&#39;&#39;&#39;</span></div>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.doctype"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.doctype">[docs]</a>    <span class="k">def</span> <span class="nf">doctype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.doctype"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.doctype">[docs]</a>    <span class="k">def</span> <span class="nf">doctype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the Document Type Declaration associated with the document&#39;&#39;&#39;</span>
         <span class="k">return</span>
 
@@ -1024,7 +1024,7 @@
         <span class="sd">&#39;&#39;&#39; Returns the mode used by the browser to render the document&#39;&#39;&#39;</span></div>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.domain"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.domain">[docs]</a>    <span class="k">def</span> <span class="nf">domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.domain"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.domain">[docs]</a>    <span class="k">def</span> <span class="nf">domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the domain name of the server that loaded the document&#39;&#39;&#39;</span>
         <span class="k">return</span>
 
@@ -1032,7 +1032,7 @@
         <span class="sd">&#39;&#39;&#39;Obsolete. Returns the DOM configuration of the document&#39;&#39;&#39;</span></div>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.embeds"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.embeds">[docs]</a>    <span class="k">def</span> <span class="nf">embeds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.embeds"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.embeds">[docs]</a>    <span class="k">def</span> <span class="nf">embeds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a collection of all &lt;embed&gt; elements the document&#39;&#39;&#39;</span>
         <span class="k">return</span>
 
@@ -1057,15 +1057,15 @@
         <span class="c1"># &#39;&#39;&#39;Returns a Boolean value indicating whether the document can be viewed in fullscreen mode&#39;&#39;&#39;</span>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.getElementById"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.getElementById">[docs]</a>    <span class="k">def</span> <span class="nf">getElementById</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.getElementById"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.getElementById">[docs]</a>    <span class="k">def</span> <span class="nf">getElementById</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns the element that has the ID attribute with the specified value&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Document.getElementsByClassName"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.getElementsByClassName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByClassName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.getElementsByClassName"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.getElementsByClassName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByClassName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns a NodeList containing all elements with the specified class name&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Document.getElementsByName"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.getElementsByName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.getElementsByName"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.getElementsByName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns a NodeList containing all elements with a specified name&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
@@ -1073,7 +1073,7 @@
         <span class="c1"># &#39;&#39;&#39;Returns a Boolean value indicating whether the document has focus&#39;&#39;&#39;</span>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.head"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.head">[docs]</a>    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.head"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.head">[docs]</a>    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the &lt;head&gt; element of the document&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
@@ -1103,7 +1103,7 @@
         <span class="c1"># &#39;&#39;&#39; Returns the date and time the document was last modified&#39;&#39;&#39;</span>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.links"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.links">[docs]</a>    <span class="k">def</span> <span class="nf">links</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.links"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.links">[docs]</a>    <span class="k">def</span> <span class="nf">links</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a collection of all &lt;a&gt; and &lt;area&gt; elements in the document that have a href attribute&#39;&#39;&#39;</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
         <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?/&gt;)&quot;</span>
@@ -1111,11 +1111,11 @@
         <span class="n">tags</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">tags</span></div>
 
-<div class="viewcode-block" id="Document.normalize"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.normalize"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Removes empty Text nodes, and joins adjacent nodes&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Document.normalizeDocument"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.normalizeDocument">[docs]</a>    <span class="k">def</span> <span class="nf">normalizeDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.normalizeDocument"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.normalizeDocument">[docs]</a>    <span class="k">def</span> <span class="nf">normalizeDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Removes empty Text nodes, and joins adjacent nodes&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
@@ -1123,11 +1123,11 @@
         <span class="sd">&#39;&#39;&#39;Opens an HTML output stream to collect output from document.write()&#39;&#39;&#39;</span></div>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.querySelector"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.querySelector">[docs]</a>    <span class="k">def</span> <span class="nf">querySelector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.querySelector"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.querySelector">[docs]</a>    <span class="k">def</span> <span class="nf">querySelector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns the first element that matches a specified CSS selector(s) in the document&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Document.querySelectorAll"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.querySelectorAll">[docs]</a>    <span class="k">def</span> <span class="nf">querySelectorAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.querySelectorAll"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.querySelectorAll">[docs]</a>    <span class="k">def</span> <span class="nf">querySelectorAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
@@ -1139,7 +1139,7 @@
         <span class="sd">&#39;&#39;&#39; Returns the URL of the document that loaded the current document&#39;&#39;&#39;</span></div>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.renameNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.renameNode">[docs]</a>    <span class="k">def</span> <span class="nf">renameNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">nodename</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.renameNode"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.renameNode">[docs]</a>    <span class="k">def</span> <span class="nf">renameNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">nodename</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Renames the specified node&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
@@ -1173,14 +1173,14 @@
     <span class="c1">#     &#39;&#39;&#39; Returns the full URL of the HTML document&#39;&#39;&#39;</span>
     <span class="c1">#     pass</span>
 
-<div class="viewcode-block" id="Document.write"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Document.write"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;Writes HTML expressions or JavaScript code to a document&#39;&#39;&#39;</span>
         <span class="c1"># doc = html</span>
         <span class="kn">from</span> <span class="nn">.html</span> <span class="kn">import</span> <span class="n">tag</span>
         <span class="n">tag</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span></div>
         <span class="c1"># super(tag).__init__(html)</span>
 
-<div class="viewcode-block" id="Document.writeln"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.writeln">[docs]</a>    <span class="k">def</span> <span class="nf">writeln</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Document.writeln"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.dom.Document.writeln">[docs]</a>    <span class="k">def</span> <span class="nf">writeln</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&#39;&#39;&#39;Same as write(), but adds a newline character after each statement&#39;&#39;&#39;</span>
         <span class="c1"># doc = html</span>
         <span class="k">pass</span></div></div>
@@ -1333,6 +1333,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

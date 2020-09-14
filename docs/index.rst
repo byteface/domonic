@@ -104,6 +104,7 @@ Here you can find instructions for getting the most out of Domonic.
    packages/terminal
    packages/CDN
    packages/components
+   packages/x3d
    packages/autodocs
 
 
