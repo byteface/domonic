@@ -173,6 +173,8 @@ class tag(object):
         """
         kwargs = super().__getattribute__('kwargs')
 
+        print(attr)
+
         if attr in kwargs:
             return kwargs[attr]
 
@@ -223,6 +225,7 @@ p = type('p', (tag, Element), {'name': 'p', '__init__': tag_init})
 i = type('i', (tag, Element), {'name': 'i', '__init__': tag_init})
 b = type('b', (tag, Element), {'name': 'b', '__init__': tag_init})
 
+portal = type('portal', (tag, Element), {'name': 'portal', '__init__': tag_init})
 
 def Atag(self, *args, **kwargs):
     # print('Atag: ', args, kwargs)

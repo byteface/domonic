@@ -129,6 +129,7 @@ class Node(EventTarget):
     def appendChild(self, item):
         """ Adds a new child node, to an element, as the last child node """
         self.args = self.args + (item,)
+        # return item  # causes max recursion when called chained
 
     @property
     def hasChildNodes(self):
@@ -325,11 +326,13 @@ class ParentNode(object):
     # def lastElementChild(self):
     #     raise NotImplementedError
 
-    def append(self, items):
-        self.args.extend(items)
+    def append(self, *args):
+        self.args += (args)
+        return self
 
-    def prepend(self, items):
-        self.args = items.extend(self.args)
+    def prepend(self, *args):
+        self.args = (args).extend(self.args)
+        return self
 
     def replaceChildren(self, children):
         self.args = args
@@ -433,7 +436,7 @@ class Element(Node):
             self.args = (value,)
         return self.content
 
-    def html(self, *args) -> str:
+    def html(self, *args):
         self.args = args
         return self
 

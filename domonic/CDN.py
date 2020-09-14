@@ -74,6 +74,7 @@ class CDN_JS(object):
     MOMENT_2_27_0 = "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"
     PIXI_5_3_3 = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"
     SOCKET_1_4_5 = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"
+    X3DOM = "https://www.x3dom.org/download/x3dom.js"
 
     # def find_on_cdn():
     # https://cdn.jsdelivr.net/npm/
@@ -94,6 +95,7 @@ class CDN_CSS(object):
     BALLOON = "https://unpkg.com/balloon-css/balloon.min.css"
     THREE_DOTS_0_2_0 = "https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css"
     MILLIGRAM_1_3_0 = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"
+    X3DOM = "https://www.x3dom.org/download/x3dom.css"
     # find_on_cdn():
     # https://unpkg.com/
     # https://cdnjs.cloudflare.com/ajax/libs/

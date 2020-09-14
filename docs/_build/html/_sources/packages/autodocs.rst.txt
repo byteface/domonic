@@ -36,3 +36,6 @@ Domonic: autodocs
 
 .. automodule:: domonic.svg
     :members:
+
+.. automodule:: domonic.x3d
+    :members:

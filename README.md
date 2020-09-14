@@ -13,7 +13,7 @@
 [![Python version](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)
 [![Build status](https://travis-ci.com/byteface/domonic.svg?branch=master)](https://travis-ci.com/byteface/domonic.svg?branch=master)
 
-#### Now contains 5 main packages: (but by no means are any of them complete)
+#### Contains several evolving packages: (but by no means are any of them complete)
 
 • html : Generate html with python 3 😎 <br />
 • dom : DOM API in python 3 😲 <br />

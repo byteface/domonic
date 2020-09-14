@@ -7,6 +7,9 @@ test:
 	python3 -m unittest tests.test_CDN
 	python3 -m unittest tests.test_JSON
 	python3 -m unittest tests.test_svg
+	python3 -m unittest tests.test_collada
+	python3 -m unittest tests.test_x3d
+
 
 build:
 	rm -r dist/
