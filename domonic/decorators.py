@@ -8,7 +8,7 @@ import functools
 from functools import wraps
 
 # wrap whats returned in an element
-# def elemental(element):
+# def el(element):
 #     def wrap(f):
 #         return f()
 #     return wrap
@@ -97,3 +97,14 @@ def cash(func, currency="£"):
     # should never switch order probably. just re-type
     # prints warning and runs
 # """
+
+'''
+def aka(names):
+    """ @aka(*mylist) """
+    def aka_decorator(fn):
+        @functools.wraps(fn)
+        def wrapper(*a, **kwa):
+            return fn(*a, **kwa)
+        return wrapper
+    return log_decorator
+'''

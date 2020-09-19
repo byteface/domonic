@@ -1209,24 +1209,43 @@ class Console(object):
             msg = substitute.join(msg.split('%s'))
         print(msg)
 
+
+    __count_var = 0
+    @staticmethod
+    def count():
+        """count
+
+        increments a number
+        """
+        Console.__count_var = Console.__count_var + 1
+        return Console.__count_var
+
+
+    @staticmethod
+    def error(error):
+        """error
+
+        increments a number
+        """
+        raise error
+
+
     def __init__(self, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
         # self.log = lambda msg : print(msg)
         # assert()
         # clear()
-        # count()
-        # error()
         # group()
         # groupCollapsed()
         # groupEnd()
         # info()
-        # table()
+        #def table(json_str, filter_array):
         # time()
         # timeEnd()
         # trace()
         # warn()
-        pass
+        __count_var = 0
 
 
 console = Console

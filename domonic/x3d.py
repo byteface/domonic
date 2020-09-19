@@ -1,7 +1,7 @@
 """
-    domonic.x3dom
+    domonic.x3d
     ====================================
-    Generate x3dom with python 3
+    Generate x3d with python 3
 
 """
 
