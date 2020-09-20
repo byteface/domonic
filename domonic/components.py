@@ -1,8 +1,82 @@
 import base64
 from domonic.html import *
 
+
+class SpriteCSS(object):
+    """ a css sprite sheet.
+
+    this spritesheet works by shifting the position of a bg image
+    uses css animation. usage:
+
+    animated_monster = SpriteCSS('monster', 190, 240, 'assets/spritesheets/monster.png', 0.8, 10)
+
+    Args:
+        _id - requires an ID which currently becomes a 'css class'
+        width
+        height
+        spritesheet
+        time
+        steps
+        loop
+        y_offset - for spritesheets with mulitple rows you can offset the ypos
+        bg_color
+
+    Returns:
+        str: A HTML rendered string
+
+    """
+    STYLE = lambda _id, width, height, spritesheet, time, steps, loop, y_offset, bg_color : """
+        ."""+_id+""" {
+          background:"""+bg_color+""";
+          width:"""+str(width)+"""px;
+          height:"""+str(height)+"""px;
+          background: url('"""+spritesheet+"""') left center;
+          animation:"""+_id+""" """+str(time)+"""s steps("""+str(steps)+""") infinite;
+        }
+        /*
+        @keyframes """+_id+""" {
+            100% { background-position: -"""+str(steps*width)+"""px; }
+        }
+        */
+        @keyframes """+_id+""" {
+            from { background-position:0px -"""+str(y_offset)+"""px; }
+            to { background-position:-"""+str(steps*width)+"""px -"""+str(y_offset)+"""px; }
+        }
+    """
+    
+    def __init__(self, id, width, height, spritesheet, time, steps, loop=True, y_offset=0, bg_color="none"):
+        self.id = id
+        self.styles = SpriteCSS.STYLE(id, width, height, spritesheet, time, steps, loop, y_offset, bg_color)
+    
+    def __str__(self):
+        return str(
+            span(
+                style(self.styles),
+                div(_class=self.id)
+            )
+        )
+
+
+# other sprite types may be needed...
+# _ss = BaseSprite()
+# _ss = Sprite()
+# _ss = SpriteCSS( path )
+# _ss = SpriteJS( path )
+# _ss = SpriteSVG( path )
+# _ss = SpriteGIF( path )
+# _ss = SpriteShader( path )
+# _ss = TileSet( path )
+
+
+
+
+
+
+
 # WARNING. What is not documented is subject to lots of change!
-# these are just examples of how to build your own components
+# below are just examples of how to build your own components
+# they may be removed in future version.
+# You should build your own components libaries using domonic
 
 
 class Modal(object):  # TODO - shouldn't this extend dom?

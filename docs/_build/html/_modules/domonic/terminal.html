@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.terminal &#8212; domonic 0.1.10 documentation</title>
+    <title>domonic.terminal &#8212; domonic 0.2.9 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -43,7 +43,7 @@
 <span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">window</span>
 
 
-<div class="viewcode-block" id="TerminalException"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.terminal.TerminalException">[docs]</a><span class="k">class</span> <span class="nc">TerminalException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="TerminalException"><a class="viewcode-back" href="../../packages/terminal.html#domonic.terminal.TerminalException">[docs]</a><span class="k">class</span> <span class="nc">TerminalException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; raised if the terminal throws an exception &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;An error message was recieved from terminal&quot;</span><span class="p">):</span>
@@ -52,10 +52,10 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="command"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.terminal.command">[docs]</a><span class="k">class</span> <span class="nc">command</span><span class="p">():</span>
+<div class="viewcode-block" id="command"><a class="viewcode-back" href="../../packages/terminal.html#domonic.terminal.command">[docs]</a><span class="k">class</span> <span class="nc">command</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot; wrapper class for all terminal commands &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="command.run"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.terminal.command.run">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="command.run"><a class="viewcode-back" href="../../packages/terminal.html#domonic.terminal.command.run">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;run</span>
 
@@ -154,7 +154,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="cd"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.terminal.cd">[docs]</a><span class="k">class</span> <span class="nc">cd</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+<div class="viewcode-block" id="cd"><a class="viewcode-back" href="../../packages/terminal.html#domonic.terminal.cd">[docs]</a><span class="k">class</span> <span class="nc">cd</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    NOTE - &#39;cd&#39; does not run on terminal</span>
 <span class="sd">    - cd is pointless as session opens and closes</span>
@@ -220,7 +220,7 @@
 <span class="c1"># help = type(&#39;help&#39;, (command,), {&#39;name&#39;: &#39;help&#39;})</span>
 
 
-<div class="viewcode-block" id="history"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.terminal.history">[docs]</a><span class="k">class</span> <span class="nc">history</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+<div class="viewcode-block" id="history"><a class="viewcode-back" href="../../packages/terminal.html#domonic.terminal.history">[docs]</a><span class="k">class</span> <span class="nc">history</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">run_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">iterable</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">try</span><span class="p">:</span>

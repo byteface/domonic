@@ -242,3 +242,21 @@ Then a given component or template can just return html and render directly into
 	    });
 	}
 
+
+
+
+*built-in components*
+
+SpriteCSS
+----------------
+
+For a working example see... /examples/ken/sf2.py
+
+pass a UID. w, h, path, duration, steps, looping, y_offset
+
+.. code-block :: javascript
+
+	animated_monster = SpriteCSS('ken', 70, 80, 'assets/spritesheets/ken.png', 0.8, 4, True, 80)
+
+
+

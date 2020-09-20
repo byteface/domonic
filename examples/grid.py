@@ -1,5 +1,7 @@
-import os
+import sys
+sys.path.insert(0, '..')
 
+import os
 from sanic import Sanic
 from sanic import response
 from domonic.html import *

@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '..')
+
 from domonic.html import *
 
 # TODO - finish example using every tag

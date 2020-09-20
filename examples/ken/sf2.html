@@ -1,0 +1,36 @@
+<html><head><link rel="stylesheet" href="https://unpkg.com/marx-css/css/marx.min.css" /><script src="https://code.jquery.com/jquery-3.5.1.min.js"></script><div><audio id="myAudio" autoplay="true"><source src="ken.mp3" type="audio/mp3" /></audio><script type="text/javascript">    
+	    $( document ).ready(function() {
+	        $( '.ken' ).on('click', function() {
+	            let sound = document.getElementById("myAudio");
+	            sound.currentTime = 0;
+	            sound.play();
+
+	            // goFullScreen();
+	        });
+	    });
+	    </script></div></head><body><article><div><div><style>
+	.bg {
+	  background-image: url("bg.png");
+	  height: 100%;
+	  background-position: center;
+	  background-repeat: no-repeat;
+	  background-size: cover;
+	}
+	</style><div class="bg"></div></div><span style="position:absolute; top:70%; left:10%;"><span><style>
+        .ken {
+          background:none;
+          width:70px;
+          height:80px;
+          background: url('ken.png') left center;
+          animation:ken 0.8s steps(4) infinite;
+        }
+        /*
+        @keyframes ken {
+            100% { background-position: -280px; }
+        }
+        */
+        @keyframes ken {
+            from { background-position:0px -80px; }
+            to { background-position:-280px -80px; }
+        }
+    </style><div class="ken"></div></span></span></div></article></body></html>
