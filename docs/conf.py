@@ -22,7 +22,7 @@ copyright = '2020, byteface'
 author = 'byteface'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.9'
+release = '0.2.11'
 
 
 # -- General configuration ---------------------------------------------------

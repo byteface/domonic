@@ -355,12 +355,16 @@ python3 -m domonic -d http://eventual.technology
 Then you can edit/tweak it to get what you need and build new components quicker.
 
 
-### EXAMPLE PROJECT
+### EXAMPLE PROJECTS
+
 A browser based file browser. Working example of how components can work:
 https://github.com/byteface/Blueberry/
 
 A cron viewer:
 https://github.com/byteface/ezcron/
+
+A basic game:
+https://github.com/byteface/bombdisposer/
 
 docs:
 https://domonic.readthedocs.io/

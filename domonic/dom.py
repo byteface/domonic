@@ -528,8 +528,8 @@ class Element(Node):
 
             return self.kwargs[attribute]
         except Exception as e:
-            print('failed to get attribute')
-            print(e)
+            # print('failed to get attribute')
+            # print(e)
             return None
 
     def getAttributeNode(self, attribute: str) -> str:
@@ -537,8 +537,8 @@ class Element(Node):
         try:
             return f"{attribute}={self.kwargs[attribute]}"  # TODO - Attr
         except Exception as e:
-            print('failed to get attribute')
-            print(e)
+            # print('failed to get attribute')
+            # print(e)
             return ''
 
     def getBoundingClientRect(self):
@@ -569,8 +569,8 @@ class Element(Node):
                 attribute = '_' + attribute
             return attribute in self.kwargs.keys()
         except Exception as e:
-            print('failed to get attribute')
-            print(e)
+            # print('failed to get attribute')
+            # print(e)
             return False
 
     def hasAttributes(self) -> bool:
@@ -764,7 +764,8 @@ class Element(Node):
 
             self.kwargs[attribute] = value
         except Exception as e:
-            print('failed to set attribute', e)
+            # print('failed to set attribute', e)
+            return None
 
     def setAttributeNode(self, attr):
         """ Sets or changes the specified attribute node """

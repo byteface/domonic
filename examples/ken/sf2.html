@@ -16,7 +16,7 @@
 	  background-repeat: no-repeat;
 	  background-size: cover;
 	}
-	</style><div class="bg"></div></div><span style="position:absolute; top:70%; left:10%;"><span><style>
+	</style><div class="bg"></div></div><span style="position:absolute; top:70%; left:10%;" id="moveMe"><span><style>
         .ken {
           background:none;
           width:70px;
@@ -33,4 +33,45 @@
             from { background-position:0px -80px; }
             to { background-position:-280px -80px; }
         }
-    </style><div class="ken"></div></span></span></div></article></body></html>
+    </style><div class="ken"></div></span></span></div><script>
+
+		var p1 = document.getElementById('moveMe'),
+		keyCodes = { left: 37, up: 38, right: 39, down: 40 },
+		keys = [];
+
+		window.addEventListener('keydown', function (evt) {
+		    keys[evt.keyCode] = true;
+		});
+
+		window.addEventListener('keyup', function (evt) {
+		    keys[evt.keyCode] = false;
+		});
+
+		setInterval(function () {
+		    
+		    // get position of div
+		    var x = parseInt(p1.style.left, 10),
+		        y = parseInt(p1.style.top, 10);
+		    
+		    // update position
+		    // left/right
+		    if (keys[keyCodes.left]) {
+		        x -= 1;
+		    } else if (keys[keyCodes.right]) {
+		        x += 1;
+		    }
+		    // up/down
+		    if (keys[keyCodes.up]) {
+		        y -= 1;
+		    } else if (keys[keyCodes.down]) {
+		        y += 1;
+		    }
+		    
+		    // set div position
+		    p1.style.left = x + 'px';
+		    p1.style.top = y + 'px';
+		    
+		}, 1/30);
+
+
+		</script></article></body></html>

@@ -600,7 +600,7 @@ class Style(object):
                 else:
                     styles = s
 
-                print(styles)
+                # print(styles)
                 self._parent_node.setAttribute("style", styles)
 
         return style_wrapper

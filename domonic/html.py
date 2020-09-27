@@ -172,8 +172,7 @@ class tag(object):
         *credit to the peeps on discord/python for this one*
         """
         kwargs = super().__getattribute__('kwargs')
-
-        print(attr)
+        # print(attr)
 
         if attr in kwargs:
             return kwargs[attr]

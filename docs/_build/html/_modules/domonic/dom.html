@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.2.9 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.2.11 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -562,8 +562,8 @@
 
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to get attribute&#39;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="c1"># print(&#39;failed to get attribute&#39;)</span>
+            <span class="c1"># print(e)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Element.getAttributeNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">getAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -571,8 +571,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>  <span class="c1"># TODO - Attr</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to get attribute&#39;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="c1"># print(&#39;failed to get attribute&#39;)</span>
+            <span class="c1"># print(e)</span>
             <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
 
 <div class="viewcode-block" id="Element.getBoundingClientRect"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getBoundingClientRect">[docs]</a>    <span class="k">def</span> <span class="nf">getBoundingClientRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -603,8 +603,8 @@
                 <span class="n">attribute</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">attribute</span>
             <span class="k">return</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to get attribute&#39;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="c1"># print(&#39;failed to get attribute&#39;)</span>
+            <span class="c1"># print(e)</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Element.hasAttributes"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.hasAttributes">[docs]</a>    <span class="k">def</span> <span class="nf">hasAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -798,7 +798,8 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to set attribute&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
+            <span class="c1"># print(&#39;failed to set attribute&#39;, e)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Element.setAttributeNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.setAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">setAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or changes the specified attribute node &quot;&quot;&quot;</span>
