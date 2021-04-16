@@ -9,8 +9,8 @@ from domonic.javascript import *
 from domonic.html import *
 from domonic.particles import *
 
-# run this first. python3 atoms.py
-# then open and look at atoms.html while the socket is running
+# run this first. python3 atoms3d.py
+# then open and look at atoms3d.html while the socket is running
 
 # create and animate some particles
 
@@ -25,7 +25,7 @@ def init():
     creatAtom()
 
 def creatAtom():
-    p = Particle(Math.random()*2)
+    p = Particle3D(Math.random()*2)
     p.grav = Math.random()*10
     p.maxSpeed = 1000
     p.damp = 0.4
@@ -33,8 +33,11 @@ def creatAtom():
 
     p.x = Math.random()*WIDTH
     p.y = Math.random()*HEIGHT
+    p.z = -100 + Math.random()*HEIGHT
     # p.vx = Math.random()*1000
     p.vy = Math.random()*10
+    p.vz = Math.random()*100
+
     p.set_bounds({'xMin':0, 'yMin':0, 'xMax':WIDTH, 'yMax':HEIGHT})
     atoms.append( p )
 
@@ -91,7 +94,6 @@ script('''
 
     function draw() {
         context.clearRect(0, 0, WIDTH, HEIGHT);
-        // context.globalCompositeOperation = "source-over";
         var i, point;
         for(i = 0; i < atoms.length; i++ ) {
             point = atoms[i];
@@ -102,18 +104,19 @@ script('''
             // window.console.log(point);
             drawAtom(point,i);
         }
-        // context.shadowBlur = 10;
-        // context.shadowColor = 'white'
-        // context.globalAlpha = 0.1;
-        // context.filter = 'blur(2px)';
-        // window.requestAnimationFrame(animate);
     }
 
     function drawAtom(p,i){
       context.beginPath();
       
       context.fillStyle = 'white';
-      context.arc(p.x, p.y, 1, 0, 2 * Math.PI, false);
+      context.arc(p.x, p.y, p.z, 0, 2 * Math.PI, false);
+      
+      // var gradient = context.createRadialGradient(p.x, p.y, p.width*p.z, p.x, p.y, 0);
+      // gradient.addColorStop( 0, 'black' );
+      // gradient.addColorStop( 1, 'white' );
+      // context.fillStyle = gradient;
+
       context.lineWidth = 2;
       context.strokeStyle = '#000';
       context.stroke();
@@ -134,7 +137,7 @@ script('''
 )
 
 # render a page of particles you can open an look at while the socket server is running
-render( page, 'atoms.html' )
+render( page, 'atoms3d.html' )
 
 
 # run the socket server
@@ -146,46 +149,3 @@ async def update(websocket, path):
 server = websockets.serve(update, '0.0.0.0', 5555)
 asyncio.get_event_loop().run_until_complete(server)
 asyncio.get_event_loop().run_forever()
-
-
-
-'''
-# see if a gevent server is better
-
-from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
-class Echo(WebSocketApplication):
-    # def on_open(self):
-    # print "Connection opened"
-    def on_message(self, message):
-        self.ws.send(json.dumps(atoms, default=vars))
-    # self.ws.send(message)
-    # def on_close(self, reason):
-    # print reason
-
-
-WebSocketServer(('0.0.0.0', 5555), Resource({'/': Echo})).serve_forever()
-'''
-
-
-'''
-# see if flask-threaded server allows better concurrency. for other windows and devices
-
-from flask import Flask
-from flask_threaded_sockets import Sockets, ThreadedWebsocketServer
-
-
-app = Flask(__name__)
-sockets = Sockets(app)
-
-
-@sockets.route('/')
-def echo_socket(ws):
-    while not ws.closed:
-        message = ws.receive()
-        ws.send(json.dumps(atoms, default=vars))
-
-
-if __name__ == "__main__":
-    srv = ThreadedWebsocketServer("0.0.0.0", 5555, app)
-    srv.serve_forever()
-'''

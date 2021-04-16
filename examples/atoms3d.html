@@ -27,7 +27,6 @@ socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
 
     function draw() {
         context.clearRect(0, 0, WIDTH, HEIGHT);
-        // context.globalCompositeOperation = "source-over";
         var i, point;
         for(i = 0; i < atoms.length; i++ ) {
             point = atoms[i];
@@ -38,18 +37,19 @@ socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
             // window.console.log(point);
             drawAtom(point,i);
         }
-        // context.shadowBlur = 10;
-        // context.shadowColor = 'white'
-        // context.globalAlpha = 0.1;
-        // context.filter = 'blur(2px)';
-        // window.requestAnimationFrame(animate);
     }
 
     function drawAtom(p,i){
       context.beginPath();
       
       context.fillStyle = 'white';
-      context.arc(p.x, p.y, 1, 0, 2 * Math.PI, false);
+      context.arc(p.x, p.y, p.z, 0, 2 * Math.PI, false);
+      
+      // var gradient = context.createRadialGradient(p.x, p.y, p.width*p.z, p.x, p.y, 0);
+      // gradient.addColorStop( 0, 'black' );
+      // gradient.addColorStop( 1, 'white' );
+      // context.fillStyle = gradient;
+
       context.lineWidth = 2;
       context.strokeStyle = '#000';
       context.stroke();
