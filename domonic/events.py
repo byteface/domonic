@@ -144,7 +144,7 @@ class KeyboardEvent(Event):
     def __init__(self, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
-        pass
+        super().__init__(evt, *args, **kwargs)
 
     # KeyboardEvent
     # altKey    Returns whether the "ALT" key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent
@@ -166,6 +166,7 @@ class UiEvent(Event):
     def __init__(self, *args, **kwargs):
         self.detail = None
         self.view = None
+        super().__init__(evt, *args, **kwargs)
 
 
 class FocusEvent(Event):
@@ -177,6 +178,7 @@ class FocusEvent(Event):
 
     def __init__(self, *args, **kwargs):
         self.relatedTarget = None
+        super().__init__(evt, *args, **kwargs)
 
 
 class TouchEvent(Event):
@@ -202,6 +204,7 @@ class TouchEvent(Event):
         """   Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element """
         self.touches = None
         """ Returns a list of all the touch objects that are currently in contact with the surface """
+        super().__init__(evt, *args, **kwargs)
 
 
 class WheelEvent(Event):
@@ -218,6 +221,7 @@ class WheelEvent(Event):
         """ Returns the scroll amount of a mouse wheel for the z-axis """
         self.deltaMode = None
         """ Returns a number that represents the unit of measurements for delta values (pixels, lines or pages) """
+        super().__init__(evt, *args, **kwargs)
 
 
 class AnimationEvent(Event):
@@ -233,6 +237,7 @@ class AnimationEvent(Event):
         """ Returns the number of seconds an animation has been running """
         self.pseudoElement = None
         """ Returns the name of the pseudo-element of the animation """
+        super().__init__(evt, *args, **kwargs)
 
 
 class ClipboardEvent(Event):
@@ -244,6 +249,7 @@ class ClipboardEvent(Event):
     def __init__(self, *args, **kwargs):
         self.clipboardData = None
         """ Returns an object containing the data affected by the clipboard operation """
+        super().__init__(evt, *args, **kwargs)
 
 
 class DragEvent(Event):
@@ -259,6 +265,7 @@ class DragEvent(Event):
     def __init__(self, *args, **kwargs):
         self.dataTransfer = None
         """ Returns the data that is dragged/dropped """
+        super().__init__(evt, *args, **kwargs)
 
 
 class HashChangeEvent(Event):
@@ -270,6 +277,7 @@ class HashChangeEvent(Event):
         """ Returns the URL of the document, after the hash has been changed """
         self.oldURL
         """ Returns the URL of the document, before the hash was changed """
+        super().__init__(evt, *args, **kwargs)
 
 
 class InputEvent(Event):
@@ -285,6 +293,7 @@ class InputEvent(Event):
         """ Returns the type of the change (i.e "inserting" or "deleting") """
         self.isComposing
         """ Returns whether the state of the event is composing or not """
+        super().__init__(evt, *args, **kwargs)
 
 
 class PageTransitionEvent(Event):
@@ -294,6 +303,7 @@ class PageTransitionEvent(Event):
     def __init__(self, *args, **kwargs):
         self.persisted = None
         """ Returns whether the webpage was cached by the browser """
+        super().__init__(evt, *args, **kwargs)
 
 
 class PopStateEvent(Event):
@@ -301,6 +311,7 @@ class PopStateEvent(Event):
     def __init__(self, *args, **kwargs):
         self.state = None
         """ Returns an object containing a copy of the history entries """
+        super().__init__(evt, *args, **kwargs)
 
 
 class StorageEvent(Event):
@@ -316,6 +327,7 @@ class StorageEvent(Event):
         """ Returns an object representing the affected storage object """
         self.url = None
         """ Returns the URL of the changed item's document """
+        super().__init__(evt, *args, **kwargs)
 
 
 class TransitionEvent(Event):
@@ -328,6 +340,7 @@ class TransitionEvent(Event):
         """  Returns the number of seconds a transition has been running """
         self.pseudoElement = None
         """ Returns the name of the pseudo-element of the transition """
+        super().__init__(evt, *args, **kwargs)
 
 
 class ProgressEvent(Event):
@@ -335,13 +348,14 @@ class ProgressEvent(Event):
     LOADSTART = "onloadstart"
 
     def __init__(self, *args, **kwargs):
-        pass
+        super().__init__(evt, *args, **kwargs)
 
 
 class CustomEvent(Event):
     """ CustomEvent """
     def __init__(self, *args, **kwargs):
         self.detail = None
+        super().__init__(evt, *args, **kwargs)
 
     def initCustomEvent(self):
         pass

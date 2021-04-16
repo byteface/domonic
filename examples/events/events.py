@@ -13,12 +13,12 @@ from domonic.events import *
 # create webpage with a socket connection back to our server so it can get mouse events
 page = html(
 
-body(div("Move the mouse around and click to see output on the server.")),
+body(h1('somepage'),div("Move the mouse around and click to see output on the server.", _id="content")),
 
 # listen on the socket and call draw when we get a message
 script('''
 const socket = new WebSocket('ws://0.0.0.0:5555');
-socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
+//socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
 '''),
 
 # track all mouse events
@@ -31,7 +31,7 @@ var TrackMouse = function (mouseEvent) {
         type: 'mouse', ts: Date.now(),
         x: mouseEvent.x, y: mouseEvent.y
     };
-    socket.send( '{ "x":' + mouseEvent.x + ', "y":' + mouseEvent.y + '}' );
+    socket.send( '{"x":' + mouseEvent.x + ', "y":' + mouseEvent.y + '}' );
 };
 
 document.addEventListener('click', TrackMouse);
@@ -39,13 +39,19 @@ document.addEventListener('click', TrackMouse);
 
 )
 
-# render a page of particles you can open an look at while the socket server is running
+# render a page to capture events on
 render( page, 'events.html' )
 
 def on_page_clicked(evt):
     print('the page was just clicked', evt)
     print('mouseX', evt.x)
     print('mouseY', evt.y)
+    
+    # content = page.getElementById('content')
+    # print(content)
+    # content.append( f"mouseX:{evt.x} mouseY:{evt.y}" )
+    # TODO - send msg so js can redraw the div
+
 
 page.addEventListener( MouseEvent.CLICK, on_page_clicked )
 

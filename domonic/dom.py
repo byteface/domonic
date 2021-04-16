@@ -407,6 +407,25 @@ class Element(Node):
         self.shadowRoot = None
         super().__init__(*args, **kwargs)
 
+
+    def _getElementById(self, _id):
+        # TODO - i think i need to build a hash map of IDs to positions on the tree
+        # for now I'm going using recursion so this is a bit of a hack to do a few levels
+        if self.getAttribute('id') == _id:
+            return self
+        try:
+            for child in self.childNodes:
+                match = child._getElementById(_id)
+                if match:
+                    return match
+        except Exception as e:
+            # print('fail', e)
+            pass # TODO - dont iterate strings
+        return False
+
+
+
+
     # elem.attachShadow({mode: open|closed})
     def attachShadow(self, obj):
         self.shadowRoot = ShadowRoot(self, obj['mode'])
@@ -1024,9 +1043,31 @@ class Document(Element):
         # '''Returns a Boolean value indicating whether the document can be viewed in fullscreen mode'''
         # return
 
-    def getElementById(self):
+
+    # TODO - test required. 
+    def getElementById(self, _id):
         '''Returns the element that has the ID attribute with the specified value'''
-        raise NotImplementedError
+        for each in self.childNodes:
+            # print( each )
+            # print('SUP============================')
+            if each.getAttribute('id') == _id:
+                return each
+            try:
+                for child in each.childNodes:
+                    # print( "chlid", child )
+                    match = child._getElementById(_id)
+                    # TODO - i think i need to build a hash map of IDs to positions on the tree
+                    # for now I'm going to use recursion and add this same method to Element
+
+                    if match:
+                        return match
+
+            except Exception as e:
+                # print('doh', e)
+                pass  # TODO - dont iterate strings
+
+        return False
+
 
     def getElementsByClassName(self):
         '''Returns a NodeList containing all elements with the specified class name'''
