@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: autodocs &#8212; domonic 0.2.11 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.2.12 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -171,13 +171,13 @@
 <em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">comment</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">content</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/html.html#comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.html.comment" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Message to be rendered inside the comment tag</p>
+<dd class="field-odd"><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Message to be rendered inside the comment tag</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>“&lt;!– {self.content} –&gt;</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -220,7 +220,7 @@
 <dd class="field-odd"><p>&lt;!DOCTYPE html&gt;</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -474,14 +474,14 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>inp</strong> (<em>obj</em>) – A domonic tag. For example div()</p></li>
-<li><p><strong>outp</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – An optional output filename</p></li>
+<li><p><strong>outp</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – An optional output filename</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A HTML rendered string</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -746,7 +746,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt id="domonic.dom.Document.getElementById">
-<code class="sig-name descname">getElementById</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementById"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.getElementById" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getElementById</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementById"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.getElementById" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the element that has the ID attribute with the specified value</p>
 </dd></dl>
 
@@ -830,13 +830,13 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt id="domonic.dom.Document.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/domonic/dom.html#Document.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.write" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/domonic/dom.html#Document.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes HTML expressions or JavaScript code to a document</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.dom.Document.writeln">
-<code class="sig-name descname">writeln</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/domonic/dom.html#Document.writeln"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.writeln" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">writeln</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/domonic/dom.html#Document.writeln"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.writeln" title="Permalink to this definition">¶</a></dt>
 <dd><p>Same as write(), but adds a newline character after each statement</p>
 </dd></dl>
 
@@ -938,13 +938,13 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt id="domonic.dom.Element.getAttribute">
-<code class="sig-name descname">getAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.getAttribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.getAttribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the specified attribute value of an element node</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.dom.Element.getAttributeNode">
-<code class="sig-name descname">getAttributeNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.getAttributeNode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getAttributeNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.getAttributeNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the specified attribute node</p>
 </dd></dl>
 
@@ -962,19 +962,19 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt id="domonic.dom.Element.getElementsByTagName">
-<code class="sig-name descname">getElementsByTagName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/domonic/dom.html#Element.getElementsByTagName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.getElementsByTagName" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getElementsByTagName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/domonic/dom.html#Element.getElementsByTagName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.getElementsByTagName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a collection of all child elements with the specified tag name</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.dom.Element.hasAttribute">
-<code class="sig-name descname">hasAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.hasAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.hasAttribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">hasAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.hasAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.hasAttribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if an element has the specified attribute, otherwise false</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.dom.Element.hasAttributes">
-<code class="sig-name descname">hasAttributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.hasAttributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.hasAttributes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">hasAttributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.hasAttributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.hasAttributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if an element has any attributes, otherwise false</p>
 </dd></dl>
 
@@ -1136,7 +1136,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt id="domonic.dom.Element.removeAttribute">
-<code class="sig-name descname">removeAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.removeAttribute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">removeAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.removeAttribute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes a specified attribute from an element</p>
 </dd></dl>
 
@@ -1582,7 +1582,7 @@ even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 <dl class="py class">
 <dt id="domonic.javascript.Date">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Date</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">date</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">formatter</span><span class="o">=</span><span class="default_value">'python'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Date" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Date</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">date</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">formatter</span><span class="o">=</span><span class="default_value">'python'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Date" title="Permalink to this definition">¶</a></dt>
 <dd><p>javascript date</p>
 <dl class="py method">
 <dt id="domonic.javascript.Date.UTC">
@@ -2125,7 +2125,7 @@ and returns a new string where the specified values are replaced</p>
 
 <dl class="py class">
 <dt id="domonic.javascript.URL">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">URL</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URL" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">URL</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URL" title="Permalink to this definition">¶</a></dt>
 <dd><p>a tag extends from URL</p>
 <dl class="py method">
 <dt id="domonic.javascript.URL.hash">
@@ -2326,13 +2326,13 @@ and returns a new string where the specified values are replaced</p>
 <dd><p>runs any command on the terminal</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cmd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – The command you want to run on the terminal</p>
+<dd class="field-odd"><p><strong>cmd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – The command you want to run on the terminal</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the response as a string</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3354,15 +3354,15 @@ and returns a new string where the specified values are replaced</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – the json array</p></li>
-<li><p><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – the output file</p></li>
+<li><p><strong>arr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the json array</p></li>
+<li><p><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the output file</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>a csv file</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3380,13 +3380,13 @@ and returns a new string where the specified values are replaced</p>
 # TODO - reverse. table to json</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>arr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – the json array</p>
+<dd class="field-odd"><p><strong>arr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a>) – the json array</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>a html table</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3530,7 +3530,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 
 <dl class="py class">
 <dt id="domonic.events.MouseEvent">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">MouseEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#MouseEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.MouseEvent" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">MouseEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">evt</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#MouseEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.MouseEvent" title="Permalink to this definition">¶</a></dt>
 <dd><p>mouse events</p>
 </dd></dl>
 
@@ -4853,19 +4853,19 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd><p>utils</p>
 <dl class="py method">
 <dt id="domonic.utils.Utils.case_camel">
-<em class="property">static </em><code class="sig-name descname">case_camel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_camel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.utils.Utils.case_camel" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">case_camel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_camel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.utils.Utils.case_camel" title="Permalink to this definition">¶</a></dt>
 <dd><p>case_camel(‘camel-case’) &gt; ‘camelCase’</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.utils.Utils.case_kebab">
-<em class="property">static </em><code class="sig-name descname">case_kebab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_kebab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.utils.Utils.case_kebab" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">case_kebab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_kebab"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.utils.Utils.case_kebab" title="Permalink to this definition">¶</a></dt>
 <dd><p>kebab(‘camelCase’) # ‘camel-case’</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.utils.Utils.case_snake">
-<em class="property">static </em><code class="sig-name descname">case_snake</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_snake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.utils.Utils.case_snake" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">case_snake</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_snake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.utils.Utils.case_snake" title="Permalink to this definition">¶</a></dt>
 <dd><p>snake(‘camelCase’) # ‘camel_case’</p>
 </dd></dl>
 

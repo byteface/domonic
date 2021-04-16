@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.2.11 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.2.12 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -440,6 +440,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Style(self)  # = #&#39;test&#39;#Style()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shadowRoot</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_getElementById</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">):</span>
+        <span class="c1"># TODO - i think i need to build a hash map of IDs to positions on the tree</span>
+        <span class="c1"># for now I&#39;m going using recursion so this is a bit of a hack to do a few levels</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">_id</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">_getElementById</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">match</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># print(&#39;fail&#39;, e)</span>
+            <span class="k">pass</span> <span class="c1"># TODO - dont iterate strings</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+
 
     <span class="c1"># elem.attachShadow({mode: open|closed})</span>
     <span class="k">def</span> <span class="nf">attachShadow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -1058,9 +1077,31 @@
         <span class="c1"># &#39;&#39;&#39;Returns a Boolean value indicating whether the document can be viewed in fullscreen mode&#39;&#39;&#39;</span>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.getElementById"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.getElementById">[docs]</a>    <span class="k">def</span> <span class="nf">getElementById</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="c1"># TODO - test required. </span>
+<div class="viewcode-block" id="Document.getElementById"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.getElementById">[docs]</a>    <span class="k">def</span> <span class="nf">getElementById</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns the element that has the ID attribute with the specified value&#39;&#39;&#39;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+            <span class="c1"># print( each )</span>
+            <span class="c1"># print(&#39;SUP============================&#39;)</span>
+            <span class="k">if</span> <span class="n">each</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">each</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">each</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+                    <span class="c1"># print( &quot;chlid&quot;, child )</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">_getElementById</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
+                    <span class="c1"># TODO - i think i need to build a hash map of IDs to positions on the tree</span>
+                    <span class="c1"># for now I&#39;m going to use recursion and add this same method to Element</span>
+
+                    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">match</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># print(&#39;doh&#39;, e)</span>
+                <span class="k">pass</span>  <span class="c1"># TODO - dont iterate strings</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
 
 <div class="viewcode-block" id="Document.getElementsByClassName"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.getElementsByClassName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByClassName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns a NodeList containing all elements with the specified class name&#39;&#39;&#39;</span>

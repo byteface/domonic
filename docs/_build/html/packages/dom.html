@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: DOM &#8212; domonic 0.2.11 documentation</title>
+    <title>Domonic: DOM &#8212; domonic 0.2.12 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -140,7 +140,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">getElementById</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementById"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">getElementById</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementById"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns the element that has the ID attribute with the specified value</p>
 </dd></dl>
 
@@ -224,13 +224,13 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/domonic/dom.html#Document.write"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/domonic/dom.html#Document.write"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Writes HTML expressions or JavaScript code to a document</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">writeln</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/domonic/dom.html#Document.writeln"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">writeln</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a><a class="reference internal" href="../_modules/domonic/dom.html#Document.writeln"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Same as write(), but adds a newline character after each statement</p>
 </dd></dl>
 
@@ -332,13 +332,13 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">getAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttribute"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">getAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttribute"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns the specified attribute value of an element node</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">getAttributeNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNode"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">getAttributeNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNode"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns the specified attribute node</p>
 </dd></dl>
 
@@ -356,19 +356,19 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">getElementsByTagName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/domonic/dom.html#Element.getElementsByTagName"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">getElementsByTagName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="../_modules/domonic/dom.html#Element.getElementsByTagName"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns a collection of all child elements with the specified tag name</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">hasAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.hasAttribute"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">hasAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.hasAttribute"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns true if an element has the specified attribute, otherwise false</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">hasAttributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.hasAttributes"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">hasAttributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a><a class="reference internal" href="../_modules/domonic/dom.html#Element.hasAttributes"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns true if an element has any attributes, otherwise false</p>
 </dd></dl>
 
@@ -530,7 +530,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">removeAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttribute"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">removeAttribute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribute</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttribute"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Removes a specified attribute from an element</p>
 </dd></dl>
 
@@ -882,7 +882,7 @@ or the current position of the caret.</p>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">MouseEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#MouseEvent"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">MouseEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">evt</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#MouseEvent"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>mouse events</p>
 </dd></dl>
 

@@ -3,7 +3,7 @@ from setuptools import setup
 with open("README.md", "r") as f:
         long_description=f.read()
 
-version = '0.2.11'
+version = '0.2.12'
 
 setup(
   name='domonic',
@@ -16,7 +16,7 @@ setup(
   description='Generate html with python 3. DOM API, Javascript API and more...',
   long_description=long_description,
   long_description_content_type="text/markdown",
-  keywords=['html', 'generate', 'templating', 'dom', 'terminal', 'json', 'web', 'template', 'javascript', 'DOM', 'GUI', 'render', 'website', 'apps', 'html5', 'template', 'framework', 'SVG', 'x3d'],
+  keywords=['html', 'generate', 'templating', 'dom', 'terminal', 'json', 'web', 'template', 'javascript', 'DOM', 'GUI', 'render', 'website', 'apps', 'html5', 'framework', 'SVG', 'x3d'],
   python_requires='>=3.6',
   classifiers=[
       "Programming Language :: Python :: 3",

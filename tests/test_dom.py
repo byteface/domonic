@@ -288,6 +288,10 @@ class domonicTestCase(unittest.TestCase):
         site.appendChild(another_div)
         print(site.contains(third_div))
 
+    def test_dom_getElementById(self):
+        pass
+
+
     # def test_dom_Node():
         # TODO - tests all below
         # contains - probably need more recursive testing
