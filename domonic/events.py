@@ -109,11 +109,12 @@ class MouseEvent(Event):
     MOUSEOUT = "onmouseout"
     MOUSEUP = "onmouseup"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, evt, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
-        # super().__init__()
-        pass
+        self.x = 0
+        self.y = 0
+        super().__init__(evt, *args, **kwargs)
 
     # MOUSE_EVENT
     # altKey    Returns whether the "ALT" key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent

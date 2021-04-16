@@ -1,0 +1,17 @@
+<html><body><div>Move the mouse around and click to see output on the server.</div></body><script>
+const socket = new WebSocket('ws://0.0.0.0:5555');
+socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
+</script><script>
+var eventCount = 0;
+var eventProperty = [];
+var TrackMouse = function (mouseEvent) {
+    console.log(mouseEvent);
+    eventProperty[eventCount++] = {
+        type: 'mouse', ts: Date.now(),
+        x: mouseEvent.x, y: mouseEvent.y
+    };
+    socket.send( '{ "x":' + mouseEvent.x + ', "y":' + mouseEvent.y + '}' );
+};
+
+document.addEventListener('click', TrackMouse);
+</script></html>
