@@ -119,12 +119,12 @@ def init():
 
 def creatAtom():
     p = Particle()
-    p.width = Math.random()*1
-    p.height = Math.random()*1
-    p.grav = Math.random()*150
-    p.maxSpeed = 100
-    p.damp = 0.1
-    p.wander = 30
+    p.width = Math.random()*2
+    p.height = Math.random()*2
+    p.grav = Math.random()*50
+    p.maxSpeed = 1000
+    p.damp = 0.5
+    p.wander = 10
 
     p.x = Math.random()*WIDTH
     p.y = Math.random()*HEIGHT
@@ -161,7 +161,7 @@ body(canvas(_id="canvas", _width="1000", _height="600")),
 
 # listen on the socket and call draw when we get a message
 script('''
-const socket = new WebSocket('ws://192.168.1.134:5555');
+const socket = new WebSocket('ws://0.0.0.0:5555');
 socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
 '''),
 
@@ -215,8 +215,8 @@ script('''
       // gradient.addColorStop( 1, 'white' );
       // context.fillStyle = gradient;
 
-      // context.lineWidth = 1;
-      // context.strokeStyle = '#000';
+      context.lineWidth = 2;
+      context.strokeStyle = '#000';
       context.stroke();
       context.fill();
     }
