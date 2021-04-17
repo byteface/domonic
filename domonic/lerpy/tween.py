@@ -23,6 +23,18 @@ class TweenData(object):
 
 
 class Tween(EventDispatcher):
+	"""
+
+	Tween is a complex lerp but you don't have do the math cos robert penner did already.
+	Just pass an easing equation from the easing package
+
+	i.e
+
+	twn = Tween( someObj, { 'x':10, 'y':5, 'z':3 }, 6, Linear.easeIn )
+
+	will tween the objects properties over the given time using Linear.easeIn
+
+	"""
 
 	FPS = 60
 
@@ -118,11 +130,11 @@ class Tween(EventDispatcher):
 	
 	@property
 	def delay(self):
-		return self._delay / 1000
+		return self._delay# / 1000
 	
 	@delay.setter
 	def delay( self, delay ):
-		self._delay = delay * 1000
+		self._delay = delay# * 1000
 	
 	@property
 	def loop(self):
@@ -130,6 +142,7 @@ class Tween(EventDispatcher):
 	
 	@loop.setter
 	def loop( self, loop ):
+		""" Set to True if you want it to loop """
 		self._loop = loop
 
 	def start(self):
@@ -159,16 +172,20 @@ class Tween(EventDispatcher):
 		
 	
 	def pause(self):
-		# TODO - pause should modify timer so it DOESNT jump frames. at mo does the opposite
+		""" Pauses the tween from changing the values  """
+		# TODO - pause should modify timer so it DOESNT jump frames. at mo does the opposite.
+		# seems to not increment. then suddenly jumps to catch up with where it should be
 		self._paused = True
 		self.dispatchEvent( TweenEvent( TweenEvent.PAUSE if self._paused else TweenEvent.UNPAUSE, self ) )
 
 	
 	def unpause(self):
+		""" unpauses the tween """
 		self._paused = False
 		self.dispatchEvent( TweenEvent( TweenEvent.UNPAUSE, self ) )
 	
 	def reset(self):
+
 		for v in self._values:
 			self._target[ v.prop ] = v.start
 		self._update( get_timer() )

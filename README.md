@@ -229,6 +229,19 @@ All tags extend 'Node' and 'tag'. So will have DOM and magic methods available t
         print(mysvg)
 ```
 
+### Tweening
+
+You can tween values with the tween library:
+
+```python
+from domonic.lerpy.easing import *
+from domonic.lerpy.tween import *
+
+someObj = {'x':0,'y':0,'z':0}
+twn = Tween( someObj, { 'x':10, 'y':5, 'z':3 }, 6, Linear.easeIn )
+twn.start()
+```
+
 ### terminal (NEW)
 
 There is a command line package that can call bash/unix/posix and other apps on the command line: <br />

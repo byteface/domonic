@@ -46,17 +46,14 @@ def on_page_clicked(evt):
     print('the page was just clicked', evt)
     print('mouseX', evt.x)
     print('mouseY', evt.y)
-    
     # content = page.getElementById('content')
     # print(content)
     # content.append( f"mouseX:{evt.x} mouseY:{evt.y}" )
     # TODO - send msg so js can redraw the div
-
-    mything = {'x':0,'y':0}
-
-    twn = Tween( mything, { 'x':evt.x, 'y':evt.y }, 3 )
-    twn.equations = Linear.easeOut
-    twn.start()
+    # mything = {'x':0,'y':0}
+    # twn = Tween( mything, { 'x':evt.x, 'y':evt.y }, 3 )
+    # twn.equations = Linear.easeOut
+    # twn.start()
 
 
 page.addEventListener( MouseEvent.CLICK, on_page_clicked )

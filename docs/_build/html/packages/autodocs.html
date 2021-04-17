@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: autodocs &#8212; domonic 0.2.12 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.2.13 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -3496,6 +3496,12 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="domonic.events.EventDispatcher">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">EventDispatcher</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#EventDispatcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.EventDispatcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>EventDispatcher is a class you can extend to give your obj event dispatching abilities</p>
+</dd></dl>
+
+<dl class="py class">
 <dt id="domonic.events.FocusEvent">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">FocusEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FocusEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.FocusEvent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -3678,6 +3684,11 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 </dd></dl>
+
+<dl class="py class">
+<dt id="domonic.events.TweenEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">TweenEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bubbles</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cancelable</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TweenEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.TweenEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py class">
 <dt id="domonic.events.UiEvent">
@@ -5312,7 +5323,29 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd></dd></dl>
 
 </div>
-<span class="target" id="module-domonic.x3d"></span><div class="section" id="domonic-x3d">
+<span class="target" id="module-domonic.lerpy.tween"></span><dl class="py class">
+<dt id="domonic.lerpy.tween.Tween">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.lerpy.tween.</code><code class="sig-name descname">Tween</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">values</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">duration</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">equations</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">delay</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">loop</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/lerpy/tween.html#Tween"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.lerpy.tween.Tween" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tween is a complex lerp but you don’t have do the math cos robert penner did already.
+Just pass an easing equation from the easing package</p>
+<p>i.e</p>
+<p>twn = Tween( someObj, { ‘x’:10, ‘y’:5, ‘z’:3 }, 6, Linear.easeIn )</p>
+<p>will tween the objects properties over the given time using Linear.easeIn</p>
+<dl class="py method">
+<dt id="domonic.lerpy.tween.Tween.pause">
+<code class="sig-name descname">pause</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/lerpy/tween.html#Tween.pause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.lerpy.tween.Tween.pause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pauses the tween from changing the values</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.lerpy.tween.Tween.unpause">
+<code class="sig-name descname">unpause</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/lerpy/tween.html#Tween.unpause"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.lerpy.tween.Tween.unpause" title="Permalink to this definition">¶</a></dt>
+<dd><p>unpauses the tween</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-domonic.lerpy.easing"></span><span class="target" id="module-domonic.x3d"></span><div class="section" id="domonic-x3d">
 <h2>domonic.x3d<a class="headerlink" href="#domonic-x3d" title="Permalink to this headline">¶</a></h2>
 <p>Generate x3d with python 3</p>
 <dl class="py class">
@@ -8056,6 +8089,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">Domonic: templates and components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tween.html">Domonic: tween</a></li>
 <li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: autodocs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#domonic">domonic</a></li>
@@ -8106,7 +8140,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2020, byteface.
+      &copy;2021, byteface.
       
       |
       <a href="../_sources/packages/autodocs.rst.txt"

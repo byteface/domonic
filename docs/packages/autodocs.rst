@@ -37,5 +37,11 @@ Domonic: autodocs
 .. automodule:: domonic.svg
     :members:
 
+.. automodule:: domonic.lerpy.tween
+    :members:
+
+.. automodule:: domonic.lerpy.easing
+    :members:
+
 .. automodule:: domonic.x3d
     :members:

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.events &#8212; domonic 0.2.12 documentation</title>
+    <title>domonic.events &#8212; domonic 0.2.13 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -41,6 +41,53 @@
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">time</span>
+
+
+<div class="viewcode-block" id="EventDispatcher"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.EventDispatcher">[docs]</a><span class="k">class</span> <span class="nc">EventDispatcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; EventDispatcher is a class you can extend to give your obj event dispatching abilities &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">hasEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span>
+
+    <span class="c1"># TODO - event: str, function, useCapture: bool</span>
+    <span class="c1"># def addEventListener(self, event: str, function, useCapture: bool) -&gt; None:</span>
+    <span class="k">def</span> <span class="nf">addEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="p">[</span><span class="n">_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="p">[</span><span class="n">_type</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">removeEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">stack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="p">[</span><span class="n">_type</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">thing</span> <span class="o">==</span> <span class="n">callback</span><span class="p">:</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+                <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">dispatchEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># huh?. surely false?</span>
+
+        <span class="n">stack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
+        <span class="c1"># .slice()</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span>  <span class="c1"># TODO/NOTE - is this correct? - cant think where else would set it</span>
+
+        <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">thing</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+                <span class="c1"># type(thing, (Event,), self)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="n">thing</span><span class="p">()</span>  <span class="c1"># try calling without params, user may not create param</span>
+
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">defaultPrevented</span></div>
+
 
 
 <div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -393,6 +440,35 @@
 
     <span class="k">def</span> <span class="nf">initCustomEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="TweenEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.TweenEvent">[docs]</a><span class="k">class</span> <span class="nc">TweenEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    
+    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;onStart&quot;</span>
+    <span class="n">STOP</span> <span class="o">=</span> <span class="s2">&quot;onStop&quot;</span>
+    <span class="n">RESET</span> <span class="o">=</span> <span class="s2">&quot;onReset&quot;</span>
+    <span class="n">PAUSE</span> <span class="o">=</span> <span class="s2">&quot;onPause&quot;</span>
+    <span class="n">UNPAUSE</span> <span class="o">=</span> <span class="s2">&quot;onUnPause&quot;</span>
+    <span class="n">UPDATE_START</span> <span class="o">=</span> <span class="s2">&quot;onUpdateStart&quot;</span>
+    <span class="n">UPDATE_END</span> <span class="o">=</span> <span class="s2">&quot;onUpdateEnd&quot;</span>
+    <span class="n">COMPLETE</span> <span class="o">=</span> <span class="s2">&quot;onComplete&quot;</span>
+
+    <span class="n">TIMER</span> <span class="o">=</span> <span class="s2">&quot;onTimer&quot;</span>
+    
+    <span class="n">_source</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">source</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source</span>
+    
+    <span class="nd">@source</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">source</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_source</span> <span class="o">=</span> <span class="n">source</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="n">source</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">bubbles</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">cancelable</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># super.__init__(self, type, bubbles, cancelable)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">)</span> <span class="c1"># TODO -</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span></div>
 </pre></div>
 
           </div>
@@ -426,6 +502,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
@@ -462,7 +539,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2020, byteface.
+      &copy;2021, byteface.
       
     </div>
 

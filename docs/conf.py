@@ -18,11 +18,11 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'domonic'
-copyright = '2020, byteface'
+copyright = '2021, byteface'
 author = 'byteface'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.12'
+release = '0.2.13'
 
 
 # -- General configuration ---------------------------------------------------
