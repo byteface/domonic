@@ -9,6 +9,53 @@ from typing import *
 import time
 
 
+class EventDispatcher(object):
+    """ EventDispatcher is a class you can extend to give your obj event dispatching abilities """
+
+    def __init__(self, *args, **kwargs):
+        self.listeners = {}
+
+    def hasEventListener(self, _type):
+        return _type in self.listeners
+
+    # TODO - event: str, function, useCapture: bool
+    # def addEventListener(self, event: str, function, useCapture: bool) -> None:
+    def addEventListener(self, _type, callback, *args, **kwargs):
+        if _type not in self.listeners:
+            self.listeners[_type] = []
+        self.listeners[_type].append(callback)
+
+    def removeEventListener(self, _type, callback):
+        if _type not in self.listeners:
+            return
+
+        stack = self.listeners[_type]
+
+        for thing in stack:
+            if thing == callback:
+                stack.remove(thing)
+                return
+
+    def dispatchEvent(self, event):
+        if event.type not in self.listeners:
+            return True  # huh?. surely false?
+
+        stack = self.listeners[event.type]
+        # .slice()
+        event.target = self  # TODO/NOTE - is this correct? - cant think where else would set it
+
+        for thing in stack:
+            try:
+                thing(event)
+                # type(thing, (Event,), self)
+            except Exception as e:
+                print(e)
+                thing()  # try calling without params, user may not create param
+
+        return not event.defaultPrevented
+
+
+
 class Event(object):
     """ event """
     EMPTIED = "onemptied"
@@ -359,3 +406,32 @@ class CustomEvent(Event):
 
     def initCustomEvent(self):
         pass
+
+
+class TweenEvent(Event):
+    
+    START = "onStart"
+    STOP = "onStop"
+    RESET = "onReset"
+    PAUSE = "onPause"
+    UNPAUSE = "onUnPause"
+    UPDATE_START = "onUpdateStart"
+    UPDATE_END = "onUpdateEnd"
+    COMPLETE = "onComplete"
+
+    TIMER = "onTimer"
+    
+    _source = None
+
+    @property
+    def source(self):
+        return self._source
+    
+    @source.setter
+    def source(self, source):
+        self._source = source
+    
+    def __init__(self, _type, source = None, bubbles = False, cancelable = False):
+        # super.__init__(self, type, bubbles, cancelable)
+        super().__init__(_type) # TODO -
+        self.source = source
