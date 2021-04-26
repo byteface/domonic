@@ -82,7 +82,7 @@ class Node(EventTarget):
         self.namespaceURI = "http://www.w3.org/1999/xhtml"
         # self.nodePrincipal = None
         self.outerText = None
-        self.ownerDocument = None
+        # self.ownerDocument = None
         self.parentNode = None
         self.prefix = None  # 🗑️
         self._update_parents()
@@ -304,6 +304,26 @@ class Node(EventTarget):
     # setUserData() 🗑️
 
 
+class TextNode(Node):
+    """ not tested """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    @property
+    def textContent(self):
+        """ Sets or returns the textual content of a node and its descendants """
+        # return f" {' '*len(self.name)}{' '*len(self.attributes)} {self.content}  {' '*len(self.name)} "
+        return self.nodeValue
+
+    @textContent.setter
+    def textContent(self, content):
+        """ Sets or returns the textual content of a node and its descendants """
+        # if type(content) is not str:
+        # raise ValueError()
+        self.nodeValue = content
+
+
 class ParentNode(object):
     """ not tested yet """
 
@@ -405,6 +425,7 @@ class Element(Node):
         self.tagName
         self.style = None  # Style(self)  # = #'test'#Style()
         self.shadowRoot = None
+        self.dir = None
         super().__init__(*args, **kwargs)
 
 
@@ -422,9 +443,6 @@ class Element(Node):
             # print('fail', e)
             pass # TODO - dont iterate strings
         return False
-
-
-
 
     # elem.attachShadow({mode: open|closed})
     def attachShadow(self, obj):
@@ -519,9 +537,15 @@ class Element(Node):
         """ Sets or returns whether the content of an element is editable or not """
         raise NotImplementedError
 
+    @property
     def dir(self):
-        """ Sets or returns the value of the dir attribute of an element """
-        raise NotImplementedError
+        """ returns the value of the dir attribute of an element """
+        return self.getAttribute('dir')
+
+    @dir.setter
+    def dir(self, direction: str = 'auto'):
+        """ Sets the value of the dir attribute of an element """
+        self.setAttribute('dir', direction)
 
     def exitFullscreen(self):
         """ Cancels an element in fullscreen mode """
@@ -567,6 +591,16 @@ class Element(Node):
     def getElementsByClassName(self):
         '''Returns a collection of all child elements with the specified class name'''
         raise NotImplementedError
+        # if _classname in self.className:
+        #     yield self
+        # try:
+        #     for child in self.childNodes:
+        #         match = child.getElementsByClassName(_classname)
+        #         if match:
+        #             yield match
+        # except Exception as e:
+        #     pass
+        # return False
 
     def getElementsByTagName(self, tag: str) -> List:
         """ Returns a collection of all child elements with the specified tag name """
@@ -669,7 +703,19 @@ class Element(Node):
 
     def normalize(self):
         '''Joins adjacent text nodes and removes empty text nodes in an element'''
-        raise NotImplementedError
+        content = []
+        for s in self.args:
+            if type(s) == TextNode:
+                content.append(s.textContent)
+                continue
+            if type(s) != str:
+                content.append(str(s))
+                continue
+            content.append(s)
+
+        self.args = content
+        self.args = [TextNode(' '.join([str(s) for s in self.args]))]
+        return self.args
 
     def offsetHeight(self):
         ''' Returns the height of an element, including padding, border and scrollbar'''
@@ -691,6 +737,7 @@ class Element(Node):
         ''' Returns the vertical offset position of an element'''
         raise NotImplementedError
 
+    @property
     def ownerDocument(self):
         """ Returns the root element (document object) for an element """
         return self.rootNode
@@ -729,7 +776,9 @@ class Element(Node):
 
     def remove(self):
         """ Removes the element from the DOM """
-        raise NotImplementedError
+        # self.ownerDocument
+        # raise NotImplementedError
+        self.parentNode.removeChild(self)
 
     def removeAttribute(self, attribute: str):
         """ Removes a specified attribute from an element """
@@ -986,9 +1035,10 @@ class Document(Element):
             return Event()
         return Event()
 
-    # def createTextNode():
+    @staticmethod
+    def createTextNode(text):
         '''Creates a Text node'''
-        # return
+        return TextNode(text)
 
     # def defaultView(self):
         ''' Returns the window object associated with a document, or null if none is available.'''
@@ -1043,22 +1093,16 @@ class Document(Element):
         # '''Returns a Boolean value indicating whether the document can be viewed in fullscreen mode'''
         # return
 
-
-    # TODO - test required. 
     def getElementById(self, _id):
         '''Returns the element that has the ID attribute with the specified value'''
         for each in self.childNodes:
-            # print( each )
-            # print('SUP============================')
             if each.getAttribute('id') == _id:
                 return each
             try:
                 for child in each.childNodes:
-                    # print( "chlid", child )
                     match = child._getElementById(_id)
                     # TODO - i think i need to build a hash map of IDs to positions on the tree
                     # for now I'm going to use recursion and add this same method to Element
-
                     if match:
                         return match
 
@@ -1067,7 +1111,6 @@ class Document(Element):
                 pass  # TODO - dont iterate strings
 
         return False
-
 
     def getElementsByClassName(self):
         '''Returns a NodeList containing all elements with the specified class name'''
@@ -1119,9 +1162,9 @@ class Document(Element):
         tags = re.findall(pattern, str(self))
         return tags
 
-    def normalize(self):
-        '''Removes empty Text nodes, and joins adjacent nodes'''
-        raise NotImplementedError
+    # def normalize(self):
+        # '''Removes empty Text nodes, and joins adjacent nodes'''
+        # raise NotImplementedError
 
     def normalizeDocument(self):
         '''Removes empty Text nodes, and joins adjacent nodes'''

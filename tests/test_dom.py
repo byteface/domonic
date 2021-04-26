@@ -289,8 +289,54 @@ class domonicTestCase(unittest.TestCase):
         print(site.contains(third_div))
 
     def test_dom_getElementById(self):
+        dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _id="test")))))))))
+        result = dom1.getElementById('test')
+        print('--')
+        print(result)
+        print('--')
         pass
 
+    def test_dom_remove(self):
+        dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _id="test")))))))))
+        result = dom1.getElementById('test')
+        print("owner:", result.ownerDocument)
+        result.remove()
+        print(result)
+        print('--')
+        print(dom1)
+        print('--')
+        pass
+
+    # def test_dom_getElementByClassName(self):
+    #     dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
+    #     result = dom1.getElementByClassName('thing')
+    #     print('--')
+    #     print(result)
+    #     print('--')
+    #     pass
+
+    def test_dom_dir(self):
+        dom1 = div(div(), _dir="rtl")
+        print('--')
+        print(dom1.dir)
+        print('--')
+        pass
+
+    def test_dom_normalize(self):
+        dom1 = html()
+        wrapper = dom1.createElement("div")
+        wrapper.appendChild(dom1.createTextNode("Part 1 "))
+        wrapper.appendChild(dom1.createTextNode("Part 2 "))
+        wrapper.appendChild("Part 3 ")
+
+        print('--')
+        print(dom1)
+        print('--')
+        print(len(wrapper.childNodes))  # 2
+        wrapper.normalize()
+        print(len(wrapper.childNodes))  # 1
+        print(wrapper.childNodes[0].textContent)  # "Part 1 Part 2 "
+        pass
 
     # def test_dom_Node():
         # TODO - tests all below

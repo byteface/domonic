@@ -1,6 +1,18 @@
 import base64
 from domonic.html import *
 
+# class Video():
+# class Sound():
+# class Socket(self):
+# def JS(self, thing):
+#     	if '.js' in thing[0:15]:
+# 		return script( _src=thing )
+# 	return script(thing)
+# def CSS(self, thing):
+# 	if '/' in thing[0:15]:
+# 		return link( _rel="stylesheet", _href=f"{thing}" )
+# 	return script(thing)
+
 
 class SpriteCSS(object):
     """ a css sprite sheet.

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: x3d &#8212; domonic 0.2.14 documentation</title>
+    <title>Domonic: x3d &#8212; domonic 0.2.15 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -60,6 +60,29 @@
 </pre></div>
 </div>
 <p>Alternatively you can just put them directly in the first parameter and move your kwargs to the end.</p>
+<p>### aframe</p>
+<p>aframe is a simliar library and its tags can be used if you import the js</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">domonic.aframe</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">domonic.CDN</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">_scene</span> <span class="o">=</span> <span class="n">scene</span><span class="p">(</span>
+        <span class="n">box</span><span class="p">(</span><span class="n">_position</span><span class="o">=</span><span class="s2">&quot;-1 0.5 -3&quot;</span><span class="p">,</span> <span class="n">_rotation</span><span class="o">=</span><span class="s2">&quot;0 45 0&quot;</span><span class="p">,</span> <span class="n">_color</span><span class="o">=</span><span class="s2">&quot;#4CC3D9&quot;</span><span class="p">),</span>
+        <span class="n">sphere</span><span class="p">(</span><span class="n">_position</span><span class="o">=</span><span class="s2">&quot;0 1.25 -5&quot;</span><span class="p">,</span> <span class="n">_radius</span><span class="o">=</span><span class="s2">&quot;1.25&quot;</span><span class="p">,</span> <span class="n">_color</span><span class="o">=</span><span class="s2">&quot;#EF2D5E&quot;</span><span class="p">),</span>
+        <span class="n">cylinder</span><span class="p">(</span><span class="n">_position</span><span class="o">=</span><span class="s2">&quot;1 0.75 -3&quot;</span><span class="p">,</span> <span class="n">_radius</span><span class="o">=</span><span class="s2">&quot;0.5&quot;</span><span class="p">,</span> <span class="n">_height</span><span class="o">=</span><span class="s2">&quot;1.5&quot;</span><span class="p">,</span> <span class="n">_color</span><span class="o">=</span><span class="s2">&quot;#FFC65D&quot;</span><span class="p">),</span>
+        <span class="n">plane</span><span class="p">(</span><span class="n">_position</span><span class="o">=</span><span class="s2">&quot;0 0 -4&quot;</span><span class="p">,</span> <span class="n">_rotation</span><span class="o">=</span><span class="s2">&quot;-90 0 0&quot;</span><span class="p">,</span> <span class="n">_width</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="n">_height</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="n">_color</span><span class="o">=</span><span class="s2">&quot;#7BC8A4&quot;</span><span class="p">),</span>
+        <span class="n">sky</span><span class="p">(</span><span class="n">_color</span><span class="o">=</span><span class="s2">&quot;#ECECEC&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+<span class="n">_webpage</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span><span class="n">head</span><span class="p">(),</span><span class="n">body</span><span class="p">(</span>
+        <span class="n">script</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="n">CDN_JS</span><span class="o">.</span><span class="n">AFRAME_1_2</span><span class="p">),</span> <span class="c1"># &lt; NOTICE you need to import aframe to use it</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">_scene</span><span class="p">)</span>
+        <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">render</span><span class="p">(</span> <span class="n">_webpage</span><span class="p">,</span> <span class="s1">&#39;hello.html&#39;</span> <span class="p">)</span>
+</pre></div>
+</div>
 <div class="section" id="id1">
 <h2>domonic.x3d<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Generate x3d with python 3</p>

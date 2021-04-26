@@ -76,7 +76,6 @@ class CDN_JS(object):
     SOCKET_1_4_5 = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"
     X3DOM = "https://www.x3dom.org/download/x3dom.js"
     AFRAME_1_2 = "https://aframe.io/releases/1.2.0/aframe.min.js"
-    
 
     # def find_on_cdn():
     # https://cdn.jsdelivr.net/npm/
@@ -98,8 +97,15 @@ class CDN_CSS(object):
     THREE_DOTS_0_2_0 = "https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css"
     MILLIGRAM_1_3_0 = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"
     X3DOM = "https://www.x3dom.org/download/x3dom.css"
+    FONTAWESOME_5_7_1 = "https://use.fontawesome.com/releases/v5.7.1/css/all.css"
     # find_on_cdn():
     # https://unpkg.com/
     # https://cdnjs.cloudflare.com/ajax/libs/
 
     # def dl(self, path=domonic.JS_MASTER):  # download
+
+
+class CDN_FONT(object):
+    @staticmethod
+    def google(family):
+        return "http://fonts.googleapis.com/css?family=" + '+'.join(family)

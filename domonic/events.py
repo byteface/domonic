@@ -5,7 +5,7 @@
 
 """
 
-from typing import *
+# from typing import *
 import time
 
 
@@ -53,7 +53,6 @@ class EventDispatcher(object):
                 thing()  # try calling without params, user may not create param
 
         return not event.defaultPrevented
-
 
 
 class Event(object):
@@ -156,12 +155,12 @@ class MouseEvent(Event):
     MOUSEOUT = "onmouseout"
     MOUSEUP = "onmouseup"
 
-    def __init__(self, evt, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
         self.x = 0
         self.y = 0
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
     # MOUSE_EVENT
     # altKey    Returns whether the "ALT" key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent
@@ -188,10 +187,10 @@ class KeyboardEvent(Event):
     KEYPRESS = "onkeypress"
     KEYUP = "onkeyup"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
     # KeyboardEvent
     # altKey    Returns whether the "ALT" key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent
@@ -210,10 +209,10 @@ class KeyboardEvent(Event):
 
 class UiEvent(Event):
     """ UiEvent """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.detail = None
         self.view = None
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class FocusEvent(Event):
@@ -223,9 +222,9 @@ class FocusEvent(Event):
     FOCUSIN = "onfocusin"
     FOCUSOUT = "onfocusout"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.relatedTarget = None
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class TouchEvent(Event):
@@ -235,7 +234,7 @@ class TouchEvent(Event):
     TOUCHMOVE = "ontouchmove"
     TOUCHSTART = "ontouchstart"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.shiftKey = None
         self.altKey = None
         """  Returns whether the "ALT" key was pressed when the touch event was triggered """
@@ -251,7 +250,7 @@ class TouchEvent(Event):
         """   Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element """
         self.touches = None
         """ Returns a list of all the touch objects that are currently in contact with the surface """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class WheelEvent(Event):
@@ -259,7 +258,7 @@ class WheelEvent(Event):
     MOUSEWHEEL = "onmousewheel"  # DEPRECATED - USE ONWHEEL
     WHEEL = "onwheel"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.deltaX = None
         """ Returns the horizontal scroll amount of a mouse wheel (x-axis) """
         self.deltaY = None
@@ -268,7 +267,7 @@ class WheelEvent(Event):
         """ Returns the scroll amount of a mouse wheel for the z-axis """
         self.deltaMode = None
         """ Returns a number that represents the unit of measurements for delta values (pixels, lines or pages) """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class AnimationEvent(Event):
@@ -277,14 +276,14 @@ class AnimationEvent(Event):
     ANIMATIONITERATION = "onanimationiteration"
     ANIMATIONSTART = "onanimationstart"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.animationName = None
         """ Returns the name of the animation """
         self.elapsedTime = None
         """ Returns the number of seconds an animation has been running """
         self.pseudoElement = None
         """ Returns the name of the pseudo-element of the animation """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class ClipboardEvent(Event):
@@ -293,10 +292,10 @@ class ClipboardEvent(Event):
     CUT = "oncut"
     PASTE = "onpaste"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.clipboardData = None
         """ Returns an object containing the data affected by the clipboard operation """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class DragEvent(Event):
@@ -309,27 +308,27 @@ class DragEvent(Event):
     START = "ondragstart"
     DROP = "ondrop"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.dataTransfer = None
         """ Returns the data that is dragged/dropped """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class HashChangeEvent(Event):
     """ HashChangeEvent """
     CHANGE = "onhashchange"
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.newURL = None
         """ Returns the URL of the document, after the hash has been changed """
         self.oldURL
         """ Returns the URL of the document, before the hash was changed """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class InputEvent(Event):
     """ InputEvent """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.data = None
         """ Returns the inserted characters """
         self.dataTransfer
@@ -340,30 +339,30 @@ class InputEvent(Event):
         """ Returns the type of the change (i.e "inserting" or "deleting") """
         self.isComposing
         """ Returns whether the state of the event is composing or not """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class PageTransitionEvent(Event):
     PAGEHIDE = "onpagehide"
     PAGESHOW = "onpageshow"
     """ PageTransitionEvent """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.persisted = None
         """ Returns whether the webpage was cached by the browser """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class PopStateEvent(Event):
     """ PopStateEvent """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.state = None
         """ Returns an object containing a copy of the history entries """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class StorageEvent(Event):
     """ StorageEvent """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.key = None
         """ Returns the key of the changed storage item """
         self.newValue = None
@@ -374,42 +373,42 @@ class StorageEvent(Event):
         """ Returns an object representing the affected storage object """
         self.url = None
         """ Returns the URL of the changed item's document """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class TransitionEvent(Event):
     TRANSITIONEND = "ontransitionend"
     """ TransitionEvent """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.propertyName = None
         """ Returns the name of the transition"""
         self.elapsedTime = None
         """  Returns the number of seconds a transition has been running """
         self.pseudoElement = None
         """ Returns the name of the pseudo-element of the transition """
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
 
 class ProgressEvent(Event):
     """ CustomEvent """
     LOADSTART = "onloadstart"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(evt, *args, **kwargs)
+    def __init__(self, _type, *args, **kwargs):
+        super().__init__(_type, *args, **kwargs)
 
 
 class CustomEvent(Event):
     """ CustomEvent """
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _type, *args, **kwargs):
         self.detail = None
-        super().__init__(evt, *args, **kwargs)
+        super().__init__(_type, *args, **kwargs)
 
     def initCustomEvent(self):
         pass
 
 
 class TweenEvent(Event):
-    
+    """ TweenEvent """
     START = "onStart"
     STOP = "onStop"
     RESET = "onReset"
@@ -420,18 +419,17 @@ class TweenEvent(Event):
     COMPLETE = "onComplete"
 
     TIMER = "onTimer"
-    
     _source = None
 
     @property
     def source(self):
         return self._source
-    
+
     @source.setter
     def source(self, source):
         self._source = source
-    
-    def __init__(self, _type, source = None, bubbles = False, cancelable = False):
+
+    def __init__(self, _type, source=None, bubbles=False, cancelable=False):
         # super.__init__(self, type, bubbles, cancelable)
-        super().__init__(_type) # TODO -
+        super().__init__(_type)  # TODO -
         self.source = source

@@ -7,12 +7,14 @@
 
 """
 
-from domonic.html import tag, closed_tag
+from domonic.html import tag  # , closed_tag
 from domonic.dom import Node, ParentNode
+
 
 class aframe_tag(tag):
     def __str__(self):
         return f"<a-{self.name}{self.attributes}>{self.content}</a-{self.name}>"
+
 
 def aframe_init(self, *args, **kwargs):
     tag.__init__(self, *args, **kwargs)

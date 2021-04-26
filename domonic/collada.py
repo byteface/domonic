@@ -23,7 +23,7 @@ def write(inp, outp='output'):
     """
     if outp != '':
         with open(outp, "w+") as f:
-            f.write(str(inp)+".dae")
+            f.write(str(inp) + ".dae")
     return str(inp)
 
 
@@ -818,6 +818,5 @@ camera(_name="eyepoint").html(
 + + + + instance_camera
 + scene
 + + instance_visual_scene
-
 
 """
