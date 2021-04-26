@@ -75,6 +75,8 @@ class CDN_JS(object):
     PIXI_5_3_3 = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"
     SOCKET_1_4_5 = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"
     X3DOM = "https://www.x3dom.org/download/x3dom.js"
+    AFRAME_1_2 = "https://aframe.io/releases/1.2.0/aframe.min.js"
+    
 
     # def find_on_cdn():
     # https://cdn.jsdelivr.net/npm/

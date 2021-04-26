@@ -21,6 +21,7 @@
 • terminal : call terminal commands with python3 😱 - NEW (*see at the end*)<br />
 • JSON : utils for loading / decorating / transforming<br />
 • SVG : Generate svg using python (untested)<br />
+• aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder)<br />
 
 See the docs/code for more hidden features...
 https://domonic.readthedocs.io/
@@ -241,6 +242,34 @@ someObj = {'x':0,'y':0,'z':0}
 twn = Tween( someObj, { 'x':10, 'y':5, 'z':3 }, 6, Linear.easeIn )
 twn.start()
 ```
+
+
+### aframe / x3d
+
+to use 3d tags can be used if you import the js
+
+```python
+from domonic.html import *
+from domonic.aframe import *
+from domonic.CDN import *
+
+_scene = scene(
+      box(_position="-1 0.5 -3", _rotation="0 45 0", _color="#4CC3D9"),
+      sphere(_position="0 1.25 -5", _radius="1.25", _color="#EF2D5E"),
+      cylinder(_position="1 0.75 -3", _radius="0.5", _height="1.5", _color="#FFC65D"),
+      plane(_position="0 0 -4", _rotation="-90 0 0", _width="4", _height="4", _color="#7BC8A4"),
+      sky(_color="#ECECEC")
+    )
+
+_webpage = html(head(),body(
+    script(_src=CDN_JS.AFRAME_1_2), # < NOTICE you need to import aframe to use it
+    str(_scene)
+    )
+)
+
+render( _webpage, 'hello.html' )
+```
+
 
 ### terminal (NEW)
 
