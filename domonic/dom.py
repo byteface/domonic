@@ -111,6 +111,23 @@ class Node(EventTarget):
         except Exception as e:
             print('unable to update parent', e)
 
+
+    def _iterate(self, element, callback):
+        '''
+        private.
+        currently used for querySelector
+        '''
+        from domonic.javascript import Array
+        nodes = Array()
+        nodes.push(element)
+        while len(nodes) > 0:
+            # print('checking')
+            element = nodes.shift()
+            callback(element)
+            nodes.unshift(*element.children)
+
+
+
     @property
     def rootNode(self):
         """[read-only property returns a Node object representing the topmost node in the tree,
@@ -428,7 +445,6 @@ class Element(Node):
         self.dir = None
         super().__init__(*args, **kwargs)
 
-
     def _getElementById(self, _id):
         # TODO - i think i need to build a hash map of IDs to positions on the tree
         # for now I'm going using recursion so this is a bit of a hack to do a few levels
@@ -442,6 +458,33 @@ class Element(Node):
         except Exception as e:
             # print('fail', e)
             pass # TODO - dont iterate strings
+        return False
+
+    def _matchElement(self, element, query):
+        """
+        tries to match an element based on the query
+        at moment very basic. i.e. single level. just checks between id/tag/class
+        """
+        try:
+            if query[0] == '#':
+                if element.getAttribute('id') == query.split('#')[1]:
+                    return True
+        except Exception as e:
+            pass
+
+        try:
+            if element.tagName.lower() == query.lower():
+                return True
+        except Exception as e:
+            pass
+
+        try:
+            if query[0] == '.':
+                if query.split('.')[1] in element.classList:
+                    return True
+        except Exception as e:
+            pass
+
         return False
 
     # elem.attachShadow({mode: open|closed})
@@ -588,19 +631,9 @@ class Element(Node):
         '''Returns the size of an element and its position relative to the viewport'''
         raise NotImplementedError
 
-    def getElementsByClassName(self):
+    def getElementsByClassName(self, className):
         '''Returns a collection of all child elements with the specified class name'''
-        raise NotImplementedError
-        # if _classname in self.className:
-        #     yield self
-        # try:
-        #     for child in self.childNodes:
-        #         match = child.getElementsByClassName(_classname)
-        #         if match:
-        #             yield match
-        # except Exception as e:
-        #     pass
-        # return False
+        return self.querySelectorAll('.' + className)
 
     def getElementsByTagName(self, tag: str) -> List:
         """ Returns a collection of all child elements with the specified tag name """
@@ -766,13 +799,23 @@ class Element(Node):
                         return self.parentNode.args[count - 1]
         return None
 
-    def querySelector(self):
+    def querySelector(self, query):
         '''Returns the first child element that matches a specified CSS selector(s) of an element'''
-        raise NotImplementedError
+        try:
+            return self.querySelectorAll(query)[0]
+        except Exception as e:
+            return None
 
-    def querySelectorAll(self):
+    def querySelectorAll(self, query):
         """ Returns all child elements that matches a specified CSS selector(s) of an element """
-        raise NotImplementedError
+        elements = []
+
+        def anon(el):
+            if self._matchElement(el, query):
+                elements.append(el)
+
+        self._iterate(self, anon)
+        return elements
 
     def remove(self):
         """ Removes the element from the DOM """
@@ -1112,10 +1155,6 @@ class Document(Element):
 
         return False
 
-    def getElementsByClassName(self):
-        '''Returns a NodeList containing all elements with the specified class name'''
-        raise NotImplementedError
-
     def getElementsByName(self):
         '''Returns a NodeList containing all elements with a specified name'''
         raise NotImplementedError
@@ -1162,32 +1201,20 @@ class Document(Element):
         tags = re.findall(pattern, str(self))
         return tags
 
-    # def normalize(self):
-        # '''Removes empty Text nodes, and joins adjacent nodes'''
-        # raise NotImplementedError
-
     def normalizeDocument(self):
         '''Removes empty Text nodes, and joins adjacent nodes'''
         raise NotImplementedError
 
     # def open(self):
-        '''Opens an HTML output stream to collect output from document.write()'''
+        # '''Opens an HTML output stream to collect output from document.write()'''
         # return
 
-    def querySelector(self):
-        '''Returns the first element that matches a specified CSS selector(s) in the document'''
-        raise NotImplementedError
-
-    def querySelectorAll(self):
-        '''Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document'''
-        raise NotImplementedError
-
     # def readyState(self):
-        ''' Returns the (loading) status of the document'''
+        # ''' Returns the (loading) status of the document'''
         # return
 
     # def referrer():
-        ''' Returns the URL of the document that loaded the current document'''
+        # ''' Returns the URL of the document that loaded the current document'''
         # return
 
     def renameNode(self, node, namespaceURI, nodename):

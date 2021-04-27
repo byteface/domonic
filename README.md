@@ -23,7 +23,7 @@
 • SVG : Generate svg using python (untested)<br />
 • aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder)<br />
 
-See the docs/code for more hidden features...
+See the docs/code for more features...
 https://domonic.readthedocs.io/
 
 ## HTML Templating with Python 3
@@ -62,6 +62,8 @@ render takes 2 parameters, some domonic and an optional output file.
 page = div(span('Hello World'))
 render(page, 'index.html')
 ```
+
+So you can build your own static site generator using python
 
 ### data-tags
 python doesn't allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags

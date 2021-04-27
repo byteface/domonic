@@ -344,6 +344,28 @@ class domonicTestCase(unittest.TestCase):
         # replaceChild
         # anchors
 
+    def test_dom_querySelector(self):
+        dom1 = html(div(div(div(div(div(div(div( div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
+
+        result = dom1.querySelector('#thing')
+        # print('--')
+        print("RESULT>>>>>", result)
+        # print('--')
+
+        result = dom1.querySelector('span')
+        # print('--')
+        print("RESULT>>>>>", result)
+
+        result = dom1.querySelector('.test')
+        # print('--')
+        print("RESULT>>>>>", result)
+
+        result = dom1.getElementsByClassName('this')
+        # print('--')
+        print("RESULT>>>>>", result)
+
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()
