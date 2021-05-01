@@ -135,9 +135,35 @@ class Utils(object):
         return filename
 
     @staticmethod
+    def permutations(word):
+        from itertools import permutations
+        return [''.join(perm) for perm in list(permutations(word))]
+
+    @staticmethod
     def random_color(self):
+        ''' TODO - remove in 0.3 as we have color class. '''
         r = lambda: random.randint(0, 255)
         return str('#%02X%02X%02X' % (r(), r(), r()))
+
+    @staticmethod
+    def escape(s):
+        chars = {
+            "&": "&amp;",
+            '"': "&quot;",
+            "'": "&apos;",
+            ">": "&gt;",
+            "<": "&lt;"
+        }
+        return "".join(chars.get(c, c) for c in s)
+
+    @staticmethod
+    def unescape(s):
+        s = s.replace("&lt;", "<")
+        s = s.replace("&gt;", ">")
+        s = s.replace("&quot;", '"')
+        s = s.replace("&apos;", "'")
+        s = s.replace("&amp;", "&")
+        return s
 
     # truncate()
     # return mystr + "..."

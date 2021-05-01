@@ -12,6 +12,8 @@ class Color():
         import random
         r = lambda: random.randint(0,255)
         return '#%02X%02X%02X' % (r(),r(),r())
+        # import secrets
+        # rgba = '#'+secrets.token_hex(4)
 
     @staticmethod
     def hex2rgb(h):

@@ -13,6 +13,66 @@ from domonic.html import *
 # 		return link( _rel="stylesheet", _href=f"{thing}" )
 # 	return script(thing)
 
+# class Triggered():
+#     # adds listeners for mouse and keys and connects a socket
+#     def __init__(self, keyboard=True, mouse=True, domain="0.0.0.0", port=5555):
+#         self.keyboard=keyboard
+#         self.mouse=mouse
+#         self.domain
+#         self.port
+    
+#     def __str__(self):
+#         return str(
+#             span(
+#                 style(self.styles),
+#                 div(_class=self.id)
+#             )
+#         )
+#     script('''
+#     const socket = new WebSocket('ws://'''+self.domain+''':'''+self.port+'''');
+#     // socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
+
+#     $(document).ready(function() { 
+#         $("document")[0].oncontextmenu = function() {return false;} 
+#         //$("document").on('mousedown', function(event)
+#         //$("document").on('mouseup', function(event)
+#         //$("document").on('mouseup', function(event)
+#         //$("document").on('click', function(event){ 
+#         //$("document").on('dblclick', function(event){ 
+
+#         $("document").on('mousedown', function(event){ 
+#             var bounds = this.getBoundingClientRect();
+#             var x = (event.clientX - bounds.left) / this.clientWidth;
+#             var y = (event.clientY - bounds.top) / this.clientHeight;
+
+            # if use_sockets:
+#             socket.send( '{"x":' + x + ', "y":' + y + '}' );
+            # else
+#             # TODO $ ajax call to /controls
+#         }); 
+        
+#         $("document").on("keydown", function(event){
+#             console.log(event);
+
+#         })
+#         $("document").on("keyup", function(event){
+            
+#         })
+
+#         $("document").on("mousemove", function(event){
+#             var bounds = this.getBoundingClientRect();
+#             var x = (event.clientX - bounds.left) / this.clientWidth;
+#             var y = (event.clientY - bounds.top) / this.clientHeight;
+#         })
+
+#     });
+# '''
+# )
+
+
+
+
+
 
 class SpriteCSS(object):
     """ a css sprite sheet.
