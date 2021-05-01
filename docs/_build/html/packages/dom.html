@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: DOM &#8212; domonic 0.2.16 documentation</title>
+    <title>Domonic: DOM &#8212; domonic 0.2.17 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -152,12 +152,6 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">getElementsByClassName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementsByClassName"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns a NodeList containing all elements with the specified class name</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
 <code class="sig-name descname">getElementsByName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementsByName"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns a NodeList containing all elements with a specified name</p>
 </dd></dl>
@@ -190,18 +184,6 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 <dt>
 <code class="sig-name descname">normalizeDocument</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.normalizeDocument"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Removes empty Text nodes, and joins adjacent nodes</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">querySelector</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.querySelector"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns the first element that matches a specified CSS selector(s) in the document</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">querySelectorAll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.querySelectorAll"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document</p>
 </dd></dl>
 
 <dl class="py method">
@@ -350,7 +332,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">getElementsByClassName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getElementsByClassName"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">getElementsByClassName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">className</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getElementsByClassName"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns a collection of all child elements with the specified class name</p>
 </dd></dl>
 
@@ -512,13 +494,13 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">querySelector</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.querySelector"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">querySelector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.querySelector"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns the first child element that matches a specified CSS selector(s) of an element</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">querySelectorAll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.querySelectorAll"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">querySelectorAll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">query</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.querySelectorAll"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns all child elements that matches a specified CSS selector(s) of an element</p>
 </dd></dl>
 

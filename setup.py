@@ -3,7 +3,7 @@ from setuptools import setup
 with open("README.md", "r") as f:
         long_description=f.read()
 
-version = '0.2.16'
+version = '0.2.17'
 
 setup(
   name='domonic',
