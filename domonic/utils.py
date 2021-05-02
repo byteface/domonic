@@ -113,14 +113,14 @@ class Utils(object):
         return freq
 
     @staticmethod
-    def init_assets():
+    def init_assets(dir='assets'):
         from domonic.terminal import mkdir, touch
-        mkdir("assets")
-        mkdir("assets/js")
-        mkdir("assets/css")
-        mkdir("assets/img")
-        touch("assets/js/master.js")
-        touch("assets/css/style.css")
+        mkdir(f"{dir}")
+        mkdir(f"{dir}/js")
+        mkdir(f"{dir}/css")
+        mkdir(f"{dir}/img")
+        touch(f"{dir}/js/master.js")
+        touch(f"{dir}/css/style.css")
         return
 
     @staticmethod
@@ -164,6 +164,7 @@ class Utils(object):
         s = s.replace("&apos;", "'")
         s = s.replace("&amp;", "&")
         return s
+
 
     # truncate()
     # return mystr + "..."

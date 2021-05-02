@@ -23,7 +23,10 @@ class KeyCode():
     DOWN = '40'
     E = '69'
     END = '35'
+
     ENTER = '13'
+    RETURN = '13'
+
     EQUAL = '187'
     ESCAPE = '27'
     F = '70'
@@ -94,7 +97,7 @@ class KeyCode():
     RIGHTBRACKET = '221'
     S = '83'
     SEMICOLON = '186'
-    SHIFT = '16'
+    SHIFT = '16' #?? left or right or both?
     SLASH = '191'
     SPACE = '32'
     T = '84'
@@ -106,6 +109,9 @@ class KeyCode():
     X = '88'
     Y = '89'
     Z = '9'
+
+
+    # TODO - modifiers
 
     def __init__(self):
         pass

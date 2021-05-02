@@ -82,3 +82,40 @@ class vec3():
 
     def __str__(self):
         return str(self.x) + " " + str(self.y) + " " + str(self.z)
+
+
+class Point(object):
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+
+class Shape:
+    def __init__(self, color='red'):
+        self.color = color
+ 
+class Rect(Shape):
+    def __init__(self, x=0, y=0, width=1, height=1, color=None):
+        super().__init__(color)
+        self._x = x
+        self._y = y
+        self._width = width
+        self._height = height
+
+    def get_bottom_right(self):
+        d = self._x + self.width
+        t = self._y + self.height
+        return (d,t)
+
+class Circle(Shape):
+    def __init__(self, radius=1.0, color=None):
+        super().__init__(color)
+        self.radius = radius  # Create an instance variable radius
+
+    @property
+    def area(self):
+        return self.radius * self.radius * pi
+
+class Square(Rectangle):
+    def __init__(self, x, y, size=1.0, color=None):
+        super().__init__(x,y size, size, color)
+

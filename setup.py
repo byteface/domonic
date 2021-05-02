@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open("README.md", "r") as f:
         long_description=f.read()
 
-version = '0.2.17'
+version = '0.2.18'
 
 setup(
   name='domonic',
@@ -48,6 +48,6 @@ setup(
   install_requires=[
           'requests', 'python-dateutil', 'urllib3'
   ],
-  packages=['domonic'],
+  packages=find_packages(),
   include_package_data=True,
 )

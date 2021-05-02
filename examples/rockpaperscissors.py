@@ -4,22 +4,13 @@
 import sys
 sys.path.insert(0, '..')
 
-import os
 import random
-from json import load
-from dataclasses import dataclass, asdict, field
-from sanic import Sanic
-from sanic import response
+from sanic import Sanic, response
 
 from domonic.html import *
 from domonic.CDN import *
 from domonic.utils import *
-
-from domonic.constants.color import Color
-print(Color.rgb2hex(0,0,0))
-
 from domonic.constants.entities import Char
-print(Char.NBSP)
 
 #  To run this first:
 #  pip3 install sanic
@@ -60,8 +51,6 @@ page_wrapper = lambda content : html(
 
 choices = ['✊', '✋', '✌']
 def get_choice():
-    # TODO - put a learning algo in here per user? rather than just random. 
-    # try to read their mind or second guess based on previous games.
     choice = random.choice(choices)
     return choice
 
@@ -75,27 +64,6 @@ async def move(request):
     board = div()
 
     result = lambda u, c, r : board.appendChild( div( f'You chose {u} ', Char.NBSP, f' I chose {c} ', h4( f'{r}', _id="result")) )
-
-    # when py3.10 comes out see if this works
-    # match choice:
-    #     case "✊":
-    #         match computer:
-    #             case '✊': result('✊','✊','Draw')
-    #             case '✋': result('✊','✋','I lose')
-    #             case '✌': result('✊','✌','I win') )
-    #     case "✋":
-    #         match computer:
-    #             case '✊': result('✋','✊','I win')
-    #             case '✋': result('✋','✋','Draw')
-    #             case '✌': result('✋','✌','I lose')
-    #     case "✌":
-    #         match computer:
-    #             case '✊': result('✌','✊','I win')
-    #             case '✋': result('✌','✋','I lose')
-    #             case '✌': result('✌','✌','Draw')
-
-
-    print(choice == '✊')
 
     if choice == "✊":
             if computer=='✊': result('✊','✊','Draw!')

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.utils &#8212; domonic 0.2.17 documentation</title>
+    <title>domonic.utils &#8212; domonic 0.2.18 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -147,14 +147,14 @@
         <span class="k">return</span> <span class="n">freq</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">init_assets</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">init_assets</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s1">&#39;assets&#39;</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">domonic.terminal</span> <span class="kn">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">touch</span>
-        <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;assets&quot;</span><span class="p">)</span>
-        <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;assets/js&quot;</span><span class="p">)</span>
-        <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;assets/css&quot;</span><span class="p">)</span>
-        <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;assets/img&quot;</span><span class="p">)</span>
-        <span class="n">touch</span><span class="p">(</span><span class="s2">&quot;assets/js/master.js&quot;</span><span class="p">)</span>
-        <span class="n">touch</span><span class="p">(</span><span class="s2">&quot;assets/css/style.css&quot;</span><span class="p">)</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">/js&quot;</span><span class="p">)</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">/css&quot;</span><span class="p">)</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">/img&quot;</span><span class="p">)</span>
+        <span class="n">touch</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">/js/master.js&quot;</span><span class="p">)</span>
+        <span class="n">touch</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">/css/style.css&quot;</span><span class="p">)</span>
         <span class="k">return</span>
 
 <div class="viewcode-block" id="Utils.url2file"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.url2file">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -198,6 +198,7 @@
         <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;apos;&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s</span></div>
+
 
     <span class="c1"># truncate()</span>
     <span class="c1"># return mystr + &quot;...&quot;</span>
