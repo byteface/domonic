@@ -349,11 +349,11 @@ class domonicTestCase(unittest.TestCase):
         print(myarr.indexOf([6]))
         print(myarr[1])
         print(len(myarr))
-        print(myarr.join('---'))  # TODO - test some js ones
+        print(myarr.join('---'))  #  TODO - test some js ones
         print(myarr.lastIndexOf("1"))
         print(myarr.lastIndexOf(3))
         print(myarr.reverse())
-        # print(myarr.slice(0,1)) # TODO --
+        print(myarr.slice(0, 1))
         print(myarr.splice(1))
         # print(myarr.splice(2))
         # print(myarr.splice(3))

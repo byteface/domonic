@@ -1033,7 +1033,7 @@ class Array(object):
 
     def slice(self, start, stop, step=1):
         """ Selects a part of an array, and returns the new array """
-        self.args.slice(start, stop, step)
+        return self.args[slice(start, stop, step)]
 
     def splice(self, start, delete_count=None, *items):
         """ Selects a part of an array, and returns the new array """
