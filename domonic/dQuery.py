@@ -403,21 +403,31 @@ class dQuery_el():
             dQuery_el.DOM = dom
             self.dom = dom
 
+    def __str__(self):
+        # print(type(self.elements))
+        if type(self.elements) is tuple:
+        # if isinstance(self.elements, (list, tuple)):
+            # print([str(el) for el in self.elements])
+            return ''.join([str(el) for el in self.elements])
+        else:
+            # print('asd')
+            return str(self.elements)
+
     @property
     def dom(self):
-        print('getting')
+        # print('getting')
         if dQuery_el.DOM is None:
             return
         # else:
-        print('GOT ONE')
+        # print('GOT ONE')
         return dQuery_el.DOM
 
     @dom.setter
     def dom(self, dom):
-        print('SETING')
+        # print('SETING')
         # self.dom = dom
         if isinstance(dom, html) or isinstance(dom, Document):
-            print('setting new ROOT')
+            # print('setting new ROOT')
             dQuery_el.DOM = dom
 
     def init(self, q):
@@ -484,9 +494,21 @@ class dQuery_el():
 
     def append(self, html):
         """ Insert content, specified by the parameter, to the end of each element in the set of matched elements."""
+
+        # print('running append')
+        # print(len(self.elements))
+        # print(":::::::::::", type(self.elements))
+
+        if type(self.elements) is not tuple:
+            self.elements.innerHTML = self.elements.innerHTML + str(html)
+            return self
+
         for el in self.elements:
-            el.innerHTML = el.innerHTML + html
-        return self
+            # print('EL!!')
+            el.innerHTML = el.innerHTML + str(html)
+
+        # print('APPEND SAYS:', self.elements)
+        # return self
 
     def appendTo(self):
         """ Insert every element in the set of matched elements to the end of the target."""
@@ -1546,8 +1568,12 @@ def º(q):
     º.uniqueSort = el.uniqueSort
     º.when = el.when
 
-    return el.elements
+    # º().append = el.append(q)
 
+    # if type(q) is not str:
+    return el
+    # else:
+        # return el.elements
     # def __str__(self):
         # return self.elements
 

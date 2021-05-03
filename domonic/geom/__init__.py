@@ -3,7 +3,7 @@
     ====================================
 
 """
-
+from domonic.javascript import Math
 
 class vec2():
 
@@ -89,22 +89,25 @@ class Point(object):
         self.x = x
         self.y = y
 
+
 class Shape:
     def __init__(self, color='red'):
         self.color = color
- 
+
+
 class Rect(Shape):
     def __init__(self, x=0, y=0, width=1, height=1, color=None):
         super().__init__(color)
-        self._x = x
-        self._y = y
-        self._width = width
-        self._height = height
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
 
     def get_bottom_right(self):
-        d = self._x + self.width
-        t = self._y + self.height
-        return (d,t)
+        d = self.x + self.width
+        t = self.y + self.height
+        return (d, t)
+
 
 class Circle(Shape):
     def __init__(self, radius=1.0, color=None):
@@ -113,9 +116,9 @@ class Circle(Shape):
 
     @property
     def area(self):
-        return self.radius * self.radius * pi
+        return self.radius * self.radius * Math.PI
 
-class Square(Rectangle):
+
+class Square(Rect):
     def __init__(self, x, y, size=1.0, color=None):
-        super().__init__(x,y size, size, color)
-
+        super().__init__(x, y, size, size, color)

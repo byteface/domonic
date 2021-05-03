@@ -20,13 +20,24 @@ class domonicTestCase(unittest.TestCase):
 
     # domonic.dQuery.º
     def test_dQuery_hello(self):
-        d = html(head(body(li(_class='things'),div(_id="test"))))
+        d = html(head(body(li(_class='things'), div(_id="test"))))
         º(d)
         print( '---** -' )
         print( º('#test') )
         print( '---** -' )
         print( º('.things') )
         print( '---** -' )
+
+        print( 'a::' )
+        a = º('<div class="test2"></div>')
+        print( a )
+
+        print( 'b::' )
+        b = º('#test').append(a)
+        print(b)
+
+        print(d)
+
         pass
 
     def test_dQuery_add(self):

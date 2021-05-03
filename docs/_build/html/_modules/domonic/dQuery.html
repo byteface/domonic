@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dQuery &#8212; domonic 0.3.0 documentation</title>
+    <title>domonic.dQuery &#8212; domonic 0.3.1 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -437,21 +437,31 @@
             <span class="n">dQuery_el</span><span class="o">.</span><span class="n">DOM</span> <span class="o">=</span> <span class="n">dom</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dom</span> <span class="o">=</span> <span class="n">dom</span>
 
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># print(type(self.elements))</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="c1"># if isinstance(self.elements, (list, tuple)):</span>
+            <span class="c1"># print([str(el) for el in self.elements])</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># print(&#39;asd&#39;)</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;getting&#39;</span><span class="p">)</span>
+        <span class="c1"># print(&#39;getting&#39;)</span>
         <span class="k">if</span> <span class="n">dQuery_el</span><span class="o">.</span><span class="n">DOM</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="c1"># else:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;GOT ONE&#39;</span><span class="p">)</span>
+        <span class="c1"># print(&#39;GOT ONE&#39;)</span>
         <span class="k">return</span> <span class="n">dQuery_el</span><span class="o">.</span><span class="n">DOM</span>
 
     <span class="nd">@dom</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">dom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dom</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SETING&#39;</span><span class="p">)</span>
+        <span class="c1"># print(&#39;SETING&#39;)</span>
         <span class="c1"># self.dom = dom</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;setting new ROOT&#39;</span><span class="p">)</span>
+            <span class="c1"># print(&#39;setting new ROOT&#39;)</span>
             <span class="n">dQuery_el</span><span class="o">.</span><span class="n">DOM</span> <span class="o">=</span> <span class="n">dom</span>
 
     <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
@@ -518,9 +528,21 @@
 
 <div class="viewcode-block" id="dQuery_el.append"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Insert content, specified by the parameter, to the end of each element in the set of matched elements.&quot;&quot;&quot;</span>
+
+        <span class="c1"># print(&#39;running append&#39;)</span>
+        <span class="c1"># print(len(self.elements))</span>
+        <span class="c1"># print(&quot;:::::::::::&quot;, type(self.elements))</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">tuple</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="n">el</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">+</span> <span class="n">html</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+            <span class="c1"># print(&#39;EL!!&#39;)</span>
+            <span class="n">el</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">html</span><span class="p">)</span></div>
+
+        <span class="c1"># print(&#39;APPEND SAYS:&#39;, self.elements)</span>
+        <span class="c1"># return self</span>
 
 <div class="viewcode-block" id="dQuery_el.appendTo"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.appendTo">[docs]</a>    <span class="k">def</span> <span class="nf">appendTo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Insert every element in the set of matched elements to the end of the target.&quot;&quot;&quot;</span>
@@ -1580,8 +1602,12 @@
     <span class="n">º</span><span class="o">.</span><span class="n">uniqueSort</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">uniqueSort</span>
     <span class="n">º</span><span class="o">.</span><span class="n">when</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">when</span>
 
-    <span class="k">return</span> <span class="n">el</span><span class="o">.</span><span class="n">elements</span>
+    <span class="c1"># º().append = el.append(q)</span>
 
+    <span class="c1"># if type(q) is not str:</span>
+    <span class="k">return</span> <span class="n">el</span>
+    <span class="c1"># else:</span>
+        <span class="c1"># return el.elements</span>
     <span class="c1"># def __str__(self):</span>
         <span class="c1"># return self.elements</span>
 
@@ -1621,6 +1647,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

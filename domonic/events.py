@@ -289,6 +289,10 @@ class KeyboardEvent(Event):
     def metaKey(self):
         return self._metaKey
 
+    @property
+    def unicode(self):
+        return self.key
+
     # KeyboardEvent
     # isComposing   Returns whether the state of the event is composing or not  InputEvent, KeyboardEvent
     # repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent

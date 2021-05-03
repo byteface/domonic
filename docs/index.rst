@@ -29,11 +29,16 @@ Domonic: Generate HTML with Python 3
 
 (but by no means are any of them complete)
 
-- html : Generate html with python3 😎
-- dom : DOM API in python3 😲
-- javascript : js API in python3 😳
-- terminal : call terminal commands with python3 😱 - NEW (*see at the end*)
-- JSON : utils for loading / decorating / transforming
+
+- html : Generate html with python 3 😎
+- dom : DOM API in python 3 😲
+- javascript : js API in python 3 😳
+- terminal : call terminal commands with python3 😱 (*see at the end*
+- JSON : utils for loading / decorating / transformin
+- SVG : Generate svg using python (untested
+- aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder
+- dQuery - NEW. Recently started. utils for querying domonic. (alt + 0 for the º symbol)
+
 
 
 HTML TEMPLATING
@@ -106,6 +111,7 @@ Here you can find instructions for getting the most out of Domonic.
    packages/components
    packages/tween
    packages/x3d
+   packages/dQuery
    packages/autodocs
 
 
