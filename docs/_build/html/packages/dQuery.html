@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: dQuery &#8212; domonic 0.3.1 documentation</title>
+    <title>Domonic: dQuery &#8212; domonic 0.3.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -15,6 +15,8 @@
     <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Domonic: autodocs" href="autodocs.html" />
+    <link rel="prev" title="Domonic: x3d" href="x3d.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -80,7 +82,7 @@
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">ajax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajax"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">ajax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="o">=</span><span class="default_value">'/'</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'GET'</span></em>, <em class="sig-param"><span class="n">data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">contentType</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">processData</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cache</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">success</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajax"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Perform an asynchronous HTTP request.</p>
 </dd></dl>
 
@@ -494,7 +496,7 @@
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">inArray</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.inArray"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">inArray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">thing</span></em>, <em class="sig-param"><span class="n">arr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.inArray"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Search for a specified value within an array and return its index or -1 if not found.</p>
 </dd></dl>
 
@@ -614,7 +616,7 @@
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">makeArray</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.makeArray"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">makeArray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">somelist</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.makeArray"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Convert an array-like object into a true JavaScript array.</p>
 </dd></dl>
 
@@ -1064,14 +1066,8 @@
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">trim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.trim"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">trim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">content</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.trim"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Remove the whitespace from the beginning and end of a string.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.type"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Determine the internal JavaScript [[Class]] of an object.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1175,7 +1171,7 @@
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>
@@ -1185,6 +1181,10 @@
 <li class="toctree-l1"><a class="reference internal" href="components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tween.html">Domonic: tween</a></li>
 <li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: dQuery</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">domonic.dQuery</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
 </ul>
 
@@ -1192,6 +1192,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="x3d.html" title="previous chapter">Domonic: x3d</a></li>
+      <li>Next: <a href="autodocs.html" title="next chapter">Domonic: autodocs</a></li>
   </ul></li>
 </ul>
 </div>

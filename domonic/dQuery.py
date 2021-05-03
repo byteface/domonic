@@ -39,10 +39,10 @@ class dQuery_el():
     """
 
     @staticmethod
-    def ajax():
+    def ajax(url='/', type='GET', data=None, 
+        contentType=False, processData=False, cache=False, success=None, error=None):
         """ Perform an asynchronous HTTP request. """
         raise NotImplementedError
-
 
     @staticmethod
     def ajaxPrefilter():
@@ -193,9 +193,12 @@ class dQuery_el():
 
 
     @staticmethod
-    def inArray():
+    def inArray(thing, arr):
         """ Search for a specified value within an array and return its index or -1 if not found. """
-        raise NotImplementedError
+        for count, each in enumerate(arr):
+            if thing == each:
+                return count
+        return -1
 
 
     @staticmethod
@@ -241,9 +244,9 @@ class dQuery_el():
 
 
     @staticmethod
-    def makeArray():
+    def makeArray(somelist):
         """ Convert an array-like object into a true JavaScript array. """
-        raise NotImplementedError
+        return Array(somelist)
 
 
     @staticmethod
@@ -273,7 +276,7 @@ class dQuery_el():
     @staticmethod
     def now():
         """ Return a number representing the current time. """
-        raise NotImplementedError
+        return Date.now()
 
 
     @staticmethod
@@ -321,7 +324,7 @@ class dQuery_el():
     # @staticmethod
     # @ty
     # def ready:
-        """ A Promise-like object or “thenable” that resolves when the document is ready. """
+        # """ A Promise-like object or “thenable” that resolves when the document is ready. """
         # raise NotImplementedError
 
 
@@ -340,7 +343,7 @@ class dQuery_el():
     # @staticmethod
     #  @ty
     # def speed:
-        """ Creates an object containing a set of properties ready to be used in the definition of custom animations. """
+        # """ Creates an object containing a set of properties ready to be used in the definition of custom animations. """
         # raise NotImplementedError
 
 
@@ -355,17 +358,16 @@ class dQuery_el():
     #     """ A collection of properties that represent the presence of different browser features or bugs. """
     #     raise NotImplementedError
 
-
     @staticmethod
-    def trim():
+    def trim(content):
         """ Remove the whitespace from the beginning and end of a string. """
-        raise NotImplementedError
-        # dQuery_el.DOM.strip()
+        content = content.replace('\n', '').replace('\t', '').replace('\r', '').strip()
+        return content
 
-    @staticmethod
-    def type():
-        """ Determine the internal JavaScript [[Class]] of an object. """
-        raise NotImplementedError
+    # @staticmethod
+    # def type():
+    #     """ Determine the internal JavaScript [[Class]] of an object. """
+    #     raise NotImplementedError
 
 
     @staticmethod
@@ -963,7 +965,7 @@ class dQuery_el():
 
     def size(self):
         """ Return the number of elements in the dQuery object."""
-        raise NotImplementedError
+        return len(self.elements)
 
     def slice(self):
         """ Reduce the set of matched elements to a subset specified by a range of indices."""
@@ -1551,7 +1553,9 @@ def º(q):
     º.merge = el.merge
     º.noConflict = el.noConflict
     º.noop = el.noop
+    
     º.now = el.now
+
     º.param = el.param
     º.parseHTML = el.parseHTML
     º.parseJSON = el.parseJSON
@@ -1563,7 +1567,7 @@ def º(q):
     º.removeData = el.removeData
     º.sub = el.sub
     º.trim = el.trim
-    º.type = el.type
+    # º.type = el.type
     º.unique = el.unique
     º.uniqueSort = el.uniqueSort
     º.when = el.when

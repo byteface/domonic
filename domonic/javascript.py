@@ -386,11 +386,11 @@ class Date(js_object):
 
     def getUTCDate(self):
         """ Returns the day of the month, according to universal time (from 1-31) """
-        pass
+        return self.date.utcnow().month
 
     def getUTCDay(self):
         """ Returns the day of the week, according to universal time (from 0-6) """
-        pass
+        return self.date.utcnow().day
 
     def getUTCFullYear(self):
         """ Returns the year, according to universal time """
@@ -420,7 +420,8 @@ class Date(js_object):
         """ Deprecated. Use the getFullYear() method instead """
         return self.date.now().year
 
-    def now(self):
+    @staticmethod
+    def now():
         """ Returns the number of milliseconds since midnight Jan 1, 1970 """
         return round(time.time() * 1000)
 
@@ -432,9 +433,10 @@ class Date(js_object):
         # """ The event occurs when the playing position has changed (like when the user fast forwards to a different point in the media) Event"""
         # pass
 
+    # @staticmethod
     def parse(self, date_string):
         """ Parses a date string and returns the number of milliseconds since January 1, 1970 """
-        self.date = self.parse_date(str(date_string))
+        self.date = self.parse_date(str(date_string)) # TODO - huh? 
         # return self.date.getTime()
 
     def setDate(self, day):
@@ -563,6 +565,7 @@ class Date(js_object):
 
     def UTC(self):
         """ Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time """
+        # timezone.utc
         pass
 
     # def valueOf():

@@ -527,7 +527,9 @@ class domonicTestCase(unittest.TestCase):
         # º.merge()
         # º.noConflict()
         # º.noop()
-        # º.now()
+
+        print(º.now())
+
         # º.param()
         # º.parseHTML()
         # º.parseJSON()
@@ -538,7 +540,7 @@ class domonicTestCase(unittest.TestCase):
         # º.readyException()
         # º.removeData()
         # º.sub()
-        # º.trim()
+        print(º.trim("  some tst \n   TEST."))
         # º.type()
         # º.unique()
         # º.uniqueSort()

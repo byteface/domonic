@@ -112,6 +112,8 @@ Here you can find instructions for getting the most out of Domonic.
    packages/tween
    packages/x3d
    packages/dQuery
+   packages/constants
+   packages/constants
    packages/autodocs
 
 

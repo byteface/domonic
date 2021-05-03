@@ -287,8 +287,18 @@ dQuery uses the º symbol (alt+0).
 
 ```python
 
-º(dom)
-º('#id')
+    d = html(head(body(li(_class='things'), div(_id="test"))))
+    
+    º(d) # you need to init a dom first. i.e. a html element
+
+    # now you can use it
+    print( º('#test') )
+    print( º('.things') )
+    a = º('<div class="test2"></div>')
+    print( a )
+
+    b = º('#test').append(a)
+    print(b)
 
 ```
 

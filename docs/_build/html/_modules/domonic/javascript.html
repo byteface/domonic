@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.3.1 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.3.2 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -420,11 +420,11 @@
 
 <div class="viewcode-block" id="Date.getUTCDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCDate">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the day of the month, according to universal time (from 1-31) &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">month</span></div>
 
 <div class="viewcode-block" id="Date.getUTCDay"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCDay">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the day of the week, according to universal time (from 0-6) &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">day</span></div>
 
 <div class="viewcode-block" id="Date.getUTCFullYear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCFullYear">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCFullYear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the year, according to universal time &quot;&quot;&quot;</span>
@@ -454,7 +454,8 @@
         <span class="sd">&quot;&quot;&quot; Deprecated. Use the getFullYear() method instead &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">year</span></div>
 
-<div class="viewcode-block" id="Date.now"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.now">[docs]</a>    <span class="k">def</span> <span class="nf">now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Date.now"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.now">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">now</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds since midnight Jan 1, 1970 &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span></div>
 
@@ -466,9 +467,10 @@
         <span class="c1"># &quot;&quot;&quot; The event occurs when the playing position has changed (like when the user fast forwards to a different point in the media) Event&quot;&quot;&quot;</span>
         <span class="c1"># pass</span>
 
+    <span class="c1"># @staticmethod</span>
 <div class="viewcode-block" id="Date.parse"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_string</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parses a date string and returns the number of milliseconds since January 1, 1970 &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_date</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">date_string</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_date</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">date_string</span><span class="p">))</span> <span class="c1"># TODO - huh? </span></div>
         <span class="c1"># return self.date.getTime()</span>
 
 <div class="viewcode-block" id="Date.setDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setDate">[docs]</a>    <span class="k">def</span> <span class="nf">setDate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day</span><span class="p">):</span>
@@ -597,6 +599,7 @@
 
 <div class="viewcode-block" id="Date.UTC"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.UTC">[docs]</a>    <span class="k">def</span> <span class="nf">UTC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time &quot;&quot;&quot;</span>
+        <span class="c1"># timezone.utc</span>
         <span class="k">pass</span></div>
 
     <span class="c1"># def valueOf():</span>
@@ -1067,7 +1070,7 @@
 
 <div class="viewcode-block" id="Array.slice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Selects a part of an array, and returns the new array &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="Array.splice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.splice">[docs]</a>    <span class="k">def</span> <span class="nf">splice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">delete_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">items</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Selects a part of an array, and returns the new array &quot;&quot;&quot;</span>
@@ -1594,6 +1597,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 
