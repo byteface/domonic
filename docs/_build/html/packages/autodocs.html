@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: autodocs &#8212; domonic 0.2.18 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -728,7 +728,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt id="domonic.dom.Document.doctype">
-<code class="sig-name descname">doctype</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.doctype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.doctype" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">doctype</code><a class="headerlink" href="#domonic.dom.Document.doctype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the Document Type Declaration associated with the document</p>
 </dd></dl>
 
@@ -740,7 +740,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt id="domonic.dom.Document.embeds">
-<code class="sig-name descname">embeds</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.embeds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.embeds" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">embeds</code><a class="headerlink" href="#domonic.dom.Document.embeds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a collection of all &lt;embed&gt; elements the document</p>
 </dd></dl>
 
@@ -748,6 +748,18 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 <dt id="domonic.dom.Document.forms">
 <em class="property">property </em><code class="sig-name descname">forms</code><a class="headerlink" href="#domonic.dom.Document.forms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a collection of all &lt;form&gt; elements in the document</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.Document.fullscreenElement">
+<code class="sig-name descname">fullscreenElement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.fullscreenElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.fullscreenElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the current element that is displayed in fullscreen mode</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.Document.fullscreenEnabled">
+<code class="sig-name descname">fullscreenEnabled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.fullscreenEnabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.fullscreenEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Boolean value indicating whether the document can be viewed in fullscreen mode</p>
 </dd></dl>
 
 <dl class="py method">
@@ -764,7 +776,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt id="domonic.dom.Document.head">
-<code class="sig-name descname">head</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.head"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.head" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">head</code><a class="headerlink" href="#domonic.dom.Document.head" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the &lt;head&gt; element of the document</p>
 </dd></dl>
 
@@ -3457,6 +3469,17 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="domonic.events.BeforeUnloadEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">BeforeUnloadEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#BeforeUnloadEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.BeforeUnloadEvent" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="domonic.events.BeforeUnloadEvent.BEFOREUNLOAD">
+<code class="sig-name descname">BEFOREUNLOAD</code><em class="property"> = 'beforeunload'</em><a class="headerlink" href="#domonic.events.BeforeUnloadEvent.BEFOREUNLOAD" title="Permalink to this definition">¶</a></dt>
+<dd><p>BeforeUnloadEvent</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="domonic.events.ClipboardEvent">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">ClipboardEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ClipboardEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.ClipboardEvent" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py attribute">
@@ -3482,6 +3505,11 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 </dd></dl>
+
+<dl class="py class">
+<dt id="domonic.events.ErrorEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">ErrorEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ErrorEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.ErrorEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py class">
 <dt id="domonic.events.Event">
@@ -3539,7 +3567,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">PageTransitionEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PageTransitionEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.PageTransitionEvent" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py attribute">
 <dt id="domonic.events.PageTransitionEvent.PAGESHOW">
-<code class="sig-name descname">PAGESHOW</code><em class="property"> = 'onpageshow'</em><a class="headerlink" href="#domonic.events.PageTransitionEvent.PAGESHOW" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">PAGESHOW</code><em class="property"> = 'pageshow'</em><a class="headerlink" href="#domonic.events.PageTransitionEvent.PAGESHOW" title="Permalink to this definition">¶</a></dt>
 <dd><p>PageTransitionEvent</p>
 </dd></dl>
 
@@ -3550,6 +3578,11 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 </dd></dl>
+
+<dl class="py class">
+<dt id="domonic.events.PointerEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">PointerEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PointerEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.PointerEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py class">
 <dt id="domonic.events.PopStateEvent">
@@ -3565,7 +3598,17 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dl class="py class">
 <dt id="domonic.events.ProgressEvent">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">ProgressEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ProgressEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.ProgressEvent" title="Permalink to this definition">¶</a></dt>
-<dd><p>CustomEvent</p>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt id="domonic.events.SVGEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">SVGEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SVGEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.SVGEvent" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="domonic.events.SVGEvent.TIMER">
+<code class="sig-name descname">TIMER</code><em class="property"> = 'svg'</em><a class="headerlink" href="#domonic.events.SVGEvent.TIMER" title="Permalink to this definition">¶</a></dt>
+<dd><p>SVGEvent</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -3599,6 +3642,28 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dt id="domonic.events.StorageEvent.url">
 <code class="sig-name descname">url</code><a class="headerlink" href="#domonic.events.StorageEvent.url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the URL of the changed item’s document</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="domonic.events.SubmitEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">SubmitEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SubmitEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.SubmitEvent" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="domonic.events.SubmitEvent.SUBMIT">
+<code class="sig-name descname">SUBMIT</code><em class="property"> = 'submit'</em><a class="headerlink" href="#domonic.events.SubmitEvent.SUBMIT" title="Permalink to this definition">¶</a></dt>
+<dd><p>SubmitEvent</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="domonic.events.TimerEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">TimerEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TimerEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.TimerEvent" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="domonic.events.TimerEvent.TIMER">
+<code class="sig-name descname">TIMER</code><em class="property"> = 'timer'</em><a class="headerlink" href="#domonic.events.TimerEvent.TIMER" title="Permalink to this definition">¶</a></dt>
+<dd><p>TimerEvent</p>
 </dd></dl>
 
 </dd></dl>
@@ -3655,7 +3720,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">TransitionEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TransitionEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.TransitionEvent" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="py attribute">
 <dt id="domonic.events.TransitionEvent.TRANSITIONEND">
-<code class="sig-name descname">TRANSITIONEND</code><em class="property"> = 'ontransitionend'</em><a class="headerlink" href="#domonic.events.TransitionEvent.TRANSITIONEND" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">TRANSITIONEND</code><em class="property"> = 'transitionend'</em><a class="headerlink" href="#domonic.events.TransitionEvent.TRANSITIONEND" title="Permalink to this definition">¶</a></dt>
 <dd><p>TransitionEvent</p>
 </dd></dl>
 

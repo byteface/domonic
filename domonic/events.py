@@ -57,48 +57,48 @@ class EventDispatcher(object):
 
 class Event(object):
     """ event """
-    EMPTIED = "onemptied"
-    ABORT = "onabort"
-    AFTERPRINT = "onafterprint"
-    BEFOREPRINT = "onbeforeprint"
-    BEFOREUNLOAD = "onbeforeunload"
-    CANPLAY = "oncanplay"
-    CANPLAYTHROUGH = "oncanplaythrough"
-    CHANGE = "onchange"
-    DURATIONCHANGE = "ondurationchange"
-    ENDED = "onended"
-    ERROR = "onerror"
-    FULLSCREENCHANGE = "onfullscreenchange"
-    FULLSCREENERROR = "onfullscreenerror"
-    INPUT = "oninput"
-    INVALID = "oninvalid"
-    LOAD = "onload"
-    LOADEDDATA = "onloadeddata"
-    LOADEDMETADATA = "onloadedmetadata"
-    MESSAGE = "onmessage"
-    OFFLINE = "onoffline"
-    ONLINE = "ononline"
-    OPEN = "onopen"
-    PAUSE = "onpause"
-    PLAY = "onplay"
-    PLAYING = "onplaying"
-    PROGRESS = "onprogress"
-    RATECHANGE = "onratechange"
-    RESIZE = "onresize"
-    RESET = "onreset"
-    SCROLL = "onscroll"
-    SEARCH = "onsearch"
-    SEEKED = "onseeked"
-    SEEKING = "onseeking"
-    SELECT = "onselect"
-    SHOW = "onshow"
-    STALLED = "onstalled"
-    SUBMIT = "onsubmit"
-    SUSPEND = "onsuspend"
-    TOGGLE = "ontoggle"
-    UNLOAD = "onunload"
-    VOLUMECHANGE = "onvolumechange"
-    WAITING = "onwaiting"
+    EMPTIED = "emptied"
+    ABORT = "abort"
+    AFTERPRINT = "afterprint"
+    BEFOREPRINT = "beforeprint"
+    BEFOREUNLOAD = "beforeunload"
+    CANPLAY = "canplay"
+    CANPLAYTHROUGH = "canplaythrough"
+    CHANGE = "change"
+    DURATIONCHANGE = "durationchange"
+    ENDED = "ended"
+    ERROR = "error"
+    FULLSCREENCHANGE = "fullscreenchange"
+    FULLSCREENERROR = "fullscreenerror"
+    INPUT = "input"
+    INVALID = "invalid"
+    LOAD = "load"
+    LOADEDDATA = "loadeddata"
+    LOADEDMETADATA = "loadedmetadata"
+    MESSAGE = "message"
+    OFFLINE = "offline"
+    ONLINE = "online"
+    OPEN = "open"
+    PAUSE = "pause"
+    PLAY = "play"
+    PLAYING = "playing"
+    PROGRESS = "progress"
+    RATECHANGE = "ratechange"
+    RESIZE = "resize"
+    RESET = "reset"
+    SCROLL = "scroll"
+    SEARCH = "search"
+    SEEKED = "seeked"
+    SEEKING = "seeking"
+    SELECT = "select"
+    SHOW = "show"
+    STALLED = "stalled"
+    SUBMIT = "submit"
+    SUSPEND = "suspend"
+    TOGGLE = "toggle"
+    UNLOAD = "unload"
+    VOLUMECHANGE = "volumechange"
+    WAITING = "waiting"
 
     # Event("look", {"bubbles":true, "cancelable":false});
     def __init__(self, _type=None, *args, **kwargs):
@@ -144,31 +144,91 @@ class Event(object):
 
 class MouseEvent(Event):
     """ mouse events """
-    CLICK = "onclick"
-    CONTEXTMENU = "oncontextmenu"
-    DBLCLICK = "ondblclick"
-    MOUSEDOWN = "onmousedown"
-    MOUSEENTER = "onmouseenter"
-    MOUSELEAVE = "onmouseleave"
-    MOUSEMOVE = "onmousemove"
-    MOUSEOVER = "onmouseover"
-    MOUSEOUT = "onmouseout"
-    MOUSEUP = "onmouseup"
+    CLICK = "click"
+    CONTEXTMENU = "contextmenu"
+    DBLCLICK = "dblclick"
+    MOUSEDOWN = "mousedown"
+    MOUSEENTER = "mouseenter"
+    MOUSELEAVE = "mouseleave"
+    MOUSEMOVE = "mousemove"
+    MOUSEOVER = "mouseover"
+    MOUSEOUT = "mouseout"
+    MOUSEUP = "mouseup"
 
     def __init__(self, _type, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
         self.x = 0
         self.y = 0
+        self._altKey = False
+        self._ctrlKey = False
+        self._shiftKey = False
+        self._metaKey = False
+        self._button = None
+        self._buttons = []
+
         super().__init__(_type, *args, **kwargs)
 
+    def initMouseEvent(self, _type=None, canBubble=True, cancelable=True, view=None,
+                        detail=None, screenX=0, screenY=0, clientX=0, clientY=0,
+                        ctrlKey=False, altKey=False, shiftKey=False, metaKey=False,
+                        button=None, relatedTarget=None, from_json={}, *args, **kwargs):
+        print('initMouseEvent')
+        self._type = _type
+        self.canBubble = canBubble
+        self.cancelable = cancelable
+        self.view = view
+        self.detail = detail
+        self.screenX = screenX
+        self.screenY = screenY
+        self.clientX = clientX
+        self.clientY = clientY
+        self.ctrlKey = ctrlKey
+        self.altKey = altKey
+        self.shiftKey = shiftKey
+        self.metaKey = metaKey
+        self.button = button
+        self.relatedTarget = relatedTarget
+        # TODO - parse from_json - so can relay
+
+    @property
+    def clientX(self):
+        return self.x
+
+    @property
+    def clientY(self):
+        return self.y
+
+    @property
+    def altKey(self):
+        return self._altKey
+
+    @property
+    def ctrlKey(self):
+        return self._ctrlKey
+
+    @property
+    def shiftKey(self):
+        return self._shiftKey
+
+    @property
+    def metaKey(self):
+        return self._metaKey
+
+    @property
+    def button(self):
+        return self._button
+
+    @property
+    def buttons(self):
+        return self._buttons
+
+    @property
+    def which(self):
+        return self._button
+
     # MOUSE_EVENT
-    # altKey    Returns whether the "ALT" key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent
-    # button    Returns which mouse button was pressed when the mouse event was triggered   MouseEvent
-    # buttons   Returns which mouse buttons were pressed when the mouse event was triggered MouseEvent
-    # ctrlKey   Returns whether the "CTRL" key was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent, TouchEvent
     # getModifierState()    Returns an array containing target ranges that will be affected by the insertion/deletion   MouseEvent
-    # metaKey   Returns whether the "META" key was pressed when an event was triggered  MouseEvent, KeyboardEvent, TouchEvent
     # MovementX Returns the horizontal coordinate of the mouse pointer relative to the position of the last mousemove event MouseEvent
     # MovementY Returns the vertical coordinate of the mouse pointer relative to the position of the last mousemove event   MouseEvent
     # offsetX   Returns the horizontal coordinate of the mouse pointer relative to the position of the edge of the target element   MouseEvent
@@ -177,34 +237,62 @@ class MouseEvent(Event):
     # pageY Returns the vertical coordinate of the mouse pointer, relative to the document, when the mouse event was triggered  MouseEvent
     # region        MouseEvent
     # relatedTarget Returns the element related to the element that triggered the mouse event   MouseEvent, FocusEvent
-    # shiftKey  Returns whether the "SHIFT" key was pressed when an event was triggered MouseEvent, KeyboardEvent, TouchEvent
-    # which Returns which mouse button was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent
 
 
 class KeyboardEvent(Event):
     """ keyboard events """
-    KEYDOWN = "onkeydown"
-    KEYPRESS = "onkeypress"
-    KEYUP = "onkeyup"
+    KEYDOWN = "keydown"
+    KEYPRESS = "keypress"
+    KEYUP = "keyup"
 
     def __init__(self, _type, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
+        self._altKey = False
+        self._ctrlKey = False
+        self._shiftKey = False
+        self._metaKey = False
+
+        self.charCode = None
+        self.code = None
+        self.key = None
+        self.keyCode = None
+
         super().__init__(_type, *args, **kwargs)
 
+    def initKeyboardEvent(self, typeArg, canBubbleArg, cancelableArg,
+                        viewArg, charArg, keyArg,
+                        locationArg, modifiersListArg, repeat):
+        self._type = typeArg
+        self.canBubbleArg = canBubbleArg
+        self.cancelableArg = cancelableArg
+        self.viewArg = viewArg
+        self.charArg = charArg
+        self.keyArg = keyArg
+        self.locationArg = locationArg
+        self.modifiersListArg = modifiersListArg
+        self.repeat = repeat
+
+    @property
+    def altKey(self):
+        return self._altKey
+
+    @property
+    def ctrlKey(self):
+        return self._ctrlKey
+
+    @property
+    def shiftKey(self):
+        return self._shiftKey
+
+    @property
+    def metaKey(self):
+        return self._metaKey
+
     # KeyboardEvent
-    # altKey    Returns whether the "ALT" key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent
-    # ctrlKey   Returns whether the "CTRL" key was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent, TouchEvent
-    # metaKey   Returns whether the "META" key was pressed when an event was triggered  MouseEvent, KeyboardEvent, TouchEvent
-    # shiftKey  Returns whether the "SHIFT" key was pressed when an event was triggered MouseEvent, KeyboardEvent, TouchEvent
-    # which Returns which mouse button was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent
-    # charCode  Returns the Unicode character code of the key that triggered the onkeypress event   KeyboardEvent
-    # code  Returns the code of the key that triggered the event    KeyboardEvent
     # isComposing   Returns whether the state of the event is composing or not  InputEvent, KeyboardEvent
-    # key   Returns the key value of the key represented by the event   KeyboardEvent, StorageEvent
-    # keyCode   Returns the Unicode character code of the key that triggered the onkeypress event, or the Unicode key code of the key that triggered the onkeydown or onkeyup event KeyboardEvent
-    # location  Returns the location of a key on the keyboard or device KeyboardEvent
     # repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent
+    # location  Returns the location of a key on the keyboard or device KeyboardEvent
 
 
 class UiEvent(Event):
@@ -217,10 +305,10 @@ class UiEvent(Event):
 
 class FocusEvent(Event):
     """ FocusEvent """
-    BLUR = "onblur"
-    FOCUS = "onfocus"
-    FOCUSIN = "onfocusin"
-    FOCUSOUT = "onfocusout"
+    BLUR = "blur"
+    FOCUS = "focus"
+    FOCUSIN = "focusin"
+    FOCUSOUT = "focusout"
 
     def __init__(self, _type, *args, **kwargs):
         self.relatedTarget = None
@@ -229,10 +317,10 @@ class FocusEvent(Event):
 
 class TouchEvent(Event):
     """ TouchEvent """
-    TOUCHCANCEL = "ontouchcancel"
-    TOUCHEND = "ontouchend"
-    TOUCHMOVE = "ontouchmove"
-    TOUCHSTART = "ontouchstart"
+    TOUCHCANCEL = "touchcancel"
+    TOUCHEND = "touchend"
+    TOUCHMOVE = "touchmove"
+    TOUCHSTART = "touchstart"
 
     def __init__(self, _type, *args, **kwargs):
         self.shiftKey = None
@@ -255,8 +343,8 @@ class TouchEvent(Event):
 
 class WheelEvent(Event):
     """ WheelEvent """
-    MOUSEWHEEL = "onmousewheel"  # DEPRECATED - USE ONWHEEL
-    WHEEL = "onwheel"
+    MOUSEWHEEL = "mousewheel"  # DEPRECATED - USE WHEEL
+    WHEEL = "wheel"
 
     def __init__(self, _type, *args, **kwargs):
         self.deltaX = None
@@ -272,9 +360,9 @@ class WheelEvent(Event):
 
 class AnimationEvent(Event):
     """ AnimationEvent """
-    ANIMATIONEND = "onanimationend"
-    ANIMATIONITERATION = "onanimationiteration"
-    ANIMATIONSTART = "onanimationstart"
+    ANIMATIONEND = "animationend"
+    ANIMATIONITERATION = "animationiteration"
+    ANIMATIONSTART = "animationstart"
 
     def __init__(self, _type, *args, **kwargs):
         self.animationName = None
@@ -288,9 +376,9 @@ class AnimationEvent(Event):
 
 class ClipboardEvent(Event):
     """ ClipboardEvent """
-    COPY = "oncopy"
-    CUT = "oncut"
-    PASTE = "onpaste"
+    COPY = "copy"
+    CUT = "cut"
+    PASTE = "paste"
 
     def __init__(self, _type, *args, **kwargs):
         self.clipboardData = None
@@ -298,15 +386,73 @@ class ClipboardEvent(Event):
         super().__init__(_type, *args, **kwargs)
 
 
+class ErrorEvent(Event):
+    """ ErrorEvent """
+    ERROR = "error"
+    def __init__(self, _type, *args, **kwargs):
+        self.message=None
+        # self.filename=None
+        # self.lineno=0
+        # self.colno=0
+        # self.error={}
+        super().__init__(_type, *args, **kwargs)
+
+
+class SubmitEvent(Event):
+    SUBMIT = "submit"
+    """ SubmitEvent """
+    def __init__(self, _type, *args, **kwargs):
+        super().__init__(_type, *args, **kwargs)
+
+
+class PointerEvent(Event):
+    """ PointerEvent """
+    POINTER="pointer"
+    def __init__(self, _type, *args, **kwargs):
+        self.pointerId = None
+        self.width = None
+        self.height = None
+        self.pressure = None
+        self.tangentialPressure = None
+        self.tiltX = None
+        self.tiltY = None
+        self.twist = None
+        self.pointerType = None
+        self.isPrimary = None
+        super().__init__(_type, *args, **kwargs)
+
+
+class BeforeUnloadEvent(Event):
+    BEFOREUNLOAD = "beforeunload"
+    """ BeforeUnloadEvent """
+    def __init__(self, _type, *args, **kwargs):
+        super().__init__(_type, *args, **kwargs)
+
+
+class SVGEvent(Event):
+    TIMER = "svg"
+    """ SVGEvent """
+    def __init__(self, _type, *args, **kwargs):
+        super().__init__(_type, *args, **kwargs)
+
+
+class TimerEvent(Event):
+    TIMER = "timer"
+    """ TimerEvent """
+    def __init__(self, _type, *args, **kwargs):
+        super().__init__(_type, *args, **kwargs)
+
+
+
 class DragEvent(Event):
     """ DragEvent """
-    DRAG = "ondrag"
-    END = "ondragend"
-    ENTER = "ondragenter"
-    LEAVE = "ondragleave"
-    OVER = "ondragover"
-    START = "ondragstart"
-    DROP = "ondrop"
+    DRAG = "drag"
+    END = "dragend"
+    ENTER = "dragenter"
+    LEAVE = "dragleave"
+    OVER = "dragover"
+    START = "dragstart"
+    DROP = "drop"
 
     def __init__(self, _type, *args, **kwargs):
         self.dataTransfer = None
@@ -316,7 +462,7 @@ class DragEvent(Event):
 
 class HashChangeEvent(Event):
     """ HashChangeEvent """
-    CHANGE = "onhashchange"
+    CHANGE = "hashchange"
 
     def __init__(self, _type, *args, **kwargs):
         self.newURL = None
@@ -343,8 +489,8 @@ class InputEvent(Event):
 
 
 class PageTransitionEvent(Event):
-    PAGEHIDE = "onpagehide"
-    PAGESHOW = "onpageshow"
+    PAGEHIDE = "pagehide"
+    PAGESHOW = "pageshow"
     """ PageTransitionEvent """
     def __init__(self, _type, *args, **kwargs):
         self.persisted = None
@@ -377,7 +523,7 @@ class StorageEvent(Event):
 
 
 class TransitionEvent(Event):
-    TRANSITIONEND = "ontransitionend"
+    TRANSITIONEND = "transitionend"
     """ TransitionEvent """
     def __init__(self, _type, *args, **kwargs):
         self.propertyName = None
@@ -390,8 +536,8 @@ class TransitionEvent(Event):
 
 
 class ProgressEvent(Event):
-    """ CustomEvent """
-    LOADSTART = "onloadstart"
+    """ ProgressEvent """
+    LOADSTART = "loadstart"
 
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
@@ -433,3 +579,249 @@ class TweenEvent(Event):
         # super.__init__(self, type, bubbles, cancelable)
         super().__init__(_type)  # TODO -
         self.source = source
+
+
+class GlobalEventHandler:
+
+    def onabort(self):
+        raise NotImplementedError
+
+    def onblur(self):
+        raise NotImplementedError
+
+    def oncancel(self):
+        raise NotImplementedError
+
+    def oncanplay(self):
+        raise NotImplementedError
+
+    def oncanplaythrough(self):
+        raise NotImplementedError
+
+    def onchange(self):
+        raise NotImplementedError
+
+    def onclick(self):
+        raise NotImplementedError
+
+    def onclose(self):
+        raise NotImplementedError
+
+    def oncontextmenu(self):
+        raise NotImplementedError
+
+    def oncuechange(self):
+        raise NotImplementedError
+
+    def ondblclick(self):
+        raise NotImplementedError
+
+    def ondrag(self):
+        raise NotImplementedError
+
+    def ondragend(self):
+        raise NotImplementedError
+
+    def ondragenter(self):
+        raise NotImplementedError
+
+    def ondragexit(self):
+        raise NotImplementedError
+
+    def ondragleave(self):
+        raise NotImplementedError
+
+    def ondragover(self):
+        raise NotImplementedError
+
+    def ondragstart(self):
+        raise NotImplementedError
+
+    def ondrop(self):
+        raise NotImplementedError
+
+    def ondurationchange(self):
+        raise NotImplementedError
+
+    def onemptied(self):
+        raise NotImplementedError
+
+    def onended(self):
+        raise NotImplementedError
+
+    def onerror(self):
+        raise NotImplementedError
+
+    def onfocus(self):
+        raise NotImplementedError
+
+    def ongotpointercapture(self):
+        raise NotImplementedError
+
+    def oninput(self):
+        raise NotImplementedError
+
+    def oninvalid(self):
+        raise NotImplementedError
+
+    def onkeydown(self):
+        raise NotImplementedError
+
+    def onkeypress(self):
+        raise NotImplementedError
+
+    def onkeyup(self):
+        raise NotImplementedError
+
+    def onload(self):
+        raise NotImplementedError
+
+    def onloadeddata(self):
+        raise NotImplementedError
+
+    def onloadedmetadata(self):
+        raise NotImplementedError
+
+    def onloadend(self):
+        raise NotImplementedError
+
+    def onloadstart(self):
+        raise NotImplementedError
+
+    def onlostpointercapture(self):
+        raise NotImplementedError
+
+    def onmouseenter(self):
+        raise NotImplementedError
+
+    def onmouseleave(self):
+        raise NotImplementedError
+
+    def onmousemove(self):
+        raise NotImplementedError
+
+    def onmouseout(self):
+        raise NotImplementedError
+
+    def onmouseover(self):
+        raise NotImplementedError
+
+    def onmouseup(self):
+        raise NotImplementedError
+
+    def onpause(self):
+        raise NotImplementedError
+
+    def onplay(self):
+        raise NotImplementedError
+
+    def onplaying(self):
+        raise NotImplementedError
+
+    def onpointercancel(self):
+        raise NotImplementedError
+
+    def onpointerdown(self):
+        raise NotImplementedError
+
+    def onpointerenter(self):
+        raise NotImplementedError
+
+    def onpointerleave(self):
+        raise NotImplementedError
+
+    def onpointermove(self):
+        raise NotImplementedError
+
+    def onpointerout(self):
+        raise NotImplementedError
+
+    def onpointerover(self):
+        raise NotImplementedError
+
+    def onpointerup(self):
+        raise NotImplementedError
+
+    def onprogress(self):
+        raise NotImplementedError
+
+    def onratechange(self):
+        raise NotImplementedError
+
+    def onreset(self):
+        raise NotImplementedError
+
+    def onresize(self):
+        raise NotImplementedError
+
+    def onscroll(self):
+        raise NotImplementedError
+
+    def onseeked(self):
+        raise NotImplementedError
+
+    def onseeking(self):
+        raise NotImplementedError
+
+    def onselect(self):
+        raise NotImplementedError
+
+    def onselectionchange(self):
+        raise NotImplementedError
+
+    def onselectstart(self):
+        raise NotImplementedError
+
+    def onshow(self):
+        raise NotImplementedError
+
+    def onstalled(self):
+        raise NotImplementedError
+
+    def onsubmit(self):
+        raise NotImplementedError
+
+    def onsuspend(self):
+        raise NotImplementedError
+
+    def ontimeupdate(self):
+        raise NotImplementedError
+
+    def onvolumechange(self):
+        raise NotImplementedError
+
+    def onwaiting(self):
+        raise NotImplementedError
+
+    def onwheel(self):
+        raise NotImplementedError
+
+    def onanimationcancel(self):
+        raise NotImplementedError
+
+    def onanimationend(self):
+        raise NotImplementedError
+
+    def onanimationiteration(self):
+        raise NotImplementedError
+
+    def onauxclick(self):
+        raise NotImplementedError
+
+    def onformdata(self):
+        raise NotImplementedError
+
+    def onmousedown(self):
+        raise NotImplementedError
+
+    def ontouchcancel(self):
+        raise NotImplementedError
+
+    def ontouchstart(self):
+        raise NotImplementedError
+
+    def ontransitioncancel(self):
+        raise NotImplementedError
+
+    def ontransitionend(self):
+        raise NotImplementedError

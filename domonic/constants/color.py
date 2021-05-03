@@ -10,8 +10,8 @@ class Color():
     @staticmethod
     def random_hex():
         import random
-        r = lambda: random.randint(0,255)
-        return '#%02X%02X%02X' % (r(),r(),r())
+        r = lambda: random.randint(0, 255)
+        return '#%02X%02X%02X' % (r(), r(), r())
         # import secrets
         # rgba = '#'+secrets.token_hex(4)
 

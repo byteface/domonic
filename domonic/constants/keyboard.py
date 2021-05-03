@@ -110,7 +110,6 @@ class KeyCode():
     Y = '89'
     Z = '9'
 
-
     # TODO - modifiers
 
     def __init__(self):

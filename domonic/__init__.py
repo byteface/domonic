@@ -7,7 +7,7 @@
     - Call Terminal commands using python 3 (this one requires a nix machine)
 """
 
-__version__ = "0.2.18"
+__version__ = "0.3.0"
 __license__ = 'MIT'
 
 # from typing import *

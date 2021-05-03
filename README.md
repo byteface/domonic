@@ -18,10 +18,11 @@
 • html : Generate html with python 3 😎 <br />
 • dom : DOM API in python 3 😲 <br />
 • javascript : js API in python 3 😳 <br />
-• terminal : call terminal commands with python3 😱 - NEW (*see at the end*)<br />
+• terminal : call terminal commands with python3 😱 (*see at the end*)<br />
 • JSON : utils for loading / decorating / transforming<br />
 • SVG : Generate svg using python (untested)<br />
 • aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder)<br />
+• dQuery - NEW. Recently started. utils for querying domonic. (alt + 0 for the º symbol)<br />
 
 See the docs/code for more features...
 https://domonic.readthedocs.io/
@@ -75,6 +76,7 @@ div("test", **{"_data-test":"test"} )
 
 #### createElement
 to create your own elements use the DOM API
+
 ```python
 from domonic.dom import *
 
@@ -85,7 +87,13 @@ print(site)
 
 ```
 
-addEventlisteners recently been started. There's several more DOM methods. Check code to see what's currently implemented.
+There's an evolving DOM. Check code/docs to see what's currently implemented. i.e
+
+```python
+
+mysite.querySelectorAll('button')
+
+```
 
 
 ### javascript
@@ -273,7 +281,21 @@ render( _webpage, 'hello.html' )
 ```
 
 
-### terminal (NEW)
+### dQuery (NEW)
+
+dQuery uses the º symbol (alt+0).
+
+```python
+
+º(dom)
+º('#id')
+
+```
+
+Only recently started so check to see what's implemented.
+
+
+### terminal
 
 There is a command line package that can call bash/unix/posix and other apps on the command line: <br />
 This package only works on nix systems as it effectively just passes stuff off to subprocess.

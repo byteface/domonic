@@ -1017,6 +1017,7 @@ class Document(Element):
     @body.setter
     def body(self, content):
         """ Sets the document's body (the <body> element) """
+        # self.querySelector('body')
         # tag = "body"
         # reg = f"<{tag}.*?>(.+?)</{tag}>"
         # pattern = re.compile(reg)
@@ -1091,9 +1092,10 @@ class Document(Element):
         ''' Controls whether the entire document should be editable or not.'''
         # return
 
+    @property
     def doctype(self):
         ''' Returns the Document Type Declaration associated with the document'''
-        return
+        return "<!DOCTYPE html>"
 
     # def documentElement(self):
         # ''' Returns the Document Element of the document (the <html> element)'''
@@ -1111,9 +1113,10 @@ class Document(Element):
         '''Obsolete. Returns the DOM configuration of the document'''
         # return
 
+    @property
     def embeds(self):
         ''' Returns a collection of all <embed> elements the document'''
-        return
+        return self.querySelectorAll('embed')
 
     # def execCommand(self):
         '''Invokes the specified clipboard operation on the element currently having focus.'''
@@ -1128,13 +1131,13 @@ class Document(Element):
         tags = re.findall(pattern, str(self))
         return tags
 
-    # def fullscreenElement():
-        # ''' Returns the current element that is displayed in fullscreen mode'''
-        # return
+    def fullscreenElement(self):
+        ''' Returns the current element that is displayed in fullscreen mode'''
+        return None
 
-    # def fullscreenEnabled():
-        # '''Returns a Boolean value indicating whether the document can be viewed in fullscreen mode'''
-        # return
+    def fullscreenEnabled(self):
+        '''Returns a Boolean value indicating whether the document can be viewed in fullscreen mode'''
+        return False
 
     def getElementById(self, _id):
         '''Returns the element that has the ID attribute with the specified value'''
@@ -1163,9 +1166,10 @@ class Document(Element):
         # '''Returns a Boolean value indicating whether the document has focus'''
         # return
 
+    @property
     def head(self):
         ''' Returns the <head> element of the document'''
-        raise NotImplementedError
+        return self.querySelector('head')
 
     @property
     def images(self):

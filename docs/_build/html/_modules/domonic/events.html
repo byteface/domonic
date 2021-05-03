@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.events &#8212; domonic 0.2.18 documentation</title>
+    <title>domonic.events &#8212; domonic 0.3.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -91,48 +91,48 @@
 
 <div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; event &quot;&quot;&quot;</span>
-    <span class="n">EMPTIED</span> <span class="o">=</span> <span class="s2">&quot;onemptied&quot;</span>
-    <span class="n">ABORT</span> <span class="o">=</span> <span class="s2">&quot;onabort&quot;</span>
-    <span class="n">AFTERPRINT</span> <span class="o">=</span> <span class="s2">&quot;onafterprint&quot;</span>
-    <span class="n">BEFOREPRINT</span> <span class="o">=</span> <span class="s2">&quot;onbeforeprint&quot;</span>
-    <span class="n">BEFOREUNLOAD</span> <span class="o">=</span> <span class="s2">&quot;onbeforeunload&quot;</span>
-    <span class="n">CANPLAY</span> <span class="o">=</span> <span class="s2">&quot;oncanplay&quot;</span>
-    <span class="n">CANPLAYTHROUGH</span> <span class="o">=</span> <span class="s2">&quot;oncanplaythrough&quot;</span>
-    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;onchange&quot;</span>
-    <span class="n">DURATIONCHANGE</span> <span class="o">=</span> <span class="s2">&quot;ondurationchange&quot;</span>
-    <span class="n">ENDED</span> <span class="o">=</span> <span class="s2">&quot;onended&quot;</span>
-    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;onerror&quot;</span>
-    <span class="n">FULLSCREENCHANGE</span> <span class="o">=</span> <span class="s2">&quot;onfullscreenchange&quot;</span>
-    <span class="n">FULLSCREENERROR</span> <span class="o">=</span> <span class="s2">&quot;onfullscreenerror&quot;</span>
-    <span class="n">INPUT</span> <span class="o">=</span> <span class="s2">&quot;oninput&quot;</span>
-    <span class="n">INVALID</span> <span class="o">=</span> <span class="s2">&quot;oninvalid&quot;</span>
-    <span class="n">LOAD</span> <span class="o">=</span> <span class="s2">&quot;onload&quot;</span>
-    <span class="n">LOADEDDATA</span> <span class="o">=</span> <span class="s2">&quot;onloadeddata&quot;</span>
-    <span class="n">LOADEDMETADATA</span> <span class="o">=</span> <span class="s2">&quot;onloadedmetadata&quot;</span>
-    <span class="n">MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;onmessage&quot;</span>
-    <span class="n">OFFLINE</span> <span class="o">=</span> <span class="s2">&quot;onoffline&quot;</span>
-    <span class="n">ONLINE</span> <span class="o">=</span> <span class="s2">&quot;ononline&quot;</span>
-    <span class="n">OPEN</span> <span class="o">=</span> <span class="s2">&quot;onopen&quot;</span>
-    <span class="n">PAUSE</span> <span class="o">=</span> <span class="s2">&quot;onpause&quot;</span>
-    <span class="n">PLAY</span> <span class="o">=</span> <span class="s2">&quot;onplay&quot;</span>
-    <span class="n">PLAYING</span> <span class="o">=</span> <span class="s2">&quot;onplaying&quot;</span>
-    <span class="n">PROGRESS</span> <span class="o">=</span> <span class="s2">&quot;onprogress&quot;</span>
-    <span class="n">RATECHANGE</span> <span class="o">=</span> <span class="s2">&quot;onratechange&quot;</span>
-    <span class="n">RESIZE</span> <span class="o">=</span> <span class="s2">&quot;onresize&quot;</span>
-    <span class="n">RESET</span> <span class="o">=</span> <span class="s2">&quot;onreset&quot;</span>
-    <span class="n">SCROLL</span> <span class="o">=</span> <span class="s2">&quot;onscroll&quot;</span>
-    <span class="n">SEARCH</span> <span class="o">=</span> <span class="s2">&quot;onsearch&quot;</span>
-    <span class="n">SEEKED</span> <span class="o">=</span> <span class="s2">&quot;onseeked&quot;</span>
-    <span class="n">SEEKING</span> <span class="o">=</span> <span class="s2">&quot;onseeking&quot;</span>
-    <span class="n">SELECT</span> <span class="o">=</span> <span class="s2">&quot;onselect&quot;</span>
-    <span class="n">SHOW</span> <span class="o">=</span> <span class="s2">&quot;onshow&quot;</span>
-    <span class="n">STALLED</span> <span class="o">=</span> <span class="s2">&quot;onstalled&quot;</span>
-    <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;onsubmit&quot;</span>
-    <span class="n">SUSPEND</span> <span class="o">=</span> <span class="s2">&quot;onsuspend&quot;</span>
-    <span class="n">TOGGLE</span> <span class="o">=</span> <span class="s2">&quot;ontoggle&quot;</span>
-    <span class="n">UNLOAD</span> <span class="o">=</span> <span class="s2">&quot;onunload&quot;</span>
-    <span class="n">VOLUMECHANGE</span> <span class="o">=</span> <span class="s2">&quot;onvolumechange&quot;</span>
-    <span class="n">WAITING</span> <span class="o">=</span> <span class="s2">&quot;onwaiting&quot;</span>
+    <span class="n">EMPTIED</span> <span class="o">=</span> <span class="s2">&quot;emptied&quot;</span>
+    <span class="n">ABORT</span> <span class="o">=</span> <span class="s2">&quot;abort&quot;</span>
+    <span class="n">AFTERPRINT</span> <span class="o">=</span> <span class="s2">&quot;afterprint&quot;</span>
+    <span class="n">BEFOREPRINT</span> <span class="o">=</span> <span class="s2">&quot;beforeprint&quot;</span>
+    <span class="n">BEFOREUNLOAD</span> <span class="o">=</span> <span class="s2">&quot;beforeunload&quot;</span>
+    <span class="n">CANPLAY</span> <span class="o">=</span> <span class="s2">&quot;canplay&quot;</span>
+    <span class="n">CANPLAYTHROUGH</span> <span class="o">=</span> <span class="s2">&quot;canplaythrough&quot;</span>
+    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;change&quot;</span>
+    <span class="n">DURATIONCHANGE</span> <span class="o">=</span> <span class="s2">&quot;durationchange&quot;</span>
+    <span class="n">ENDED</span> <span class="o">=</span> <span class="s2">&quot;ended&quot;</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
+    <span class="n">FULLSCREENCHANGE</span> <span class="o">=</span> <span class="s2">&quot;fullscreenchange&quot;</span>
+    <span class="n">FULLSCREENERROR</span> <span class="o">=</span> <span class="s2">&quot;fullscreenerror&quot;</span>
+    <span class="n">INPUT</span> <span class="o">=</span> <span class="s2">&quot;input&quot;</span>
+    <span class="n">INVALID</span> <span class="o">=</span> <span class="s2">&quot;invalid&quot;</span>
+    <span class="n">LOAD</span> <span class="o">=</span> <span class="s2">&quot;load&quot;</span>
+    <span class="n">LOADEDDATA</span> <span class="o">=</span> <span class="s2">&quot;loadeddata&quot;</span>
+    <span class="n">LOADEDMETADATA</span> <span class="o">=</span> <span class="s2">&quot;loadedmetadata&quot;</span>
+    <span class="n">MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;message&quot;</span>
+    <span class="n">OFFLINE</span> <span class="o">=</span> <span class="s2">&quot;offline&quot;</span>
+    <span class="n">ONLINE</span> <span class="o">=</span> <span class="s2">&quot;online&quot;</span>
+    <span class="n">OPEN</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
+    <span class="n">PAUSE</span> <span class="o">=</span> <span class="s2">&quot;pause&quot;</span>
+    <span class="n">PLAY</span> <span class="o">=</span> <span class="s2">&quot;play&quot;</span>
+    <span class="n">PLAYING</span> <span class="o">=</span> <span class="s2">&quot;playing&quot;</span>
+    <span class="n">PROGRESS</span> <span class="o">=</span> <span class="s2">&quot;progress&quot;</span>
+    <span class="n">RATECHANGE</span> <span class="o">=</span> <span class="s2">&quot;ratechange&quot;</span>
+    <span class="n">RESIZE</span> <span class="o">=</span> <span class="s2">&quot;resize&quot;</span>
+    <span class="n">RESET</span> <span class="o">=</span> <span class="s2">&quot;reset&quot;</span>
+    <span class="n">SCROLL</span> <span class="o">=</span> <span class="s2">&quot;scroll&quot;</span>
+    <span class="n">SEARCH</span> <span class="o">=</span> <span class="s2">&quot;search&quot;</span>
+    <span class="n">SEEKED</span> <span class="o">=</span> <span class="s2">&quot;seeked&quot;</span>
+    <span class="n">SEEKING</span> <span class="o">=</span> <span class="s2">&quot;seeking&quot;</span>
+    <span class="n">SELECT</span> <span class="o">=</span> <span class="s2">&quot;select&quot;</span>
+    <span class="n">SHOW</span> <span class="o">=</span> <span class="s2">&quot;show&quot;</span>
+    <span class="n">STALLED</span> <span class="o">=</span> <span class="s2">&quot;stalled&quot;</span>
+    <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;submit&quot;</span>
+    <span class="n">SUSPEND</span> <span class="o">=</span> <span class="s2">&quot;suspend&quot;</span>
+    <span class="n">TOGGLE</span> <span class="o">=</span> <span class="s2">&quot;toggle&quot;</span>
+    <span class="n">UNLOAD</span> <span class="o">=</span> <span class="s2">&quot;unload&quot;</span>
+    <span class="n">VOLUMECHANGE</span> <span class="o">=</span> <span class="s2">&quot;volumechange&quot;</span>
+    <span class="n">WAITING</span> <span class="o">=</span> <span class="s2">&quot;waiting&quot;</span>
 
     <span class="c1"># Event(&quot;look&quot;, {&quot;bubbles&quot;:true, &quot;cancelable&quot;:false});</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -178,31 +178,91 @@
 
 <div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; mouse events &quot;&quot;&quot;</span>
-    <span class="n">CLICK</span> <span class="o">=</span> <span class="s2">&quot;onclick&quot;</span>
-    <span class="n">CONTEXTMENU</span> <span class="o">=</span> <span class="s2">&quot;oncontextmenu&quot;</span>
-    <span class="n">DBLCLICK</span> <span class="o">=</span> <span class="s2">&quot;ondblclick&quot;</span>
-    <span class="n">MOUSEDOWN</span> <span class="o">=</span> <span class="s2">&quot;onmousedown&quot;</span>
-    <span class="n">MOUSEENTER</span> <span class="o">=</span> <span class="s2">&quot;onmouseenter&quot;</span>
-    <span class="n">MOUSELEAVE</span> <span class="o">=</span> <span class="s2">&quot;onmouseleave&quot;</span>
-    <span class="n">MOUSEMOVE</span> <span class="o">=</span> <span class="s2">&quot;onmousemove&quot;</span>
-    <span class="n">MOUSEOVER</span> <span class="o">=</span> <span class="s2">&quot;onmouseover&quot;</span>
-    <span class="n">MOUSEOUT</span> <span class="o">=</span> <span class="s2">&quot;onmouseout&quot;</span>
-    <span class="n">MOUSEUP</span> <span class="o">=</span> <span class="s2">&quot;onmouseup&quot;</span>
+    <span class="n">CLICK</span> <span class="o">=</span> <span class="s2">&quot;click&quot;</span>
+    <span class="n">CONTEXTMENU</span> <span class="o">=</span> <span class="s2">&quot;contextmenu&quot;</span>
+    <span class="n">DBLCLICK</span> <span class="o">=</span> <span class="s2">&quot;dblclick&quot;</span>
+    <span class="n">MOUSEDOWN</span> <span class="o">=</span> <span class="s2">&quot;mousedown&quot;</span>
+    <span class="n">MOUSEENTER</span> <span class="o">=</span> <span class="s2">&quot;mouseenter&quot;</span>
+    <span class="n">MOUSELEAVE</span> <span class="o">=</span> <span class="s2">&quot;mouseleave&quot;</span>
+    <span class="n">MOUSEMOVE</span> <span class="o">=</span> <span class="s2">&quot;mousemove&quot;</span>
+    <span class="n">MOUSEOVER</span> <span class="o">=</span> <span class="s2">&quot;mouseover&quot;</span>
+    <span class="n">MOUSEOUT</span> <span class="o">=</span> <span class="s2">&quot;mouseout&quot;</span>
+    <span class="n">MOUSEUP</span> <span class="o">=</span> <span class="s2">&quot;mouseup&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
         <span class="c1"># self.kwargs = kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_altKey</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ctrlKey</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shiftKey</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metaKey</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_button</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buttons</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">initMouseEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">canBubble</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cancelable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">view</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">detail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">screenX</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">screenY</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">clientX</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">clientY</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                        <span class="n">ctrlKey</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">altKey</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shiftKey</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">metaKey</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">button</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relatedTarget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_json</span><span class="o">=</span><span class="p">{},</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;initMouseEvent&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canBubble</span> <span class="o">=</span> <span class="n">canBubble</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancelable</span> <span class="o">=</span> <span class="n">cancelable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="n">detail</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screenX</span> <span class="o">=</span> <span class="n">screenX</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screenY</span> <span class="o">=</span> <span class="n">screenY</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clientX</span> <span class="o">=</span> <span class="n">clientX</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clientY</span> <span class="o">=</span> <span class="n">clientY</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctrlKey</span> <span class="o">=</span> <span class="n">ctrlKey</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">altKey</span> <span class="o">=</span> <span class="n">altKey</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shiftKey</span> <span class="o">=</span> <span class="n">shiftKey</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metaKey</span> <span class="o">=</span> <span class="n">metaKey</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">button</span> <span class="o">=</span> <span class="n">button</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="n">relatedTarget</span>
+        <span class="c1"># TODO - parse from_json - so can relay</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">clientX</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">clientY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">altKey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_altKey</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ctrlKey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ctrlKey</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shiftKey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shiftKey</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metaKey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metaKey</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">button</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_button</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">buttons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buttons</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">which</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_button</span></div>
 
     <span class="c1"># MOUSE_EVENT</span>
-    <span class="c1"># altKey    Returns whether the &quot;ALT&quot; key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent</span>
-    <span class="c1"># button    Returns which mouse button was pressed when the mouse event was triggered   MouseEvent</span>
-    <span class="c1"># buttons   Returns which mouse buttons were pressed when the mouse event was triggered MouseEvent</span>
-    <span class="c1"># ctrlKey   Returns whether the &quot;CTRL&quot; key was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent, TouchEvent</span>
     <span class="c1"># getModifierState()    Returns an array containing target ranges that will be affected by the insertion/deletion   MouseEvent</span>
-    <span class="c1"># metaKey   Returns whether the &quot;META&quot; key was pressed when an event was triggered  MouseEvent, KeyboardEvent, TouchEvent</span>
     <span class="c1"># MovementX Returns the horizontal coordinate of the mouse pointer relative to the position of the last mousemove event MouseEvent</span>
     <span class="c1"># MovementY Returns the vertical coordinate of the mouse pointer relative to the position of the last mousemove event   MouseEvent</span>
     <span class="c1"># offsetX   Returns the horizontal coordinate of the mouse pointer relative to the position of the edge of the target element   MouseEvent</span>
@@ -211,34 +271,62 @@
     <span class="c1"># pageY Returns the vertical coordinate of the mouse pointer, relative to the document, when the mouse event was triggered  MouseEvent</span>
     <span class="c1"># region        MouseEvent</span>
     <span class="c1"># relatedTarget Returns the element related to the element that triggered the mouse event   MouseEvent, FocusEvent</span>
-    <span class="c1"># shiftKey  Returns whether the &quot;SHIFT&quot; key was pressed when an event was triggered MouseEvent, KeyboardEvent, TouchEvent</span>
-    <span class="c1"># which Returns which mouse button was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent</span>
 
 
 <div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; keyboard events &quot;&quot;&quot;</span>
-    <span class="n">KEYDOWN</span> <span class="o">=</span> <span class="s2">&quot;onkeydown&quot;</span>
-    <span class="n">KEYPRESS</span> <span class="o">=</span> <span class="s2">&quot;onkeypress&quot;</span>
-    <span class="n">KEYUP</span> <span class="o">=</span> <span class="s2">&quot;onkeyup&quot;</span>
+    <span class="n">KEYDOWN</span> <span class="o">=</span> <span class="s2">&quot;keydown&quot;</span>
+    <span class="n">KEYPRESS</span> <span class="o">=</span> <span class="s2">&quot;keypress&quot;</span>
+    <span class="n">KEYUP</span> <span class="o">=</span> <span class="s2">&quot;keyup&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
         <span class="c1"># self.kwargs = kwargs</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_altKey</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ctrlKey</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shiftKey</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metaKey</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">charCode</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyCode</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">initKeyboardEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeArg</span><span class="p">,</span> <span class="n">canBubbleArg</span><span class="p">,</span> <span class="n">cancelableArg</span><span class="p">,</span>
+                        <span class="n">viewArg</span><span class="p">,</span> <span class="n">charArg</span><span class="p">,</span> <span class="n">keyArg</span><span class="p">,</span>
+                        <span class="n">locationArg</span><span class="p">,</span> <span class="n">modifiersListArg</span><span class="p">,</span> <span class="n">repeat</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">typeArg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canBubbleArg</span> <span class="o">=</span> <span class="n">canBubbleArg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancelableArg</span> <span class="o">=</span> <span class="n">cancelableArg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewArg</span> <span class="o">=</span> <span class="n">viewArg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charArg</span> <span class="o">=</span> <span class="n">charArg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keyArg</span> <span class="o">=</span> <span class="n">keyArg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locationArg</span> <span class="o">=</span> <span class="n">locationArg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modifiersListArg</span> <span class="o">=</span> <span class="n">modifiersListArg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repeat</span> <span class="o">=</span> <span class="n">repeat</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">altKey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_altKey</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ctrlKey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ctrlKey</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shiftKey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shiftKey</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metaKey</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metaKey</span></div>
 
     <span class="c1"># KeyboardEvent</span>
-    <span class="c1"># altKey    Returns whether the &quot;ALT&quot; key was pressed when the mouse event was triggered    MouseEvent, KeyboardEvent, TouchEvent</span>
-    <span class="c1"># ctrlKey   Returns whether the &quot;CTRL&quot; key was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent, TouchEvent</span>
-    <span class="c1"># metaKey   Returns whether the &quot;META&quot; key was pressed when an event was triggered  MouseEvent, KeyboardEvent, TouchEvent</span>
-    <span class="c1"># shiftKey  Returns whether the &quot;SHIFT&quot; key was pressed when an event was triggered MouseEvent, KeyboardEvent, TouchEvent</span>
-    <span class="c1"># which Returns which mouse button was pressed when the mouse event was triggered   MouseEvent, KeyboardEvent</span>
-    <span class="c1"># charCode  Returns the Unicode character code of the key that triggered the onkeypress event   KeyboardEvent</span>
-    <span class="c1"># code  Returns the code of the key that triggered the event    KeyboardEvent</span>
     <span class="c1"># isComposing   Returns whether the state of the event is composing or not  InputEvent, KeyboardEvent</span>
-    <span class="c1"># key   Returns the key value of the key represented by the event   KeyboardEvent, StorageEvent</span>
-    <span class="c1"># keyCode   Returns the Unicode character code of the key that triggered the onkeypress event, or the Unicode key code of the key that triggered the onkeydown or onkeyup event KeyboardEvent</span>
-    <span class="c1"># location  Returns the location of a key on the keyboard or device KeyboardEvent</span>
     <span class="c1"># repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent</span>
+    <span class="c1"># location  Returns the location of a key on the keyboard or device KeyboardEvent</span>
 
 
 <div class="viewcode-block" id="UiEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.UiEvent">[docs]</a><span class="k">class</span> <span class="nc">UiEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
@@ -251,10 +339,10 @@
 
 <div class="viewcode-block" id="FocusEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.FocusEvent">[docs]</a><span class="k">class</span> <span class="nc">FocusEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; FocusEvent &quot;&quot;&quot;</span>
-    <span class="n">BLUR</span> <span class="o">=</span> <span class="s2">&quot;onblur&quot;</span>
-    <span class="n">FOCUS</span> <span class="o">=</span> <span class="s2">&quot;onfocus&quot;</span>
-    <span class="n">FOCUSIN</span> <span class="o">=</span> <span class="s2">&quot;onfocusin&quot;</span>
-    <span class="n">FOCUSOUT</span> <span class="o">=</span> <span class="s2">&quot;onfocusout&quot;</span>
+    <span class="n">BLUR</span> <span class="o">=</span> <span class="s2">&quot;blur&quot;</span>
+    <span class="n">FOCUS</span> <span class="o">=</span> <span class="s2">&quot;focus&quot;</span>
+    <span class="n">FOCUSIN</span> <span class="o">=</span> <span class="s2">&quot;focusin&quot;</span>
+    <span class="n">FOCUSOUT</span> <span class="o">=</span> <span class="s2">&quot;focusout&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="kc">None</span>
@@ -263,10 +351,10 @@
 
 <div class="viewcode-block" id="TouchEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.TouchEvent">[docs]</a><span class="k">class</span> <span class="nc">TouchEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; TouchEvent &quot;&quot;&quot;</span>
-    <span class="n">TOUCHCANCEL</span> <span class="o">=</span> <span class="s2">&quot;ontouchcancel&quot;</span>
-    <span class="n">TOUCHEND</span> <span class="o">=</span> <span class="s2">&quot;ontouchend&quot;</span>
-    <span class="n">TOUCHMOVE</span> <span class="o">=</span> <span class="s2">&quot;ontouchmove&quot;</span>
-    <span class="n">TOUCHSTART</span> <span class="o">=</span> <span class="s2">&quot;ontouchstart&quot;</span>
+    <span class="n">TOUCHCANCEL</span> <span class="o">=</span> <span class="s2">&quot;touchcancel&quot;</span>
+    <span class="n">TOUCHEND</span> <span class="o">=</span> <span class="s2">&quot;touchend&quot;</span>
+    <span class="n">TOUCHMOVE</span> <span class="o">=</span> <span class="s2">&quot;touchmove&quot;</span>
+    <span class="n">TOUCHSTART</span> <span class="o">=</span> <span class="s2">&quot;touchstart&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shiftKey</span> <span class="o">=</span> <span class="kc">None</span>
@@ -289,8 +377,8 @@
 
 <div class="viewcode-block" id="WheelEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.WheelEvent">[docs]</a><span class="k">class</span> <span class="nc">WheelEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; WheelEvent &quot;&quot;&quot;</span>
-    <span class="n">MOUSEWHEEL</span> <span class="o">=</span> <span class="s2">&quot;onmousewheel&quot;</span>  <span class="c1"># DEPRECATED - USE ONWHEEL</span>
-    <span class="n">WHEEL</span> <span class="o">=</span> <span class="s2">&quot;onwheel&quot;</span>
+    <span class="n">MOUSEWHEEL</span> <span class="o">=</span> <span class="s2">&quot;mousewheel&quot;</span>  <span class="c1"># DEPRECATED - USE WHEEL</span>
+    <span class="n">WHEEL</span> <span class="o">=</span> <span class="s2">&quot;wheel&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deltaX</span> <span class="o">=</span> <span class="kc">None</span>
@@ -306,9 +394,9 @@
 
 <div class="viewcode-block" id="AnimationEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.AnimationEvent">[docs]</a><span class="k">class</span> <span class="nc">AnimationEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; AnimationEvent &quot;&quot;&quot;</span>
-    <span class="n">ANIMATIONEND</span> <span class="o">=</span> <span class="s2">&quot;onanimationend&quot;</span>
-    <span class="n">ANIMATIONITERATION</span> <span class="o">=</span> <span class="s2">&quot;onanimationiteration&quot;</span>
-    <span class="n">ANIMATIONSTART</span> <span class="o">=</span> <span class="s2">&quot;onanimationstart&quot;</span>
+    <span class="n">ANIMATIONEND</span> <span class="o">=</span> <span class="s2">&quot;animationend&quot;</span>
+    <span class="n">ANIMATIONITERATION</span> <span class="o">=</span> <span class="s2">&quot;animationiteration&quot;</span>
+    <span class="n">ANIMATIONSTART</span> <span class="o">=</span> <span class="s2">&quot;animationstart&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">animationName</span> <span class="o">=</span> <span class="kc">None</span>
@@ -322,9 +410,9 @@
 
 <div class="viewcode-block" id="ClipboardEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.ClipboardEvent">[docs]</a><span class="k">class</span> <span class="nc">ClipboardEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ClipboardEvent &quot;&quot;&quot;</span>
-    <span class="n">COPY</span> <span class="o">=</span> <span class="s2">&quot;oncopy&quot;</span>
-    <span class="n">CUT</span> <span class="o">=</span> <span class="s2">&quot;oncut&quot;</span>
-    <span class="n">PASTE</span> <span class="o">=</span> <span class="s2">&quot;onpaste&quot;</span>
+    <span class="n">COPY</span> <span class="o">=</span> <span class="s2">&quot;copy&quot;</span>
+    <span class="n">CUT</span> <span class="o">=</span> <span class="s2">&quot;cut&quot;</span>
+    <span class="n">PASTE</span> <span class="o">=</span> <span class="s2">&quot;paste&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clipboardData</span> <span class="o">=</span> <span class="kc">None</span>
@@ -332,15 +420,73 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="ErrorEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.ErrorEvent">[docs]</a><span class="k">class</span> <span class="nc">ErrorEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; ErrorEvent &quot;&quot;&quot;</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">=</span><span class="kc">None</span>
+        <span class="c1"># self.filename=None</span>
+        <span class="c1"># self.lineno=0</span>
+        <span class="c1"># self.colno=0</span>
+        <span class="c1"># self.error={}</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SubmitEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.SubmitEvent">[docs]</a><span class="k">class</span> <span class="nc">SubmitEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;submit&quot;</span>
+    <span class="sd">&quot;&quot;&quot; SubmitEvent &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PointerEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.PointerEvent">[docs]</a><span class="k">class</span> <span class="nc">PointerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; PointerEvent &quot;&quot;&quot;</span>
+    <span class="n">POINTER</span><span class="o">=</span><span class="s2">&quot;pointer&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointerId</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressure</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tangentialPressure</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiltX</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tiltY</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">twist</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointerType</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isPrimary</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BeforeUnloadEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.BeforeUnloadEvent">[docs]</a><span class="k">class</span> <span class="nc">BeforeUnloadEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="n">BEFOREUNLOAD</span> <span class="o">=</span> <span class="s2">&quot;beforeunload&quot;</span>
+    <span class="sd">&quot;&quot;&quot; BeforeUnloadEvent &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SVGEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.SVGEvent">[docs]</a><span class="k">class</span> <span class="nc">SVGEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="n">TIMER</span> <span class="o">=</span> <span class="s2">&quot;svg&quot;</span>
+    <span class="sd">&quot;&quot;&quot; SVGEvent &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TimerEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.TimerEvent">[docs]</a><span class="k">class</span> <span class="nc">TimerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="n">TIMER</span> <span class="o">=</span> <span class="s2">&quot;timer&quot;</span>
+    <span class="sd">&quot;&quot;&quot; TimerEvent &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; DragEvent &quot;&quot;&quot;</span>
-    <span class="n">DRAG</span> <span class="o">=</span> <span class="s2">&quot;ondrag&quot;</span>
-    <span class="n">END</span> <span class="o">=</span> <span class="s2">&quot;ondragend&quot;</span>
-    <span class="n">ENTER</span> <span class="o">=</span> <span class="s2">&quot;ondragenter&quot;</span>
-    <span class="n">LEAVE</span> <span class="o">=</span> <span class="s2">&quot;ondragleave&quot;</span>
-    <span class="n">OVER</span> <span class="o">=</span> <span class="s2">&quot;ondragover&quot;</span>
-    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;ondragstart&quot;</span>
-    <span class="n">DROP</span> <span class="o">=</span> <span class="s2">&quot;ondrop&quot;</span>
+    <span class="n">DRAG</span> <span class="o">=</span> <span class="s2">&quot;drag&quot;</span>
+    <span class="n">END</span> <span class="o">=</span> <span class="s2">&quot;dragend&quot;</span>
+    <span class="n">ENTER</span> <span class="o">=</span> <span class="s2">&quot;dragenter&quot;</span>
+    <span class="n">LEAVE</span> <span class="o">=</span> <span class="s2">&quot;dragleave&quot;</span>
+    <span class="n">OVER</span> <span class="o">=</span> <span class="s2">&quot;dragover&quot;</span>
+    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;dragstart&quot;</span>
+    <span class="n">DROP</span> <span class="o">=</span> <span class="s2">&quot;drop&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataTransfer</span> <span class="o">=</span> <span class="kc">None</span>
@@ -350,7 +496,7 @@
 
 <div class="viewcode-block" id="HashChangeEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.HashChangeEvent">[docs]</a><span class="k">class</span> <span class="nc">HashChangeEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; HashChangeEvent &quot;&quot;&quot;</span>
-    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;onhashchange&quot;</span>
+    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;hashchange&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">newURL</span> <span class="o">=</span> <span class="kc">None</span>
@@ -377,8 +523,8 @@
 
 
 <div class="viewcode-block" id="PageTransitionEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.PageTransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">PageTransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
-    <span class="n">PAGEHIDE</span> <span class="o">=</span> <span class="s2">&quot;onpagehide&quot;</span>
-    <span class="n">PAGESHOW</span> <span class="o">=</span> <span class="s2">&quot;onpageshow&quot;</span>
+    <span class="n">PAGEHIDE</span> <span class="o">=</span> <span class="s2">&quot;pagehide&quot;</span>
+    <span class="n">PAGESHOW</span> <span class="o">=</span> <span class="s2">&quot;pageshow&quot;</span>
     <span class="sd">&quot;&quot;&quot; PageTransitionEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persisted</span> <span class="o">=</span> <span class="kc">None</span>
@@ -411,7 +557,7 @@
 
 
 <div class="viewcode-block" id="TransitionEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.TransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">TransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
-    <span class="n">TRANSITIONEND</span> <span class="o">=</span> <span class="s2">&quot;ontransitionend&quot;</span>
+    <span class="n">TRANSITIONEND</span> <span class="o">=</span> <span class="s2">&quot;transitionend&quot;</span>
     <span class="sd">&quot;&quot;&quot; TransitionEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">propertyName</span> <span class="o">=</span> <span class="kc">None</span>
@@ -424,8 +570,8 @@
 
 
 <div class="viewcode-block" id="ProgressEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.ProgressEvent">[docs]</a><span class="k">class</span> <span class="nc">ProgressEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; CustomEvent &quot;&quot;&quot;</span>
-    <span class="n">LOADSTART</span> <span class="o">=</span> <span class="s2">&quot;onloadstart&quot;</span>
+    <span class="sd">&quot;&quot;&quot; ProgressEvent &quot;&quot;&quot;</span>
+    <span class="n">LOADSTART</span> <span class="o">=</span> <span class="s2">&quot;loadstart&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -467,6 +613,252 @@
         <span class="c1"># super.__init__(self, type, bubbles, cancelable)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">)</span>  <span class="c1"># TODO -</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span></div>
+
+
+<span class="k">class</span> <span class="nc">GlobalEventHandler</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">onabort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onblur</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">oncancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">oncanplay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">oncanplaythrough</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onchange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onclick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onclose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">oncontextmenu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">oncuechange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ondblclick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ondrag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ondragend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ondragenter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ondragexit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ondragleave</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ondragover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ondragstart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ondrop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ondurationchange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onemptied</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onended</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onerror</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onfocus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ongotpointercapture</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">oninput</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">oninvalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onkeydown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onkeypress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onkeyup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onloadeddata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onloadedmetadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onloadend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onloadstart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onlostpointercapture</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onmouseenter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onmouseleave</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onmousemove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onmouseout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onmouseover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onmouseup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onpause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onplay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onplaying</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onpointercancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onpointerdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onpointerenter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onpointerleave</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onpointermove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onpointerout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onpointerover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onpointerup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onprogress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onratechange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onreset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onresize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onscroll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onseeked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onseeking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onselect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onselectionchange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onselectstart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onshow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onstalled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onsubmit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onsuspend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ontimeupdate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onvolumechange</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onwaiting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onwheel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onanimationcancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onanimationend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onanimationiteration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onauxclick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onformdata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">onmousedown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ontouchcancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ontouchstart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ontransitioncancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">ontransitionend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 </pre></div>
 
           </div>

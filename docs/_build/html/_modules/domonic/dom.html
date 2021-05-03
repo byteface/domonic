@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.2.18 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.3.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -1051,6 +1051,7 @@
     <span class="nd">@body</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the document&#39;s body (the &lt;body&gt; element) &quot;&quot;&quot;</span>
+        <span class="c1"># self.querySelector(&#39;body&#39;)</span>
         <span class="c1"># tag = &quot;body&quot;</span>
         <span class="c1"># reg = f&quot;&lt;{tag}.*?&gt;(.+?)&lt;/{tag}&gt;&quot;</span>
         <span class="c1"># pattern = re.compile(reg)</span>
@@ -1125,16 +1126,17 @@
         <span class="sd">&#39;&#39;&#39; Controls whether the entire document should be editable or not.&#39;&#39;&#39;</span></div>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.doctype"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.doctype">[docs]</a>    <span class="k">def</span> <span class="nf">doctype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">doctype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the Document Type Declaration associated with the document&#39;&#39;&#39;</span>
-        <span class="k">return</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span>
 
     <span class="c1"># def documentElement(self):</span>
         <span class="c1"># &#39;&#39;&#39; Returns the Document Element of the document (the &lt;html&gt; element)&#39;&#39;&#39;</span>
         <span class="c1"># return self</span>
 
     <span class="c1"># def documentMode(self):</span>
-        <span class="sd">&#39;&#39;&#39; Returns the mode used by the browser to render the document&#39;&#39;&#39;</span></div>
+        <span class="sd">&#39;&#39;&#39; Returns the mode used by the browser to render the document&#39;&#39;&#39;</span>
         <span class="c1"># return</span>
 
 <div class="viewcode-block" id="Document.domain"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.domain">[docs]</a>    <span class="k">def</span> <span class="nf">domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1145,12 +1147,13 @@
         <span class="sd">&#39;&#39;&#39;Obsolete. Returns the DOM configuration of the document&#39;&#39;&#39;</span></div>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.embeds"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.embeds">[docs]</a>    <span class="k">def</span> <span class="nf">embeds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">embeds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a collection of all &lt;embed&gt; elements the document&#39;&#39;&#39;</span>
-        <span class="k">return</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s1">&#39;embed&#39;</span><span class="p">)</span>
 
     <span class="c1"># def execCommand(self):</span>
-        <span class="sd">&#39;&#39;&#39;Invokes the specified clipboard operation on the element currently having focus.&#39;&#39;&#39;</span></div>
+        <span class="sd">&#39;&#39;&#39;Invokes the specified clipboard operation on the element currently having focus.&#39;&#39;&#39;</span>
         <span class="c1"># return</span>
 
     <span class="nd">@property</span>
@@ -1162,13 +1165,13 @@
         <span class="n">tags</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">tags</span>
 
-    <span class="c1"># def fullscreenElement():</span>
-        <span class="c1"># &#39;&#39;&#39; Returns the current element that is displayed in fullscreen mode&#39;&#39;&#39;</span>
-        <span class="c1"># return</span>
+<div class="viewcode-block" id="Document.fullscreenElement"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.fullscreenElement">[docs]</a>    <span class="k">def</span> <span class="nf">fullscreenElement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Returns the current element that is displayed in fullscreen mode&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
-    <span class="c1"># def fullscreenEnabled():</span>
-        <span class="c1"># &#39;&#39;&#39;Returns a Boolean value indicating whether the document can be viewed in fullscreen mode&#39;&#39;&#39;</span>
-        <span class="c1"># return</span>
+<div class="viewcode-block" id="Document.fullscreenEnabled"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.fullscreenEnabled">[docs]</a>    <span class="k">def</span> <span class="nf">fullscreenEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Returns a Boolean value indicating whether the document can be viewed in fullscreen mode&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Document.getElementById"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.getElementById">[docs]</a>    <span class="k">def</span> <span class="nf">getElementById</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_id</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns the element that has the ID attribute with the specified value&#39;&#39;&#39;</span>
@@ -1197,9 +1200,10 @@
         <span class="c1"># &#39;&#39;&#39;Returns a Boolean value indicating whether the document has focus&#39;&#39;&#39;</span>
         <span class="c1"># return</span>
 
-<div class="viewcode-block" id="Document.head"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.head">[docs]</a>    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the &lt;head&gt; element of the document&#39;&#39;&#39;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">querySelector</span><span class="p">(</span><span class="s1">&#39;head&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">images</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
