@@ -20,7 +20,7 @@ class Style(object):
         self._parent_node = parent_node  # so I can update a tags returned style attributes if a style gets set
 
         self.alignContent = 'normal'
-        '''Sets or returns the alignment between the lines inside a flexible container when the items do not use all available space   3'''
+        '''Sets or returns the alignment between the lines inside a flexible container when the items do not use all available space'''
 
         self.alignItems = 'normal'
         '''Sets or returns the alignment for items inside a flexible container 3'''

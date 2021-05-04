@@ -436,7 +436,7 @@ class Date(js_object):
     # @staticmethod
     def parse(self, date_string):
         """ Parses a date string and returns the number of milliseconds since January 1, 1970 """
-        self.date = self.parse_date(str(date_string)) # TODO - huh? 
+        self.date = self.parse_date(str(date_string))  #  TODO - huh?
         # return self.date.getTime()
 
     def setDate(self, day):
