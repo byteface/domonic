@@ -25,7 +25,6 @@ class domonic:
     JS_MASTER = "assets/js/master.js"
     CSS_STYLE = "assets/css/style.css"
 
-
     @staticmethod
     def get(url: str):
         """ downloads html and converts to domonic """
@@ -33,9 +32,8 @@ class domonic:
         return domonic.parse(r.content.decode("utf-8"))
         # TODO - param to eval
 
-
     @staticmethod
-    def loads(path: str, *args, **kwargs): # TODO - rename to loads and load()?
+    def loads(path: str, *args, **kwargs):
         """ [
             given a path to a file will return the .pyml as a python object
 
@@ -45,11 +43,10 @@ class domonic:
         with open(path, "r") as pyml_string:
             content = pyml_string.read()
             # print("++++",content, type(content) )
-            prog = domonic.domonify( str(content), *args, **kwargs)
+            prog = domonic.domonify(str(content), *args, **kwargs)
             if type(prog) is tuple:
                 prog = prog[0]
             return prog
-
 
     @staticmethod
     def load(pyml: str, *args, **kwargs):
@@ -63,9 +60,8 @@ class domonic:
             prog = prog[0]
         return prog
 
-    
     @staticmethod # load replaces this.
-    def domonify(pyml: str, *args, **kwargs): # TODO - rename to loads and load()?
+    def domonify(pyml: str, *args, **kwargs):
         """ [
             attempts to fix pyml
         ]
@@ -80,17 +76,10 @@ class domonic:
             if it was ammeneded, render the returned object to get the new string
         """
 
-        # print('ITS IN MY KWARGS!!!!')
-        # print(kwargs)
-        s = domonic.evaluate(pyml, *args, **kwargs)
+        # print(pyml)
 
-        # scope = {**globals(),**kwargs}
-        
-        # print(scope)
-        # p = eval(s, scope)
-        # p = eval(s, {"links":[1,2,3]})
-        # p = eval(s, {**kwargs}, {**globals()} )
-        p = eval(s, {**kwargs, **globals()} )
+        s = domonic.evaluate(pyml, *args, **kwargs)
+        p = eval(s, {**kwargs, **globals()})
         return p
 
 
@@ -110,6 +99,9 @@ class domonic:
             returns a potentially edited working program. (not the string)
             if it was ammeneded, render the returned object to get the new string
         """
+
+        # print(pyml)
+
         try:
             # TODO - strip any potentially bad/dangerous code before eval.
             p = eval(pyml, {**kwargs, **globals()})
@@ -153,7 +145,6 @@ class domonic:
             print('Eval failed! you will have to modify the output manually')
             return pyml
 
-
     @staticmethod
     def _is_valid_pyml(line):
         """
@@ -166,7 +157,7 @@ class domonic:
             if '(' in line:
                 test_line = line + ')'
 
-            if line[0] in ['"',"_","*"]:
+            if line[0] in ['"', "_", "*"]:
                 test_line = "div(" + line
                 if test_line[len(test_line)-1] != ')':
                     test_line = test_line + ')'
@@ -889,7 +880,7 @@ class domonic:
                         piece = piece.strip()
                         piece = piece.strip('\n')
                         is_working, p = domonic._is_valid_pyml(piece)
-                        print(is_working,p)
+                        # print(is_working,p)
                         if is_working:
                             keepers.append(p)
                     line = ','.join(keepers)
@@ -898,6 +889,8 @@ class domonic:
                         fixed.append(newline)
                         # print("FIXED:", line)
             page = '\n'.join(fixed)
+
+        page = ''.join(page.splitlines())
 
         # if not minify and indent:
         #     print('>>',len(page))

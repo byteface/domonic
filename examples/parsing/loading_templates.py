@@ -24,7 +24,7 @@ render(webpage, 'webpage.html')
 
 
 
-# 'load' is different to 'loads' it simple take plane html string and converts to a program
+# 'load' is different to 'loads', it takes html strings and converts to a program
 
 from domonic.dQuery import º
 
@@ -32,3 +32,8 @@ webpage = domonic.load('<html><head></head><body id="test"></body></html>')
 º(webpage)
 º('#test').append(div("Hello World"))
 render(webpage, 'webpage2.html')
+
+
+
+# useful plugin for formatting flat .pyml in vscode
+# https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dictionary

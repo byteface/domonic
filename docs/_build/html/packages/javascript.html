@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: Javascript &#8212; domonic 0.3.2 documentation</title>
+    <title>Domonic: Javascript &#8212; domonic 0.3.3 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -758,7 +758,7 @@ from the args and kwargs arguments, respectively.</p>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">String</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>javascript string method</p>
+<dd><p>javascript String methods</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname">charAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charAt"><span class="viewcode-link">[source]</span></a></dt>
@@ -767,19 +767,19 @@ from the args and kwargs arguments, respectively.</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">charCodeAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charCodeAt"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">charCodeAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charCodeAt"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns the Unicode of the character at the specified index</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">endsWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.endsWith"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">endsWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.endsWith"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Checks whether a string ends with specified string/characters</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">fromCharCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">code</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCharCode"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">fromCharCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">code</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCharCode"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Converts Unicode values to characters</p>
 </dd></dl>
 
@@ -798,14 +798,39 @@ and returns a new string where the specified values are replaced</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">startsWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.startsWith"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.slice"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Selects a part of an string, and returns the new string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">startsWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.startsWith"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Checks whether a string begins with specified characters</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">substring</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.substring"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">substr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.substr"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Extracts the characters from a string, beginning at a specified start position,
+and through the specified number of character</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">substring</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.substring"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Extracts the characters from a string, between two specified indices</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">toLocaleLowerCase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.toLocaleLowerCase"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Converts a string to lowercase letters, according to the host’s locale</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">toLocaleUpperCase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.toLocaleUpperCase"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Converts a string to uppercase letters, according to the host’s locale</p>
 </dd></dl>
 
 <dl class="py method">
@@ -924,6 +949,8 @@ and returns a new string where the specified values are replaced</p>
 <li class="toctree-l1"><a class="reference internal" href="tween.html">Domonic: tween</a></li>
 <li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

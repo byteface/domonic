@@ -93,8 +93,9 @@ class domonicTestCase(unittest.TestCase):
         print(myobj)
         self.assertEqual(True, str(myobj) == '<div class="mytest" style="float:left;"></div>')
 
+        print("NOW>>>>")
         mylist = li() / 10
-        myobj = domonic.domonify(domonic.parse(mylist))
+        myobj = domonic.load(mylist)
         print(myobj)
 
         myorderedlist = ol()

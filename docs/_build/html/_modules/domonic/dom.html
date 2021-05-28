@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.3.2 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.3.3 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -671,16 +671,16 @@
 
 <div class="viewcode-block" id="Element.getElementsByTagName"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getElementsByTagName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByTagName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns a collection of all child elements with the specified tag name &quot;&quot;&quot;</span>
-        <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?&gt;.+?&lt;/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&gt;)&quot;</span>
+        <span class="c1"># reg = f&quot;(&lt;{tag}.*?&gt;.+?&lt;/{tag}&gt;)&quot;</span>
 
-        <span class="n">closed_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;hr&quot;</span><span class="p">,</span> <span class="s2">&quot;br&quot;</span><span class="p">,</span> <span class="s2">&quot;wbr&quot;</span><span class="p">,</span> <span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="s2">&quot;embed&quot;</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="s2">&quot;track&quot;</span><span class="p">,</span>
-                       <span class="s2">&quot;area&quot;</span><span class="p">,</span> <span class="s2">&quot;col&quot;</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="s2">&quot;keygen&quot;</span><span class="p">,</span> <span class="s2">&quot;command&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">closed_tags</span><span class="p">:</span>
-            <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?/&gt;)&quot;</span>
+        <span class="c1"># closed_tags = [&quot;base&quot;, &quot;link&quot;, &quot;meta&quot;, &quot;hr&quot;, &quot;br&quot;, &quot;wbr&quot;, &quot;img&quot;, &quot;embed&quot;, &quot;param&quot;, &quot;source&quot;, &quot;track&quot;,</span>
+        <span class="c1">#                &quot;area&quot;, &quot;col&quot;, &quot;input&quot;, &quot;keygen&quot;, &quot;command&quot;]</span>
+        <span class="c1"># if tag in closed_tags:</span>
+        <span class="c1">#     reg = f&quot;(&lt;{tag}.*?/&gt;)&quot;</span>
 
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">tags</span></div>
+        <span class="c1"># pattern = re.compile(reg)</span>
+        <span class="c1"># tags = re.findall(pattern, str(self))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Element.hasAttribute"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.hasAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">hasAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns true if an element has the specified attribute, otherwise false &quot;&quot;&quot;</span>
