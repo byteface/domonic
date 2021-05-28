@@ -1195,37 +1195,56 @@ class Number(float):
 
 
 class String(object):
-    """ javascript string method """
+    """ javascript String methods """
 
     def __init__(self, x="", *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
         self.x = x
 
+    def __str__(self):
+        return self.x
+
+    @staticmethod
+    def charCodeAt(self, index):
+        """ Returns the Unicode of the character at the specified index """
+        return ord(self.x[index])
+
+    @staticmethod
+    def fromCharCode(self, code):
+        """ Converts Unicode values to characters """
+        return chr(code)
+
+    @property
+    def length(self):
+        return len(self.x)
+
     def repeat(self, count):
         """ Returns a new string with a specified number of copies of an existing string """
         return self.x * count
 
-    def startsWith(self, x, start, end):
+    def startsWith(self, x, start=None, end=None):
         """ Checks whether a string begins with specified characters """
-        if end is None:
-            end = len(x)
-
         if start is None:
             start = 0
+        if end is None:
+            end = len(x)
+        # print(self.x.startswith(x, start, end))
+        return self.x.startswith(x, start, end)
 
-        self.x.startswith(x, beg=start, end=end)
-
-    def substring(self):
+    def substring(self, start, end=None):
         """ Extracts the characters from a string, between two specified indices """
-        pass
+        if end is None:
+            end = len(self.x)
+        return self.x[start:end]
 
-    def endsWith(self, x, start, end):
+    def endsWith(self, x, start=None, end=None):
         """ Checks whether a string ends with specified string/characters """
-
-        # TODO - should take array. or any length string
-        # return x[len(x)] == x
-        self.x.endswith(x, start, end)
+        if start is None:
+            start = 0
+        if end is None:
+            end = len(x)
+        return self.x.endswith(x, start, end)
 
     def toLowerCase(self):
         """ Converts a string to lowercase letters """
@@ -1235,6 +1254,12 @@ class String(object):
         """ Converts a string to uppercase letters """
         return self.x.upper()
 
+    def slice(self, start=0, end=None):
+        """ Selects a part of an string, and returns the new string """
+        if end is None:
+            end = len(self.x) - 1
+        return self.x[start:end]
+
     def trim(self):
         """ Removes whitespace from both ends of a string """
         return self.x.strip()
@@ -1242,14 +1267,6 @@ class String(object):
     def charAt(self, index):
         """ Returns the character at the specified index (position) """
         return self.x[index]
-
-    def charCodeAt(self, index):
-        """ Returns the Unicode of the character at the specified index """
-        return ord(self.x[index])
-
-    def fromCharCode(self, code):
-        """ Converts Unicode values to characters """
-        return chr(code)
 
     # def test():
         # r = (re.search(r"regexp", "someString") != None)
@@ -1272,18 +1289,20 @@ class String(object):
     # if re.search(r"\d", "iphone 8"):
     # print("Has a number")
 
-    # pass
-    # def substr():
-    # """ Extracts the characters from a string, beginning at a specified start position, and through the specified number of character  """
-    # pass
+    def substr(self, start=0, end=None):
+        """ Extracts the characters from a string, beginning at a specified start position,
+        and through the specified number of character """
+        if end is None:
+            end = len(self.x)
+        return self.x[start:start + end]
 
     def toLocaleLowerCase(self):
-        # """ Converts a string to lowercase letters, according to the host's locale """
+        """ Converts a string to lowercase letters, according to the host's locale """
         # locale.setlocale()
         return self.x.lower()
 
     def toLocaleUpperCase(self):
-        # """ Converts a string to uppercase letters, according to the host's locale """
+        """ Converts a string to uppercase letters, according to the host's locale """
         # locale.setlocale()
         return self.x.upper()
 

@@ -637,16 +637,16 @@ class Element(Node):
 
     def getElementsByTagName(self, tag: str) -> List:
         """ Returns a collection of all child elements with the specified tag name """
-        reg = f"(<{tag}.*?>.+?</{tag}>)"
+        # reg = f"(<{tag}.*?>.+?</{tag}>)"
 
-        closed_tags = ["base", "link", "meta", "hr", "br", "wbr", "img", "embed", "param", "source", "track",
-                       "area", "col", "input", "keygen", "command"]
-        if tag in closed_tags:
-            reg = f"(<{tag}.*?/>)"
+        # closed_tags = ["base", "link", "meta", "hr", "br", "wbr", "img", "embed", "param", "source", "track",
+        #                "area", "col", "input", "keygen", "command"]
+        # if tag in closed_tags:
+        #     reg = f"(<{tag}.*?/>)"
 
-        pattern = re.compile(reg)
-        tags = re.findall(pattern, str(self))
-        return tags
+        # pattern = re.compile(reg)
+        # tags = re.findall(pattern, str(self))
+        return self.querySelectorAll(tag)
 
     def hasAttribute(self, attribute: str) -> str:
         """ Returns true if an element has the specified attribute, otherwise false """

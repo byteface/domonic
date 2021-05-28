@@ -8,6 +8,47 @@ from domonic.javascript import URL
 from domonic.dom import Element, Document
 
 
+html_tags = [
+            "figcaption", "blockquote", "textarea", "progress", "optgroup", "noscript", "fieldset", "datalist",
+            "colgroup", "summary", "section", "details", "command", "caption", "article", "address", "submit",
+            "strong", "source", "select", "script", "output", "option", "object", "legend", "keygen", "iframe",
+            "hgroup", "header", "footer", "figure", "canvas", "button", "video", "track", "title", "title",
+            "thead", "tfoot", "tbody", "table", "style", "small", "param", "meter", "label", "input", "embed",
+            "audio", "aside", "time", "span", "span", "samp", "ruby", "meta", "meta", "menu", "mark", "link",
+            "applet", "object", "basefont", "center", "dir", "embed", "font", "isindex", "listing", "menu", #
+            "plaintext", "pre", "strike", "xmp", "template", "picture",#
+            "html", "head", "form", "font", "code", "cite", "body", "base", "area", "abbr", "wbr", "var", "sup",
+            "sub", "pre", "nav", "map", "main", "kbd", "ins", "img", "div", "dfn", "del", "col", "bdo", "bdi",
+            "ul", "tr", "th", "td", "rt", "rp", "ol", "li", "hr", "hr", "h6", "h5", "h4", "h3", "h2", "h1",
+            "em", "dt", "dl", "dd", "br", "u", "s", "q", "p", "i", "b", "a"]
+
+html_attributes = [
+            "accept", "accesskey", "action", "align", "alt", "async", "autocomplete", "autofocus",
+            "autoplay", "bgcolor", "border", "charset", "checked", "cite", "class", "color",
+            "cols", "colspan", "content", "contenteditable", "controls", "coords", "data", "datetime", "default",
+            "defer", "dir", "dirname", "disabled", "download", "draggable", "enctype", "for", "form", "formaction",
+            "headers", "height", "hidden", "high", "href", "hreflang", "id", "ismap", "kind", "label", "lang", "list",
+            "loop", "low", "max", "maxlength", "media", "method", "min", "multiple", "muted", "name", "novalidate",
+            "onabort", "onafterprint", "onbeforeprint", "onbeforeunload", "onblur", "oncanplay", "oncanplaythrough",
+            "onchange", "onclick", "oncontextmenu", "oncopy", "oncuechange", "oncut", "ondblclick", "ondrag",
+            "ondragend", "ondragenter", "ondragleave", "ondragover", "ondragstart", "ondrop", "ondurationchange",
+            "onemptied", "onended", "onerror", "onfocus", "onhashchange", "oninput", "oninvalid", "onkeydown",
+            "onkeypress", "onkeyup", "onload", "onloadeddata", "onloadedmetadata", "onloadstart", "onmousedown",
+            "onmousemove", "onmouseout", "onmouseover", "onmouseup", "onmousewheel", "onoffline", "ononline",
+            "onpagehide", "onpageshow", "onpaste", "onpause", "onplay", "onplaying", "onpopstate", "onprogress",
+            "onratechange", "onreset", "onresize", "onscroll", "onsearch", "onseeked", "onseeking", "onselect",
+            "onstalled", "onstorage", "onsubmit", "onsuspend", "ontimeupdate", "ontoggle", "onunload", "onvolumechange",
+            "onwaiting", "onwheel", "open", "optimum", "pattern", "placeholder", "poster", "preload", "readonly",
+            "rel", "required", "reversed", "rows", "rowspan", "sandbox", "scope", "selected", "shape", "size", "sizes",
+            "span", "spellcheck", "src", "srcdoc", "srclang", "srcset", "start", "step", "style", "tabindex", "target",
+            "title", "translate", "type", "usemap", "value", "width", "wrap", "property", "integrity", "crossorigin", "nonce",
+            "autocapitalize","enterkeyhint","inputmode","is","itemid","itemprop","itemref","itemscope","itemtype","part",
+            "slot","spellcheck","alink","nowrap","vlink","vspace","language","clear","hspace","xmlns","about","allowtransparency",
+            "datatype","inlist","prefix","resource","rev","typeof","vocab", # rdfa
+            "playsinline","autopictureinpicture","buffered","controlslist","disableremoteplayback"# video
+            ]
+
+
 def render(inp, outp=''):
     """render
 
@@ -38,12 +79,14 @@ class TemplateError(IndexError):
 
 
 class tag(object):
-    """ The class from which all html tags extend """
+    """
+    The class from which all html tags extend.
+    """
 
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
-
+        # self.name = 'tag'  # not set which means extended tags that don't use create_element will break
         try:
             self.content = ''.join([each.__str__() for each in args])
             self.attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in kwargs.items()])
@@ -352,6 +395,28 @@ command = type('command', (closed_tag, Element), {'name': 'command', '__init__':
 main = type('command', (tag, Element), {'name': 'main', '__init__': tag_init})  # TODO - y was this missing?
 
 
+# obsolete
+applet = type('applet', (tag, Element), {'name': 'applet', '__init__': tag_init})
+# object = type('object', (tag, Element), {'name': 'object', '__init__': tag_init})
+basefont = type('basefont', (tag, Element), {'name': 'basefont', '__init__': tag_init})
+center = type('center', (tag, Element), {'name': 'center', '__init__': tag_init})
+# dir = type('dir', (tag, Element), {'name': 'dir', '__init__': tag_init})
+embed = type('embed', (tag, Element), {'name': 'embed', '__init__': tag_init})
+font = type('font', (tag, Element), {'name': 'font', '__init__': tag_init})
+isindex = type('isindex', (tag, Element), {'name': 'isindex', '__init__': tag_init})
+listing = type('listing', (tag, Element), {'name': 'listing', '__init__': tag_init})
+menu = type('menu', (tag, Element), {'name': 'menu', '__init__': tag_init})
+plaintext = type('plaintext', (tag, Element), {'name': 'plaintext', '__init__': tag_init})
+pre = type('pre', (tag, Element), {'name': 'pre', '__init__': tag_init})
+s = type('s', (tag, Element), {'name': 's', '__init__': tag_init})
+u = type('u', (tag, Element), {'name': 'u', '__init__': tag_init})
+strike = type('strike', (tag, Element), {'name': 'strike', '__init__': tag_init})
+xmp = type('xmp', (tag, Element), {'name': 'xmp', '__init__': tag_init})
+
+template = type('template', (tag, Element), {'name': 'template', '__init__': tag_init})
+picture = type('picture', (tag, Element), {'name': 'picture', '__init__': tag_init})
+
+
 class doctype():
     """doctype
 
@@ -376,3 +441,18 @@ class comment():
 
     def __str__(self):
         return f"<!-- {self.content} -->"
+
+
+def create_element(name='custom_tag', *args, **kwargs):
+    '''
+    If you must, a method for creating custom tags
+    tag name needs to be set due to custom tags with hyphens can't be classnames.
+    i.e. hypenated tags <some-custom-tag></some-custom-tag>
+    '''
+    custom_tag = type('custom_tag', (tag, Element), {'name': name, '__init__': tag_init})
+    # t = tag(*args, **kwargs)  #  TODO - this is not an element.
+    t = custom_tag(*args, **kwargs)
+    t.name = name
+    return t
+    # new_tag = type('custom_tag', (tag, Element), {'name': name, '__init__': tag_init})
+    # return new_tag

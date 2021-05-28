@@ -165,6 +165,13 @@ class Utils(object):
         s = s.replace("&amp;", "&")
         return s
 
+    @staticmethod
+    def replace_between(content, match, replacement, start=0, end=0):
+        front = content[0:start]
+        mid = content[start:end]
+        end = content[end:len(content)]
+        mid = mid.replace(match, replacement)
+        return front + mid + end
 
     # truncate()
     # return mystr + "..."

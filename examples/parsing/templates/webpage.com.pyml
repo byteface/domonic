@@ -1,0 +1,11 @@
+html(
+	_lang="en",
+	_id=brand,
+	_class="no_js",
+).html(
+	head(),
+	body(
+		h1(brand),
+		*[ str(a( url, _href=url, _style="display:block;" )) for url in links ]
+	),
+),

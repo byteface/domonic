@@ -15,6 +15,7 @@ from domonic.javascript import Window
 from domonic.javascript import Date
 from domonic.javascript import URL
 from domonic.javascript import Array
+from domonic.javascript import String
 
 from domonic.javascript import *
 
@@ -504,6 +505,46 @@ class domonicTestCase(unittest.TestCase):
         time.sleep(3)
         window.clearInterval(_intID)
         myPromise.then(lambda successMessage: print("Yay! " + str(successMessage)))
+
+    def test_javascript_string(self):
+        print("test_javascript_string")
+        mystr = String("Some String")
+
+        assert(mystr.toLowerCase() == "some string")
+        assert(mystr.toUpperCase() == "SOME STRING")
+
+        print(type(mystr))
+        print(mystr.length)
+        assert(mystr.length == 11)
+
+        assert(mystr.repeat(2) == "Some StringSome String")
+        print(mystr)
+        print(mystr)
+        print(mystr)
+        assert(mystr.startsWith('S'))
+        # assert(mystr.endsWith('g'))
+
+        print(">>", mystr.substr(1))
+        assert(mystr.substr(1) == 'ome String')
+
+        # def substring
+        # slice
+        # trim
+        # charAt
+        # charCodeAt
+        # fromCharCode
+        # test
+        # replace
+        # localeCompare
+        # search
+        # substr
+        # toLocaleLowerCase
+        # toLocaleUpperCase
+        # compile
+        # lastIndex
+        # test
+
+
 
 
 _intID = None
