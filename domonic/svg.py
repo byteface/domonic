@@ -14,14 +14,14 @@ from domonic.dom import Node
 
 
 svg_tags = [
-            "svg","animate","animateMotion","animateTransform","circle","clipPath","defs","desc","ellipse","image",
-            "line","linearGradient","marker","mask","mpath","pattern","polygon","polyline","radialGradient","tspan","path",
-            "rect","stop","switch","symbol","text","textPath","title","use","view","feBlend","feColorMatrix","feComponentTransfer",
-            "feComposite","feConvolveMatrix","feDiffuseLighting","feDisplacementMap","feGaussianBlur","feImage","feMerge",
-            "feMorphology","feOffset","feSpecularLighting","feTile","feTurbulence","feDistantLight","fePointLight","feSpotLight",
-            "feDropShadow","discard","feDistantLight","feFlood","feFuncA","feFuncB","feFuncG","feFuncR","feMergeNode","foreignObject",
-            "unknown","cursor","hatchpath","altGlyph","tref","tspan","altGlyphDef","altGlyphItem","glyph","glyphRef","solidcolor",
-            "hatch","font","hkern","vkern","animateColor","g"]
+            "svg", "animate", "animateMotion", "animateTransform", "circle", "clipPath", "defs", "desc", "ellipse", "image",
+            "line", "linearGradient", "marker", "mask", "mpath", "pattern", "polygon", "polyline", "radialGradient", "tspan", "path",
+            "rect", "stop", "switch", "symbol", "text", "textPath", "title", "use", "view", "feBlend", "feColorMatrix", "feComponentTransfer",
+            "feComposite", "feConvolveMatrix", "feDiffuseLighting", "feDisplacementMap", "feGaussianBlur", "feImage", "feMerge",
+            "feMorphology", "feOffset", "feSpecularLighting", "feTile", "feTurbulence", "feDistantLight", "fePointLight", "feSpotLight",
+            "feDropShadow", "discard", "feDistantLight", "feFlood", "feFuncA", "feFuncB", "feFuncG", "feFuncR", "feMergeNode", "foreignObject",
+            "unknown", "cursor", "hatchpath", "altGlyph", "tref", "tspan", "altGlyphDef", "altGlyphItem", "glyph", "glyphRef", "solidcolor",
+            "hatch", "font", "hkern", "vkern", "animateColor", "g"]
 
 
 def svg_init(self, *args, **kwargs):

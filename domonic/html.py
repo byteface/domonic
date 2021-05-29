@@ -15,8 +15,8 @@ html_tags = [
             "hgroup", "header", "footer", "figure", "canvas", "button", "video", "track", "title", "title",
             "thead", "tfoot", "tbody", "table", "style", "small", "param", "meter", "label", "input", "embed",
             "audio", "aside", "time", "span", "span", "samp", "ruby", "meta", "meta", "menu", "mark", "link",
-            "applet", "object", "basefont", "center", "dir", "embed", "font", "isindex", "listing", "menu", #
-            "plaintext", "pre", "strike", "xmp", "template", "picture",#
+            "applet", "object", "basefont", "center", "dir", "embed", "font", "isindex", "listing", "menu",
+            "plaintext", "pre", "strike", "xmp", "template", "picture",
             "html", "head", "form", "font", "code", "cite", "body", "base", "area", "abbr", "wbr", "var", "sup",
             "sub", "pre", "nav", "map", "main", "kbd", "ins", "img", "div", "dfn", "del", "col", "bdo", "bdi",
             "ul", "tr", "th", "td", "rt", "rp", "ol", "li", "hr", "hr", "h6", "h5", "h4", "h3", "h2", "h1",
@@ -42,10 +42,10 @@ html_attributes = [
             "rel", "required", "reversed", "rows", "rowspan", "sandbox", "scope", "selected", "shape", "size", "sizes",
             "span", "spellcheck", "src", "srcdoc", "srclang", "srcset", "start", "step", "style", "tabindex", "target",
             "title", "translate", "type", "usemap", "value", "width", "wrap", "property", "integrity", "crossorigin", "nonce",
-            "autocapitalize","enterkeyhint","inputmode","is","itemid","itemprop","itemref","itemscope","itemtype","part",
-            "slot","spellcheck","alink","nowrap","vlink","vspace","language","clear","hspace","xmlns","about","allowtransparency",
-            "datatype","inlist","prefix","resource","rev","typeof","vocab", # rdfa
-            "playsinline","autopictureinpicture","buffered","controlslist","disableremoteplayback"# video
+            "autocapitalize", "enterkeyhint", "inputmode", "is", "itemid", "itemprop", "itemref", "itemscope", "itemtype", "part",
+            "slot", "spellcheck", "alink", "nowrap", "vlink", "vspace", "language", "clear", "hspace", "xmlns", "about", "allowtransparency",
+            "datatype", "inlist", "prefix", "resource", "rev", "typeof", "vocab",  # rdfa
+            "playsinline", "autopictureinpicture", "buffered", "controlslist", "disableremoteplayback"  # video
             ]
 
 
@@ -268,6 +268,7 @@ i = type('i', (tag, Element), {'name': 'i', '__init__': tag_init})
 b = type('b', (tag, Element), {'name': 'b', '__init__': tag_init})
 
 portal = type('portal', (tag, Element), {'name': 'portal', '__init__': tag_init})
+
 
 def Atag(self, *args, **kwargs):
     # print('Atag: ', args, kwargs)

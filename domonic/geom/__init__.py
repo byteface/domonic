@@ -5,6 +5,7 @@
 """
 from domonic.javascript import Math
 
+
 class vec2():
 
     def __init__(self, x=0, y=0):

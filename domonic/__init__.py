@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 __license__ = 'MIT'
 
 import requests
@@ -60,7 +60,7 @@ class domonic:
             prog = prog[0]
         return prog
 
-    @staticmethod # load replaces this.
+    @staticmethod  # load replaces this.
     def domonify(pyml: str, *args, **kwargs):
         """ [
             attempts to fix pyml

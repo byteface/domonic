@@ -37,11 +37,11 @@ class Back():
 class Bounce():
 
     @staticmethod
-    def easeIn(t, b, c, d, aa = 0, bb = 0):
-        return c - Bounce.easeOut(d-t, 0, c, d) + b;
+    def easeIn(t, b, c, d, aa=0, bb=0):
+        return c - Bounce.easeOut(d-t, 0, c, d) + b
 
     @staticmethod
-    def easeOut(t, b, c, d, aa = 0, bb = 0):
+    def easeOut(t, b, c, d, aa=0, bb=0):
         t /= d
         if t < (1/2.75):
             return c*(7.5625*t*t) + b
@@ -194,23 +194,23 @@ class Expo():
 
     @staticmethod
     def easeIn(t, b, c, d, aa, bb):
-        return c * Math.pow( 2, 10 * (t/d - 1) ) + b
+        return c * Math.pow(2, 10 * (t/d - 1)) + b
 
     @staticmethod
     def easeOut(t, b, c, d, aa, bb):
-        return c * ( -Math.pow( 2, -10 * t/d ) + 1 ) + b
+        return c * (-Math.pow(2, -10 * t/d) + 1) + b
 
     @staticmethod
     def easeInOut(t, b, c, d, aa, bb):
         t /= d/2
-        if t < 1: 
-            return c/2 * Math.pow( 2, 10 * (t - 1) ) + b
+        if t < 1:
+            return c/2 * Math.pow(2, 10 * (t - 1)) + b
         t -= 1
-        return c/2 * ( -Math.pow( 2, -10 * t) + 2 ) + b
+        return c/2 * (-Math.pow(2, -10 * t) + 2) + b
 
 
 class Linear():
-    
+
     # lambda t, b, c, d : c*t/d + b
 
     @staticmethod

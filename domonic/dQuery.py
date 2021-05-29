@@ -83,9 +83,9 @@ class dQuery_el():
 
 
     @staticmethod
-    def contains():
+    def contains(parent, child):
         """ Check to see if a DOM element is a descendant of another DOM element. """
-        raise NotImplementedError
+        return parent.contains(child)
 
 
     # @staticmethod
@@ -131,30 +131,29 @@ class dQuery_el():
         """ Takes a string and throws an exception containing it. """
         raise NotImplementedError
 
-
     @staticmethod
     def escapeSelector():
         """ Escapes any character that has a special meaning in a CSS selector. """
         raise NotImplementedError
 
-
     @staticmethod
-    def extend():
+    def extend(*args):
         """ Merge the contents of two or more objects together into the first object. """
-        raise NotImplementedError
-
+        result = {}
+        for each in args:
+            result.update(each)
+        return result
 
     @staticmethod
-    def get():
+    def get(url: str):
         """ Load data from the server using a HTTP GET request. """
-        raise NotImplementedError
-
+        r = requests.get(url)
+        return r.content.decode("utf-8")
 
     @staticmethod
     def getJSON():
         """ Load JSON-encoded data from the server using a GET HTTP request. """
         raise NotImplementedError
-
 
     @staticmethod
     def getScript():
@@ -206,18 +205,15 @@ class dQuery_el():
         """ Determine whether the argument is an array. """
         raise NotImplementedError
 
-
     @staticmethod
     def isEmptyObject():
         """ Check to see if an object is empty (contains no enumerable properties). """
         raise NotImplementedError
 
-
     @staticmethod
-    def isFunction():
+    def isFunction(obj):
         """ Determines if its argument is callable as a function. """
-        raise NotImplementedError
-
+        return callable(obj)
 
     @staticmethod
     def isNumeric():
@@ -242,30 +238,27 @@ class dQuery_el():
         """ Check to see if a DOM node is within an XML document (or is an XML document). """
         raise NotImplementedError
 
-
     @staticmethod
     def makeArray(somelist):
         """ Convert an array-like object into a true JavaScript array. """
         return Array(somelist)
-
 
     @staticmethod
     def map():
         """ Translate all items in an array or object to new array of items. """
         raise NotImplementedError
 
-
     @staticmethod
-    def merge():
-        """ Merge the contents of two arrays together into the first array. """
-        raise NotImplementedError
-
+    def merge(one, *args):
+        """ Merge the contents of arrays into the first array. """
+        import itertools
+        one.append(list(itertools.chain(*args)))
+        return one
 
     @staticmethod
     def noConflict():
-        """ Relinquish dQuery’s control of the $ variable. """
+        """ Relinquish dQuery’s control of the º variable. """
         raise NotImplementedError
-
 
     @staticmethod
     def noop():
@@ -278,24 +271,20 @@ class dQuery_el():
         """ Return a number representing the current time. """
         return Date.now()
 
-
     @staticmethod
     def param():
         """ Create a serialized representation of an array, a plain object, or a dQuery object suitable for use in a URL query string or Ajax request. In case a dQuery object is passed, it should contain input elements with name/value properties. """
         raise NotImplementedError
-
 
     @staticmethod
     def parseHTML():
         """ Parses a string into an array of DOM nodes. """
         raise NotImplementedError
 
-
     @staticmethod
     def parseJSON():
         """ Takes a well-formed JSON string and returns the resulting JavaScript value. """
         raise NotImplementedError
-
 
     @staticmethod
     def parseXML():
@@ -746,7 +735,7 @@ class dQuery_el():
     @property
     def length(self):
         """ The number of elements in the dQuery object. """
-        raise NotImplementedError        
+        return len(self.elements)
 
     def live(self):
         """ Attach an event handler for all elements which match the current selector, now and in the future."""
@@ -810,7 +799,7 @@ class dQuery_el():
 
     def off(self, event):
         """ Remove an event handler."""
-        for el in elements:
+        for el in self.elements:
             self.eventHandler.unbindEvent(event, el)
 
     def offset(self):
@@ -823,7 +812,7 @@ class dQuery_el():
 
     def on(self, event, callback):
         """ Attach an event handler function for one or more events to the selected elements."""
-        for el in elements:
+        for el in self.elements:
             self.eventHandler.bindEvent(event, callback, el)
         return self
 

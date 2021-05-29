@@ -65,9 +65,12 @@ class JSON(object):
             t.appendChild(row)
             return headings
 
-        if type(arr) == str: arr = json.loads(arr)  # leniency. allow for a string
-        if type(arr) == dict: arr = arr[next(iter(arr))]  # leniency. allow for a dict wrapping a list
-        if type(arr) != list: raise ValueError  # if it aint a list by now reject it
+        if type(arr) == str:
+            arr = json.loads(arr)  # leniency. allow for a string
+        if type(arr) == dict:
+            arr = arr[next(iter(arr))]  # leniency. allow for a dict wrapping a list
+        if type(arr) != list:
+            raise ValueError  # if it aint a list by now reject it
 
         t = table()
         headings = _get_headings(arr, t)
@@ -89,9 +92,12 @@ class JSON(object):
         Returns:
             str: a csv file
         """
-        if type(arr) == str: arr = json.loads(arr)  # leniency. allow for a string
-        if type(arr) == dict: arr = arr[next(iter(arr))]  # leniency. allow for a dict wrapping a list
-        if type(arr) != list: raise ValueError  # if it aint a list by now reject it
+        if type(arr) == str:
+            arr = json.loads(arr)  # leniency. allow for a string
+        if type(arr) == dict:
+            arr = arr[next(iter(arr))]  # leniency. allow for a dict wrapping a list
+        if type(arr) != list:
+            raise ValueError  # if it aint a list by now reject it
 
         def _get_headings(arr):
             headings = []
@@ -118,7 +124,8 @@ class JSON(object):
             for row in csvReader:
                 items.append(row)
 
-        if json_filepath is None: return json.dumps(items)
+        if json_filepath is None:
+            return json.dumps(items)
 
         with open(json_filepath, 'w', encoding='utf-8') as f:
             f.write(json.dumps(items, indent=4))
@@ -165,7 +172,8 @@ class JSON(object):
 
     @staticmethod
     def is_JSON(json: str):
-        if type(json) != str: return False
+        if type(json) != str:
+            return False
 
         if json.startswith('{') and json.endswith('}'):
             return True

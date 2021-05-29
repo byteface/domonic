@@ -4,12 +4,14 @@
 
 """
 
+from domonic.javascript import Math
+
 
 class Game():
 
     @staticmethod
     def roll_dice():
-        return Math.round(Math.random()*6)
+        return Math.round(Math.random() * 6)
 
     # @staticmethod
     # def pick_a_card():

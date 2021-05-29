@@ -616,7 +616,7 @@ class Style(object):
         return style_wrapper
 
     @property
-    @style_get_decorator # TODO - pass array of valid words as params. so can raise value errors
+    @style_get_decorator  # TODO - pass array of valid words as params. so can raise value errors
     def alignContent(self):
         return self.__alignContent
 

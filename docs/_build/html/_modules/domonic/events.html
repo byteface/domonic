@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.events &#8212; domonic 0.3.3 documentation</title>
+    <title>domonic.events &#8212; domonic 0.3.4 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -427,8 +427,9 @@
 <div class="viewcode-block" id="ErrorEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.ErrorEvent">[docs]</a><span class="k">class</span> <span class="nc">ErrorEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ErrorEvent &quot;&quot;&quot;</span>
     <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># self.filename=None</span>
         <span class="c1"># self.lineno=0</span>
         <span class="c1"># self.colno=0</span>
@@ -437,15 +438,17 @@
 
 
 <div class="viewcode-block" id="SubmitEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.SubmitEvent">[docs]</a><span class="k">class</span> <span class="nc">SubmitEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
-    <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;submit&quot;</span>
     <span class="sd">&quot;&quot;&quot; SubmitEvent &quot;&quot;&quot;</span>
+    <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;submit&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PointerEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.PointerEvent">[docs]</a><span class="k">class</span> <span class="nc">PointerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; PointerEvent &quot;&quot;&quot;</span>
-    <span class="n">POINTER</span><span class="o">=</span><span class="s2">&quot;pointer&quot;</span>
+    <span class="n">POINTER</span> <span class="o">=</span> <span class="s2">&quot;pointer&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pointerId</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="kc">None</span>
@@ -479,7 +482,6 @@
     <span class="sd">&quot;&quot;&quot; TimerEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-
 
 
 <div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.events.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>

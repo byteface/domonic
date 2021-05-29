@@ -393,8 +393,9 @@ class ClipboardEvent(Event):
 class ErrorEvent(Event):
     """ ErrorEvent """
     ERROR = "error"
+
     def __init__(self, _type, *args, **kwargs):
-        self.message=None
+        self.message = None
         # self.filename=None
         # self.lineno=0
         # self.colno=0
@@ -403,15 +404,17 @@ class ErrorEvent(Event):
 
 
 class SubmitEvent(Event):
-    SUBMIT = "submit"
     """ SubmitEvent """
+    SUBMIT = "submit"
+
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
 
 
 class PointerEvent(Event):
     """ PointerEvent """
-    POINTER="pointer"
+    POINTER = "pointer"
+
     def __init__(self, _type, *args, **kwargs):
         self.pointerId = None
         self.width = None
@@ -445,7 +448,6 @@ class TimerEvent(Event):
     """ TimerEvent """
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
-
 
 
 class DragEvent(Event):

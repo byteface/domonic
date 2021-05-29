@@ -97,7 +97,7 @@ class KeyCode():
     RIGHTBRACKET = '221'
     S = '83'
     SEMICOLON = '186'
-    SHIFT = '16' #?? left or right or both?
+    SHIFT = '16'  # ?? left or right or both?
     SLASH = '191'
     SPACE = '32'
     T = '84'

@@ -22,17 +22,17 @@ class domonicTestCase(unittest.TestCase):
     def test_dQuery_hello(self):
         d = html(head(body(li(_class='things'), div(_id="test"))))
         º(d)
-        print( '---** -' )
-        print( º('#test') )
-        print( '---** -' )
-        print( º('.things') )
-        print( '---** -' )
+        print('---** -')
+        print(º('#test'))
+        print('---** -')
+        print(º('.things'))
+        print('---** -')
 
-        print( 'a::' )
+        print('a::')
         a = º('<div class="test2"></div>')
-        print( a )
+        print(a)
 
-        print( 'b::' )
+        print('b::')
         b = º('#test').append(a)
         print(b)
 
@@ -485,6 +485,8 @@ class domonicTestCase(unittest.TestCase):
         d = html()
         º(d)
 
+        d.appendChild(body())
+
         # º.boxModel
         # º.browser
         # º.cssHooks
@@ -498,14 +500,29 @@ class domonicTestCase(unittest.TestCase):
         # º.ajaxSetup()
         # º.ajaxTransport()
         # º.Callbacks()
-        # º.contains()
+
+        # print(d)
+        # print('el:', d.documentElement)
+        # print('bod:', d.body)
+        assert(º.contains(d.documentElement, d.body), True)  # true
+        assert(º.contains(d.body, d.documentElement), False)  # false
+
         # º.data()
         # º.Deferred()
         # º.dequeue()
         # º.each()
         # º.error()
         # º.escapeSelector()
-        # º.extend()
+        
+        obj1 = {'a':1,'b':2}
+        obj2 = {'c':1,'b':5}
+        print(º.extend(obj1,obj2))
+
+        test = lambda x:x
+        test2 = 1
+        print("well?:",º.isFunction(test))
+        print("well?:",º.isFunction(test2))
+
         # º.get()
         # º.getJSON()
         # º.getScript()
@@ -524,7 +541,21 @@ class domonicTestCase(unittest.TestCase):
         # º.isXMLDoc()
         # º.makeArray()
         # º.map()
-        # º.merge()
+        
+        first = ["a", "b", "c"]
+        second = ["d", "e", "f"]
+        result = º.merge(º.merge([], first), second)
+        print(first)
+        print(second)
+        print(result)
+
+        first = ["a", "b", "c"]
+        second = ["d", "e", "f"]
+        result = º.merge(first, second)
+        print(first)
+        print(second)
+        print(result)
+
         # º.noConflict()
         # º.noop()
 

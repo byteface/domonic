@@ -68,7 +68,7 @@ class Tween(EventDispatcher):
         return self._paused
 
     @property
-    def paused(self):
+    def position(self):
         if self._position < 0:
             return 0
         elif self._position > 100:
@@ -118,11 +118,11 @@ class Tween(EventDispatcher):
             e = equations if type(equations) == list else [equations]
             i = 0
             for v in self._values:
-                i = len(e)-1 if i > len(e)-1 else i
+                i = len(e) - 1 if i > len(e) - 1 else i
                 if callable(e[i]):
                     p = TweenEquation(e[i])
                 else:
-                    p = TweenEquation(e[i].fn, {a: e[i].a, b: e[i].b})
+                    p = TweenEquation(e[i].fn, {'a': e[i].a, 'b': e[i].b})
                 v.equation = p
                 i += 1
 
@@ -144,7 +144,7 @@ class Tween(EventDispatcher):
         self._loop = loop
 
     def start(self):
-        self._timeStart = get_timer()   #  TODO!! ---
+        self._timeStart = get_timer()   # TODO!! ---
         self._timePaused = 0
         self._timePrevious = self._timeStart
         self._position = 0

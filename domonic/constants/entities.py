@@ -1,6 +1,6 @@
 """
     domonic.constants.entities
-    ====================================
+====================================
 
 """
 
@@ -9,13 +9,10 @@ class Char():
 
     # @staticmethod
     # def get_entity(char):
-
     # @staticmethod
     # def get_entity_number(char):
-
     # @staticmethod
     # def get_char(entity):
-    
     # @staticmethod
     # def get_char_by_number(entity):
 
@@ -54,13 +51,13 @@ class Char():
     EIGHT = '&#56;'  # 8
     NINE = '&#57;'  # 9
 
-    COLON ='&#58;'  # :
-    SEMICOLON ='&#59;'  # ;
+    COLON = '&#58;'  # :
+    SEMICOLON = '&#59;'  # ;
     LESS_THAN = '&lt;'  # <
-    EQUALS_SIGN ='&#61;'  # =
+    EQUALS_SIGN = '&#61;'  # =
     GREATER_THAN = '&gt;'  # >
-    QUESTION_MARK ='&#63;'  # ?
-    AT_SIGN ='&#64;'  # @
+    QUESTION_MARK = '&#63;'  # ?
+    AT_SIGN = '&#64;'  # @
 
     UPPERCASE_A = '&#65;'  # A
     UPPERCASE_B = '&#66;'  # B
@@ -89,12 +86,12 @@ class Char():
     UPPERCASE_Y = '&#89;'  # Y
     UPPERCASE_Z = '&#90;'  # Z
 
-    OPENING_SQUARE_BRACKET = '&#91;' # [
-    BACKSLASH = '&#92;' # \
-    CLOSING_SQUARE_BRACKET = '&#93;' # ]
-    CARET = '&#94;' # ^
-    UNDERSCORE = '&#95;' # _
-    GRAVE_ACCENT = '&#96;' # `
+    OPENING_SQUARE_BRACKET = '&#91;'  # [
+    BACKSLASH = '&#92;'  # \
+    CLOSING_SQUARE_BRACKET = '&#93;'  # ]
+    CARET = '&#94;'  # ^
+    UNDERSCORE = '&#95;'  # _
+    GRAVE_ACCENT = '&#96;'  # `
 
     LOWERCASE_A = '&#97;'  # a
     LOWERCASE_B = '&#98;'  # b
@@ -123,76 +120,76 @@ class Char():
     LOWERCASE_Y = '&#121;'  # y
     LOWERCASE_Z = '&#122;'  # z
 
-    OPENING_CURLY_BRACE = '&#123;' # {
-    LEFT_CURLY_BRACE = '&#123;' # {
-    VERTICAL_BAR = '&#124;'#  |
-    CLOSING_CURLY_BRACE = '&#125;'#  }
-    RIGHT_CURLY_BRACE = '&#125;'#  }
-    TILDE = '&#126;'#  ~
+    OPENING_CURLY_BRACE = '&#123;'  # {
+    LEFT_CURLY_BRACE = '&#123;'  # {
+    VERTICAL_BAR = '&#124;'  # |
+    CLOSING_CURLY_BRACE = '&#125;'  # }
+    RIGHT_CURLY_BRACE = '&#125;'  # }
+    TILDE = '&#126;'  # ~
 
     # ISO-8859-1 Characters
-    AGRAVE  = '&Agrave;'  # À
-    AACUTE  = '&Aacute;'  # Á
-    ACIRC  = '&Acirc;'  # Â
-    ATILDE  = '&Atilde;'  # Ã
-    AUML  = '&Auml;'  # Ä
-    ARING  = '&Aring;'  # Å
-    AELIG  = '&AElig;'  # Æ
-    CCEDIL  = '&Ccedil;'  # Ç
-    EGRAVE  = '&Egrave;'  # È
-    EACUTE  = '&Eacute;'  # É
-    ECIRC  = '&Ecirc;'  # Ê
-    EUML  = '&Euml;'  # Ë
-    IGRAVE  = '&Igrave;'  # Ì
-    IACUTE  = '&Iacute;'  # Í
-    ICIRC  = '&Icirc;'  # Î
-    IUML  = '&Iuml;'  # Ï
-    ETH  = '&ETH;'  # Ð
-    NTILDE  = '&Ntilde;'  # Ñ
-    OGRAVE  = '&Ograve;'  # Ò
-    OACUTE  = '&Oacute;'  # Ó
-    OCIRC  = '&Ocirc;'  # Ô
-    OTILDE  = '&Otilde;'  # Õ
-    OUML  = '&Ouml;'  # Ö
-    OSLASH  = '&Oslash;'  # Ø
-    UGRAVE  = '&Ugrave;'  # Ù
-    UACUTE  = '&Uacute;'  # Ú
-    UCIRC  = '&Ucirc;'  # Û
-    UUML  = '&Uuml;'  # Ü
-    YACUTE  = '&Yacute;'  # Ý
-    THORN  = '&THORN;'  # Þ
-    SZLIG  = '&szlig;'  # ß
-    AGRAVE  = '&agrave;'  # à
-    AACUTE  = '&aacute;'  # á
-    ACIRC  = '&acirc;'  # â
-    ATILDE  = '&atilde;'  # ã
-    AUML  = '&auml;'  # ä
-    ARING  = '&aring;'  # å
-    AELIG  = '&aelig;'  # æ
-    CCEDIL  = '&ccedil;'  # ç
-    EGRAVE  = '&egrave;'  # è
-    EACUTE  = '&eacute;'  # é
-    ECIRC  = '&ecirc;'  # ê
-    EUML  = '&euml;'  # ë
-    IGRAVE  = '&igrave;'  # ì
-    IACUTE  = '&iacute;'  # í
-    ICIRC  = '&icirc;'  # î
-    IUML  = '&iuml;'  # ï
-    ETH  = '&eth;'  # ð
-    NTILDE  = '&ntilde;'  # ñ
-    OGRAVE  = '&ograve;'  # ò
-    OACUTE  = '&oacute;'  # ó
-    OCIRC  = '&ocirc;'  # ô
-    OTILDE  = '&otilde;'  # õ
-    OUML  = '&ouml;'  # ö
-    OSLASH  = '&oslash;'  # ø
-    UGRAVE  = '&ugrave;'  # ù
-    UACUTE  = '&uacute;'  # ú
-    UCIRC  = '&ucirc;'  # û
-    UUML  = '&uuml;'  # ü
-    YACUTE  = '&yacute;'  # ý
-    THORN  = '&thorn;'  # þ
-    YUML  = '&yuml;'  # ÿ
+    AGRAVE = '&Agrave;'  # À
+    AACUTE = '&Aacute;'  # Á
+    ACIRC = '&Acirc;'  # Â
+    ATILDE = '&Atilde;'  # Ã
+    AUML = '&Auml;'  # Ä
+    ARING = '&Aring;'  # Å
+    AELIG = '&AElig;'  # Æ
+    CCEDIL = '&Ccedil;'  # Ç
+    EGRAVE = '&Egrave;'  # È
+    EACUTE = '&Eacute;'  # É
+    ECIRC = '&Ecirc;'  # Ê
+    EUML = '&Euml;'  # Ë
+    IGRAVE = '&Igrave;'  # Ì
+    IACUTE = '&Iacute;'  # Í
+    ICIRC = '&Icirc;'  # Î
+    IUML = '&Iuml;'  # Ï
+    ETH = '&ETH;'  # Ð
+    NTILDE = '&Ntilde;'  # Ñ
+    OGRAVE = '&Ograve;'  # Ò
+    OACUTE = '&Oacute;'  # Ó
+    OCIRC = '&Ocirc;'  # Ô
+    OTILDE = '&Otilde;'  # Õ
+    OUML = '&Ouml;'  # Ö
+    OSLASH = '&Oslash;'  # Ø
+    UGRAVE = '&Ugrave;'  # Ù
+    UACUTE = '&Uacute;'  # Ú
+    UCIRC = '&Ucirc;'  # Û
+    UUML = '&Uuml;'  # Ü
+    YACUTE = '&Yacute;'  # Ý
+    THORN = '&THORN;'  # Þ
+    SZLIG = '&szlig;'  # ß
+    AGRAVE = '&agrave;'  # à
+    AACUTE = '&aacute;'  # á
+    ACIRC = '&acirc;'  # â
+    ATILDE = '&atilde;'  # ã
+    AUML = '&auml;'  # ä
+    ARING = '&aring;'  # å
+    AELIG = '&aelig;'  # æ
+    CCEDIL = '&ccedil;'  # ç
+    EGRAVE = '&egrave;'  # è
+    EACUTE = '&eacute;'  # é
+    ECIRC = '&ecirc;'  # ê
+    EUML = '&euml;'  # ë
+    IGRAVE = '&igrave;'  # ì
+    IACUTE = '&iacute;'  # í
+    ICIRC = '&icirc;'  # î
+    IUML = '&iuml;'  # ï
+    ETH = '&eth;'  # ð
+    NTILDE = '&ntilde;'  # ñ
+    OGRAVE = '&ograve;'  # ò
+    OACUTE = '&oacute;'  # ó
+    OCIRC = '&ocirc;'  # ô
+    OTILDE = '&otilde;'  # õ
+    OUML = '&ouml;'  # ö
+    OSLASH = '&oslash;'  # ø
+    UGRAVE = '&ugrave;'  # ù
+    UACUTE = '&uacute;'  # ú
+    UCIRC = '&ucirc;'  # û
+    UUML = '&uuml;'  # ü
+    YACUTE = '&yacute;'  # ý
+    THORN = '&thorn;'  # þ
+    YUML = '&yuml;'  # ÿ
 
     # ISO-8859-1 Symbols
     NBSP = '&nbsp;'

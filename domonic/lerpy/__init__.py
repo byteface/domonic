@@ -1,9 +1,10 @@
 import time
-import math
-from typing import Tuple
-
+# import math
+# from typing import Tuple
 
 _start = time.time()
+
+
 def get_timer():
     end = time.time()
     return end - _start

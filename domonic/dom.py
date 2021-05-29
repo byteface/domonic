@@ -457,7 +457,7 @@ class Element(Node):
                     return match
         except Exception as e:
             # print('fail', e)
-            pass # TODO - dont iterate strings
+            pass  # TODO - dont iterate strings
         return False
 
     def _matchElement(self, element, query):
@@ -1006,13 +1006,7 @@ class Document(Element):
     @property
     def body(self):
         """ returns the document's body (the <body> element) """
-        # print("TESTING:::")
-        # print(self)
-        tag = "body"
-        reg = f"(<{tag}.*?>.+?</{tag}>)"
-        pattern = re.compile(reg)
-        tags = re.findall(pattern, str(self))
-        return tags[0]
+        return self.querySelector('body')
 
     @body.setter
     def body(self, content):
