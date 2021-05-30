@@ -487,6 +487,114 @@ class Element(Node):
 
         return False
 
+    def getElementsBySelector(self, all_selectors, document):
+        """
+            Get DOM elements based on the given CSS Selector
+            https://simonwillison.net/2003/Mar/25/getElementsBySelector/ < original author
+            http://www.openjs.com/scripts/dom/css_selector/ < ported to support ','
+            https://bin-co.com/python/scripts/getelementsbyselector-html-css-query.php < ported to py2 (broken/bugs) *BSD LICENSED*
+
+            fixed and ported to py3 here. quite cool means other peoples code works on my dom :)
+            # TODO - needs to work in conjuctions with _matchElement so querySelector works a bit better and dQuery picks it up
+            # TOOD - *= node content
+
+        Args:
+            all_selectors ([type]): [description]
+            document ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        selected = []
+        # import string
+        all_selectors = re.sub(r'\s*([^\w])\s*', r'\1', all_selectors)  # cleann
+        # Grab all of the tagName elements within current context 
+        def getElements(context, tag):
+            if (tag == ""):
+                tag = '*'
+            # Get elements matching tag, filter them for class selector
+            found = []
+            for con in context:
+                elements = con.getElementsByTagName(tag)
+                found.extend(elements)
+            return found
+
+        context = [document]
+        inheriters = str.split(all_selectors, " ")
+        # print(inheriters)
+
+        # Space
+        for element in inheriters:
+            # This part is to make sure that it is not part of a CSS3 Selector
+            left_bracket = str.find(element, "[")
+            right_bracket = str.find(element, "]")
+            pos = str.find(element, "#")  # ID
+            if(pos + 1 and not(pos > left_bracket and pos < right_bracket)):
+                # print('IM A ID')
+                parts = str.split(element, "#")
+                tag = parts[0]
+                id = parts[1]
+                ele = document.getElementById(id)
+                # print('ele::',ele)
+                context = [ele]  # [](ele)
+                continue
+
+            pos = str.find(element, ".")  # Class
+            if(pos + 1 and not(pos > left_bracket and pos < right_bracket)):
+                # print('IM A CLASS')
+                parts = str.split(element, '.')
+                tag = parts[0]
+                class_name = parts[1]
+                # print(context, tag)
+                found = getElements(context, tag)
+                context = []
+                for fnd in found:
+                    if(fnd.getAttribute("class") and re.search(r'(^|\s)' + class_name + '(\s|$)', fnd.getAttribute("class"))):
+                        context.append(fnd)
+
+                continue
+
+            # If the char '[' appears, that means it needs CSS 3 parsing
+            if(str.find(element, '[') + 1):
+                # Code to deal with attribute selectors
+                m = re.match(r'^(\w*)\[(\w+)([=~\|\^\$\*]?)=?[\'"]?([^\]\'"]*)[\'"]?\]$', element)
+                if (m):
+                    tag = m.group(1)
+                    attr = m.group(2)
+                    operator = m.group(3)
+                    value = m.group(4)
+                else:
+                    return "NOPE" #?
+
+                found = getElements(context, tag)
+                context = []
+                for fnd in found:
+                    # print(fnd)
+                    if(operator == '=' and fnd.getAttribute(attr) != value):
+                        continue  # WORKING
+                    if(operator == '~' and not(re.search(r'(^|\\s)' + value + '(\\s|$)', fnd.getAttribute(attr)))):
+                        continue  # NOT WORKING?
+                    if(operator == '|' and not(re.search(r'^' + value + '-?', fnd.getAttribute(attr)))):
+                        continue
+                    if(operator == '^' and str.find(fnd.getAttribute(attr), value) != 0):
+                        continue  # WORKING
+                    if(operator == '$' and str.rfind(fnd.getAttribute(attr), value) != (len(fnd.getAttribute(attr)) - len(value))):
+                        continue  # kinda WORKING
+                    if(operator == '*' and not(str.find(fnd.getAttribute(attr), value) + 1)):
+                        continue  # WORKING
+                    elif(not fnd.getAttribute(attr)):
+                        continue
+                    context.append(fnd)
+
+                continue
+
+            # Tag selectors - no class or id specified.
+            found = getElements(context, element)
+            context = found
+
+        selected.extend(context)
+        return selected
+
     # elem.attachShadow({mode: open|closed})
     def attachShadow(self, obj):
         self.shadowRoot = ShadowRoot(self, obj['mode'])
