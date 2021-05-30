@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: DOM &#8212; domonic 0.3.4 documentation</title>
+    <title>Domonic: DOM &#8212; domonic 0.3.6 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -346,6 +346,36 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 <dt>
 <code class="sig-name descname">getElementsByClassName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">className</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getElementsByClassName"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns a collection of all child elements with the specified class name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getElementsBySelector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">all_selectors</span></em>, <em class="sig-param"><span class="n">document</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getElementsBySelector"><span class="viewcode-link">[source]</span></a></dt>
+<dd><blockquote>
+<div><p>Get DOM elements based on the given CSS Selector
+<a class="reference external" href="https://simonwillison.net/2003/Mar/25/getElementsBySelector/">https://simonwillison.net/2003/Mar/25/getElementsBySelector/</a> &lt; original author
+<a class="reference external" href="http://www.openjs.com/scripts/dom/css_selector/">http://www.openjs.com/scripts/dom/css_selector/</a> &lt; ported to support ‘,’
+<a class="reference external" href="https://bin-co.com/python/scripts/getelementsbyselector-html-css-query.php">https://bin-co.com/python/scripts/getelementsbyselector-html-css-query.php</a> &lt; ported to py2 (broken/bugs) <em>BSD LICENSED</em></p>
+<p>note - always needs a tag in the query
+i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
+<p>fixed and ported to py3 here. quite cool means other peoples code works on my dom :)
+# TODO - needs to work in conjuctions with _matchElement so querySelector works a bit better and dQuery picks it up
+# TOOD - <a href="#id2"><span class="problematic" id="id3">*</span></a>= node content</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>all_selectors</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [description]</p></li>
+<li><p><strong>document</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

@@ -530,6 +530,40 @@ class domonicTestCase(unittest.TestCase):
             )
         )
 
+        from domonic.dQuery import º
+        º(page)
+
+        # print(º('a'))
+        # print(str(page.getElementsBySelector("a[rel=nofollow]", page)[0]))
+        # print(str(page.getElementsBySelector("a", page)))
+
+        # print(º('#team'))
+        # print('xxxxxxxxxxxxxxxxxxxxxxxx')
+        # print(str(page.getElementsBySelector("#team", page)[0]))
+
+        # print(º('#team'))
+        # print('xxxxxxxxxxxxxxxxxxxxxxxx')
+        # print(str(page.getElementsBySelector("#team", page)[0]))
+
+        # print(º('a[rel=nofollow]'))
+        # print(str(page.getElementsBySelector("a[rel=nofollow]", page)[0]))
+
+        # print(º('.fab'))
+        # print(str(page.getElementsBySelector(".fab", page)))
+
+        # print(º('.far'))
+        # print(º('a'))
+        # print(str(page.getElementsBySelector(".fab", page)))
+
+        # if there's a rule.
+        # if its a tag
+
+        # if just class regular seems better
+        #  circular reerence if i use it in query selector for tags.
+
+        # if True:
+            # return
+
         # render( page, 'index.html' )
 
         links = page.getElementsBySelector("a[rel=nofollow]", page)

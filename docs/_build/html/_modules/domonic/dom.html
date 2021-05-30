@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.3.4 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.3.6 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -520,6 +520,118 @@
             <span class="k">pass</span>
 
         <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># @staticmethod</span>
+<div class="viewcode-block" id="Element.getElementsBySelector"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getElementsBySelector">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsBySelector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_selectors</span><span class="p">,</span> <span class="n">document</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Get DOM elements based on the given CSS Selector</span>
+<span class="sd">            https://simonwillison.net/2003/Mar/25/getElementsBySelector/ &lt; original author</span>
+<span class="sd">            http://www.openjs.com/scripts/dom/css_selector/ &lt; ported to support &#39;,&#39;</span>
+<span class="sd">            https://bin-co.com/python/scripts/getelementsbyselector-html-css-query.php &lt; ported to py2 (broken/bugs) *BSD LICENSED*</span>
+
+<span class="sd">            note - always needs a tag in the query</span>
+<span class="sd">            i.e. (&#39;a.classname&#39;) will work. but just (&#39;.classname&#39;) wont</span>
+
+<span class="sd">            fixed and ported to py3 here. quite cool means other peoples code works on my dom :)</span>
+<span class="sd">            # TODO - needs to work in conjuctions with _matchElement so querySelector works a bit better and dQuery picks it up</span>
+<span class="sd">            # TOOD - *= node content</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            all_selectors ([type]): [description]</span>
+<span class="sd">            document ([type]): [description]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">selected</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># import string</span>
+        <span class="n">all_selectors</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*([^\w])\s*&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">all_selectors</span><span class="p">)</span>  <span class="c1"># cleann</span>
+        <span class="c1"># Grab all of the tagName elements within current context </span>
+        <span class="k">def</span> <span class="nf">getElements</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
+            <span class="c1"># Get elements matching tag, filter them for class selector</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">con</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+                <span class="n">elements</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+                <span class="n">found</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">found</span>
+
+        <span class="n">context</span> <span class="o">=</span> <span class="p">[</span><span class="n">document</span><span class="p">]</span>
+        <span class="n">inheriters</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">all_selectors</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="c1"># print(inheriters)</span>
+
+        <span class="c1"># Space</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">inheriters</span><span class="p">:</span>
+            <span class="c1"># This part is to make sure that it is not part of a CSS3 Selector</span>
+            <span class="n">left_bracket</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;[&quot;</span><span class="p">)</span>
+            <span class="n">right_bracket</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;]&quot;</span><span class="p">)</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">)</span>  <span class="c1"># ID</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span><span class="p">(</span><span class="n">pos</span> <span class="o">&gt;</span> <span class="n">left_bracket</span> <span class="ow">and</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="n">right_bracket</span><span class="p">)):</span>
+                <span class="c1"># print(&#39;IM A ID&#39;)</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">)</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="nb">id</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">ele</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">getElementById</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+                <span class="c1"># print(&#39;ele::&#39;,ele)</span>
+                <span class="n">context</span> <span class="o">=</span> <span class="p">[</span><span class="n">ele</span><span class="p">]</span>  <span class="c1"># [](ele)</span>
+                <span class="k">continue</span>
+
+            <span class="n">pos</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>  <span class="c1"># Class</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">pos</span> <span class="o">+</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span><span class="p">(</span><span class="n">pos</span> <span class="o">&gt;</span> <span class="n">left_bracket</span> <span class="ow">and</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="n">right_bracket</span><span class="p">)):</span>
+                <span class="c1"># print(&#39;IM A CLASS&#39;)</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">class_name</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="c1"># print(context, tag)</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="n">getElements</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+                <span class="n">context</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">fnd</span> <span class="ow">in</span> <span class="n">found</span><span class="p">:</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">fnd</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(^|\s)&#39;</span> <span class="o">+</span> <span class="n">class_name</span> <span class="o">+</span> <span class="s1">&#39;(\s|$)&#39;</span><span class="p">,</span> <span class="n">fnd</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">))):</span>
+                        <span class="n">context</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fnd</span><span class="p">)</span>
+
+                <span class="k">continue</span>
+
+            <span class="c1"># If the char &#39;[&#39; appears, that means it needs CSS 3 parsing</span>
+            <span class="k">if</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="s1">&#39;[&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="c1"># Code to deal with attribute selectors</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(\w*)\[(\w+)([=~\|\^\$\*]?)=?[</span><span class="se">\&#39;</span><span class="s1">&quot;]?([^\]</span><span class="se">\&#39;</span><span class="s1">&quot;]*)[</span><span class="se">\&#39;</span><span class="s1">&quot;]?\]$&#39;</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="p">):</span>
+                    <span class="n">tag</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">attr</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="n">operator</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="s2">&quot;NOPE&quot;</span> <span class="c1">#?</span>
+
+                <span class="n">found</span> <span class="o">=</span> <span class="n">getElements</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+                <span class="n">context</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">fnd</span> <span class="ow">in</span> <span class="n">found</span><span class="p">:</span>
+                    <span class="c1"># print(fnd)</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">operator</span> <span class="o">==</span> <span class="s1">&#39;=&#39;</span> <span class="ow">and</span> <span class="n">fnd</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">!=</span> <span class="n">value</span><span class="p">):</span>
+                        <span class="k">continue</span>  <span class="c1"># WORKING</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">operator</span> <span class="o">==</span> <span class="s1">&#39;~&#39;</span> <span class="ow">and</span> <span class="ow">not</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(^|</span><span class="se">\\</span><span class="s1">s)&#39;</span> <span class="o">+</span> <span class="n">value</span> <span class="o">+</span> <span class="s1">&#39;(</span><span class="se">\\</span><span class="s1">s|$)&#39;</span><span class="p">,</span> <span class="n">fnd</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)))):</span>
+                        <span class="k">continue</span>  <span class="c1"># NOT WORKING?</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">operator</span> <span class="o">==</span> <span class="s1">&#39;|&#39;</span> <span class="ow">and</span> <span class="ow">not</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^&#39;</span> <span class="o">+</span> <span class="n">value</span> <span class="o">+</span> <span class="s1">&#39;-?&#39;</span><span class="p">,</span> <span class="n">fnd</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)))):</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">operator</span> <span class="o">==</span> <span class="s1">&#39;^&#39;</span> <span class="ow">and</span> <span class="nb">str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">fnd</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                        <span class="k">continue</span>  <span class="c1"># WORKING</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">operator</span> <span class="o">==</span> <span class="s1">&#39;$&#39;</span> <span class="ow">and</span> <span class="nb">str</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">fnd</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fnd</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">))):</span>
+                        <span class="k">continue</span>  <span class="c1"># kinda WORKING</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">operator</span> <span class="o">==</span> <span class="s1">&#39;*&#39;</span> <span class="ow">and</span> <span class="ow">not</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">fnd</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)):</span>
+                        <span class="k">continue</span>  <span class="c1"># WORKING</span>
+                    <span class="k">elif</span><span class="p">(</span><span class="ow">not</span> <span class="n">fnd</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)):</span>
+                        <span class="k">continue</span>
+                    <span class="n">context</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fnd</span><span class="p">)</span>
+
+                <span class="k">continue</span>
+
+            <span class="c1"># Tag selectors - no class or id specified.</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="n">getElements</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">element</span><span class="p">)</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="n">found</span>
+
+        <span class="n">selected</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">selected</span></div>
 
     <span class="c1"># elem.attachShadow({mode: open|closed})</span>
     <span class="k">def</span> <span class="nf">attachShadow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>

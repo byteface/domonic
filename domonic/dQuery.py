@@ -430,7 +430,17 @@ class dQuery_el():
             self.elements = domonic.domonic.domonify(domonic.domonic.parse(self.q))
         else:
             try:
-                self.elements = self.dom.querySelector(self.q)
+                # element by selector not working on just classes as always needs a tag
+                if self.q[0] == '.':
+
+                    # NOTE - if jquery is not present in a webpage chrome assigns $ to querySelector NOT querySelectorAll
+                    # so differing behaviours may be expected.
+                    # detect if there's a list in each method if not just do it to first item? so it does bit of both? aka .append
+
+                    self.elements = self.dom.querySelectorAll(self.q)
+                    return
+
+                self.elements = self.dom.getElementsBySelector(self.q, self.dom)
             except Exception as e:
                 print('Error. No DOM has been set!!', e)
                 raise e
@@ -490,7 +500,7 @@ class dQuery_el():
         # print(len(self.elements))
         # print(":::::::::::", type(self.elements))
 
-        if type(self.elements) is not tuple:
+        if type(self.elements) is not tuple and type(self.elements) is not list:
             self.elements.innerHTML = self.elements.innerHTML + str(html)
             return self
 

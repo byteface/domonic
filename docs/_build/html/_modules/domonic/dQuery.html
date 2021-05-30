@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dQuery &#8212; domonic 0.3.4 documentation</title>
+    <title>domonic.dQuery &#8212; domonic 0.3.6 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -464,7 +464,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">domonic</span><span class="o">.</span><span class="n">domonify</span><span class="p">(</span><span class="n">domonic</span><span class="o">.</span><span class="n">domonic</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dom</span><span class="o">.</span><span class="n">querySelector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span>
+                <span class="c1"># element by selector not working on just classes as always needs a tag</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+
+                    <span class="c1"># NOTE - if jquery is not present in a webpage chrome assigns $ to querySelector NOT querySelectorAll</span>
+                    <span class="c1"># so differing behaviours may be expected.</span>
+                    <span class="c1"># detect if there&#39;s a list in each method if not just do it to first item? so it does bit of both? aka .append</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dom</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dom</span><span class="o">.</span><span class="n">getElementsBySelector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dom</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error. No DOM has been set!!&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">e</span>
@@ -524,7 +534,7 @@
         <span class="c1"># print(len(self.elements))</span>
         <span class="c1"># print(&quot;:::::::::::&quot;, type(self.elements))</span>
 
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">tuple</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span>
 

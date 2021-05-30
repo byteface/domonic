@@ -487,12 +487,16 @@ class Element(Node):
 
         return False
 
+    # @staticmethod
     def getElementsBySelector(self, all_selectors, document):
         """
             Get DOM elements based on the given CSS Selector
             https://simonwillison.net/2003/Mar/25/getElementsBySelector/ < original author
             http://www.openjs.com/scripts/dom/css_selector/ < ported to support ','
             https://bin-co.com/python/scripts/getelementsbyselector-html-css-query.php < ported to py2 (broken/bugs) *BSD LICENSED*
+
+            note - always needs a tag in the query
+            i.e. ('a.classname') will work. but just ('.classname') wont
 
             fixed and ported to py3 here. quite cool means other peoples code works on my dom :)
             # TODO - needs to work in conjuctions with _matchElement so querySelector works a bit better and dQuery picks it up
