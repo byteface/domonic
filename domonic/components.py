@@ -70,10 +70,6 @@ from domonic.html import *
 # )
 
 
-
-
-
-
 class SpriteCSS(object):
     """ a css sprite sheet.
 
@@ -115,11 +111,11 @@ class SpriteCSS(object):
             to { background-position:-"""+str(steps*width)+"""px -"""+str(y_offset)+"""px; }
         }
     """
-    
+
     def __init__(self, id, width, height, spritesheet, time, steps, loop=True, y_offset=0, bg_color="none"):
         self.id = id
         self.styles = SpriteCSS.STYLE(id, width, height, spritesheet, time, steps, loop, y_offset, bg_color)
-    
+
     def __str__(self):
         return str(
             span(
@@ -140,11 +136,6 @@ class SpriteCSS(object):
 # _ss = TileSet( path )
 
 
-
-
-
-
-
 # WARNING. What is not documented is subject to lots of change!
 # below are just examples of how to build your own components
 # they may be removed in future version.
@@ -163,8 +154,13 @@ class Modal(object):  # TODO - shouldn't this extend dom?
                 div(
                     span("&times;", _class="close", **{"_data-ref": self.reference}),
                     div(self.content),
-                    _class="modal-content"
-                ), _class="modal", _id=self.reference
+                    _class="modal-content",
+                    _style="background-color:#fefefe;margin:15% auto;padding:20px;border:1px solid;width:80%;"
+                ), 
+                _class="modal", 
+                _style="display:none;position:fixed;z-index:1;left:0;top:0;width:100%;height:100%; \
+                    overflow:auto;background-color:rgb(0,0,0);background-color:rgba(0,0,0,0.4);",
+                _id=self.reference
             )
         )
 

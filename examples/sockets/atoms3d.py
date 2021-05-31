@@ -3,7 +3,7 @@ import websockets # you gotta 'pip3 install websockets' for this example.
 import json
 
 import sys
-sys.path.insert(0, '..')
+sys.path.insert(0, '../..')
 
 from domonic.javascript import *
 from domonic.html import *

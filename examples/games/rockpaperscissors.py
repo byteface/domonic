@@ -2,7 +2,7 @@
 # NOTICE THE ENCODING TO ALLOW THE FUNNY CHARS!
 
 import sys
-sys.path.insert(0, '..')
+sys.path.insert(0, '../..')
 
 import random
 from sanic import Sanic, response
@@ -19,7 +19,7 @@ app = Sanic(name='✊✋✌')
 app.static('/assets', './assets')
 
 # create a template
-page_wrapper = lambda content : html(
+page_wrapper = lambda content: html(
             head(
                 script(_src="https://code.jquery.com/jquery-3.5.1.min.js"),
                 link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.MVP),
@@ -63,25 +63,34 @@ async def move(request):
     page = div()
     board = div()
 
-    result = lambda u, c, r : board.appendChild( div( f'You chose {u} ', Char.NBSP, f' I chose {c} ', h4( f'{r}', _id="result")) )
+    result = lambda u, c, r: board.appendChild( div( f'You chose {u} ', Char.NBSP, f' I chose {c} ', h4( f'{r}', _id="result")) )
 
     if choice == "✊":
-            if computer=='✊': result('✊','✊','Draw!')
-            if computer=='✋': result('✊','✋','I win. You lose!')
-            if computer=='✌': result('✊','✌','I lose. You win!')
+        if computer == '✊':
+            result('✊', '✊', 'Draw!')
+        elif computer == '✋':
+            result('✊', '✋', 'I win. You lose!')
+        elif computer == '✌':
+            result('✊', '✌', 'I lose. You win!')
 
-    if choice == "✋":
-            if computer=='✋': result('✋','✋','Draw!')
-            if computer=='✊': result('✋','✊','I lose. You win!')
-            if computer=='✌': result('✋','✌','I win. You lose!')
-        
-    if choice == "✌":
-            if computer=='✌': result('✌','✌','Draw!')
-            if computer=='✊': result('✌','✊','I win. You lose!')
-            if computer=='✋': result('✌','✋','I lose. You win!')
+    elif choice == "✋":
+        if computer == '✋':
+            result('✋', '✋', 'Draw!')
+        elif computer == '✊':
+            result('✋', '✊', 'I lose. You win!')
+        elif computer == '✌':
+            result('✋', '✌', 'I win. You lose!')
+
+    elif choice == "✌":
+        if computer == '✌':
+            result('✌', '✌', 'Draw!')
+        elif computer == '✊':
+            result('✌', '✊', 'I win. You lose!')
+        elif computer == '✋':
+            result('✌', '✋', 'I lose. You win!')
 
     page.appendChild(board)
-    return response.html(str(main( str(page), _id="game")))
+    return response.html(str(main(str(page), _id="game")))
 
 
 @app.route('/')
@@ -90,7 +99,7 @@ async def play(request):
     intro = header(
         h1("✊✋✌!"),
         h2("Wanna play?"),
-        div( "type 'r' for Rock ✊", br(), "'p' for Paper ✋", br(), "Or 's' for Scissors ✌"),
+        div("type 'r' for Rock ✊", br(), "'p' for Paper ✋", br(), "Or 's' for Scissors ✌"),
         main(_id="game")
     )
     return response.html(str(page_wrapper(intro)))
