@@ -160,6 +160,8 @@ class MouseEvent(Event):
         # self.kwargs = kwargs
         self.x = 0
         self.y = 0
+        self._clientX = 0
+        self._clientX = 0
         self._altKey = False
         self._ctrlKey = False
         self._shiftKey = False
@@ -173,7 +175,7 @@ class MouseEvent(Event):
                         detail=None, screenX=0, screenY=0, clientX=0, clientY=0,
                         ctrlKey=False, altKey=False, shiftKey=False, metaKey=False,
                         button=None, relatedTarget=None, from_json={}, *args, **kwargs):
-        print('initMouseEvent')
+        # print('initMouseEvent')
         self._type = _type
         self.canBubble = canBubble
         self.cancelable = cancelable
@@ -181,13 +183,13 @@ class MouseEvent(Event):
         self.detail = detail
         self.screenX = screenX
         self.screenY = screenY
-        self.clientX = clientX
-        self.clientY = clientY
-        self.ctrlKey = ctrlKey
-        self.altKey = altKey
-        self.shiftKey = shiftKey
-        self.metaKey = metaKey
-        self.button = button
+        self._clientX = clientX
+        self._clientY = clientY
+        self._ctrlKey = ctrlKey
+        self._altKey = altKey
+        self._shiftKey = shiftKey
+        self._metaKey = metaKey
+        self._button = button
         self.relatedTarget = relatedTarget
         # TODO - parse from_json - so can relay
 
@@ -352,13 +354,9 @@ class WheelEvent(Event):
 
     def __init__(self, _type, *args, **kwargs):
         self.deltaX = None
-        """ Returns the horizontal scroll amount of a mouse wheel (x-axis) """
         self.deltaY = None
-        """ Returns the vertical scroll amount of a mouse wheel (y-axis) """
         self.deltaZ = None
-        """ Returns the scroll amount of a mouse wheel for the z-axis """
         self.deltaMode = None
-        """ Returns a number that represents the unit of measurements for delta values (pixels, lines or pages) """
         super().__init__(_type, *args, **kwargs)
 
 
@@ -437,7 +435,6 @@ class BeforeUnloadEvent(Event):
 
 
 class SVGEvent(Event):
-    TIMER = "svg"
     """ SVGEvent """
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
@@ -455,6 +452,7 @@ class DragEvent(Event):
     DRAG = "drag"
     END = "dragend"
     ENTER = "dragenter"
+    EXIT = "dragexit"
     LEAVE = "dragleave"
     OVER = "dragover"
     START = "dragstart"
@@ -472,9 +470,7 @@ class HashChangeEvent(Event):
 
     def __init__(self, _type, *args, **kwargs):
         self.newURL = None
-        """ Returns the URL of the document, after the hash has been changed """
-        self.oldURL
-        """ Returns the URL of the document, before the hash was changed """
+        self.oldURL = None
         super().__init__(_type, *args, **kwargs)
 
 
@@ -559,6 +555,15 @@ class CustomEvent(Event):
         pass
 
 
+class GamePadEvent(Event):
+    """ GamePadEvent """
+    START = "gamepadconnected"
+    STOP = "gamepaddisconnected"
+    def __init__(self, _type, *args, **kwargs):
+        self.gamepad = None
+        super().__init__(_type, *args, **kwargs)
+
+
 class TweenEvent(Event):
     """ TweenEvent """
     START = "onStart"
@@ -587,247 +592,350 @@ class TweenEvent(Event):
         self.source = source
 
 
-class GlobalEventHandler:
+class GlobalEventHandler:  # (EventDispatcher):
 
-    def onabort(self):
+    # def __init__(self):
+    #     super().__init__(self)
+    #     self.addEventListener(KeyboardEvent.KEYDOWN, self.onkeydown)
+    #     self.addEventListener(KeyboardEvent.KEYUP, self.onkeyup)
+
+    #     self.addEventListener(MouseEvent.MOUSEMOVE, self.onmousemove)
+    #     self.addEventListener(MouseEvent.MOUSEDOWN, self.onmousedown)
+    #     self.addEventListener(MouseEvent.MOUSEUP, self.onmouseup)
+
+    #     self.addEventListener(DragEvent.DRAG, self.ondrag)
+    #     self.addEventListener(DragEvent.END, self.ondragend)
+    #     self.addEventListener(DragEvent.ENTER, self.ondragenter)
+    #     self.addEventListener(DragEvent.EXIT, self.ondragexit)
+    #     self.addEventListener(DragEvent.LEAVE, self.ondragleave)
+    #     self.addEventListener(DragEvent.OVER, self.ondragover)
+    #     self.addEventListener(DragEvent.START, self.ondragstart)
+    #     self.addEventListener(DragEvent.DROP, self.ondrop)
+
+    #     self.addEventListener(ClipboardEvent.CUT, self.oncut)
+    #     self.addEventListener(ClipboardEvent.COPY, self.oncopy)
+    #     self.addEventListener(ClipboardEvent.PASTE, self.onpaste)
+
+    def onabort(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onblur(self):
+    def onblur(self, event):
+        print(event)
         raise NotImplementedError
 
-    def oncancel(self):
+    def oncancel(self, event):
+        print(event)
         raise NotImplementedError
 
-    def oncanplay(self):
+    def oncanplay(self, event):
+        print(event)
         raise NotImplementedError
 
-    def oncanplaythrough(self):
+    def oncanplaythrough(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onchange(self):
+    def onchange(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onclick(self):
+    def onclick(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onclose(self):
+    def onclose(self, event):
+        print(event)
         raise NotImplementedError
 
-    def oncontextmenu(self):
+    def oncontextmenu(self, event):
+        print(event)
         raise NotImplementedError
 
-    def oncuechange(self):
+    def oncuechange(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ondblclick(self):
+    def ondblclick(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ondrag(self):
+    def ondrag(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ondragend(self):
+    def ondragend(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ondragenter(self):
+    def ondragenter(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ondragexit(self):
+    def ondragexit(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ondragleave(self):
+    def ondragleave(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ondragover(self):
+    def ondragover(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ondragstart(self):
+    def ondragstart(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ondrop(self):
+    def ondrop(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ondurationchange(self):
+    def ondurationchange(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onemptied(self):
+    def onemptied(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onended(self):
+    def onended(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onerror(self):
+    def onerror(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onfocus(self):
+    def onfocus(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ongotpointercapture(self):
+    def ongotpointercapture(self, event):
+        print(event)
         raise NotImplementedError
 
-    def oninput(self):
+    def oninput(self, event):
+        print(event)
         raise NotImplementedError
 
-    def oninvalid(self):
+    def oninvalid(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onkeydown(self):
+    def onkeydown(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onkeypress(self):
+    def onkeypress(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onkeyup(self):
+    def onkeyup(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onload(self):
+    def onload(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onloadeddata(self):
+    def onloadeddata(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onloadedmetadata(self):
+    def onloadedmetadata(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onloadend(self):
+    def onloadend(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onloadstart(self):
+    def onloadstart(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onlostpointercapture(self):
+    def onlostpointercapture(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onmouseenter(self):
+    def onmouseenter(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onmouseleave(self):
+    def onmouseleave(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onmousemove(self):
+    def onmousemove(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onmouseout(self):
+    def onmouseout(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onmouseover(self):
+    def onmouseover(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onmouseup(self):
+    def onmouseup(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onpause(self):
+    def onpause(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onplay(self):
+    def onplay(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onplaying(self):
+    def onplaying(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onpointercancel(self):
+    def onpointercancel(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onpointerdown(self):
+    def onpointerdown(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onpointerenter(self):
+    def onpointerenter(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onpointerleave(self):
+    def onpointerleave(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onpointermove(self):
+    def onpointermove(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onpointerout(self):
+    def onpointerout(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onpointerover(self):
+    def onpointerover(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onpointerup(self):
+    def onpointerup(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onprogress(self):
+    def onprogress(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onratechange(self):
+    def onratechange(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onreset(self):
+    def onreset(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onresize(self):
+    def onresize(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onscroll(self):
+    def onscroll(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onseeked(self):
+    def onseeked(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onseeking(self):
+    def onseeking(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onselect(self):
+    def onselect(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onselectionchange(self):
+    def onselectionchange(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onselectstart(self):
+    def onselectstart(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onshow(self):
+    def onshow(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onstalled(self):
+    def onstalled(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onsubmit(self):
+    def onsubmit(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onsuspend(self):
+    def onsuspend(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ontimeupdate(self):
+    def ontimeupdate(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onvolumechange(self):
+    def onvolumechange(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onwaiting(self):
+    def onwaiting(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onwheel(self):
+    def onwheel(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onanimationcancel(self):
+    def onanimationcancel(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onanimationend(self):
+    def onanimationend(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onanimationiteration(self):
+    def onanimationiteration(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onauxclick(self):
+    def onauxclick(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onformdata(self):
+    def onformdata(self, event):
+        print(event)
         raise NotImplementedError
 
-    def onmousedown(self):
+    def onmousedown(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ontouchcancel(self):
+    def ontouchcancel(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ontouchstart(self):
+    def ontouchstart(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ontransitioncancel(self):
+    def ontransitioncancel(self, event):
+        print(event)
         raise NotImplementedError
 
-    def ontransitionend(self):
+    def ontransitionend(self, event):
+        print(event)
         raise NotImplementedError

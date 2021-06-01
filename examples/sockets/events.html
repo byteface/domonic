@@ -1,0 +1,99 @@
+<html><head><title>Test Capturing Browser Events</title></head><script src="https://code.jquery.com/jquery-3.5.1.min.js"></script><body><script>
+            const socket = new WebSocket("ws://0.0.0.0:5555");
+
+            function stringify_object(object, depth=0, max_depth=2) {
+                //console.log(object);
+                // change max_depth to see more levels, for a touch event, 2 is good
+                if (depth > max_depth)
+                    return 'Object';
+
+                const obj = {};
+                for (let key in object) {
+                    let value = object[key];
+                    if (value instanceof Node)
+                        // specify which properties you want to see from the node
+                        value = {id: value.id};
+                    else if (value instanceof Window)
+                        value = 'Window';
+                    else if (value instanceof Object)
+                        value = stringify_object(value, depth+1, max_depth);
+
+                    if(key=="originalEvent"){ // note im stripping this one off
+                        continue;
+                    }
+                    obj[key] = value;
+                }
+                return depth? obj: JSON.stringify(obj);
+            }
+
+            $(document).ready(function(){ 
+
+            
+            $("body").on("mousedown", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            $("body").on("mousemove", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            $("body").on("mouseup", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            $("body").on("keydown", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            $("body").on("keyup", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            window.addEventListener('wheel', function(){
+                socket.send( stringify_object(event) );
+            }, false);
+            
+            window.addEventListener('cut', function(){
+                socket.send( stringify_object(event) );
+            }, false);
+            window.addEventListener('copy', function(){
+                socket.send( stringify_object(event) );
+            }, false);
+            window.addEventListener('paste', function(){
+                socket.send( stringify_object(event) );
+            }, false);
+            
+            $("body").on("drag", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            $("body").on("dragend", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            $("body").on("dragenter", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            $("body").on("dragleave", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            $("body").on("dragover", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            $("body").on("dragstart", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            $("body").on("drop", function(event){
+                socket.send( stringify_object(event) );
+            });
+            
+            window.addEventListener('hashchange', function(){
+                socket.send( stringify_object(event) );
+            }, false);
+            
+            
+            });</script><div class="dropzone"><div id="draggable" draggable="true" ondragstart="event.dataTransfer.setData('text/plain',null)">This div is draggable</div></div><div class="dropzone"></div></body></html>

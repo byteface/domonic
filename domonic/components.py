@@ -1,9 +1,299 @@
 import base64
+import json
+
 from domonic.html import *
+from domonic.events import *
+
+
+class Websocket(object):
+    """[Creates a websocket with listeners for particular events]
+
+    # TODO - collect other or all Window data and pass to a window object
+
+    Args:
+        str ([reference]): [the javascript variable name given to the socket]
+        str ([address]): [where you want to connect to]
+        str ([target]): [the dom element to attach the listeners to]
+    """
+
+    @staticmethod
+    def get_event(msg):
+        evt = None
+        try:
+            dom_event = json.loads(msg)
+        except Exception as e:
+            return # pass on non json message
+
+        # print(msg)
+        event_string = dom_event['type']
+
+        if event_string == "keydown" or event_string == "keyup":
+            evt = KeyboardEvent(event_string)
+            evt.keyCode = dom_event['keyCode']
+            evt.charCode = dom_event['charCode']
+            evt.code = dom_event['code']
+            evt.key = dom_event['key']
+
+        elif event_string == 'mousedown' or event_string == 'mouseup' or event_string == "mousemove":
+            evt = MouseEvent(event_string)
+            evt.initMouseEvent(_type=event_string, screenX=dom_event['screenX'], screenY=dom_event['screenY'],
+                            clientX=dom_event['clientX'], clientY=dom_event['clientY'],
+                            ctrlKey=dom_event['ctrlKey'], altKey=dom_event['altKey'], shiftKey=dom_event['shiftKey'])
+
+        elif event_string in ["drag", "dragend", "dragenter", "dragexit", "dragleave", "dragover", "dragstart", "drop"]:
+            evt = DragEvent(event_string)
+            try:
+                evt.dataTransfer = dom_event['dataTransfer']
+            except Exception as e:
+                pass
+
+        elif event_string == "hashchange":
+            # print(dom_event)
+            evt = HashChangeEvent(event_string)
+            evt.oldURL = dom_event['oldURL']
+            evt.newURL = dom_event['newURL']
+
+        elif event_string == 'cut' or event_string == 'copy' or event_string == "paste":
+            # print("SUP::",event_string, dom_event)
+            evt = ClipboardEvent(event_string)
+            evt.clipboardData = dom_event['clipboardData']
+
+        elif event_string == 'wheel':
+            evt = WheelEvent(event_string)
+            # print(evt)
+            # print(dom_event)
+            evt.deltaX = dom_event['deltaX']
+            evt.deltaY = dom_event['deltaY']
+            evt.deltaZ = dom_event['deltaZ']
+            evt.deltaMode = dom_event['deltaMode']
+            #?? TODO - no deltaX? - myabe stripped by stringify? was on wrong target
+
+        return evt
+
+
+    def __init__(self, reference='socket', address='ws://0.0.0.0:5555', target="body",
+                    mouse_events=True,
+                    keyboard_events=True,
+                    ui_events=False,
+                    focus_events=False,
+                    touch_events=False,
+                    wheel_events=False,
+                    animation_events=False,
+                    clipboard_events=False,
+                    error_events=False,
+                    submit_events=False,
+                    pointer_events=False,
+                    before_unload_events=False,
+                    SVG_events=False,
+                    timer_events=False,
+                    drag_events=False,
+                    hashchange_events=False,
+                    input_events=False,
+                    page_transition_events=False,
+                    popstate_events=False,
+                    storage_events=False,
+                    transition_events=False,
+                    progress_events=False):
+
+        self.reference = reference
+        self.address = address
+        self.mouse_events = mouse_events
+        self.keyboard_events = keyboard_events
+        self.ui_events = ui_events
+        self.focus_events = focus_events
+        self.touch_events = touch_events
+        self.wheel_events = wheel_events
+        self.animation_events = animation_events
+        self.clipboard_events = clipboard_events
+        self.error_events = error_events
+        self.submit_events = submit_events
+        self.pointer_events = pointer_events
+        self.before_unload_events = before_unload_events
+        self.SVG_events = SVG_events
+        self.timer_events = timer_events
+        self.drag_events = drag_events
+        self.hashchange_events = hashchange_events
+        self.input_events = input_events
+        self.page_transition_events = page_transition_events
+        self.popstate_events = popstate_events
+        self.storage_events = storage_events
+        self.transition_events = transition_events
+        self.progress_events = progress_events
+
+    def _add_listener(self, event, target='body'):
+        return str('''
+            $("''' + target + '''").on("''' + event + '''", function(event){
+                socket.send( stringify_object(event) );
+            });
+            '''
+        )
+        # TODO - no jquery. detect targets and use # addEventListener
+
+    def __str__(self):
+        events = ''
+        if self.mouse_events:
+            events += self._add_listener('mousedown')
+            events += self._add_listener('mousemove')
+            events += self._add_listener('mouseup')
+        if self.keyboard_events:
+            events += self._add_listener('keydown')
+            events += self._add_listener('keyup')
+        if self.ui_events:  # https://www.w3schools.com/jsref/obj_uievent.asp
+            events += self._add_listener('abort')
+            events += self._add_listener('beforeunload')
+            events += self._add_listener('error')
+            events += self._add_listener('load')
+            events += self._add_listener('resize')
+            events += self._add_listener('scroll')
+            events += self._add_listener('select')
+            events += self._add_listener('unload')
+        if self.focus_events:
+            events += self._add_listener('blur')
+            events += self._add_listener('focus')
+            events += self._add_listener('focusin')
+            events += self._add_listener('focusout')
+        if self.touch_events:
+            events += self._add_listener('touchstart')
+            events += self._add_listener('touchend')
+            events += self._add_listener('touchmove')
+            events += self._add_listener('touchcancel')
+        if self.wheel_events:
+            # events += self._add_listener('wheel')
+            events += '''
+            window.addEventListener('wheel', function(){
+                socket.send( stringify_object(event) );
+            }, false);
+            '''
+        if self.animation_events:
+            events += self._add_listener('animationend')
+            events += self._add_listener('animationiteration')
+            events += self._add_listener('animationstart')
+        if self.clipboard_events:
+            # events += self._add_listener('copy')
+            # events += self._add_listener('cut')
+            # events += self._add_listener('paste')
+            events += '''
+            window.addEventListener('cut', function(){
+                socket.send( stringify_object(event) );
+            }, false);
+            window.addEventListener('copy', function(){
+                socket.send( stringify_object(event) );
+            }, false);
+            window.addEventListener('paste', function(){
+                socket.send( stringify_object(event) );
+            }, false);
+            '''
+        # if self.error_events:
+        # events += self._add_listener('')
+        if self.submit_events:
+            events += self._add_listener('submit')
+        # if self.pointer_events:
+            # events += '''
+            # $("body").on("keydown", function(event){
+            #     socket.send( stringify_object(event) );
+            # })
+            # $("body").on("keyup", function(event){
+            #     socket.send( stringify_object(event) );
+            # })
+            # '''
+        # if self.before_unload_events:
+            # events += '''
+            # $("body").on("keydown", function(event){
+            #     socket.send( stringify_object(event) );
+            # })
+            # $("body").on("keyup", function(event){
+            #     socket.send( stringify_object(event) );
+            # })
+            # '''
+        # if self.SVG_events:
+            # events += '''
+            # $("body").on("keydown", function(event){
+            #     socket.send( stringify_object(event) );
+            # })
+            # $("body").on("keyup", function(event){
+            #     socket.send( stringify_object(event) );
+            # })
+            # '''
+        # if self.timer_events:
+            # events += '''
+            # $("body").on("keydown", function(event){
+            #     socket.send( stringify_object(event) );
+            # })
+            # $("body").on("keyup", function(event){
+            #     socket.send( stringify_object(event) );
+            # })
+            # '''
+        if self.drag_events:
+            events += self._add_listener('drag')
+            events += self._add_listener('dragend')
+            events += self._add_listener('dragenter')
+            events += self._add_listener('dragleave')
+            events += self._add_listener('dragover')
+            events += self._add_listener('dragstart')
+            events += self._add_listener('drop')
+        if self.hashchange_events:
+            # events += self._add_listener('hashchange', "window")
+            events += '''
+            window.addEventListener('hashchange', function(){
+                socket.send( stringify_object(event) );
+            }, false);
+            '''
+        if self.input_events:
+            events += self._add_listener('input')
+        if self.page_transition_events:
+            events += self._add_listener('pagehide')
+            events += self._add_listener('pageshow')
+        if self.popstate_events:
+            events += self._add_listener('popstate')
+        if self.storage_events:
+            events += self._add_listener('storage')
+        if self.transition_events:
+            events += self._add_listener('transitionend')
+        if self.progress_events:
+            events += self._add_listener('error')
+            events += self._add_listener('loadstart')
+
+        return str(
+            script('''
+            const socket = new WebSocket("''' + self.address + '''");
+
+            function stringify_object(object, depth=0, max_depth=2) {
+                //console.log(object);
+                // change max_depth to see more levels, for a touch event, 2 is good
+                if (depth > max_depth)
+                    return 'Object';
+
+                const obj = {};
+                for (let key in object) {
+                    let value = object[key];
+                    if (value instanceof Node)
+                        // specify which properties you want to see from the node
+                        value = {id: value.id};
+                    else if (value instanceof Window)
+                        value = 'Window';
+                    else if (value instanceof Object)
+                        value = stringify_object(value, depth+1, max_depth);
+
+                    if(key=="originalEvent"){ // note im stripping this one off
+                        continue;
+                    }
+                    obj[key] = value;
+                }
+                return depth? obj: JSON.stringify(obj);
+            }
+
+            $(document).ready(function(){ 
+
+            ''' + events + """
+            
+            });"""
+            )
+        )
+
+
 
 # class Video():
 # class Sound():
-# class Socket(self):
 # def JS(self, thing):
 #     	if '.js' in thing[0:15]:
 # 		return script( _src=thing )
@@ -12,62 +302,6 @@ from domonic.html import *
 # 	if '/' in thing[0:15]:
 # 		return link( _rel="stylesheet", _href=f"{thing}" )
 # 	return script(thing)
-
-# class Triggered():
-#     # adds listeners for mouse and keys and connects a socket
-#     def __init__(self, keyboard=True, mouse=True, domain="0.0.0.0", port=5555):
-#         self.keyboard=keyboard
-#         self.mouse=mouse
-#         self.domain
-#         self.port
-    
-#     def __str__(self):
-#         return str(
-#             span(
-#                 style(self.styles),
-#                 div(_class=self.id)
-#             )
-#         )
-#     script('''
-#     const socket = new WebSocket('ws://'''+self.domain+''':'''+self.port+'''');
-#     // socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
-
-#     $(document).ready(function() { 
-#         $("document")[0].oncontextmenu = function() {return false;} 
-#         //$("document").on('mousedown', function(event)
-#         //$("document").on('mouseup', function(event)
-#         //$("document").on('mouseup', function(event)
-#         //$("document").on('click', function(event){ 
-#         //$("document").on('dblclick', function(event){ 
-
-#         $("document").on('mousedown', function(event){ 
-#             var bounds = this.getBoundingClientRect();
-#             var x = (event.clientX - bounds.left) / this.clientWidth;
-#             var y = (event.clientY - bounds.top) / this.clientHeight;
-
-            # if use_sockets:
-#             socket.send( '{"x":' + x + ', "y":' + y + '}' );
-            # else
-#             # TODO $ ajax call to /controls
-#         }); 
-        
-#         $("document").on("keydown", function(event){
-#             console.log(event);
-
-#         })
-#         $("document").on("keyup", function(event){
-            
-#         })
-
-#         $("document").on("mousemove", function(event){
-#             var bounds = this.getBoundingClientRect();
-#             var x = (event.clientX - bounds.left) / this.clientWidth;
-#             var y = (event.clientY - bounds.top) / this.clientHeight;
-#         })
-
-#     });
-# '''
-# )
 
 
 class SpriteCSS(object):
@@ -185,7 +419,7 @@ class Webpage(object):  # TODO - shouldn't this extend html?
 
             // When the user clicks anywhere outside of the modal, close it
             //window.onclick = function(event) {
-            //    if (event.target == modal) {
+            //    if (event.targeevent_string == modal) {
             //        modal.style.display = "none";
             //    }
             //}
@@ -243,28 +477,3 @@ class Webpage(object):  # TODO - shouldn't this extend html?
                 body(div(self.content, _class="domonic-container"))
             )
         )
-
-
-'''
-def create_element(_type, *args, **kwargs):
-    # TODO - check if a component exists..
-    # TODO - check if a div exists
-    # if not create a new tag type < orignal
-    new_tag = type(_type, (closed_tag, Element), {'name': _type, '__init__': tag_init})
-    return new_tag
-
-
-el = create_element
-
-
-def clone_element():
-    pass
-
-
-def is_valid_element():
-    pass
-
-
-def create_ref():
-    pass
-'''
