@@ -41,13 +41,19 @@ class domonicTestCase(unittest.TestCase):
         pass
 
     def test_dQuery_add(self):
+        # test = º('<p></p>').add('<h1>').add(div())
+        # print(test)
         pass
 
     def test_dQuery_addBack(self):
         pass
 
     def test_dQuery_addClass(self):
-        pass
+        a = º('<div id="test2"></div><div id="test3"></div>')
+        a.addClass('one').addClass('two').addClass('three')
+        print(a)
+        for el in a.elements:
+            print(el.getAttribute("class"))
 
     def test_dQuery_after(self):
         pass
@@ -90,7 +96,14 @@ class domonicTestCase(unittest.TestCase):
         pass
 
     def test_dQuery_attr(self):
-        pass
+        a = º('<div id="test2"></div>')
+        a.addClass('one').addClass('two').addClass('three')
+        print('================')
+        print(a.attr('id'))
+        print(a.attr('class'))
+        print(a.attr('id', 'somethingelse'))
+        print(a.elements[0])
+        print('================')
 
     def test_dQuery_before(self):
         pass
@@ -210,7 +223,11 @@ class domonicTestCase(unittest.TestCase):
         pass
 
     def test_dQuery_hasClass(self):
-        pass
+        a = º('<div id="test2"></div>')
+        a.addClass('one').addClass('two').addClass('three')
+        print(a.hasClass('one'))
+        print(a.hasClass('five'))
+
 
     def test_dQuery_height(self):
         pass
@@ -252,7 +269,8 @@ class domonicTestCase(unittest.TestCase):
         pass
 
     def test_dQuery_last(self):
-        pass
+        things = º('<li></li><li></li><li></li><li></li><li></li>')
+        print(things.last())
 
     def test_dQuery_length(self):
         pass
@@ -372,7 +390,13 @@ class domonicTestCase(unittest.TestCase):
         pass
 
     def test_dQuery_removeClass(self):
-        pass
+        a = º('<div id="test2"></div>')
+        a.addClass('one').addClass('two').addClass('three')
+        print('================')
+        print(a.hasClass('one'))
+        print(a.removeClass('one'))
+        print(a.hasClass('one'))
+        print('================')
 
     def test_dQuery_removeData(self):
         pass
@@ -402,7 +426,21 @@ class domonicTestCase(unittest.TestCase):
         pass
 
     def test_dQuery_serialize(self):
-        pass
+        page = html(form(
+            select(_name="single",).html(
+                option("Single", _selected=True),
+                option("Single2")
+            ),
+            br(),
+            select(_name="multiple", _multiple="multiple").html(
+                option("Multiple", _selected="selected"),
+                option("Multiple2"),
+                option("Multiple3", _selected="selected")
+            ),
+            input(_type="text", _id="lname", _name="lname")
+        ))
+        º(page)
+        print(º('form').serialize())
 
     def test_dQuery_serializeArray(self):
         pass
@@ -534,7 +572,6 @@ class domonicTestCase(unittest.TestCase):
         # º.inArray()
         # º.isArray()
         # º.isEmptyObject()
-        # º.isFunction()
         # º.isNumeric()
         # º.isPlainObject()
         # º.isWindow()

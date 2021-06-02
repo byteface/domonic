@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dQuery &#8212; domonic 0.3.7 documentation</title>
+    <title>domonic.dQuery &#8212; domonic 0.3.8 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -479,17 +479,40 @@
                 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error. No DOM has been set!!&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">e</span>
 
-<div class="viewcode-block" id="dQuery_el.add"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.add"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elements</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Create a new dQuery object with elements added to the set of matched elements.&quot;&quot;&quot;</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        dq = None</span>
+<span class="sd">        if type(elements) == str:</span>
+<span class="sd">            dq = º(elements).elements</span>
+<span class="sd">        </span>
+<span class="sd">        if type(dq) not in [list, tuple]:</span>
+<span class="sd">            dq = [dq]</span>
+
+<span class="sd">        if type(self.elements) not in [list, tuple]:</span>
+<span class="sd">            self.elements = [self.elements]</span>
+
+<span class="sd">        # if type(dq) not in [list, tuple]:</span>
+<span class="sd">            # self.elements = [self.elements]</span>
+
+<span class="sd">        self.elements = list(self.elements) + list(dq)</span>
+<span class="sd">        return self</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># return self</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.addBack"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.addBack">[docs]</a>    <span class="k">def</span> <span class="nf">addBack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Add the previous set of elements on the stack to the current set, optionally filtered by a selector.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="dQuery_el.addClass"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.addClass">[docs]</a>    <span class="k">def</span> <span class="nf">addClass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.addClass"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.addClass">[docs]</a>    <span class="k">def</span> <span class="nf">addClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adds the specified class to each element in the set of matched elements.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">el</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">el</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="dQuery_el.after"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.after">[docs]</a>    <span class="k">def</span> <span class="nf">after</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Insert content, specified by the parameter, after each element in the set of matched elements.&quot;&quot;&quot;</span>
@@ -545,13 +568,21 @@
         <span class="c1"># print(&#39;APPEND SAYS:&#39;, self.elements)</span>
         <span class="c1"># return self</span>
 
-<div class="viewcode-block" id="dQuery_el.appendTo"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.appendTo">[docs]</a>    <span class="k">def</span> <span class="nf">appendTo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.appendTo"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.appendTo">[docs]</a>    <span class="k">def</span> <span class="nf">appendTo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Insert every element in the set of matched elements to the end of the target.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="n">target</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span>
+        <span class="k">return</span> <span class="n">target</span></div>
 
-<div class="viewcode-block" id="dQuery_el.attr"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.attr">[docs]</a>    <span class="k">def</span> <span class="nf">attr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.attr"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.attr">[docs]</a>    <span class="k">def</span> <span class="nf">attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the value of an attribute for the first element in the set of matched elements or set one or more attributes for every matched element.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">tuple</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="dQuery_el.before"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.before">[docs]</a>    <span class="k">def</span> <span class="nf">before</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Insert content, specified by the parameter, before each element in the set of matched elements.&quot;&quot;&quot;</span>
@@ -602,9 +633,9 @@
         <span class="sd">&quot;&quot;&quot; Bind an event handler to the “contextmenu” JavaScript event, or trigger that event on an element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="dQuery_el.css"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.css">[docs]</a>    <span class="k">def</span> <span class="nf">css</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.css"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.css">[docs]</a>    <span class="k">def</span> <span class="nf">css</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the value of a computed style property for the first element in the set of matched elements or set one or more CSS properties for every matched element.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="dQuery_el.data"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Store arbitrary data associated with the matched elements or return the value at the named data store for the first element in the set of matched elements.&quot;&quot;&quot;</span>
@@ -646,9 +677,9 @@
         <span class="sd">&quot;&quot;&quot; End the most recent filtering operation in the current chain and return the set of matched elements to its previous state.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="dQuery_el.eq"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.eq">[docs]</a>    <span class="k">def</span> <span class="nf">eq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.eq"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.eq">[docs]</a>    <span class="k">def</span> <span class="nf">eq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reduce the set of matched elements to the one at the specified index.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="dQuery_el.error"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Bind an event handler to the “error” JavaScript event.&quot;&quot;&quot;</span>
@@ -688,7 +719,9 @@
 
 <div class="viewcode-block" id="dQuery_el.first"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.first">[docs]</a>    <span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reduce the set of matched elements to the first in the set.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="dQuery_el.focus"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.focus">[docs]</a>    <span class="k">def</span> <span class="nf">focus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Bind an event handler to the “focus” JavaScript event, or trigger that event on an element.&quot;&quot;&quot;</span>
@@ -710,9 +743,13 @@
         <span class="sd">&quot;&quot;&quot; Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="dQuery_el.hasClass"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.hasClass">[docs]</a>    <span class="k">def</span> <span class="nf">hasClass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.hasClass"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.hasClass">[docs]</a>    <span class="k">def</span> <span class="nf">hasClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Determine whether any of the matched elements are assigned the given class.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">classname</span> <span class="ow">in</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="dQuery_el.height"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.height">[docs]</a>    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the current computed height for the first element in the set of matched elements or set the height of every matched element.&quot;&quot;&quot;</span>
@@ -774,7 +811,9 @@
 
 <div class="viewcode-block" id="dQuery_el.last"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.last">[docs]</a>    <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reduce the set of matched elements to the final one in the set.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -894,7 +933,7 @@
             <span class="n">el</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="n">html</span> <span class="o">+</span> <span class="n">el</span><span class="o">.</span><span class="n">innerHTML</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="dQuery_el.prependTo"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.prependTo">[docs]</a>    <span class="k">def</span> <span class="nf">prependTo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.prependTo"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.prependTo">[docs]</a>    <span class="k">def</span> <span class="nf">prependTo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Insert every element in the set of matched elements to the beginning of the target.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
@@ -914,9 +953,16 @@
         <span class="sd">&quot;&quot;&quot; Return a Promise object to observe when all actions of a certain type bound to the collection, queued or not, have finished.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="dQuery_el.prop"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.prop">[docs]</a>    <span class="k">def</span> <span class="nf">prop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.prop"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.prop">[docs]</a>    <span class="k">def</span> <span class="nf">prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the value of a property for the first element in the set of matched elements or set one or more properties for every matched element.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">tuple</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="dQuery_el.pushStack"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.pushStack">[docs]</a>    <span class="k">def</span> <span class="nf">pushStack</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Add a collection of DOM elements onto the dQuery stack.&quot;&quot;&quot;</span>
@@ -938,9 +984,15 @@
         <span class="sd">&quot;&quot;&quot; Remove an attribute from each element in the set of matched elements.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="dQuery_el.removeClass"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.removeClass">[docs]</a>    <span class="k">def</span> <span class="nf">removeClass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.removeClass"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.removeClass">[docs]</a>    <span class="k">def</span> <span class="nf">removeClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Remove a single class, multiple classes, or all classes from each element in the set of matched elements.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">classname</span> <span class="ow">in</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">):</span>
+                    <span class="n">removed</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">classname</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">removed</span> <span class="o">=</span> <span class="n">removed</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;  &#39;</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                    <span class="n">el</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="n">removed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="dQuery_el.removeData"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.removeData">[docs]</a>    <span class="k">def</span> <span class="nf">removeData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Remove a previously-stored piece of data.&quot;&quot;&quot;</span>
@@ -980,7 +1032,43 @@
 
 <div class="viewcode-block" id="dQuery_el.serialize"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Encode a set of form elements as a string for submission.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="c1"># raise NotImplementedError</span>
+        <span class="c1"># from domonic.javascript import Global</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="p">):</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span>
+
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">!=</span> <span class="s2">&quot;FORM&quot;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">form</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            
+            <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="s1">&#39;INPUT&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">,</span><span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="s1">&#39;hidden&#39;</span><span class="p">,</span><span class="s1">&#39;password&#39;</span><span class="p">,</span><span class="s1">&#39;button&#39;</span><span class="p">,</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span><span class="s1">&#39;submit&#39;</span><span class="p">,</span><span class="s1">&#39;email&#39;</span><span class="p">]:</span>
+                    <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">Global</span><span class="o">.</span><span class="n">encodeURIComponent</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">nodeValue</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">el</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;checkbox&#39;</span><span class="p">,</span><span class="s1">&#39;radio&#39;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">checked</span><span class="p">:</span>
+                        <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">Global</span><span class="o">.</span><span class="n">encodeURIComponent</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">nodeValue</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">el</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="s1">&#39;TEXTAREA&#39;</span><span class="p">:</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">Global</span><span class="o">.</span><span class="n">encodeURIComponent</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">nodeValue</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">el</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="s1">&#39;SELECT&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;multiple&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">el</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;option&#39;</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">Global</span><span class="o">.</span><span class="n">encodeURIComponent</span><span class="p">(</span><span class="n">option</span><span class="o">.</span><span class="n">nodeValue</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">Global</span><span class="o">.</span><span class="n">encodeURIComponent</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">nodeValue</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">el</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="s1">&#39;BUTTON&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">]:</span>
+                    <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">Global</span><span class="o">.</span><span class="n">encodeURIComponent</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">nodeValue</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="s2">&quot;&amp;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">q</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="dQuery_el.serializeArray"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.serializeArray">[docs]</a>    <span class="k">def</span> <span class="nf">serializeArray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Encode a set of form elements as an array of names and values.&quot;&quot;&quot;</span>
@@ -1030,7 +1118,11 @@
 
 <div class="viewcode-block" id="dQuery_el.toArray"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.toArray">[docs]</a>    <span class="k">def</span> <span class="nf">toArray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Retrieve all the elements contained in the dQuery set, as an array.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="c1"># raise NotImplementedError</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="dQuery_el.toggle"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.toggle">[docs]</a>    <span class="k">def</span> <span class="nf">toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Display or hide the matched elements.&quot;&quot;&quot;</span>

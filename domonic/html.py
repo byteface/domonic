@@ -305,7 +305,24 @@ tr = type('tr', (tag, Element), {'name': 'tr', '__init__': tag_init})
 td = type('td', (tag, Element), {'name': 'td', '__init__': tag_init})
 title = type('title', (tag, Element), {'name': 'title', '__init__': tag_init})
 meta = type('meta', (tag, Element), {'name': 'meta', '__init__': tag_init})
-form = type('form', (tag, Element), {'name': 'form', '__init__': tag_init})
+
+
+# form = type('form', (tag, Element), {'name': 'form', '__init__': tag_init})
+
+class form(tag, Element):
+    def __init__(self, *args, **kwargs):
+        self.name = 'form'
+        tag.__init__(self, *args, **kwargs)
+        Element.__init__(self, *args, **kwargs)
+
+    @property
+    def elements(self):
+        kids = []
+        for child in self.children:
+            if isinstance(child, (button, fieldset, input, object, output, select, textarea)):
+                kids.append(child)
+        return kids
+
 label = type('label', (tag, Element), {'name': 'label', '__init__': tag_init})
 submit = type('submit', (tag, Element), {'name': 'submit', '__init__': tag_init})
 title = type('title', (tag, Element), {'name': 'title', '__init__': tag_init})

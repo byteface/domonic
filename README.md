@@ -446,13 +446,31 @@ docs:
 https://domonic.readthedocs.io/
 
 
+There's also several useage examples in the repo so pull and have a look.
+
+
 ### Join-In
 Feel free to contribute if you find it useful.
 
-If there are any methods you want that are missing or not complete yet. Just update the code and send a pull request.
+Email me, message me directly if you like or create a discussion on here.
+
+If there are any methods you want that are missing or not complete yet or you think you can help make it better just update the code and send a pull request.
 
 I'll merge and releaese asap.
 
+In the repo there's a requirements-dev.txt which is mostly the libs used in the examples.
+
+requirements.txt are the libs used for packaging just the lib.
+ 
+
+### running examples
+
+```bash
+. venv/bin/activate
+pip install -r requirements-dev.txt
+cd examples
+python lifecalendar.py
+```
 
 ### run tests
 See Makefile:
@@ -467,6 +485,13 @@ see coverage
 ```bash
 coverage run -m unittest discover tests/
 coverage report
+```
+
+### rebuild docs
+See Makefile:
+```bash
+cd docs
+make html
 ```
 
 ### Disclaimer

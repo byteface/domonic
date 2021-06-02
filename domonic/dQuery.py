@@ -445,17 +445,40 @@ class dQuery_el():
                 print('Error. No DOM has been set!!', e)
                 raise e
 
-    def add(self):
+    def add(self, elements):
         """ Create a new dQuery object with elements added to the set of matched elements."""
+        '''
+        dq = None
+        if type(elements) == str:
+            dq = º(elements).elements
+        
+        if type(dq) not in [list, tuple]:
+            dq = [dq]
+
+        if type(self.elements) not in [list, tuple]:
+            self.elements = [self.elements]
+
+        # if type(dq) not in [list, tuple]:
+            # self.elements = [self.elements]
+
+        self.elements = list(self.elements) + list(dq)
+        return self
+        '''
+        # return self
         raise NotImplementedError
 
     def addBack(self):
         """ Add the previous set of elements on the stack to the current set, optionally filtered by a selector."""
         raise NotImplementedError
 
-    def addClass(self):
+    def addClass(self, name):
         """ Adds the specified class to each element in the set of matched elements."""
-        raise NotImplementedError
+        for el in self.elements:
+            if el.getAttribute("class") is not None:
+                el.setAttribute('class', el.getAttribute("class") + " " + name)
+            else:
+                el.setAttribute('class', name)
+        return self
 
     def after(self):
         """ Insert content, specified by the parameter, after each element in the set of matched elements."""
@@ -511,13 +534,21 @@ class dQuery_el():
         # print('APPEND SAYS:', self.elements)
         # return self
 
-    def appendTo(self):
+    def appendTo(self, target):
         """ Insert every element in the set of matched elements to the end of the target."""
-        raise NotImplementedError
+        target += self.elements
+        return target
 
-    def attr(self):
+    def attr(self, property, value=None):
         """ Get the value of an attribute for the first element in the set of matched elements or set one or more attributes for every matched element."""
-        raise NotImplementedError
+        if value is not None:
+            if self.elements[0].getAttribute(property) is not None:
+                self.elements[0].setAttribute(property, value)
+                return self
+        if type(self.elements) is not tuple and type(self.elements) is not list:
+            return self.elements.getAttribute(property)
+        else:
+            return self.elements[0].getAttribute(property)
 
     def before(self):
         """ Insert content, specified by the parameter, before each element in the set of matched elements."""
@@ -568,9 +599,9 @@ class dQuery_el():
         """ Bind an event handler to the “contextmenu” JavaScript event, or trigger that event on an element."""
         raise NotImplementedError
 
-    def css(self):
+    def css(self, prop, value):
         """ Get the value of a computed style property for the first element in the set of matched elements or set one or more CSS properties for every matched element."""
-        raise NotImplementedError
+        pass
 
     def data(self):
         """ Store arbitrary data associated with the matched elements or return the value at the named data store for the first element in the set of matched elements."""
@@ -612,9 +643,9 @@ class dQuery_el():
         """ End the most recent filtering operation in the current chain and return the set of matched elements to its previous state."""
         raise NotImplementedError
 
-    def eq(self):
+    def eq(self, index):
         """ Reduce the set of matched elements to the one at the specified index."""
-        raise NotImplementedError
+        return self.elements[index]
 
     def error(self):
         """ Bind an event handler to the “error” JavaScript event."""
@@ -654,7 +685,9 @@ class dQuery_el():
 
     def first(self):
         """ Reduce the set of matched elements to the first in the set."""
-        raise NotImplementedError
+        if isinstance(self.elements, (list, tuple)):
+            self.elements = self.elements[0]
+        return self
 
     def focus(self):
         """ Bind an event handler to the “focus” JavaScript event, or trigger that event on an element."""
@@ -676,9 +709,13 @@ class dQuery_el():
         """ Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element."""
         raise NotImplementedError
 
-    def hasClass(self):
+    def hasClass(self, classname):
         """ Determine whether any of the matched elements are assigned the given class."""
-        raise NotImplementedError
+        for el in self.elements:
+            if el.getAttribute("class") is not None:
+                if classname in el.getAttribute("class"):
+                    return True
+        return False
 
     def height(self):
         """ Get the current computed height for the first element in the set of matched elements or set the height of every matched element."""
@@ -740,7 +777,9 @@ class dQuery_el():
 
     def last(self):
         """ Reduce the set of matched elements to the final one in the set."""
-        raise NotImplementedError
+        if isinstance(self.elements, list) or isinstance(self.elements, tuple):
+            self.elements = self.elements[len(self.elements)-1]
+        return self
 
     @property
     def length(self):
@@ -860,7 +899,7 @@ class dQuery_el():
             el.innerHTML = html + el.innerHTML
         return self
 
-    def prependTo(self):
+    def prependTo(self, target):
         """ Insert every element in the set of matched elements to the beginning of the target."""
         raise NotImplementedError
 
@@ -880,9 +919,16 @@ class dQuery_el():
         """ Return a Promise object to observe when all actions of a certain type bound to the collection, queued or not, have finished."""
         raise NotImplementedError
 
-    def prop(self):
+    def prop(self, property, value):
         """ Get the value of a property for the first element in the set of matched elements or set one or more properties for every matched element."""
-        raise NotImplementedError
+        if value is not None:
+            if self.elements[0].getAttribute(property) is not None:
+                self.elements[0].setAttribute(property, value)
+                return self
+        if type(self.elements) is not tuple and type(self.elements) is not list:
+            return self.elements.getAttribute(property)
+        else:
+            return self.elements[0].getAttribute(property)
 
     def pushStack(self):
         """ Add a collection of DOM elements onto the dQuery stack."""
@@ -904,9 +950,15 @@ class dQuery_el():
         """ Remove an attribute from each element in the set of matched elements."""
         raise NotImplementedError
 
-    def removeClass(self):
+    def removeClass(self, classname):
         """ Remove a single class, multiple classes, or all classes from each element in the set of matched elements."""
-        raise NotImplementedError
+        for el in self.elements:
+            if el.getAttribute("class") is not None:
+                if classname in el.getAttribute("class"):
+                    removed = ''.join(el.getAttribute("class").split(classname)).strip()
+                    removed = removed.replace('  ',' ')
+                    el.setAttribute("class", removed)
+        return self
 
     def removeData(self):
         """ Remove a previously-stored piece of data."""
@@ -946,7 +998,43 @@ class dQuery_el():
 
     def serialize(self):
         """ Encode a set of form elements as a string for submission."""
-        raise NotImplementedError
+        # raise NotImplementedError
+        # from domonic.javascript import Global
+
+        if isinstance( self.elements, (tuple, list) ):
+            form = self.elements[0]
+        else:
+            form = self.elements
+
+        if form.nodeName != "FORM":
+            return
+
+        q = []
+        for el in form.elements:
+
+            if el.getAttribute('name') == "":
+                continue
+            
+            if el.nodeName == 'INPUT':
+                if el.type in ['email','text','hidden','password','button','reset','submit','email']:
+                    q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
+                elif el.type in ['checkbox','radio']:
+                    if el.checked:
+                        q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
+            elif el.nodeName == 'TEXTAREA':
+                q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
+            elif el.nodeName == 'SELECT':
+                if el.getAttribute('multiple') != None:
+                    for option in el.getElementsByTagName('option'):
+                        if option.getAttribute('selected') != None:
+                            q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(option.nodeValue))
+                else:
+                    q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
+            elif el.nodeName == 'BUTTON':
+                if el.type in ['reset', 'submit', 'button']:
+                    q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
+
+        return "&".join(q)
 
     def serializeArray(self):
         """ Encode a set of form elements as an array of names and values."""
@@ -996,7 +1084,11 @@ class dQuery_el():
 
     def toArray(self):
         """ Retrieve all the elements contained in the dQuery set, as an array."""
-        raise NotImplementedError
+        # raise NotImplementedError
+        if isinstance(self.elements, (list, tuple) ):
+            return self.elements
+        else:
+            return [self.elements]
 
     def toggle(self):
         """ Display or hide the matched elements."""
