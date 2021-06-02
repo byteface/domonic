@@ -13,7 +13,7 @@ flake8==3.8.3
 httptools==0.1.1
 idna==2.8
 imagesize==1.2.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
 multidict==5.1.0
