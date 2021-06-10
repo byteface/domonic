@@ -12,6 +12,8 @@
 [![Downloads](https://pepy.tech/badge/domonic)](https://pepy.tech/project/domonic)
 [![Python version](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)
 [![Build status](https://travis-ci.com/byteface/domonic.svg?branch=master)](https://travis-ci.com/byteface/domonic.svg?branch=master)
+[![Python package](https://github.com/byteface/domonic/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/byteface/domonic/actions/workflows/python-package.yml)
+
 
 #### Contains several evolving packages: (but by no means are any of them complete)
 
@@ -26,6 +28,9 @@
 
 See the docs/code for more features...
 https://domonic.readthedocs.io/
+
+or examples in the repo...
+https://github.com/byteface/domonic/tree/master/examples
 
 ## HTML Templating with Python 3
 
