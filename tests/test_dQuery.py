@@ -397,11 +397,9 @@ class domonicTestCase(unittest.TestCase):
     def test_dQuery_removeClass(self):
         a = º('<div id="test2"></div>')
         a.addClass('one').addClass('two').addClass('three')
-        print('================')
-        print(a.hasClass('one'))
-        print(a.removeClass('one'))
-        print(a.hasClass('one'))
-        print('================')
+        assert a.hasClass('one') == True
+        a.removeClass('one')
+        assert a.hasClass('one') == False
 
     def test_dQuery_removeData(self):
         pass
