@@ -17,25 +17,26 @@
 
 #### Contains several evolving packages: (but by no means are any of them complete)
 
-• html : Generate html with python 3 😎 <br />
-• dom : DOM API in python 3 😲 <br />
-• javascript : js API in python 3 😳 <br />
+• [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎 <br />
+• [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲 <br />
+• [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 <br />
+• [dQuery](https://domonic.readthedocs.io/_modules/domonic/dQuery.html) - NEW. Recently started. utils for querying domonic. (alt + 0 for the º symbol)<br />
 • terminal : call terminal commands with python3 😱 (*see at the end*)<br />
 • JSON : utils for loading / decorating / transforming<br />
 • SVG : Generate svg using python (untested)<br />
 • aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder)<br />
-• dQuery - NEW. Recently started. utils for querying domonic. (alt + 0 for the º symbol)<br />
 
 See the docs/code for more features...
 https://domonic.readthedocs.io/
 
-or examples in the repo...
-https://github.com/byteface/domonic/tree/master/examples
+or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
+
 
 ## HTML Templating with Python 3
 
 ```python
-    print(html(body(h1('Hello, World!'))))
+from domonic.html import *
+print(html(body(h1('Hello, World!'))))
 ```
 ```html
 <html><body><h1>Hello, World!</h1></body></html>
@@ -43,13 +44,13 @@ https://github.com/byteface/domonic/tree/master/examples
 
 ### install
 ```bash
-    python3 -m pip install domonic
+python3 -m pip install domonic
 ```
 
 or if you had it before upgrade:
 
 ```bash
-    python3 -m pip install domonic --upgrade
+python3 -m pip install domonic --upgrade
 ```
 
 ### attributes
@@ -63,11 +64,20 @@ print(test)
 ```
 
 ### rendering
-render takes 2 parameters, some domonic and an optional output file.
+
+you can just cast str() on any element to render it.
+
+```python
+el_string = str(div())
+print(el_string)
+```
+
+there's also a render method that takes 2 parameters, some domonic and an optional output file.
 ```python
 page = div(span('Hello World'))
 render(page, 'index.html')
 ```
+
 
 So you can build your own static site generator using python
 
@@ -103,7 +113,7 @@ mysite.querySelectorAll('button')
 
 ### javascript
 
-There is a javascript package being started that mirrors the js API:
+There is a javascript package that mimics the js API:
 
 ```python
 from domonic.javascript import Math
@@ -466,7 +476,7 @@ I'll merge and releaese asap.
 In the repo there's a requirements-dev.txt which is mostly the libs used in the examples.
 
 requirements.txt are the libs used for packaging just the lib.
- 
+
 
 ### running examples
 
@@ -478,16 +488,27 @@ python lifecalendar.py
 ```
 
 ### run tests
-See Makefile:
+
+There are tests used during dev. They are useful as code examples and to see what still needs doing.
+
+See Makefile to run all tests:
+
 ```bash
 make test
 ```
+
 or to test a single function:
 ```bash
 python -m unittest tests.test_javascript.domonicTestCase.test_javascript_array
 python -m unittest tests.test_dQuery.domonicTestCase.test_dQuery_addClass
 ```
-see coverage
+
+or to test a whole module
+```bash
+python -m unittest tests.test_html
+```
+
+to see coverage
 ```bash
 coverage run -m unittest discover tests/
 coverage report
@@ -496,6 +517,7 @@ coverage report
 ### rebuild docs
 See Makefile:
 ```bash
+. venv/bin/activate
 cd docs
 make html
 ```

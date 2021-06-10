@@ -60,7 +60,7 @@ class domonic:
         page = domonic.parse(pyml)
         prog = domonic.domonify(page, *args, **kwargs)
         if type(prog) is tuple:
-            if len(prog)<2:
+            if len(prog) < 2:
                 prog = prog[0]
             elif prog[1] == None:
                 prog = prog[0]
@@ -90,7 +90,6 @@ class domonic:
         p = eval(s, {**kwargs, **globals()})
         return p
 
-
     @staticmethod
     def evaluate(pyml: str, *args, **kwargs):
         """ [
@@ -115,7 +114,7 @@ class domonic:
         try:
             # TODO - strip any potentially bad/dangerous code before eval.
             p = eval(pyml, {**kwargs, **globals()})
-            return pyml  #????
+            return pyml  # ????
         except Exception as e:
             # import sys
             # old_log = sys.stdout
@@ -130,7 +129,7 @@ class domonic:
                 err = str(e)
                 if str(len(pyml.splitlines())) in err:
                     pyml += ")"
-                    return domonic.evaluate(pyml) # try again
+                    return domonic.evaluate(pyml)  # try again
 
             if "positional argument follows keyword argument" in str(e):
                 # print(e)
@@ -140,7 +139,7 @@ class domonic:
                 num = num.strip()
                 num = int(num)
                 pyml = pyml.splitlines()
-                pyml[num-2] = pyml[num-2] + ").html(" # need to know when to close tag comma vs wrap
+                pyml[num - 2] = pyml[num - 2] + ").html("  # need to know when to close tag comma vs wrap
                 pyml = '\n'.join(pyml)
                 # print(pyml)
                 return domonic.evaluate(pyml) # try again

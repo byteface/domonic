@@ -17,9 +17,29 @@ from domonic.decorators import silence
 
 class domonicTestCase(unittest.TestCase):
 
+    def test_hello_world(self):
+        assert str(html(body(h1('Hello World!')))) == \
+            '''<html><body><h1>Hello World!</h1></body></html>'''
+
+    def test_html_attributes(self):
+        assert str(div(_id='mydiv', _class='test', **{"_aria-label": True}, **{"_data-name": True}, _onclick="alert('hi');")) == \
+            '''<div id="mydiv" class="test" aria-label="True" data-name="True" onclick="alert('hi');"></div>'''
+
+        myel = div(_id='mydiv', _class='test', **{"_aria-label": True}, **{"_data-name": True}, _onclick="alert('hi');")
+        assert myel.id == "mydiv"
+        assert myel._id == "mydiv"
+        assert myel._class == "test"
+        assert myel.onclick == "alert('hi');"
+
+    def test_create_element(self):
+        # print(create_element('custom_el', div('some content'), _id="test"))
+        assert str(create_element('custom_el', div('some content'), _id="test")) == \
+            '''<custom_el id="test"><div>some content</div></custom_el>'''
+
+
     # @silence
     def test_domonic_parse(self):
-        page = domonic.parse("<html><body>'some content'</body></html>")
+        page = domonic.parse("<html><body>'some content'</body></html>") # TODO - single comma
         page = domonic.parse("<html><body></body></html>")
         print(page)
 
@@ -787,28 +807,19 @@ class domonicTestCase(unittest.TestCase):
 
 
     def test_domonic_render_a_tag(self):
-        # test = html(body("asdfasdf"))
-        # print(test)
-        # print(test.anchors())
         atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
-        # print('atag:',atag)
-        print('href:',atag.href)
-        print('protocol:',atag.protocol)
-        print('port:',atag.port)
-
+        assert str(atag) == '<a href="https://somesite.com:8000/blog/article-one#some-hash"></a>'
+        assert "https://somesite.com:8000/blog/article-one#some-hash" == atag.href
+        assert 'https' == atag.protocol
+        assert '8000' == str(atag.port)
         atag.protocol = "http"
-        print('protocol:',atag.protocol)
-        print('href:',atag.href)
-        print(atag)
-        # print(atag.attributes)
-
+        assert 'http' == atag.protocol
+        assert "http://somesite.com:8000/blog/article-one#some-hash" == atag.href
         atag.port = 8983
-        print(atag)
-
+        assert '8983' == str(atag.port)
+        assert "http://somesite.com:8983/blog/article-one#some-hash" == atag.href
+        assert 'somesite.com' == atag.hostname
         # print('host:',atag.host)
-        # print('hostname:',atag.hostname)
-        # atag.protocol = 'http'
-        # print(atag)
 
 
 if __name__ == '__main__':

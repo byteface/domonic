@@ -15,33 +15,31 @@ class EventHandler():
     def __init__(self):
         self.events = []
 
-    def bindEvent(event, callback, targetElement):
+    def bindEvent(self, event, callback, targetElement):
         self.unbindEvent(event, targetElement)
         targetElement.addEventListener(event, callback, False)
-        self.events.append({_type: event, event: callback, target: targetElement})
+        self.events.append({'_type': event, 'event': callback, 'target': targetElement})
 
-    def findEvent(event):
-        return [e for e in self.events[0] if e == evt['_type']]
+    def findEvent(self, event):
+        return [e for e in self.events[0] if e == event['_type']]
 
-    def unbindEvent(event, targetElement):
+    def unbindEvent(self, event, targetElement):
         foundEvent = self.findEvent(event)
         if foundEvent is not None:
             targetElement.removeEventListener(event, foundEvent['event'], False)
-        self.events = [e for e in self.events if e != evt['_type']]
+        self.events = [e for e in self.events if e != event['_type']]
 
 
 class dQuery_el():
-    """ 
+    """
     alt + 0
 
     dQuery - methods for querying domonic
-    
+
     """
 
     @staticmethod
-    def ajax(url='/', type='GET', data=None, 
-        contentType=False, processData=False, cache=False, success=None, error=None):
-        """ Perform an asynchronous HTTP request. """
+    def ajax(url='/', type='GET', data=None, contentType=False, processData=False, cache=False, success=None, error=None):
         raise NotImplementedError
 
     @staticmethod
@@ -49,18 +47,15 @@ class dQuery_el():
         """ Handle custom Ajax options or modify existing options before each request is sent and before they are processed by .ajax """
         raise NotImplementedError
 
-
     @staticmethod
     def ajaxSetup():
         """ Set default values for future Ajax requests. Its use is not recommended. """
         raise NotImplementedError
 
-
     @staticmethod
     def ajaxTransport():
         """ Creates an object that handles the actual transmission of Ajax data. """
         raise NotImplementedError
-
 
     # @staticmethod
     # @ty
@@ -68,25 +63,21 @@ class dQuery_el():
     #     """ States if the current page, in the user’s browser, is being rendered using the W3C CSS Box Model. """
     #     raise NotImplementedError
 
-
     # @staticmethod
     # @ty
     # def browser:
         """ Contains flags for the useragent, read from navigator.userAgent. """
         # raise NotImplementedError
 
-
     @staticmethod
     def Callbacks():
         """ A multi-purpose callbacks list object that provides a powerful way to manage callback lists. """
         raise NotImplementedError
 
-
     @staticmethod
     def contains(parent, child):
         """ Check to see if a DOM element is a descendant of another DOM element. """
         return parent.contains(child)
-
 
     # @staticmethod
     # @ty
@@ -94,37 +85,31 @@ class dQuery_el():
         """ Hook directly into dQuery to override how particular CSS properties are retrieved or set, normalize CSS property naming, or create custom properties. """
         # raise NotImplementedError
 
-
     # @staticmethod
     # @ty
     # def cssNumber:
         """ An object containing all CSS properties that may be used without a unit. The .css method uses this object to see if it may append px to unitless values. """
         # raise NotImplementedError
 
-
-    @staticmethod
-    def data():
-        """ Store arbitrary data associated with the specified element and/or return the value that was set. """
-        raise NotImplementedError
-
+    # @staticmethod
+    # def data():
+    #     """ Store arbitrary data associated with the specified element and/or return the value that was set. """
+    #     raise NotImplementedError
 
     @staticmethod
     def Deferred():
         """ A factory function that returns a chainable utility object with methods to register multiple callbacks into callback queues, invoke callback queues, and relay the success or failure state of any synchronous or asynchronous function. """
         raise NotImplementedError
 
-
     @staticmethod
     def dequeue():
         """ Execute the next function on the queue for the matched element. """
         raise NotImplementedError
 
-
     @staticmethod
     def each():
         """ A generic iterator function, which can be used to seamlessly iterate over both objects and arrays. """
         raise NotImplementedError
-
 
     @staticmethod
     def error():
@@ -160,36 +145,30 @@ class dQuery_el():
         """ Load a JavaScript file from the server using a GET HTTP request, then execute it. """
         raise NotImplementedError
 
-
     @staticmethod
     def globalEval():
         """ Execute some JavaScript code globally. """
         raise NotImplementedError
-
 
     @staticmethod
     def grep():
         """ Finds the elements of an array which satisfy a filter function. The original array is not affected. """
         raise NotImplementedError
 
-
     @staticmethod
     def hasData():
         """ Determine whether an element has any dQuery data associated with it. """
         raise NotImplementedError
-
 
     @staticmethod
     def holdReady():
         """ Holds or releases the execution of dQuery’s ready event. """
         raise NotImplementedError
 
-
     @staticmethod
     def htmlPrefilter():
         """ Modify and filter HTML strings passed through dQuery manipulation methods. """
         raise NotImplementedError
-
 
     @staticmethod
     def inArray(thing, arr):
@@ -198,7 +177,6 @@ class dQuery_el():
             if thing == each:
                 return count
         return -1
-
 
     @staticmethod
     def isArray():
@@ -220,18 +198,15 @@ class dQuery_el():
         """ Determines whether its argument represents a JavaScript number. """
         raise NotImplementedError
 
-
     @staticmethod
     def isPlainObject():
         """ Check to see if an object is a plain object created using “{}” or “new Object”. """
         raise NotImplementedError
 
-
     @staticmethod
     def isWindow():
         """ Determine whether the argument is a window. """
         raise NotImplementedError
-
 
     @staticmethod
     def isXMLDoc():
@@ -265,7 +240,6 @@ class dQuery_el():
         """ An empty function. """
         raise NotImplementedError
 
-
     @staticmethod
     def now():
         """ Return a number representing the current time. """
@@ -291,24 +265,20 @@ class dQuery_el():
         """ Parses a string into an XML document. """
         raise NotImplementedError
 
-
     @staticmethod
     def post():
         """ Send data to the server using a HTTP POST request. """
         raise NotImplementedError
-
 
     @staticmethod
     def proxy():
         """ Takes a function and returns a new one that will always have a particular context. """
         raise NotImplementedError
 
-
     @staticmethod
     def queue():
         """ Show or manipulate the queue of functions to be executed on the matched element. """
         raise NotImplementedError
-
 
     # @staticmethod
     # @ty
@@ -322,12 +292,10 @@ class dQuery_el():
         """ Handles errors thrown synchronously in functions wrapped in dQuery """
         raise NotImplementedError
 
-
     @staticmethod
     def removeData():
         """ Remove a previously-stored piece of data. """
         raise NotImplementedError
-
 
     # @staticmethod
     #  @ty
@@ -335,12 +303,10 @@ class dQuery_el():
         # """ Creates an object containing a set of properties ready to be used in the definition of custom animations. """
         # raise NotImplementedError
 
-
     @staticmethod
     def sub():
         """ Creates a new copy of dQuery whose properties and methods can be modified without affecting the original dQuery object. """
         raise NotImplementedError
-
 
     # @staticmethod
     # def t:
@@ -358,18 +324,15 @@ class dQuery_el():
     #     """ Determine the internal JavaScript [[Class]] of an object. """
     #     raise NotImplementedError
 
-
     @staticmethod
     def unique():
         """ Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers. """
         raise NotImplementedError
 
-
     @staticmethod
     def uniqueSort():
         """ Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers. """
         raise NotImplementedError
-
 
     @staticmethod
     def when():
@@ -397,7 +360,7 @@ class dQuery_el():
     def __str__(self):
         # print(type(self.elements))
         if type(self.elements) is tuple:
-        # if isinstance(self.elements, (list, tuple)):
+            # if isinstance(self.elements, (list, tuple)):
             # print([str(el) for el in self.elements])
             return ''.join([str(el) for el in self.elements])
         else:
@@ -456,7 +419,7 @@ class dQuery_el():
         dq = None
         if type(elements) == str:
             dq = º(elements).elements
-        
+
         if type(dq) not in [list, tuple]:
             dq = [dq]
 
@@ -978,7 +941,7 @@ class dQuery_el():
             if el.getAttribute("class") is not None:
                 if classname in el.getAttribute("class"):
                     removed = ''.join(el.getAttribute("class").split(classname)).strip()
-                    removed = removed.replace('  ',' ')
+                    removed = removed.replace('  ', ' ')
                     el.setAttribute("class", removed)
         return self
 
@@ -1023,7 +986,7 @@ class dQuery_el():
         # raise NotImplementedError
         # from domonic.javascript import Global
 
-        if isinstance( self.elements, (tuple, list) ):
+        if isinstance(self.elements, (tuple, list)):
             form = self.elements[0]
         else:
             form = self.elements
@@ -1036,11 +999,11 @@ class dQuery_el():
 
             if el.getAttribute('name') == "":
                 continue
-            
+
             if el.nodeName == 'INPUT':
-                if el.type in ['email','text','hidden','password','button','reset','submit','email']:
+                if el.type in ['email', 'text', 'hidden', 'password', 'button', 'reset', 'submit', 'email']:
                     q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
-                elif el.type in ['checkbox','radio']:
+                elif el.type in ['checkbox', 'radio']:
                     if el.checked:
                         q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
             elif el.nodeName == 'TEXTAREA':
@@ -1065,7 +1028,7 @@ class dQuery_el():
     def show(self):
         """ Display the matched elements."""
         for el in self.elements:
-              el.style.display = ''
+            el.style.display = ''
         return self
 
     def siblings(self):
@@ -1104,7 +1067,7 @@ class dQuery_el():
         """ Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements."""
         if newVal != None:
             for el in self.elements:
-                el.textContent = newVal 
+                el.textContent = newVal
         else:
             return [el.textContent for el in self.elements]
 
@@ -1156,7 +1119,7 @@ class dQuery_el():
         """ Get the current value of the first element in the set of matched elements or set the value of every matched element."""
         if newVal != None:
             for el in elements:
-                self.elements.value = newVal 
+                self.elements.value = newVal
         else:
             return self.elements.value
         # return self
@@ -1670,7 +1633,6 @@ def º(q):
     º.merge = el.merge
     º.noConflict = el.noConflict
     º.noop = el.noop
-    
     º.now = el.now
 
     º.param = el.param

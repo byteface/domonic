@@ -49,52 +49,47 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">bindEvent</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">targetElement</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">bindEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">targetElement</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unbindEvent</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">targetElement</span><span class="p">)</span>
         <span class="n">targetElement</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="n">_type</span><span class="p">:</span> <span class="n">event</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">callback</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">targetElement</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;_type&#39;</span><span class="p">:</span> <span class="n">event</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="n">callback</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="n">targetElement</span><span class="p">})</span>
 
-    <span class="k">def</span> <span class="nf">findEvent</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="n">evt</span><span class="p">[</span><span class="s1">&#39;_type&#39;</span><span class="p">]]</span>
+    <span class="k">def</span> <span class="nf">findEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;_type&#39;</span><span class="p">]]</span>
 
-    <span class="k">def</span> <span class="nf">unbindEvent</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">targetElement</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">unbindEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">targetElement</span><span class="p">):</span>
         <span class="n">foundEvent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">findEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">foundEvent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">targetElement</span><span class="o">.</span><span class="n">removeEventListener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">foundEvent</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="k">if</span> <span class="n">e</span> <span class="o">!=</span> <span class="n">evt</span><span class="p">[</span><span class="s1">&#39;_type&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="k">if</span> <span class="n">e</span> <span class="o">!=</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;_type&#39;</span><span class="p">]]</span>
 
 
 <div class="viewcode-block" id="dQuery_el"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el">[docs]</a><span class="k">class</span> <span class="nc">dQuery_el</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot; </span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    alt + 0</span>
 
 <span class="sd">    dQuery - methods for querying domonic</span>
-<span class="sd">    </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="dQuery_el.ajax"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.ajax">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">ajax</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-        <span class="n">contentType</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">processData</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Perform an asynchronous HTTP request. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">ajax</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">contentType</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">processData</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="dQuery_el.ajaxPrefilter"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.ajaxPrefilter">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">ajaxPrefilter</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Handle custom Ajax options or modify existing options before each request is sent and before they are processed by .ajax &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.ajaxSetup"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.ajaxSetup">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">ajaxSetup</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Set default values for future Ajax requests. Its use is not recommended. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.ajaxTransport"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.ajaxTransport">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">ajaxTransport</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Creates an object that handles the actual transmission of Ajax data. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># @ty</span>
@@ -102,25 +97,21 @@
     <span class="c1">#     &quot;&quot;&quot; States if the current page, in the user’s browser, is being rendered using the W3C CSS Box Model. &quot;&quot;&quot;</span>
     <span class="c1">#     raise NotImplementedError</span>
 
-
     <span class="c1"># @staticmethod</span>
     <span class="c1"># @ty</span>
     <span class="c1"># def browser:</span>
         <span class="sd">&quot;&quot;&quot; Contains flags for the useragent, read from navigator.userAgent. &quot;&quot;&quot;</span></div>
         <span class="c1"># raise NotImplementedError</span>
 
-
 <div class="viewcode-block" id="dQuery_el.Callbacks"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.Callbacks">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">Callbacks</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; A multi-purpose callbacks list object that provides a powerful way to manage callback lists. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.contains"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.contains">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Check to see if a DOM element is a descendant of another DOM element. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">parent</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># @ty</span>
@@ -128,37 +119,31 @@
         <span class="sd">&quot;&quot;&quot; Hook directly into dQuery to override how particular CSS properties are retrieved or set, normalize CSS property naming, or create custom properties. &quot;&quot;&quot;</span>
         <span class="c1"># raise NotImplementedError</span>
 
-
     <span class="c1"># @staticmethod</span>
     <span class="c1"># @ty</span>
     <span class="c1"># def cssNumber:</span>
         <span class="sd">&quot;&quot;&quot; An object containing all CSS properties that may be used without a unit. The .css method uses this object to see if it may append px to unitless values. &quot;&quot;&quot;</span></div>
         <span class="c1"># raise NotImplementedError</span>
 
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">data</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot; Store arbitrary data associated with the specified element and/or return the value that was set. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def data():</span>
+    <span class="c1">#     &quot;&quot;&quot; Store arbitrary data associated with the specified element and/or return the value that was set. &quot;&quot;&quot;</span>
+    <span class="c1">#     raise NotImplementedError</span>
 
 <div class="viewcode-block" id="dQuery_el.Deferred"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.Deferred">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">Deferred</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; A factory function that returns a chainable utility object with methods to register multiple callbacks into callback queues, invoke callback queues, and relay the success or failure state of any synchronous or asynchronous function. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">dequeue</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Execute the next function on the queue for the matched element. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">each</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; A generic iterator function, which can be used to seamlessly iterate over both objects and arrays. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">error</span><span class="p">():</span>
@@ -194,36 +179,30 @@
         <span class="sd">&quot;&quot;&quot; Load a JavaScript file from the server using a GET HTTP request, then execute it. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.globalEval"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.globalEval">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">globalEval</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Execute some JavaScript code globally. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
 
 <div class="viewcode-block" id="dQuery_el.grep"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.grep">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">grep</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Finds the elements of an array which satisfy a filter function. The original array is not affected. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.hasData"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.hasData">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">hasData</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Determine whether an element has any dQuery data associated with it. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
 
 <div class="viewcode-block" id="dQuery_el.holdReady"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.holdReady">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">holdReady</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Holds or releases the execution of dQuery’s ready event. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.htmlPrefilter"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.htmlPrefilter">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">htmlPrefilter</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Modify and filter HTML strings passed through dQuery manipulation methods. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
 
 <div class="viewcode-block" id="dQuery_el.inArray"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.inArray">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">inArray</span><span class="p">(</span><span class="n">thing</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
@@ -232,7 +211,6 @@
             <span class="k">if</span> <span class="n">thing</span> <span class="o">==</span> <span class="n">each</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">count</span>
         <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
-
 
 <div class="viewcode-block" id="dQuery_el.isArray"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.isArray">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isArray</span><span class="p">():</span>
@@ -254,18 +232,15 @@
         <span class="sd">&quot;&quot;&quot; Determines whether its argument represents a JavaScript number. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.isPlainObject"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.isPlainObject">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isPlainObject</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Check to see if an object is a plain object created using “{}” or “new Object”. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.isWindow"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.isWindow">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isWindow</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Determine whether the argument is a window. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
 
 <div class="viewcode-block" id="dQuery_el.isXMLDoc"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.isXMLDoc">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isXMLDoc</span><span class="p">():</span>
@@ -299,7 +274,6 @@
         <span class="sd">&quot;&quot;&quot; An empty function. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.now"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.now">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">now</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Return a number representing the current time. &quot;&quot;&quot;</span>
@@ -325,24 +299,20 @@
         <span class="sd">&quot;&quot;&quot; Parses a string into an XML document. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.post"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.post">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">post</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Send data to the server using a HTTP POST request. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
 
 <div class="viewcode-block" id="dQuery_el.proxy"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.proxy">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">proxy</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Takes a function and returns a new one that will always have a particular context. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">queue</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Show or manipulate the queue of functions to be executed on the matched element. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># @ty</span>
@@ -356,12 +326,10 @@
         <span class="sd">&quot;&quot;&quot; Handles errors thrown synchronously in functions wrapped in dQuery &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">removeData</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Remove a previously-stored piece of data. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
 
     <span class="c1"># @staticmethod</span>
     <span class="c1">#  @ty</span>
@@ -369,12 +337,10 @@
         <span class="c1"># &quot;&quot;&quot; Creates an object containing a set of properties ready to be used in the definition of custom animations. &quot;&quot;&quot;</span>
         <span class="c1"># raise NotImplementedError</span>
 
-
 <div class="viewcode-block" id="dQuery_el.sub"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.sub">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">sub</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Creates a new copy of dQuery whose properties and methods can be modified without affecting the original dQuery object. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># def t:</span>
@@ -392,18 +358,15 @@
     <span class="c1">#     &quot;&quot;&quot; Determine the internal JavaScript [[Class]] of an object. &quot;&quot;&quot;</span>
     <span class="c1">#     raise NotImplementedError</span>
 
-
 <div class="viewcode-block" id="dQuery_el.unique"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.unique">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">unique</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-
 <div class="viewcode-block" id="dQuery_el.uniqueSort"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.uniqueSort">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">uniqueSort</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
 
 <div class="viewcode-block" id="dQuery_el.when"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.when">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">when</span><span class="p">():</span>
@@ -431,7 +394,7 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># print(type(self.elements))</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">:</span>
-        <span class="c1"># if isinstance(self.elements, (list, tuple)):</span>
+            <span class="c1"># if isinstance(self.elements, (list, tuple)):</span>
             <span class="c1"># print([str(el) for el in self.elements])</span>
             <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
@@ -490,7 +453,7 @@
 <span class="sd">        dq = None</span>
 <span class="sd">        if type(elements) == str:</span>
 <span class="sd">            dq = º(elements).elements</span>
-<span class="sd">        </span>
+
 <span class="sd">        if type(dq) not in [list, tuple]:</span>
 <span class="sd">            dq = [dq]</span>
 
@@ -1012,7 +975,7 @@
             <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">classname</span> <span class="ow">in</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">):</span>
                     <span class="n">removed</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">classname</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                    <span class="n">removed</span> <span class="o">=</span> <span class="n">removed</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;  &#39;</span><span class="p">,</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                    <span class="n">removed</span> <span class="o">=</span> <span class="n">removed</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;  &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
                     <span class="n">el</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="n">removed</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -1057,7 +1020,7 @@
         <span class="c1"># raise NotImplementedError</span>
         <span class="c1"># from domonic.javascript import Global</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
             <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span>
@@ -1070,11 +1033,11 @@
 
             <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                 <span class="k">continue</span>
-            
+
             <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="s1">&#39;INPUT&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">,</span><span class="s1">&#39;text&#39;</span><span class="p">,</span><span class="s1">&#39;hidden&#39;</span><span class="p">,</span><span class="s1">&#39;password&#39;</span><span class="p">,</span><span class="s1">&#39;button&#39;</span><span class="p">,</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span><span class="s1">&#39;submit&#39;</span><span class="p">,</span><span class="s1">&#39;email&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;email&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;hidden&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">]:</span>
                     <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">Global</span><span class="o">.</span><span class="n">encodeURIComponent</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">nodeValue</span><span class="p">))</span>
-                <span class="k">elif</span> <span class="n">el</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;checkbox&#39;</span><span class="p">,</span><span class="s1">&#39;radio&#39;</span><span class="p">]:</span>
+                <span class="k">elif</span> <span class="n">el</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;checkbox&#39;</span><span class="p">,</span> <span class="s1">&#39;radio&#39;</span><span class="p">]:</span>
                     <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">checked</span><span class="p">:</span>
                         <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">Global</span><span class="o">.</span><span class="n">encodeURIComponent</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">nodeValue</span><span class="p">))</span>
             <span class="k">elif</span> <span class="n">el</span><span class="o">.</span><span class="n">nodeName</span> <span class="o">==</span> <span class="s1">&#39;TEXTAREA&#39;</span><span class="p">:</span>
@@ -1099,7 +1062,7 @@
 <div class="viewcode-block" id="dQuery_el.show"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Display the matched elements.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-              <span class="n">el</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="n">el</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="dQuery_el.siblings"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.siblings">[docs]</a>    <span class="k">def</span> <span class="nf">siblings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1138,7 +1101,7 @@
         <span class="sd">&quot;&quot;&quot; Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">newVal</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-                <span class="n">el</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">newVal</span> 
+                <span class="n">el</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">newVal</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">textContent</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">]</span></div>
 
@@ -1190,7 +1153,7 @@
         <span class="sd">&quot;&quot;&quot; Get the current value of the first element in the set of matched elements or set the value of every matched element.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">newVal</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">newVal</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">newVal</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">value</span></div>
         <span class="c1"># return self</span>
@@ -1704,7 +1667,6 @@
     <span class="n">º</span><span class="o">.</span><span class="n">merge</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">merge</span>
     <span class="n">º</span><span class="o">.</span><span class="n">noConflict</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">noConflict</span>
     <span class="n">º</span><span class="o">.</span><span class="n">noop</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">noop</span>
-    
     <span class="n">º</span><span class="o">.</span><span class="n">now</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">now</span>
 
     <span class="n">º</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">el</span><span class="o">.</span><span class="n">param</span>
@@ -1770,7 +1732,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

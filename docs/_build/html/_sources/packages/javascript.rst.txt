@@ -1,12 +1,15 @@
 Domonic: Javascript
 ===================
 
-There is a javascript package being started that mirrors the js API:
+There is a javascript package that mimics the js API.
+
+This allows you to use javascript code you know within python i.e :
 
 .. code-block :: python
 
 	from domonic.javascript import Math
-	print(Math.random())
+	print(Math.random()*10)
+	print(Math.floor(Math.random()*100))
 
 	from domonic.javascript import Array
 	myArr=Array(1,2,3)
@@ -22,6 +25,11 @@ There is a javascript package being started that mirrors the js API:
 	# from domonic.javascript import Global
 	# Global.decodeURIComponent(...
 	# Global.encodeComponent(...
+
+	mystr = String("Some String")
+	print(mystr.toLowerCase())
+	print(mystr.toUpperCase())
+	print(mystr.length)
 
 	# from domonic.javascript import Date
 	# etc..
@@ -63,6 +71,64 @@ You can update a-tags the same way as it inherits from URL:
 	atag.protocol = "http"
 	atag.port = 8983
 	print(atag)
+
+
+
+There's a fetch implementation that uses promises. With additional mulithreaded and pooled versions.
+
+.. code-block :: python
+
+	from domonic.javascript import *
+
+	urls = ['http://google.com', 'http://linkedin.com', 'http://eventual.technology']  # use your own domains
+
+	print('run 1')
+	results = window.fetch(urls[0])
+	results.then(lambda r: print(r.text))
+	print('run 1 FINISHED')
+
+	def somefunc(response):
+		print("I'm a callback", response.ok)
+		return response
+
+	mydata = window.fetch(urls[0]).then(somefunc)
+	print(mydata)
+	print(mydata.data)
+	print(mydata.data.text)
+
+	# fetch more than one
+	results = window.fetch_set(urls)
+	print(results)
+	print(list(results))
+	for r in results:
+		if r is not None:
+			print(r.ok)
+			# print(r.text)
+
+	# multi-threaded
+	results = window.fetch_threaded(urls)
+	print(results)
+	print(list(results))
+	for r in results:
+		if r is not None:
+			print(r.ok)
+			# print(r.text)
+
+	# pooled
+	results = window.fetch_pooled(urls, timeout=2)
+	print(results)
+	for r in results:
+		if r is not None:
+			print(r.ok)
+			# print(r.text)
+
+	print('run 4')
+	results = window.fetch(urls[0])
+	print(results)
+	results.then(lambda r: print(r.text) if r is not None else None)
+
+
+All fetch methods use requests and will pass all the kwargs along should you need to modify
 
 
 Styling
