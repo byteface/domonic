@@ -50,10 +50,16 @@ class domonicTestCase(unittest.TestCase):
 
     def test_dQuery_addClass(self):
         a = º('<div id="test2"></div><div id="test3"></div>')
+        assert str(a) == '<div id="test2"></div><div id="test3"></div>'
+        a.addClass('one')
+        assert str(a) == '<div id="test2" class="one"></div><div id="test3" class="one"></div>'
+        # print("1:",a)
+        # print("2:",str(a))
+        # print(str(a))
         a.addClass('one').addClass('two').addClass('three')
-        print(a)
-        for el in a.elements:
-            print(el.getAttribute("class"))
+        assert str(a) == '<div id="test2" class="one one two three"></div><div id="test3" class="one one two three"></div>'
+        # for el in a.elements:
+            # print(el.getAttribute("class"))
 
     def test_dQuery_after(self):
         pass
@@ -97,13 +103,13 @@ class domonicTestCase(unittest.TestCase):
 
     def test_dQuery_attr(self):
         a = º('<div id="test2"></div>')
-        a.addClass('one').addClass('two').addClass('three')
-        print('================')
-        print(a.attr('id'))
-        print(a.attr('class'))
-        print(a.attr('id', 'somethingelse'))
-        print(a.elements[0])
-        print('================')
+        a.addClass('one')
+        assert str(a) == '<div id="test2" class="one"></div>'
+        assert a.attr('id') == 'test2'
+        assert a.attr('class') == 'one'
+        a.attr('id', 'somethingelse')
+        assert str(a) == '<div id="somethingelse" class="one"></div>'
+        # print(a.elements[0])
 
     def test_dQuery_before(self):
         pass
@@ -225,9 +231,8 @@ class domonicTestCase(unittest.TestCase):
     def test_dQuery_hasClass(self):
         a = º('<div id="test2"></div>')
         a.addClass('one').addClass('two').addClass('three')
-        print(a.hasClass('one'))
-        print(a.hasClass('five'))
-
+        assert a.hasClass('one') == True
+        assert a.hasClass('five') == False
 
     def test_dQuery_height(self):
         pass
@@ -269,8 +274,8 @@ class domonicTestCase(unittest.TestCase):
         pass
 
     def test_dQuery_last(self):
-        things = º('<li></li><li></li><li></li><li></li><li></li>')
-        print(things.last())
+        things = º('<li></li><li></li><li></li><li></li><li data-tag="me"></li>')
+        assert str(things.last()) == '<li data-tag="me"></li>'
 
     def test_dQuery_length(self):
         pass
@@ -473,7 +478,20 @@ class domonicTestCase(unittest.TestCase):
         pass
 
     def test_dQuery_text(self):
-        pass
+        page = html(form(
+                select(_name="single",).html(
+                    option("a", _selected=True),
+                    option("b")
+                ),
+            ),
+            div('hi'),
+            div(span('there'))
+        )
+        º(page)
+        assert º('div').text() == ['hi', 'there']
+        º('div').text('test')
+        assert º('div').text() == ['test', 'test']
+        assert str(page) == '<html><form><select name="single"><option selected="True">a</option><option>b</option></select></form><div>test</div><div>test</div></html>'
 
     def test_dQuery_toArray(self):
         pass
@@ -502,7 +520,7 @@ class domonicTestCase(unittest.TestCase):
     def test_dQuery_unwrap(self):
         pass
 
-    def val(self, newVal=None):
+    def test_dQuery_val(self):
         pass
 
     def test_dQuery_width(self):

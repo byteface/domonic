@@ -479,7 +479,8 @@ make test
 ```
 or to test a single function:
 ```bash
-python3.7 -m unittest tests.test_javascript.domonicTestCase.test_javascript_array
+python -m unittest tests.test_javascript.domonicTestCase.test_javascript_array
+python -m unittest tests.test_dQuery.domonicTestCase.test_dQuery_addClass
 ```
 see coverage
 ```bash

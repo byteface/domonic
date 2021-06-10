@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: dQuery &#8212; domonic 0.3.8 documentation</title>
+    <title>Domonic: dQuery &#8212; domonic 0.3.9 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -35,9 +35,35 @@
             
   <div class="section" id="domonic-dquery">
 <h1>Domonic: dQuery<a class="headerlink" href="#domonic-dquery" title="Permalink to this headline">¶</a></h1>
-<p>TODO</p>
+<p>dQuery is for querying and manipulating your server-side dom.</p>
+<div class="section" id="querying">
+<h2>querying<a class="headerlink" href="#querying" title="Permalink to this headline">¶</a></h2>
+<p>dQuery uses the º symbol (alt+0).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+    <span class="kn">from</span> <span class="nn">domonic.dQuery</span> <span class="kn">import</span> <span class="n">º</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span><span class="n">head</span><span class="p">(</span><span class="n">body</span><span class="p">(</span><span class="n">li</span><span class="p">(</span><span class="n">_class</span><span class="o">=</span><span class="s1">&#39;things&#39;</span><span class="p">),</span> <span class="n">div</span><span class="p">(</span><span class="n">_id</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">))))</span>
+
+<span class="n">º</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="c1"># you need to init a dom first. i.e. a html element</span>
+
+<span class="c1"># now you can use it</span>
+<span class="nb">print</span><span class="p">(</span> <span class="n">º</span><span class="p">(</span><span class="s1">&#39;#test&#39;</span><span class="p">)</span> <span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span> <span class="n">º</span><span class="p">(</span><span class="s1">&#39;.things&#39;</span><span class="p">)</span> <span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">º</span><span class="p">(</span><span class="s1">&#39;&lt;div class=&quot;test2&quot;&gt;&lt;/div&gt;&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span> <span class="n">a</span> <span class="p">)</span>
+
+<span class="n">b</span> <span class="o">=</span> <span class="n">º</span><span class="p">(</span><span class="s1">&#39;#test&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can quickly access returned elements as if it were a list…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">somehtml</span> <span class="o">=</span> <span class="n">º</span><span class="p">(</span><span class="s1">&#39;&lt;html&gt;&lt;table id=&quot;mytable&quot; class=&quot;one&quot;&gt;&lt;/table&gt;&lt;/html&gt;&#39;</span><span class="p">)</span>
+<span class="nb">str</span><span class="p">(</span><span class="n">º</span><span class="p">(</span><span class="s1">&#39;html&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>as well as lots of useful utilities…</p>
 <div class="section" id="id1">
-<h2>domonic.dQuery<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h3>domonic.dQuery<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>alt + 0</p>
 <dl class="py class">
 <dt>
@@ -1030,7 +1056,7 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">text</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.text"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">text</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newVal</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.text"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements.</p>
 </dd></dl>
 
@@ -1146,6 +1172,7 @@
 
 </div>
 </div>
+</div>
 
 
           </div>
@@ -1182,7 +1209,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tween.html">Domonic: tween</a></li>
 <li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: dQuery</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">domonic.dQuery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#querying">querying</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>

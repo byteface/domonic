@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "0.3.8"
+__version__ = "0.3.9"
 __license__ = 'MIT'
 
 import requests
@@ -54,10 +54,16 @@ class domonic:
             turns a pyml string into a python object
         ]
         """
+        if not isinstance(pyml, str):
+            raise ValueError("load requires a string not:", type(pyml))
+
         page = domonic.parse(pyml)
         prog = domonic.domonify(page, *args, **kwargs)
         if type(prog) is tuple:
-            prog = prog[0]
+            if len(prog)<2:
+                prog = prog[0]
+            elif prog[1] == None:
+                prog = prog[0]
         return prog
 
     @staticmethod  # load replaces this.
@@ -77,6 +83,8 @@ class domonic:
         """
 
         # print(pyml)
+        if not isinstance(pyml, str):
+            raise ValueError("domonify requires a string not:", type(pyml))
 
         s = domonic.evaluate(pyml, *args, **kwargs)
         p = eval(s, {**kwargs, **globals()})
@@ -101,6 +109,8 @@ class domonic:
         """
 
         # print(pyml)
+        if not isinstance(pyml, str):
+            raise ValueError("evaluate requires a string not:", type(pyml))
 
         try:
             # TODO - strip any potentially bad/dangerous code before eval.
@@ -220,6 +230,10 @@ class domonic:
         the result will NOT always be valid .pyml . often params will be in wrong order.
         evaluate can be used to try and resolve param order.
         """
+        if not isinstance(page, str):
+            raise ValueError("Parse requires a string required not:", type(page))
+
+        # print('parsing parsing parsing!!')
 
         page = ''.join(page.split('<!DOCTYPE HTML>'))
         page = ''.join(page.split('<!DOCTYPE html>'))
@@ -467,6 +481,9 @@ class domonic:
         page = page.replace('/>', '\n),\n')
         page = page.replace('>', '\n(\n')
         page = page.replace('<', '')
+
+
+        # print(":::",page)
 
         # page = page.replace('>', '\n,\n')  # < note. changed to not closing tag
         # page = page.replace('<', '\n(\n')
@@ -890,6 +907,7 @@ class domonic:
                         # print("FIXED:", line)
             page = '\n'.join(fixed)
 
+        # page = ''.join(page.splitlines())
         page = ''.join(page.splitlines())
 
         # if not minify and indent:

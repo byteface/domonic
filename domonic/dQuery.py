@@ -404,6 +404,9 @@ class dQuery_el():
             # print('asd')
             return str(self.elements)
 
+    def __getitem__(self, index):
+        return self.elements[index]
+
     @property
     def dom(self):
         # print('getting')
@@ -415,19 +418,21 @@ class dQuery_el():
 
     @dom.setter
     def dom(self, dom):
-        # print('SETING')
-        # self.dom = dom
         if isinstance(dom, html) or isinstance(dom, Document):
-            # print('setting new ROOT')
             dQuery_el.DOM = dom
 
-    def init(self, q):
+    def init(self, q=''):
         self.q = q
         if type(q) is not str:
             return
+        # if q == "":
+            # return
 
         if self.q[0] == '<':
-            self.elements = domonic.domonic.domonify(domonic.domonic.parse(self.q))
+            self.elements = domonic.domonic.load(self.q)
+            # print(type(self.elements))
+            if isinstance(self.elements, html) or isinstance(self.elements, Document):
+                self.dom = self.elements
         else:
             try:
                 # element by selector not working on just classes as always needs a tag
@@ -473,6 +478,12 @@ class dQuery_el():
 
     def addClass(self, name):
         """ Adds the specified class to each element in the set of matched elements."""
+        # print(self.elements, name)
+        # print(type(self.elements))
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        # print(type(self.elements))
+
         for el in self.elements:
             if el.getAttribute("class") is not None:
                 el.setAttribute('class', el.getAttribute("class") + " " + name)
@@ -541,6 +552,10 @@ class dQuery_el():
 
     def attr(self, property, value=None):
         """ Get the value of an attribute for the first element in the set of matched elements or set one or more attributes for every matched element."""
+
+        # if not isinstance(self.elements, (list, tuple)):
+            # self.elements = (self.elements,)
+
         if value is not None:
             if self.elements[0].getAttribute(property) is not None:
                 self.elements[0].setAttribute(property, value)
@@ -711,6 +726,9 @@ class dQuery_el():
 
     def hasClass(self, classname):
         """ Determine whether any of the matched elements are assigned the given class."""
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+
         for el in self.elements:
             if el.getAttribute("class") is not None:
                 if classname in el.getAttribute("class"):
@@ -952,6 +970,10 @@ class dQuery_el():
 
     def removeClass(self, classname):
         """ Remove a single class, multiple classes, or all classes from each element in the set of matched elements."""
+
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+
         for el in self.elements:
             if el.getAttribute("class") is not None:
                 if classname in el.getAttribute("class"):
@@ -1078,9 +1100,13 @@ class dQuery_el():
         """ Bind an event handler to the “submit” JavaScript event, or trigger that event on an element."""
         raise NotImplementedError
 
-    def text(self):
+    def text(self, newVal=None):
         """ Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements."""
-        raise NotImplementedError
+        if newVal != None:
+            for el in self.elements:
+                el.textContent = newVal 
+        else:
+            return [el.textContent for el in self.elements]
 
     def toArray(self):
         """ Retrieve all the elements contained in the dQuery set, as an array."""

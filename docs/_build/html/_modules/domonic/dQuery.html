@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dQuery &#8212; domonic 0.3.8 documentation</title>
+    <title>domonic.dQuery &#8212; domonic 0.3.9 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -438,6 +438,9 @@
             <span class="c1"># print(&#39;asd&#39;)</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># print(&#39;getting&#39;)</span>
@@ -449,19 +452,21 @@
 
     <span class="nd">@dom</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">dom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dom</span><span class="p">):</span>
-        <span class="c1"># print(&#39;SETING&#39;)</span>
-        <span class="c1"># self.dom = dom</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dom</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
-            <span class="c1"># print(&#39;setting new ROOT&#39;)</span>
             <span class="n">dQuery_el</span><span class="o">.</span><span class="n">DOM</span> <span class="o">=</span> <span class="n">dom</span>
 
-    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">q</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
             <span class="k">return</span>
+        <span class="c1"># if q == &quot;&quot;:</span>
+            <span class="c1"># return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">domonic</span><span class="o">.</span><span class="n">domonify</span><span class="p">(</span><span class="n">domonic</span><span class="o">.</span><span class="n">domonic</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">domonic</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span>
+            <span class="c1"># print(type(self.elements))</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># element by selector not working on just classes as always needs a tag</span>
@@ -507,6 +512,12 @@
 
 <div class="viewcode-block" id="dQuery_el.addClass"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.addClass">[docs]</a>    <span class="k">def</span> <span class="nf">addClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adds the specified class to each element in the set of matched elements.&quot;&quot;&quot;</span>
+        <span class="c1"># print(self.elements, name)</span>
+        <span class="c1"># print(type(self.elements))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,)</span>
+        <span class="c1"># print(type(self.elements))</span>
+
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">el</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
@@ -575,6 +586,10 @@
 
 <div class="viewcode-block" id="dQuery_el.attr"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.attr">[docs]</a>    <span class="k">def</span> <span class="nf">attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the value of an attribute for the first element in the set of matched elements or set one or more attributes for every matched element.&quot;&quot;&quot;</span>
+
+        <span class="c1"># if not isinstance(self.elements, (list, tuple)):</span>
+            <span class="c1"># self.elements = (self.elements,)</span>
+
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -745,6 +760,9 @@
 
 <div class="viewcode-block" id="dQuery_el.hasClass"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.hasClass">[docs]</a>    <span class="k">def</span> <span class="nf">hasClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Determine whether any of the matched elements are assigned the given class.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,)</span>
+
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">classname</span> <span class="ow">in</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">):</span>
@@ -986,6 +1004,10 @@
 
 <div class="viewcode-block" id="dQuery_el.removeClass"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.removeClass">[docs]</a>    <span class="k">def</span> <span class="nf">removeClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Remove a single class, multiple classes, or all classes from each element in the set of matched elements.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,)</span>
+
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">classname</span> <span class="ow">in</span> <span class="n">el</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">):</span>
@@ -1112,9 +1134,13 @@
         <span class="sd">&quot;&quot;&quot; Bind an event handler to the “submit” JavaScript event, or trigger that event on an element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="dQuery_el.text"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.text">[docs]</a>    <span class="k">def</span> <span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="dQuery_el.text"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.text">[docs]</a>    <span class="k">def</span> <span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newVal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">if</span> <span class="n">newVal</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+                <span class="n">el</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">newVal</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">textContent</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="dQuery_el.toArray"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.toArray">[docs]</a>    <span class="k">def</span> <span class="nf">toArray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Retrieve all the elements contained in the dQuery set, as an array.&quot;&quot;&quot;</span>
