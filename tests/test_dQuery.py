@@ -558,8 +558,8 @@ class domonicTestCase(unittest.TestCase):
         # print(d)
         # print('el:', d.documentElement)
         # print('bod:', d.body)
-        assert(º.contains(d.documentElement, d.body), True)  # true
-        assert(º.contains(d.body, d.documentElement), False)  # false
+        assert º.contains(d.documentElement, d.body) == True  # true
+        assert º.contains(d.body, d.documentElement) == False  # false
 
         # º.data()
         # º.Deferred()
