@@ -4,10 +4,19 @@ Domonic: HTML
 
 rendering
 ----------------
-render takes 2 parameters, some domonic and an optional output file.
+
+you can just cast str() on any element to render it.
+
+```python
+el_string = str(div())
+print(el_string)
+```
+
+there's also a render method that takes 2 parameters, some pyml and an optional output file.
 
 .. code-block :: python
-
+    
+    from domonic.html import *
 	page = div(span('Hello World'))
 	render(page, 'index.html')
 
@@ -92,20 +101,66 @@ python doesn't allow hyphens in parameter names. so use variable keyword argumen
 DONT FORGET TO PREPEND THE UNDERSCORE.
 
 
-fugly
+script tags
 ----------------
-use your own methods to prettify. the example uses a library that leverages beautifulsoup. i.e.
+
+load from a source...
 
 .. code-block :: python
 
-	output = render(html(body(h1('Hello, World!'))))
-	from html5print import HTMLBeautifier
-	print(HTMLBeautifier.beautify(output, 4))
+	script(_src="/docs/5.0/dist/js/bootstrap.bundle.min.js", _integrity="sha384-1234", _crossorigin="anonymous"),
+
+or do inline js...
+
+.. code-block :: python
+
+	script("""
+    let itbe = ""
+    """),
 
 
-createElement
+style tags
 ----------------
-to create your own elements use the DOM API
+
+load from a source...
+
+.. code-block :: python
+
+	link(_href="/docs/5.0/dist/css/bootstrap.min.css", _rel="stylesheet", __integrity="sha384-12345", __crossorigin="anonymous"),
+
+or do inline css...
+
+.. code-block :: python
+
+    style("""
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+    }
+    }
+    """),
+
+
+Create Elements
+----------------
+
+to create your own custom elements you can use create_element
+
+.. code-block :: python
+
+    from domonic.html import *
+    create_element('custom_el', div('some content'), _id="test")
+
+
+or you could use the DOM API...
 
 .. code-block :: python
 
@@ -231,6 +286,63 @@ unpack children...
         print(a1)
         a1, b1, c1, d1, e1 = button() * 5
         print(a1, b1, c1, d1, e1)
+
+
+Fugly
+----------------
+for now use your own methods to prettify. the example uses a library that leverages beautifulsoup. i.e.
+
+.. code-block :: python
+
+	output = render(html(body(h1('Hello, World!'))))
+	from html5print import HTMLBeautifier
+	print(HTMLBeautifier.beautify(output, 4))
+
+
+Some primitive formatting is coming shortly
+
+You can also use this vscode plugin on .pyml and it does a nice job.
+
+https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dictionary
+
+
+
+loading .pyml templates
+--------------------------------
+
+'loads' imports a pyml file and turns it into a program
+
+this example loads a template and passing params for rendering
+
+.. code-block :: python
+
+    from domonic import loads
+    from domonic.html import *
+
+    # create some vars. you will see these referenced in the template file
+    brand = "MyBrand"
+    links = ['one', 'two', 'three']
+
+    # load a template and pass it some data
+    webpage = domonic.loads('templates/webpage.com.pyml', links=links, brand=brand)
+
+    render(webpage, 'webpage.html')
+
+
+# 'load' is different to 'loads', it takes html strings and converts to a program
+
+.. code-block :: python
+
+    from domonic.dQuery import º
+
+    webpage = domonic.load('<html><head></head><body id="test"></body></html>')
+    º(webpage)
+    º('#test').append(div("Hello World"))
+    render(webpage, 'webpage2.html')
+
+
+* warning loads also is very basic and can only convert simple html as the parser is still in development
+
 
 
 .. automodule:: domonic.html

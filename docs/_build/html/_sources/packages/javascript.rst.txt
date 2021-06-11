@@ -1,15 +1,12 @@
 Domonic: Javascript
 ===================
 
-There is a javascript package that mimics the js API.
-
-This allows you to use javascript code you know within python i.e :
+There's a javascript package that mimics the js API:
 
 .. code-block :: python
 
 	from domonic.javascript import Math
-	print(Math.random()*10)
-	print(Math.floor(Math.random()*100))
+	print(Math.random())
 
 	from domonic.javascript import Array
 	myArr=Array(1,2,3)
@@ -25,11 +22,6 @@ This allows you to use javascript code you know within python i.e :
 	# from domonic.javascript import Global
 	# Global.decodeURIComponent(...
 	# Global.encodeComponent(...
-
-	mystr = String("Some String")
-	print(mystr.toLowerCase())
-	print(mystr.toUpperCase())
-	print(mystr.length)
 
 	# from domonic.javascript import Date
 	# etc..
@@ -57,22 +49,8 @@ You can use setInterval and clearInterval with params
 
 
 
-You can update a-tags the same way as it inherits from URL:
-
-.. code-block :: python
-
-	from domonic.html import *
-
-	atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
-	print('href:',atag.href)
-	print('protocol:',atag.protocol)
-	print('port:',atag.port)
-
-	atag.protocol = "http"
-	atag.port = 8983
-	print(atag)
-
-
+fetch
+----------------
 
 There's a fetch implementation that uses promises. With additional mulithreaded and pooled versions.
 

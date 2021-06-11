@@ -404,7 +404,12 @@ It is used specifically for rendering.
 
 
 ### Common Errors
-If templates are typed incorrectly they will not work. Here are some solutions to common errors when creating large templates...
+
+If templates are typed incorrectly they will not work.
+
+There's a small learning curve getting .pyml templates correct. Usually (1) a missing comma between tags, (2) an underscore missing on an attribute or (3) params in the wrong order. Use this reference when starting out as a reminder when you get an error.
+
+Here are the 4 solutions to those common errors when creating large templates...
 ( i.e. see bootstrap5 examples in test_domonic.py )
 
 IndexError: list index out of range
@@ -414,7 +419,7 @@ SyntaxError: invalid syntax
     - You are Missing a comma between attributes
 
 SyntaxError: positional argument follows keyword argument
-    - You have to pass attributes LAST. and strings and objects first. *see docs*
+    - You have to pass attributes LAST. and strings and objects first. *see notes on templating above*
 
 TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
     - You are Missing a comma between attributes. before the **{}

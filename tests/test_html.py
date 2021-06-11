@@ -36,7 +36,6 @@ class domonicTestCase(unittest.TestCase):
         assert str(create_element('custom_el', div('some content'), _id="test")) == \
             '''<custom_el id="test"><div>some content</div></custom_el>'''
 
-
     # @silence
     def test_domonic_parse(self):
         page = domonic.parse("<html><body>'some content'</body></html>") # TODO - single comma

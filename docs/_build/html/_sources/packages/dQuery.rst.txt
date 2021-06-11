@@ -28,6 +28,7 @@ dQuery uses the º symbol (alt+0).
     print(b)
 
 
+
 You can quickly access returned elements as if it were a list...
 
 .. code-block :: python

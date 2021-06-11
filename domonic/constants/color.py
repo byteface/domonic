@@ -8,6 +8,11 @@ class Color():
 
     @staticmethod
     def random_hex():
+        """[random_hex]
+
+        Returns:
+            [str]: [random hex color]
+        """
         import random
         r = lambda: random.randint(0, 255)
         return '#%02X%02X%02X' % (r(), r(), r())
@@ -16,12 +21,30 @@ class Color():
 
     @staticmethod
     def hex2rgb(h):
+        """[hex2rgb]
+
+        Args:
+            h ([str]): [hex string]
+
+        Returns:
+            [tuple]: [rgb tuple]
+        """
         if h[0] == '#':
             h = h.lstrip('#')
         return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
     @staticmethod
     def rgb2hex(a, b, c):
+        """[rgb2hex]
+
+        Args:
+            a ([type]): [r]
+            b ([type]): [g]
+            c ([type]): [b]
+
+        Returns:
+            [str]: [retuns a hex string]
+        """
         #  TODO - pass tuples or
         # if isinstance(a, (int, float)):
         # elif isinstance(a, (tuple, list)):

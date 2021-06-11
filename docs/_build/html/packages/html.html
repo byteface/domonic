@@ -37,9 +37,15 @@
 <h1>Domonic: HTML<a class="headerlink" href="#domonic-html" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="rendering">
 <h2>rendering<a class="headerlink" href="#rendering" title="Permalink to this headline">¶</a></h2>
-<p>render takes 2 parameters, some domonic and an optional output file.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">page</span> <span class="o">=</span> <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s1">&#39;Hello World&#39;</span><span class="p">))</span>
-<span class="n">render</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
+<p>you can just cast str() on any element to render it.</p>
+<p><code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">el_string</span> <span class="pre">=</span> <span class="pre">str(div())</span>
+<span class="pre">print(el_string)</span>
+<span class="pre">`</span></code></p>
+<p>there’s also a render method that takes 2 parameters, some pyml and an optional output file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+    <span class="n">page</span> <span class="o">=</span> <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s1">&#39;Hello World&#39;</span><span class="p">))</span>
+    <span class="n">render</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -106,18 +112,52 @@
 </div>
 <p>DONT FORGET TO PREPEND THE UNDERSCORE.</p>
 </div>
-<div class="section" id="fugly">
-<h2>fugly<a class="headerlink" href="#fugly" title="Permalink to this headline">¶</a></h2>
-<p>use your own methods to prettify. the example uses a library that leverages beautifulsoup. i.e.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="n">render</span><span class="p">(</span><span class="n">html</span><span class="p">(</span><span class="n">body</span><span class="p">(</span><span class="n">h1</span><span class="p">(</span><span class="s1">&#39;Hello, World!&#39;</span><span class="p">))))</span>
-<span class="kn">from</span> <span class="nn">html5print</span> <span class="kn">import</span> <span class="n">HTMLBeautifier</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">HTMLBeautifier</span><span class="o">.</span><span class="n">beautify</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<div class="section" id="script-tags">
+<h2>script tags<a class="headerlink" href="#script-tags" title="Permalink to this headline">¶</a></h2>
+<p>load from a source…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">script</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="s2">&quot;/docs/5.0/dist/js/bootstrap.bundle.min.js&quot;</span><span class="p">,</span> <span class="n">_integrity</span><span class="o">=</span><span class="s2">&quot;sha384-1234&quot;</span><span class="p">,</span> <span class="n">_crossorigin</span><span class="o">=</span><span class="s2">&quot;anonymous&quot;</span><span class="p">),</span>
+</pre></div>
+</div>
+<p>or do inline js…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">script</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">let itbe = &quot;&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="createelement">
-<h2>createElement<a class="headerlink" href="#createelement" title="Permalink to this headline">¶</a></h2>
-<p>to create your own elements use the DOM API</p>
+<div class="section" id="style-tags">
+<h2>style tags<a class="headerlink" href="#style-tags" title="Permalink to this headline">¶</a></h2>
+<p>load from a source…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">link</span><span class="p">(</span><span class="n">_href</span><span class="o">=</span><span class="s2">&quot;/docs/5.0/dist/css/bootstrap.min.css&quot;</span><span class="p">,</span> <span class="n">_rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span> <span class="n">__integrity</span><span class="o">=</span><span class="s2">&quot;sha384-12345&quot;</span><span class="p">,</span> <span class="n">__crossorigin</span><span class="o">=</span><span class="s2">&quot;anonymous&quot;</span><span class="p">),</span>
+</pre></div>
+</div>
+<p>or do inline css…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">.bd-placeholder-img {</span>
+<span class="s2">    font-size: 1.125rem;</span>
+<span class="s2">    text-anchor: middle;</span>
+<span class="s2">    -webkit-user-select: none;</span>
+<span class="s2">    -moz-user-select: none;</span>
+<span class="s2">    -ms-user-select: none;</span>
+<span class="s2">    user-select: none;</span>
+<span class="s2">}</span>
+<span class="s2">@media (min-width: 768px) {</span>
+<span class="s2">.bd-placeholder-img-lg {</span>
+<span class="s2">    font-size: 3.5rem;</span>
+<span class="s2">}</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-elements">
+<h2>Create Elements<a class="headerlink" href="#create-elements" title="Permalink to this headline">¶</a></h2>
+<p>to create your own custom elements you can use create_element</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">create_element</span><span class="p">(</span><span class="s1">&#39;custom_el&#39;</span><span class="p">,</span> <span class="n">div</span><span class="p">(</span><span class="s1">&#39;some content&#39;</span><span class="p">),</span> <span class="n">_id</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or you could use the DOM API…</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
 
@@ -204,6 +244,48 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="fugly">
+<h2>Fugly<a class="headerlink" href="#fugly" title="Permalink to this headline">¶</a></h2>
+<p>for now use your own methods to prettify. the example uses a library that leverages beautifulsoup. i.e.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="n">render</span><span class="p">(</span><span class="n">html</span><span class="p">(</span><span class="n">body</span><span class="p">(</span><span class="n">h1</span><span class="p">(</span><span class="s1">&#39;Hello, World!&#39;</span><span class="p">))))</span>
+<span class="kn">from</span> <span class="nn">html5print</span> <span class="kn">import</span> <span class="n">HTMLBeautifier</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">HTMLBeautifier</span><span class="o">.</span><span class="n">beautify</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Some primitive formatting is coming shortly</p>
+<p>You can also use this vscode plugin on .pyml and it does a nice job.</p>
+<p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dictionary">https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dictionary</a></p>
+</div>
+<div class="section" id="loading-pyml-templates">
+<h2>loading .pyml templates<a class="headerlink" href="#loading-pyml-templates" title="Permalink to this headline">¶</a></h2>
+<p>‘loads’ imports a pyml file and turns it into a program</p>
+<p>this example loads a template and passing params for rendering</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic</span> <span class="kn">import</span> <span class="n">loads</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># create some vars. you will see these referenced in the template file</span>
+<span class="n">brand</span> <span class="o">=</span> <span class="s2">&quot;MyBrand&quot;</span>
+<span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;three&#39;</span><span class="p">]</span>
+
+<span class="c1"># load a template and pass it some data</span>
+<span class="n">webpage</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="s1">&#39;templates/webpage.com.pyml&#39;</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="n">links</span><span class="p">,</span> <span class="n">brand</span><span class="o">=</span><span class="n">brand</span><span class="p">)</span>
+
+<span class="n">render</span><span class="p">(</span><span class="n">webpage</span><span class="p">,</span> <span class="s1">&#39;webpage.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p># ‘load’ is different to ‘loads’, it takes html strings and converts to a program</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.dQuery</span> <span class="kn">import</span> <span class="n">º</span>
+
+<span class="n">webpage</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body id=&quot;test&quot;&gt;&lt;/body&gt;&lt;/html&gt;&#39;</span><span class="p">)</span>
+<span class="n">º</span><span class="p">(</span><span class="n">webpage</span><span class="p">)</span>
+<span class="n">º</span><span class="p">(</span><span class="s1">&#39;#test&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">div</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">))</span>
+<span class="n">render</span><span class="p">(</span><span class="n">webpage</span><span class="p">,</span> <span class="s1">&#39;webpage2.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>warning loads also is very basic and can only convert simple html as the parser is still in development</p></li>
+</ul>
 <div class="section" id="id1">
 <h3>domonic.html<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Generate HTML using python 3</p>
@@ -907,9 +989,12 @@ i.e. hypenated tags &lt;some-custom-tag&gt;&lt;/some-custom-tag&gt;</p>
 <li class="toctree-l2"><a class="reference internal" href="#attributes">attributes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#lists">lists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-tags">data-tags</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#fugly">fugly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#createelement">createElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#script-tags">script tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#style-tags">style tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-elements">Create Elements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#magic-methods">Magic methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fugly">Fugly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-pyml-templates">loading .pyml templates</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
@@ -922,7 +1007,7 @@ i.e. hypenated tags &lt;some-custom-tag&gt;&lt;/some-custom-tag&gt;</p>
 <li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

@@ -35,7 +35,7 @@
             
   <div class="section" id="domonic-javascript">
 <h1>Domonic: Javascript<a class="headerlink" href="#domonic-javascript" title="Permalink to this headline">¶</a></h1>
-<p>There is a javascript package being started that mirrors the js API:</p>
+<p>There’s a javascript package that mimics the js API:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">Math</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">Math</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
 
@@ -75,19 +75,61 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final value of x:</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You can update a-tags the same way as it inherits from URL:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+</div>
+<div class="section" id="fetch">
+<h2>fetch<a class="headerlink" href="#fetch" title="Permalink to this headline">¶</a></h2>
+<p>There’s a fetch implementation that uses promises. With additional mulithreaded and pooled versions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="n">atag</span> <span class="o">=</span> <span class="n">a</span><span class="p">(</span><span class="n">_href</span><span class="o">=</span><span class="s2">&quot;https://somesite.com:8000/blog/article-one#some-hash&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;href:&#39;</span><span class="p">,</span><span class="n">atag</span><span class="o">.</span><span class="n">href</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;protocol:&#39;</span><span class="p">,</span><span class="n">atag</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;port:&#39;</span><span class="p">,</span><span class="n">atag</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+<span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;http://google.com&#39;</span><span class="p">,</span> <span class="s1">&#39;http://linkedin.com&#39;</span><span class="p">,</span> <span class="s1">&#39;http://eventual.technology&#39;</span><span class="p">]</span>  <span class="c1"># use your own domains</span>
 
-<span class="n">atag</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="s2">&quot;http&quot;</span>
-<span class="n">atag</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="mi">8983</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">atag</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;run 1&#39;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">urls</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">results</span><span class="o">.</span><span class="n">then</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;run 1 FINISHED&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">somefunc</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;I&#39;m a callback&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+<span class="n">mydata</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">urls</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">then</span><span class="p">(</span><span class="n">somefunc</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mydata</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mydata</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mydata</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+<span class="c1"># fetch more than one</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">fetch_set</span><span class="p">(</span><span class="n">urls</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">)</span>
+                <span class="c1"># print(r.text)</span>
+
+<span class="c1"># multi-threaded</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">fetch_threaded</span><span class="p">(</span><span class="n">urls</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">)</span>
+                <span class="c1"># print(r.text)</span>
+
+<span class="c1"># pooled</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">fetch_pooled</span><span class="p">(</span><span class="n">urls</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">ok</span><span class="p">)</span>
+                <span class="c1"># print(r.text)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;run 4&#39;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">urls</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="n">results</span><span class="o">.</span><span class="n">then</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>All fetch methods use requests and will pass all the kwargs along should you need to modify</p>
 </div>
 <div class="section" id="styling">
 <h2>Styling<a class="headerlink" href="#styling" title="Permalink to this headline">¶</a></h2>
@@ -939,6 +981,7 @@ and through the specified number of character</p>
 <li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: Javascript</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#setinterval">setInterval</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fetch">fetch</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#styling">Styling</a></li>
 </ul>
 </li>
@@ -950,7 +993,7 @@ and through the specified number of character</p>
 <li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

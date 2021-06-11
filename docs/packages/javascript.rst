@@ -1,7 +1,7 @@
 Domonic: Javascript
 ===================
 
-There is a javascript package being started that mirrors the js API:
+There's a javascript package that mimics the js API:
 
 .. code-block :: python
 
@@ -49,20 +49,64 @@ You can use setInterval and clearInterval with params
 
 
 
-You can update a-tags the same way as it inherits from URL:
+fetch
+----------------
+
+There's a fetch implementation that uses promises. With additional mulithreaded and pooled versions.
 
 .. code-block :: python
 
-	from domonic.html import *
+	from domonic.javascript import *
 
-	atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
-	print('href:',atag.href)
-	print('protocol:',atag.protocol)
-	print('port:',atag.port)
+	urls = ['http://google.com', 'http://linkedin.com', 'http://eventual.technology']  # use your own domains
 
-	atag.protocol = "http"
-	atag.port = 8983
-	print(atag)
+	print('run 1')
+	results = window.fetch(urls[0])
+	results.then(lambda r: print(r.text))
+	print('run 1 FINISHED')
+
+	def somefunc(response):
+		print("I'm a callback", response.ok)
+		return response
+
+	mydata = window.fetch(urls[0]).then(somefunc)
+	print(mydata)
+	print(mydata.data)
+	print(mydata.data.text)
+
+	# fetch more than one
+	results = window.fetch_set(urls)
+	print(results)
+	print(list(results))
+	for r in results:
+		if r is not None:
+			print(r.ok)
+			# print(r.text)
+
+	# multi-threaded
+	results = window.fetch_threaded(urls)
+	print(results)
+	print(list(results))
+	for r in results:
+		if r is not None:
+			print(r.ok)
+			# print(r.text)
+
+	# pooled
+	results = window.fetch_pooled(urls, timeout=2)
+	print(results)
+	for r in results:
+		if r is not None:
+			print(r.ok)
+			# print(r.text)
+
+	print('run 4')
+	results = window.fetch(urls[0])
+	print(results)
+	results.then(lambda r: print(r.text) if r is not None else None)
+
+
+All fetch methods use requests and will pass all the kwargs along should you need to modify
 
 
 Styling
