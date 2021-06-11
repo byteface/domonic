@@ -37,11 +37,11 @@
 <h1>Domonic: HTML<a class="headerlink" href="#domonic-html" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="rendering">
 <h2>rendering<a class="headerlink" href="#rendering" title="Permalink to this headline">¶</a></h2>
-<p>you can just cast str() on any element to render it.</p>
-<p><code class="docutils literal notranslate"><span class="pre">`python</span>
-<span class="pre">el_string</span> <span class="pre">=</span> <span class="pre">str(div())</span>
-<span class="pre">print(el_string)</span>
-<span class="pre">`</span></code></p>
+<p>you can cast str() on any element to render it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">el_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">div</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">el_string</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>there’s also a render method that takes 2 parameters, some pyml and an optional output file.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
     <span class="n">page</span> <span class="o">=</span> <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s1">&#39;Hello World&#39;</span><span class="p">))</span>

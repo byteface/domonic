@@ -1340,8 +1340,6 @@ class dQuery_el():
 # :eq() Selector
 # Select the element at index n within the matched set.
 
-
-
 # Selectors > Basic Filter | Deprecated > Deprecated 3.4 | Selectors > dQuery Extensions
 # :even Selector
 # Selects even elements, zero-indexed. See also :odd.

@@ -323,6 +323,7 @@ class form(tag, Element):
                 kids.append(child)
         return kids
 
+
 label = type('label', (tag, Element), {'name': 'label', '__init__': tag_init})
 submit = type('submit', (tag, Element), {'name': 'submit', '__init__': tag_init})
 title = type('title', (tag, Element), {'name': 'title', '__init__': tag_init})

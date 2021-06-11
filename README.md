@@ -511,6 +511,7 @@ python -m unittest tests.test_dQuery.domonicTestCase.test_dQuery_addClass
 or to test a whole module
 ```bash
 python -m unittest tests.test_html
+python -m unittest tests.test_CDN
 ```
 
 to see coverage

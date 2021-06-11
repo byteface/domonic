@@ -262,8 +262,7 @@ class KeyboardEvent(Event):
 
         super().__init__(_type, *args, **kwargs)
 
-    def initKeyboardEvent(self, typeArg, canBubbleArg, cancelableArg,
-                        viewArg, charArg, keyArg,
+    def initKeyboardEvent(self, typeArg, canBubbleArg, cancelableArg, viewArg, charArg, keyArg,
                         locationArg, modifiersListArg, repeat):
         self._type = typeArg
         self.canBubbleArg = canBubbleArg
@@ -331,19 +330,12 @@ class TouchEvent(Event):
     def __init__(self, _type, *args, **kwargs):
         self.shiftKey = None
         self.altKey = None
-        """  Returns whether the "ALT" key was pressed when the touch event was triggered """
         self.changedTouches = None
-        """  Returns a list of all the touch objects whose state changed between the previous touch and this touch """
         self.ctrlKey = None
-        """ Returns whether the "CTRL" key was pressed when the touch event was triggered """
         self.metaKey = None
-        """ Returns whether the "meta" key was pressed when the touch event was triggered """
         self.shiftKey = None
-        """  Returns whether the "SHIFT" key was pressed when the touch event was triggered """
         self.targetTouches = None
-        """   Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element """
         self.touches = None
-        """ Returns a list of all the touch objects that are currently in contact with the surface """
         super().__init__(_type, *args, **kwargs)
 
 
@@ -559,6 +551,7 @@ class GamePadEvent(Event):
     """ GamePadEvent """
     START = "gamepadconnected"
     STOP = "gamepaddisconnected"
+
     def __init__(self, _type, *args, **kwargs):
         self.gamepad = None
         super().__init__(_type, *args, **kwargs)

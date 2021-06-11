@@ -5,12 +5,13 @@ Domonic: HTML
 rendering
 ----------------
 
-you can just cast str() on any element to render it.
+you can cast str() on any element to render it.
 
-```python
-el_string = str(div())
-print(el_string)
-```
+.. code-block :: python
+
+    el_string = str(div())
+    print(el_string)
+
 
 there's also a render method that takes 2 parameters, some pyml and an optional output file.
 

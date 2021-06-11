@@ -11,7 +11,13 @@ class Game():
 
     @staticmethod
     def roll_dice():
+        """[roll_dice]
+
+        Returns:
+            [int]: [between 1 and 6]
+        """
         return Math.round(Math.random() * 6)
+    # dice_roll = roll_dice
 
     # @staticmethod
     # def pick_a_card():
