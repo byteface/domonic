@@ -1061,13 +1061,15 @@ class Array(object):
         del self.args[0]
         return item
 
-    def map(self):
+    def map(self, func):
+        #  written by .ai (https://6b.eleuther.ai/)
         """ Creates a new array with the result of calling a function for each array element """
-        raise NotImplementedError
+        return [func(value) for value in self.args]
 
     def some(self):
+        #  written by .ai (https://6b.eleuther.ai/)
         """ Checks if any of the elements in an array pass a test """
-        raise NotImplementedError
+        return any(func(value) for value in self.args)
 
     def sort(self):
         """ Sorts the elements of an array """
@@ -1079,27 +1081,41 @@ class Array(object):
 
     def reduceRight(self):
         """ Reduce the values of an array to a single value (going right-to-left) """
-        raise NotImplementedError
+        #  written by .ai (https://6b.eleuther.ai/)
+        #  Takes an array and reduces it based on a function in reverse order 
+        for value, index in zip(self.args, reversed(range(len(self.args)) - 1)):
+            yield func(value, index)
+        yield self.args[0]
 
     def filter(self, func):
         """
         Creates a new array with every element in an array that pass a test
         even_numbers = someArr.filter( lambda x: x % 2 == 0 )
         """
-        raise NotImplementedError
-        # return list(filter(func, self.args))
+        # written by .ai (https://6b.eleuther.ai/)
+        filtered = []
+        for value in self.args:
+            if func(value):
+                filtered.append(value)
+        return filtered
 
     def find(self):
         """ Returns the value of the first element in an array that pass a test """
         raise NotImplementedError
 
-    def findIndex(self):
+    def findIndex(self, value):
         """ Returns the index of the first element in an array that pass a test """
-        raise NotImplementedError
+        # written by .ai (https://6b.eleuther.ai/)
+        for i, value in enumerate(self.args):
+            if value == value:
+                return i
+        return -1
 
-    def forEach(self):
+    def forEach(self, func):
         """ Calls a function for each array element """
-        raise NotImplementedError
+        # written by .ai (https://6b.eleuther.ai/)
+        for value in self.args:
+            func(value)
 
     # def from():
         """ Creates an array from an object """
