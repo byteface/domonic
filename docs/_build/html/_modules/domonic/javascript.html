@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.3.9 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.3.10 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -1095,13 +1095,15 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">item</span></div>
 
-<div class="viewcode-block" id="Array.map"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.map"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="c1">#  written by .ai (https://6b.eleuther.ai/)</span>
         <span class="sd">&quot;&quot;&quot; Creates a new array with the result of calling a function for each array element &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Array.some"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.some">[docs]</a>    <span class="k">def</span> <span class="nf">some</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#  written by .ai (https://6b.eleuther.ai/)</span>
         <span class="sd">&quot;&quot;&quot; Checks if any of the elements in an array pass a test &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Array.sort"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sorts the elements of an array &quot;&quot;&quot;</span>
@@ -1113,27 +1115,41 @@
 
 <div class="viewcode-block" id="Array.reduceRight"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reduceRight">[docs]</a>    <span class="k">def</span> <span class="nf">reduceRight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going right-to-left) &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="c1">#  written by .ai (https://6b.eleuther.ai/)</span>
+        <span class="c1">#  Takes an array and reduces it based on a function in reverse order </span>
+        <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)):</span>
+            <span class="k">yield</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Array.filter"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a new array with every element in an array that pass a test</span>
 <span class="sd">        even_numbers = someArr.filter( lambda x: x % 2 == 0 )</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-        <span class="c1"># return list(filter(func, self.args))</span>
+        <span class="c1"># written by .ai (https://6b.eleuther.ai/)</span>
+        <span class="n">filtered</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="n">filtered</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">filtered</span></div>
 
 <div class="viewcode-block" id="Array.find"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.find">[docs]</a>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value of the first element in an array that pass a test &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.findIndex"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.findIndex">[docs]</a>    <span class="k">def</span> <span class="nf">findIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.findIndex"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.findIndex">[docs]</a>    <span class="k">def</span> <span class="nf">findIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the index of the first element in an array that pass a test &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="c1"># written by .ai (https://6b.eleuther.ai/)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">i</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="Array.forEach"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.forEach">[docs]</a>    <span class="k">def</span> <span class="nf">forEach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.forEach"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.forEach">[docs]</a>    <span class="k">def</span> <span class="nf">forEach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Calls a function for each array element &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="c1"># written by .ai (https://6b.eleuther.ai/)</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="c1"># def from():</span>
         <span class="sd">&quot;&quot;&quot; Creates an array from an object &quot;&quot;&quot;</span></div>

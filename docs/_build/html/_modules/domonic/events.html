@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.events &#8212; domonic 0.3.9 documentation</title>
+    <title>domonic.events &#8212; domonic 0.3.10 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -296,8 +296,7 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">initKeyboardEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeArg</span><span class="p">,</span> <span class="n">canBubbleArg</span><span class="p">,</span> <span class="n">cancelableArg</span><span class="p">,</span>
-                        <span class="n">viewArg</span><span class="p">,</span> <span class="n">charArg</span><span class="p">,</span> <span class="n">keyArg</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">initKeyboardEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typeArg</span><span class="p">,</span> <span class="n">canBubbleArg</span><span class="p">,</span> <span class="n">cancelableArg</span><span class="p">,</span> <span class="n">viewArg</span><span class="p">,</span> <span class="n">charArg</span><span class="p">,</span> <span class="n">keyArg</span><span class="p">,</span>
                         <span class="n">locationArg</span><span class="p">,</span> <span class="n">modifiersListArg</span><span class="p">,</span> <span class="n">repeat</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">typeArg</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">canBubbleArg</span> <span class="o">=</span> <span class="n">canBubbleArg</span>
@@ -365,19 +364,12 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shiftKey</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">altKey</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;  Returns whether the &quot;ALT&quot; key was pressed when the touch event was triggered &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">changedTouches</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;  Returns a list of all the touch objects whose state changed between the previous touch and this touch &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ctrlKey</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot; Returns whether the &quot;CTRL&quot; key was pressed when the touch event was triggered &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metaKey</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot; Returns whether the &quot;meta&quot; key was pressed when the touch event was triggered &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shiftKey</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;  Returns whether the &quot;SHIFT&quot; key was pressed when the touch event was triggered &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">targetTouches</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot;   Returns a list of all the touch objects that are in contact with the surface and where the touchstart event occured on the same target element as the current target element &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">touches</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&quot;&quot;&quot; Returns a list of all the touch objects that are currently in contact with the surface &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -593,6 +585,7 @@
     <span class="sd">&quot;&quot;&quot; GamePadEvent &quot;&quot;&quot;</span>
     <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;gamepadconnected&quot;</span>
     <span class="n">STOP</span> <span class="o">=</span> <span class="s2">&quot;gamepaddisconnected&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gamepad</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
