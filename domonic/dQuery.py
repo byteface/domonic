@@ -1114,14 +1114,15 @@ class dQuery_el():
         """
         # TODO - untested / not working
 
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
+        # if not isinstance(self.elements, (list, tuple)):
+        #     self.elements = (self.elements,)
 
-        for el in self.elements:
-            if º(el).hasClass(className):
-                º(el).addClass(className)
-            else:
-                º(el).removeClass(className)
+        # for el in self.elements:
+        #     if º(el).hasClass(className):
+        #         º(el).addClass(className)
+        #     else:
+        #         º(el).removeClass(className)
+        raise NotImplementedError
 
     def trigger(self):
         """ Execute all handlers and behaviors attached to the matched elements for the given event type."""

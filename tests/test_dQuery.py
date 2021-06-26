@@ -498,21 +498,22 @@ class domonicTestCase(unittest.TestCase):
         pass
 
     def test_dQuery_toggleClass(self):
-        page = html(form(
-                select(_name="single",).html(
-                    option("a", _selected=True),
-                    option("b")
-                ), _id='test'
-            ),
-            div('hi'),
-            div(span('there'))
-        )
-        º(page)
-        print(page)
-        º('#test').toggleClass('someclass')
-        print(page)
-        º('#test').toggleClass('someclass')
-        print(page)
+        # page = html(form(
+        #         select(_name="single",).html(
+        #             option("a", _selected=True),
+        #             option("b")
+        #         ), _id='test'
+        #     ),
+        #     div('hi'),
+        #     div(span('there'))
+        # )
+        # º(page)
+        # print(page)
+        # º('#test').toggleClass('someclass')
+        # print(page)
+        # º('#test').toggleClass('someclass')
+        # print(page)
+        pass
 
     def test_dQuery_trigger(self):
         pass
