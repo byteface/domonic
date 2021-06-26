@@ -884,12 +884,25 @@ class Window(object):
         """ Returns the Navigator object for the window (See Navigator object) """
         # return
 
+    @staticmethod
+    def btoa(dataString):
+        """ Encodes a string in base-64 """
+        import base64
+        dataBytes = dataString.encode("utf-8")
+        encoded = base64.b64encode(dataBytes)
+        return encoded
+
+    @staticmethod
+    def atob(dataString):
+        """ Decodes a base-64 encoded string """
+        import base64
+        return base64.b64decode(dataString).decode()
+
+
 # WINDOW
 # localStorage  Allows to save key/value pairs in a web browser. Stores the data with no expiration date    Window
 # requestAnimationFrame()   Requests the browser to call a function to update an animation before the next repaint  Window
-# atob()    Decodes a base-64 encoded string    Window
 # blur()    Removes focus from an element   Element, Window
-# btoa()    Encodes a string in base-64 Window
 # clearTimeout()    Clears a timer set with setTimeout()    Window
 # closed    Returns a Boolean value indicating whether a window has been closed or not  Window
 # close()   Closes the output stream previously opened with document.open() Document, Window
@@ -966,7 +979,7 @@ class Array(object):
 
     def toString(self):
         ''' Converts an array to a string, and returns the result '''
-        return str(self.ars)  # TODO - check what js does
+        return str(self.args)  # TODO - check what js does
 
     @property
     def length(self):
@@ -1135,8 +1148,8 @@ class Array(object):
 
     def every(self, test):
         """ Checks if every element in an array pass a test """
-        # return all(test for x in self.args)
-        raise NotImplementedError
+        # written by .ai (https://6b.eleuther.ai/)
+        return all(func(value) for value in self.args)
 
 
 class Navigator(object):

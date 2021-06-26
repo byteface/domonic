@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: DOM &#8212; domonic 0.3.10 documentation</title>
+    <title>Domonic: DOM &#8212; domonic 0.3.11 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -164,7 +164,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">getElementsByName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementsByName"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">getElementsByName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementsByName"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns a NodeList containing all elements with a specified name</p>
 </dd></dl>
 
@@ -286,12 +286,6 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 <dt>
 <em class="property">property </em><code class="sig-name descname">clientWidth</code></dt>
 <dd><p>Returns the width of an element, including padding</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">compareDocumentPosition</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.compareDocumentPosition"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Compares the document position of two elements</p>
 </dd></dl>
 
 <dl class="py method">
@@ -676,6 +670,12 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 <dt>
 <code class="sig-name descname">cloneNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.cloneNode"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns a copy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">compareDocumentPosition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">otherElement</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.compareDocumentPosition"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Compares the document position of two elements</p>
 </dd></dl>
 
 <dl class="py method">

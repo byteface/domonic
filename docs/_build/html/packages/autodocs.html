@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: autodocs &#8212; domonic 0.3.10 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.3.11 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -823,7 +823,7 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt id="domonic.dom.Document.getElementsByName">
-<code class="sig-name descname">getElementsByName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementsByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.getElementsByName" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getElementsByName</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.getElementsByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Document.getElementsByName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a NodeList containing all elements with a specified name</p>
 </dd></dl>
 
@@ -945,12 +945,6 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 <dt id="domonic.dom.Element.clientWidth">
 <em class="property">property </em><code class="sig-name descname">clientWidth</code><a class="headerlink" href="#domonic.dom.Element.clientWidth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the width of an element, including padding</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.dom.Element.compareDocumentPosition">
-<code class="sig-name descname">compareDocumentPosition</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.compareDocumentPosition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.compareDocumentPosition" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compares the document position of two elements</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1335,6 +1329,12 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 <dt id="domonic.dom.Node.cloneNode">
 <code class="sig-name descname">cloneNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">deep</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.cloneNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Node.cloneNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a copy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.Node.compareDocumentPosition">
+<code class="sig-name descname">compareDocumentPosition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">otherElement</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.compareDocumentPosition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Node.compareDocumentPosition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares the document position of two elements</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2257,6 +2257,18 @@ and through the specified number of character</p>
 <dt id="domonic.javascript.Window.alert">
 <em class="property">static </em><code class="sig-name descname">alert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Window.alert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Window.alert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays an alert box with a message and an OK button</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Window.atob">
+<em class="property">static </em><code class="sig-name descname">atob</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataString</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Window.atob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Window.atob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes a base-64 encoded string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Window.btoa">
+<em class="property">static </em><code class="sig-name descname">btoa</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataString</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Window.btoa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Window.btoa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes a string in base-64</p>
 </dd></dl>
 
 <dl class="py method">

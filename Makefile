@@ -10,6 +10,7 @@ test:
 	python3 -m unittest tests.test_collada
 	python3 -m unittest tests.test_x3d
 	python3 -m unittest tests.test_dQuery
+	python3 -m unittest tests.test_geom
 
 build:
 	rm -r dist/

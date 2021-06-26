@@ -67,11 +67,18 @@ class Node(EventTarget):
     DOCUMENT_TYPE_NODE = 10
     DOCUMENT_FRAGMENT_NODE = 11
 
+    DOCUMENT_POSITION_DISCONNECTED = 1
+    DOCUMENT_POSITION_PRECEDING = 2
+    DOCUMENT_POSITION_FOLLOWING = 4
+    DOCUMENT_POSITION_CONTAINS = 8
+    DOCUMENT_POSITION_CONTAINED_BY = 16
+    DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 32
+
     # The following constants have been deprecated and should not be used anymore.
-    # ATTRIBUTE_NODE = 2
-    # ENTITY_REFERENCE_NODE = 5
-    # ENTITY_NODE = 6
-    # NOTATION_NODE = 12
+    ATTRIBUTE_NODE = 2
+    ENTITY_REFERENCE_NODE = 5
+    ENTITY_NODE = 6
+    NOTATION_NODE = 12
 
     def __init__(self, *args, **kwargs):
         self.args = args
@@ -111,7 +118,6 @@ class Node(EventTarget):
         except Exception as e:
             print('unable to update parent', e)
 
-
     def _iterate(self, element, callback):
         '''
         private.
@@ -125,8 +131,6 @@ class Node(EventTarget):
             element = nodes.shift()
             callback(element)
             nodes.unshift(*element.children)
-
-
 
     @property
     def rootNode(self):
@@ -310,7 +314,10 @@ class Node(EventTarget):
         # if options['composed'] = True:
         return self.rootNode
 
-        # compareDocumentPosition()
+    def compareDocumentPosition(self, otherElement):
+        """ Compares the document position of two elements """
+        raise NotImplementedError
+
         # isDefaultNamespace()
         # lookupNamespaceURI()
         # lookupPrefix()
@@ -460,6 +467,20 @@ class Element(Node):
             pass  # TODO - dont iterate strings
         return False
 
+    def _getElementByAttrVal(self, attr, val):
+        # TODO - i think i need to build a hash map of IDs to positions on the tree
+        # for now I'm going using recursion so this is a bit of a hack to do a few levels
+        if self.getAttribute(attr) == val:
+            return self
+        try:
+            for child in self.childNodes:
+                match = child._getElementByAttrVal(attr, val)
+                if match:
+                    return match
+        except Exception as e:
+            pass  # TODO - dont iterate strings
+        return False
+
     def _matchElement(self, element, query):
         """
         tries to match an element based on the query
@@ -512,7 +533,8 @@ class Element(Node):
         selected = []
         # import string
         all_selectors = re.sub(r'\s*([^\w])\s*', r'\1', all_selectors)  # cleann
-        # Grab all of the tagName elements within current context 
+        # Grab all of the tagName elements within current context
+
         def getElements(context, tag):
             if (tag == ""):
                 tag = '*'
@@ -568,7 +590,7 @@ class Element(Node):
                     operator = m.group(3)
                     value = m.group(4)
                 else:
-                    return "NOPE" #?
+                    return "NOPE"  # ?
 
                 found = getElements(context, tag)
                 context = []
@@ -683,10 +705,6 @@ class Element(Node):
     def clientWidth(self):
         """ Returns the width of an element, including padding """
         return self.style.width + self.style.paddingLeft + self.style.paddingRight
-
-    def compareDocumentPosition(self):
-        """ Compares the document position of two elements """
-        raise NotImplementedError
 
     def contentEditable(self):
         """ Sets or returns whether the content of an element is editable or not """
@@ -1049,6 +1067,8 @@ class DOMImplementation(object):
 
     def createDocument(self):
         # return Document()
+        # from domonic.html import html
+        # return html()
         raise NotImplementedError
 
     def createDocumentType(self):
@@ -1231,11 +1251,7 @@ class Document(Element):
     @property
     def forms(self):
         ''' Returns a collection of all <form> elements in the document'''
-        tag = "form"
-        reg = f"(<{tag}.*?>.+?</{tag}>)"
-        pattern = re.compile(reg)
-        tags = re.findall(pattern, str(self))
-        return tags
+        return self.querySelectorAll('form')
 
     def fullscreenElement(self):
         ''' Returns the current element that is displayed in fullscreen mode'''
@@ -1264,9 +1280,19 @@ class Document(Element):
 
         return False
 
-    def getElementsByName(self):
+    def getElementsByName(self, name):
         '''Returns a NodeList containing all elements with a specified name'''
-        raise NotImplementedError
+        for each in self.childNodes:
+            if each.getAttribute('name') == name:
+                return each
+            try:
+                for child in each.childNodes:
+                    match = child._getElementByAttrVal('name', name)
+                    if match:
+                        return match
+            except Exception as e:
+                pass
+        return False
 
     # def hasFocus():
         # '''Returns a Boolean value indicating whether the document has focus'''
@@ -1280,11 +1306,7 @@ class Document(Element):
     @property
     def images(self):
         """ Returns a collection of all <img> elements in the document """
-        tag = "img"
-        reg = f"(<{tag}.*?/>)"
-        pattern = re.compile(reg)
-        tags = re.findall(pattern, str(self))
-        return tags
+        return self.querySelectorAll('img')
 
     @property
     def implementation(self):
@@ -1305,11 +1327,7 @@ class Document(Element):
 
     def links(self):
         ''' Returns a collection of all <a> and <area> elements in the document that have a href attribute'''
-        tag = "a"
-        reg = f"(<{tag}.*?/>)"
-        pattern = re.compile(reg)
-        tags = re.findall(pattern, str(self))
-        return tags
+        return self.querySelectorAll('a')
 
     def normalizeDocument(self):
         '''Removes empty Text nodes, and joins adjacent nodes'''
@@ -1334,18 +1352,14 @@ class Document(Element):
     @property
     def scripts(self):
         ''' Returns a collection of <script> elements in the document'''
-        tag = "script"
-        reg = f"(<{tag}.*?>.+?</{tag}>)"
-        pattern = re.compile(reg)
-        tags = re.findall(pattern, str(self))
-        return tags
+        return self.querySelectorAll('script')
 
     # def strictErrorChecking():
         ''' Sets or returns whether error-checking is enforced or not'''
         # return
 
     @property
-    def title(self) -> str:
+    def title(self):
         ''' Sets or returns the title of the document'''
         try:
             tag = "title"
@@ -1431,8 +1445,8 @@ class Console(object):
             msg = substitute.join(msg.split('%s'))
         print(msg)
 
-
     __count_var = 0
+
     @staticmethod
     def count():
         """count
@@ -1442,15 +1456,12 @@ class Console(object):
         Console.__count_var = Console.__count_var + 1
         return Console.__count_var
 
-
     @staticmethod
     def error(error):
         """error
 
-        increments a number
         """
         raise error
-
 
     def __init__(self, *args, **kwargs):
         # self.args = args
@@ -1462,7 +1473,7 @@ class Console(object):
         # groupCollapsed()
         # groupEnd()
         # info()
-        #def table(json_str, filter_array):
+        # def table(json_str, filter_array):
         # time()
         # timeEnd()
         # trace()

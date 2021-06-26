@@ -22,7 +22,7 @@ class Websocket(object):
         try:
             dom_event = json.loads(msg)
         except Exception as e:
-            return # pass on non json message
+            return  # pass on non json message
 
         # print(msg)
         event_string = dom_event['type']
@@ -66,10 +66,9 @@ class Websocket(object):
             evt.deltaY = dom_event['deltaY']
             evt.deltaZ = dom_event['deltaZ']
             evt.deltaMode = dom_event['deltaMode']
-            #?? TODO - no deltaX? - myabe stripped by stringify? was on wrong target
+            # ?? TODO - no deltaX? - myabe stripped by stringify? was on wrong target
 
         return evt
-
 
     def __init__(self, reference='socket', address='ws://0.0.0.0:5555', target="body",
                     mouse_events=True,
@@ -285,11 +284,9 @@ class Websocket(object):
             $(document).ready(function(){ 
 
             ''' + events + """
-            
             });"""
             )
         )
-
 
 
 # class Video():
@@ -327,7 +324,7 @@ class SpriteCSS(object):
         str: A HTML rendered string
 
     """
-    STYLE = lambda _id, width, height, spritesheet, time, steps, loop, y_offset, bg_color : """
+    STYLE = lambda _id, width, height, spritesheet, time, steps, loop, y_offset, bg_color: """
         ."""+_id+""" {
           background:"""+bg_color+""";
           width:"""+str(width)+"""px;
@@ -370,6 +367,117 @@ class SpriteCSS(object):
 # _ss = TileSet( path )
 
 
+class DomonicJS(object):
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        return script("""
+            window.domonic = {'version':'0.1'}; // || domonic
+            function print(msg){
+                console.log(msg);
+            }
+            """
+        )
+
+# class ImgButton():
+
+#     def __init__(self, up, over=None, down=None, label=None, label_position=None):
+#         self.up = up
+#         self.over = over
+#         self.down = down
+
+
+# class ImgCheckbox():
+
+#     def __init__(self, up, over=None, down=None, label=None, label_position=None):
+#         self.up = up
+#         self.over = over
+#         self.down = down
+
+
+class Sound(object):
+
+    def __init__(self, filename):
+        self.filename = filename
+
+    def __str__(self):
+        return str(
+            div(
+                audio(source(_src=self.filename, _type="audio/mp3"), _id="sfx", _autoplay="true"),
+                script(
+                """
+                function play_sound( filename ) {
+                let sound = document.getElementById("sfx");
+                sound.currentTime = 0;
+                sound.src = filename
+                sound.play();
+                };
+                """, _type="text/javascript"
+                ),
+                _id='sound'
+            )
+        )
+
+
+class ProgressBar(object):
+
+    def __init__(self,):
+        """
+        a progress bar for loading or health / mana etc
+        """
+        # self.direction # the fill direction for the progress bar.
+        # self.max
+        # self.min
+        self.percent
+        self.value
+        # self.style =
+
+    def __str__(self):
+        # $('#progress_bar span').css('width', somevalue);
+        return str(
+            div(span(_style="width:100%" ), _id="progress_bar", _class="meter")
+        )
+
+
+class Input(object):
+
+    BUTTON = "button"
+    CHECKBOX = "checkbox"
+    COLOR = "color"
+    DATE = "date"
+    DATETIME = "datetime-local"
+    EMAIL = "email"
+    FILE = "file"
+    HIDDEN = "hidden"
+    IMAGE = "image"
+    MONTH = "month"
+    NUMBER = "number"
+    PASSWORD = "password"
+    RADIO = "radio"
+    RANGE = "range"
+    RESET = "reset"
+    SEARCH = "search"
+    SUBMIT = "submit"
+    TEL = "tel"
+    TEXT = "text"
+    TIME = "time"
+    URL = "url"
+    WEEK = "week"
+
+    def __init__(self, _type, _id=None, _name=None, _label=None, *args, **kwargs):
+        self._type = _type
+        self._label = label
+        self._id = _id
+        self._name = _name
+
+    def __str__(self):
+        return str(
+            # label(_for=_name, self._label), if _label is not None else None
+            input(_type=_type, _id=_id, _name=_name, *args, **kwargs)
+        )
+
+
 # WARNING. What is not documented is subject to lots of change!
 # below are just examples of how to build your own components
 # they may be removed in future version.
@@ -390,7 +498,7 @@ class Modal(object):  # TODO - shouldn't this extend dom?
                     div(self.content),
                     _class="modal-content",
                     _style="background-color:#fefefe;margin:15% auto;padding:20px;border:1px solid;width:80%;"
-                ), 
+                ),
                 _class="modal", 
                 _style="display:none;position:fixed;z-index:1;left:0;top:0;width:100%;height:100%; \
                     overflow:auto;background-color:rgb(0,0,0);background-color:rgba(0,0,0,0.4);",

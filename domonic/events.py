@@ -123,9 +123,6 @@ class Event(object):
     def composedPath(self):
         pass
 
-    def createEvent(self):
-        pass
-
     def initEvent(self, _type=None, *args, **kwargs):
         self.__init__(_type, args, kwargs)
 

@@ -173,12 +173,12 @@ class Utils(object):
         mid = mid.replace(match, replacement)
         return front + mid + end
 
-    # truncate()
-    # return mystr + "..."
-
-    # def any(arr):
-    #     """ given a list. return 1 random item """
-    #     return random.choice(arr)
+    @staticmethod
+    def truncate(text='', length=0):
+        if len(text) > length:
+            return text[0:length] + "..."
+        else:
+            return text + "..."
 
     # def any_iter(arr):
     #     ''' given a list. returns random until expired '''

@@ -107,14 +107,14 @@ class dQuery_el():
         raise NotImplementedError
 
     @staticmethod
-    def each():
+    def each(arr, func):
         """ A generic iterator function, which can be used to seamlessly iterate over both objects and arrays. """
         raise NotImplementedError
 
     @staticmethod
     def error():
         """ Takes a string and throws an exception containing it. """
-        raise NotImplementedError
+        raise Exception(msg)
 
     @staticmethod
     def escapeSelector():
@@ -141,9 +141,10 @@ class dQuery_el():
         raise NotImplementedError
 
     @staticmethod
-    def getScript():
-        """ Load a JavaScript file from the server using a GET HTTP request, then execute it. """
-        raise NotImplementedError
+    def getScript(filename, *args):
+        """ execute another python file. """
+        from subprocess import Popen
+        Popen('python '+filename+'.py')
 
     @staticmethod
     def globalEval():
@@ -179,14 +180,14 @@ class dQuery_el():
         return -1
 
     @staticmethod
-    def isArray():
+    def isArray(item):
         """ Determine whether the argument is an array. """
-        raise NotImplementedError
+        return type(item) == Array
 
     @staticmethod
-    def isEmptyObject():
+    def isEmptyObject(dct):
         """ Check to see if an object is empty (contains no enumerable properties). """
-        raise NotImplementedError
+        return not bool(dct)
 
     @staticmethod
     def isFunction(obj):
@@ -196,12 +197,12 @@ class dQuery_el():
     @staticmethod
     def isNumeric():
         """ Determines whether its argument represents a JavaScript number. """
-        raise NotImplementedError
+        return type(item) == Number
 
     @staticmethod
-    def isPlainObject():
-        """ Check to see if an object is a plain object created using “{}” or “new Object”. """
-        raise NotImplementedError
+    def isPlainObject(obj):
+        """ Check to see if an object is a plain object created using “{}” """
+        return type(obj) is dict
 
     @staticmethod
     def isWindow():
@@ -219,9 +220,9 @@ class dQuery_el():
         return Array(somelist)
 
     @staticmethod
-    def map():
+    def map(arr, func):
         """ Translate all items in an array or object to new array of items. """
-        raise NotImplementedError
+        return [func(value) for value in arr]
 
     @staticmethod
     def merge(one, *args):
@@ -238,7 +239,7 @@ class dQuery_el():
     @staticmethod
     def noop():
         """ An empty function. """
-        raise NotImplementedError
+        pass
 
     @staticmethod
     def now():
@@ -266,9 +267,12 @@ class dQuery_el():
         raise NotImplementedError
 
     @staticmethod
-    def post():
+    def post(url, data, success):
         """ Send data to the server using a HTTP POST request. """
-        raise NotImplementedError
+        r = requests.post(url, data)
+        # if r.ok:
+        #     succss()
+        return r.content.decode("utf-8")
 
     @staticmethod
     def proxy():
@@ -412,6 +416,16 @@ class dQuery_el():
             except Exception as e:
                 print('Error. No DOM has been set!!', e)
                 raise e
+
+    # def _listify(func):
+    #     from functools import wraps
+    #     @wraps(func)
+    #     def as_list_wrapper(self, value=None, *args, **kwargs):
+    #         if not isinstance(self.elements, (list, tuple)):
+    #             self.elements = (self.elements,)
+    #         value = func(value, *args, **kwargs)
+    #         return value
+    #     return as_list_wrapper
 
     def add(self, elements):
         """ Create a new dQuery object with elements added to the set of matched elements."""
@@ -609,13 +623,23 @@ class dQuery_el():
         """ Remove event handlers previously attached using .live from the elements."""
         raise NotImplementedError
 
-    def each(self):
+    def each(self, func):
         """ Iterate over a dQuery object, executing a function for each matched element."""
-        raise NotImplementedError
+        # TODO - untested
+        for index, value in enumerate(self.elements):
+            try:
+                func(index, value)
+            except Exception as e:
+                func(index)
+        return self
 
+    # @_listify
     def empty(self):
         """ Remove all child nodes of the set of matched elements from the DOM."""
-        raise NotImplementedError
+        # TODO - test
+        for el in self.elements:
+            el.args = []
+        return self
 
     def end(self):
         """ End the most recent filtering operation in the current chain and return the set of matched elements to its previous state."""
@@ -1065,7 +1089,7 @@ class dQuery_el():
 
     def text(self, newVal=None):
         """ Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements."""
-        if newVal != None:
+        if newVal is not None:
             for el in self.elements:
                 el.textContent = newVal
         else:
@@ -1083,13 +1107,21 @@ class dQuery_el():
         """ Display or hide the matched elements."""
         raise NotImplementedError
 
-    # def toggle(self):
-    #     """ Bind two or more handlers to the matched elements, to be executed on alternate clicks."""
-    #     raise NotImplementedError
+    # @_listify
+    def toggleClass(self, className):
+        """
+        Add or remove one or more classes from each element in the set of matched elements
+        """
+        # TODO - untested / not working
 
-    def toggleClass(self):
-        """ Add or remove one or more classes from each element in the set of matched elements, depending on either the class presence or the value of the state argument."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+
+        for el in self.elements:
+            if º(el).hasClass(className):
+                º(el).addClass(className)
+            else:
+                º(el).removeClass(className)
 
     def trigger(self):
         """ Execute all handlers and behaviors attached to the matched elements for the given event type."""
@@ -1117,9 +1149,9 @@ class dQuery_el():
 
     def val(self, newVal=None):
         """ Get the current value of the first element in the set of matched elements or set the value of every matched element."""
-        if newVal != None:
-            for el in elements:
-                self.elements.value = newVal
+        if newVal is not None:
+            for el in self.elements:
+                el.value = newVal
         else:
             return self.elements.value
         # return self

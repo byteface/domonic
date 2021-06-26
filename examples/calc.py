@@ -24,6 +24,13 @@ calc = article(
 
 render( html(head(classless_css, jquery, code), body(calc)), 'calc.html' )
 
+try:
+	import os
+	import webbrowser
+	webbrowser.open("file://" + os.path.realpath('.') + "/calc.html")
+except Exception as e:
+	print('view calc.html in the browser')
+	pass
 
 # // TODO - serve
 

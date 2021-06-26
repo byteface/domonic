@@ -506,6 +506,7 @@ or to test a single function:
 ```bash
 python -m unittest tests.test_javascript.domonicTestCase.test_javascript_array
 python -m unittest tests.test_dQuery.domonicTestCase.test_dQuery_addClass
+python -m unittest tests.test_geom.domonicTestCase.test_vec2
 ```
 
 or to test a whole module

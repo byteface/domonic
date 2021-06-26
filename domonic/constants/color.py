@@ -50,9 +50,71 @@ class Color():
         # elif isinstance(a, (tuple, list)):
         return '#%02x%02x%02x' % (a, b, c)
 
-    def __init__(self, color, *args):
+    def __init__(self, *args, **kwargs):
         # TODO - if type is vec4 / if hash / if word
-        pass
+        # if isinstance( args[0], vec4 ):
+        #     self.r = float(args[0])
+        #     self.g = float(args[0])
+        #     self.b = float(args[0])
+        #     self.a = float(args[0])
+        # if isinstance( args[0], vec3 ):
+        #     self.r = float(args[0])
+        #     self.g = float(args[0])
+        #     self.b = float(args[0])
+        if isinstance(args[0], str):
+            if args[0].startswith('#'):
+                self.r, self.g, self.b = Color.hex2rgb(args[0])
+        if isinstance(args[0], (int, float)):
+            if len(args) == 3:
+                self.r, self.g, self.b = args
+            if len(args) == 4:
+                self.r, self.g, self.b, self.a = args
+
+        # self.alpha
+        # self.red
+        # self.green
+        # self.blue
+        # self.gray
+        # self.hue
+        # self.saturation
+        # self.brightness
+        # self.lightness
+        # print(self.r, self.g, self.b)
+
+    # set(*args)
+    # convert(type)
+    # hasAlpha()
+    # equals(color)
+    # clone()
+
+    # def add(number)
+    # def add(color)
+    # def __add__(color)
+
+    # def subtract(number)
+    # def subtract(color)
+    # def __sub__(color)
+
+    # def multiply(number)
+    # def multiply(color)
+    # def __mul__(color)
+
+    # def divide(number)
+    # def divide(color)
+    # def __div__(color)
+
+    def __str__(self):
+        return Color.rgb2hex(self.r, self.g, self.b)
+
+    def toCSS(self):
+        return str(self)
+
+    def toHex(self):
+        return str(self)
+
+    # def toRGB(hex)
+    # def toRGBA(hex)
+    # def transform(matrix)
 
     # web
     Black = "#000000"

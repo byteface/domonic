@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: dQuery &#8212; domonic 0.3.10 documentation</title>
+    <title>Domonic: dQuery &#8212; domonic 0.3.11 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -318,7 +318,7 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">each</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.each"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">each</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.each"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Iterate over a dQuery object, executing a function for each matched element.</p>
 </dd></dl>
 
@@ -444,8 +444,8 @@
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">getScript</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.getScript"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Load a JavaScript file from the server using a GET HTTP request, then execute it.</p>
+<em class="property">static </em><code class="sig-name descname">getScript</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.getScript"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>execute another python file.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -552,13 +552,13 @@
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">isArray</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.isArray"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">isArray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.isArray"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Determine whether the argument is an array.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">isEmptyObject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.isEmptyObject"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">isEmptyObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dct</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.isEmptyObject"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Check to see if an object is empty (contains no enumerable properties).</p>
 </dd></dl>
 
@@ -576,8 +576,8 @@
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">isPlainObject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.isPlainObject"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Check to see if an object is a plain object created using “{}” or “new Object”.</p>
+<em class="property">static </em><code class="sig-name descname">isPlainObject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.isPlainObject"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Check to see if an object is a plain object created using “{}”</p>
 </dd></dl>
 
 <dl class="py method">
@@ -828,7 +828,7 @@
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">post</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.post"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">success</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.post"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Send data to the server using a HTTP POST request.</p>
 </dd></dl>
 
@@ -1068,8 +1068,8 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">toggleClass</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.toggleClass"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Add or remove one or more classes from each element in the set of matched elements, depending on either the class presence or the value of the state argument.</p>
+<code class="sig-name descname">toggleClass</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">className</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.toggleClass"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Add or remove one or more classes from each element in the set of matched elements</p>
 </dd></dl>
 
 <dl class="py method">

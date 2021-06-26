@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.3.10 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.3.11 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -101,11 +101,18 @@
     <span class="n">DOCUMENT_TYPE_NODE</span> <span class="o">=</span> <span class="mi">10</span>
     <span class="n">DOCUMENT_FRAGMENT_NODE</span> <span class="o">=</span> <span class="mi">11</span>
 
+    <span class="n">DOCUMENT_POSITION_DISCONNECTED</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">DOCUMENT_POSITION_PRECEDING</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">DOCUMENT_POSITION_FOLLOWING</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">DOCUMENT_POSITION_CONTAINS</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">DOCUMENT_POSITION_CONTAINED_BY</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC</span> <span class="o">=</span> <span class="mi">32</span>
+
     <span class="c1"># The following constants have been deprecated and should not be used anymore.</span>
-    <span class="c1"># ATTRIBUTE_NODE = 2</span>
-    <span class="c1"># ENTITY_REFERENCE_NODE = 5</span>
-    <span class="c1"># ENTITY_NODE = 6</span>
-    <span class="c1"># NOTATION_NODE = 12</span>
+    <span class="n">ATTRIBUTE_NODE</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">ENTITY_REFERENCE_NODE</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">ENTITY_NODE</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">NOTATION_NODE</span> <span class="o">=</span> <span class="mi">12</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
@@ -145,7 +152,6 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;unable to update parent&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 
-
     <span class="k">def</span> <span class="nf">_iterate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        private.</span>
@@ -159,8 +165,6 @@
             <span class="n">element</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">shift</span><span class="p">()</span>
             <span class="n">callback</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
             <span class="n">nodes</span><span class="o">.</span><span class="n">unshift</span><span class="p">(</span><span class="o">*</span><span class="n">element</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
-
-
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">rootNode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -342,9 +346,12 @@
     <span class="k">def</span> <span class="nf">getRootNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># if options is not None:</span>
         <span class="c1"># if options[&#39;composed&#39;] = True:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rootNode</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rootNode</span>
 
-        <span class="c1"># compareDocumentPosition()</span>
+<div class="viewcode-block" id="Node.compareDocumentPosition"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.compareDocumentPosition">[docs]</a>    <span class="k">def</span> <span class="nf">compareDocumentPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">otherElement</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compares the document position of two elements &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
         <span class="c1"># isDefaultNamespace()</span>
         <span class="c1"># lookupNamespaceURI()</span>
         <span class="c1"># lookupPrefix()</span>
@@ -494,6 +501,20 @@
             <span class="k">pass</span>  <span class="c1"># TODO - dont iterate strings</span>
         <span class="k">return</span> <span class="kc">False</span>
 
+    <span class="k">def</span> <span class="nf">_getElementByAttrVal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="c1"># TODO - i think i need to build a hash map of IDs to positions on the tree</span>
+        <span class="c1"># for now I&#39;m going using recursion so this is a bit of a hack to do a few levels</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">==</span> <span class="n">val</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">_getElementByAttrVal</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">match</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># TODO - dont iterate strings</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
     <span class="k">def</span> <span class="nf">_matchElement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">query</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        tries to match an element based on the query</span>
@@ -546,7 +567,8 @@
         <span class="n">selected</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># import string</span>
         <span class="n">all_selectors</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*([^\w])\s*&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">all_selectors</span><span class="p">)</span>  <span class="c1"># cleann</span>
-        <span class="c1"># Grab all of the tagName elements within current context </span>
+        <span class="c1"># Grab all of the tagName elements within current context</span>
+
         <span class="k">def</span> <span class="nf">getElements</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
                 <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span>
@@ -602,7 +624,7 @@
                     <span class="n">operator</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="s2">&quot;NOPE&quot;</span> <span class="c1">#?</span>
+                    <span class="k">return</span> <span class="s2">&quot;NOPE&quot;</span>  <span class="c1"># ?</span>
 
                 <span class="n">found</span> <span class="o">=</span> <span class="n">getElements</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
                 <span class="n">context</span> <span class="o">=</span> <span class="p">[]</span>
@@ -717,10 +739,6 @@
     <span class="k">def</span> <span class="nf">clientWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the width of an element, including padding &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">paddingLeft</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">paddingRight</span>
-
-<div class="viewcode-block" id="Element.compareDocumentPosition"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.compareDocumentPosition">[docs]</a>    <span class="k">def</span> <span class="nf">compareDocumentPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Compares the document position of two elements &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Element.contentEditable"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.contentEditable">[docs]</a>    <span class="k">def</span> <span class="nf">contentEditable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or returns whether the content of an element is editable or not &quot;&quot;&quot;</span>
@@ -1083,6 +1101,8 @@
 
     <span class="k">def</span> <span class="nf">createDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># return Document()</span>
+        <span class="c1"># from domonic.html import html</span>
+        <span class="c1"># return html()</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">createDocumentType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1265,11 +1285,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">forms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a collection of all &lt;form&gt; elements in the document&#39;&#39;&#39;</span>
-        <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;form&quot;</span>
-        <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?&gt;.+?&lt;/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&gt;)&quot;</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">tags</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s1">&#39;form&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Document.fullscreenElement"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.fullscreenElement">[docs]</a>    <span class="k">def</span> <span class="nf">fullscreenElement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the current element that is displayed in fullscreen mode&#39;&#39;&#39;</span>
@@ -1298,9 +1314,19 @@
 
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Document.getElementsByName"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.getElementsByName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Document.getElementsByName"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.getElementsByName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Returns a NodeList containing all elements with a specified name&#39;&#39;&#39;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">each</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">each</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">each</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">_getElementByAttrVal</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">match</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
     <span class="c1"># def hasFocus():</span>
         <span class="c1"># &#39;&#39;&#39;Returns a Boolean value indicating whether the document has focus&#39;&#39;&#39;</span>
@@ -1314,11 +1340,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">images</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a collection of all &lt;img&gt; elements in the document &quot;&quot;&quot;</span>
-        <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;img&quot;</span>
-        <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?/&gt;)&quot;</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">tags</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s1">&#39;img&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">implementation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1339,11 +1361,7 @@
 
 <div class="viewcode-block" id="Document.links"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.links">[docs]</a>    <span class="k">def</span> <span class="nf">links</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a collection of all &lt;a&gt; and &lt;area&gt; elements in the document that have a href attribute&#39;&#39;&#39;</span>
-        <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
-        <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?/&gt;)&quot;</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">tags</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Document.normalizeDocument"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.normalizeDocument">[docs]</a>    <span class="k">def</span> <span class="nf">normalizeDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Removes empty Text nodes, and joins adjacent nodes&#39;&#39;&#39;</span>
@@ -1368,18 +1386,14 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">scripts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns a collection of &lt;script&gt; elements in the document&#39;&#39;&#39;</span>
-        <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;script&quot;</span>
-        <span class="n">reg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;(&lt;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">.*?&gt;.+?&lt;/</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&gt;)&quot;</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">tags</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s1">&#39;script&#39;</span><span class="p">)</span>
 
     <span class="c1"># def strictErrorChecking():</span>
         <span class="sd">&#39;&#39;&#39; Sets or returns whether error-checking is enforced or not&#39;&#39;&#39;</span>
         <span class="c1"># return</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Sets or returns the title of the document&#39;&#39;&#39;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;title&quot;</span>
@@ -1465,8 +1479,8 @@
             <span class="n">msg</span> <span class="o">=</span> <span class="n">substitute</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-
     <span class="n">__count_var</span> <span class="o">=</span> <span class="mi">0</span>
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">count</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;count</span>
@@ -1476,15 +1490,12 @@
         <span class="n">Console</span><span class="o">.</span><span class="n">__count_var</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">__count_var</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">Console</span><span class="o">.</span><span class="n">__count_var</span>
 
-
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;error</span>
 
-<span class="sd">        increments a number</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="n">error</span>
-
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
@@ -1496,7 +1507,7 @@
         <span class="c1"># groupCollapsed()</span>
         <span class="c1"># groupEnd()</span>
         <span class="c1"># info()</span>
-        <span class="c1">#def table(json_str, filter_array):</span>
+        <span class="c1"># def table(json_str, filter_array):</span>
         <span class="c1"># time()</span>
         <span class="c1"># timeEnd()</span>
         <span class="c1"># trace()</span>

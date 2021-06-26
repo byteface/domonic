@@ -2,8 +2,11 @@
     domonic.game
     ====================================
 
-"""
+    some of this was written by.ai
+    (https://6b.eleuther.ai/)
 
+"""
+import random
 from domonic.javascript import Math
 
 
@@ -22,8 +25,18 @@ class Game():
     # @staticmethod
     # def pick_a_card():
 
-    # @staticmethod
-    # def random_bool():
+    @staticmethod
+    def random_bool():
+        #  (https://6b.eleuther.ai/) TODO - test
+        rv = random.Random()
+        if rv.uniform(0.0, 1.0):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def random_char():
+        return chr(random.choice(range(ord('A'), ord('Z') + 1)))
 
     # @staticmethod
     # def bingo():

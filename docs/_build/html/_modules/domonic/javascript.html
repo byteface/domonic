@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.3.10 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.3.11 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -915,15 +915,28 @@
     <span class="c1"># @staticmethod</span>
     <span class="c1"># @getter</span>
     <span class="c1"># def navigator():</span>
-        <span class="sd">&quot;&quot;&quot; Returns the Navigator object for the window (See Navigator object) &quot;&quot;&quot;</span></div>
+        <span class="sd">&quot;&quot;&quot; Returns the Navigator object for the window (See Navigator object) &quot;&quot;&quot;</span>
         <span class="c1"># return</span>
+
+<div class="viewcode-block" id="Window.btoa"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.btoa">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">btoa</span><span class="p">(</span><span class="n">dataString</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Encodes a string in base-64 &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">base64</span>
+        <span class="n">dataBytes</span> <span class="o">=</span> <span class="n">dataString</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">encoded</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">dataBytes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">encoded</span></div>
+
+<div class="viewcode-block" id="Window.atob"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.atob">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">atob</span><span class="p">(</span><span class="n">dataString</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Decodes a base-64 encoded string &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">base64</span>
+        <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">dataString</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div></div>
+
 
 <span class="c1"># WINDOW</span>
 <span class="c1"># localStorage  Allows to save key/value pairs in a web browser. Stores the data with no expiration date    Window</span>
 <span class="c1"># requestAnimationFrame()   Requests the browser to call a function to update an animation before the next repaint  Window</span>
-<span class="c1"># atob()    Decodes a base-64 encoded string    Window</span>
 <span class="c1"># blur()    Removes focus from an element   Element, Window</span>
-<span class="c1"># btoa()    Encodes a string in base-64 Window</span>
 <span class="c1"># clearTimeout()    Clears a timer set with setTimeout()    Window</span>
 <span class="c1"># closed    Returns a Boolean value indicating whether a window has been closed or not  Window</span>
 <span class="c1"># close()   Closes the output stream previously opened with document.open() Document, Window</span>
@@ -1000,7 +1013,7 @@
 
 <div class="viewcode-block" id="Array.toString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Converts an array to a string, and returns the result &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ars</span><span class="p">)</span>  <span class="c1"># TODO - check what js does</span></div>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>  <span class="c1"># TODO - check what js does</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1169,8 +1182,8 @@
 
 <div class="viewcode-block" id="Array.every"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.every">[docs]</a>    <span class="k">def</span> <span class="nf">every</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks if every element in an array pass a test &quot;&quot;&quot;</span>
-        <span class="c1"># return all(test for x in self.args)</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+        <span class="c1"># written by .ai (https://6b.eleuther.ai/)</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Navigator"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Navigator">[docs]</a><span class="k">class</span> <span class="nc">Navigator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
