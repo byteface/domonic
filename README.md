@@ -159,7 +159,7 @@ print(f"Final value of x:{x}")
 
 ```
 
-You can update a-tags the same way as it inherits from URL:
+a-tags inherits from URL:
 
 ```python
 from domonic.html import *
@@ -174,7 +174,24 @@ atag.port = 8983
 print(atag)
 ```
 
-Styling is now supported...
+For writing and using regular javascript you can load from a source...
+
+```python
+script(_src="/docs/5.0/dist/js/bootstrap.bundle.min.js", _integrity="sha384-1234", _crossorigin="anonymous"),
+```
+
+or do inline js by opening triple quotes...
+
+```python
+script("""
+let itbe = ""
+"""),
+```
+
+
+### Styling
+
+Styling is supported. Styles get passed to the style tag on render...
 
 ```python
 mytag = div("hi", _id="test")
@@ -184,7 +201,24 @@ print(mytag)
 # <div id="test" style="background-color:black;font-size:12px;">hi</div>
 ```
 
-several other undocumented features. Take a look at the code.
+To use css use a link tag as you usually would...
+
+```python
+link(_href="styles.css", _rel="stylesheet"),
+```
+
+or use triple quotes to open style tag...
+
+```python
+style("""
+.placeholder-img {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+"""),
+```
 
 
 ### JSON (utils)

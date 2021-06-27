@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "0.3.11"
+__version__ = "0.3.12"
 __license__ = 'MIT'
 
 import requests
@@ -18,7 +18,7 @@ from domonic.html import html_attributes as attributes
 from domonic.javascript import *
 
 from domonic.utils import Utils
-
+from domonic.components import Input
 
 class domonic:
 
@@ -81,7 +81,6 @@ class domonic:
             returns a potentially edited working program. (not the string)
             if it was ammeneded, render the returned object to get the new string
         """
-
         # print(pyml)
         if not isinstance(pyml, str):
             raise ValueError("domonify requires a string not:", type(pyml))

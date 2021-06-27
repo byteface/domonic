@@ -1,0 +1,25 @@
+html(
+	_lang="en", _id=APPNAME
+).html(
+	head(
+		link(_href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css", _rel="stylesheet"),
+		style("""
+		.tool {
+			padding: 2 2 2 2;
+			display:block;
+			font-size: 16px;
+		}		
+		.tool:hover {
+			color:gray;
+		}
+		""")
+	),
+	body(
+		h4("Tools"),
+		*[button(div(_class=f"mdi {value}"), _class='tool', _title=key) for key, value in tools.items()],
+		hr(),
+		Input(_type=Input.COLOR, _name='stroke', _id='stroke', _label="<span class='mdi mdi-feather'></span>"),
+		" ",
+		Input(_type=Input.COLOR, _name='fill', _id='fill', _label="<span class='mdi mdi-format-paint'></span>"),
+	)
+)

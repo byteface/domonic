@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: Javascript &#8212; domonic 0.3.11 documentation</title>
+    <title>Domonic: Javascript &#8212; domonic 0.3.12 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -35,7 +35,8 @@
             
   <div class="section" id="domonic-javascript">
 <h1>Domonic: Javascript<a class="headerlink" href="#domonic-javascript" title="Permalink to this headline">¶</a></h1>
-<p>There’s a javascript package that mimics the js API:</p>
+<p>There’s a javascript package that mimics the js API.</p>
+<p>It’s useful for things like porting javascript code to python but also if you already know javascript:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">Math</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">Math</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
 
@@ -133,6 +134,7 @@
 </div>
 <div class="section" id="styling">
 <h2>Styling<a class="headerlink" href="#styling" title="Permalink to this headline">¶</a></h2>
+<p>Styling gets passed to the style tag on render.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mytag</span> <span class="o">=</span> <span class="n">div</span><span class="p">(</span><span class="s2">&quot;hi&quot;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
 <span class="n">mytag</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span>
 <span class="n">mytag</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">fontSize</span> <span class="o">=</span> <span class="s2">&quot;12px&quot;</span>
@@ -140,7 +142,7 @@
 <span class="c1"># &lt;div id=&quot;test&quot; style=&quot;background-color:black;font-size:12px;&quot;&gt;hi&lt;/div&gt;</span>
 </pre></div>
 </div>
-<p>several other undocumented features. Take a look at the code.</p>
+<p>Many other undocumented features. Take a look at the code.</p>
 <div class="section" id="id1">
 <h3>domonic.javascript<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -1006,6 +1008,7 @@ and through the specified number of character</p>
 <li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

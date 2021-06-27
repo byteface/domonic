@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.events &#8212; domonic 0.3.11 documentation</title>
+    <title>domonic.events &#8212; domonic 0.3.12 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -91,48 +91,48 @@
 
 <div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../packages/events.html#domonic.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; event &quot;&quot;&quot;</span>
-    <span class="n">EMPTIED</span> <span class="o">=</span> <span class="s2">&quot;emptied&quot;</span>
-    <span class="n">ABORT</span> <span class="o">=</span> <span class="s2">&quot;abort&quot;</span>
-    <span class="n">AFTERPRINT</span> <span class="o">=</span> <span class="s2">&quot;afterprint&quot;</span>
-    <span class="n">BEFOREPRINT</span> <span class="o">=</span> <span class="s2">&quot;beforeprint&quot;</span>
-    <span class="n">BEFOREUNLOAD</span> <span class="o">=</span> <span class="s2">&quot;beforeunload&quot;</span>
-    <span class="n">CANPLAY</span> <span class="o">=</span> <span class="s2">&quot;canplay&quot;</span>
-    <span class="n">CANPLAYTHROUGH</span> <span class="o">=</span> <span class="s2">&quot;canplaythrough&quot;</span>
-    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;change&quot;</span>
-    <span class="n">DURATIONCHANGE</span> <span class="o">=</span> <span class="s2">&quot;durationchange&quot;</span>
-    <span class="n">ENDED</span> <span class="o">=</span> <span class="s2">&quot;ended&quot;</span>
-    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
-    <span class="n">FULLSCREENCHANGE</span> <span class="o">=</span> <span class="s2">&quot;fullscreenchange&quot;</span>
-    <span class="n">FULLSCREENERROR</span> <span class="o">=</span> <span class="s2">&quot;fullscreenerror&quot;</span>
-    <span class="n">INPUT</span> <span class="o">=</span> <span class="s2">&quot;input&quot;</span>
-    <span class="n">INVALID</span> <span class="o">=</span> <span class="s2">&quot;invalid&quot;</span>
-    <span class="n">LOAD</span> <span class="o">=</span> <span class="s2">&quot;load&quot;</span>
-    <span class="n">LOADEDDATA</span> <span class="o">=</span> <span class="s2">&quot;loadeddata&quot;</span>
-    <span class="n">LOADEDMETADATA</span> <span class="o">=</span> <span class="s2">&quot;loadedmetadata&quot;</span>
-    <span class="n">MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;message&quot;</span>
-    <span class="n">OFFLINE</span> <span class="o">=</span> <span class="s2">&quot;offline&quot;</span>
-    <span class="n">ONLINE</span> <span class="o">=</span> <span class="s2">&quot;online&quot;</span>
-    <span class="n">OPEN</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>
-    <span class="n">PAUSE</span> <span class="o">=</span> <span class="s2">&quot;pause&quot;</span>
-    <span class="n">PLAY</span> <span class="o">=</span> <span class="s2">&quot;play&quot;</span>
-    <span class="n">PLAYING</span> <span class="o">=</span> <span class="s2">&quot;playing&quot;</span>
-    <span class="n">PROGRESS</span> <span class="o">=</span> <span class="s2">&quot;progress&quot;</span>
-    <span class="n">RATECHANGE</span> <span class="o">=</span> <span class="s2">&quot;ratechange&quot;</span>
-    <span class="n">RESIZE</span> <span class="o">=</span> <span class="s2">&quot;resize&quot;</span>
-    <span class="n">RESET</span> <span class="o">=</span> <span class="s2">&quot;reset&quot;</span>
-    <span class="n">SCROLL</span> <span class="o">=</span> <span class="s2">&quot;scroll&quot;</span>
-    <span class="n">SEARCH</span> <span class="o">=</span> <span class="s2">&quot;search&quot;</span>
-    <span class="n">SEEKED</span> <span class="o">=</span> <span class="s2">&quot;seeked&quot;</span>
-    <span class="n">SEEKING</span> <span class="o">=</span> <span class="s2">&quot;seeking&quot;</span>
-    <span class="n">SELECT</span> <span class="o">=</span> <span class="s2">&quot;select&quot;</span>
-    <span class="n">SHOW</span> <span class="o">=</span> <span class="s2">&quot;show&quot;</span>
-    <span class="n">STALLED</span> <span class="o">=</span> <span class="s2">&quot;stalled&quot;</span>
-    <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;submit&quot;</span>
-    <span class="n">SUSPEND</span> <span class="o">=</span> <span class="s2">&quot;suspend&quot;</span>
-    <span class="n">TOGGLE</span> <span class="o">=</span> <span class="s2">&quot;toggle&quot;</span>
-    <span class="n">UNLOAD</span> <span class="o">=</span> <span class="s2">&quot;unload&quot;</span>
-    <span class="n">VOLUMECHANGE</span> <span class="o">=</span> <span class="s2">&quot;volumechange&quot;</span>
-    <span class="n">WAITING</span> <span class="o">=</span> <span class="s2">&quot;waiting&quot;</span>
+    <span class="n">EMPTIED</span> <span class="o">=</span> <span class="s2">&quot;emptied&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ABORT</span> <span class="o">=</span> <span class="s2">&quot;abort&quot;</span>  <span class="c1">#:</span>
+    <span class="n">AFTERPRINT</span> <span class="o">=</span> <span class="s2">&quot;afterprint&quot;</span>  <span class="c1">#:</span>
+    <span class="n">BEFOREPRINT</span> <span class="o">=</span> <span class="s2">&quot;beforeprint&quot;</span>  <span class="c1">#:</span>
+    <span class="n">BEFOREUNLOAD</span> <span class="o">=</span> <span class="s2">&quot;beforeunload&quot;</span>  <span class="c1">#:</span>
+    <span class="n">CANPLAY</span> <span class="o">=</span> <span class="s2">&quot;canplay&quot;</span>  <span class="c1">#:</span>
+    <span class="n">CANPLAYTHROUGH</span> <span class="o">=</span> <span class="s2">&quot;canplaythrough&quot;</span>  <span class="c1">#:</span>
+    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;change&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DURATIONCHANGE</span> <span class="o">=</span> <span class="s2">&quot;durationchange&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ENDED</span> <span class="o">=</span> <span class="s2">&quot;ended&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>  <span class="c1">#:</span>
+    <span class="n">FULLSCREENCHANGE</span> <span class="o">=</span> <span class="s2">&quot;fullscreenchange&quot;</span>  <span class="c1">#:</span>
+    <span class="n">FULLSCREENERROR</span> <span class="o">=</span> <span class="s2">&quot;fullscreenerror&quot;</span>  <span class="c1">#:</span>
+    <span class="n">INPUT</span> <span class="o">=</span> <span class="s2">&quot;input&quot;</span>  <span class="c1">#:</span>
+    <span class="n">INVALID</span> <span class="o">=</span> <span class="s2">&quot;invalid&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LOAD</span> <span class="o">=</span> <span class="s2">&quot;load&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LOADEDDATA</span> <span class="o">=</span> <span class="s2">&quot;loadeddata&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LOADEDMETADATA</span> <span class="o">=</span> <span class="s2">&quot;loadedmetadata&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MESSAGE</span> <span class="o">=</span> <span class="s2">&quot;message&quot;</span>  <span class="c1">#:</span>
+    <span class="n">OFFLINE</span> <span class="o">=</span> <span class="s2">&quot;offline&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ONLINE</span> <span class="o">=</span> <span class="s2">&quot;online&quot;</span>  <span class="c1">#:</span>
+    <span class="n">OPEN</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PAUSE</span> <span class="o">=</span> <span class="s2">&quot;pause&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PLAY</span> <span class="o">=</span> <span class="s2">&quot;play&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PLAYING</span> <span class="o">=</span> <span class="s2">&quot;playing&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PROGRESS</span> <span class="o">=</span> <span class="s2">&quot;progress&quot;</span>  <span class="c1">#:</span>
+    <span class="n">RATECHANGE</span> <span class="o">=</span> <span class="s2">&quot;ratechange&quot;</span>  <span class="c1">#:</span>
+    <span class="n">RESIZE</span> <span class="o">=</span> <span class="s2">&quot;resize&quot;</span>  <span class="c1">#:</span>
+    <span class="n">RESET</span> <span class="o">=</span> <span class="s2">&quot;reset&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SCROLL</span> <span class="o">=</span> <span class="s2">&quot;scroll&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SEARCH</span> <span class="o">=</span> <span class="s2">&quot;search&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SEEKED</span> <span class="o">=</span> <span class="s2">&quot;seeked&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SEEKING</span> <span class="o">=</span> <span class="s2">&quot;seeking&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SELECT</span> <span class="o">=</span> <span class="s2">&quot;select&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SHOW</span> <span class="o">=</span> <span class="s2">&quot;show&quot;</span>  <span class="c1">#:</span>
+    <span class="n">STALLED</span> <span class="o">=</span> <span class="s2">&quot;stalled&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;submit&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SUSPEND</span> <span class="o">=</span> <span class="s2">&quot;suspend&quot;</span>  <span class="c1">#:</span>
+    <span class="n">TOGGLE</span> <span class="o">=</span> <span class="s2">&quot;toggle&quot;</span>  <span class="c1">#:</span>
+    <span class="n">UNLOAD</span> <span class="o">=</span> <span class="s2">&quot;unload&quot;</span>  <span class="c1">#:</span>
+    <span class="n">VOLUMECHANGE</span> <span class="o">=</span> <span class="s2">&quot;volumechange&quot;</span>  <span class="c1">#:</span>
+    <span class="n">WAITING</span> <span class="o">=</span> <span class="s2">&quot;waiting&quot;</span>  <span class="c1">#:</span>
 
     <span class="c1"># Event(&quot;look&quot;, {&quot;bubbles&quot;:true, &quot;cancelable&quot;:false});</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -175,16 +175,16 @@
 
 <div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; mouse events &quot;&quot;&quot;</span>
-    <span class="n">CLICK</span> <span class="o">=</span> <span class="s2">&quot;click&quot;</span>
-    <span class="n">CONTEXTMENU</span> <span class="o">=</span> <span class="s2">&quot;contextmenu&quot;</span>
-    <span class="n">DBLCLICK</span> <span class="o">=</span> <span class="s2">&quot;dblclick&quot;</span>
-    <span class="n">MOUSEDOWN</span> <span class="o">=</span> <span class="s2">&quot;mousedown&quot;</span>
-    <span class="n">MOUSEENTER</span> <span class="o">=</span> <span class="s2">&quot;mouseenter&quot;</span>
-    <span class="n">MOUSELEAVE</span> <span class="o">=</span> <span class="s2">&quot;mouseleave&quot;</span>
-    <span class="n">MOUSEMOVE</span> <span class="o">=</span> <span class="s2">&quot;mousemove&quot;</span>
-    <span class="n">MOUSEOVER</span> <span class="o">=</span> <span class="s2">&quot;mouseover&quot;</span>
-    <span class="n">MOUSEOUT</span> <span class="o">=</span> <span class="s2">&quot;mouseout&quot;</span>
-    <span class="n">MOUSEUP</span> <span class="o">=</span> <span class="s2">&quot;mouseup&quot;</span>
+    <span class="n">CLICK</span> <span class="o">=</span> <span class="s2">&quot;click&quot;</span>  <span class="c1">#:</span>
+    <span class="n">CONTEXTMENU</span> <span class="o">=</span> <span class="s2">&quot;contextmenu&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DBLCLICK</span> <span class="o">=</span> <span class="s2">&quot;dblclick&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MOUSEDOWN</span> <span class="o">=</span> <span class="s2">&quot;mousedown&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MOUSEENTER</span> <span class="o">=</span> <span class="s2">&quot;mouseenter&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MOUSELEAVE</span> <span class="o">=</span> <span class="s2">&quot;mouseleave&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MOUSEMOVE</span> <span class="o">=</span> <span class="s2">&quot;mousemove&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MOUSEOVER</span> <span class="o">=</span> <span class="s2">&quot;mouseover&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MOUSEOUT</span> <span class="o">=</span> <span class="s2">&quot;mouseout&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MOUSEUP</span> <span class="o">=</span> <span class="s2">&quot;mouseup&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
@@ -274,9 +274,9 @@
 
 <div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; keyboard events &quot;&quot;&quot;</span>
-    <span class="n">KEYDOWN</span> <span class="o">=</span> <span class="s2">&quot;keydown&quot;</span>
-    <span class="n">KEYPRESS</span> <span class="o">=</span> <span class="s2">&quot;keypress&quot;</span>
-    <span class="n">KEYUP</span> <span class="o">=</span> <span class="s2">&quot;keyup&quot;</span>
+    <span class="n">KEYDOWN</span> <span class="o">=</span> <span class="s2">&quot;keydown&quot;</span>  <span class="c1">#:</span>
+    <span class="n">KEYPRESS</span> <span class="o">=</span> <span class="s2">&quot;keypress&quot;</span>  <span class="c1">#:</span>
+    <span class="n">KEYUP</span> <span class="o">=</span> <span class="s2">&quot;keyup&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
@@ -341,10 +341,10 @@
 
 <div class="viewcode-block" id="FocusEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.FocusEvent">[docs]</a><span class="k">class</span> <span class="nc">FocusEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; FocusEvent &quot;&quot;&quot;</span>
-    <span class="n">BLUR</span> <span class="o">=</span> <span class="s2">&quot;blur&quot;</span>
-    <span class="n">FOCUS</span> <span class="o">=</span> <span class="s2">&quot;focus&quot;</span>
-    <span class="n">FOCUSIN</span> <span class="o">=</span> <span class="s2">&quot;focusin&quot;</span>
-    <span class="n">FOCUSOUT</span> <span class="o">=</span> <span class="s2">&quot;focusout&quot;</span>
+    <span class="n">BLUR</span> <span class="o">=</span> <span class="s2">&quot;blur&quot;</span>  <span class="c1">#:</span>
+    <span class="n">FOCUS</span> <span class="o">=</span> <span class="s2">&quot;focus&quot;</span>  <span class="c1">#:</span>
+    <span class="n">FOCUSIN</span> <span class="o">=</span> <span class="s2">&quot;focusin&quot;</span>  <span class="c1">#:</span>
+    <span class="n">FOCUSOUT</span> <span class="o">=</span> <span class="s2">&quot;focusout&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="kc">None</span>
@@ -353,10 +353,10 @@
 
 <div class="viewcode-block" id="TouchEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.TouchEvent">[docs]</a><span class="k">class</span> <span class="nc">TouchEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; TouchEvent &quot;&quot;&quot;</span>
-    <span class="n">TOUCHCANCEL</span> <span class="o">=</span> <span class="s2">&quot;touchcancel&quot;</span>
-    <span class="n">TOUCHEND</span> <span class="o">=</span> <span class="s2">&quot;touchend&quot;</span>
-    <span class="n">TOUCHMOVE</span> <span class="o">=</span> <span class="s2">&quot;touchmove&quot;</span>
-    <span class="n">TOUCHSTART</span> <span class="o">=</span> <span class="s2">&quot;touchstart&quot;</span>
+    <span class="n">TOUCHCANCEL</span> <span class="o">=</span> <span class="s2">&quot;touchcancel&quot;</span>  <span class="c1">#:</span>
+    <span class="n">TOUCHEND</span> <span class="o">=</span> <span class="s2">&quot;touchend&quot;</span>  <span class="c1">#:</span>
+    <span class="n">TOUCHMOVE</span> <span class="o">=</span> <span class="s2">&quot;touchmove&quot;</span>  <span class="c1">#:</span>
+    <span class="n">TOUCHSTART</span> <span class="o">=</span> <span class="s2">&quot;touchstart&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shiftKey</span> <span class="o">=</span> <span class="kc">None</span>
@@ -372,8 +372,8 @@
 
 <div class="viewcode-block" id="WheelEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.WheelEvent">[docs]</a><span class="k">class</span> <span class="nc">WheelEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; WheelEvent &quot;&quot;&quot;</span>
-    <span class="n">MOUSEWHEEL</span> <span class="o">=</span> <span class="s2">&quot;mousewheel&quot;</span>  <span class="c1"># DEPRECATED - USE WHEEL</span>
-    <span class="n">WHEEL</span> <span class="o">=</span> <span class="s2">&quot;wheel&quot;</span>
+    <span class="n">MOUSEWHEEL</span> <span class="o">=</span> <span class="s2">&quot;mousewheel&quot;</span>  <span class="c1"># DEPRECATED - USE WHEEL  #:</span>
+    <span class="n">WHEEL</span> <span class="o">=</span> <span class="s2">&quot;wheel&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">deltaX</span> <span class="o">=</span> <span class="kc">None</span>
@@ -385,9 +385,9 @@
 
 <div class="viewcode-block" id="AnimationEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.AnimationEvent">[docs]</a><span class="k">class</span> <span class="nc">AnimationEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; AnimationEvent &quot;&quot;&quot;</span>
-    <span class="n">ANIMATIONEND</span> <span class="o">=</span> <span class="s2">&quot;animationend&quot;</span>
-    <span class="n">ANIMATIONITERATION</span> <span class="o">=</span> <span class="s2">&quot;animationiteration&quot;</span>
-    <span class="n">ANIMATIONSTART</span> <span class="o">=</span> <span class="s2">&quot;animationstart&quot;</span>
+    <span class="n">ANIMATIONEND</span> <span class="o">=</span> <span class="s2">&quot;animationend&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ANIMATIONITERATION</span> <span class="o">=</span> <span class="s2">&quot;animationiteration&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ANIMATIONSTART</span> <span class="o">=</span> <span class="s2">&quot;animationstart&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">animationName</span> <span class="o">=</span> <span class="kc">None</span>
@@ -401,9 +401,9 @@
 
 <div class="viewcode-block" id="ClipboardEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.ClipboardEvent">[docs]</a><span class="k">class</span> <span class="nc">ClipboardEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ClipboardEvent &quot;&quot;&quot;</span>
-    <span class="n">COPY</span> <span class="o">=</span> <span class="s2">&quot;copy&quot;</span>
-    <span class="n">CUT</span> <span class="o">=</span> <span class="s2">&quot;cut&quot;</span>
-    <span class="n">PASTE</span> <span class="o">=</span> <span class="s2">&quot;paste&quot;</span>
+    <span class="n">COPY</span> <span class="o">=</span> <span class="s2">&quot;copy&quot;</span>  <span class="c1">#:</span>
+    <span class="n">CUT</span> <span class="o">=</span> <span class="s2">&quot;cut&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PASTE</span> <span class="o">=</span> <span class="s2">&quot;paste&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clipboardData</span> <span class="o">=</span> <span class="kc">None</span>
@@ -413,7 +413,7 @@
 
 <div class="viewcode-block" id="ErrorEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.ErrorEvent">[docs]</a><span class="k">class</span> <span class="nc">ErrorEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ErrorEvent &quot;&quot;&quot;</span>
-    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="kc">None</span>
@@ -426,7 +426,7 @@
 
 <div class="viewcode-block" id="SubmitEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.SubmitEvent">[docs]</a><span class="k">class</span> <span class="nc">SubmitEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; SubmitEvent &quot;&quot;&quot;</span>
-    <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;submit&quot;</span>
+    <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;submit&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -434,7 +434,7 @@
 
 <div class="viewcode-block" id="PointerEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.PointerEvent">[docs]</a><span class="k">class</span> <span class="nc">PointerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; PointerEvent &quot;&quot;&quot;</span>
-    <span class="n">POINTER</span> <span class="o">=</span> <span class="s2">&quot;pointer&quot;</span>
+    <span class="n">POINTER</span> <span class="o">=</span> <span class="s2">&quot;pointer&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pointerId</span> <span class="o">=</span> <span class="kc">None</span>
@@ -451,7 +451,7 @@
 
 
 <div class="viewcode-block" id="BeforeUnloadEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.BeforeUnloadEvent">[docs]</a><span class="k">class</span> <span class="nc">BeforeUnloadEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
-    <span class="n">BEFOREUNLOAD</span> <span class="o">=</span> <span class="s2">&quot;beforeunload&quot;</span>
+    <span class="n">BEFOREUNLOAD</span> <span class="o">=</span> <span class="s2">&quot;beforeunload&quot;</span>  <span class="c1">#:</span>
     <span class="sd">&quot;&quot;&quot; BeforeUnloadEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -464,7 +464,7 @@
 
 
 <div class="viewcode-block" id="TimerEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.TimerEvent">[docs]</a><span class="k">class</span> <span class="nc">TimerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
-    <span class="n">TIMER</span> <span class="o">=</span> <span class="s2">&quot;timer&quot;</span>
+    <span class="n">TIMER</span> <span class="o">=</span> <span class="s2">&quot;timer&quot;</span>  <span class="c1">#:</span>
     <span class="sd">&quot;&quot;&quot; TimerEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -472,14 +472,14 @@
 
 <div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; DragEvent &quot;&quot;&quot;</span>
-    <span class="n">DRAG</span> <span class="o">=</span> <span class="s2">&quot;drag&quot;</span>
-    <span class="n">END</span> <span class="o">=</span> <span class="s2">&quot;dragend&quot;</span>
-    <span class="n">ENTER</span> <span class="o">=</span> <span class="s2">&quot;dragenter&quot;</span>
-    <span class="n">EXIT</span> <span class="o">=</span> <span class="s2">&quot;dragexit&quot;</span>
-    <span class="n">LEAVE</span> <span class="o">=</span> <span class="s2">&quot;dragleave&quot;</span>
-    <span class="n">OVER</span> <span class="o">=</span> <span class="s2">&quot;dragover&quot;</span>
-    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;dragstart&quot;</span>
-    <span class="n">DROP</span> <span class="o">=</span> <span class="s2">&quot;drop&quot;</span>
+    <span class="n">DRAG</span> <span class="o">=</span> <span class="s2">&quot;drag&quot;</span>  <span class="c1">#:</span>
+    <span class="n">END</span> <span class="o">=</span> <span class="s2">&quot;dragend&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ENTER</span> <span class="o">=</span> <span class="s2">&quot;dragenter&quot;</span>  <span class="c1">#:</span>
+    <span class="n">EXIT</span> <span class="o">=</span> <span class="s2">&quot;dragexit&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LEAVE</span> <span class="o">=</span> <span class="s2">&quot;dragleave&quot;</span>  <span class="c1">#:</span>
+    <span class="n">OVER</span> <span class="o">=</span> <span class="s2">&quot;dragover&quot;</span>  <span class="c1">#:</span>
+    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;dragstart&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DROP</span> <span class="o">=</span> <span class="s2">&quot;drop&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataTransfer</span> <span class="o">=</span> <span class="kc">None</span>
@@ -489,7 +489,7 @@
 
 <div class="viewcode-block" id="HashChangeEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.HashChangeEvent">[docs]</a><span class="k">class</span> <span class="nc">HashChangeEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; HashChangeEvent &quot;&quot;&quot;</span>
-    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;hashchange&quot;</span>
+    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;hashchange&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">newURL</span> <span class="o">=</span> <span class="kc">None</span>
@@ -514,8 +514,8 @@
 
 
 <div class="viewcode-block" id="PageTransitionEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.PageTransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">PageTransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
-    <span class="n">PAGEHIDE</span> <span class="o">=</span> <span class="s2">&quot;pagehide&quot;</span>
-    <span class="n">PAGESHOW</span> <span class="o">=</span> <span class="s2">&quot;pageshow&quot;</span>
+    <span class="n">PAGEHIDE</span> <span class="o">=</span> <span class="s2">&quot;pagehide&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PAGESHOW</span> <span class="o">=</span> <span class="s2">&quot;pageshow&quot;</span>  <span class="c1">#:</span>
     <span class="sd">&quot;&quot;&quot; PageTransitionEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persisted</span> <span class="o">=</span> <span class="kc">None</span>
@@ -548,7 +548,7 @@
 
 
 <div class="viewcode-block" id="TransitionEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.TransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">TransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
-    <span class="n">TRANSITIONEND</span> <span class="o">=</span> <span class="s2">&quot;transitionend&quot;</span>
+    <span class="n">TRANSITIONEND</span> <span class="o">=</span> <span class="s2">&quot;transitionend&quot;</span>  <span class="c1">#:</span>
     <span class="sd">&quot;&quot;&quot; TransitionEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">propertyName</span> <span class="o">=</span> <span class="kc">None</span>
@@ -562,7 +562,7 @@
 
 <div class="viewcode-block" id="ProgressEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.ProgressEvent">[docs]</a><span class="k">class</span> <span class="nc">ProgressEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ProgressEvent &quot;&quot;&quot;</span>
-    <span class="n">LOADSTART</span> <span class="o">=</span> <span class="s2">&quot;loadstart&quot;</span>
+    <span class="n">LOADSTART</span> <span class="o">=</span> <span class="s2">&quot;loadstart&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -580,8 +580,8 @@
 
 <div class="viewcode-block" id="GamePadEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.GamePadEvent">[docs]</a><span class="k">class</span> <span class="nc">GamePadEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; GamePadEvent &quot;&quot;&quot;</span>
-    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;gamepadconnected&quot;</span>
-    <span class="n">STOP</span> <span class="o">=</span> <span class="s2">&quot;gamepaddisconnected&quot;</span>
+    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;gamepadconnected&quot;</span>  <span class="c1">#:</span>
+    <span class="n">STOP</span> <span class="o">=</span> <span class="s2">&quot;gamepaddisconnected&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gamepad</span> <span class="o">=</span> <span class="kc">None</span>
@@ -590,16 +590,16 @@
 
 <div class="viewcode-block" id="TweenEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.TweenEvent">[docs]</a><span class="k">class</span> <span class="nc">TweenEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; TweenEvent &quot;&quot;&quot;</span>
-    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;onStart&quot;</span>
-    <span class="n">STOP</span> <span class="o">=</span> <span class="s2">&quot;onStop&quot;</span>
-    <span class="n">RESET</span> <span class="o">=</span> <span class="s2">&quot;onReset&quot;</span>
-    <span class="n">PAUSE</span> <span class="o">=</span> <span class="s2">&quot;onPause&quot;</span>
-    <span class="n">UNPAUSE</span> <span class="o">=</span> <span class="s2">&quot;onUnPause&quot;</span>
-    <span class="n">UPDATE_START</span> <span class="o">=</span> <span class="s2">&quot;onUpdateStart&quot;</span>
-    <span class="n">UPDATE_END</span> <span class="o">=</span> <span class="s2">&quot;onUpdateEnd&quot;</span>
-    <span class="n">COMPLETE</span> <span class="o">=</span> <span class="s2">&quot;onComplete&quot;</span>
+    <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;onStart&quot;</span>  <span class="c1">#:</span>
+    <span class="n">STOP</span> <span class="o">=</span> <span class="s2">&quot;onStop&quot;</span>  <span class="c1">#:</span>
+    <span class="n">RESET</span> <span class="o">=</span> <span class="s2">&quot;onReset&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PAUSE</span> <span class="o">=</span> <span class="s2">&quot;onPause&quot;</span>  <span class="c1">#:</span>
+    <span class="n">UNPAUSE</span> <span class="o">=</span> <span class="s2">&quot;onUnPause&quot;</span>  <span class="c1">#:</span>
+    <span class="n">UPDATE_START</span> <span class="o">=</span> <span class="s2">&quot;onUpdateStart&quot;</span>  <span class="c1">#:</span>
+    <span class="n">UPDATE_END</span> <span class="o">=</span> <span class="s2">&quot;onUpdateEnd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">COMPLETE</span> <span class="o">=</span> <span class="s2">&quot;onComplete&quot;</span>  <span class="c1">#:</span>
 
-    <span class="n">TIMER</span> <span class="o">=</span> <span class="s2">&quot;onTimer&quot;</span>
+    <span class="n">TIMER</span> <span class="o">=</span> <span class="s2">&quot;onTimer&quot;</span>  <span class="c1">#:</span>
     <span class="n">_source</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
@@ -1001,6 +1001,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

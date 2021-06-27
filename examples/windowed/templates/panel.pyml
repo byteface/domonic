@@ -1,0 +1,8 @@
+html(
+	_lang="en", _id=APPNAME
+).html(
+	head(),
+	body(
+		h4("a floating panel")
+	)
+)

@@ -57,48 +57,48 @@ class EventDispatcher(object):
 
 class Event(object):
     """ event """
-    EMPTIED = "emptied"
-    ABORT = "abort"
-    AFTERPRINT = "afterprint"
-    BEFOREPRINT = "beforeprint"
-    BEFOREUNLOAD = "beforeunload"
-    CANPLAY = "canplay"
-    CANPLAYTHROUGH = "canplaythrough"
-    CHANGE = "change"
-    DURATIONCHANGE = "durationchange"
-    ENDED = "ended"
-    ERROR = "error"
-    FULLSCREENCHANGE = "fullscreenchange"
-    FULLSCREENERROR = "fullscreenerror"
-    INPUT = "input"
-    INVALID = "invalid"
-    LOAD = "load"
-    LOADEDDATA = "loadeddata"
-    LOADEDMETADATA = "loadedmetadata"
-    MESSAGE = "message"
-    OFFLINE = "offline"
-    ONLINE = "online"
-    OPEN = "open"
-    PAUSE = "pause"
-    PLAY = "play"
-    PLAYING = "playing"
-    PROGRESS = "progress"
-    RATECHANGE = "ratechange"
-    RESIZE = "resize"
-    RESET = "reset"
-    SCROLL = "scroll"
-    SEARCH = "search"
-    SEEKED = "seeked"
-    SEEKING = "seeking"
-    SELECT = "select"
-    SHOW = "show"
-    STALLED = "stalled"
-    SUBMIT = "submit"
-    SUSPEND = "suspend"
-    TOGGLE = "toggle"
-    UNLOAD = "unload"
-    VOLUMECHANGE = "volumechange"
-    WAITING = "waiting"
+    EMPTIED = "emptied"  #:
+    ABORT = "abort"  #:
+    AFTERPRINT = "afterprint"  #:
+    BEFOREPRINT = "beforeprint"  #:
+    BEFOREUNLOAD = "beforeunload"  #:
+    CANPLAY = "canplay"  #:
+    CANPLAYTHROUGH = "canplaythrough"  #:
+    CHANGE = "change"  #:
+    DURATIONCHANGE = "durationchange"  #:
+    ENDED = "ended"  #:
+    ERROR = "error"  #:
+    FULLSCREENCHANGE = "fullscreenchange"  #:
+    FULLSCREENERROR = "fullscreenerror"  #:
+    INPUT = "input"  #:
+    INVALID = "invalid"  #:
+    LOAD = "load"  #:
+    LOADEDDATA = "loadeddata"  #:
+    LOADEDMETADATA = "loadedmetadata"  #:
+    MESSAGE = "message"  #:
+    OFFLINE = "offline"  #:
+    ONLINE = "online"  #:
+    OPEN = "open"  #:
+    PAUSE = "pause"  #:
+    PLAY = "play"  #:
+    PLAYING = "playing"  #:
+    PROGRESS = "progress"  #:
+    RATECHANGE = "ratechange"  #:
+    RESIZE = "resize"  #:
+    RESET = "reset"  #:
+    SCROLL = "scroll"  #:
+    SEARCH = "search"  #:
+    SEEKED = "seeked"  #:
+    SEEKING = "seeking"  #:
+    SELECT = "select"  #:
+    SHOW = "show"  #:
+    STALLED = "stalled"  #:
+    SUBMIT = "submit"  #:
+    SUSPEND = "suspend"  #:
+    TOGGLE = "toggle"  #:
+    UNLOAD = "unload"  #:
+    VOLUMECHANGE = "volumechange"  #:
+    WAITING = "waiting"  #:
 
     # Event("look", {"bubbles":true, "cancelable":false});
     def __init__(self, _type=None, *args, **kwargs):
@@ -141,16 +141,16 @@ class Event(object):
 
 class MouseEvent(Event):
     """ mouse events """
-    CLICK = "click"
-    CONTEXTMENU = "contextmenu"
-    DBLCLICK = "dblclick"
-    MOUSEDOWN = "mousedown"
-    MOUSEENTER = "mouseenter"
-    MOUSELEAVE = "mouseleave"
-    MOUSEMOVE = "mousemove"
-    MOUSEOVER = "mouseover"
-    MOUSEOUT = "mouseout"
-    MOUSEUP = "mouseup"
+    CLICK = "click"  #:
+    CONTEXTMENU = "contextmenu"  #:
+    DBLCLICK = "dblclick"  #:
+    MOUSEDOWN = "mousedown"  #:
+    MOUSEENTER = "mouseenter"  #:
+    MOUSELEAVE = "mouseleave"  #:
+    MOUSEMOVE = "mousemove"  #:
+    MOUSEOVER = "mouseover"  #:
+    MOUSEOUT = "mouseout"  #:
+    MOUSEUP = "mouseup"  #:
 
     def __init__(self, _type, *args, **kwargs):
         # self.args = args
@@ -240,9 +240,9 @@ class MouseEvent(Event):
 
 class KeyboardEvent(Event):
     """ keyboard events """
-    KEYDOWN = "keydown"
-    KEYPRESS = "keypress"
-    KEYUP = "keyup"
+    KEYDOWN = "keydown"  #:
+    KEYPRESS = "keypress"  #:
+    KEYUP = "keyup"  #:
 
     def __init__(self, _type, *args, **kwargs):
         # self.args = args
@@ -307,10 +307,10 @@ class UiEvent(Event):
 
 class FocusEvent(Event):
     """ FocusEvent """
-    BLUR = "blur"
-    FOCUS = "focus"
-    FOCUSIN = "focusin"
-    FOCUSOUT = "focusout"
+    BLUR = "blur"  #:
+    FOCUS = "focus"  #:
+    FOCUSIN = "focusin"  #:
+    FOCUSOUT = "focusout"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.relatedTarget = None
@@ -319,10 +319,10 @@ class FocusEvent(Event):
 
 class TouchEvent(Event):
     """ TouchEvent """
-    TOUCHCANCEL = "touchcancel"
-    TOUCHEND = "touchend"
-    TOUCHMOVE = "touchmove"
-    TOUCHSTART = "touchstart"
+    TOUCHCANCEL = "touchcancel"  #:
+    TOUCHEND = "touchend"  #:
+    TOUCHMOVE = "touchmove"  #:
+    TOUCHSTART = "touchstart"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.shiftKey = None
@@ -338,8 +338,8 @@ class TouchEvent(Event):
 
 class WheelEvent(Event):
     """ WheelEvent """
-    MOUSEWHEEL = "mousewheel"  # DEPRECATED - USE WHEEL
-    WHEEL = "wheel"
+    MOUSEWHEEL = "mousewheel"  # DEPRECATED - USE WHEEL  #:
+    WHEEL = "wheel"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.deltaX = None
@@ -351,9 +351,9 @@ class WheelEvent(Event):
 
 class AnimationEvent(Event):
     """ AnimationEvent """
-    ANIMATIONEND = "animationend"
-    ANIMATIONITERATION = "animationiteration"
-    ANIMATIONSTART = "animationstart"
+    ANIMATIONEND = "animationend"  #:
+    ANIMATIONITERATION = "animationiteration"  #:
+    ANIMATIONSTART = "animationstart"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.animationName = None
@@ -367,9 +367,9 @@ class AnimationEvent(Event):
 
 class ClipboardEvent(Event):
     """ ClipboardEvent """
-    COPY = "copy"
-    CUT = "cut"
-    PASTE = "paste"
+    COPY = "copy"  #:
+    CUT = "cut"  #:
+    PASTE = "paste"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.clipboardData = None
@@ -379,7 +379,7 @@ class ClipboardEvent(Event):
 
 class ErrorEvent(Event):
     """ ErrorEvent """
-    ERROR = "error"
+    ERROR = "error"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.message = None
@@ -392,7 +392,7 @@ class ErrorEvent(Event):
 
 class SubmitEvent(Event):
     """ SubmitEvent """
-    SUBMIT = "submit"
+    SUBMIT = "submit"  #:
 
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
@@ -400,7 +400,7 @@ class SubmitEvent(Event):
 
 class PointerEvent(Event):
     """ PointerEvent """
-    POINTER = "pointer"
+    POINTER = "pointer"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.pointerId = None
@@ -417,7 +417,7 @@ class PointerEvent(Event):
 
 
 class BeforeUnloadEvent(Event):
-    BEFOREUNLOAD = "beforeunload"
+    BEFOREUNLOAD = "beforeunload"  #:
     """ BeforeUnloadEvent """
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
@@ -430,7 +430,7 @@ class SVGEvent(Event):
 
 
 class TimerEvent(Event):
-    TIMER = "timer"
+    TIMER = "timer"  #:
     """ TimerEvent """
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
@@ -438,14 +438,14 @@ class TimerEvent(Event):
 
 class DragEvent(Event):
     """ DragEvent """
-    DRAG = "drag"
-    END = "dragend"
-    ENTER = "dragenter"
-    EXIT = "dragexit"
-    LEAVE = "dragleave"
-    OVER = "dragover"
-    START = "dragstart"
-    DROP = "drop"
+    DRAG = "drag"  #:
+    END = "dragend"  #:
+    ENTER = "dragenter"  #:
+    EXIT = "dragexit"  #:
+    LEAVE = "dragleave"  #:
+    OVER = "dragover"  #:
+    START = "dragstart"  #:
+    DROP = "drop"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.dataTransfer = None
@@ -455,7 +455,7 @@ class DragEvent(Event):
 
 class HashChangeEvent(Event):
     """ HashChangeEvent """
-    CHANGE = "hashchange"
+    CHANGE = "hashchange"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.newURL = None
@@ -480,8 +480,8 @@ class InputEvent(Event):
 
 
 class PageTransitionEvent(Event):
-    PAGEHIDE = "pagehide"
-    PAGESHOW = "pageshow"
+    PAGEHIDE = "pagehide"  #:
+    PAGESHOW = "pageshow"  #:
     """ PageTransitionEvent """
     def __init__(self, _type, *args, **kwargs):
         self.persisted = None
@@ -514,7 +514,7 @@ class StorageEvent(Event):
 
 
 class TransitionEvent(Event):
-    TRANSITIONEND = "transitionend"
+    TRANSITIONEND = "transitionend"  #:
     """ TransitionEvent """
     def __init__(self, _type, *args, **kwargs):
         self.propertyName = None
@@ -528,7 +528,7 @@ class TransitionEvent(Event):
 
 class ProgressEvent(Event):
     """ ProgressEvent """
-    LOADSTART = "loadstart"
+    LOADSTART = "loadstart"  #:
 
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
@@ -546,8 +546,8 @@ class CustomEvent(Event):
 
 class GamePadEvent(Event):
     """ GamePadEvent """
-    START = "gamepadconnected"
-    STOP = "gamepaddisconnected"
+    START = "gamepadconnected"  #:
+    STOP = "gamepaddisconnected"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.gamepad = None
@@ -556,16 +556,16 @@ class GamePadEvent(Event):
 
 class TweenEvent(Event):
     """ TweenEvent """
-    START = "onStart"
-    STOP = "onStop"
-    RESET = "onReset"
-    PAUSE = "onPause"
-    UNPAUSE = "onUnPause"
-    UPDATE_START = "onUpdateStart"
-    UPDATE_END = "onUpdateEnd"
-    COMPLETE = "onComplete"
+    START = "onStart"  #:
+    STOP = "onStop"  #:
+    RESET = "onReset"  #:
+    PAUSE = "onPause"  #:
+    UNPAUSE = "onUnPause"  #:
+    UPDATE_START = "onUpdateStart"  #:
+    UPDATE_END = "onUpdateEnd"  #:
+    COMPLETE = "onComplete"  #:
 
-    TIMER = "onTimer"
+    TIMER = "onTimer"  #:
     _source = None
 
     @property

@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>domonic.constants.keyboard &#8212; domonic 0.3.12 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for domonic.constants.keyboard</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    domonic.constants.keyboard</span>
+<span class="sd">    ====================================</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="KeyCode"><a class="viewcode-back" href="../../../packages/constants.html#domonic.constants.keyboard.KeyCode">[docs]</a><span class="k">class</span> <span class="nc">KeyCode</span><span class="p">():</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="s1">&#39;65&#39;</span>  <span class="c1">#:</span>
+    <span class="n">ALTERNATE</span> <span class="o">=</span> <span class="s1">&#39;18&#39;</span>  <span class="c1">#:</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="s1">&#39;66&#39;</span>  <span class="c1">#:</span>
+    <span class="n">BACKQUOTE</span> <span class="o">=</span> <span class="s1">&#39;192&#39;</span>  <span class="c1">#:</span>
+    <span class="n">BACKSLASH</span> <span class="o">=</span> <span class="s1">&#39;220&#39;</span>  <span class="c1">#:</span>
+    <span class="n">BACKSPACE</span> <span class="o">=</span> <span class="s1">&#39;8&#39;</span>  <span class="c1">#:</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="s1">&#39;67&#39;</span>  <span class="c1">#:</span>
+    <span class="n">CAPS_LOCK</span> <span class="o">=</span> <span class="s1">&#39;20&#39;</span>  <span class="c1">#:</span>
+    <span class="n">COMMA</span> <span class="o">=</span> <span class="s1">&#39;188&#39;</span>  <span class="c1">#:</span>
+    <span class="n">COMMAND</span> <span class="o">=</span> <span class="s1">&#39;15&#39;</span>  <span class="c1">#:</span>
+    <span class="n">CONTROL</span> <span class="o">=</span> <span class="s1">&#39;17&#39;</span>  <span class="c1">#:</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="s1">&#39;68&#39;</span>  <span class="c1">#:</span>
+    <span class="n">DELETE</span> <span class="o">=</span> <span class="s1">&#39;46&#39;</span>  <span class="c1">#:</span>
+    <span class="n">DOWN</span> <span class="o">=</span> <span class="s1">&#39;40&#39;</span>  <span class="c1">#:</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="s1">&#39;69&#39;</span>  <span class="c1">#:</span>
+    <span class="n">END</span> <span class="o">=</span> <span class="s1">&#39;35&#39;</span>  <span class="c1">#:</span>
+
+    <span class="n">ENTER</span> <span class="o">=</span> <span class="s1">&#39;13&#39;</span>  <span class="c1">#:</span>
+    <span class="n">RETURN</span> <span class="o">=</span> <span class="s1">&#39;13&#39;</span>  <span class="c1">#:</span>
+
+    <span class="n">EQUAL</span> <span class="o">=</span> <span class="s1">&#39;187&#39;</span>  <span class="c1">#:</span>
+    <span class="n">ESCAPE</span> <span class="o">=</span> <span class="s1">&#39;27&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="s1">&#39;70&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F1</span> <span class="o">=</span> <span class="s1">&#39;112&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F10</span> <span class="o">=</span> <span class="s1">&#39;121&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F11</span> <span class="o">=</span> <span class="s1">&#39;122&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F12</span> <span class="o">=</span> <span class="s1">&#39;123&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F13</span> <span class="o">=</span> <span class="s1">&#39;124&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F14</span> <span class="o">=</span> <span class="s1">&#39;125&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F15</span> <span class="o">=</span> <span class="s1">&#39;126&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F2</span> <span class="o">=</span> <span class="s1">&#39;113&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F3</span> <span class="o">=</span> <span class="s1">&#39;114&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F4</span> <span class="o">=</span> <span class="s1">&#39;115&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F5</span> <span class="o">=</span> <span class="s1">&#39;116&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F6</span> <span class="o">=</span> <span class="s1">&#39;117&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F7</span> <span class="o">=</span> <span class="s1">&#39;118&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F8</span> <span class="o">=</span> <span class="s1">&#39;119&#39;</span>  <span class="c1">#:</span>
+    <span class="n">F9</span> <span class="o">=</span> <span class="s1">&#39;120&#39;</span>  <span class="c1">#:</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="s1">&#39;71&#39;</span>  <span class="c1">#:</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="s1">&#39;72&#39;</span>  <span class="c1">#:</span>
+    <span class="n">HOME</span> <span class="o">=</span> <span class="s1">&#39;36&#39;</span>  <span class="c1">#:</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="s1">&#39;73&#39;</span>  <span class="c1">#:</span>
+    <span class="n">INSERT</span> <span class="o">=</span> <span class="s1">&#39;45&#39;</span>  <span class="c1">#:</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="s1">&#39;74&#39;</span>  <span class="c1">#:</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="s1">&#39;75&#39;</span>  <span class="c1">#:</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="s1">&#39;76&#39;</span>  <span class="c1">#:</span>
+    <span class="n">LEFT</span> <span class="o">=</span> <span class="s1">&#39;37&#39;</span>  <span class="c1">#:</span>
+    <span class="n">LEFTBRACKET</span> <span class="o">=</span> <span class="s1">&#39;219&#39;</span>  <span class="c1">#:</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="s1">&#39;77&#39;</span>  <span class="c1">#:</span>
+    <span class="n">MINUS</span> <span class="o">=</span> <span class="s1">&#39;189&#39;</span>  <span class="c1">#:</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="s1">&#39;78&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMBER_0</span> <span class="o">=</span> <span class="s1">&#39;48&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMBER_1</span> <span class="o">=</span> <span class="s1">&#39;49&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMBER_2</span> <span class="o">=</span> <span class="s1">&#39;50&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMBER_3</span> <span class="o">=</span> <span class="s1">&#39;51&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMBER_4</span> <span class="o">=</span> <span class="s1">&#39;52&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMBER_5</span> <span class="o">=</span> <span class="s1">&#39;53&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMBER_6</span> <span class="o">=</span> <span class="s1">&#39;54&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMBER_7</span> <span class="o">=</span> <span class="s1">&#39;55&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMBER_8</span> <span class="o">=</span> <span class="s1">&#39;56&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMBER_9</span> <span class="o">=</span> <span class="s1">&#39;57&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD</span> <span class="o">=</span> <span class="s1">&#39;21&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_0</span> <span class="o">=</span> <span class="s1">&#39;96&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_1</span> <span class="o">=</span> <span class="s1">&#39;97&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_2</span> <span class="o">=</span> <span class="s1">&#39;98&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_3</span> <span class="o">=</span> <span class="s1">&#39;99&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_4</span> <span class="o">=</span> <span class="s1">&#39;100&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_5</span> <span class="o">=</span> <span class="s1">&#39;101&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_6</span> <span class="o">=</span> <span class="s1">&#39;102&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_7</span> <span class="o">=</span> <span class="s1">&#39;103&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_8</span> <span class="o">=</span> <span class="s1">&#39;104&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_9</span> <span class="o">=</span> <span class="s1">&#39;105&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_ADD</span> <span class="o">=</span> <span class="s1">&#39;107&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_DECIMAL</span> <span class="o">=</span> <span class="s1">&#39;110&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_DIVIDE</span> <span class="o">=</span> <span class="s1">&#39;111&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_ENTER</span> <span class="o">=</span> <span class="s1">&#39;108&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_MULTIPLY</span> <span class="o">=</span> <span class="s1">&#39;106&#39;</span>  <span class="c1">#:</span>
+    <span class="n">NUMPAD_SUBTRACT</span> <span class="o">=</span> <span class="s1">&#39;109&#39;</span>  <span class="c1">#:</span>
+    <span class="n">O</span> <span class="o">=</span> <span class="s1">&#39;79&#39;</span>  <span class="c1">#:</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="s1">&#39;80&#39;</span>  <span class="c1">#:</span>
+    <span class="n">PAGE_DOWN</span> <span class="o">=</span> <span class="s1">&#39;34&#39;</span>  <span class="c1">#:</span>
+    <span class="n">PAGE_UP</span> <span class="o">=</span> <span class="s1">&#39;33&#39;</span>  <span class="c1">#:</span>
+    <span class="n">PERIOD</span> <span class="o">=</span> <span class="s1">&#39;190&#39;</span>  <span class="c1">#:</span>
+    <span class="n">Q</span> <span class="o">=</span> <span class="s1">&#39;81&#39;</span>  <span class="c1">#:</span>
+    <span class="n">QUOTE</span> <span class="o">=</span> <span class="s1">&#39;222&#39;</span>  <span class="c1">#:</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="s1">&#39;82&#39;</span>  <span class="c1">#:</span>
+    <span class="n">RIGHT</span> <span class="o">=</span> <span class="s1">&#39;39&#39;</span>  <span class="c1">#:</span>
+    <span class="n">RIGHTBRACKET</span> <span class="o">=</span> <span class="s1">&#39;221&#39;</span>  <span class="c1">#:</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="s1">&#39;83&#39;</span>  <span class="c1">#:</span>
+    <span class="n">SEMICOLON</span> <span class="o">=</span> <span class="s1">&#39;186&#39;</span>  <span class="c1">#:</span>
+    <span class="n">SHIFT</span> <span class="o">=</span> <span class="s1">&#39;16&#39;</span>  <span class="c1">#: ?? left or right or both?</span>
+    <span class="n">SLASH</span> <span class="o">=</span> <span class="s1">&#39;191&#39;</span>  <span class="c1">#:</span>
+    <span class="n">SPACE</span> <span class="o">=</span> <span class="s1">&#39;32&#39;</span>  <span class="c1">#:</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="s1">&#39;84&#39;</span>  <span class="c1">#:</span>
+    <span class="n">TAB</span> <span class="o">=</span> <span class="s1">&#39;9&#39;</span>  <span class="c1">#:</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="s1">&#39;85&#39;</span>  <span class="c1">#:</span>
+    <span class="n">UP</span> <span class="o">=</span> <span class="s1">&#39;38&#39;</span>  <span class="c1">#:</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="s1">&#39;86&#39;</span>  <span class="c1">#:</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="s1">&#39;87&#39;</span>  <span class="c1">#:</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="s1">&#39;88&#39;</span>  <span class="c1">#:</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="s1">&#39;89&#39;</span>  <span class="c1">#:</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="s1">&#39;9&#39;</span>  <span class="c1">#:</span>
+
+    <span class="c1"># TODO - modifiers</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">domonic</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=byteface&repo=domonic&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/html.html">Domonic: HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/dom.html">Domonic: DOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/terminal.html">Domonic: terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/components.html">Domonic: templates and components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/tween.html">Domonic: tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/x3d.html">Domonic: x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/dQuery.html">Domonic: dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/constants.html">Domonic: constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/geom.html">Domonic: geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/autodocs.html">Domonic: autodocs</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

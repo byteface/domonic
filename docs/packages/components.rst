@@ -247,6 +247,13 @@ Then a given component or template can just return html and render directly into
 
 *built-in components*
 
+There is a built in components package but its use is discouraged as they may change or be buggy and untested.
+
+You should use domonic to make your own components.
+
+Some that may kick around a while due to being used in examples are listed here...
+
+
 SpriteCSS
 ----------------
 
@@ -257,6 +264,4 @@ pass a UID. w, h, path, duration, steps, looping, y_offset
 .. code-block :: javascript
 
 	animated_monster = SpriteCSS('ken', 70, 80, 'assets/spritesheets/ken.png', 0.8, 4, True, 80)
-
-
 

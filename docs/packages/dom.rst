@@ -1,10 +1,12 @@
 Domonic: DOM
 ============
 
+The DOM is gradually evolving...
+
 
 createElement
 ----------------
-to create your own elements use the DOM API
+Here's an exmaple of creating your own elements using the DOM API
 
 .. code-block :: python
 
@@ -16,7 +18,10 @@ to create your own elements use the DOM API
 	print(site)
 
 
-addEventlisteners recently been started. There's several more DOM methods. Check code to see what's currently implemented.
+
+See the examples folder for other uses of a python virtual DOM.
+
+A full list of available methods are below...
 
 
 .. automodule:: domonic.dom

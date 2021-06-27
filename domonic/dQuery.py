@@ -397,6 +397,7 @@ class dQuery_el():
 
         if self.q[0] == '<':
             self.elements = domonic.domonic.load(self.q)
+            # print(self.elements)
             # print(type(self.elements))
             if isinstance(self.elements, html) or isinstance(self.elements, Document):
                 self.dom = self.elements
@@ -468,9 +469,19 @@ class dQuery_el():
                 el.setAttribute('class', name)
         return self
 
-    def after(self):
+    def after(self, newnode):
         """ Insert content, specified by the parameter, after each element in the set of matched elements."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+
+        for el in self.elements:
+            p = el.parentNode
+            for i, n in enumerate(p.children):
+                if n == el:
+                    l = list(p.args)
+                    l.insert(i + 1, newnode)
+                    p.args = tuple(l)
+        return self
 
     def ajaxComplete(self):
         """ Register a handler to be called when Ajax requests complete. This is an AjaxEvent."""

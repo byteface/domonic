@@ -38,7 +38,23 @@ You can quickly access returned elements as if it were a list...
 
 
 
-as well as lots of useful utilities...
+But you don't need a DOM fragment to use dquery. It also contains useful static methods. i.e.
+
+
+.. code-block :: python
+
+    first = ["a", "b", "c"]
+    second = ["d", "e", "f"]
+    result = º.merge(first, second)
+    print(result)
+
+    obj1 = {'a':1,'b':2}
+    obj2 = {'c':1,'b':5}
+    print(º.extend(obj1,obj2))
+
+    print(º.trim("  some tst \n   TEST."))
+
+    print(º.now())
 
 
 .. automodule:: domonic.dQuery

@@ -45,3 +45,6 @@ Domonic: autodocs
 
 .. automodule:: domonic.x3d
     :members:
+
+.. automodule:: domonic.geom
+    :members:

@@ -12,6 +12,7 @@ def parse_args():
     parser.add_argument('-a', '--assets', help="generate as assets directory with common files", action='store_true')
     parser.add_argument('-d', '--download', help="Attempts to to generate domonic template from a webpage", type=str)
     # parser.add_argument('-t', '--tree', default=False, help="generate a tree view from a component", type=str)
+    # parser.add_argument('-l', '--launch', help="launches a UI")
     parser.add_argument('-h', '--help', action='store_true')  # launch the docs
     parser.add_argument('-v', '--version', action='store_true')  # launch the docs
 

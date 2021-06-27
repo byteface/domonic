@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.3.11 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.3.12 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -414,6 +414,27 @@
 
     <span class="k">def</span> <span class="nf">replaceChildren</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">children</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span></div>
+
+
+<div class="viewcode-block" id="ChildNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode">[docs]</a><span class="k">class</span> <span class="nc">ChildNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; not tested yet &quot;&quot;&quot;</span>
+
+    <span class="c1"># @classmethod??</span>
+<div class="viewcode-block" id="ChildNode.remove"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Removes this ChildNode from the children list of its parent. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="ChildNode.before"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.before">[docs]</a>    <span class="k">def</span> <span class="nf">before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Inserts a set of Node or DOMString objects in the children list of this ChildNode&#39;s parent, just before this ChildNode. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="ChildNode.after"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.after">[docs]</a>    <span class="k">def</span> <span class="nf">after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Inserts a set of Node or DOMString objects in the children list of this ChildNode&#39;s parent, just after this ChildNode. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="ChildNode.replaceWith"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.replaceWith">[docs]</a>    <span class="k">def</span> <span class="nf">replaceWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Replaces this ChildNode in the children list of its parent with a set of Node or DOMString objects. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">Attr</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -1590,6 +1611,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

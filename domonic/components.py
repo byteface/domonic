@@ -467,15 +467,15 @@ class Input(object):
 
     def __init__(self, _type, _id=None, _name=None, _label=None, *args, **kwargs):
         self._type = _type
-        self._label = label
+        self._label = _label
         self._id = _id
         self._name = _name
 
     def __str__(self):
-        return str(
-            # label(_for=_name, self._label), if _label is not None else None
-            input(_type=_type, _id=_id, _name=_name, *args, **kwargs)
-        )
+        # lab = str(label(self._label, _for=self._name))
+        lab = str(label(str(self._label)))
+        inp = str(input(_type=self._type, _id=self._id, _name=self._name))
+        return str(lab + inp)
 
 
 # WARNING. What is not documented is subject to lots of change!

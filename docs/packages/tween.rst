@@ -80,6 +80,18 @@ Quint.easeInOut
 Sine.easeInOut
 
 
+get_timer
+---------------------------------
+
+The tween engine makes use of timer method which shows how long the game has been running.
+
+.. code-block :: python
+
+    from domonic.lerpy import get_timer
+    print(get_timer())
+
+
+
 .. automodule:: domonic.lerpy.tween
     :members:
     :noindex:

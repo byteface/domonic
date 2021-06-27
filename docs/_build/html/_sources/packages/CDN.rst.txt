@@ -59,7 +59,9 @@ currently constants exist for:
 - BALLOON
 - THREE_DOTS_0_2_0
 - MILLIGRAM_1_3_0
-
+- X3DOM
+- FONTAWESOME_5_7_1
+- MDI_5_4_55
 
 CDN_IMG
 ----------------

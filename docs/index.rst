@@ -37,8 +37,8 @@ Domonic: Generate HTML with Python 3
 - JSON : utils for loading / decorating / transformin
 - SVG : Generate svg using python (untested
 - aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder
-- dQuery - NEW. Recently started. utils for querying domonic. (alt + 0 for the º symbol)
-
+- dQuery - Utils for querying domonic. (alt + 0 for the º symbol)
+- geom - vec2, vec3 with _dunders_ as well as shape classes
 
 
 HTML TEMPLATING
@@ -114,6 +114,7 @@ Here you can find instructions for getting the most out of Domonic.
    packages/dQuery
    packages/constants
    packages/events
+   packages/geom
    packages/autodocs
 
 

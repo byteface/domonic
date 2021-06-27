@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: dQuery &#8212; domonic 0.3.11 documentation</title>
+    <title>Domonic: dQuery &#8212; domonic 0.3.12 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -61,7 +61,21 @@
 <span class="nb">str</span><span class="p">(</span><span class="n">º</span><span class="p">(</span><span class="s1">&#39;html&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>as well as lots of useful utilities…</p>
+<p>But you don’t need a DOM fragment to use dquery. It also contains useful static methods. i.e.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">first</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">]</span>
+<span class="n">second</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">]</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">º</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="n">obj1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>
+<span class="n">obj2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;c&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">º</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">obj1</span><span class="p">,</span><span class="n">obj2</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">º</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="s2">&quot;  some tst </span><span class="se">\n</span><span class="s2">   TEST.&quot;</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">º</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+</pre></div>
+</div>
 <div class="section" id="id1">
 <h3>domonic.dQuery<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>alt + 0</p>
@@ -102,7 +116,7 @@
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">after</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.after"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">after</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newnode</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.after"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Insert content, specified by the parameter, after each element in the set of matched elements.</p>
 </dd></dl>
 
@@ -1208,6 +1222,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

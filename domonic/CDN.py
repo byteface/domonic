@@ -98,6 +98,7 @@ class CDN_CSS(object):
     MILLIGRAM_1_3_0 = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"
     X3DOM = "https://www.x3dom.org/download/x3dom.css"
     FONTAWESOME_5_7_1 = "https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+    MDI_5_4_55 = "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"  # icons
     # find_on_cdn():
     # https://unpkg.com/
     # https://cdnjs.cloudflare.com/ajax/libs/

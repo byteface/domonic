@@ -1,0 +1,1312 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>domonic.constants.color &#8212; domonic 0.3.12 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for domonic.constants.color</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    domonic.constants.color</span>
+<span class="sd">    ====================================</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="Color"><a class="viewcode-back" href="../../../packages/constants.html#domonic.constants.color.Color">[docs]</a><span class="k">class</span> <span class="nc">Color</span><span class="p">():</span>
+
+<div class="viewcode-block" id="Color.random_hex"><a class="viewcode-back" href="../../../packages/constants.html#domonic.constants.color.Color.random_hex">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">random_hex</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;[random_hex]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [random hex color]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">random</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;#</span><span class="si">%02X%02X%02X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">(),</span> <span class="n">r</span><span class="p">(),</span> <span class="n">r</span><span class="p">())</span></div>
+        <span class="c1"># import secrets</span>
+        <span class="c1"># rgba = &#39;#&#39;+secrets.token_hex(4)</span>
+
+<div class="viewcode-block" id="Color.hex2rgb"><a class="viewcode-back" href="../../../packages/constants.html#domonic.constants.color.Color.hex2rgb">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">hex2rgb</span><span class="p">(</span><span class="n">h</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[hex2rgb]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            h ([str]): [hex string]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [tuple]: [rgb tuple]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;#&#39;</span><span class="p">:</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Color.rgb2hex"><a class="viewcode-back" href="../../../packages/constants.html#domonic.constants.color.Color.rgb2hex">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">rgb2hex</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[rgb2hex]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            a ([type]): [r]</span>
+<span class="sd">            b ([type]): [g]</span>
+<span class="sd">            c ([type]): [b]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [retuns a hex string]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#  TODO - pass tuples or</span>
+        <span class="c1"># if isinstance(a, (int, float)):</span>
+        <span class="c1"># elif isinstance(a, (tuple, list)):</span>
+        <span class="k">return</span> <span class="s1">&#39;#</span><span class="si">%02x%02x%02x</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># TODO - if type is vec4 / if hash / if word</span>
+        <span class="c1"># if isinstance( args[0], vec4 ):</span>
+        <span class="c1">#     self.r = float(args[0])</span>
+        <span class="c1">#     self.g = float(args[0])</span>
+        <span class="c1">#     self.b = float(args[0])</span>
+        <span class="c1">#     self.a = float(args[0])</span>
+        <span class="c1"># if isinstance( args[0], vec3 ):</span>
+        <span class="c1">#     self.r = float(args[0])</span>
+        <span class="c1">#     self.g = float(args[0])</span>
+        <span class="c1">#     self.b = float(args[0])</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">Color</span><span class="o">.</span><span class="n">hex2rgb</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">args</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">args</span>
+
+        <span class="c1"># self.alpha</span>
+        <span class="c1"># self.red</span>
+        <span class="c1"># self.green</span>
+        <span class="c1"># self.blue</span>
+        <span class="c1"># self.gray</span>
+        <span class="c1"># self.hue</span>
+        <span class="c1"># self.saturation</span>
+        <span class="c1"># self.brightness</span>
+        <span class="c1"># self.lightness</span>
+        <span class="c1"># print(self.r, self.g, self.b)</span>
+
+    <span class="c1"># set(*args)</span>
+    <span class="c1"># convert(type)</span>
+    <span class="c1"># hasAlpha()</span>
+    <span class="c1"># equals(color)</span>
+    <span class="c1"># clone()</span>
+
+    <span class="c1"># def add(number)</span>
+    <span class="c1"># def add(color)</span>
+    <span class="c1"># def __add__(color)</span>
+
+    <span class="c1"># def subtract(number)</span>
+    <span class="c1"># def subtract(color)</span>
+    <span class="c1"># def __sub__(color)</span>
+
+    <span class="c1"># def multiply(number)</span>
+    <span class="c1"># def multiply(color)</span>
+    <span class="c1"># def __mul__(color)</span>
+
+    <span class="c1"># def divide(number)</span>
+    <span class="c1"># def divide(color)</span>
+    <span class="c1"># def __div__(color)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Color</span><span class="o">.</span><span class="n">rgb2hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">toCSS</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">toHex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="c1"># def toRGB(hex)</span>
+    <span class="c1"># def toRGBA(hex)</span>
+    <span class="c1"># def transform(matrix)</span>
+
+    <span class="c1"># web</span>
+    <span class="n">Black</span> <span class="o">=</span> <span class="s2">&quot;#000000&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Navy</span> <span class="o">=</span> <span class="s2">&quot;#000080&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkBlue</span> <span class="o">=</span> <span class="s2">&quot;#00008B&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MediumBlue</span> <span class="o">=</span> <span class="s2">&quot;#0000CD&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Blue</span> <span class="o">=</span> <span class="s2">&quot;#0000FF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkGreen</span> <span class="o">=</span> <span class="s2">&quot;#006400&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Green</span> <span class="o">=</span> <span class="s2">&quot;#008000&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Teal</span> <span class="o">=</span> <span class="s2">&quot;#008080&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkCyan</span> <span class="o">=</span> <span class="s2">&quot;#008B8B&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DeepSkyBlue</span> <span class="o">=</span> <span class="s2">&quot;#00BFFF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkTurquoise</span> <span class="o">=</span> <span class="s2">&quot;#00CED1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MediumSpringGreen</span> <span class="o">=</span> <span class="s2">&quot;#00FA9A&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Lime</span> <span class="o">=</span> <span class="s2">&quot;#00FF00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SpringGreen</span> <span class="o">=</span> <span class="s2">&quot;#00FF7F&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Aqua</span> <span class="o">=</span> <span class="s2">&quot;#00FFFF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Cyan</span> <span class="o">=</span> <span class="s2">&quot;#00FFFF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MidnightBlue</span> <span class="o">=</span> <span class="s2">&quot;#191970&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DodgerBlue</span> <span class="o">=</span> <span class="s2">&quot;#1E90FF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightSeaGreen</span> <span class="o">=</span> <span class="s2">&quot;#20B2AA&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ForestGreen</span> <span class="o">=</span> <span class="s2">&quot;#228B22&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SeaGreen</span> <span class="o">=</span> <span class="s2">&quot;#2E8B57&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkSlateGray</span> <span class="o">=</span> <span class="s2">&quot;#2F4F4F&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkSlateGrey</span> <span class="o">=</span> <span class="s2">&quot;#2F4F4F&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LimeGreen</span> <span class="o">=</span> <span class="s2">&quot;#32CD32&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MediumSeaGreen</span> <span class="o">=</span> <span class="s2">&quot;#3CB371&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Turquoise</span> <span class="o">=</span> <span class="s2">&quot;#40E0D0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">RoyalBlue</span> <span class="o">=</span> <span class="s2">&quot;#4169E1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SteelBlue</span> <span class="o">=</span> <span class="s2">&quot;#4682B4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkSlateBlue</span> <span class="o">=</span> <span class="s2">&quot;#483D8B&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MediumTurquoise</span> <span class="o">=</span> <span class="s2">&quot;#48D1CC&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Indigo</span> <span class="o">=</span> <span class="s2">&quot;#4B0082&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkOliveGreen</span> <span class="o">=</span> <span class="s2">&quot;#556B2F&quot;</span>  <span class="c1">#:</span>
+    <span class="n">CadetBlue</span> <span class="o">=</span> <span class="s2">&quot;#5F9EA0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">CornflowerBlue</span> <span class="o">=</span> <span class="s2">&quot;#6495ED&quot;</span>  <span class="c1">#:</span>
+    <span class="n">RebeccaPurple</span> <span class="o">=</span> <span class="s2">&quot;#663399&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MediumAquaMarine</span> <span class="o">=</span> <span class="s2">&quot;#66CDAA&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DimGray</span> <span class="o">=</span> <span class="s2">&quot;#696969&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DimGrey</span> <span class="o">=</span> <span class="s2">&quot;#696969&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SlateBlue</span> <span class="o">=</span> <span class="s2">&quot;#6A5ACD&quot;</span>  <span class="c1">#:</span>
+    <span class="n">OliveDrab</span> <span class="o">=</span> <span class="s2">&quot;#6B8E23&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SlateGray</span> <span class="o">=</span> <span class="s2">&quot;#708090&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SlateGrey</span> <span class="o">=</span> <span class="s2">&quot;#708090&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightSlateGray</span> <span class="o">=</span> <span class="s2">&quot;#778899&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightSlateGrey</span> <span class="o">=</span> <span class="s2">&quot;#778899&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MediumSlateBlue</span> <span class="o">=</span> <span class="s2">&quot;#7B68EE&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LawnGreen</span> <span class="o">=</span> <span class="s2">&quot;#7CFC00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Chartreuse</span> <span class="o">=</span> <span class="s2">&quot;#7FFF00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Aquamarine</span> <span class="o">=</span> <span class="s2">&quot;#7FFFD4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Maroon</span> <span class="o">=</span> <span class="s2">&quot;#800000&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Purple</span> <span class="o">=</span> <span class="s2">&quot;#800080&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Olive</span> <span class="o">=</span> <span class="s2">&quot;#808000&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Gray</span> <span class="o">=</span> <span class="s2">&quot;#808080&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Grey</span> <span class="o">=</span> <span class="s2">&quot;#808080&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SkyBlue</span> <span class="o">=</span> <span class="s2">&quot;#87CEEB&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightSkyBlue</span> <span class="o">=</span> <span class="s2">&quot;#87CEFA&quot;</span>  <span class="c1">#:</span>
+    <span class="n">BlueViolet</span> <span class="o">=</span> <span class="s2">&quot;#8A2BE2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkRed</span> <span class="o">=</span> <span class="s2">&quot;#8B0000&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkMagenta</span> <span class="o">=</span> <span class="s2">&quot;#8B008B&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SaddleBrown</span> <span class="o">=</span> <span class="s2">&quot;#8B4513&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkSeaGreen</span> <span class="o">=</span> <span class="s2">&quot;#8FBC8F&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightGreen</span> <span class="o">=</span> <span class="s2">&quot;#90EE90&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MediumPurple</span> <span class="o">=</span> <span class="s2">&quot;#9370DB&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkViolet</span> <span class="o">=</span> <span class="s2">&quot;#9400D3&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PaleGreen</span> <span class="o">=</span> <span class="s2">&quot;#98FB98&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkOrchid</span> <span class="o">=</span> <span class="s2">&quot;#9932CC&quot;</span>  <span class="c1">#:</span>
+    <span class="n">YellowGreen</span> <span class="o">=</span> <span class="s2">&quot;#9ACD32&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Sienna</span> <span class="o">=</span> <span class="s2">&quot;#A0522D&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Brown</span> <span class="o">=</span> <span class="s2">&quot;#A52A2A&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkGray</span> <span class="o">=</span> <span class="s2">&quot;#A9A9A9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkGrey</span> <span class="o">=</span> <span class="s2">&quot;#A9A9A9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightBlue</span> <span class="o">=</span> <span class="s2">&quot;#ADD8E6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">GreenYellow</span> <span class="o">=</span> <span class="s2">&quot;#ADFF2F&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PaleTurquoise</span> <span class="o">=</span> <span class="s2">&quot;#AFEEEE&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightSteelBlue</span> <span class="o">=</span> <span class="s2">&quot;#B0C4DE&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PowderBlue</span> <span class="o">=</span> <span class="s2">&quot;#B0E0E6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">FireBrick</span> <span class="o">=</span> <span class="s2">&quot;#B22222&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkGoldenRod</span> <span class="o">=</span> <span class="s2">&quot;#B8860B&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MediumOrchid</span> <span class="o">=</span> <span class="s2">&quot;#BA55D3&quot;</span>  <span class="c1">#:</span>
+    <span class="n">RosyBrown</span> <span class="o">=</span> <span class="s2">&quot;#BC8F8F&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkKhaki</span> <span class="o">=</span> <span class="s2">&quot;#BDB76B&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Silver</span> <span class="o">=</span> <span class="s2">&quot;#C0C0C0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MediumVioletRed</span> <span class="o">=</span> <span class="s2">&quot;#C71585&quot;</span>  <span class="c1">#:</span>
+    <span class="n">IndianRed</span> <span class="o">=</span> <span class="s2">&quot;#CD5C5C&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Peru</span> <span class="o">=</span> <span class="s2">&quot;#CD853F&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Chocolate</span> <span class="o">=</span> <span class="s2">&quot;#D2691E&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Tan</span> <span class="o">=</span> <span class="s2">&quot;#D2B48C&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightGray</span> <span class="o">=</span> <span class="s2">&quot;#D3D3D3&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightGrey</span> <span class="o">=</span> <span class="s2">&quot;#D3D3D3&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Thistle</span> <span class="o">=</span> <span class="s2">&quot;#D8BFD8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Orchid</span> <span class="o">=</span> <span class="s2">&quot;#DA70D6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">GoldenRod</span> <span class="o">=</span> <span class="s2">&quot;#DAA520&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PaleVioletRed</span> <span class="o">=</span> <span class="s2">&quot;#DB7093&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Crimson</span> <span class="o">=</span> <span class="s2">&quot;#DC143C&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Gainsboro</span> <span class="o">=</span> <span class="s2">&quot;#DCDCDC&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Plum</span> <span class="o">=</span> <span class="s2">&quot;#DDA0DD&quot;</span>  <span class="c1">#:</span>
+    <span class="n">BurlyWood</span> <span class="o">=</span> <span class="s2">&quot;#DEB887&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightCyan</span> <span class="o">=</span> <span class="s2">&quot;#E0FFFF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Lavender</span> <span class="o">=</span> <span class="s2">&quot;#E6E6FA&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkSalmon</span> <span class="o">=</span> <span class="s2">&quot;#E9967A&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Violet</span> <span class="o">=</span> <span class="s2">&quot;#EE82EE&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PaleGoldenRod</span> <span class="o">=</span> <span class="s2">&quot;#EEE8AA&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightCoral</span> <span class="o">=</span> <span class="s2">&quot;#F08080&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Khaki</span> <span class="o">=</span> <span class="s2">&quot;#F0E68C&quot;</span>  <span class="c1">#:</span>
+    <span class="n">AliceBlue</span> <span class="o">=</span> <span class="s2">&quot;#F0F8FF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">HoneyDew</span> <span class="o">=</span> <span class="s2">&quot;#F0FFF0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Azure</span> <span class="o">=</span> <span class="s2">&quot;#F0FFFF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SandyBrown</span> <span class="o">=</span> <span class="s2">&quot;#F4A460&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Wheat</span> <span class="o">=</span> <span class="s2">&quot;#F5DEB3&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Beige</span> <span class="o">=</span> <span class="s2">&quot;#F5F5DC&quot;</span>  <span class="c1">#:</span>
+    <span class="n">WhiteSmoke</span> <span class="o">=</span> <span class="s2">&quot;#F5F5F5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MintCream</span> <span class="o">=</span> <span class="s2">&quot;#F5FFFA&quot;</span>  <span class="c1">#:</span>
+    <span class="n">GhostWhite</span> <span class="o">=</span> <span class="s2">&quot;#F8F8FF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Salmon</span> <span class="o">=</span> <span class="s2">&quot;#FA8072&quot;</span>  <span class="c1">#:</span>
+    <span class="n">AntiqueWhite</span> <span class="o">=</span> <span class="s2">&quot;#FAEBD7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Linen</span> <span class="o">=</span> <span class="s2">&quot;#FAF0E6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightGoldenRodYellow</span> <span class="o">=</span> <span class="s2">&quot;#FAFAD2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">OldLace</span> <span class="o">=</span> <span class="s2">&quot;#FDF5E6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Red</span> <span class="o">=</span> <span class="s2">&quot;#FF0000&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Fuchsia</span> <span class="o">=</span> <span class="s2">&quot;#FF00FF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Magenta</span> <span class="o">=</span> <span class="s2">&quot;#FF00FF&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DeepPink</span> <span class="o">=</span> <span class="s2">&quot;#FF1493&quot;</span>  <span class="c1">#:</span>
+    <span class="n">OrangeRed</span> <span class="o">=</span> <span class="s2">&quot;#FF4500&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Tomato</span> <span class="o">=</span> <span class="s2">&quot;#FF6347&quot;</span>  <span class="c1">#:</span>
+    <span class="n">HotPink</span> <span class="o">=</span> <span class="s2">&quot;#FF69B4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Coral</span> <span class="o">=</span> <span class="s2">&quot;#FF7F50&quot;</span>  <span class="c1">#:</span>
+    <span class="n">DarkOrange</span> <span class="o">=</span> <span class="s2">&quot;#FF8C00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightSalmon</span> <span class="o">=</span> <span class="s2">&quot;#FFA07A&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Orange</span> <span class="o">=</span> <span class="s2">&quot;#FFA500&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightPink</span> <span class="o">=</span> <span class="s2">&quot;#FFB6C1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Pink</span> <span class="o">=</span> <span class="s2">&quot;#FFC0CB&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Gold</span> <span class="o">=</span> <span class="s2">&quot;#FFD700&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PeachPuff</span> <span class="o">=</span> <span class="s2">&quot;#FFDAB9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">NavajoWhite</span> <span class="o">=</span> <span class="s2">&quot;#FFDEAD&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Moccasin</span> <span class="o">=</span> <span class="s2">&quot;#FFE4B5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Bisque</span> <span class="o">=</span> <span class="s2">&quot;#FFE4C4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">MistyRose</span> <span class="o">=</span> <span class="s2">&quot;#FFE4E1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">BlanchedAlmond</span> <span class="o">=</span> <span class="s2">&quot;#FFEBCD&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PapayaWhip</span> <span class="o">=</span> <span class="s2">&quot;#FFEFD5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LavenderBlush</span> <span class="o">=</span> <span class="s2">&quot;#FFF0F5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SeaShell</span> <span class="o">=</span> <span class="s2">&quot;#FFF5EE&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Cornsilk</span> <span class="o">=</span> <span class="s2">&quot;#FFF8DC&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LemonChiffon</span> <span class="o">=</span> <span class="s2">&quot;#FFFACD&quot;</span>  <span class="c1">#:</span>
+    <span class="n">FloralWhite</span> <span class="o">=</span> <span class="s2">&quot;#FFFAF0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Snow</span> <span class="o">=</span> <span class="s2">&quot;#FFFAFA&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Yellow</span> <span class="o">=</span> <span class="s2">&quot;#FFFF00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LightYellow</span> <span class="o">=</span> <span class="s2">&quot;#FFFFE0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">Ivory</span> <span class="o">=</span> <span class="s2">&quot;#FFFFF0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">White</span> <span class="o">=</span> <span class="s2">&quot;#FFFFFF&quot;</span>  <span class="c1">#:</span>
+
+    <span class="c1"># XKCD</span>
+    <span class="n">acidgreen</span> <span class="o">=</span> <span class="s2">&quot;#8ffe09&quot;</span>  <span class="c1">#:</span>
+    <span class="n">adobe</span> <span class="o">=</span> <span class="s2">&quot;#bd6c48&quot;</span>  <span class="c1">#:</span>
+    <span class="n">algae</span> <span class="o">=</span> <span class="s2">&quot;#54ac68&quot;</span>  <span class="c1">#:</span>
+    <span class="n">algaegreen</span> <span class="o">=</span> <span class="s2">&quot;#21c36f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">almostblack</span> <span class="o">=</span> <span class="s2">&quot;#070d0d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">amber</span> <span class="o">=</span> <span class="s2">&quot;#feb308&quot;</span>  <span class="c1">#:</span>
+    <span class="n">amethyst</span> <span class="o">=</span> <span class="s2">&quot;#9b5fc0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">apple</span> <span class="o">=</span> <span class="s2">&quot;#6ecb3c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">applegreen</span> <span class="o">=</span> <span class="s2">&quot;#76cd26&quot;</span>  <span class="c1">#:</span>
+    <span class="n">apricot</span> <span class="o">=</span> <span class="s2">&quot;#ffb16d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">aqua</span> <span class="o">=</span> <span class="s2">&quot;#13eac9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">aquablue</span> <span class="o">=</span> <span class="s2">&quot;#02d8e9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">aquagreen</span> <span class="o">=</span> <span class="s2">&quot;#12e193&quot;</span>  <span class="c1">#:</span>
+    <span class="n">aquamarine</span> <span class="o">=</span> <span class="s2">&quot;#2ee8bb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">armygreen</span> <span class="o">=</span> <span class="s2">&quot;#4b5d16&quot;</span>  <span class="c1">#:</span>
+    <span class="n">asparagus</span> <span class="o">=</span> <span class="s2">&quot;#77ab56&quot;</span>  <span class="c1">#:</span>
+    <span class="n">aubergine</span> <span class="o">=</span> <span class="s2">&quot;#3d0734&quot;</span>  <span class="c1">#:</span>
+    <span class="n">auburn</span> <span class="o">=</span> <span class="s2">&quot;#9a3001&quot;</span>  <span class="c1">#:</span>
+    <span class="n">avocado</span> <span class="o">=</span> <span class="s2">&quot;#90b134&quot;</span>  <span class="c1">#:</span>
+    <span class="n">avocadogreen</span> <span class="o">=</span> <span class="s2">&quot;#87a922&quot;</span>  <span class="c1">#:</span>
+    <span class="n">azul</span> <span class="o">=</span> <span class="s2">&quot;#1d5dec&quot;</span>  <span class="c1">#:</span>
+    <span class="n">azure</span> <span class="o">=</span> <span class="s2">&quot;#069af3&quot;</span>  <span class="c1">#:</span>
+    <span class="n">babyblue</span> <span class="o">=</span> <span class="s2">&quot;#a2cffe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">babygreen</span> <span class="o">=</span> <span class="s2">&quot;#8cff9e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">babypink</span> <span class="o">=</span> <span class="s2">&quot;#ffb7ce&quot;</span>  <span class="c1">#:</span>
+    <span class="n">babypoo</span> <span class="o">=</span> <span class="s2">&quot;#ab9004&quot;</span>  <span class="c1">#:</span>
+    <span class="n">babypoop</span> <span class="o">=</span> <span class="s2">&quot;#937c00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">babypoopgreen</span> <span class="o">=</span> <span class="s2">&quot;#8f9805&quot;</span>  <span class="c1">#:</span>
+    <span class="n">babypukegreen</span> <span class="o">=</span> <span class="s2">&quot;#b6c406&quot;</span>  <span class="c1">#:</span>
+    <span class="n">babypurple</span> <span class="o">=</span> <span class="s2">&quot;#ca9bf7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">babyshitbrown</span> <span class="o">=</span> <span class="s2">&quot;#ad900d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">babyshitgreen</span> <span class="o">=</span> <span class="s2">&quot;#889717&quot;</span>  <span class="c1">#:</span>
+    <span class="n">banana</span> <span class="o">=</span> <span class="s2">&quot;#ffff7e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bananayellow</span> <span class="o">=</span> <span class="s2">&quot;#fafe4b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">barbiepink</span> <span class="o">=</span> <span class="s2">&quot;#fe46a5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">barfgreen</span> <span class="o">=</span> <span class="s2">&quot;#94ac02&quot;</span>  <span class="c1">#:</span>
+    <span class="n">barney</span> <span class="o">=</span> <span class="s2">&quot;#ac1db8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">barneypurple</span> <span class="o">=</span> <span class="s2">&quot;#a00498&quot;</span>  <span class="c1">#:</span>
+    <span class="n">battleshipgrey</span> <span class="o">=</span> <span class="s2">&quot;#6b7c85&quot;</span>  <span class="c1">#:</span>
+    <span class="n">beige</span> <span class="o">=</span> <span class="s2">&quot;#e6daa6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">berry</span> <span class="o">=</span> <span class="s2">&quot;#990f4b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bile</span> <span class="o">=</span> <span class="s2">&quot;#b5c306&quot;</span>  <span class="c1">#:</span>
+    <span class="n">black</span> <span class="o">=</span> <span class="s2">&quot;#000000&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bland</span> <span class="o">=</span> <span class="s2">&quot;#afa88b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blood</span> <span class="o">=</span> <span class="s2">&quot;#770001&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bloodorange</span> <span class="o">=</span> <span class="s2">&quot;#fe4b03&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bloodred</span> <span class="o">=</span> <span class="s2">&quot;#980002&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blue</span> <span class="o">=</span> <span class="s2">&quot;#0343df&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blueberry</span> <span class="o">=</span> <span class="s2">&quot;#464196&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blueblue</span> <span class="o">=</span> <span class="s2">&quot;#2242c7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bluegreen</span> <span class="o">=</span> <span class="s2">&quot;#0f9b8e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bluegrey</span> <span class="o">=</span> <span class="s2">&quot;#85a3b2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bluepurple</span> <span class="o">=</span> <span class="s2">&quot;#5a06ef&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blueviolet</span> <span class="o">=</span> <span class="s2">&quot;#5d06e9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bluewithahintofpurple</span> <span class="o">=</span> <span class="s2">&quot;#533cc6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blueygreen</span> <span class="o">=</span> <span class="s2">&quot;#2bb179&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blueygrey</span> <span class="o">=</span> <span class="s2">&quot;#89a0b0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blueypurple</span> <span class="o">=</span> <span class="s2">&quot;#6241c7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bluish</span> <span class="o">=</span> <span class="s2">&quot;#2976bb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bluishgreen</span> <span class="o">=</span> <span class="s2">&quot;#10a674&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bluishgrey</span> <span class="o">=</span> <span class="s2">&quot;#748b97&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bluishpurple</span> <span class="o">=</span> <span class="s2">&quot;#703be7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blurple</span> <span class="o">=</span> <span class="s2">&quot;#5539cc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blush</span> <span class="o">=</span> <span class="s2">&quot;#f29e8e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">blushpink</span> <span class="o">=</span> <span class="s2">&quot;#fe828c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">booger</span> <span class="o">=</span> <span class="s2">&quot;#9bb53c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">boogergreen</span> <span class="o">=</span> <span class="s2">&quot;#96b403&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bordeaux</span> <span class="o">=</span> <span class="s2">&quot;#7b002c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">boringgreen</span> <span class="o">=</span> <span class="s2">&quot;#63b365&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bottlegreen</span> <span class="o">=</span> <span class="s2">&quot;#044a05&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brick</span> <span class="o">=</span> <span class="s2">&quot;#a03623&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brickorange</span> <span class="o">=</span> <span class="s2">&quot;#c14a09&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brickred</span> <span class="o">=</span> <span class="s2">&quot;#8f1402&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightaqua</span> <span class="o">=</span> <span class="s2">&quot;#0bf9ea&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightblue</span> <span class="o">=</span> <span class="s2">&quot;#0165fc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightcyan</span> <span class="o">=</span> <span class="s2">&quot;#41fdfe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightgreen</span> <span class="o">=</span> <span class="s2">&quot;#01ff07&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightlavender</span> <span class="o">=</span> <span class="s2">&quot;#c760ff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightlightblue</span> <span class="o">=</span> <span class="s2">&quot;#26f7fd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightlightgreen</span> <span class="o">=</span> <span class="s2">&quot;#2dfe54&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightlilac</span> <span class="o">=</span> <span class="s2">&quot;#c95efb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightlime</span> <span class="o">=</span> <span class="s2">&quot;#87fd05&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightlimegreen</span> <span class="o">=</span> <span class="s2">&quot;#65fe08&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightmagenta</span> <span class="o">=</span> <span class="s2">&quot;#ff08e8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightolive</span> <span class="o">=</span> <span class="s2">&quot;#9cbb04&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightorange</span> <span class="o">=</span> <span class="s2">&quot;#ff5b00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightpink</span> <span class="o">=</span> <span class="s2">&quot;#fe01b1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightpurple</span> <span class="o">=</span> <span class="s2">&quot;#be03fd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightred</span> <span class="o">=</span> <span class="s2">&quot;#ff000d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightseagreen</span> <span class="o">=</span> <span class="s2">&quot;#05ffa6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightskyblue</span> <span class="o">=</span> <span class="s2">&quot;#02ccfe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightteal</span> <span class="o">=</span> <span class="s2">&quot;#01f9c6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightturquoise</span> <span class="o">=</span> <span class="s2">&quot;#0ffef9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightviolet</span> <span class="o">=</span> <span class="s2">&quot;#ad0afd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightyellow</span> <span class="o">=</span> <span class="s2">&quot;#fffd01&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brightyellowgreen</span> <span class="o">=</span> <span class="s2">&quot;#9dff00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">britishracinggreen</span> <span class="o">=</span> <span class="s2">&quot;#05480d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bronze</span> <span class="o">=</span> <span class="s2">&quot;#a87900&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brown</span> <span class="o">=</span> <span class="s2">&quot;#653700&quot;</span>  <span class="c1">#:</span>
+    <span class="n">browngreen</span> <span class="o">=</span> <span class="s2">&quot;#706c11&quot;</span>  <span class="c1">#:</span>
+    <span class="n">browngrey</span> <span class="o">=</span> <span class="s2">&quot;#8d8468&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownish</span> <span class="o">=</span> <span class="s2">&quot;#9c6d57&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownishgreen</span> <span class="o">=</span> <span class="s2">&quot;#6a6e09&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownishgrey</span> <span class="o">=</span> <span class="s2">&quot;#86775f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownishorange</span> <span class="o">=</span> <span class="s2">&quot;#cb7723&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownishpink</span> <span class="o">=</span> <span class="s2">&quot;#c27e79&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownishpurple</span> <span class="o">=</span> <span class="s2">&quot;#76424e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownishred</span> <span class="o">=</span> <span class="s2">&quot;#9e3623&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownishyellow</span> <span class="o">=</span> <span class="s2">&quot;#c9b003&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownorange</span> <span class="o">=</span> <span class="s2">&quot;#b96902&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownred</span> <span class="o">=</span> <span class="s2">&quot;#922b05&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownyellow</span> <span class="o">=</span> <span class="s2">&quot;#b29705&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownygreen</span> <span class="o">=</span> <span class="s2">&quot;#6f6c0a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">brownyorange</span> <span class="o">=</span> <span class="s2">&quot;#ca6b02&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bruise</span> <span class="o">=</span> <span class="s2">&quot;#7e4071&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bubblegum</span> <span class="o">=</span> <span class="s2">&quot;#ff6cb5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">bubblegumpink</span> <span class="o">=</span> <span class="s2">&quot;#ff69af&quot;</span>  <span class="c1">#:</span>
+    <span class="n">buff</span> <span class="o">=</span> <span class="s2">&quot;#fef69e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">burgundy</span> <span class="o">=</span> <span class="s2">&quot;#610023&quot;</span>  <span class="c1">#:</span>
+    <span class="n">burntorange</span> <span class="o">=</span> <span class="s2">&quot;#c04e01&quot;</span>  <span class="c1">#:</span>
+    <span class="n">burntred</span> <span class="o">=</span> <span class="s2">&quot;#9f2305&quot;</span>  <span class="c1">#:</span>
+    <span class="n">burntsiena</span> <span class="o">=</span> <span class="s2">&quot;#b75203&quot;</span>  <span class="c1">#:</span>
+    <span class="n">burntsienna</span> <span class="o">=</span> <span class="s2">&quot;#b04e0f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">burntumber</span> <span class="o">=</span> <span class="s2">&quot;#a0450e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">burntyellow</span> <span class="o">=</span> <span class="s2">&quot;#d5ab09&quot;</span>  <span class="c1">#:</span>
+    <span class="n">burple</span> <span class="o">=</span> <span class="s2">&quot;#6832e3&quot;</span>  <span class="c1">#:</span>
+    <span class="n">butter</span> <span class="o">=</span> <span class="s2">&quot;#ffff81&quot;</span>  <span class="c1">#:</span>
+    <span class="n">butterscotch</span> <span class="o">=</span> <span class="s2">&quot;#fdb147&quot;</span>  <span class="c1">#:</span>
+    <span class="n">butteryellow</span> <span class="o">=</span> <span class="s2">&quot;#fffd74&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cadetblue</span> <span class="o">=</span> <span class="s2">&quot;#4e7496&quot;</span>  <span class="c1">#:</span>
+    <span class="n">camel</span> <span class="o">=</span> <span class="s2">&quot;#c69f59&quot;</span>  <span class="c1">#:</span>
+    <span class="n">camo</span> <span class="o">=</span> <span class="s2">&quot;#7f8f4e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">camogreen</span> <span class="o">=</span> <span class="s2">&quot;#526525&quot;</span>  <span class="c1">#:</span>
+    <span class="n">camouflagegreen</span> <span class="o">=</span> <span class="s2">&quot;#4b6113&quot;</span>  <span class="c1">#:</span>
+    <span class="n">canary</span> <span class="o">=</span> <span class="s2">&quot;#fdff63&quot;</span>  <span class="c1">#:</span>
+    <span class="n">canaryyellow</span> <span class="o">=</span> <span class="s2">&quot;#fffe40&quot;</span>  <span class="c1">#:</span>
+    <span class="n">candypink</span> <span class="o">=</span> <span class="s2">&quot;#ff63e9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">caramel</span> <span class="o">=</span> <span class="s2">&quot;#af6f09&quot;</span>  <span class="c1">#:</span>
+    <span class="n">carmine</span> <span class="o">=</span> <span class="s2">&quot;#9d0216&quot;</span>  <span class="c1">#:</span>
+    <span class="n">carnation</span> <span class="o">=</span> <span class="s2">&quot;#fd798f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">carnationpink</span> <span class="o">=</span> <span class="s2">&quot;#ff7fa7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">carolinablue</span> <span class="o">=</span> <span class="s2">&quot;#8ab8fe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">celadon</span> <span class="o">=</span> <span class="s2">&quot;#befdb7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">celery</span> <span class="o">=</span> <span class="s2">&quot;#c1fd95&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cement</span> <span class="o">=</span> <span class="s2">&quot;#a5a391&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cerise</span> <span class="o">=</span> <span class="s2">&quot;#de0c62&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cerulean</span> <span class="o">=</span> <span class="s2">&quot;#0485d1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ceruleanblue</span> <span class="o">=</span> <span class="s2">&quot;#056eee&quot;</span>  <span class="c1">#:</span>
+    <span class="n">charcoal</span> <span class="o">=</span> <span class="s2">&quot;#343837&quot;</span>  <span class="c1">#:</span>
+    <span class="n">charcoalgrey</span> <span class="o">=</span> <span class="s2">&quot;#3c4142&quot;</span>  <span class="c1">#:</span>
+    <span class="n">chartreuse</span> <span class="o">=</span> <span class="s2">&quot;#c1f80a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cherry</span> <span class="o">=</span> <span class="s2">&quot;#cf0234&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cherryred</span> <span class="o">=</span> <span class="s2">&quot;#f7022a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">chestnut</span> <span class="o">=</span> <span class="s2">&quot;#742802&quot;</span>  <span class="c1">#:</span>
+    <span class="n">chocolate</span> <span class="o">=</span> <span class="s2">&quot;#3d1c02&quot;</span>  <span class="c1">#:</span>
+    <span class="n">chocolatebrown</span> <span class="o">=</span> <span class="s2">&quot;#411900&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cinnamon</span> <span class="o">=</span> <span class="s2">&quot;#ac4f06&quot;</span>  <span class="c1">#:</span>
+    <span class="n">claret</span> <span class="o">=</span> <span class="s2">&quot;#680018&quot;</span>  <span class="c1">#:</span>
+    <span class="n">clay</span> <span class="o">=</span> <span class="s2">&quot;#b66a50&quot;</span>  <span class="c1">#:</span>
+    <span class="n">claybrown</span> <span class="o">=</span> <span class="s2">&quot;#b2713d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">clearblue</span> <span class="o">=</span> <span class="s2">&quot;#247afd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cobalt</span> <span class="o">=</span> <span class="s2">&quot;#1e488f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cobaltblue</span> <span class="o">=</span> <span class="s2">&quot;#030aa7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cocoa</span> <span class="o">=</span> <span class="s2">&quot;#875f42&quot;</span>  <span class="c1">#:</span>
+    <span class="n">coffee</span> <span class="o">=</span> <span class="s2">&quot;#a6814c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">coolblue</span> <span class="o">=</span> <span class="s2">&quot;#4984b8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">coolgreen</span> <span class="o">=</span> <span class="s2">&quot;#33b864&quot;</span>  <span class="c1">#:</span>
+    <span class="n">coolgrey</span> <span class="o">=</span> <span class="s2">&quot;#95a3a6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">copper</span> <span class="o">=</span> <span class="s2">&quot;#b66325&quot;</span>  <span class="c1">#:</span>
+    <span class="n">coral</span> <span class="o">=</span> <span class="s2">&quot;#fc5a50&quot;</span>  <span class="c1">#:</span>
+    <span class="n">coralpink</span> <span class="o">=</span> <span class="s2">&quot;#ff6163&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cornflower</span> <span class="o">=</span> <span class="s2">&quot;#6a79f7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cornflowerblue</span> <span class="o">=</span> <span class="s2">&quot;#5170d7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cranberry</span> <span class="o">=</span> <span class="s2">&quot;#9e003a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cream</span> <span class="o">=</span> <span class="s2">&quot;#ffffc2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">creme</span> <span class="o">=</span> <span class="s2">&quot;#ffffb6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">crimson</span> <span class="o">=</span> <span class="s2">&quot;#8c000f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">custard</span> <span class="o">=</span> <span class="s2">&quot;#fffd78&quot;</span>  <span class="c1">#:</span>
+    <span class="n">cyan</span> <span class="o">=</span> <span class="s2">&quot;#00ffff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dandelion</span> <span class="o">=</span> <span class="s2">&quot;#fedf08&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dark</span> <span class="o">=</span> <span class="s2">&quot;#1b2431&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkaqua</span> <span class="o">=</span> <span class="s2">&quot;#05696b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkaquamarine</span> <span class="o">=</span> <span class="s2">&quot;#017371&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkbeige</span> <span class="o">=</span> <span class="s2">&quot;#ac9362&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkblue</span> <span class="o">=</span> <span class="s2">&quot;#030764&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkbluegreen</span> <span class="o">=</span> <span class="s2">&quot;#005249&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkbluegrey</span> <span class="o">=</span> <span class="s2">&quot;#1f3b4d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkbrown</span> <span class="o">=</span> <span class="s2">&quot;#341c02&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkcoral</span> <span class="o">=</span> <span class="s2">&quot;#cf524e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkcream</span> <span class="o">=</span> <span class="s2">&quot;#fff39a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkcyan</span> <span class="o">=</span> <span class="s2">&quot;#0a888a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkforestgreen</span> <span class="o">=</span> <span class="s2">&quot;#002d04&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkfuchsia</span> <span class="o">=</span> <span class="s2">&quot;#9d0759&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkgold</span> <span class="o">=</span> <span class="s2">&quot;#b59410&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkgrassgreen</span> <span class="o">=</span> <span class="s2">&quot;#388004&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkgreen</span> <span class="o">=</span> <span class="s2">&quot;#054907&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkgreenblue</span> <span class="o">=</span> <span class="s2">&quot;#1f6357&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkgrey</span> <span class="o">=</span> <span class="s2">&quot;#363737&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkgreyblue</span> <span class="o">=</span> <span class="s2">&quot;#29465b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkhotpink</span> <span class="o">=</span> <span class="s2">&quot;#d90166&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkindigo</span> <span class="o">=</span> <span class="s2">&quot;#1f0954&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkishblue</span> <span class="o">=</span> <span class="s2">&quot;#014182&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkishgreen</span> <span class="o">=</span> <span class="s2">&quot;#287c37&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkishpink</span> <span class="o">=</span> <span class="s2">&quot;#da467d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkishpurple</span> <span class="o">=</span> <span class="s2">&quot;#751973&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkishred</span> <span class="o">=</span> <span class="s2">&quot;#a90308&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkkhaki</span> <span class="o">=</span> <span class="s2">&quot;#9b8f55&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darklavender</span> <span class="o">=</span> <span class="s2">&quot;#856798&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darklilac</span> <span class="o">=</span> <span class="s2">&quot;#9c6da5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darklime</span> <span class="o">=</span> <span class="s2">&quot;#84b701&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darklimegreen</span> <span class="o">=</span> <span class="s2">&quot;#7ebd01&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkmagenta</span> <span class="o">=</span> <span class="s2">&quot;#960056&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkmaroon</span> <span class="o">=</span> <span class="s2">&quot;#3c0008&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkmauve</span> <span class="o">=</span> <span class="s2">&quot;#874c62&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkmint</span> <span class="o">=</span> <span class="s2">&quot;#48c072&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkmintgreen</span> <span class="o">=</span> <span class="s2">&quot;#20c073&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkmustard</span> <span class="o">=</span> <span class="s2">&quot;#a88905&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darknavy</span> <span class="o">=</span> <span class="s2">&quot;#000435&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darknavyblue</span> <span class="o">=</span> <span class="s2">&quot;#00022e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkolive</span> <span class="o">=</span> <span class="s2">&quot;#373e02&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkolivegreen</span> <span class="o">=</span> <span class="s2">&quot;#3c4d03&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkorange</span> <span class="o">=</span> <span class="s2">&quot;#c65102&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkpastelgreen</span> <span class="o">=</span> <span class="s2">&quot;#56ae57&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkpeach</span> <span class="o">=</span> <span class="s2">&quot;#de7e5d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkperiwinkle</span> <span class="o">=</span> <span class="s2">&quot;#665fd1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkpink</span> <span class="o">=</span> <span class="s2">&quot;#cb416b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkplum</span> <span class="o">=</span> <span class="s2">&quot;#3f012c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkpurple</span> <span class="o">=</span> <span class="s2">&quot;#35063e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkred</span> <span class="o">=</span> <span class="s2">&quot;#840000&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkrose</span> <span class="o">=</span> <span class="s2">&quot;#b5485d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkroyalblue</span> <span class="o">=</span> <span class="s2">&quot;#02066f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darksage</span> <span class="o">=</span> <span class="s2">&quot;#598556&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darksalmon</span> <span class="o">=</span> <span class="s2">&quot;#c85a53&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darksand</span> <span class="o">=</span> <span class="s2">&quot;#a88f59&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkseafoam</span> <span class="o">=</span> <span class="s2">&quot;#1fb57a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkseafoamgreen</span> <span class="o">=</span> <span class="s2">&quot;#3eaf76&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkseagreen</span> <span class="o">=</span> <span class="s2">&quot;#11875d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkskyblue</span> <span class="o">=</span> <span class="s2">&quot;#448ee4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkslateblue</span> <span class="o">=</span> <span class="s2">&quot;#214761&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darktan</span> <span class="o">=</span> <span class="s2">&quot;#af884a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darktaupe</span> <span class="o">=</span> <span class="s2">&quot;#7f684e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkteal</span> <span class="o">=</span> <span class="s2">&quot;#014d4e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkturquoise</span> <span class="o">=</span> <span class="s2">&quot;#045c5a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkviolet</span> <span class="o">=</span> <span class="s2">&quot;#34013f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkyellow</span> <span class="o">=</span> <span class="s2">&quot;#d5b60a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">darkyellowgreen</span> <span class="o">=</span> <span class="s2">&quot;#728f02&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepaqua</span> <span class="o">=</span> <span class="s2">&quot;#08787f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepblue</span> <span class="o">=</span> <span class="s2">&quot;#040273&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepbrown</span> <span class="o">=</span> <span class="s2">&quot;#410200&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepgreen</span> <span class="o">=</span> <span class="s2">&quot;#02590f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deeplavender</span> <span class="o">=</span> <span class="s2">&quot;#8d5eb7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deeplilac</span> <span class="o">=</span> <span class="s2">&quot;#966ebd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepmagenta</span> <span class="o">=</span> <span class="s2">&quot;#a0025c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deeporange</span> <span class="o">=</span> <span class="s2">&quot;#dc4d01&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deeppink</span> <span class="o">=</span> <span class="s2">&quot;#cb0162&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deeppurple</span> <span class="o">=</span> <span class="s2">&quot;#36013f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepred</span> <span class="o">=</span> <span class="s2">&quot;#9a0200&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deeprose</span> <span class="o">=</span> <span class="s2">&quot;#c74767&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepseablue</span> <span class="o">=</span> <span class="s2">&quot;#015482&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepskyblue</span> <span class="o">=</span> <span class="s2">&quot;#0d75f8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepteal</span> <span class="o">=</span> <span class="s2">&quot;#00555a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepturquoise</span> <span class="o">=</span> <span class="s2">&quot;#017374&quot;</span>  <span class="c1">#:</span>
+    <span class="n">deepviolet</span> <span class="o">=</span> <span class="s2">&quot;#490648&quot;</span>  <span class="c1">#:</span>
+    <span class="n">denim</span> <span class="o">=</span> <span class="s2">&quot;#3b638c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">denimblue</span> <span class="o">=</span> <span class="s2">&quot;#3b5b92&quot;</span>  <span class="c1">#:</span>
+    <span class="n">desert</span> <span class="o">=</span> <span class="s2">&quot;#ccad60&quot;</span>  <span class="c1">#:</span>
+    <span class="n">diarrhea</span> <span class="o">=</span> <span class="s2">&quot;#9f8303&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dirt</span> <span class="o">=</span> <span class="s2">&quot;#8a6e45&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dirtbrown</span> <span class="o">=</span> <span class="s2">&quot;#836539&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dirtyblue</span> <span class="o">=</span> <span class="s2">&quot;#3f829d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dirtygreen</span> <span class="o">=</span> <span class="s2">&quot;#667e2c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dirtyorange</span> <span class="o">=</span> <span class="s2">&quot;#c87606&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dirtypink</span> <span class="o">=</span> <span class="s2">&quot;#ca7b80&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dirtypurple</span> <span class="o">=</span> <span class="s2">&quot;#734a65&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dirtyyellow</span> <span class="o">=</span> <span class="s2">&quot;#cdc50a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dodgerblue</span> <span class="o">=</span> <span class="s2">&quot;#3e82fc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">drab</span> <span class="o">=</span> <span class="s2">&quot;#828344&quot;</span>  <span class="c1">#:</span>
+    <span class="n">drabgreen</span> <span class="o">=</span> <span class="s2">&quot;#749551&quot;</span>  <span class="c1">#:</span>
+    <span class="n">driedblood</span> <span class="o">=</span> <span class="s2">&quot;#4b0101&quot;</span>  <span class="c1">#:</span>
+    <span class="n">duckeggblue</span> <span class="o">=</span> <span class="s2">&quot;#c3fbf4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dullblue</span> <span class="o">=</span> <span class="s2">&quot;#49759c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dullbrown</span> <span class="o">=</span> <span class="s2">&quot;#876e4b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dullgreen</span> <span class="o">=</span> <span class="s2">&quot;#74a662&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dullorange</span> <span class="o">=</span> <span class="s2">&quot;#d8863b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dullpink</span> <span class="o">=</span> <span class="s2">&quot;#d5869d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dullpurple</span> <span class="o">=</span> <span class="s2">&quot;#84597e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dullred</span> <span class="o">=</span> <span class="s2">&quot;#bb3f3f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dullteal</span> <span class="o">=</span> <span class="s2">&quot;#5f9e8f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dullyellow</span> <span class="o">=</span> <span class="s2">&quot;#eedc5b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dusk</span> <span class="o">=</span> <span class="s2">&quot;#4e5481&quot;</span>  <span class="c1">#:</span>
+    <span class="n">duskblue</span> <span class="o">=</span> <span class="s2">&quot;#26538d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">duskyblue</span> <span class="o">=</span> <span class="s2">&quot;#475f94&quot;</span>  <span class="c1">#:</span>
+    <span class="n">duskypink</span> <span class="o">=</span> <span class="s2">&quot;#cc7a8b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">duskypurple</span> <span class="o">=</span> <span class="s2">&quot;#895b7b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">duskyrose</span> <span class="o">=</span> <span class="s2">&quot;#ba6873&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dust</span> <span class="o">=</span> <span class="s2">&quot;#b2996e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dustyblue</span> <span class="o">=</span> <span class="s2">&quot;#5a86ad&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dustygreen</span> <span class="o">=</span> <span class="s2">&quot;#76a973&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dustylavender</span> <span class="o">=</span> <span class="s2">&quot;#ac86a8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dustyorange</span> <span class="o">=</span> <span class="s2">&quot;#f0833a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dustypink</span> <span class="o">=</span> <span class="s2">&quot;#d58a94&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dustypurple</span> <span class="o">=</span> <span class="s2">&quot;#825f87&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dustyred</span> <span class="o">=</span> <span class="s2">&quot;#b9484e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dustyrose</span> <span class="o">=</span> <span class="s2">&quot;#c0737a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">dustyteal</span> <span class="o">=</span> <span class="s2">&quot;#4c9085&quot;</span>  <span class="c1">#:</span>
+    <span class="n">earth</span> <span class="o">=</span> <span class="s2">&quot;#a2653e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">eastergreen</span> <span class="o">=</span> <span class="s2">&quot;#8cfd7e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">easterpurple</span> <span class="o">=</span> <span class="s2">&quot;#c071fe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ecru</span> <span class="o">=</span> <span class="s2">&quot;#feffca&quot;</span>  <span class="c1">#:</span>
+    <span class="n">eggplant</span> <span class="o">=</span> <span class="s2">&quot;#380835&quot;</span>  <span class="c1">#:</span>
+    <span class="n">eggplantpurple</span> <span class="o">=</span> <span class="s2">&quot;#430541&quot;</span>  <span class="c1">#:</span>
+    <span class="n">eggshell</span> <span class="o">=</span> <span class="s2">&quot;#fffcc4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">eggshellblue</span> <span class="o">=</span> <span class="s2">&quot;#c4fff7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">electricblue</span> <span class="o">=</span> <span class="s2">&quot;#0652ff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">electricgreen</span> <span class="o">=</span> <span class="s2">&quot;#21fc0d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">electriclime</span> <span class="o">=</span> <span class="s2">&quot;#a8ff04&quot;</span>  <span class="c1">#:</span>
+    <span class="n">electricpink</span> <span class="o">=</span> <span class="s2">&quot;#ff0490&quot;</span>  <span class="c1">#:</span>
+    <span class="n">electricpurple</span> <span class="o">=</span> <span class="s2">&quot;#aa23ff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">emerald</span> <span class="o">=</span> <span class="s2">&quot;#01a049&quot;</span>  <span class="c1">#:</span>
+    <span class="n">emeraldgreen</span> <span class="o">=</span> <span class="s2">&quot;#028f1e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">evergreen</span> <span class="o">=</span> <span class="s2">&quot;#05472a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fadedblue</span> <span class="o">=</span> <span class="s2">&quot;#658cbb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fadedgreen</span> <span class="o">=</span> <span class="s2">&quot;#7bb274&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fadedorange</span> <span class="o">=</span> <span class="s2">&quot;#f0944d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fadedpink</span> <span class="o">=</span> <span class="s2">&quot;#de9dac&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fadedpurple</span> <span class="o">=</span> <span class="s2">&quot;#916e99&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fadedred</span> <span class="o">=</span> <span class="s2">&quot;#d3494e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fadedyellow</span> <span class="o">=</span> <span class="s2">&quot;#feff7f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fawn</span> <span class="o">=</span> <span class="s2">&quot;#cfaf7b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fern</span> <span class="o">=</span> <span class="s2">&quot;#63a950&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ferngreen</span> <span class="o">=</span> <span class="s2">&quot;#548d44&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fireenginered</span> <span class="o">=</span> <span class="s2">&quot;#fe0002&quot;</span>  <span class="c1">#:</span>
+    <span class="n">flatblue</span> <span class="o">=</span> <span class="s2">&quot;#3c73a8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">flatgreen</span> <span class="o">=</span> <span class="s2">&quot;#699d4c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fluorescentgreen</span> <span class="o">=</span> <span class="s2">&quot;#08ff08&quot;</span>  <span class="c1">#:</span>
+    <span class="n">flurogreen</span> <span class="o">=</span> <span class="s2">&quot;#0aff02&quot;</span>  <span class="c1">#:</span>
+    <span class="n">foamgreen</span> <span class="o">=</span> <span class="s2">&quot;#90fda9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">forest</span> <span class="o">=</span> <span class="s2">&quot;#0b5509&quot;</span>  <span class="c1">#:</span>
+    <span class="n">forestgreen</span> <span class="o">=</span> <span class="s2">&quot;#06470c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">forrestgreen</span> <span class="o">=</span> <span class="s2">&quot;#154406&quot;</span>  <span class="c1">#:</span>
+    <span class="n">frenchblue</span> <span class="o">=</span> <span class="s2">&quot;#436bad&quot;</span>  <span class="c1">#:</span>
+    <span class="n">freshgreen</span> <span class="o">=</span> <span class="s2">&quot;#69d84f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">froggreen</span> <span class="o">=</span> <span class="s2">&quot;#58bc08&quot;</span>  <span class="c1">#:</span>
+    <span class="n">fuchsia</span> <span class="o">=</span> <span class="s2">&quot;#ed0dd9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">gold</span> <span class="o">=</span> <span class="s2">&quot;#dbb40c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">golden</span> <span class="o">=</span> <span class="s2">&quot;#f5bf03&quot;</span>  <span class="c1">#:</span>
+    <span class="n">goldenbrown</span> <span class="o">=</span> <span class="s2">&quot;#b27a01&quot;</span>  <span class="c1">#:</span>
+    <span class="n">goldenrod</span> <span class="o">=</span> <span class="s2">&quot;#f9bc08&quot;</span>  <span class="c1">#:</span>
+    <span class="n">goldenyellow</span> <span class="o">=</span> <span class="s2">&quot;#fec615&quot;</span>  <span class="c1">#:</span>
+    <span class="n">grape</span> <span class="o">=</span> <span class="s2">&quot;#6c3461&quot;</span>  <span class="c1">#:</span>
+    <span class="n">grapefruit</span> <span class="o">=</span> <span class="s2">&quot;#fd5956&quot;</span>  <span class="c1">#:</span>
+    <span class="n">grapepurple</span> <span class="o">=</span> <span class="s2">&quot;#5d1451&quot;</span>  <span class="c1">#:</span>
+    <span class="n">grass</span> <span class="o">=</span> <span class="s2">&quot;#5cac2d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">grassgreen</span> <span class="o">=</span> <span class="s2">&quot;#3f9b0b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">grassygreen</span> <span class="o">=</span> <span class="s2">&quot;#419c03&quot;</span>  <span class="c1">#:</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="s2">&quot;#15b01a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenapple</span> <span class="o">=</span> <span class="s2">&quot;#5edc1f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenblue</span> <span class="o">=</span> <span class="s2">&quot;#01c08d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenbrown</span> <span class="o">=</span> <span class="s2">&quot;#544e03&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greengrey</span> <span class="o">=</span> <span class="s2">&quot;#77926f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenish</span> <span class="o">=</span> <span class="s2">&quot;#40a368&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenishbeige</span> <span class="o">=</span> <span class="s2">&quot;#c9d179&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenishblue</span> <span class="o">=</span> <span class="s2">&quot;#0b8b87&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenishbrown</span> <span class="o">=</span> <span class="s2">&quot;#696112&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenishcyan</span> <span class="o">=</span> <span class="s2">&quot;#2afeb7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenishgrey</span> <span class="o">=</span> <span class="s2">&quot;#96ae8d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenishtan</span> <span class="o">=</span> <span class="s2">&quot;#bccb7a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenishteal</span> <span class="o">=</span> <span class="s2">&quot;#32bf84&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenishturquoise</span> <span class="o">=</span> <span class="s2">&quot;#00fbb0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenishyellow</span> <span class="o">=</span> <span class="s2">&quot;#cdfd02&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenteal</span> <span class="o">=</span> <span class="s2">&quot;#0cb577&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenyblue</span> <span class="o">=</span> <span class="s2">&quot;#42b395&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenybrown</span> <span class="o">=</span> <span class="s2">&quot;#696006&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenyellow</span> <span class="o">=</span> <span class="s2">&quot;#b5ce08&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenygrey</span> <span class="o">=</span> <span class="s2">&quot;#7ea07a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greenyyellow</span> <span class="o">=</span> <span class="s2">&quot;#c6f808&quot;</span>  <span class="c1">#:</span>
+    <span class="n">grey</span> <span class="o">=</span> <span class="s2">&quot;#929591&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greyblue</span> <span class="o">=</span> <span class="s2">&quot;#647d8e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greybrown</span> <span class="o">=</span> <span class="s2">&quot;#7f7053&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greygreen</span> <span class="o">=</span> <span class="s2">&quot;#86a17d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greyish</span> <span class="o">=</span> <span class="s2">&quot;#a8a495&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greyishblue</span> <span class="o">=</span> <span class="s2">&quot;#5e819d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greyishbrown</span> <span class="o">=</span> <span class="s2">&quot;#7a6a4f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greyishgreen</span> <span class="o">=</span> <span class="s2">&quot;#82a67d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greyishpink</span> <span class="o">=</span> <span class="s2">&quot;#c88d94&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greyishpurple</span> <span class="o">=</span> <span class="s2">&quot;#887191&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greyishteal</span> <span class="o">=</span> <span class="s2">&quot;#719f91&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greypink</span> <span class="o">=</span> <span class="s2">&quot;#c3909b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greypurple</span> <span class="o">=</span> <span class="s2">&quot;#826d8c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">greyteal</span> <span class="o">=</span> <span class="s2">&quot;#5e9b8a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">grossgreen</span> <span class="o">=</span> <span class="s2">&quot;#a0bf16&quot;</span>  <span class="c1">#:</span>
+    <span class="n">gunmetal</span> <span class="o">=</span> <span class="s2">&quot;#536267&quot;</span>  <span class="c1">#:</span>
+    <span class="n">hazel</span> <span class="o">=</span> <span class="s2">&quot;#8e7618&quot;</span>  <span class="c1">#:</span>
+    <span class="n">heather</span> <span class="o">=</span> <span class="s2">&quot;#a484ac&quot;</span>  <span class="c1">#:</span>
+    <span class="n">heliotrope</span> <span class="o">=</span> <span class="s2">&quot;#d94ff5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">highlightergreen</span> <span class="o">=</span> <span class="s2">&quot;#1bfc06&quot;</span>  <span class="c1">#:</span>
+    <span class="n">hospitalgreen</span> <span class="o">=</span> <span class="s2">&quot;#9be5aa&quot;</span>  <span class="c1">#:</span>
+    <span class="n">hotgreen</span> <span class="o">=</span> <span class="s2">&quot;#25ff29&quot;</span>  <span class="c1">#:</span>
+    <span class="n">hotmagenta</span> <span class="o">=</span> <span class="s2">&quot;#f504c9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">hotpink</span> <span class="o">=</span> <span class="s2">&quot;#ff028d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">hotpurple</span> <span class="o">=</span> <span class="s2">&quot;#cb00f5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">huntergreen</span> <span class="o">=</span> <span class="s2">&quot;#0b4008&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ice</span> <span class="o">=</span> <span class="s2">&quot;#d6fffa&quot;</span>  <span class="c1">#:</span>
+    <span class="n">iceblue</span> <span class="o">=</span> <span class="s2">&quot;#d7fffe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ickygreen</span> <span class="o">=</span> <span class="s2">&quot;#8fae22&quot;</span>  <span class="c1">#:</span>
+    <span class="n">indianred</span> <span class="o">=</span> <span class="s2">&quot;#850e04&quot;</span>  <span class="c1">#:</span>
+    <span class="n">indigo</span> <span class="o">=</span> <span class="s2">&quot;#380282&quot;</span>  <span class="c1">#:</span>
+    <span class="n">indigoblue</span> <span class="o">=</span> <span class="s2">&quot;#3a18b1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">iris</span> <span class="o">=</span> <span class="s2">&quot;#6258c4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">irishgreen</span> <span class="o">=</span> <span class="s2">&quot;#019529&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ivory</span> <span class="o">=</span> <span class="s2">&quot;#ffffcb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">jade</span> <span class="o">=</span> <span class="s2">&quot;#1fa774&quot;</span>  <span class="c1">#:</span>
+    <span class="n">jadegreen</span> <span class="o">=</span> <span class="s2">&quot;#2baf6a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">junglegreen</span> <span class="o">=</span> <span class="s2">&quot;#048243&quot;</span>  <span class="c1">#:</span>
+    <span class="n">kelleygreen</span> <span class="o">=</span> <span class="s2">&quot;#009337&quot;</span>  <span class="c1">#:</span>
+    <span class="n">kellygreen</span> <span class="o">=</span> <span class="s2">&quot;#02ab2e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">kermitgreen</span> <span class="o">=</span> <span class="s2">&quot;#5cb200&quot;</span>  <span class="c1">#:</span>
+    <span class="n">keylime</span> <span class="o">=</span> <span class="s2">&quot;#aeff6e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">khaki</span> <span class="o">=</span> <span class="s2">&quot;#aaa662&quot;</span>  <span class="c1">#:</span>
+    <span class="n">khakigreen</span> <span class="o">=</span> <span class="s2">&quot;#728639&quot;</span>  <span class="c1">#:</span>
+    <span class="n">kiwi</span> <span class="o">=</span> <span class="s2">&quot;#9cef43&quot;</span>  <span class="c1">#:</span>
+    <span class="n">kiwigreen</span> <span class="o">=</span> <span class="s2">&quot;#8ee53f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lavender</span> <span class="o">=</span> <span class="s2">&quot;#c79fef&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lavenderblue</span> <span class="o">=</span> <span class="s2">&quot;#8b88f8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lavenderpink</span> <span class="o">=</span> <span class="s2">&quot;#dd85d7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lawngreen</span> <span class="o">=</span> <span class="s2">&quot;#4da409&quot;</span>  <span class="c1">#:</span>
+    <span class="n">leaf</span> <span class="o">=</span> <span class="s2">&quot;#71aa34&quot;</span>  <span class="c1">#:</span>
+    <span class="n">leafgreen</span> <span class="o">=</span> <span class="s2">&quot;#5ca904&quot;</span>  <span class="c1">#:</span>
+    <span class="n">leafygreen</span> <span class="o">=</span> <span class="s2">&quot;#51b73b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">leather</span> <span class="o">=</span> <span class="s2">&quot;#ac7434&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lemon</span> <span class="o">=</span> <span class="s2">&quot;#fdff52&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lemongreen</span> <span class="o">=</span> <span class="s2">&quot;#adf802&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lemonlime</span> <span class="o">=</span> <span class="s2">&quot;#bffe28&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lemonyellow</span> <span class="o">=</span> <span class="s2">&quot;#fdff38&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lichen</span> <span class="o">=</span> <span class="s2">&quot;#8fb67b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightaqua</span> <span class="o">=</span> <span class="s2">&quot;#8cffdb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightaquamarine</span> <span class="o">=</span> <span class="s2">&quot;#7bfdc7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightbeige</span> <span class="o">=</span> <span class="s2">&quot;#fffeb6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightblue</span> <span class="o">=</span> <span class="s2">&quot;#7bc8f6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightbluegreen</span> <span class="o">=</span> <span class="s2">&quot;#7efbb3&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightbluegrey</span> <span class="o">=</span> <span class="s2">&quot;#b7c9e2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightbluishgreen</span> <span class="o">=</span> <span class="s2">&quot;#76fda8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightbrightgreen</span> <span class="o">=</span> <span class="s2">&quot;#53fe5c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightbrown</span> <span class="o">=</span> <span class="s2">&quot;#ad8150&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightburgundy</span> <span class="o">=</span> <span class="s2">&quot;#a8415b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightcyan</span> <span class="o">=</span> <span class="s2">&quot;#acfffc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lighteggplant</span> <span class="o">=</span> <span class="s2">&quot;#894585&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightergreen</span> <span class="o">=</span> <span class="s2">&quot;#75fd63&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lighterpurple</span> <span class="o">=</span> <span class="s2">&quot;#a55af4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightforestgreen</span> <span class="o">=</span> <span class="s2">&quot;#4f9153&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightgold</span> <span class="o">=</span> <span class="s2">&quot;#fddc5c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightgrassgreen</span> <span class="o">=</span> <span class="s2">&quot;#9af764&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightgreen</span> <span class="o">=</span> <span class="s2">&quot;#76ff7b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightgreenblue</span> <span class="o">=</span> <span class="s2">&quot;#56fca2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightgreenishblue</span> <span class="o">=</span> <span class="s2">&quot;#63f7b4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightgrey</span> <span class="o">=</span> <span class="s2">&quot;#d8dcd6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightgreyblue</span> <span class="o">=</span> <span class="s2">&quot;#9dbcd4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightgreygreen</span> <span class="o">=</span> <span class="s2">&quot;#b7e1a1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightindigo</span> <span class="o">=</span> <span class="s2">&quot;#6d5acf&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightishblue</span> <span class="o">=</span> <span class="s2">&quot;#3d7afd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightishgreen</span> <span class="o">=</span> <span class="s2">&quot;#61e160&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightishpurple</span> <span class="o">=</span> <span class="s2">&quot;#a552e6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightishred</span> <span class="o">=</span> <span class="s2">&quot;#fe2f4a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightkhaki</span> <span class="o">=</span> <span class="s2">&quot;#e6f2a2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightlavendar</span> <span class="o">=</span> <span class="s2">&quot;#efc0fe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightlavender</span> <span class="o">=</span> <span class="s2">&quot;#dfc5fe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightlightblue</span> <span class="o">=</span> <span class="s2">&quot;#cafffb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightlightgreen</span> <span class="o">=</span> <span class="s2">&quot;#c8ffb0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightlilac</span> <span class="o">=</span> <span class="s2">&quot;#edc8ff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightlime</span> <span class="o">=</span> <span class="s2">&quot;#aefd6c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightlimegreen</span> <span class="o">=</span> <span class="s2">&quot;#b9ff66&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightmagenta</span> <span class="o">=</span> <span class="s2">&quot;#fa5ff7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightmaroon</span> <span class="o">=</span> <span class="s2">&quot;#a24857&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightmauve</span> <span class="o">=</span> <span class="s2">&quot;#c292a1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightmint</span> <span class="o">=</span> <span class="s2">&quot;#b6ffbb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightmintgreen</span> <span class="o">=</span> <span class="s2">&quot;#a6fbb2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightmossgreen</span> <span class="o">=</span> <span class="s2">&quot;#a6c875&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightmustard</span> <span class="o">=</span> <span class="s2">&quot;#f7d560&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightnavy</span> <span class="o">=</span> <span class="s2">&quot;#155084&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightnavyblue</span> <span class="o">=</span> <span class="s2">&quot;#2e5a88&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightneongreen</span> <span class="o">=</span> <span class="s2">&quot;#4efd54&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightolive</span> <span class="o">=</span> <span class="s2">&quot;#acbf69&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightolivegreen</span> <span class="o">=</span> <span class="s2">&quot;#a4be5c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightorange</span> <span class="o">=</span> <span class="s2">&quot;#fdaa48&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightpastelgreen</span> <span class="o">=</span> <span class="s2">&quot;#b2fba5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightpeach</span> <span class="o">=</span> <span class="s2">&quot;#ffd8b1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightpeagreen</span> <span class="o">=</span> <span class="s2">&quot;#c4fe82&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightperiwinkle</span> <span class="o">=</span> <span class="s2">&quot;#c1c6fc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightpink</span> <span class="o">=</span> <span class="s2">&quot;#ffd1df&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightplum</span> <span class="o">=</span> <span class="s2">&quot;#9d5783&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightpurple</span> <span class="o">=</span> <span class="s2">&quot;#bf77f6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightred</span> <span class="o">=</span> <span class="s2">&quot;#ff474c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightrose</span> <span class="o">=</span> <span class="s2">&quot;#ffc5cb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightroyalblue</span> <span class="o">=</span> <span class="s2">&quot;#3a2efe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightsage</span> <span class="o">=</span> <span class="s2">&quot;#bcecac&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightsalmon</span> <span class="o">=</span> <span class="s2">&quot;#fea993&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightseafoam</span> <span class="o">=</span> <span class="s2">&quot;#a0febf&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightseafoamgreen</span> <span class="o">=</span> <span class="s2">&quot;#a7ffb5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightseagreen</span> <span class="o">=</span> <span class="s2">&quot;#98f6b0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightskyblue</span> <span class="o">=</span> <span class="s2">&quot;#c6fcff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lighttan</span> <span class="o">=</span> <span class="s2">&quot;#fbeeac&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightteal</span> <span class="o">=</span> <span class="s2">&quot;#90e4c1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightturquoise</span> <span class="o">=</span> <span class="s2">&quot;#7ef4cc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lighturple</span> <span class="o">=</span> <span class="s2">&quot;#b36ff6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightviolet</span> <span class="o">=</span> <span class="s2">&quot;#d6b4fc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightyellow</span> <span class="o">=</span> <span class="s2">&quot;#fffe7a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightyellowgreen</span> <span class="o">=</span> <span class="s2">&quot;#ccfd7f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lightyellowishgreen</span> <span class="o">=</span> <span class="s2">&quot;#c2ff89&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lilac</span> <span class="o">=</span> <span class="s2">&quot;#cea2fd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">liliac</span> <span class="o">=</span> <span class="s2">&quot;#c48efd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lime</span> <span class="o">=</span> <span class="s2">&quot;#aaff32&quot;</span>  <span class="c1">#:</span>
+    <span class="n">limegreen</span> <span class="o">=</span> <span class="s2">&quot;#89fe05&quot;</span>  <span class="c1">#:</span>
+    <span class="n">limeyellow</span> <span class="o">=</span> <span class="s2">&quot;#d0fe1d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lipstick</span> <span class="o">=</span> <span class="s2">&quot;#d5174e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">lipstickred</span> <span class="o">=</span> <span class="s2">&quot;#c0022f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">macaroniandcheese</span> <span class="o">=</span> <span class="s2">&quot;#efb435&quot;</span>  <span class="c1">#:</span>
+    <span class="n">magenta</span> <span class="o">=</span> <span class="s2">&quot;#c20078&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mahogany</span> <span class="o">=</span> <span class="s2">&quot;#4a0100&quot;</span>  <span class="c1">#:</span>
+    <span class="n">maize</span> <span class="o">=</span> <span class="s2">&quot;#f4d054&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mango</span> <span class="o">=</span> <span class="s2">&quot;#ffa62b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">manilla</span> <span class="o">=</span> <span class="s2">&quot;#fffa86&quot;</span>  <span class="c1">#:</span>
+    <span class="n">marigold</span> <span class="o">=</span> <span class="s2">&quot;#fcc006&quot;</span>  <span class="c1">#:</span>
+    <span class="n">marine</span> <span class="o">=</span> <span class="s2">&quot;#042e60&quot;</span>  <span class="c1">#:</span>
+    <span class="n">marineblue</span> <span class="o">=</span> <span class="s2">&quot;#01386a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">maroon</span> <span class="o">=</span> <span class="s2">&quot;#650021&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mauve</span> <span class="o">=</span> <span class="s2">&quot;#ae7181&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mediumblue</span> <span class="o">=</span> <span class="s2">&quot;#2c6fbb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mediumbrown</span> <span class="o">=</span> <span class="s2">&quot;#7f5112&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mediumgreen</span> <span class="o">=</span> <span class="s2">&quot;#39ad48&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mediumgrey</span> <span class="o">=</span> <span class="s2">&quot;#7d7f7c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mediumpink</span> <span class="o">=</span> <span class="s2">&quot;#f36196&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mediumpurple</span> <span class="o">=</span> <span class="s2">&quot;#9e43a2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">melon</span> <span class="o">=</span> <span class="s2">&quot;#ff7855&quot;</span>  <span class="c1">#:</span>
+    <span class="n">merlot</span> <span class="o">=</span> <span class="s2">&quot;#730039&quot;</span>  <span class="c1">#:</span>
+    <span class="n">metallicblue</span> <span class="o">=</span> <span class="s2">&quot;#4f738e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">midblue</span> <span class="o">=</span> <span class="s2">&quot;#276ab3&quot;</span>  <span class="c1">#:</span>
+    <span class="n">midgreen</span> <span class="o">=</span> <span class="s2">&quot;#50a747&quot;</span>  <span class="c1">#:</span>
+    <span class="n">midnight</span> <span class="o">=</span> <span class="s2">&quot;#03012d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">midnightblue</span> <span class="o">=</span> <span class="s2">&quot;#020035&quot;</span>  <span class="c1">#:</span>
+    <span class="n">midnightpurple</span> <span class="o">=</span> <span class="s2">&quot;#280137&quot;</span>  <span class="c1">#:</span>
+    <span class="n">militarygreen</span> <span class="o">=</span> <span class="s2">&quot;#667c3e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">milkchocolate</span> <span class="o">=</span> <span class="s2">&quot;#7f4e1e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mint</span> <span class="o">=</span> <span class="s2">&quot;#9ffeb0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mintgreen</span> <span class="o">=</span> <span class="s2">&quot;#8fff9f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mintygreen</span> <span class="o">=</span> <span class="s2">&quot;#0bf77d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mocha</span> <span class="o">=</span> <span class="s2">&quot;#9d7651&quot;</span>  <span class="c1">#:</span>
+    <span class="n">moss</span> <span class="o">=</span> <span class="s2">&quot;#769958&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mossgreen</span> <span class="o">=</span> <span class="s2">&quot;#658b38&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mossygreen</span> <span class="o">=</span> <span class="s2">&quot;#638b27&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mud</span> <span class="o">=</span> <span class="s2">&quot;#735c12&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mudbrown</span> <span class="o">=</span> <span class="s2">&quot;#60460f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">muddybrown</span> <span class="o">=</span> <span class="s2">&quot;#886806&quot;</span>  <span class="c1">#:</span>
+    <span class="n">muddygreen</span> <span class="o">=</span> <span class="s2">&quot;#657432&quot;</span>  <span class="c1">#:</span>
+    <span class="n">muddyyellow</span> <span class="o">=</span> <span class="s2">&quot;#bfac05&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mudgreen</span> <span class="o">=</span> <span class="s2">&quot;#606602&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mulberry</span> <span class="o">=</span> <span class="s2">&quot;#920a4e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">murkygreen</span> <span class="o">=</span> <span class="s2">&quot;#6c7a0e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mushroom</span> <span class="o">=</span> <span class="s2">&quot;#ba9e88&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mustard</span> <span class="o">=</span> <span class="s2">&quot;#ceb301&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mustardbrown</span> <span class="o">=</span> <span class="s2">&quot;#ac7e04&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mustardgreen</span> <span class="o">=</span> <span class="s2">&quot;#a8b504&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mustardyellow</span> <span class="o">=</span> <span class="s2">&quot;#d2bd0a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mutedblue</span> <span class="o">=</span> <span class="s2">&quot;#3b719f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mutedgreen</span> <span class="o">=</span> <span class="s2">&quot;#5fa052&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mutedpink</span> <span class="o">=</span> <span class="s2">&quot;#d1768f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">mutedpurple</span> <span class="o">=</span> <span class="s2">&quot;#805b87&quot;</span>  <span class="c1">#:</span>
+    <span class="n">nastygreen</span> <span class="o">=</span> <span class="s2">&quot;#70b23f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">navy</span> <span class="o">=</span> <span class="s2">&quot;#01153e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">navyblue</span> <span class="o">=</span> <span class="s2">&quot;#001146&quot;</span>  <span class="c1">#:</span>
+    <span class="n">navygreen</span> <span class="o">=</span> <span class="s2">&quot;#35530a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">neonblue</span> <span class="o">=</span> <span class="s2">&quot;#04d9ff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">neongreen</span> <span class="o">=</span> <span class="s2">&quot;#0cff0c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">neonpink</span> <span class="o">=</span> <span class="s2">&quot;#fe019a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">neonpurple</span> <span class="o">=</span> <span class="s2">&quot;#bc13fe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">neonred</span> <span class="o">=</span> <span class="s2">&quot;#ff073a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">neonyellow</span> <span class="o">=</span> <span class="s2">&quot;#cfff04&quot;</span>  <span class="c1">#:</span>
+    <span class="n">niceblue</span> <span class="o">=</span> <span class="s2">&quot;#107ab0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">nightblue</span> <span class="o">=</span> <span class="s2">&quot;#040348&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ocean</span> <span class="o">=</span> <span class="s2">&quot;#017b92&quot;</span>  <span class="c1">#:</span>
+    <span class="n">oceanblue</span> <span class="o">=</span> <span class="s2">&quot;#03719c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">oceangreen</span> <span class="o">=</span> <span class="s2">&quot;#3d9973&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ocher</span> <span class="o">=</span> <span class="s2">&quot;#bf9b0c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ochre</span> <span class="o">=</span> <span class="s2">&quot;#bf9005&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ocre</span> <span class="o">=</span> <span class="s2">&quot;#c69c04&quot;</span>  <span class="c1">#:</span>
+    <span class="n">offblue</span> <span class="o">=</span> <span class="s2">&quot;#5684ae&quot;</span>  <span class="c1">#:</span>
+    <span class="n">offgreen</span> <span class="o">=</span> <span class="s2">&quot;#6ba353&quot;</span>  <span class="c1">#:</span>
+    <span class="n">offwhite</span> <span class="o">=</span> <span class="s2">&quot;#ffffe4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">offyellow</span> <span class="o">=</span> <span class="s2">&quot;#f1f33f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">oldpink</span> <span class="o">=</span> <span class="s2">&quot;#c77986&quot;</span>  <span class="c1">#:</span>
+    <span class="n">oldrose</span> <span class="o">=</span> <span class="s2">&quot;#c87f89&quot;</span>  <span class="c1">#:</span>
+    <span class="n">olive</span> <span class="o">=</span> <span class="s2">&quot;#6e750e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">olivebrown</span> <span class="o">=</span> <span class="s2">&quot;#645403&quot;</span>  <span class="c1">#:</span>
+    <span class="n">olivedrab</span> <span class="o">=</span> <span class="s2">&quot;#6f7632&quot;</span>  <span class="c1">#:</span>
+    <span class="n">olivegreen</span> <span class="o">=</span> <span class="s2">&quot;#677a04&quot;</span>  <span class="c1">#:</span>
+    <span class="n">oliveyellow</span> <span class="o">=</span> <span class="s2">&quot;#c2b709&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orange</span> <span class="o">=</span> <span class="s2">&quot;#f97306&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangebrown</span> <span class="o">=</span> <span class="s2">&quot;#be6400&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangeish</span> <span class="o">=</span> <span class="s2">&quot;#fd8d49&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangepink</span> <span class="o">=</span> <span class="s2">&quot;#ff6f52&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangered</span> <span class="o">=</span> <span class="s2">&quot;#fe420f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangeybrown</span> <span class="o">=</span> <span class="s2">&quot;#b16002&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangeyellow</span> <span class="o">=</span> <span class="s2">&quot;#ffad01&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangeyred</span> <span class="o">=</span> <span class="s2">&quot;#fa4224&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangeyyellow</span> <span class="o">=</span> <span class="s2">&quot;#fdb915&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangish</span> <span class="o">=</span> <span class="s2">&quot;#fc824a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangishbrown</span> <span class="o">=</span> <span class="s2">&quot;#b25f03&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orangishred</span> <span class="o">=</span> <span class="s2">&quot;#f43605&quot;</span>  <span class="c1">#:</span>
+    <span class="n">orchid</span> <span class="o">=</span> <span class="s2">&quot;#c875c4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pale</span> <span class="o">=</span> <span class="s2">&quot;#fff9d0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">paleaqua</span> <span class="o">=</span> <span class="s2">&quot;#b8ffeb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">paleblue</span> <span class="o">=</span> <span class="s2">&quot;#d0fefe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palebrown</span> <span class="o">=</span> <span class="s2">&quot;#b1916e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palecyan</span> <span class="o">=</span> <span class="s2">&quot;#b7fffa&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palegold</span> <span class="o">=</span> <span class="s2">&quot;#fdde6c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palegreen</span> <span class="o">=</span> <span class="s2">&quot;#c7fdb5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palegrey</span> <span class="o">=</span> <span class="s2">&quot;#fdfdfe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palelavender</span> <span class="o">=</span> <span class="s2">&quot;#eecffe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palelightgreen</span> <span class="o">=</span> <span class="s2">&quot;#b1fc99&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palelilac</span> <span class="o">=</span> <span class="s2">&quot;#e4cbff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palelime</span> <span class="o">=</span> <span class="s2">&quot;#befd73&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palelimegreen</span> <span class="o">=</span> <span class="s2">&quot;#b1ff65&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palemagenta</span> <span class="o">=</span> <span class="s2">&quot;#d767ad&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palemauve</span> <span class="o">=</span> <span class="s2">&quot;#fed0fc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">paleolive</span> <span class="o">=</span> <span class="s2">&quot;#b9cc81&quot;</span>  <span class="c1">#:</span>
+    <span class="n">paleolivegreen</span> <span class="o">=</span> <span class="s2">&quot;#b1d27b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">paleorange</span> <span class="o">=</span> <span class="s2">&quot;#ffa756&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palepeach</span> <span class="o">=</span> <span class="s2">&quot;#ffe5ad&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palepink</span> <span class="o">=</span> <span class="s2">&quot;#ffcfdc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palepurple</span> <span class="o">=</span> <span class="s2">&quot;#b790d4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palered</span> <span class="o">=</span> <span class="s2">&quot;#d9544d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palerose</span> <span class="o">=</span> <span class="s2">&quot;#fdc1c5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">palesalmon</span> <span class="o">=</span> <span class="s2">&quot;#ffb19a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">paleskyblue</span> <span class="o">=</span> <span class="s2">&quot;#bdf6fe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">paleteal</span> <span class="o">=</span> <span class="s2">&quot;#82cbb2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">paleturquoise</span> <span class="o">=</span> <span class="s2">&quot;#a5fbd5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">paleviolet</span> <span class="o">=</span> <span class="s2">&quot;#ceaefa&quot;</span>  <span class="c1">#:</span>
+    <span class="n">paleyellow</span> <span class="o">=</span> <span class="s2">&quot;#ffff84&quot;</span>  <span class="c1">#:</span>
+    <span class="n">parchment</span> <span class="o">=</span> <span class="s2">&quot;#fefcaf&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pastelblue</span> <span class="o">=</span> <span class="s2">&quot;#a2bffe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pastelgreen</span> <span class="o">=</span> <span class="s2">&quot;#b0ff9d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pastelorange</span> <span class="o">=</span> <span class="s2">&quot;#ff964f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pastelpink</span> <span class="o">=</span> <span class="s2">&quot;#ffbacd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pastelpurple</span> <span class="o">=</span> <span class="s2">&quot;#caa0ff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pastelred</span> <span class="o">=</span> <span class="s2">&quot;#db5856&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pastelyellow</span> <span class="o">=</span> <span class="s2">&quot;#fffe71&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pea</span> <span class="o">=</span> <span class="s2">&quot;#a4bf20&quot;</span>  <span class="c1">#:</span>
+    <span class="n">peach</span> <span class="o">=</span> <span class="s2">&quot;#ffb07c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">peachypink</span> <span class="o">=</span> <span class="s2">&quot;#ff9a8a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">peacockblue</span> <span class="o">=</span> <span class="s2">&quot;#016795&quot;</span>  <span class="c1">#:</span>
+    <span class="n">peagreen</span> <span class="o">=</span> <span class="s2">&quot;#8eab12&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pear</span> <span class="o">=</span> <span class="s2">&quot;#cbf85f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">peasoup</span> <span class="o">=</span> <span class="s2">&quot;#929901&quot;</span>  <span class="c1">#:</span>
+    <span class="n">peasoupgreen</span> <span class="o">=</span> <span class="s2">&quot;#94a617&quot;</span>  <span class="c1">#:</span>
+    <span class="n">periwinkle</span> <span class="o">=</span> <span class="s2">&quot;#8e82fe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">periwinkleblue</span> <span class="o">=</span> <span class="s2">&quot;#8f99fb&quot;</span>  <span class="c1">#:</span>
+    <span class="n">perrywinkle</span> <span class="o">=</span> <span class="s2">&quot;#8f8ce7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">petrol</span> <span class="o">=</span> <span class="s2">&quot;#005f6a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pigpink</span> <span class="o">=</span> <span class="s2">&quot;#e78ea5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pine</span> <span class="o">=</span> <span class="s2">&quot;#2b5d34&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinegreen</span> <span class="o">=</span> <span class="s2">&quot;#0a481e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pink</span> <span class="o">=</span> <span class="s2">&quot;#ff81c0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkish</span> <span class="o">=</span> <span class="s2">&quot;#d46a7e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkishbrown</span> <span class="o">=</span> <span class="s2">&quot;#b17261&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkishgrey</span> <span class="o">=</span> <span class="s2">&quot;#c8aca9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkishorange</span> <span class="o">=</span> <span class="s2">&quot;#ff724c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkishpurple</span> <span class="o">=</span> <span class="s2">&quot;#d648d7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkishred</span> <span class="o">=</span> <span class="s2">&quot;#f10c45&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkishtan</span> <span class="o">=</span> <span class="s2">&quot;#d99b82&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkpurple</span> <span class="o">=</span> <span class="s2">&quot;#ef1de7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkred</span> <span class="o">=</span> <span class="s2">&quot;#f5054f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinky</span> <span class="o">=</span> <span class="s2">&quot;#fc86aa&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkypurple</span> <span class="o">=</span> <span class="s2">&quot;#c94cbe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pinkyred</span> <span class="o">=</span> <span class="s2">&quot;#fc2647&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pissyellow</span> <span class="o">=</span> <span class="s2">&quot;#ddd618&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pistachio</span> <span class="o">=</span> <span class="s2">&quot;#c0fa8b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">plum</span> <span class="o">=</span> <span class="s2">&quot;#580f41&quot;</span>  <span class="c1">#:</span>
+    <span class="n">plumpurple</span> <span class="o">=</span> <span class="s2">&quot;#4e0550&quot;</span>  <span class="c1">#:</span>
+    <span class="n">poisongreen</span> <span class="o">=</span> <span class="s2">&quot;#40fd14&quot;</span>  <span class="c1">#:</span>
+    <span class="n">poo</span> <span class="o">=</span> <span class="s2">&quot;#8f7303&quot;</span>  <span class="c1">#:</span>
+    <span class="n">poobrown</span> <span class="o">=</span> <span class="s2">&quot;#885f01&quot;</span>  <span class="c1">#:</span>
+    <span class="n">poop</span> <span class="o">=</span> <span class="s2">&quot;#7f5e00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">poopbrown</span> <span class="o">=</span> <span class="s2">&quot;#7a5901&quot;</span>  <span class="c1">#:</span>
+    <span class="n">poopgreen</span> <span class="o">=</span> <span class="s2">&quot;#6f7c00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">powderblue</span> <span class="o">=</span> <span class="s2">&quot;#b1d1fc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">powderpink</span> <span class="o">=</span> <span class="s2">&quot;#ffb2d0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">primaryblue</span> <span class="o">=</span> <span class="s2">&quot;#0804f9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">prussianblue</span> <span class="o">=</span> <span class="s2">&quot;#004577&quot;</span>  <span class="c1">#:</span>
+    <span class="n">puce</span> <span class="o">=</span> <span class="s2">&quot;#a57e52&quot;</span>  <span class="c1">#:</span>
+    <span class="n">puke</span> <span class="o">=</span> <span class="s2">&quot;#a5a502&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pukebrown</span> <span class="o">=</span> <span class="s2">&quot;#947706&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pukegreen</span> <span class="o">=</span> <span class="s2">&quot;#9aae07&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pukeyellow</span> <span class="o">=</span> <span class="s2">&quot;#c2be0e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pumpkin</span> <span class="o">=</span> <span class="s2">&quot;#e17701&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pumpkinorange</span> <span class="o">=</span> <span class="s2">&quot;#fb7d07&quot;</span>  <span class="c1">#:</span>
+    <span class="n">pureblue</span> <span class="o">=</span> <span class="s2">&quot;#0203e2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purple</span> <span class="o">=</span> <span class="s2">&quot;#7e1e9c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purpleblue</span> <span class="o">=</span> <span class="s2">&quot;#5d21d0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplebrown</span> <span class="o">=</span> <span class="s2">&quot;#673a3f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplegrey</span> <span class="o">=</span> <span class="s2">&quot;#866f85&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purpleish</span> <span class="o">=</span> <span class="s2">&quot;#98568d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purpleishblue</span> <span class="o">=</span> <span class="s2">&quot;#6140ef&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purpleishpink</span> <span class="o">=</span> <span class="s2">&quot;#df4ec8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplepink</span> <span class="o">=</span> <span class="s2">&quot;#d725de&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplered</span> <span class="o">=</span> <span class="s2">&quot;#990147&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purpley</span> <span class="o">=</span> <span class="s2">&quot;#8756e4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purpleyblue</span> <span class="o">=</span> <span class="s2">&quot;#5f34e7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purpleygrey</span> <span class="o">=</span> <span class="s2">&quot;#947e94&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purpleypink</span> <span class="o">=</span> <span class="s2">&quot;#c83cb9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplish</span> <span class="o">=</span> <span class="s2">&quot;#94568c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplishblue</span> <span class="o">=</span> <span class="s2">&quot;#601ef9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplishbrown</span> <span class="o">=</span> <span class="s2">&quot;#6b4247&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplishgrey</span> <span class="o">=</span> <span class="s2">&quot;#7a687f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplishpink</span> <span class="o">=</span> <span class="s2">&quot;#ce5dae&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplishred</span> <span class="o">=</span> <span class="s2">&quot;#b0054b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purply</span> <span class="o">=</span> <span class="s2">&quot;#983fb2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplyblue</span> <span class="o">=</span> <span class="s2">&quot;#661aee&quot;</span>  <span class="c1">#:</span>
+    <span class="n">purplypink</span> <span class="o">=</span> <span class="s2">&quot;#f075e6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">putty</span> <span class="o">=</span> <span class="s2">&quot;#beae8a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">racinggreen</span> <span class="o">=</span> <span class="s2">&quot;#014600&quot;</span>  <span class="c1">#:</span>
+    <span class="n">radioactivegreen</span> <span class="o">=</span> <span class="s2">&quot;#2cfa1f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">raspberry</span> <span class="o">=</span> <span class="s2">&quot;#b00149&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rawsienna</span> <span class="o">=</span> <span class="s2">&quot;#9a6200&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rawumber</span> <span class="o">=</span> <span class="s2">&quot;#a75e09&quot;</span>  <span class="c1">#:</span>
+    <span class="n">reallylightblue</span> <span class="o">=</span> <span class="s2">&quot;#d4ffff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="s2">&quot;#e50000&quot;</span>  <span class="c1">#:</span>
+    <span class="n">redbrown</span> <span class="o">=</span> <span class="s2">&quot;#8b2e16&quot;</span>  <span class="c1">#:</span>
+    <span class="n">reddish</span> <span class="o">=</span> <span class="s2">&quot;#c44240&quot;</span>  <span class="c1">#:</span>
+    <span class="n">reddishbrown</span> <span class="o">=</span> <span class="s2">&quot;#7f2b0a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">reddishgrey</span> <span class="o">=</span> <span class="s2">&quot;#997570&quot;</span>  <span class="c1">#:</span>
+    <span class="n">reddishorange</span> <span class="o">=</span> <span class="s2">&quot;#f8481c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">reddishpink</span> <span class="o">=</span> <span class="s2">&quot;#fe2c54&quot;</span>  <span class="c1">#:</span>
+    <span class="n">reddishpurple</span> <span class="o">=</span> <span class="s2">&quot;#910951&quot;</span>  <span class="c1">#:</span>
+    <span class="n">reddybrown</span> <span class="o">=</span> <span class="s2">&quot;#6e1005&quot;</span>  <span class="c1">#:</span>
+    <span class="n">redorange</span> <span class="o">=</span> <span class="s2">&quot;#fd3c06&quot;</span>  <span class="c1">#:</span>
+    <span class="n">redpink</span> <span class="o">=</span> <span class="s2">&quot;#fa2a55&quot;</span>  <span class="c1">#:</span>
+    <span class="n">redpurple</span> <span class="o">=</span> <span class="s2">&quot;#820747&quot;</span>  <span class="c1">#:</span>
+    <span class="n">redviolet</span> <span class="o">=</span> <span class="s2">&quot;#9e0168&quot;</span>  <span class="c1">#:</span>
+    <span class="n">redwine</span> <span class="o">=</span> <span class="s2">&quot;#8c0034&quot;</span>  <span class="c1">#:</span>
+    <span class="n">richblue</span> <span class="o">=</span> <span class="s2">&quot;#021bf9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">richpurple</span> <span class="o">=</span> <span class="s2">&quot;#720058&quot;</span>  <span class="c1">#:</span>
+    <span class="n">robineggblue</span> <span class="o">=</span> <span class="s2">&quot;#8af1fe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">robinsegg</span> <span class="o">=</span> <span class="s2">&quot;#6dedfd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">robinseggblue</span> <span class="o">=</span> <span class="s2">&quot;#98eff9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rosa</span> <span class="o">=</span> <span class="s2">&quot;#fe86a4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rose</span> <span class="o">=</span> <span class="s2">&quot;#cf6275&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rosepink</span> <span class="o">=</span> <span class="s2">&quot;#f7879a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rosered</span> <span class="o">=</span> <span class="s2">&quot;#be013c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rosypink</span> <span class="o">=</span> <span class="s2">&quot;#f6688e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rouge</span> <span class="o">=</span> <span class="s2">&quot;#ab1239&quot;</span>  <span class="c1">#:</span>
+    <span class="n">royal</span> <span class="o">=</span> <span class="s2">&quot;#0c1793&quot;</span>  <span class="c1">#:</span>
+    <span class="n">royalblue</span> <span class="o">=</span> <span class="s2">&quot;#0504aa&quot;</span>  <span class="c1">#:</span>
+    <span class="n">royalpurple</span> <span class="o">=</span> <span class="s2">&quot;#4b006e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ruby</span> <span class="o">=</span> <span class="s2">&quot;#ca0147&quot;</span>  <span class="c1">#:</span>
+    <span class="n">russet</span> <span class="o">=</span> <span class="s2">&quot;#a13905&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rust</span> <span class="o">=</span> <span class="s2">&quot;#a83c09&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rustbrown</span> <span class="o">=</span> <span class="s2">&quot;#8b3103&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rustorange</span> <span class="o">=</span> <span class="s2">&quot;#c45508&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rustred</span> <span class="o">=</span> <span class="s2">&quot;#aa2704&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rustyorange</span> <span class="o">=</span> <span class="s2">&quot;#cd5909&quot;</span>  <span class="c1">#:</span>
+    <span class="n">rustyred</span> <span class="o">=</span> <span class="s2">&quot;#af2f0d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">saffron</span> <span class="o">=</span> <span class="s2">&quot;#feb209&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sage</span> <span class="o">=</span> <span class="s2">&quot;#87ae73&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sagegreen</span> <span class="o">=</span> <span class="s2">&quot;#88b378&quot;</span>  <span class="c1">#:</span>
+    <span class="n">salmon</span> <span class="o">=</span> <span class="s2">&quot;#ff796c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">salmonpink</span> <span class="o">=</span> <span class="s2">&quot;#fe7b7c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sand</span> <span class="o">=</span> <span class="s2">&quot;#e2ca76&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sandbrown</span> <span class="o">=</span> <span class="s2">&quot;#cba560&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sandstone</span> <span class="o">=</span> <span class="s2">&quot;#c9ae74&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sandy</span> <span class="o">=</span> <span class="s2">&quot;#f1da7a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sandybrown</span> <span class="o">=</span> <span class="s2">&quot;#c4a661&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sandyellow</span> <span class="o">=</span> <span class="s2">&quot;#fce166&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sandyyellow</span> <span class="o">=</span> <span class="s2">&quot;#fdee73&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sapgreen</span> <span class="o">=</span> <span class="s2">&quot;#5c8b15&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sapphire</span> <span class="o">=</span> <span class="s2">&quot;#2138ab&quot;</span>  <span class="c1">#:</span>
+    <span class="n">scarlet</span> <span class="o">=</span> <span class="s2">&quot;#be0119&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sea</span> <span class="o">=</span> <span class="s2">&quot;#3c9992&quot;</span>  <span class="c1">#:</span>
+    <span class="n">seablue</span> <span class="o">=</span> <span class="s2">&quot;#047495&quot;</span>  <span class="c1">#:</span>
+    <span class="n">seafoam</span> <span class="o">=</span> <span class="s2">&quot;#80f9ad&quot;</span>  <span class="c1">#:</span>
+    <span class="n">seafoamblue</span> <span class="o">=</span> <span class="s2">&quot;#78d1b6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">seafoamgreen</span> <span class="o">=</span> <span class="s2">&quot;#7af9ab&quot;</span>  <span class="c1">#:</span>
+    <span class="n">seagreen</span> <span class="o">=</span> <span class="s2">&quot;#53fca1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">seaweed</span> <span class="o">=</span> <span class="s2">&quot;#18d17b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">seaweedgreen</span> <span class="o">=</span> <span class="s2">&quot;#35ad6b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sepia</span> <span class="o">=</span> <span class="s2">&quot;#985e2b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">shamrock</span> <span class="o">=</span> <span class="s2">&quot;#01b44c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">shamrockgreen</span> <span class="o">=</span> <span class="s2">&quot;#02c14d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">shit</span> <span class="o">=</span> <span class="s2">&quot;#7f5f00&quot;</span>  <span class="c1">#:</span>
+    <span class="n">shitbrown</span> <span class="o">=</span> <span class="s2">&quot;#7b5804&quot;</span>  <span class="c1">#:</span>
+    <span class="n">shitgreen</span> <span class="o">=</span> <span class="s2">&quot;#758000&quot;</span>  <span class="c1">#:</span>
+    <span class="n">shockingpink</span> <span class="o">=</span> <span class="s2">&quot;#fe02a2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sickgreen</span> <span class="o">=</span> <span class="s2">&quot;#9db92c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sicklygreen</span> <span class="o">=</span> <span class="s2">&quot;#94b21c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sicklyyellow</span> <span class="o">=</span> <span class="s2">&quot;#d0e429&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sienna</span> <span class="o">=</span> <span class="s2">&quot;#a9561e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">silver</span> <span class="o">=</span> <span class="s2">&quot;#c5c9c7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sky</span> <span class="o">=</span> <span class="s2">&quot;#82cafc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">skyblue</span> <span class="o">=</span> <span class="s2">&quot;#75bbfd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">slate</span> <span class="o">=</span> <span class="s2">&quot;#516572&quot;</span>  <span class="c1">#:</span>
+    <span class="n">slateblue</span> <span class="o">=</span> <span class="s2">&quot;#5b7c99&quot;</span>  <span class="c1">#:</span>
+    <span class="n">slategreen</span> <span class="o">=</span> <span class="s2">&quot;#658d6d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">slategrey</span> <span class="o">=</span> <span class="s2">&quot;#59656d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">slimegreen</span> <span class="o">=</span> <span class="s2">&quot;#99cc04&quot;</span>  <span class="c1">#:</span>
+    <span class="n">snot</span> <span class="o">=</span> <span class="s2">&quot;#acbb0d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">snotgreen</span> <span class="o">=</span> <span class="s2">&quot;#9dc100&quot;</span>  <span class="c1">#:</span>
+    <span class="n">softblue</span> <span class="o">=</span> <span class="s2">&quot;#6488ea&quot;</span>  <span class="c1">#:</span>
+    <span class="n">softgreen</span> <span class="o">=</span> <span class="s2">&quot;#6fc276&quot;</span>  <span class="c1">#:</span>
+    <span class="n">softpink</span> <span class="o">=</span> <span class="s2">&quot;#fdb0c0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">softpurple</span> <span class="o">=</span> <span class="s2">&quot;#a66fb5&quot;</span>  <span class="c1">#:</span>
+    <span class="n">spearmint</span> <span class="o">=</span> <span class="s2">&quot;#1ef876&quot;</span>  <span class="c1">#:</span>
+    <span class="n">springgreen</span> <span class="o">=</span> <span class="s2">&quot;#a9f971&quot;</span>  <span class="c1">#:</span>
+    <span class="n">spruce</span> <span class="o">=</span> <span class="s2">&quot;#0a5f38&quot;</span>  <span class="c1">#:</span>
+    <span class="n">squash</span> <span class="o">=</span> <span class="s2">&quot;#f2ab15&quot;</span>  <span class="c1">#:</span>
+    <span class="n">steel</span> <span class="o">=</span> <span class="s2">&quot;#738595&quot;</span>  <span class="c1">#:</span>
+    <span class="n">steelblue</span> <span class="o">=</span> <span class="s2">&quot;#5a7d9a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">steelgrey</span> <span class="o">=</span> <span class="s2">&quot;#6f828a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">stone</span> <span class="o">=</span> <span class="s2">&quot;#ada587&quot;</span>  <span class="c1">#:</span>
+    <span class="n">stormyblue</span> <span class="o">=</span> <span class="s2">&quot;#507b9c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">straw</span> <span class="o">=</span> <span class="s2">&quot;#fcf679&quot;</span>  <span class="c1">#:</span>
+    <span class="n">strawberry</span> <span class="o">=</span> <span class="s2">&quot;#fb2943&quot;</span>  <span class="c1">#:</span>
+    <span class="n">strongblue</span> <span class="o">=</span> <span class="s2">&quot;#0c06f7&quot;</span>  <span class="c1">#:</span>
+    <span class="n">strongpink</span> <span class="o">=</span> <span class="s2">&quot;#ff0789&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sunflower</span> <span class="o">=</span> <span class="s2">&quot;#ffc512&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sunfloweryellow</span> <span class="o">=</span> <span class="s2">&quot;#ffda03&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sunnyyellow</span> <span class="o">=</span> <span class="s2">&quot;#fff917&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sunshineyellow</span> <span class="o">=</span> <span class="s2">&quot;#fffd37&quot;</span>  <span class="c1">#:</span>
+    <span class="n">sunyellow</span> <span class="o">=</span> <span class="s2">&quot;#ffdf22&quot;</span>  <span class="c1">#:</span>
+    <span class="n">swamp</span> <span class="o">=</span> <span class="s2">&quot;#698339&quot;</span>  <span class="c1">#:</span>
+    <span class="n">swampgreen</span> <span class="o">=</span> <span class="s2">&quot;#748500&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tan</span> <span class="o">=</span> <span class="s2">&quot;#d1b26f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tanbrown</span> <span class="o">=</span> <span class="s2">&quot;#ab7e4c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tangerine</span> <span class="o">=</span> <span class="s2">&quot;#ff9408&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tangreen</span> <span class="o">=</span> <span class="s2">&quot;#a9be70&quot;</span>  <span class="c1">#:</span>
+    <span class="n">taupe</span> <span class="o">=</span> <span class="s2">&quot;#b9a281&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tea</span> <span class="o">=</span> <span class="s2">&quot;#65ab7c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">teagreen</span> <span class="o">=</span> <span class="s2">&quot;#bdf8a3&quot;</span>  <span class="c1">#:</span>
+    <span class="n">teal</span> <span class="o">=</span> <span class="s2">&quot;#029386&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tealblue</span> <span class="o">=</span> <span class="s2">&quot;#01889f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tealgreen</span> <span class="o">=</span> <span class="s2">&quot;#25a36f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tealish</span> <span class="o">=</span> <span class="s2">&quot;#24bca8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tealishgreen</span> <span class="o">=</span> <span class="s2">&quot;#0cdc73&quot;</span>  <span class="c1">#:</span>
+    <span class="n">terracota</span> <span class="o">=</span> <span class="s2">&quot;#cb6843&quot;</span>  <span class="c1">#:</span>
+    <span class="n">terracotta</span> <span class="o">=</span> <span class="s2">&quot;#c9643b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tiffanyblue</span> <span class="o">=</span> <span class="s2">&quot;#7bf2da&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tomato</span> <span class="o">=</span> <span class="s2">&quot;#ef4026&quot;</span>  <span class="c1">#:</span>
+    <span class="n">tomatored</span> <span class="o">=</span> <span class="s2">&quot;#ec2d01&quot;</span>  <span class="c1">#:</span>
+    <span class="n">topaz</span> <span class="o">=</span> <span class="s2">&quot;#13bbaf&quot;</span>  <span class="c1">#:</span>
+    <span class="n">toupe</span> <span class="o">=</span> <span class="s2">&quot;#c7ac7d&quot;</span>  <span class="c1">#:</span>
+    <span class="n">toxicgreen</span> <span class="o">=</span> <span class="s2">&quot;#61de2a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">treegreen</span> <span class="o">=</span> <span class="s2">&quot;#2a7e19&quot;</span>  <span class="c1">#:</span>
+    <span class="n">trueblue</span> <span class="o">=</span> <span class="s2">&quot;#010fcc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">truegreen</span> <span class="o">=</span> <span class="s2">&quot;#089404&quot;</span>  <span class="c1">#:</span>
+    <span class="n">turquoise</span> <span class="o">=</span> <span class="s2">&quot;#06c2ac&quot;</span>  <span class="c1">#:</span>
+    <span class="n">turquoiseblue</span> <span class="o">=</span> <span class="s2">&quot;#06b1c4&quot;</span>  <span class="c1">#:</span>
+    <span class="n">turquoisegreen</span> <span class="o">=</span> <span class="s2">&quot;#04f489&quot;</span>  <span class="c1">#:</span>
+    <span class="n">turtlegreen</span> <span class="o">=</span> <span class="s2">&quot;#75b84f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">twilight</span> <span class="o">=</span> <span class="s2">&quot;#4e518b&quot;</span>  <span class="c1">#:</span>
+    <span class="n">twilightblue</span> <span class="o">=</span> <span class="s2">&quot;#0a437a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">uglyblue</span> <span class="o">=</span> <span class="s2">&quot;#31668a&quot;</span>  <span class="c1">#:</span>
+    <span class="n">uglybrown</span> <span class="o">=</span> <span class="s2">&quot;#7d7103&quot;</span>  <span class="c1">#:</span>
+    <span class="n">uglygreen</span> <span class="o">=</span> <span class="s2">&quot;#7a9703&quot;</span>  <span class="c1">#:</span>
+    <span class="n">uglypink</span> <span class="o">=</span> <span class="s2">&quot;#cd7584&quot;</span>  <span class="c1">#:</span>
+    <span class="n">uglypurple</span> <span class="o">=</span> <span class="s2">&quot;#a442a0&quot;</span>  <span class="c1">#:</span>
+    <span class="n">uglyyellow</span> <span class="o">=</span> <span class="s2">&quot;#d0c101&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ultramarine</span> <span class="o">=</span> <span class="s2">&quot;#2000b1&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ultramarineblue</span> <span class="o">=</span> <span class="s2">&quot;#1805db&quot;</span>  <span class="c1">#:</span>
+    <span class="n">umber</span> <span class="o">=</span> <span class="s2">&quot;#b26400&quot;</span>  <span class="c1">#:</span>
+    <span class="n">velvet</span> <span class="o">=</span> <span class="s2">&quot;#750851&quot;</span>  <span class="c1">#:</span>
+    <span class="n">vermillion</span> <span class="o">=</span> <span class="s2">&quot;#f4320c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verydarkblue</span> <span class="o">=</span> <span class="s2">&quot;#000133&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verydarkbrown</span> <span class="o">=</span> <span class="s2">&quot;#1d0200&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verydarkgreen</span> <span class="o">=</span> <span class="s2">&quot;#062e03&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verydarkpurple</span> <span class="o">=</span> <span class="s2">&quot;#2a0134&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verylightblue</span> <span class="o">=</span> <span class="s2">&quot;#d5ffff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verylightbrown</span> <span class="o">=</span> <span class="s2">&quot;#d3b683&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verylightgreen</span> <span class="o">=</span> <span class="s2">&quot;#d1ffbd&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verylightpink</span> <span class="o">=</span> <span class="s2">&quot;#fff4f2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verylightpurple</span> <span class="o">=</span> <span class="s2">&quot;#f6cefc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verypaleblue</span> <span class="o">=</span> <span class="s2">&quot;#d6fffe&quot;</span>  <span class="c1">#:</span>
+    <span class="n">verypalegreen</span> <span class="o">=</span> <span class="s2">&quot;#cffdbc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">vibrantblue</span> <span class="o">=</span> <span class="s2">&quot;#0339f8&quot;</span>  <span class="c1">#:</span>
+    <span class="n">vibrantgreen</span> <span class="o">=</span> <span class="s2">&quot;#0add08&quot;</span>  <span class="c1">#:</span>
+    <span class="n">vibrantpurple</span> <span class="o">=</span> <span class="s2">&quot;#ad03de&quot;</span>  <span class="c1">#:</span>
+    <span class="n">violet</span> <span class="o">=</span> <span class="s2">&quot;#9a0eea&quot;</span>  <span class="c1">#:</span>
+    <span class="n">violetblue</span> <span class="o">=</span> <span class="s2">&quot;#510ac9&quot;</span>  <span class="c1">#:</span>
+    <span class="n">violetpink</span> <span class="o">=</span> <span class="s2">&quot;#fb5ffc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">violetred</span> <span class="o">=</span> <span class="s2">&quot;#a50055&quot;</span>  <span class="c1">#:</span>
+    <span class="n">viridian</span> <span class="o">=</span> <span class="s2">&quot;#1e9167&quot;</span>  <span class="c1">#:</span>
+    <span class="n">vividblue</span> <span class="o">=</span> <span class="s2">&quot;#152eff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">vividgreen</span> <span class="o">=</span> <span class="s2">&quot;#2fef10&quot;</span>  <span class="c1">#:</span>
+    <span class="n">vividpurple</span> <span class="o">=</span> <span class="s2">&quot;#9900fa&quot;</span>  <span class="c1">#:</span>
+    <span class="n">vomit</span> <span class="o">=</span> <span class="s2">&quot;#a2a415&quot;</span>  <span class="c1">#:</span>
+    <span class="n">vomitgreen</span> <span class="o">=</span> <span class="s2">&quot;#89a203&quot;</span>  <span class="c1">#:</span>
+    <span class="n">vomityellow</span> <span class="o">=</span> <span class="s2">&quot;#c7c10c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">warmblue</span> <span class="o">=</span> <span class="s2">&quot;#4b57db&quot;</span>  <span class="c1">#:</span>
+    <span class="n">warmbrown</span> <span class="o">=</span> <span class="s2">&quot;#964e02&quot;</span>  <span class="c1">#:</span>
+    <span class="n">warmgrey</span> <span class="o">=</span> <span class="s2">&quot;#978a84&quot;</span>  <span class="c1">#:</span>
+    <span class="n">warmpink</span> <span class="o">=</span> <span class="s2">&quot;#fb5581&quot;</span>  <span class="c1">#:</span>
+    <span class="n">warmpurple</span> <span class="o">=</span> <span class="s2">&quot;#952e8f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">washedoutgreen</span> <span class="o">=</span> <span class="s2">&quot;#bcf5a6&quot;</span>  <span class="c1">#:</span>
+    <span class="n">waterblue</span> <span class="o">=</span> <span class="s2">&quot;#0e87cc&quot;</span>  <span class="c1">#:</span>
+    <span class="n">watermelon</span> <span class="o">=</span> <span class="s2">&quot;#fd4659&quot;</span>  <span class="c1">#:</span>
+    <span class="n">weirdgreen</span> <span class="o">=</span> <span class="s2">&quot;#3ae57f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">wheat</span> <span class="o">=</span> <span class="s2">&quot;#fbdd7e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">white</span> <span class="o">=</span> <span class="s2">&quot;#ffffff&quot;</span>  <span class="c1">#:</span>
+    <span class="n">windowsblue</span> <span class="o">=</span> <span class="s2">&quot;#3778bf&quot;</span>  <span class="c1">#:</span>
+    <span class="n">wine</span> <span class="o">=</span> <span class="s2">&quot;#80013f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">winered</span> <span class="o">=</span> <span class="s2">&quot;#7b0323&quot;</span>  <span class="c1">#:</span>
+    <span class="n">wintergreen</span> <span class="o">=</span> <span class="s2">&quot;#20f986&quot;</span>  <span class="c1">#:</span>
+    <span class="n">wisteria</span> <span class="o">=</span> <span class="s2">&quot;#a87dc2&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellow</span> <span class="o">=</span> <span class="s2">&quot;#ffff14&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowbrown</span> <span class="o">=</span> <span class="s2">&quot;#b79400&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowgreen</span> <span class="o">=</span> <span class="s2">&quot;#bbf90f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowish</span> <span class="o">=</span> <span class="s2">&quot;#faee66&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowishbrown</span> <span class="o">=</span> <span class="s2">&quot;#9b7a01&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowishgreen</span> <span class="o">=</span> <span class="s2">&quot;#b0dd16&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowishorange</span> <span class="o">=</span> <span class="s2">&quot;#ffab0f&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowishtan</span> <span class="o">=</span> <span class="s2">&quot;#fcfc81&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowochre</span> <span class="o">=</span> <span class="s2">&quot;#cb9d06&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yelloworange</span> <span class="o">=</span> <span class="s2">&quot;#fcb001&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowtan</span> <span class="o">=</span> <span class="s2">&quot;#ffe36e&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowybrown</span> <span class="o">=</span> <span class="s2">&quot;#ae8b0c&quot;</span>  <span class="c1">#:</span>
+    <span class="n">yellowygreen</span> <span class="o">=</span> <span class="s2">&quot;#bff128&quot;</span>  <span class="c1">#:</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">domonic</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=byteface&repo=domonic&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/html.html">Domonic: HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/dom.html">Domonic: DOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/terminal.html">Domonic: terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/components.html">Domonic: templates and components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/tween.html">Domonic: tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/x3d.html">Domonic: x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/dQuery.html">Domonic: dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/constants.html">Domonic: constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/geom.html">Domonic: geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/autodocs.html">Domonic: autodocs</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

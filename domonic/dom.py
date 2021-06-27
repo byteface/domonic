@@ -382,6 +382,27 @@ class ParentNode(object):
         self.args = args
 
 
+class ChildNode(object):
+    """ not tested yet """
+
+    # @classmethod??
+    def remove(self):
+        """ Removes this ChildNode from the children list of its parent. """
+        raise NotImplementedError
+
+    def before(self, el):
+        """ Inserts a set of Node or DOMString objects in the children list of this ChildNode's parent, just before this ChildNode. """
+        raise NotImplementedError
+
+    def after(self, el):
+        """ Inserts a set of Node or DOMString objects in the children list of this ChildNode's parent, just after this ChildNode. """
+        raise NotImplementedError
+
+    def replaceWith(self, el):
+        """ Replaces this ChildNode in the children list of its parent with a set of Node or DOMString objects. """
+        raise NotImplementedError
+
+
 class Attr(object):
 
     def __init__(self, name, *args, **kwargs):

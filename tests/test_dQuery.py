@@ -62,7 +62,15 @@ class domonicTestCase(unittest.TestCase):
             # print(el.getAttribute("class"))
 
     def test_dQuery_after(self):
-        pass
+        # TODO - sort the parser... positional error on this as not multiline
+        # tags = º('<div id="test1"><h1>asd</h1></div>')
+        # print(tags)
+        app = html(head(), body(div(span(), _id="test")))
+        º(app)  # TODO _str is none?
+        # print( 'wtf:??:', º('#test1') ) # TODO - better errors when passing wrong id name
+        º('#test').after(p('hi'))
+        print(app)
+        # pass
 
     def test_dQuery_ajaxComplete(self):
         pass

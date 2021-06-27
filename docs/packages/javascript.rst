@@ -1,7 +1,9 @@
 Domonic: Javascript
 ===================
 
-There's a javascript package that mimics the js API:
+There's a javascript package that mimics the js API.
+
+It's useful for things like porting javascript code to python but also if you already know javascript:
 
 .. code-block :: python
 
@@ -112,6 +114,8 @@ All fetch methods use requests and will pass all the kwargs along should you nee
 Styling
 ----------------
 
+Styling gets passed to the style tag on render.
+
 .. code-block :: python
 
 	mytag = div("hi", _id="test")
@@ -121,7 +125,8 @@ Styling
 	# <div id="test" style="background-color:black;font-size:12px;">hi</div>
 
 
-several other undocumented features. Take a look at the code.
+
+Many other undocumented features. Take a look at the code.
 
 
 .. automodule:: domonic.javascript

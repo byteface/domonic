@@ -1,0 +1,21 @@
+html(
+	_lang="en", _id=APPNAME
+).html(
+	head(),
+	body(
+		script("""
+
+			function open_new_window(page, w=400, h=550, x=0, y=0){
+				w = window.open( page+'.html', page, 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width='+w+',height='+h);
+				w.moveTo(x,y);
+			}
+
+		"""),
+		h1(APPNAME),
+		div(
+			button("toolbar", _onclick="open_new_window('toolbar', 50, 650);"),
+			button("panel", _onclick="open_new_window('panel', 450, 350, 800, 0);"),
+		),
+		canvas(_id="canvas", _width="500", _height="500")
+	)
+)
