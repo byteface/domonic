@@ -1,0 +1,8 @@
+<html lang="en" id="pixl"><head></head><body><script>
+
+			function open_new_window(page, w=400, h=550, x=0, y=0){
+				w = window.open( page+'.html', page, 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width='+w+',height='+h);
+				w.moveTo(x,y);
+			}
+
+		</script><h1>pixl</h1><div><button onclick="open_new_window('toolbar', 50, 650);">toolbar</button><button onclick="open_new_window('panel', 450, 350, 800, 0);">panel</button></div><canvas id="canvas" width="500" height="500"></canvas></body></html>
