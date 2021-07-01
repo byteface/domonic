@@ -1240,9 +1240,12 @@ class String(object):
         return ord(self.x[index])
 
     @staticmethod
-    def fromCharCode(self, code):
-        """ Converts Unicode values to characters """
-        return chr(code)
+    def fromCharCode(self, *codes):
+        """ returns a string created from the specified sequence of UTF-16 code units """
+        # return ''.join([chr(code) for code in codes])
+        # chr = "".join([str(chr(x)) for x in codes])
+        # result = "".join([str(codepoints.index(x) + 1) for x in range(len(codepoints))])
+        return "".join([str(chr(x)) for x in codes])
 
     @property
     def length(self):
@@ -1349,7 +1352,6 @@ class String(object):
 
 # https://developer.mozilla.org/en-US/docs/Web/API/URL
 
-
 class URL(object):
     """ a tag extends from URL """
 
@@ -1364,6 +1366,8 @@ class URL(object):
             new['host'] = ''  # self.url.hostname
             new['pathname'] = self.url.path
             new['hash'] = ''  # self.url.hash
+            new['search'] = ''  # self.url.hash
+
 
             # update it with all the new ones
             new = {}
@@ -1377,6 +1381,9 @@ class URL(object):
             # rebuild
             self.url = urllib.parse.urlsplit(
                 new['protocol'] + "://" + new['host'] + new['pathname'] + new['hash'])
+
+            new['search'] = self.url.query
+            new['_searchParams'] = URLSearchParams(self.url.query)
 
             # reset
             self.href = self.url.geturl()
@@ -1402,6 +1409,17 @@ class URL(object):
         self.host = self.url.hostname
         self.pathname = self.url.path
         self.hash = ''
+
+
+        # print("HERE", self.url.query)
+        self.search = self.url.query
+        self._searchParams = URLSearchParams(self.url.query)
+
+
+    @property
+    def searchParams(self):
+        return self._searchParams.toString()
+
 
     def toString(self):
         return str(self.href)
@@ -1494,6 +1512,100 @@ class URL(object):
     # @property
     # def origin(self):
         '''# origin    Returns the protocol, hostname and port number of a URL Location'''
+
+
+class URLSearchParams:
+    """[utility methods to work with the query string of a URL]
+
+        created with help of https://6b.eleuther.ai/
+
+    """
+
+    def __init__(self, paramString):#, **paramsObj):
+        """[Returns a URLSearchParams object instance.]
+
+        Args:
+            paramString ([type]): [ i.e. q=URLUtils.searchParams&topic=api]
+        """
+        # TODO - escape
+        # import ast
+        # TODO - dont think i can do this cant urls params have duplicate keys?
+        # self.params = ast.literal_eval(paramString)
+        if isinstance(paramString, str):
+            if paramString.startswith('?'):
+                paramString = paramString[1:len(paramString)]
+
+            import urllib
+            self.params = urllib.parse.parse_qs(paramString)
+        elif hasattr(paramString, '__iter__'):
+            self.params = [item for sublist in paramString for item in sublist]
+        elif isinstance(paramString, dict):
+            self.params = dict([(key, item) for key, item in paramString.iteritems()])
+        else:
+            raise TypeError("Malformed paramString.  Must be a string or a dict with dict like items. Got: %s" % paramString)
+
+    def __iter__(self):
+        for attr in self.params.items():  # dir(self.params.items()):
+            # if not attr.startswith("__"):
+            yield attr
+
+    def append(self, key, value):
+        """ Appends a specified key/value pair as a new search parameter """
+        # TODO - ordereddict?
+        self.params[key].append(value)  # [key]=value
+
+    def delete(self, key):
+        """ Deletes the given search parameter, and its associated value, from the list of all search parameters. """
+        del self.params[key]
+
+    def has(self, key):
+        """ Returns a Boolean indicating if such a given parameter exists. """
+        return key in self.params
+
+    def entries(self):
+        """ Returns an iterator allowing iteration through all key/value pairs contained in this object. """
+        return self.params.items()
+
+    def forEach(self, func):
+        """ Allows iteration through all values contained in this object via a callback function. """
+        for key, value in self.params.items():
+            func(key, value)
+
+    def keys(self):
+        """ Returns an iterator allowing iteration through all keys of the key/value pairs contained in this object. """
+        return self.params.keys()
+
+    def get(self, key):
+        """ Returns the first value associated with the given search parameter. """
+        try:
+            return self.params.get(key, None)[0]
+        except Exception:
+            return None
+
+    def sort(self):
+        """ Sorts all key/value pairs, if any, by their keys. """
+        self.params.sort()
+
+    def values(self):
+        """ Returns an iterator allowing iteration through all values of the key/value pairs contained in this object. """
+        return self.params.values()
+
+    def toString(self):
+        """ Returns a string containing a query string suitable for use in a URL. """
+        # return '&'.join([str(x) for x in self.params])
+        return urllib.parse.urlencode(self.params, doseq=True)
+        # return str(self.params)
+
+    def set(self, key, value):
+        """ Sets the value associated with a given search parameter to the given value. If there are several values, the others are deleted. """
+        self.params[key] = (value)
+
+    def getAll(self, key):
+        """ Returns all the values associated with a given search parameter. """
+        return self.params.get(key)
+
+    def __str__(self):
+        return urllib.parse.urlencode(self.params, doseq=True)
 
 
 '''

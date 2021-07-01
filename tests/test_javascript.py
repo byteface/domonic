@@ -545,6 +545,66 @@ class domonicTestCase(unittest.TestCase):
         # test
 
 
+    def test_javascript_URLSearchParams(self):
+        print("test_javascript_URLSearchParams")
+
+        paramsString = "q=test&topic=api"
+        searchParams = URLSearchParams(paramsString)
+
+        # Iterate the search parameters.
+        for p in searchParams:
+            print(p)
+
+        assert searchParams.has("topic") == True  # True
+        # print( searchParams.get("topic") )
+        assert searchParams.get("topic") == "api"  # True
+        # searchParams.getAll("topic"); # ["api"]
+        assert searchParams.get("foo") is None  # true
+        print(searchParams.toString())
+        searchParams.append("topic", "webdev")
+        print(searchParams.toString())
+        assert searchParams.toString() == "q=test&topic=api&topic=webdev"
+        searchParams.set("topic", "More webdev")
+        assert searchParams.toString() == "q=test&topic=More+webdev"
+        searchParams.delete("topic")
+        assert searchParams.toString() == "q=test"
+
+        # GOTCHAS
+
+        paramsString1 = "http://example.com/search?query=%40"
+        searchParams1 = URLSearchParams(paramsString1)
+
+        assert searchParams1.has("query") == False
+        assert searchParams1.has("http://example.com/search?query") == True
+
+        assert searchParams1.get("query") == None
+        searchParams1.get("http://example.com/search?query")  # "@" (equivalent to decodeURIComponent('%40'))
+
+        paramsString2 = "?query=value"
+        searchParams2 = URLSearchParams(paramsString2)
+        print(searchParams2)
+        assert searchParams2.has("query") == True
+
+        url = URL("http://example.com/search?query=%40")
+
+        searchParams3 = URLSearchParams(url.search)
+
+        print(searchParams3)
+        # print(str(searchParams3))
+        # assert searchParams3.has("query") == True
+
+        base64 = window.btoa(String.fromCharCode(19, 224, 23, 64, 31, 128))  # base64 is "E+AXQB+A"
+        print(base64)
+        searchParams = URLSearchParams("q=foo&bin=" + str(base64))  # q=foo&bin=E+AXQB+A
+        # getBin = searchParams.get("bin")  # "E AXQB A" + char is replaced by spaces
+        # print(getBin)
+        # window.btoa(window.atob(getBin))  # "EAXQBA==" no error thrown
+        # window.btoa(String.fromCharCode(16, 5, 208, 4))  # "EAXQBA==" decodes to wrong binary value
+        # getBin.replace(r'/ /g', "+")  # "E+AXQB+A" is one solution
+
+        # or use set to add the parameter, but this increases the query string length
+        # searchParams.set("bin2", base64)  # "q=foo&bin=E+AXQB+A&bin2=E%2BAXQB%2BA" encodes + as %2B
+        # searchParams.get("bin2")  # "E+AXQB+A"
 
 
 _intID = None

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: autodocs &#8212; domonic 0.3.12 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.3.13 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -2193,8 +2193,8 @@ from the args and kwargs arguments, respectively.</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.String.fromCharCode">
-<em class="property">static </em><code class="sig-name descname">fromCharCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">code</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCharCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.fromCharCode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Converts Unicode values to characters</p>
+<em class="property">static </em><code class="sig-name descname">fromCharCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">codes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCharCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.fromCharCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns a string created from the specified sequence of UTF-16 code units</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2275,6 +2275,85 @@ and through the specified number of character</p>
 <dt id="domonic.javascript.URL.hash">
 <em class="property">property </em><code class="sig-name descname">hash</code><a class="headerlink" href="#domonic.javascript.URL.hash" title="Permalink to this definition">¶</a></dt>
 <dd><p>” hash Sets or returns the anchor part (#) of a URL</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="domonic.javascript.URLSearchParams">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">URLSearchParams</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">paramString</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>[utility methods to work with the query string of a URL]</p>
+<p>created with help of <a class="reference external" href="https://6b.eleuther.ai/">https://6b.eleuther.ai/</a></p>
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.append">
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Appends a specified key/value pair as a new search parameter</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.delete">
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the given search parameter, and its associated value, from the list of all search parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.entries">
+<code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator allowing iteration through all key/value pairs contained in this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.forEach">
+<code class="sig-name descname">forEach</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.forEach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.forEach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows iteration through all values contained in this object via a callback function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first value associated with the given search parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.getAll">
+<code class="sig-name descname">getAll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.getAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.getAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all the values associated with a given search parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.has">
+<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.has"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.has" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Boolean indicating if such a given parameter exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.keys">
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator allowing iteration through all keys of the key/value pairs contained in this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.set">
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the value associated with a given search parameter to the given value. If there are several values, the others are deleted.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.sort">
+<code class="sig-name descname">sort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts all key/value pairs, if any, by their keys.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.toString">
+<code class="sig-name descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string containing a query string suitable for use in a URL.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.URLSearchParams.values">
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator allowing iteration through all values of the key/value pairs contained in this object.</p>
 </dd></dl>
 
 </dd></dl>
