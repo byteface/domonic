@@ -24,20 +24,332 @@ from multiprocessing.pool import ThreadPool as Pool
 import re
 
 
-class js_object(object):
-    """ js_object """
+class Object(object):
+    """ Object """
 
-    def valueOf(self):
-        """ Returns the primitive value of an array Array, Boolean, Date, Number, String"""
+    def __init__(self, attribs=None):
+        """
+        Creates a new Object
+
+        @param attribs: name/value pair
+        @type attribs: dict of key/value pairs
+        """
+        self.attribs = attribs
+
+    # def __str__(self):
+    #     """ Dumps the attributes of this Object """
+    #     pass
+
+    @staticmethod
+    def fromEntries(entries):
+        """
+        transforms a list of lists containing key and value into an object.
+
+        @param entries: a list containing key and value tuples. The key and value
+                        are separated by ':'
+        @type entries: list of tuple(string, string)
+        @returns: a { dict } object.
+
+        >>> fromEntries(entries)
+        {'a': 1, 'b': 2, 'c': 3}
+        """
+        return {k: v for k, v in entries}
+
+    # @staticmethod
+    # def assign(target, source):
+    #     """ Copies the values of all enumerable own properties from one or more source objects to a target object. """
+    #     if isinstance( source, dict ):
+    #     return target
+
+    # @staticmethod
+    # def create(proto, propertiesObject):
+    #     """ Creates a new object with the specified prototype object and properties. """
+    #     obj = {}
+    #     for key in proto.keys():
+    #         obj[key] = propertiesObject[key]
+    #     return obj
+
+    @staticmethod
+    def defineProperty(obj, prop, descriptor):
+        """ Adds the named property described by a given descriptor to an object. """
+        obj[prop] = descriptor
+
+    # @staticmethod
+    # def defineProperties(obj, props):
+    #     """ Adds the named properties described by the given descriptors to an object. """
+    #     for prop, desc in props.items():
+    #         obj.__define_property__(prop, desc)  # TODO - obviously that wont work
+
+    @staticmethod
+    def entries(obj):
+        """ Returns an array containing all of the [key, value] pairs of a given object's own enumerable string properties. """
+        if isinstance(obj, dict):
+            return [[k, v] for k, v in obj.items()]
+        if isinstance(obj, (float, int)):
+            return []
+
+    @staticmethod
+    def keys(obj):
+        """ Returns an array containing the names of all of the given object's own enumerable string properties."""
         pass
 
-    # def prototype:
-        """ Allows you to add properties and methods to an Array object Array, Boolean, Date"""
+    @classmethod
+    def values(obj):
+        """ Returns an array containing the values that correspond to all of a given object's own enumerable string properties. """
+        pass
+
+    @staticmethod
+    def getOwnPropertyDescriptor(obj, prop):
+        """ Returns a property descriptor for a named property on an object. """
+        # return getattr(obj, prop)
+        pass
+
+    @staticmethod
+    def getOwnPropertyDescriptors(obj):
+        """ Returns an object containing all own property descriptors for an object. """
+        # return vars(obj)
+        pass
+
+    @staticmethod
+    def getOwnPropertyNames(obj):
+        """ Returns an array containing the names of all of the given object's own enumerable and non-enumerable properties. """
+        # return [k for k in vars(obj).keys()]
+        pass
+
+    # @staticmethod
+    # def _is(value1, value2):
+    #     """ Compares if two values are the same value. 
+    #     Equates all NaN values (which differs from both Abstract Equality Comparison and Strict Equality Comparison)."""
+    #     pass
+
+    # @staticmethod
+    # def getOwnPropertySymbols(obj):
+    #     """ Returns an array of all symbol properties found directly upon a given object. """
+    #     pass
+
+    # @staticmethod
+    # def getPrototypeOf(obj):
+    #     """ Returns the prototype (internal [[Prototype]] property) of the specified object. """
+    #     pass
+
+    # @staticmethod
+    # def isExtensible(obj):
+    #     """ Determines if extending of an object is allowed. """
+    #     pass
+
+    # @staticmethod
+    # def isFrozen(obj):
+    #     """ Determines if an object was frozen. """
+    #     pass
+
+    # @staticmethod
+    # def isSealed(obj):
+    #     """ Determines if an object is sealed. """
+    #     pass
+
+    # @staticmethod
+    # def preventExtensions(obj):
+    #     """ Prevents any extensions of an object. """
+    #     pass
+
+    # @staticmethod
+    # def seal(obj):
+    #     """ Prevents other code from deleting properties of an object. """
+    #     pass
+
+    # @staticmethod
+    # def setPrototypeOf(obj, prototype):
+    #     """ Sets the object's prototype (its internal [[Prototype]] property). """
+    #     pass
+
+    # @staticmethod
+    # def freeze(obj):
+    #     """ Freezes an object. Other code cannot delete or change its properties. """
+    #     pass
+
+    def valueOf(self):
+        """ Returns the primitive value of an array Array, Boolean, Date, Number, String """
+        pass
+
+    # def prototype(self):
+        """ Allows you to add properties and methods to an Array object Array, Boolean, Date """
         # pass
 
+    def __getattr__(self, name):
+        """
+        The __getattr__() method is called when the attribute 'name' is accessed.
+        """
+        if name == 'objectId':
+            return self.getId()
+        if name == 'proto':
+            return self.__class__.fromEntries(self.__attribs__)
+        return getattr(self, name)
 
-class Math(js_object):
-    """ Math class that mirrors javascript implementation """
+    def __defineGetter__(self):
+        """ Associates a function with a property that, when accessed, executes that function and returns its return value."""
+        raise NotImplementedError
+
+    def __defineSetter__(self):
+        """ Associates a function with a property that, when set, executes that function which modifies the property. """
+        raise NotImplementedError
+
+    def __lookupGetter__(self):
+        """ Returns the function associated with the specified property by the __defineGetter__() method. """
+        raise NotImplementedError
+
+    def __lookupSetter__(self):
+        """ Returns the function associated with the specified property by the __defineSetter__() method. """
+        raise NotImplementedError
+
+    def hasOwnProperty(self):
+        """ Returns a boolean indicating whether an object contains the specified property as a direct property of that object and not inherited through the prototype chain. """
+        raise NotImplementedError
+
+    def isPrototypeOf(self):
+        """ Returns a boolean indicating whether the object this method is called upon is in the prototype chain of the specified object. """
+        raise NotImplementedError
+
+    def propertyIsEnumerable(self):
+        """ Returns a boolean indicating if the internal ECMAScript [[Enumerable]] attribute is set. """
+        raise NotImplementedError
+
+    def toLocaleString(self):
+        """ Calls toString()."""
+        raise NotImplementedError
+
+    def toString(self):
+        """ Returns a string representation of the object."""
+        raise NotImplementedError
+
+    def valueOf(self):
+        """ Returns the primitive value of the specified object."""
+        raise NotImplementedError
+
+
+class Map(object):
+    """ Map holds key-value pairs and remembers the original insertion order of the keys. """
+
+    def __init__(self, collection):
+        self.collection = collection
+
+    def clear(self):
+        """ Removes all key-value pairs from the Map object. """
+        raise NotImplementedError
+
+    def delete(self, key):
+        """ Returns true if an element in the Map object existed and has been removed, 
+        or false if the element does not exist. Map.prototype.has(key) will return false afterwards. """
+
+    def get(self, key):
+        """ Returns the value associated to the key, or undefined if there is none. """
+        raise NotImplementedError
+
+    def has(self, key):
+        """ Returns a boolean asserting whether a value has been associated to the key in the Map object or not."""
+        raise NotImplementedError
+
+    def set(self, key, value):
+        """ Sets the value for the key in the Map object. Returns the Map object. """
+        raise NotImplementedError
+
+    def keys(self):
+        """ Returns a new Iterator object that contains the keys for each element in the Map object in insertion order. """
+        raise NotImplementedError
+
+    def values(self):
+        """ Returns a new Iterator object that contains the values for each element in the Map object in insertion order. """
+        raise NotImplementedError
+
+    def entries(self):
+        """ Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order. """
+        # return [[k, v] for k, v in self.collection.items()]
+
+    # def forEach(self, callbackFn[, thisArg]):
+    #     raise NotImplementedError
+
+
+class FormData(object):
+    """[utils for a form]
+
+    Args:
+        object ([str]): [takes a string or pyml object and returns a FormData]
+    """
+
+    def __init__(self, form):
+        """ creates a new FormData object. """
+        # TODO - parse to domonic.
+        # if isinstance(form, str):
+            # self._data = domonic.loads(form) # TODO - parser wont be done enough yet
+        # if isinstance(form, Node):
+            # self._data = form
+        raise NotImplementedError
+
+    def append(self, name, value, filename):
+        """ Appends a new value onto an existing key inside a FormData object, or adds the key if it does not already exist. """
+        # self._data.append((name, value, filename))
+        raise NotImplementedError
+
+    def delete(self, name):
+        """ Deletes a key/value pair from a FormData object. """
+        raise NotImplementedError
+
+    def entries(self):
+        """ Returns an iterator allowing to go through all key/value pairs contained in this object. """
+        raise NotImplementedError
+
+    def get(self, name):
+        """ Returns the first value associated with a given key from within a FormData object. """
+        raise NotImplementedError
+
+    def getAll(self, name):
+        """ Returns an array of all the values associated with a given key from within a FormData """
+        raise NotImplementedError
+
+    def has(self, name):
+        """ Returns a boolean stating whether a FormData object contains a certain key."""
+        raise NotImplementedError
+
+    def keys(self):
+        """ Returns an iterator allowing to go through all keys of the key/value pairs contained in this object."""
+        raise NotImplementedError
+
+    def set(self, name, value, filename):
+        """ Sets a new value for an existing key inside a FormData object, or adds the key/value if it does not already exist."""
+        raise NotImplementedError
+
+    def values(self):
+        """ Returns an iterator allowing to go through all values  contained in this object."""
+        raise NotImplementedError
+
+
+class Worker(object):
+    """[A background task that can be created via script, which can send messages back to its creator. 
+    Creating a worker is done by calling the Worker("path/to/worker/script") constructor.]
+
+    TODO - JSWorker - Node comms.
+
+    Args:
+        object ([str]): [takes a path to a python script]
+    """
+
+    def postMessage(self):
+        """ Sends a message — consisting of any object — to the worker's inner scope. """
+        raise NotImplementedError
+
+    def terminate(self):
+        """ Immediately terminates the worker. This does not let worker finish its operations; it is halted at once.
+        ServiceWorker instances do not support this method. """
+        raise NotImplementedError
+
+
+
+class Math(Object):
+    """ Math class that mirrors javascript implementation.
+
+    i.e. you can pass strings and it will also work
+    Math.abs('-1')
+
+    """
 
     # CONSTANTS
     PI = 3.141592653589793
@@ -49,172 +361,201 @@ class Math(js_object):
     SQRT1_2 = 0.7071067811865476
     SQRT2 = 1.4142135623730951
 
-    # TODO - pass what types of validation? < may move to decorators
-    # i.e force numbers
-    # i.e positive/negative numbers allowed
-    # convert bool/string to number?
-    def validate(func):
+    def _force_number(func):
+        """[private decorator to make Math behave like javascript and turn strings, bools and None into numbers]]
+        """
         def validation_decorator(*args, **kwargs):
-            for n in args:
+            params = list(args)
+            for i, n in enumerate(params):
+
+                if type(n) == list or type(n) == tuple:
+                    if len(n) == 0:
+                        params[i] = n = 0
+                    elif len(n) == 1:
+                        params[i] = n = n[0]
+
+                if type(n) == str:
+                    if n == "":
+                        params[i] = n = 0
+                        continue
+
+                if n is None:
+                    params[i] = 0
+                    continue
+
                 if type(n) != float and type(n) != int:
-                    raise ValueError("Value passed was NaN")
-            return func(*args)
+                    try:
+                        if '.' in n:
+                            params[i] = float(n)
+                        else:
+                            params[i] = int(n)
+                    except Exception:
+                        # raise ValueError("")
+                        # js returns None instead
+                        pass
+
+            args = tuple(params)
+            try:
+                return func(*args)
+            except Exception:
+                return None
+
         return validation_decorator
 
     @staticmethod
-    @validate
+    @_force_number
     def abs(x):
         """ Returns the absolute value of x """
         return abs(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def acos(x):
         """ Returns the arccosine of x, in radians """
         return math.acos(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def acosh(x):
         """ Returns the hyperbolic arccosine of x """
         return math.acosh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def asin(x):
         """ Returns the arcsine of x, in radians """
         return math.asin(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def asinh(x):
         """ Returns the hyperbolic arcsine of x """
         return math.asinh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def atan(x):
         """ Returns the arctangent of x as a numeric value between -PI/2 and PI/2 radians """
         return math.atan(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def atan2(x, y):
         """ Returns the arctangent of the quotient of its arguments """
         return math.atan2(x, y)
 
     @staticmethod
-    @validate
+    @_force_number
     def atanh(x):
         """ Returns the hyperbolic arctangent of x """
         return math.atanh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def cbrt(x):
         """ Returns the cubic root of x """
         # return math.cbrt(x)
         return round(math.pow(x, 1 / 3))
 
     @staticmethod
-    @validate
+    @_force_number
     def ceil(x):
         """ Returns x, rounded upwards to the nearest integer """
         return math.ceil(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def cos(x):
         """ Returns the cosine of x (x is in radians) """
         return math.cos(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def cosh(x):
         """ Returns the hyperbolic cosine of x """
         return math.cosh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def exp(x):
         """ Returns the value of Ex """
         return math.exp(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def floor(x):
         """ Returns x, rounded downwards to the nearest integer """
         return math.floor(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def log(x, y):
         """ Returns the natural logarithm (base E) of x """
         return math.log(x, y)
 
     @staticmethod
-    @validate
+    @_force_number
     def max(x, y):
         """ Returns the number with the highest value """
         return max(x, y)
 
     @staticmethod
-    @validate
+    @_force_number
     def min(x, y):
         """ Returns the number with the lowest value """
         return min(x, y)
 
     @staticmethod
-    @validate
+    @_force_number
     def random():
         """ Returns a random number between 0 and 1 """
         # return math.random(x)
         return random.random()
 
     @staticmethod
-    @validate
+    @_force_number
     def round(x):
         """ Rounds x to the nearest integer """
         return round(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def pow(x, y):
         """ Returns the value of x to the power of y """
         return math.pow(x, y)
 
     @staticmethod
-    @validate
+    @_force_number
     def sin(x):
         """ Returns the sine of x (x is in radians) """
         return math.sin(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def sinh(x):
         """ Returns the hyperbolic sine of x """
         return math.sinh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def sqrt(x):
         """ Returns the square root of x """
         return math.sqrt(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def tan(x):
         """ Returns the tangent of an angle """
         return math.tan(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def tanh(x):
         """ Returns the hyperbolic tangent of a number """
         return math.tanh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def trunc(x):
         """ Returns the integer part of a number (x) """
         return math.trunc(x)
@@ -303,12 +644,12 @@ class Global(object):
         return "NaN"
 
     @staticmethod
-    def parseFloat(x):
+    def parseFloat(x: str):
         """ Parses a string and returns a floating point number """
         return float(x)
 
     @staticmethod
-    def parseInt(x):
+    def parseInt(x: str):
         """ Parses a string and returns an integer """
         return int(x)
 
@@ -327,7 +668,7 @@ class Global(object):
         # pass
 
 
-class Date(js_object):
+class Date(Object):
     """ javascript date """
 
     def __init__(self, date: str = None, formatter='python'):
@@ -1242,9 +1583,6 @@ class String(object):
     @staticmethod
     def fromCharCode(self, *codes):
         """ returns a string created from the specified sequence of UTF-16 code units """
-        # return ''.join([chr(code) for code in codes])
-        # chr = "".join([str(chr(x)) for x in codes])
-        # result = "".join([str(codepoints.index(x) + 1) for x in range(len(codepoints))])
         return "".join([str(chr(x)) for x in codes])
 
     @property
@@ -1528,7 +1866,7 @@ class URLSearchParams:
             paramString ([type]): [ i.e. q=URLUtils.searchParams&topic=api]
         """
         # TODO - escape
-        # import ast
+        # import ast 
         # TODO - dont think i can do this cant urls params have duplicate keys?
         # self.params = ast.literal_eval(paramString)
         if isinstance(paramString, str):
@@ -1681,7 +2019,6 @@ class URLSearchParams:
 # multiline Checks whether the "m" modifier is set  RegExp
 # namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection
 # removeNamedItem() Removes a specified attribute node  Attribute
-# search    Sets or returns the querystring part of a URL   Location
 # setNamedItem()    Sets the specified attribute node (by name) Attribute
 # source    Returns the text of the RegExp pattern  RegExp
 # specified Returns true if the attribute has been specified, otherwise it returns false    Attribute
