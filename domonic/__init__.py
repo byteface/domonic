@@ -8,6 +8,7 @@
 
 __version__ = "0.3.14"
 __license__ = 'MIT'
+'''
 __uri__ = "https://github.com/byteface/domonic"
 # https://domonic.readthedocs.io/
 __title__ = 'domonic'
@@ -20,10 +21,10 @@ __all__ = (
     '__title__',
     '__description__'
 )
-
-TITLE = __title__
+'''
+# TITLE = __title__
 VERSION = __version__
-LICENSE = __license__
+# LICENSE = __license__
 
 import requests
 import re

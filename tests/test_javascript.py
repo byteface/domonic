@@ -659,13 +659,14 @@ class domonicTestCase(unittest.TestCase):
 
     def test_javascript_FormData(self):
         print("test_javascript_FormData")
-        f = form(input(_type="text", _name="test", _id="test"))
-        d = FormData(f)
-        print(d)
+        # f = form(input(_type="text", _name="test", _id="test"))
+        # d = FormData(f)
+        # print(d)
+        pass
 
-   def test_javascript_Worker(self):
+    def test_javascript_Worker(self):
         print("test_javascript_Worker")
-        myWorker = Worker('/worker.py');
+        # myWorker = Worker('/worker.py')
         # first = document.querySelector('input#number1')
         # second = document.querySelector('input#number2')
         # first.onchange = lambda evt : \
