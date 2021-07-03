@@ -58,9 +58,9 @@ class domonicTestCase(unittest.TestCase):
         assert Object.entries(100) == []
 
         # iterate through key-value gracefully
-        obj = {'a': 5, 'b': 7, 'c': 9}
-        for key, value in Object.entries(obj):
-            print(f'{key} {value}')  # "a 5", "b 7", "c 9"
+        # obj = {'a': 5, 'b': 7, 'c': 9}
+        # for key, value in Object.entries(obj):
+            # print(f'{key} {value}')  # "a 5", "b 7", "c 9"
 
     def test_domonic_abs(self):
         # python -m unittest tests.test_javascript.domonicTestCase.test_domonic_abs

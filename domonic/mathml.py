@@ -9,9 +9,9 @@ from domonic.html import tag
 from domonic.dom import Node
 
 
-mathml_tags = [ "math","maction","math","menclose","merror","mfenced","mfrac","mi","mmultiscripts","mn","mo","mover","mpadded","mphantom","mroot","mrow",
-                "ms","mspace","msqrt","mstyle","msub","msubsup","msup","mtable","mtd","mtext","mtr","munder","munderover","semantics","maligngroup",
-                "malignmark","msline","msgroup","mlongdiv","mstyle","mprescripts","mscarries","mscarry","munder","munderover","none"]
+mathml_tags = ["math", "maction", "math", "menclose", "merror", "mfenced", "mfrac", "mi", "mmultiscripts", "mn", "mo", "mover", "mpadded", "mphantom", "mroot", "mrow",
+                "ms", "mspace", "msqrt", "mstyle", "msub", "msubsup", "msup", "mtable", "mtd", "mtext", "mtr", "munder", "munderover", "semantics", "maligngroup",
+                "malignmark", "msline", "msgroup", "mlongdiv", "mstyle", "mprescripts", "mscarries", "mscarry", "munder", "munderover", "none"]
 
 # mathml_attributes = []
 

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.3.13 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.3.14 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -58,20 +58,332 @@
 <span class="kn">import</span> <span class="nn">re</span>
 
 
-<div class="viewcode-block" id="js_object"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.js_object">[docs]</a><span class="k">class</span> <span class="nc">js_object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; js_object &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Object"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object">[docs]</a><span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Object &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="js_object.valueOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.js_object.valueOf">[docs]</a>    <span class="k">def</span> <span class="nf">valueOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the primitive value of an array Array, Boolean, Date, Number, String&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new Object</span>
+
+<span class="sd">        @param attribs: name/value pair</span>
+<span class="sd">        @type attribs: dict of key/value pairs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attribs</span> <span class="o">=</span> <span class="n">attribs</span>
+
+    <span class="c1"># def __str__(self):</span>
+    <span class="c1">#     &quot;&quot;&quot; Dumps the attributes of this Object &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+<div class="viewcode-block" id="Object.fromEntries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.fromEntries">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">fromEntries</span><span class="p">(</span><span class="n">entries</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        transforms a list of lists containing key and value into an object.</span>
+
+<span class="sd">        @param entries: a list containing key and value tuples. The key and value</span>
+<span class="sd">                        are separated by &#39;:&#39;</span>
+<span class="sd">        @type entries: list of tuple(string, string)</span>
+<span class="sd">        @returns: a { dict } object.</span>
+
+<span class="sd">        &gt;&gt;&gt; fromEntries(entries)</span>
+<span class="sd">        {&#39;a&#39;: 1, &#39;b&#39;: 2, &#39;c&#39;: 3}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">}</span></div>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def assign(target, source):</span>
+    <span class="c1">#     &quot;&quot;&quot; Copies the values of all enumerable own properties from one or more source objects to a target object. &quot;&quot;&quot;</span>
+    <span class="c1">#     if isinstance( source, dict ):</span>
+    <span class="c1">#     return target</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def create(proto, propertiesObject):</span>
+    <span class="c1">#     &quot;&quot;&quot; Creates a new object with the specified prototype object and properties. &quot;&quot;&quot;</span>
+    <span class="c1">#     obj = {}</span>
+    <span class="c1">#     for key in proto.keys():</span>
+    <span class="c1">#         obj[key] = propertiesObject[key]</span>
+    <span class="c1">#     return obj</span>
+
+<div class="viewcode-block" id="Object.defineProperty"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.defineProperty">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">defineProperty</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Adds the named property described by a given descriptor to an object. &quot;&quot;&quot;</span>
+        <span class="n">obj</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">descriptor</span></div>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def defineProperties(obj, props):</span>
+    <span class="c1">#     &quot;&quot;&quot; Adds the named properties described by the given descriptors to an object. &quot;&quot;&quot;</span>
+    <span class="c1">#     for prop, desc in props.items():</span>
+    <span class="c1">#         obj.__define_property__(prop, desc)  # TODO - obviously that wont work</span>
+
+<div class="viewcode-block" id="Object.entries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.entries">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an array containing all of the [key, value] pairs of a given object&#39;s own enumerable string properties. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[[</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="Object.keys"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.keys">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an array containing the names of all of the given object&#39;s own enumerable string properties.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Object.values"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.values">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an array containing the values that correspond to all of a given object&#39;s own enumerable string properties. &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Object.getOwnPropertyDescriptor"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.getOwnPropertyDescriptor">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getOwnPropertyDescriptor</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a property descriptor for a named property on an object. &quot;&quot;&quot;</span>
+        <span class="c1"># return getattr(obj, prop)</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Object.getOwnPropertyDescriptors"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.getOwnPropertyDescriptors">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getOwnPropertyDescriptors</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an object containing all own property descriptors for an object. &quot;&quot;&quot;</span>
+        <span class="c1"># return vars(obj)</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Object.getOwnPropertyNames"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.getOwnPropertyNames">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getOwnPropertyNames</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an array containing the names of all of the given object&#39;s own enumerable and non-enumerable properties. &quot;&quot;&quot;</span>
+        <span class="c1"># return [k for k in vars(obj).keys()]</span>
+        <span class="k">pass</span></div>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def _is(value1, value2):</span>
+    <span class="c1">#     &quot;&quot;&quot; Compares if two values are the same value. </span>
+    <span class="c1">#     Equates all NaN values (which differs from both Abstract Equality Comparison and Strict Equality Comparison).&quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def getOwnPropertySymbols(obj):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns an array of all symbol properties found directly upon a given object. &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def getPrototypeOf(obj):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns the prototype (internal [[Prototype]] property) of the specified object. &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def isExtensible(obj):</span>
+    <span class="c1">#     &quot;&quot;&quot; Determines if extending of an object is allowed. &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def isFrozen(obj):</span>
+    <span class="c1">#     &quot;&quot;&quot; Determines if an object was frozen. &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def isSealed(obj):</span>
+    <span class="c1">#     &quot;&quot;&quot; Determines if an object is sealed. &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def preventExtensions(obj):</span>
+    <span class="c1">#     &quot;&quot;&quot; Prevents any extensions of an object. &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def seal(obj):</span>
+    <span class="c1">#     &quot;&quot;&quot; Prevents other code from deleting properties of an object. &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def setPrototypeOf(obj, prototype):</span>
+    <span class="c1">#     &quot;&quot;&quot; Sets the object&#39;s prototype (its internal [[Prototype]] property). &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def freeze(obj):</span>
+    <span class="c1">#     &quot;&quot;&quot; Freezes an object. Other code cannot delete or change its properties. &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="k">def</span> <span class="nf">valueOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the primitive value of an array Array, Boolean, Date, Number, String &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="c1"># def prototype:</span>
-        <span class="sd">&quot;&quot;&quot; Allows you to add properties and methods to an Array object Array, Boolean, Date&quot;&quot;&quot;</span></div></div>
+    <span class="c1"># def prototype(self):</span>
+        <span class="sd">&quot;&quot;&quot; Allows you to add properties and methods to an Array object Array, Boolean, Date &quot;&quot;&quot;</span>
         <span class="c1"># pass</span>
 
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The __getattr__() method is called when the attribute &#39;name&#39; is accessed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;objectId&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getId</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;proto&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">fromEntries</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Math"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Math">[docs]</a><span class="k">class</span> <span class="nc">Math</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Math class that mirrors javascript implementation &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__defineGetter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Associates a function with a property that, when accessed, executes that function and returns its return value.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">__defineSetter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Associates a function with a property that, when set, executes that function which modifies the property. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">__lookupGetter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the function associated with the specified property by the __defineGetter__() method. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">__lookupSetter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the function associated with the specified property by the __defineSetter__() method. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="Object.hasOwnProperty"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.hasOwnProperty">[docs]</a>    <span class="k">def</span> <span class="nf">hasOwnProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a boolean indicating whether an object contains the specified property as a direct property of that object and not inherited through the prototype chain. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Object.isPrototypeOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.isPrototypeOf">[docs]</a>    <span class="k">def</span> <span class="nf">isPrototypeOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a boolean indicating whether the object this method is called upon is in the prototype chain of the specified object. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Object.propertyIsEnumerable"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.propertyIsEnumerable">[docs]</a>    <span class="k">def</span> <span class="nf">propertyIsEnumerable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a boolean indicating if the internal ECMAScript [[Enumerable]] attribute is set. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Object.toLocaleString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.toLocaleString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Calls toString().&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Object.toString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a string representation of the object.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Object.valueOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.valueOf">[docs]</a>    <span class="k">def</span> <span class="nf">valueOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the primitive value of the specified object.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="Map"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map">[docs]</a><span class="k">class</span> <span class="nc">Map</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Map holds key-value pairs and remembers the original insertion order of the keys. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
+
+<div class="viewcode-block" id="Map.clear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Removes all key-value pairs from the Map object. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Map.delete"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns true if an element in the Map object existed and has been removed, </span>
+<span class="sd">        or false if the element does not exist. Map.prototype.has(key) will return false afterwards. &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Map.get"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the value associated to the key, or undefined if there is none. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Map.has"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a boolean asserting whether a value has been associated to the key in the Map object or not.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Map.set"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the value for the key in the Map object. Returns the Map object. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Map.keys"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains the keys for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Map.values"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains the values for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Map.entries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.entries">[docs]</a>    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order. &quot;&quot;&quot;</span></div></div>
+        <span class="c1"># return [[k, v] for k, v in self.collection.items()]</span>
+
+    <span class="c1"># def forEach(self, callbackFn[, thisArg]):</span>
+    <span class="c1">#     raise NotImplementedError</span>
+
+
+<div class="viewcode-block" id="FormData"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData">[docs]</a><span class="k">class</span> <span class="nc">FormData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;[utils for a form]</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        object ([str]): [takes a string or pyml object and returns a FormData]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; creates a new FormData object. &quot;&quot;&quot;</span>
+        <span class="c1"># TODO - parse to domonic.</span>
+        <span class="c1"># if isinstance(form, str):</span>
+            <span class="c1"># self._data = domonic.loads(form) # TODO - parser wont be done enough yet</span>
+        <span class="c1"># if isinstance(form, Node):</span>
+            <span class="c1"># self._data = form</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="FormData.append"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Appends a new value onto an existing key inside a FormData object, or adds the key if it does not already exist. &quot;&quot;&quot;</span>
+        <span class="c1"># self._data.append((name, value, filename))</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="FormData.delete"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Deletes a key/value pair from a FormData object. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="FormData.entries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.entries">[docs]</a>    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing to go through all key/value pairs contained in this object. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="FormData.get"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the first value associated with a given key from within a FormData object. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="FormData.getAll"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.getAll">[docs]</a>    <span class="k">def</span> <span class="nf">getAll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an array of all the values associated with a given key from within a FormData &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="FormData.has"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a boolean stating whether a FormData object contains a certain key.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="FormData.keys"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing to go through all keys of the key/value pairs contained in this object.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="FormData.set"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets a new value for an existing key inside a FormData object, or adds the key/value if it does not already exist.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="FormData.values"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing to go through all values  contained in this object.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;[A background task that can be created via script, which can send messages back to its creator. </span>
+<span class="sd">    Creating a worker is done by calling the Worker(&quot;path/to/worker/script&quot;) constructor.]</span>
+
+<span class="sd">    TODO - JSWorker - Node comms.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        object ([str]): [takes a path to a python script]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Worker.postMessage"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Worker.postMessage">[docs]</a>    <span class="k">def</span> <span class="nf">postMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sends a message — consisting of any object — to the worker&#39;s inner scope. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Worker.terminate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Worker.terminate">[docs]</a>    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Immediately terminates the worker. This does not let worker finish its operations; it is halted at once.</span>
+<span class="sd">        ServiceWorker instances do not support this method. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+
+<div class="viewcode-block" id="Math"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Math">[docs]</a><span class="k">class</span> <span class="nc">Math</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Math class that mirrors javascript implementation.</span>
+
+<span class="sd">    i.e. you can pass strings and it will also work</span>
+<span class="sd">    Math.abs(&#39;-1&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># CONSTANTS</span>
     <span class="n">PI</span> <span class="o">=</span> <span class="mf">3.141592653589793</span>
@@ -83,172 +395,201 @@
     <span class="n">SQRT1_2</span> <span class="o">=</span> <span class="mf">0.7071067811865476</span>
     <span class="n">SQRT2</span> <span class="o">=</span> <span class="mf">1.4142135623730951</span>
 
-    <span class="c1"># TODO - pass what types of validation? &lt; may move to decorators</span>
-    <span class="c1"># i.e force numbers</span>
-    <span class="c1"># i.e positive/negative numbers allowed</span>
-    <span class="c1"># convert bool/string to number?</span>
-    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_force_number</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[private decorator to make Math behave like javascript and turn strings, bools and None into numbers]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">validation_decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                        <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">continue</span>
+
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">float</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value passed was NaN&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">n</span><span class="p">:</span>
+                            <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="c1"># raise ValueError(&quot;&quot;)</span>
+                        <span class="c1"># js returns None instead</span>
+                        <span class="k">pass</span>
+
+            <span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
         <span class="k">return</span> <span class="n">validation_decorator</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the absolute value of x &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">acos</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the arccosine of x, in radians &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arccosine of x &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">asin</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the arcsine of x, in radians &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">asinh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arcsine of x &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">asinh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">atan</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the arctangent of x as a numeric value between -PI/2 and PI/2 radians &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">atan2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the arctangent of the quotient of its arguments &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">atanh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arctangent of x &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">atanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">cbrt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the cubic root of x &quot;&quot;&quot;</span>
         <span class="c1"># return math.cbrt(x)</span>
         <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">))</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">ceil</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns x, rounded upwards to the nearest integer &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">cos</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the cosine of x (x is in radians) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the hyperbolic cosine of x &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value of Ex &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">floor</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns x, rounded downwards to the nearest integer &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the natural logarithm (base E) of x &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the number with the highest value &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the number with the lowest value &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">random</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot; Returns a random number between 0 and 1 &quot;&quot;&quot;</span>
         <span class="c1"># return math.random(x)</span>
         <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Rounds x to the nearest integer &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value of x to the power of y &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">sin</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the sine of x (x is in radians) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the hyperbolic sine of x &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the square root of x &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">tan</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the tangent of an angle &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the hyperbolic tangent of a number &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="nd">@validate</span>
+    <span class="nd">@_force_number</span>
     <span class="k">def</span> <span class="nf">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the integer part of a number (x) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
@@ -337,12 +678,12 @@
         <span class="k">return</span> <span class="s2">&quot;NaN&quot;</span></div>
 
 <div class="viewcode-block" id="Global.parseFloat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.parseFloat">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">parseFloat</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">parseFloat</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parses a string and returns a floating point number &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Global.parseInt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.parseInt">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">parseInt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">parseInt</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Parses a string and returns an integer &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
@@ -361,7 +702,7 @@
         <span class="c1"># pass</span>
 
 
-<div class="viewcode-block" id="Date"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date">[docs]</a><span class="k">class</span> <span class="nc">Date</span><span class="p">(</span><span class="n">js_object</span><span class="p">):</span>
+<div class="viewcode-block" id="Date"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date">[docs]</a><span class="k">class</span> <span class="nc">Date</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; javascript date &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">formatter</span><span class="o">=</span><span class="s1">&#39;python&#39;</span><span class="p">):</span>
@@ -1276,9 +1617,6 @@
 <div class="viewcode-block" id="String.fromCharCode"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.fromCharCode">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">fromCharCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">codes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; returns a string created from the specified sequence of UTF-16 code units &quot;&quot;&quot;</span>
-        <span class="c1"># return &#39;&#39;.join([chr(code) for code in codes])</span>
-        <span class="c1"># chr = &quot;&quot;.join([str(chr(x)) for x in codes])</span>
-        <span class="c1"># result = &quot;&quot;.join([str(codepoints.index(x) + 1) for x in range(len(codepoints))])</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">])</span></div>
 
     <span class="nd">@property</span>
@@ -1562,7 +1900,7 @@
 <span class="sd">            paramString ([type]): [ i.e. q=URLUtils.searchParams&amp;topic=api]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO - escape</span>
-        <span class="c1"># import ast</span>
+        <span class="c1"># import ast </span>
         <span class="c1"># TODO - dont think i can do this cant urls params have duplicate keys?</span>
         <span class="c1"># self.params = ast.literal_eval(paramString)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">paramString</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -1715,7 +2053,6 @@
 <span class="sd"># multiline Checks whether the &quot;m&quot; modifier is set  RegExp</span>
 <span class="sd"># namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection</span>
 <span class="sd"># removeNamedItem() Removes a specified attribute node  Attribute</span>
-<span class="sd"># search    Sets or returns the querystring part of a URL   Location</span>
 <span class="sd"># setNamedItem()    Sets the specified attribute node (by name) Attribute</span>
 <span class="sd"># source    Returns the text of the RegExp pattern  RegExp</span>
 <span class="sd"># specified Returns true if the attribute has been specified, otherwise it returns false    Attribute</span>

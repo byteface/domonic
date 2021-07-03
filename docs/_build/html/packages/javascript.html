@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: Javascript &#8212; domonic 0.3.13 documentation</title>
+    <title>Domonic: Javascript &#8212; domonic 0.3.14 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -613,6 +613,71 @@ even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 <dl class="py class">
 <dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">FormData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">form</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[utils for a form]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>object</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [takes a string or pyml object and returns a FormData]</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.append"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Appends a new value onto an existing key inside a FormData object, or adds the key if it does not already exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.delete"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Deletes a key/value pair from a FormData object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.entries"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an iterator allowing to go through all key/value pairs contained in this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.get"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the first value associated with a given key from within a FormData object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">getAll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.getAll"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an array of all the values associated with a given key from within a FormData</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.has"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a boolean stating whether a FormData object contains a certain key.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.keys"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an iterator allowing to go through all keys of the key/value pairs contained in this object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.set"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets a new value for an existing key inside a FormData object, or adds the key/value if it does not already exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.values"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an iterator allowing to go through all values  contained in this object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Global</code><a class="reference internal" href="../_modules/domonic/javascript.html#Global"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>javascript global methods</p>
 <dl class="py method">
@@ -671,13 +736,13 @@ even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">parseFloat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.parseFloat"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">parseFloat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.parseFloat"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Parses a string and returns a floating point number</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">parseInt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.parseInt"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">parseInt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.parseInt"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Parses a string and returns an integer</p>
 </dd></dl>
 
@@ -706,8 +771,65 @@ from the args and kwargs arguments, respectively.</p>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Math</code><a class="reference internal" href="../_modules/domonic/javascript.html#Math"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Math class that mirrors javascript implementation</p>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Map holds key-value pairs and remembers the original insertion order of the keys.</p>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.clear"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes all key-value pairs from the Map object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.delete"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns true if an element in the Map object existed and has been removed,
+or false if the element does not exist. Map.prototype.has(key) will return false afterwards.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.entries"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.get"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the value associated to the key, or undefined if there is none.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.has"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a boolean asserting whether a value has been associated to the key in the Map object or not.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.keys"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a new Iterator object that contains the keys for each element in the Map object in insertion order.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.set"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets the value for the key in the Map object. Returns the Map object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.values"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a new Iterator object that contains the values for each element in the Map object in insertion order.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Math</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Math"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Math class that mirrors javascript implementation.</p>
+<p>i.e. you can pass strings and it will also work
+Math.abs(‘-1’)</p>
 </dd></dl>
 
 <dl class="py class">
@@ -748,6 +870,105 @@ from the args and kwargs arguments, respectively.</p>
 <dt>
 <code class="sig-name descname">toPrecision</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toPrecision"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Formats a number to x length</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">defineProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">prop</span></em>, <em class="sig-param"><span class="n">descriptor</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.defineProperty"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Adds the named property described by a given descriptor to an object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">entries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.entries"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an array containing all of the [key, value] pairs of a given object’s own enumerable string properties.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">fromEntries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">entries</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.fromEntries"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>transforms a list of lists containing key and value into an object.</p>
+<dl class="simple">
+<dt>&#64;param entries: a list containing key and value tuples. The key and value</dt><dd><p>are separated by ‘:’</p>
+</dd>
+</dl>
+<p>&#64;type entries: list of tuple(string, string)
+&#64;returns: a { dict } object.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fromEntries</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span>
+<span class="go">{&#39;a&#39;: 1, &#39;b&#39;: 2, &#39;c&#39;: 3}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">getOwnPropertyDescriptor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">prop</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.getOwnPropertyDescriptor"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a property descriptor for a named property on an object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">getOwnPropertyDescriptors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.getOwnPropertyDescriptors"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an object containing all own property descriptors for an object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">getOwnPropertyNames</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.getOwnPropertyNames"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an array containing the names of all of the given object’s own enumerable and non-enumerable properties.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">hasOwnProperty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.hasOwnProperty"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a boolean indicating whether an object contains the specified property as a direct property of that object and not inherited through the prototype chain.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">isPrototypeOf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.isPrototypeOf"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a boolean indicating whether the object this method is called upon is in the prototype chain of the specified object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">keys</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.keys"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an array containing the names of all of the given object’s own enumerable string properties.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">propertyIsEnumerable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.propertyIsEnumerable"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a boolean indicating if the internal ECMAScript [[Enumerable]] attribute is set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">toLocaleString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.toLocaleString"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Calls toString().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.toString"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a string representation of the object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">valueOf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.valueOf"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the primitive value of the specified object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">classmethod </em><code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.values"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an array containing the values that correspond to all of a given object’s own enumerable string properties.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1026,11 +1247,26 @@ and through the specified number of character</p>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">js_object</code><a class="reference internal" href="../_modules/domonic/javascript.html#js_object"><span class="viewcode-link">[source]</span></a></dt>
-<dd><dl class="py method">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Worker</code><a class="reference internal" href="../_modules/domonic/javascript.html#Worker"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[A background task that can be created via script, which can send messages back to its creator.
+Creating a worker is done by calling the Worker(“path/to/worker/script”) constructor.]</p>
+<p>TODO - JSWorker - Node comms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>object</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [takes a path to a python script]</p>
+</dd>
+</dl>
+<dl class="py method">
 <dt>
-<code class="sig-name descname">valueOf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#js_object.valueOf"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns the primitive value of an array Array, Boolean, Date, Number, String</p>
+<code class="sig-name descname">postMessage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Worker.postMessage"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sends a message — consisting of any object — to the worker’s inner scope.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">terminate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Worker.terminate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Immediately terminates the worker. This does not let worker finish its operations; it is halted at once.
+ServiceWorker instances do not support this method.</p>
 </dd></dl>
 
 </dd></dl>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.events &#8212; domonic 0.3.13 documentation</title>
+    <title>domonic.events &#8212; domonic 0.3.14 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -514,9 +514,9 @@
 
 
 <div class="viewcode-block" id="PageTransitionEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.PageTransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">PageTransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; PageTransitionEvent &quot;&quot;&quot;</span>
     <span class="n">PAGEHIDE</span> <span class="o">=</span> <span class="s2">&quot;pagehide&quot;</span>  <span class="c1">#:</span>
     <span class="n">PAGESHOW</span> <span class="o">=</span> <span class="s2">&quot;pageshow&quot;</span>  <span class="c1">#:</span>
-    <span class="sd">&quot;&quot;&quot; PageTransitionEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">persisted</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns whether the webpage was cached by the browser &quot;&quot;&quot;</span>
@@ -548,8 +548,8 @@
 
 
 <div class="viewcode-block" id="TransitionEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.TransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">TransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
-    <span class="n">TRANSITIONEND</span> <span class="o">=</span> <span class="s2">&quot;transitionend&quot;</span>  <span class="c1">#:</span>
     <span class="sd">&quot;&quot;&quot; TransitionEvent &quot;&quot;&quot;</span>
+    <span class="n">TRANSITIONEND</span> <span class="o">=</span> <span class="s2">&quot;transitionend&quot;</span>  <span class="c1">#:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">propertyName</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the name of the transition&quot;&quot;&quot;</span>

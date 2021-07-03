@@ -15,6 +15,8 @@ from domonic.javascript import Math
 
 
 class vec2():
+    """[vec2]
+    """
 
     def __init__(self, x=0, y=0):
         self.x = x
@@ -189,6 +191,8 @@ class vec2():
 
 
 class vec3():
+    """[vec3]
+    """
 
     def __init__(self, x=0, y=0, z=0, w=0):
         self.x = x
@@ -319,6 +323,8 @@ class vec3():
 
 
 class vec4():
+    """[vec2]
+    """
 
     def __init__(self, x=0, y=0, z=0, w=0, n=1):
         self.x = x
@@ -355,6 +361,8 @@ class vec4():
 
 
 class matrix(object):
+    """[matrixs]
+    """
 
     def __init__(self, m):
         self.m = m
@@ -367,6 +375,7 @@ class matrix(object):
 # class Quaternion():
 
 class vertex(object):
+    
     def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
@@ -381,6 +390,7 @@ Point = vertex
 
 
 class Shape(Point):
+
     def __init__(self, x=0, y=0, color='red'):
         super().__init__(x, y)
         self.color = color
@@ -500,6 +510,7 @@ class Polyline(Shape):
 
 
 class Circle(Shape):
+
     def __init__(self, x, y, radius=1.0, color=None):
         super().__init__(color)
         self.radius = radius  # Create an instance variable radius
