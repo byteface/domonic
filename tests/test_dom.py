@@ -346,7 +346,7 @@ class domonicTestCase(unittest.TestCase):
         # anchors
 
     def test_dom_querySelector(self):
-        dom1 = html(div(div(div(div(div(div(div( div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
+        dom1 = html(div(div(div(div(div(div(div(div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
 
         result = dom1.querySelector('#thing')
         # print('--')
@@ -502,10 +502,10 @@ class domonicTestCase(unittest.TestCase):
                             div(_class="row").html(
                                 div(_class="col-lg-12 text-center").html(
                                     p(
-                                        "Email : ", 
+                                        "Email : ",
                                         a("user@website.com", _href="mailto:user@website.com"),
                                         br(),
-                                        "or Call us on : ", 
+                                        "or Call us on : ",
                                         a("123456789", _href="tel:123456789")
                                     ),
                                     ul(_class="mb-0 list-inline text-center").html(

@@ -118,7 +118,7 @@ class Object(object):
 
     # @staticmethod
     # def _is(value1, value2):
-    #     """ Compares if two values are the same value. 
+    #     """ Compares if two values are the same value.
     #     Equates all NaN values (which differs from both Abstract Equality Comparison and Strict Equality Comparison)."""
     #     pass
 
@@ -227,45 +227,93 @@ class Object(object):
 
 
 class Map(object):
-    """ Map holds key-value pairs and remembers the original insertion order of the keys. """
+    """ Map holds key-value pairs and remembers the original insertion order of the keys.
+    """
 
     def __init__(self, collection):
-        self.collection = collection
+        # TODO - parse the passed collectionn
+
+        # if isinstance( collection, list ):
+            # create a dict
+        # if isinstance( collection, dict ):
+            # create a dict
+
+        self._data = {}
+        self._order = []
+
+    def __contains__(self, key):
+        return key in self._dict
+
+    def __getitem__(self, key):
+        return self._dict[key]
+
+    def __setitem__(self, key, value):
+        if key not in self._dict:
+            self._order.append(key)
+            self._dict[key] = value
+
+    def __delitem__(self, key):
+        self._order.remove(key)
+        del self._dict[key]
 
     def clear(self):
         """ Removes all key-value pairs from the Map object. """
-        raise NotImplementedError
+        self._data = {}
+        self._order = []
 
     def delete(self, key):
         """ Returns true if an element in the Map object existed and has been removed, 
         or false if the element does not exist. Map.prototype.has(key) will return false afterwards. """
+        try:
+            self._order.remove(key)
+            del self._dict[key]
+            return True
+        except Exception:
+            return False
 
-    def get(self, key):
+    def get(self, key, default=None):
         """ Returns the value associated to the key, or undefined if there is none. """
-        raise NotImplementedError
+        return self._dict.get(key, default)
 
     def has(self, key):
         """ Returns a boolean asserting whether a value has been associated to the key in the Map object or not."""
-        raise NotImplementedError
+        return key in self._dict
 
     def set(self, key, value):
         """ Sets the value for the key in the Map object. Returns the Map object. """
-        raise NotImplementedError
+        if key not in self._dict:
+            self._order.append(key)
+            self._dict[key] = value
+        return self
+
+    def iterkeys(self):
+        return iter(self._order)
+
+    def iteritems(self):
+        for key in self._order:
+            yield key, self._dict[key]
 
     def keys(self):
         """ Returns a new Iterator object that contains the keys for each element in the Map object in insertion order. """
-        raise NotImplementedError
+        return list(self.iterkeys())
 
     def values(self):
         """ Returns a new Iterator object that contains the values for each element in the Map object in insertion order. """
-        raise NotImplementedError
+        return list(self.iteritems())
 
     def entries(self):
         """ Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order. """
-        # return [[k, v] for k, v in self.collection.items()]
+        return [(x, self._dict[x]) for x in self._order]
 
     # def forEach(self, callbackFn[, thisArg]):
     #     raise NotImplementedError
+
+    def update(self, ordered_dict):
+        for key, value in ordered_dict.iteritems():
+            self[key] = value
+
+    def __str__(self):
+        return str([(x, self._dict[x]) for x in self._order])
 
 
 class FormData(object):
@@ -325,9 +373,7 @@ class FormData(object):
 class Worker(object):
     """[A background task that can be created via script, which can send messages back to its creator. 
     Creating a worker is done by calling the Worker("path/to/worker/script") constructor.]
-
-    TODO - JSWorker - Node comms.
-
+    TODO - JSWorker - Node
     Args:
         object ([str]): [takes a path to a python script]
     """
@@ -340,7 +386,6 @@ class Worker(object):
         """ Immediately terminates the worker. This does not let worker finish its operations; it is halted at once.
         ServiceWorker instances do not support this method. """
         raise NotImplementedError
-
 
 
 class Math(Object):
@@ -1299,6 +1344,13 @@ class Array(object):
     """ javascript array """
 
     def __init__(self, *args):
+        """[An Array that behaves like a js array]
+        """
+        # casting
+        if len(args) == 1:
+            if isinstance(args[0], list):
+                self.args = args[0]
+                return
         self.args = list(args)
 
     def __getitem__(self, index):
@@ -1307,10 +1359,24 @@ class Array(object):
     def __setitem__(self, index, value):
         self.args[index] = value
 
+    def __add__(self, value):
+        if isinstance(value, int):
+            raise ValueError('int not supported')
+        if isinstance(value, Array):
+            self.args = self.args + value.args
+        if isinstance(value, list):
+            self.args = self.args + value
+        return self.args
+
     def __len__(self):
         return len(self.args)
 
-        # TODO - all the dunder methods
+    def __eq__(self, other):
+        return isinstance(other, Array) and \
+            self.args == other.args
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __str___(self):
         return self.args
@@ -1404,24 +1470,38 @@ class Array(object):
         # return self.args
 
     def unshift(self, *args):
-        """ Adds new elements to the beginning of an array, and returns the new length """
+        """[Adds new elements to the beginning of an array, and returns the new length]
+
+        Returns:
+            [int]: [the length of the array]
+        """
         for i in reversed(args):
             self.args.insert(0, i)
         return len(self.args)
 
     def shift(self):
-        """ removes the first element from an array and returns that removed element """
+        """[removes the first element from an array and returns that removed element]
+
+        Returns:
+            [type]: [the removed array element]
+        """
         item = self.args[0]
         del self.args[0]
         return item
 
     def map(self, func):
-        #  written by .ai (https://6b.eleuther.ai/)
-        """ Creates a new array with the result of calling a function for each array element """
-        return [func(value) for value in self.args]
+        """[Creates a new array with the result of calling a function for each array element]
 
-    def some(self):
-        #  written by .ai (https://6b.eleuther.ai/)
+        Args:
+            func ([type]): [a function to call on each array element]
+
+        Returns:
+            [list]: [a new array]
+        """
+        # return [func(value) for value in self.args]
+        return map(self.args, func)
+
+    def some(self, func):
         """ Checks if any of the elements in an array pass a test """
         return any(func(value) for value in self.args)
 
@@ -1429,29 +1509,37 @@ class Array(object):
         """ Sorts the elements of an array """
         raise NotImplementedError
 
-    def reduce(self):
+    def reduce(self, func, value=None):
         """ Reduce the values of an array to a single value (going left-to-right) """
-        raise NotImplementedError
+        try:
+            return func(self.args[0], *self.args)
+        except IndexError:
+            return -1
 
-    def reduceRight(self):
+    def reduceRight(self, func, value=None):
         """ Reduce the values of an array to a single value (going right-to-left) """
         #  written by .ai (https://6b.eleuther.ai/)
-        #  Takes an array and reduces it based on a function in reverse order 
-        for value, index in zip(self.args, reversed(range(len(self.args)) - 1)):
-            yield func(value, index)
-        yield self.args[0]
+        #  Takes an array and reduces it based on a function in reverse order
+        try:
+            if value is None:
+                return func(value, *self.args)
+            else:
+                return func(self.args[0], value, *self.args[1:])
+        except IndexError:
+            return -1
 
     def filter(self, func):
         """
         Creates a new array with every element in an array that pass a test
-        even_numbers = someArr.filter( lambda x: x % 2 == 0 )
+        i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )
         """
         # written by .ai (https://6b.eleuther.ai/)
-        filtered = []
-        for value in self.args:
-            if func(value):
-                filtered.append(value)
-        return filtered
+        # filtered = []
+        # for value in self.args:
+        #     if func(value):
+        #         filtered.append(value)
+        # return filtered
+        return list(filter(func, self.args))
 
     def find(self):
         """ Returns the value of the first element in an array that pass a test """
@@ -1477,20 +1565,49 @@ class Array(object):
 
     def keys(self):
         """ Returns a Array Iteration Object, containing the keys of the original array """
-        raise NotImplementedError
+        for i in self.args:
+            yield i
 
-    def copyWithin(self):
-        """ Copies array elements within the array, to and from specified positions """
-        raise NotImplementedError
+    def copyWithin(self, target, start=0, end=None):
+        """ Copies array elements within the array, from start to end """
+        if end is None:
+            end = len(target)
+        for i in range(start, end):
+            self.args[i] = target[i]
 
     def entries(self):
-        """ Returns a key/value pair Array Iteration Object """
-        raise NotImplementedError
+        """[Returns a key/value pair Array Iteration Object]
 
-    def every(self, test):
-        """ Checks if every element in an array pass a test """
-        # written by .ai (https://6b.eleuther.ai/)
+        Yields:
+            [type]: [key/value pair]
+        """
+        for i in self.args:
+            yield [i, self.args[i]]
+
+    def every(self, func):
+        """[Checks if every element in an array pass a test]
+
+        Args:
+            func ([type]): [test function]
+
+        Returns:
+            [bool]: [if every array elemnt passed the test]
+        """
         return all(func(value) for value in self.args)
+
+    def at(self, index: int):
+        """[takes an integer value and returns the item at that index, 
+        allowing for positive and negative integers.
+        Negative integers count back from the last item in the array.]
+
+        Args:
+            index ([type]): [position of item]
+
+        Returns:
+            [type]: [item at the given position]
+        """
+        return self.args[index]
+
 
 
 class Navigator(object):
@@ -1576,7 +1693,7 @@ class String(object):
         return self.x
 
     @staticmethod
-    def charCodeAt(self, index):
+    def charCodeAt(self, index: int):
         """ Returns the Unicode of the character at the specified index """
         return ord(self.x[index])
 
@@ -1589,11 +1706,11 @@ class String(object):
     def length(self):
         return len(self.x)
 
-    def repeat(self, count):
+    def repeat(self, count: int):
         """ Returns a new string with a specified number of copies of an existing string """
         return self.x * count
 
-    def startsWith(self, x, start=None, end=None):
+    def startsWith(self, x: str, start: int = None, end: int = None):
         """ Checks whether a string begins with specified characters """
         if start is None:
             start = 0
@@ -1602,13 +1719,13 @@ class String(object):
         # print(self.x.startswith(x, start, end))
         return self.x.startswith(x, start, end)
 
-    def substring(self, start, end=None):
+    def substring(self, start: int, end: int = None):
         """ Extracts the characters from a string, between two specified indices """
         if end is None:
             end = len(self.x)
         return self.x[start:end]
 
-    def endsWith(self, x, start=None, end=None):
+    def endsWith(self, x: str, start: int = None, end: int = None):
         """ Checks whether a string ends with specified string/characters """
         if start is None:
             start = 0
@@ -1624,7 +1741,7 @@ class String(object):
         """ Converts a string to uppercase letters """
         return self.x.upper()
 
-    def slice(self, start=0, end=None):
+    def slice(self, start: int = 0, end: int = None):
         """ Selects a part of an string, and returns the new string """
         if end is None:
             end = len(self.x) - 1
@@ -1634,7 +1751,7 @@ class String(object):
         """ Removes whitespace from both ends of a string """
         return self.x.strip()
 
-    def charAt(self, index):
+    def charAt(self, index: int):
         """ Returns the character at the specified index (position) """
         return self.x[index]
 
@@ -1642,13 +1759,26 @@ class String(object):
         # r = (re.search(r"regexp", "someString") != None)
         # return r
 
-    def replace(self, old, new):
+    def replace(self, old: str, new: str):
         """
         Searches a string for a specified value, or a regular expression,
-        and returns a new string where the specified values are replaced
+        and returns a new string where the specified values are replaced.
+        only replaces first one.
+        """
+        return self.x.replace(old, new, 1)
+        # re.sub(r"regepx", "old", "new") # TODO - js one also takes a regex
+
+    def replaceAll(self, old: str, new: str):
+        """[returns a new string where the specified values are replaced. ES2021]
+
+        Args:
+            old ([str]): [word to remove]
+            new ([str]): [word to replace it with]
+
+        Returns:
+            [str]: [new string with all occurences of old word replaced]
         """
         return self.x.replace(old, new)
-        # re.sub(r"regepx", "old", "new") # TODO - js one also takes a regex
 
     # def localeCompare():
     # """ Compares two strings in the current locale """
@@ -1659,7 +1789,7 @@ class String(object):
     # if re.search(r"\d", "iphone 8"):
     # print("Has a number")
 
-    def substr(self, start=0, end=None):
+    def substr(self, start: int = 0, end: int = None):
         """ Extracts the characters from a string, beginning at a specified start position,
         and through the specified number of character """
         if end is None:
@@ -1706,7 +1836,6 @@ class URL(object):
             new['hash'] = ''  # self.url.hash
             new['search'] = ''  # self.url.hash
 
-
             # update it with all the new ones
             new = {}
             new['protocol'] = self.protocol
@@ -1748,16 +1877,13 @@ class URL(object):
         self.pathname = self.url.path
         self.hash = ''
 
-
         # print("HERE", self.url.query)
         self.search = self.url.query
         self._searchParams = URLSearchParams(self.url.query)
 
-
     @property
     def searchParams(self):
         return self._searchParams.toString()
-
 
     def toString(self):
         return str(self.href)
@@ -1866,7 +1992,7 @@ class URLSearchParams:
             paramString ([type]): [ i.e. q=URLUtils.searchParams&topic=api]
         """
         # TODO - escape
-        # import ast 
+        # import ast
         # TODO - dont think i can do this cant urls params have duplicate keys?
         # self.params = ast.literal_eval(paramString)
         if isinstance(paramString, str):

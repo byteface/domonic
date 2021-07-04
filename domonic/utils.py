@@ -111,10 +111,10 @@ class Utils(object):
         """[get a list of vowels from the word]
 
         Args:
-            string ([type]): [the word to check]
+            string ([str]): [the word to check]
 
         Returns:
-            [type]: [a list of vowels]
+            [list]: [a list of vowels]
         """
         return [each for each in string if each in 'aeiou']
 
@@ -139,7 +139,7 @@ class Utils(object):
             b ([type]): [dict b]
 
         Returns:
-            [type]: [a new dict]
+            [dict]: [a new dict]
         """
         return {**a, **b}
 
@@ -152,7 +152,7 @@ class Utils(object):
             values ([type]): [a list of value]
 
         Returns:
-            [type]: [a dictionary]
+            [dict]: [a dictionary]
         """
         return dict(zip(keys, values))
 
@@ -165,6 +165,22 @@ class Utils(object):
         return Counter(first) == Counter(second)
 
     @staticmethod
+    def acronym(sentence: str):
+        """[pass a sentence, returns the acronym]
+
+        Args:
+            sentence ([str]): [typically 3 words]
+
+        Returns:
+            [str]: [a TLA (three letter acronym)]
+        """
+        text = sentence.split()
+        a = ""
+        for i in text:
+            a = a + str(i[0]).upper()
+        return a
+
+    @staticmethod
     def frequency(data):
         """[check the frequency of elements in the data]
 
@@ -172,7 +188,7 @@ class Utils(object):
             data ([type]): [the data to check]
 
         Returns:
-            [type]: [a list of elements and their frequency]
+            [dict]: [a dict of elements and their frequency]
         """
         freq = {}
         for elem in data:
@@ -203,10 +219,10 @@ class Utils(object):
         """[gen a safe filename from a url. by replacing '/' for '_' and ':' for '__' ]
 
         Args:
-            url ([type]): [the url to turn into a filename]
+            url ([str]): [the url to turn into a filename]
 
         Returns:
-            [type]: [description]
+            [str]: [description]
         """
         import urllib
         url = "_".join(url.split("/"))
@@ -219,10 +235,10 @@ class Utils(object):
         """[provides all the possible permutations of a given word]
 
         Args:
-            word ([type]): [the word to get permutations for]
+            word ([str]): [the word to get permutations for]
 
         Returns:
-            [type]: [description]
+            [str]: [description]
         """
         from itertools import permutations
         return [''.join(perm) for perm in list(permutations(word))]
@@ -238,10 +254,10 @@ class Utils(object):
         """[escape a string]
 
         Args:
-            s ([type]): [the string to escape]
+            s ([str]): [the string to escape]
 
         Returns:
-            [type]: [description]
+            [str]: [description]
         """
         chars = {
             "&": "&amp;",
@@ -257,10 +273,10 @@ class Utils(object):
         """[unescape a string]
 
         Args:
-            s ([type]): [the string to unescape]
+            s ([str]): [the string to unescape]
 
         Returns:
-            [type]: [description]
+            [str]: [description]
         """
         s = s.replace("&lt;", "<")
         s = s.replace("&gt;", ">")
@@ -270,7 +286,7 @@ class Utils(object):
         return s
 
     @staticmethod
-    def replace_between(content: str, match: str, replacement: str, start: int=0, end: int=0):
+    def replace_between(content: str, match: str, replacement: str, start: int = 0, end: int = 0):
         """[replace some text but only between certain indexes]
 
         Args:
@@ -281,7 +297,7 @@ class Utils(object):
             end (int, optional): [end index]. Defaults to 0.
 
         Returns:
-            [type]: [description]
+            [str]: [description]
         """
         front = content[0:start]
         mid = content[start:end]
@@ -298,12 +314,22 @@ class Utils(object):
             length (int, optional): [the max length]. Defaults to 0.
 
         Returns:
-            [type]: [description]
+            [str]: [description]
         """
         if len(text) > length:
             return text[0:length] + "..."
         else:
             return text + "..."
+
+    @staticmethod
+    def has_internet(url='http://www.google.com/', timeout=5):
+        import requests
+        try:
+            _ = requests.head(url, timeout=timeout)
+            return True
+        except requests.ConnectionError:
+            print("No internet connection available.")
+        return False
 
     # def any_iter(arr):
     #     ''' given a list. returns random until expired '''

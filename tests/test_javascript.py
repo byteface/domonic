@@ -674,6 +674,18 @@ class domonicTestCase(unittest.TestCase):
         #     print('Message posted to worker')
         pass
 
+    def test_javascript_at(self):
+        print("test_javascript_at")
+        myarr = Array(['a', 'b', 'c', 'd'])
+        assert myarr.at(-1) == 'd'
+        myarr = ['a', 'b', 'c', 'd']
+        myarr = Array(myarr)
+        assert myarr.at(-1) == 'd'
+        myarr = Array('a', 'b', 'c', 'd')
+        assert myarr.at(-1) == 'd'
+
+
+
 
 _intID = None
 _results = []
