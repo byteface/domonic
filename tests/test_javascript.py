@@ -685,8 +685,6 @@ class domonicTestCase(unittest.TestCase):
         assert myarr.at(-1) == 'd'
 
 
-
-
 _intID = None
 _results = []
 

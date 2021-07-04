@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: CDN &#8212; domonic 0.3.14 documentation</title>
+    <title>Domonic: CDN &#8212; domonic 0.3.15 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -166,6 +166,23 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd><p>utils</p>
 <dl class="py method">
 <dt>
+<em class="property">static </em><code class="sig-name descname">acronym</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sentence</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.acronym"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[pass a sentence, returns the acronym]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sentence</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [typically 3 words]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a TLA (three letter acronym)]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <em class="property">static </em><code class="sig-name descname">case_camel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_camel"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>case_camel(‘camel-case’) &gt; ‘camelCase’</p>
 </dd></dl>
@@ -234,13 +251,13 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd><p>[escape a string]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>s</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [the string to escape]</p>
+<dd class="field-odd"><p><strong>s</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [the string to escape]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[description]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -254,10 +271,10 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd class="field-odd"><p><strong>data</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [the data to check]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[a list of elements and their frequency]</p>
+<dd class="field-even"><p>[a dict of elements and their frequency]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -268,13 +285,13 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd><p>[get a list of vowels from the word]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>string</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [the word to check]</p>
+<dd class="field-odd"><p><strong>string</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [the word to check]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[a list of vowels]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -305,7 +322,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd class="field-even"><p>[a new dict]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -316,13 +333,13 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd><p>[provides all the possible permutations of a given word]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>word</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [the word to get permutations for]</p>
+<dd class="field-odd"><p><strong>word</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [the word to get permutations for]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[description]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -351,7 +368,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd class="field-even"><p>[description]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -388,7 +405,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd class="field-even"><p>[a dictionary]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -408,7 +425,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd class="field-even"><p>[description]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -419,13 +436,13 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd><p>[unescape a string]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>s</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [the string to unescape]</p>
+<dd class="field-odd"><p><strong>s</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [the string to unescape]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[description]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -470,13 +487,13 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dd><p>[gen a safe filename from a url. by replacing ‘/’ for ‘_’ and ‘:’ for ‘__’ ]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>url</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [the url to turn into a filename]</p>
+<dd class="field-odd"><p><strong>url</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [the url to turn into a filename]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[description]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -490,6 +507,12 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dt>
 <code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#check"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>logs entry and exit of a function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">el</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element</span><span class="o">=</span><span class="default_value">'div'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#el"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[wraps the results of a function in an element]</p>
 </dd></dl>
 
 <dl class="py function">

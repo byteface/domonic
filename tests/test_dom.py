@@ -616,5 +616,42 @@ class domonicTestCase(unittest.TestCase):
         print('>>>>>>>>>')  # works
 
 
+    def test_dom_decorators(self):
+        from domonic.decorators import el
+
+        @el(html)
+        @el(body)
+        @el(div)
+        def test():
+            return 'hi!'
+        print(test())
+        assert str(test()) == '<html><body><div>hi!</div></body></html>'
+        print('decorators work!')
+
+        @el(html, True)
+        @el(body, True)
+        @el(div, True)
+        def test():
+            return 'hi!'
+        assert test() == '<html><body><div>hi!</div></body></html>'
+        print('decorators work2!')
+
+        @el('html')
+        @el('body')
+        @el('div')
+        def test():
+            return 'hi!'
+        print(test())
+        assert str(test()) == '<html><body><div>hi!</div></body></html>'
+        print('decorators work3!')
+
+        @el(html, True)
+        @el(body)
+        @el('div')
+        def test():
+            return 'hi!'
+        print(test())
+        print('decorators work4!')
+
 if __name__ == '__main__':
     unittest.main()

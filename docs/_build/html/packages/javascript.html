@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: Javascript &#8212; domonic 0.3.14 documentation</title>
+    <title>Domonic: Javascript &#8212; domonic 0.3.15 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -154,26 +154,61 @@
 <dd><p>javascript array</p>
 <dl class="py method">
 <dt>
+<code class="sig-name descname">at</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.at"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[takes an integer value and returns the item at that index,
+allowing for positive and negative integers.
+Negative integers count back from the last item in the array.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [position of item]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[item at the given position]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname">concat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.concat"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Joins two or more arrays, and returns a copy of the joined arrays</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">copyWithin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.copyWithin"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Copies array elements within the array, to and from specified positions</p>
+<code class="sig-name descname">copyWithin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.copyWithin"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Copies array elements within the array, from start to end</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
 <code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.entries"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns a key/value pair Array Iteration Object</p>
+<dd><p>[Returns a key/value pair Array Iteration Object]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Yields</dt>
+<dd class="field-odd"><p><em>[type]</em> – [key/value pair]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">every</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">test</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.every"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Checks if every element in an array pass a test</p>
+<code class="sig-name descname">every</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.every"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[Checks if every element in an array pass a test]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [test function]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[if every array elemnt passed the test]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -186,7 +221,7 @@
 <dt>
 <code class="sig-name descname">filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.filter"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Creates a new array with every element in an array that pass a test
-even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
+i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 </dd></dl>
 
 <dl class="py method">
@@ -252,7 +287,18 @@ even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname">map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.map"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Creates a new array with the result of calling a function for each array element</p>
+<dd><p>[Creates a new array with the result of calling a function for each array element]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>func</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [a function to call on each array element]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a new array]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -269,13 +315,13 @@ even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">reduce</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.reduce"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">reduce</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.reduce"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Reduce the values of an array to a single value (going left-to-right)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">reduceRight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.reduceRight"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">reduceRight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">value</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.reduceRight"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Reduce the values of an array to a single value (going right-to-left)</p>
 </dd></dl>
 
@@ -288,7 +334,15 @@ even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname">shift</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.shift"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>removes the first element from an array and returns that removed element</p>
+<dd><p>[removes the first element from an array and returns that removed element]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the removed array element]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -299,7 +353,7 @@ even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">some</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.some"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">some</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.some"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Checks if any of the elements in an array pass a test</p>
 </dd></dl>
 
@@ -324,7 +378,15 @@ even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname">unshift</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.unshift"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Adds new elements to the beginning of an array, and returns the new length</p>
+<dd><p>[Adds new elements to the beginning of an array, and returns the new length]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the length of the array]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -794,7 +856,7 @@ or false if the element does not exist. Map.prototype.has(key) will return false
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.get"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">default</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.get"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns the value associated to the key, or undefined if there is none.</p>
 </dd></dl>
 
@@ -1026,19 +1088,19 @@ Math.abs(‘-1’)</p>
 <dd><p>javascript String methods</p>
 <dl class="py method">
 <dt>
-<code class="sig-name descname">charAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charAt"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">charAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charAt"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns the character at the specified index (position)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<em class="property">static </em><code class="sig-name descname">charCodeAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charCodeAt"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">static </em><code class="sig-name descname">charCodeAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charCodeAt"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns the Unicode of the character at the specified index</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">endsWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.endsWith"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">endsWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.endsWith"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Checks whether a string ends with specified string/characters</p>
 </dd></dl>
 
@@ -1050,39 +1112,60 @@ Math.abs(‘-1’)</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">repeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">count</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.repeat"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">repeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">count</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.repeat"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns a new string with a specified number of copies of an existing string</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">old</span></em>, <em class="sig-param"><span class="n">new</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.replace"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">replace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">old</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">new</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.replace"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Searches a string for a specified value, or a regular expression,
-and returns a new string where the specified values are replaced</p>
+and returns a new string where the specified values are replaced.
+only replaces first one.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.slice"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">replaceAll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">old</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">new</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.replaceAll"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[returns a new string where the specified values are replaced. ES2021]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>old</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [word to remove]</p></li>
+<li><p><strong>new</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [word to replace it with]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[new string with all occurences of old word replaced]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.slice"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Selects a part of an string, and returns the new string</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">startsWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.startsWith"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">startsWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.startsWith"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Checks whether a string begins with specified characters</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">substr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.substr"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">substr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.substr"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Extracts the characters from a string, beginning at a specified start position,
 and through the specified number of character</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">substring</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.substring"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">substring</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.substring"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Extracts the characters from a string, between two specified indices</p>
 </dd></dl>
 
@@ -1249,13 +1332,10 @@ and through the specified number of character</p>
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Worker</code><a class="reference internal" href="../_modules/domonic/javascript.html#Worker"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>[A background task that can be created via script, which can send messages back to its creator.
-Creating a worker is done by calling the Worker(“path/to/worker/script”) constructor.]</p>
-<p>TODO - JSWorker - Node comms.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>object</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [takes a path to a python script]</p>
-</dd>
-</dl>
+Creating a worker is done by calling the Worker(“path/to/worker/script”) constructor.]
+TODO - JSWorker - Node
+:param object: [takes a path to a python script]
+:type object: [str]</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname">postMessage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Worker.postMessage"><span class="viewcode-link">[source]</span></a></dt>

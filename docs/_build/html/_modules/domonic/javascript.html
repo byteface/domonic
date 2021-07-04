@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.3.14 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.3.15 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -152,7 +152,7 @@
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># def _is(value1, value2):</span>
-    <span class="c1">#     &quot;&quot;&quot; Compares if two values are the same value. </span>
+    <span class="c1">#     &quot;&quot;&quot; Compares if two values are the same value.</span>
     <span class="c1">#     Equates all NaN values (which differs from both Abstract Equality Comparison and Strict Equality Comparison).&quot;&quot;&quot;</span>
     <span class="c1">#     pass</span>
 
@@ -261,45 +261,93 @@
 
 
 <div class="viewcode-block" id="Map"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map">[docs]</a><span class="k">class</span> <span class="nc">Map</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Map holds key-value pairs and remembers the original insertion order of the keys. &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; Map holds key-value pairs and remembers the original insertion order of the keys.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="c1"># TODO - parse the passed collectionn</span>
+
+        <span class="c1"># if isinstance( collection, list ):</span>
+            <span class="c1"># create a dict</span>
+        <span class="c1"># if isinstance( collection, dict ):</span>
+            <span class="c1"># create a dict</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Map.clear"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Removes all key-value pairs from the Map object. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="Map.delete"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns true if an element in the Map object existed and has been removed, </span>
-<span class="sd">        or false if the element does not exist. Map.prototype.has(key) will return false afterwards. &quot;&quot;&quot;</span></div>
+<span class="sd">        or false if the element does not exist. Map.prototype.has(key) will return false afterwards. &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Map.get"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="Map.get"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value associated to the key, or undefined if there is none. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Map.has"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a boolean asserting whether a value has been associated to the key in the Map object or not.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span></div>
 
 <div class="viewcode-block" id="Map.set"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the value for the key in the Map object. Returns the Map object. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">iterkeys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Map.keys"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains the keys for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Map.values"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains the values for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iteritems</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Map.entries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.entries">[docs]</a>    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order. &quot;&quot;&quot;</span></div></div>
-        <span class="c1"># return [[k, v] for k, v in self.collection.items()]</span>
+        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">]</span></div>
 
     <span class="c1"># def forEach(self, callbackFn[, thisArg]):</span>
     <span class="c1">#     raise NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ordered_dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ordered_dict</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="FormData"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData">[docs]</a><span class="k">class</span> <span class="nc">FormData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -359,9 +407,7 @@
 <div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;[A background task that can be created via script, which can send messages back to its creator. </span>
 <span class="sd">    Creating a worker is done by calling the Worker(&quot;path/to/worker/script&quot;) constructor.]</span>
-
-<span class="sd">    TODO - JSWorker - Node comms.</span>
-
+<span class="sd">    TODO - JSWorker - Node</span>
 <span class="sd">    Args:</span>
 <span class="sd">        object ([str]): [takes a path to a python script]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -374,7 +420,6 @@
         <span class="sd">&quot;&quot;&quot; Immediately terminates the worker. This does not let worker finish its operations; it is halted at once.</span>
 <span class="sd">        ServiceWorker instances do not support this method. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
-
 
 
 <div class="viewcode-block" id="Math"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Math">[docs]</a><span class="k">class</span> <span class="nc">Math</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
@@ -1333,6 +1378,13 @@
     <span class="sd">&quot;&quot;&quot; javascript array &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[An Array that behaves like a js array]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># casting</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
@@ -1341,10 +1393,24 @@
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;int not supported&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">+</span> <span class="n">value</span><span class="o">.</span><span class="n">args</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">+</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
+
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
 
-        <span class="c1"># TODO - all the dunder methods</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Array</span><span class="p">)</span> <span class="ow">and</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">args</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__str___</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
@@ -1438,24 +1504,38 @@
         <span class="c1"># return self.args</span>
 
 <div class="viewcode-block" id="Array.unshift"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.unshift">[docs]</a>    <span class="k">def</span> <span class="nf">unshift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Adds new elements to the beginning of an array, and returns the new length &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;[Adds new elements to the beginning of an array, and returns the new length]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [int]: [the length of the array]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Array.shift"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; removes the first element from an array and returns that removed element &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;[removes the first element from an array and returns that removed element]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [the removed array element]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">item</span></div>
 
 <div class="viewcode-block" id="Array.map"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
-        <span class="c1">#  written by .ai (https://6b.eleuther.ai/)</span>
-        <span class="sd">&quot;&quot;&quot; Creates a new array with the result of calling a function for each array element &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">]</span></div>
+        <span class="sd">&quot;&quot;&quot;[Creates a new array with the result of calling a function for each array element]</span>
 
-<div class="viewcode-block" id="Array.some"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.some">[docs]</a>    <span class="k">def</span> <span class="nf">some</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#  written by .ai (https://6b.eleuther.ai/)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            func ([type]): [a function to call on each array element]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [list]: [a new array]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># return [func(value) for value in self.args]</span>
+        <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Array.some"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.some">[docs]</a>    <span class="k">def</span> <span class="nf">some</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks if any of the elements in an array pass a test &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
@@ -1463,29 +1543,37 @@
         <span class="sd">&quot;&quot;&quot; Sorts the elements of an array &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Array.reduce"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reduce">[docs]</a>    <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.reduce"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reduce">[docs]</a>    <span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going left-to-right) &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
-<div class="viewcode-block" id="Array.reduceRight"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reduceRight">[docs]</a>    <span class="k">def</span> <span class="nf">reduceRight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Array.reduceRight"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.reduceRight">[docs]</a>    <span class="k">def</span> <span class="nf">reduceRight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reduce the values of an array to a single value (going right-to-left) &quot;&quot;&quot;</span>
         <span class="c1">#  written by .ai (https://6b.eleuther.ai/)</span>
-        <span class="c1">#  Takes an array and reduces it based on a function in reverse order </span>
-        <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)):</span>
-            <span class="k">yield</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
-        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+        <span class="c1">#  Takes an array and reduces it based on a function in reverse order</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
 <div class="viewcode-block" id="Array.filter"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a new array with every element in an array that pass a test</span>
-<span class="sd">        even_numbers = someArr.filter( lambda x: x % 2 == 0 )</span>
+<span class="sd">        i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># written by .ai (https://6b.eleuther.ai/)</span>
-        <span class="n">filtered</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-                <span class="n">filtered</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">filtered</span></div>
+        <span class="c1"># filtered = []</span>
+        <span class="c1"># for value in self.args:</span>
+        <span class="c1">#     if func(value):</span>
+        <span class="c1">#         filtered.append(value)</span>
+        <span class="c1"># return filtered</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Array.find"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.find">[docs]</a>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value of the first element in an array that pass a test &quot;&quot;&quot;</span>
@@ -1511,20 +1599,49 @@
 
 <div class="viewcode-block" id="Array.keys"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a Array Iteration Object, containing the keys of the original array &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">i</span></div>
 
-<div class="viewcode-block" id="Array.copyWithin"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.copyWithin">[docs]</a>    <span class="k">def</span> <span class="nf">copyWithin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Copies array elements within the array, to and from specified positions &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<div class="viewcode-block" id="Array.copyWithin"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.copyWithin">[docs]</a>    <span class="k">def</span> <span class="nf">copyWithin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Copies array elements within the array, from start to end &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Array.entries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.entries">[docs]</a>    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a key/value pair Array Iteration Object &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="sd">&quot;&quot;&quot;[Returns a key/value pair Array Iteration Object]</span>
 
-<div class="viewcode-block" id="Array.every"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.every">[docs]</a>    <span class="k">def</span> <span class="nf">every</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Checks if every element in an array pass a test &quot;&quot;&quot;</span>
-        <span class="c1"># written by .ai (https://6b.eleuther.ai/)</span>
-        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div></div>
+<span class="sd">        Yields:</span>
+<span class="sd">            [type]: [key/value pair]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="Array.every"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.every">[docs]</a>    <span class="k">def</span> <span class="nf">every</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[Checks if every element in an array pass a test]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            func ([type]): [test function]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [bool]: [if every array elemnt passed the test]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Array.at"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.at">[docs]</a>    <span class="k">def</span> <span class="nf">at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[takes an integer value and returns the item at that index, </span>
+<span class="sd">        allowing for positive and negative integers.</span>
+<span class="sd">        Negative integers count back from the last item in the array.]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            index ([type]): [position of item]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [item at the given position]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div></div>
+
 
 
 <div class="viewcode-block" id="Navigator"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Navigator">[docs]</a><span class="k">class</span> <span class="nc">Navigator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -1610,7 +1727,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
 
 <div class="viewcode-block" id="String.charCodeAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charCodeAt">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">charCodeAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">charCodeAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the Unicode of the character at the specified index &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">])</span></div>
 
@@ -1623,11 +1740,11 @@
     <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
 
-<div class="viewcode-block" id="String.repeat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+<div class="viewcode-block" id="String.repeat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a new string with a specified number of copies of an existing string &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">count</span></div>
 
-<div class="viewcode-block" id="String.startsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.startsWith">[docs]</a>    <span class="k">def</span> <span class="nf">startsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="String.startsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.startsWith">[docs]</a>    <span class="k">def</span> <span class="nf">startsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks whether a string begins with specified characters &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1636,13 +1753,13 @@
         <span class="c1"># print(self.x.startswith(x, start, end))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="String.substring"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.substring">[docs]</a>    <span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="String.substring"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.substring">[docs]</a>    <span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extracts the characters from a string, between two specified indices &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="String.endsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.endsWith">[docs]</a>    <span class="k">def</span> <span class="nf">endsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="String.endsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.endsWith">[docs]</a>    <span class="k">def</span> <span class="nf">endsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks whether a string ends with specified string/characters &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1658,7 +1775,7 @@
         <span class="sd">&quot;&quot;&quot; Converts a string to uppercase letters &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.slice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="String.slice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Selects a part of an string, and returns the new string &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
@@ -1668,7 +1785,7 @@
         <span class="sd">&quot;&quot;&quot; Removes whitespace from both ends of a string &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.charAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charAt">[docs]</a>    <span class="k">def</span> <span class="nf">charAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="String.charAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charAt">[docs]</a>    <span class="k">def</span> <span class="nf">charAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the character at the specified index (position) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
@@ -1676,13 +1793,26 @@
         <span class="c1"># r = (re.search(r&quot;regexp&quot;, &quot;someString&quot;) != None)</span>
         <span class="c1"># return r</span>
 
-<div class="viewcode-block" id="String.replace"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+<div class="viewcode-block" id="String.replace"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Searches a string for a specified value, or a regular expression,</span>
-<span class="sd">        and returns a new string where the specified values are replaced</span>
+<span class="sd">        and returns a new string where the specified values are replaced.</span>
+<span class="sd">        only replaces first one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+        <span class="c1"># re.sub(r&quot;regepx&quot;, &quot;old&quot;, &quot;new&quot;) # TODO - js one also takes a regex</span>
+
+<div class="viewcode-block" id="String.replaceAll"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.replaceAll">[docs]</a>    <span class="k">def</span> <span class="nf">replaceAll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[returns a new string where the specified values are replaced. ES2021]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            old ([str]): [word to remove]</span>
+<span class="sd">            new ([str]): [word to replace it with]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [new string with all occurences of old word replaced]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span></div>
-        <span class="c1"># re.sub(r&quot;regepx&quot;, &quot;old&quot;, &quot;new&quot;) # TODO - js one also takes a regex</span>
 
     <span class="c1"># def localeCompare():</span>
     <span class="c1"># &quot;&quot;&quot; Compares two strings in the current locale &quot;&quot;&quot;</span>
@@ -1693,7 +1823,7 @@
     <span class="c1"># if re.search(r&quot;\d&quot;, &quot;iphone 8&quot;):</span>
     <span class="c1"># print(&quot;Has a number&quot;)</span>
 
-<div class="viewcode-block" id="String.substr"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.substr">[docs]</a>    <span class="k">def</span> <span class="nf">substr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="String.substr"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.substr">[docs]</a>    <span class="k">def</span> <span class="nf">substr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extracts the characters from a string, beginning at a specified start position,</span>
 <span class="sd">        and through the specified number of character &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1740,7 +1870,6 @@
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># self.url.hash</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;search&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># self.url.hash</span>
 
-
             <span class="c1"># update it with all the new ones</span>
             <span class="n">new</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span>
@@ -1782,16 +1911,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pathname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hash</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
-
         <span class="c1"># print(&quot;HERE&quot;, self.url.query)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">search</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">query</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_searchParams</span> <span class="o">=</span> <span class="n">URLSearchParams</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
 
-
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">searchParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_searchParams</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
-
 
     <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="p">)</span>
@@ -1900,7 +2026,7 @@
 <span class="sd">            paramString ([type]): [ i.e. q=URLUtils.searchParams&amp;topic=api]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO - escape</span>
-        <span class="c1"># import ast </span>
+        <span class="c1"># import ast</span>
         <span class="c1"># TODO - dont think i can do this cant urls params have duplicate keys?</span>
         <span class="c1"># self.params = ast.literal_eval(paramString)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">paramString</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
