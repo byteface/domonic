@@ -1830,6 +1830,7 @@ class URL(object):
             new = {}
             new['protocol'] = self.url.scheme
             new['hostname'] = self.url.hostname
+            new['href'] = self.url.geturl()
             new['port'] = self.url.port
             new['host'] = ''  # self.url.hostname
             new['pathname'] = self.url.path
@@ -1840,20 +1841,19 @@ class URL(object):
             new = {}
             new['protocol'] = self.protocol
             new['hostname'] = self.hostname
+            new['href'] = self.href
             new['port'] = self.port
             new['host'] = self.host
             new['pathname'] = self.pathname
             new['hash'] = self.hash  # self.hash
-
-            # rebuild
+            new['search'] = self.search  # self.url.query
+            new['_searchParams'] = self._searchParams  # URLSearchParams(self.url.query)
+            # NOTE - rebuild happening here
             self.url = urllib.parse.urlsplit(
-                new['protocol'] + "://" + new['host'] + new['pathname'] + new['hash'])
+                new['protocol'] + "://" + new['host'] + new['pathname'] + new['hash'] + new['search'])
 
-            new['search'] = self.url.query
-            new['_searchParams'] = URLSearchParams(self.url.query)
-
-            # reset
             self.href = self.url.geturl()
+
         except Exception:  # as e:
             # print('fails on props called by init as they dont exist yet')
             # print(e)
@@ -1868,16 +1868,13 @@ class URL(object):
             url (str): a url
         """
         self.url = urllib.parse.urlsplit(url)
-        self.href = self.url.geturl()
-
+        self.href = url  # self.url.geturl()
         self.protocol = self.url.scheme
         self.hostname = self.url.hostname
         self.port = self.url.port
         self.host = self.url.hostname
         self.pathname = self.url.path
         self.hash = ''
-
-        # print("HERE", self.url.query)
         self.search = self.url.query
         self._searchParams = URLSearchParams(self.url.query)
 
@@ -1886,12 +1883,14 @@ class URL(object):
         return self._searchParams.toString()
 
     def toString(self):
+        print('toString CALLED::')
         return str(self.href)
 
     # def toJson
 
     # @property
     # def href(self):
+    # TODO - check js vs tag. does js version remove query?. if so detect self.
     #     return self.href
 
     # @href.setter
@@ -1976,6 +1975,13 @@ class URL(object):
     # @property
     # def origin(self):
         '''# origin    Returns the protocol, hostname and port number of a URL Location'''
+
+    def __str__(self):
+        print("called!!!")
+        return str(self.href)
+
+
+
 
 
 class URLSearchParams:

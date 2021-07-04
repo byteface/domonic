@@ -821,5 +821,25 @@ class domonicTestCase(unittest.TestCase):
         # print('host:',atag.host)
 
 
+    def test_domonic_render_a_tag_query_params(self):
+        # from domonic import a, render
+        urls = [
+        'example.com/stuff?things=morestuff',
+        'https://example.com/stuff?things=morestuff',
+        'https://example.com/stuff',
+        'https://www.example.com/stuff?thing',
+        'https://www.example.com/?stuff'
+        ]
+        for url in urls:
+            print( 'zz',url)
+            print( 'zz2',render(a(_href=url)) )
+            assert f'''{render(a(_href=url))}''' == f'''<a href="{url}"></a>'''
+
+        # a tag no href TODO
+        # print( render(a(_name="test")) )
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
