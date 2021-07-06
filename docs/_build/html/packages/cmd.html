@@ -15,6 +15,8 @@
     <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Domonic: templates and components" href="components.html" />
+    <link rel="prev" title="Domonic: terminal" href="terminal.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -49,7 +51,7 @@
 <div class="section" id="run-arbitrary-commands">
 <h2>run arbitrary commands…<a class="headerlink" href="#run-arbitrary-commands" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.cmd</span> <span class="kn">import</span> <span class="n">Cmdcommand</span>
-<span class="n">command</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;echo hi&quot;</span><span class="p">)</span>
+<span class="n">Cmdcommand</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;echo hi&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Take a look at the code in ‘cmd.py’ to see all the commands. (Disclaimer: not tested.)</p>
@@ -111,12 +113,6 @@
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.cmd.</code><code class="sig-name descname">chkdsk</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span></dt>
 <dd><p>check volumes</p>
-</dd></dl>
-
-<dl class="py class">
-<dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.cmd.</code><code class="sig-name descname">cmd</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span></dt>
-<dd><p>start command prompt</p>
 </dd></dl>
 
 <dl class="py class">
@@ -586,20 +582,25 @@ wsmanhttpconfig Manages functions of the Windows Remote Management (winrm).</p>
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: cmd</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#run-arbitrary-commands">run arbitrary commands…</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="geom.html">Domonic: geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
 </ul>
 
@@ -607,6 +608,8 @@ wsmanhttpconfig Manages functions of the Windows Remote Management (winrm).</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="terminal.html" title="previous chapter">Domonic: terminal</a></li>
+      <li>Next: <a href="components.html" title="next chapter">Domonic: templates and components</a></li>
   </ul></li>
 </ul>
 </div>

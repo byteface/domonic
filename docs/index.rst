@@ -116,6 +116,7 @@ Here you can find instructions for getting the most out of Domonic.
    packages/geom
    packages/x3d
    packages/CDN
+   packages/servers
    packages/autodocs
 
 

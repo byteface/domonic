@@ -24,7 +24,7 @@ run arbitrary commands...
 .. code-block :: python
 
 	from domonic.cmd import Cmdcommand
-	command.run("echo hi")
+	Cmdcommand.run("echo hi")
 
 
 Take a look at the code in 'cmd.py' to see all the commands. (Disclaimer: not tested.)

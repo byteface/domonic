@@ -42,6 +42,15 @@
 
 <span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">window</span>
 
+<span class="c1"># create a mapping of equivelent commands to call on terminal if user OS is not windows</span>
+<span class="n">equivelents_map</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;dir&quot;</span><span class="p">:</span><span class="s2">&quot;ls&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;move&quot;</span><span class="p">:</span><span class="s2">&quot;mv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;copy&quot;</span><span class="p">:</span><span class="s2">&quot;cp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;erase&quot;</span><span class="p">:</span><span class="s2">&quot;rm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;comp&quot;</span><span class="p">:</span><span class="s2">&quot;diff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type_&quot;</span><span class="p">:</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> 
+<span class="p">}</span>
 
 <div class="viewcode-block" id="CmdException"><a class="viewcode-back" href="../../packages/cmd.html#domonic.cmd.CmdException">[docs]</a><span class="k">class</span> <span class="nc">CmdException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; raised if cmd throws an exception &quot;&quot;&quot;</span>
@@ -78,6 +87,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">first_run</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">first_run</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># TODO - call terminal equiv command if not on windows</span>
+        <span class="c1"># from sys import platform</span>
+        <span class="c1"># if platform == &quot;linux&quot; or platform == &quot;linux2&quot;:</span>
+        <span class="c1">#     print(&quot;This is linux&quot;)</span>
+        <span class="c1"># elif platform == &quot;darwin&quot;:</span>
+        <span class="c1">#    print(&quot;This is mac&quot;)</span>
+        <span class="c1"># elif platform == &quot;win32&quot;:</span>
+        <span class="c1">#    print(&quot;This is windows&quot;)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">run_command</span><span class="p">()</span>
 
@@ -224,7 +242,7 @@
 <span class="n">mrinfo</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;mrinfo&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;mrinfo&#39;</span><span class="p">})</span>  <span class="c1">#: Provides information on the router</span>
 <span class="n">tasklist</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;tasklist&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;tasklist&#39;</span><span class="p">})</span>  <span class="c1">#: Lists all running processes</span>
 
-<span class="n">cmd</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;cmd&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;cmd&#39;</span><span class="p">})</span>  <span class="c1">#: start command prompt</span>
+<span class="c1"># cmd = type(&#39;cmd&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;cmd&#39;})  #: start command prompt - NOTE hangs</span>
 <span class="n">title</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;title&#39;</span><span class="p">})</span>  <span class="c1">#: Changes the title of the command prompt</span>
 <span class="n">tzutil</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;tzutil&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;tzutil&#39;</span><span class="p">})</span>  <span class="c1">#: Displays the currently set time zone (/g) or changes it (/s)</span>
 
@@ -537,6 +555,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 
