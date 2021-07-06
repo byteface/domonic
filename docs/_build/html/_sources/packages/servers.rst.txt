@@ -194,7 +194,7 @@ now create a file called app.py
             html(
             head(),
             body(
-                div(span(f"Hello World!"))
+                div(span("Hello World!"))
                 )
             ))
         )
@@ -241,7 +241,7 @@ now create a file called app.py
             html(
             head(),
             body(
-                div(span(f"Hello World!"))
+                div(span("Hello World!"))
                 )
             ))
 
@@ -287,7 +287,7 @@ now create a file called app.py
         html(
         head(),
         body(
-            div(span(f"Hello World!"))
+            div(span("Hello World!"))
             )
         ))
 
@@ -326,7 +326,7 @@ now create a file called app.py
                         html(
                         head(),
                         body(
-                            div(span(f"Hello World!"))
+                            div(span("Hello World!"))
                             )
                         )), mimetype='text/html')
 
@@ -371,7 +371,7 @@ now create a file called app.py
                     html(
                     head(),
                     body(
-                        div(span(f"Hello World!"))
+                        div(span("Hello World!"))
                         )
                     ))
             )
@@ -418,7 +418,7 @@ now create a file called app.py
                 html(
                 head(),
                 body(
-                    div(span(f"Hello World!"))
+                    div(span("Hello World!"))
                     )
                 )))
 
