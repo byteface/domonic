@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.3.15 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.3.17 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -1864,6 +1864,7 @@
             <span class="n">new</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">scheme</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hostname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">hostname</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">port</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># self.url.hostname</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span>
@@ -1874,20 +1875,19 @@
             <span class="n">new</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hostname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">href</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathname</span>
             <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash</span>  <span class="c1"># self.hash</span>
-
-            <span class="c1"># rebuild</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;search&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span>  <span class="c1"># self.url.query</span>
+            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;_searchParams&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_searchParams</span>  <span class="c1"># URLSearchParams(self.url.query)</span>
+            <span class="c1"># NOTE - rebuild happening here</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span>
-                <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;://&quot;</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">])</span>
+                <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;://&quot;</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;search&#39;</span><span class="p">])</span>
 
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;search&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">query</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;_searchParams&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">URLSearchParams</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
-
-            <span class="c1"># reset</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
+
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># as e:</span>
             <span class="c1"># print(&#39;fails on props called by init as they dont exist yet&#39;)</span>
             <span class="c1"># print(e)</span>
@@ -1902,16 +1902,13 @@
 <span class="sd">            url (str): a url</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">href</span> <span class="o">=</span> <span class="n">url</span>  <span class="c1"># self.url.geturl()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">scheme</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">hostname</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">port</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">hostname</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pathname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hash</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-
-        <span class="c1"># print(&quot;HERE&quot;, self.url.query)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">search</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">query</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_searchParams</span> <span class="o">=</span> <span class="n">URLSearchParams</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
 
@@ -1920,12 +1917,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_searchParams</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;toString CALLED::&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="p">)</span>
 
     <span class="c1"># def toJson</span>
 
     <span class="c1"># @property</span>
     <span class="c1"># def href(self):</span>
+    <span class="c1"># TODO - check js vs tag. does js version remove query?. if so detect self.</span>
     <span class="c1">#     return self.href</span>
 
     <span class="c1"># @href.setter</span>
@@ -2009,7 +2008,14 @@
 
     <span class="c1"># @property</span>
     <span class="c1"># def origin(self):</span>
-        <span class="sd">&#39;&#39;&#39;# origin    Returns the protocol, hostname and port number of a URL Location&#39;&#39;&#39;</span></div>
+        <span class="sd">&#39;&#39;&#39;# origin    Returns the protocol, hostname and port number of a URL Location&#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;called!!!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="p">)</span></div>
+
+
+
 
 
 <div class="viewcode-block" id="URLSearchParams"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams">[docs]</a><span class="k">class</span> <span class="nc">URLSearchParams</span><span class="p">:</span>
@@ -2215,14 +2221,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">Domonic: cmd</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

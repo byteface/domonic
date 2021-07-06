@@ -107,14 +107,15 @@ Here you can find instructions for getting the most out of Domonic.
    packages/javascript
    packages/JSON
    packages/terminal
-   packages/CDN
+   packages/cmd
    packages/components
    packages/tween
-   packages/x3d
    packages/dQuery
    packages/constants
    packages/events
    packages/geom
+   packages/x3d
+   packages/CDN
    packages/autodocs
 
 

@@ -33,7 +33,7 @@ Domonic: Generate HTML with Python 3
 - html : Generate html with python 3 😎
 - dom : DOM API in python 3 😲
 - javascript : js API in python 3 😳
-- terminal : call terminal commands with python3 😱 (*see at the end*
+- terminal || cmd : call terminal commands with python3 😱 (*see at the end*)
 - JSON : utils for loading / decorating / transformin
 - SVG : Generate svg using python (untested
 - aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder
@@ -107,14 +107,15 @@ Here you can find instructions for getting the most out of Domonic.
    packages/javascript
    packages/JSON
    packages/terminal
-   packages/CDN
+   packages/cmd
    packages/components
    packages/tween
-   packages/x3d
    packages/dQuery
    packages/constants
    packages/events
    packages/geom
+   packages/x3d
+   packages/CDN
    packages/autodocs
 
 
