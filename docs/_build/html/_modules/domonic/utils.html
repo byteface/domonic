@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.utils &#8212; domonic 0.3.17 documentation</title>
+    <title>domonic.utils &#8212; domonic 0.3.18 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -197,6 +197,10 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">anagram</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">second</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Counter</span><span class="p">(</span><span class="n">first</span><span class="p">)</span> <span class="o">==</span> <span class="n">Counter</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_palindrome</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">word</span> <span class="o">==</span> <span class="n">word</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Utils.acronym"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.acronym">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">acronym</span><span class="p">(</span><span class="n">sentence</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>

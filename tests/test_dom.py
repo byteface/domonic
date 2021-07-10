@@ -653,5 +653,60 @@ class domonicTestCase(unittest.TestCase):
         print(test())
         print('decorators work4!')
 
+
+    def test_domonic_window_console_log(self):
+        # note originally dom had everything from document
+        # this will likely move later versions
+
+        # window = Window()
+        # Window().console.log("test this")
+        # window.console.log("test this")
+
+        # c = Console()
+        # c.log()
+        # Console.log('test')
+        # someObject = { 'str': "Some text", 'id': 5 }
+        # Console.log(someObject)
+
+        # [09:27:13.475] ({str:"Some text", id:5})
+
+        count = 5
+        Console.log('--count: %d', count)
+        assert Console.log('count: %d', count) == "count: 5"
+        Console.log('--count:', count)
+        assert Console.log('count:', count) == "count: 5"
+
+        console.time("answer time")
+        console.timeLog("answer time")
+        console.timeEnd("answer time")
+
+        errorMsg = 'the # is not even'
+        for number in range(2, 5):
+            console.log('the # is ' + str(number))
+            console.assert_(number % 2 == 0, {'number': number, 'errorMsg': errorMsg})
+
+        console.info('test2')
+        console.warn('test3')
+
+        pass
+
+    def test_domonic_matches(self):
+        content = ul(_id="birds").html(
+            li("Orange-winged parrot"),
+            li("Philippine eagle", _class="endangered"),
+            li("Great white pelican")
+        )
+        birds = content.getElementsByTagName('li')
+        # print(birds)
+        for bird in birds:
+            # print(bird)
+            if bird.matches('.endangered'):
+                print('The ' + bird.textContent + ' is endangered!')
+
+
+    # def test_domonic_closest(self):
+
+
+
 if __name__ == '__main__':
     unittest.main()

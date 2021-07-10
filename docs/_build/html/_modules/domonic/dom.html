@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.3.17 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.3.18 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -482,6 +482,358 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">def AriaMixin():  #???</span>
+
+<span class="sd">    @property</span>
+<span class="sd">    def ariaAtomic(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-atomic&#39;)</span>
+
+<span class="sd">    @ariaAtomic.setter</span>
+<span class="sd">    def ariaAtomic(self, value: str):</span>
+<span class="sd">        self.setAttribute(&#39;aria-atomic&#39;, value)</span>
+
+<span class="sd">    @property</span>
+<span class="sd">    def ariaAtomic(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-atomic&#39;)</span>
+
+<span class="sd">    @property</span>
+<span class="sd">    def ariaAutoComplete(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-autoComplete&#39;)</span>
+
+<span class="sd">    @ariaAutoComplete.setter</span>
+<span class="sd">    def ariaAutoComplete(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-autoComplete&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaBusy(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-busy&#39;)</span>
+
+<span class="sd">    @ariaBusy.setter</span>
+<span class="sd">    def ariaBusy(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-busy&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaChecked(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-checked&#39;)</span>
+
+<span class="sd">    @ariaChecked.setter</span>
+<span class="sd">    def ariaChecked(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-checked&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaColCount(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-colCount&#39;)</span>
+
+<span class="sd">    @ariaColCount.setter</span>
+<span class="sd">    def ariaColCount(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-colCount&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaColIndex(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-colIndex&#39;)</span>
+
+<span class="sd">    @ariaColIndex.setter</span>
+<span class="sd">    def ariaColIndex(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-colIndex&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaColIndexText(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-colIndexText&#39;)</span>
+
+<span class="sd">    @ariaColIndexText.setter</span>
+<span class="sd">    def ariaColIndexText(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-colIndexText&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaColSpan(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-colSpan&#39;)</span>
+
+<span class="sd">    @ariaColSpan.setter</span>
+<span class="sd">    def ariaColSpan(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-colSpan&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaCurrent(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-current&#39;)</span>
+
+<span class="sd">    @ariaCurrent.setter</span>
+<span class="sd">    def ariaCurrent(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-current&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaDescription(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-description&#39;)</span>
+
+<span class="sd">    @ariaDescription.setter</span>
+<span class="sd">    def ariaDescription(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-description&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaDisabled(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-disabled&#39;)</span>
+
+<span class="sd">    @ariaDisabled.setter</span>
+<span class="sd">    def ariaDisabled(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-disabled&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaExpanded(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-expanded&#39;)</span>
+
+<span class="sd">    @ariaExpanded.setter</span>
+<span class="sd">    def ariaExpanded(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-expanded&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaHasPopup(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-hasPopup&#39;)</span>
+
+<span class="sd">    @ariaHasPopup.setter</span>
+<span class="sd">    def ariaHasPopup(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-hasPopup&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaHidden(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-hidden&#39;)</span>
+
+<span class="sd">    @ariaHidden.setter</span>
+<span class="sd">    def ariaHidden(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-hidden&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaKeyShortcuts(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-keyShortcuts&#39;)</span>
+
+<span class="sd">    @ariaKeyShortcuts.setter</span>
+<span class="sd">    def ariaKeyShortcuts(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-keyShortcuts&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaLabel(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-label&#39;)</span>
+
+<span class="sd">    @ariaLabel.setter</span>
+<span class="sd">    def ariaLabel(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-label&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaLevel(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-level&#39;)</span>
+
+<span class="sd">    @ariaLevel.setter</span>
+<span class="sd">    def ariaLevel(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-level&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaLive(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-live&#39;)</span>
+
+<span class="sd">    @ariaLive.setter</span>
+<span class="sd">    def ariaLive(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-live&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaModal(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-modal&#39;)</span>
+
+<span class="sd">    @ariaModal.setter</span>
+<span class="sd">    def ariaModal(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-modal&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaMultiline(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-multiline&#39;)</span>
+
+<span class="sd">    @ariaMultiline.setter</span>
+<span class="sd">    def ariaMultiline(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-multiline&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaMultiSelectable(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-multiSelectable&#39;)</span>
+
+<span class="sd">    @ariaMultiSelectable.setter</span>
+<span class="sd">    def ariaMultiSelectable(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-multiSelectable&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaOrientation(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-orientation&#39;)</span>
+
+<span class="sd">    @ariaOrientation.setter</span>
+<span class="sd">    def ariaOrientation(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-orientation&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaPlaceholder(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-placeholder&#39;)</span>
+
+<span class="sd">    @ariaPlaceholder.setter</span>
+<span class="sd">    def ariaPlaceholder(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-placeholder&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaPosInSet(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-posInSet&#39;)</span>
+
+<span class="sd">    @ariaPosInSet.setter</span>
+<span class="sd">    def ariaPosInSet(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-posInSet&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaPressed(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-pressed&#39;)</span>
+
+<span class="sd">    @ariaPressed.setter</span>
+<span class="sd">    def ariaPressed(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-pressed&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaReadOnly(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-readOnly&#39;)</span>
+
+<span class="sd">    @ariaReadOnly.setter</span>
+<span class="sd">    def ariaReadOnly(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-readOnly&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaRelevant(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-relevant&#39;)</span>
+
+<span class="sd">    @ariaRelevant.setter</span>
+<span class="sd">    def ariaRelevant(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-relevant&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaRequired(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-required&#39;)</span>
+
+<span class="sd">    @ariaRequired.setter</span>
+<span class="sd">    def ariaRequired(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-required&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaRoleDescription(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-roleDescription&#39;)</span>
+
+<span class="sd">    @ariaRoleDescription.setter</span>
+<span class="sd">    def ariaRoleDescription(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-roleDescription&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaRowCount(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-rowCount&#39;)</span>
+
+<span class="sd">    @ariaRowCount.setter</span>
+<span class="sd">    def ariaRowCount(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-rowCount&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaRowIndex(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-rowIndex&#39;)</span>
+
+<span class="sd">    @ariaRowIndex.setter</span>
+<span class="sd">    def ariaRowIndex(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-rowIndex&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaRowIndexText(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-rowIndexText&#39;)</span>
+
+<span class="sd">    @ariaRowIndexText.setter</span>
+<span class="sd">    def ariaRowIndexText(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-rowIndexText&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaRowSpan(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-rowSpan&#39;)</span>
+
+<span class="sd">    @ariaRowSpan.setter</span>
+<span class="sd">    def ariaRowSpan(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-rowSpan&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaSelected(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-selected&#39;)</span>
+
+<span class="sd">    @ariaSelected.setter</span>
+<span class="sd">    def ariaSelected(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-selected&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaSetSize(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-setSize&#39;)</span>
+
+<span class="sd">    @ariaSetSize.setter</span>
+<span class="sd">    def ariaSetSize(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-setSize&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaSort(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-sort&#39;)</span>
+
+<span class="sd">    @ariaSort.setter</span>
+<span class="sd">    def ariaSort(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-sort&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaValueMax(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-valueMax&#39;)</span>
+
+<span class="sd">    @ariaValueMax.setter</span>
+<span class="sd">    def ariaValueMax(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-valueMax&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaValueMin(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-valueMin&#39;)</span>
+
+<span class="sd">    @ariaValueMin.setter</span>
+<span class="sd">    def ariaValueMin(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-valueMin&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaValueNow(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-valueNow&#39;)</span>
+
+<span class="sd">    @ariaValueNow.setter</span>
+<span class="sd">    def ariaValueNow(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-valueNow&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    @property</span>
+<span class="sd">    def ariaValueText(self):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-valueText&#39;)</span>
+
+<span class="sd">    @ariaValueText.setter</span>
+<span class="sd">    def ariaValueText(self, value: str):</span>
+<span class="sd">        return self.getAttribute(&#39;aria-valueText&#39;)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NodeList"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList">[docs]</a><span class="k">class</span> <span class="nc">NodeList</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+
+<div class="viewcode-block" id="NodeList.item"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an item in the list by its index, or null if the index is out-of-bounds.&quot;&quot;&quot;</span>
+        <span class="c1"># An alternative to accessing nodeList[i] (which instead returns  undefined when i is out-of-bounds). This is mostly useful for non-JavaScript DOM implementations.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NodeList.entries"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList.entries">[docs]</a>    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an iterator, allowing code to go through all key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0 and the values are nodes.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="NodeList.forEach"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList.forEach">[docs]</a>    <span class="k">def</span> <span class="nf">forEach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Executes a provided function once per NodeList element, passing the element as an argument to the function. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="NodeList.keys"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0.)&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="NodeList.values"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing code to go through all values (nodes) of the key/value pairs contained in the collection.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
 <div class="viewcode-block" id="Element"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element">[docs]</a><span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Baseclass for all html tags &quot;&quot;&quot;</span>
 
@@ -562,6 +914,37 @@
             <span class="k">pass</span>
 
         <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/Element/matches</span>
+    <span class="c1"># @classmethod</span>
+<div class="viewcode-block" id="Element.matches"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.matches">[docs]</a>    <span class="k">def</span> <span class="nf">matches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[checks to see if the Element would be selected by the provided selectorString]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            s (str): [css selector]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [bool]: [True if selector maches Element otherwise False]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(&quot;matches:&quot;, s)</span>
+        <span class="c1"># print(self.document) # TODO - buggin?</span>
+        <span class="c1"># print(self.ownerDocument)</span>
+        <span class="c1"># matches = (self.document or self.ownerDocument).querySelectorAll(s)</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownerDocument</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/Element/closest</span>
+    <span class="c1"># def closest(self, s: str):</span>
+    <span class="c1">#     el = self</span>
+    <span class="c1">#     while (el != None and el.nodeType == 1):  # TODO - nodeType</span>
+    <span class="c1">#         if (Element.matches(el, s)):</span>
+    <span class="c1">#             return el;</span>
+    <span class="c1">#         el = el.parentElement || el.parentNode</span>
+    <span class="c1">#     return None</span>
+
 
     <span class="c1"># @staticmethod</span>
 <div class="viewcode-block" id="Element.getElementsBySelector"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getElementsBySelector">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsBySelector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">all_selectors</span><span class="p">,</span> <span class="n">document</span><span class="p">):</span>
@@ -704,6 +1087,21 @@
             <span class="c1"># TODO - will need the parser to work for this to work properly. for now shove all on first content node</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">outerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="nd">@outerHTML</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">outerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Element</span><span class="p">):</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># self = value</span>
+            <span class="c1"># TODO - parse</span>
+            <span class="c1"># TODO - will need the parser to work for this to work properly</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
@@ -1487,18 +1885,28 @@
 <span class="k">class</span> <span class="nc">Console</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;log</span>
 
 <span class="sd">        prints a message to the console</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            msg (str): msg to log</span>
-<span class="sd">            substitute (str): replace %s with this</span>
+<span class="sd">            substitute : replaces %s or %d with this</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">argstring</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">substitute</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="n">substitute</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span> <span class="ow">and</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
+                <span class="n">argstring</span> <span class="o">=</span> <span class="n">argstring</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">substitute</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">substitute</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">substitute</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">substitute</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">substitute</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">))</span>
+
+        <span class="c1"># print(args)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span> <span class="o">+</span> <span class="n">argstring</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">argstring</span>
+
 
     <span class="n">__count_var</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -1518,24 +1926,86 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="n">error</span>
 
+    <span class="n">_timers</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[starts a timer]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            label (str): [The name to give the new timer.]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">time</span>
+        <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">timeLog</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[summary]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            label (str): [The name to of the timer to log]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># if label = None</span>
+            <span class="kn">import</span> <span class="nn">time</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;ms&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;ms&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Timer &#39;</span> <span class="o">+</span> <span class="n">label</span> <span class="o">+</span> <span class="s1">&#39; does not exist&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">timeEnd</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[stops a timer]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            label (str): [The name to of the timer to stop]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [label: time - timer ended]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">time</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">fin</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;ms - timer ended&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;ms - timer ended&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Timer &#39;</span> <span class="o">+</span> <span class="n">label</span> <span class="o">+</span> <span class="s1">&#39; does not exist&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">assert_</span><span class="p">(</span><span class="n">assertion</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[return an error message if the assertion is false. If the assertion is true, nothing happens.]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            assertion (bool): [any boolean expression]</span>
+<span class="sd">            msg (str): [output if expression if false]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">assertion</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">msg</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
         <span class="c1"># self.kwargs = kwargs</span>
         <span class="c1"># self.log = lambda msg : print(msg)</span>
-        <span class="c1"># assert()</span>
         <span class="c1"># clear()</span>
         <span class="c1"># group()</span>
         <span class="c1"># groupCollapsed()</span>
         <span class="c1"># groupEnd()</span>
         <span class="c1"># info()</span>
         <span class="c1"># def table(json_str, filter_array):</span>
-        <span class="c1"># time()</span>
-        <span class="c1"># timeEnd()</span>
         <span class="c1"># trace()</span>
         <span class="c1"># warn()</span>
         <span class="n">__count_var</span> <span class="o">=</span> <span class="mi">0</span>
 
 
+<span class="n">Console</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">log</span>
+<span class="n">Console</span><span class="o">.</span><span class="n">warn</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">log</span>
 <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span>
 
 

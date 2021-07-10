@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: autodocs &#8212; domonic 0.3.17 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.3.18 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -1140,6 +1140,23 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="domonic.dom.Element.matches">
+<code class="sig-name descname">matches</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.matches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.matches" title="Permalink to this definition">¶</a></dt>
+<dd><p>[checks to see if the Element would be selected by the provided selectorString]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – [css selector]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[True if selector maches Element otherwise False]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="domonic.dom.Element.namespaceURI">
 <code class="sig-name descname">namespaceURI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.namespaceURI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.namespaceURI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the namespace URI of an element</p>
@@ -1452,6 +1469,41 @@ or the current node if it’s the topmost node in the tree]</p>
 <dd class="field-even"><p>[<a class="reference internal" href="#domonic.dom.Node" title="domonic.dom.Node">Node</a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="domonic.dom.NodeList">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">NodeList</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span><span class="o">=</span><span class="default_value">()</span></em>, <em class="sig-param"><span class="o">/</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.NodeList" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="domonic.dom.NodeList.entries">
+<code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.NodeList.entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator, allowing code to go through all key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0 and the values are nodes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.NodeList.forEach">
+<code class="sig-name descname">forEach</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.forEach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.NodeList.forEach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes a provided function once per NodeList element, passing the element as an argument to the function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.NodeList.item">
+<code class="sig-name descname">item</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.item"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.NodeList.item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an item in the list by its index, or null if the index is out-of-bounds.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.NodeList.keys">
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.NodeList.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.NodeList.values">
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.NodeList.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator allowing code to go through all values (nodes) of the key/value pairs contained in the collection.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2574,7 +2626,7 @@ and through the specified number of character</p>
 <dl class="py class">
 <dt id="domonic.javascript.URL">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">URL</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">''</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URL" title="Permalink to this definition">¶</a></dt>
-<dd><p>a tag extends from URL</p>
+<dd><p>a-tag extends from URL</p>
 <dl class="py method">
 <dt id="domonic.javascript.URL.hash">
 <em class="property">property </em><code class="sig-name descname">hash</code><a class="headerlink" href="#domonic.javascript.URL.hash" title="Permalink to this definition">¶</a></dt>
@@ -4066,6 +4118,17 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="domonic.events.CompositionEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">CompositionEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#CompositionEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.CompositionEvent" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt id="domonic.events.CompositionEvent.data">
+<code class="sig-name descname">data</code><a class="headerlink" href="#domonic.events.CompositionEvent.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the characters generated by the input method that raised the event</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="domonic.events.CustomEvent">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">CustomEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#CustomEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.CustomEvent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -4708,8 +4771,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="domonic.events.UiEvent">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">UiEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#UiEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.UiEvent" title="Permalink to this definition">¶</a></dt>
+<dt id="domonic.events.UIEvent">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">UIEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#UIEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.UIEvent" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py class">

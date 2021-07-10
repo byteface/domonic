@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: DOM &#8212; domonic 0.3.17 documentation</title>
+    <title>Domonic: DOM &#8212; domonic 0.3.18 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -484,6 +484,23 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 
 <dl class="py method">
 <dt>
+<code class="sig-name descname">matches</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.matches"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[checks to see if the Element would be selected by the provided selectorString]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – [css selector]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[True if selector maches Element otherwise False]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname">namespaceURI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.namespaceURI"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Returns the namespace URI of an element</p>
 </dd></dl>
@@ -801,6 +818,41 @@ or the current node if it’s the topmost node in the tree]</p>
 
 <dl class="py class">
 <dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">NodeList</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span><span class="o">=</span><span class="default_value">()</span></em>, <em class="sig-param"><span class="o">/</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="py method">
+<dt>
+<code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.entries"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an iterator, allowing code to go through all key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0 and the values are nodes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">forEach</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.forEach"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Executes a provided function once per NodeList element, passing the element as an argument to the function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">item</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.item"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an item in the list by its index, or null if the index is out-of-bounds.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.keys"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.values"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an iterator allowing code to go through all values (nodes) of the key/value pairs contained in the collection.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">ParentNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ParentNode"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>not tested yet</p>
 </dd></dl>
@@ -930,6 +982,17 @@ or the current position of the caret.</p>
 <dt>
 <code class="sig-name descname">clipboardData</code></dt>
 <dd><p>Returns an object containing the data affected by the clipboard operation</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">CompositionEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#CompositionEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="py attribute">
+<dt>
+<code class="sig-name descname">data</code></dt>
+<dd><p>Returns the characters generated by the input method that raised the event</p>
 </dd></dl>
 
 </dd></dl>
@@ -1578,7 +1641,7 @@ or the current position of the caret.</p>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">UiEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#UiEvent"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">UIEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#UIEvent"><span class="viewcode-link">[source]</span></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">

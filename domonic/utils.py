@@ -165,6 +165,10 @@ class Utils(object):
         return Counter(first) == Counter(second)
 
     @staticmethod
+    def is_palindrome(word):
+        return word == word[::-1]
+
+    @staticmethod
     def acronym(sentence: str):
         """[pass a sentence, returns the acronym]
 

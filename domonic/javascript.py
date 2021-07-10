@@ -712,6 +712,18 @@ class Global(object):
         """ Deprecated in version 1.5. Use decodeURI() or decodeURIComponent() instead """
         # pass
 
+    @staticmethod
+    def require(path: str):
+        # if '.json' in path:
+            # TODO - loads json
+            # return
+
+        # '.'.join(path.split('/'))
+        # module = __import__(path)  # app.components.{component}
+        # my_class = getattr(module, component.title())
+        # return my_class()
+        pass
+
 
 class Date(Object):
     """ javascript date """
@@ -1821,7 +1833,7 @@ class String(object):
 # https://developer.mozilla.org/en-US/docs/Web/API/URL
 
 class URL(object):
-    """ a tag extends from URL """
+    """ a-tag extends from URL """
 
     def __update__(self):
         # print( "update URL:", type(self), self  )
@@ -1883,7 +1895,6 @@ class URL(object):
         return self._searchParams.toString()
 
     def toString(self):
-        print('toString CALLED::')
         return str(self.href)
 
     # def toJson
@@ -1977,11 +1988,65 @@ class URL(object):
         '''# origin    Returns the protocol, hostname and port number of a URL Location'''
 
     def __str__(self):
-        print("called!!!")
         return str(self.href)
 
+    # NOTE - node -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    # @staticmethod
+    # def domainToASCII(domain: str):
+    #     """[It returns the Punycode ASCII serialization of the domain. 
+    #     If domain is an invalid domain, the empty string is returned.]
 
+    #     Args:
+    #         domain (str): [description]
+    #     """
+    #     pass
 
+    # @staticmethod
+    # def domainToUnicode(domain: str):
+    #     """[returns the Unicode serialization of the domain. 
+    #     If the domain is invalid, the empty string is returned]
+
+    #     Args:
+    #         domain (str): [description]
+    #     """
+    #     pass
+
+    # @staticmethod
+    # def fileURLToPath(url: str):
+    #     """[summary]
+
+    #     Args:
+    #         url (str): [description]
+    #     """
+    #     pass
+
+    # @staticmethod
+    # def format(URL, options):
+    #     """[summary]
+
+    #     Args:
+    #         URL ([type]): [description]
+    #         options ([type]): [description]
+    #     """
+    #     pass
+
+    # @staticmethod
+    # def pathToFileURL(path: str):
+    #     """[summary]
+
+    #     Args:
+    #         path (str): [description]
+    #     """
+    #     pass
+
+    # @staticmethod
+    # def urlToHttpOptions(url: str):
+    #     """[summary]
+
+    #     Args:
+    #         url (str): [description]
+    #     """
+    #     pass
 
 
 class URLSearchParams:

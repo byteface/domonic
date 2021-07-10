@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.3.17 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.3.18 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -743,8 +743,20 @@
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># def unescape():</span>
-        <span class="sd">&quot;&quot;&quot; Deprecated in version 1.5. Use decodeURI() or decodeURIComponent() instead &quot;&quot;&quot;</span></div></div>
+        <span class="sd">&quot;&quot;&quot; Deprecated in version 1.5. Use decodeURI() or decodeURIComponent() instead &quot;&quot;&quot;</span></div>
         <span class="c1"># pass</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">require</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># if &#39;.json&#39; in path:</span>
+            <span class="c1"># TODO - loads json</span>
+            <span class="c1"># return</span>
+
+        <span class="c1"># &#39;.&#39;.join(path.split(&#39;/&#39;))</span>
+        <span class="c1"># module = __import__(path)  # app.components.{component}</span>
+        <span class="c1"># my_class = getattr(module, component.title())</span>
+        <span class="c1"># return my_class()</span>
+        <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="Date"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date">[docs]</a><span class="k">class</span> <span class="nc">Date</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
@@ -1855,7 +1867,7 @@
 <span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/URL</span>
 
 <div class="viewcode-block" id="URL"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URL">[docs]</a><span class="k">class</span> <span class="nc">URL</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; a tag extends from URL &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; a-tag extends from URL &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__update__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># print( &quot;update URL:&quot;, type(self), self  )</span>
@@ -1917,7 +1929,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_searchParams</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;toString CALLED::&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="p">)</span>
 
     <span class="c1"># def toJson</span>
@@ -2011,11 +2022,65 @@
         <span class="sd">&#39;&#39;&#39;# origin    Returns the protocol, hostname and port number of a URL Location&#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;called!!!&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="p">)</span></div>
 
+    <span class="c1"># NOTE - node -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --</span>
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def domainToASCII(domain: str):</span>
+    <span class="c1">#     &quot;&quot;&quot;[It returns the Punycode ASCII serialization of the domain. </span>
+    <span class="c1">#     If domain is an invalid domain, the empty string is returned.]</span>
 
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         domain (str): [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
 
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def domainToUnicode(domain: str):</span>
+    <span class="c1">#     &quot;&quot;&quot;[returns the Unicode serialization of the domain. </span>
+    <span class="c1">#     If the domain is invalid, the empty string is returned]</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         domain (str): [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def fileURLToPath(url: str):</span>
+    <span class="c1">#     &quot;&quot;&quot;[summary]</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         url (str): [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def format(URL, options):</span>
+    <span class="c1">#     &quot;&quot;&quot;[summary]</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         URL ([type]): [description]</span>
+    <span class="c1">#         options ([type]): [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def pathToFileURL(path: str):</span>
+    <span class="c1">#     &quot;&quot;&quot;[summary]</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         path (str): [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def urlToHttpOptions(url: str):</span>
+    <span class="c1">#     &quot;&quot;&quot;[summary]</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         url (str): [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
 
 
 <div class="viewcode-block" id="URLSearchParams"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams">[docs]</a><span class="k">class</span> <span class="nc">URLSearchParams</span><span class="p">:</span>
