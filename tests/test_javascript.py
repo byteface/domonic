@@ -689,18 +689,14 @@ class domonicTestCase(unittest.TestCase):
         assert myarr.at(-1) == 'd'
 
 
-    def test_javascript_Node(self):
+    # def test_javascript_Node(self):
         # url = require('url');        
-        
-        console.log(url.domainToASCII('español.com'))
-        console.log(url.domainToASCII('??.com'))
-        console.log(url.domainToASCII('xn--iñvalid.com'))
-
-        console.log(url.domainToUnicode('español.com'))
-        console.log(url.domainToUnicode('??.com'))
-        console.log(url.domainToUnicode('xn--iñvalid.com'))
-
-
+        # console.log(url.domainToASCII('español.com'))
+        # console.log(url.domainToASCII('??.com'))
+        # console.log(url.domainToASCII('xn--iñvalid.com'))
+        # console.log(url.domainToUnicode('español.com'))
+        # console.log(url.domainToUnicode('??.com'))
+        # console.log(url.domainToUnicode('xn--iñvalid.com'))
 
 
 _intID = None
