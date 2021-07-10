@@ -1894,14 +1894,22 @@ class Console(object):
     _timers = {}
 
     @staticmethod
+    def _getTime():
+        import time
+        try:
+            return time.time_ns() // 1000
+        except Exception:
+            # python 3.6 doesn't have _ns
+            return time.time() * 1000000
+
+    @staticmethod
     def time(label: str):
         """[starts a timer]
 
         Args:
             label (str): [The name to give the new timer.]
         """
-        import time
-        Console._timers[label] = time.time_ns() // 1000
+        Console._timers[label] = Console._getTime()  # time.time_ns() // 1000
 
     @staticmethod
     def timeLog(label: str = None):
@@ -1915,8 +1923,7 @@ class Console(object):
         """
         try:
             # if label = None
-            import time
-            end = time.time_ns() // 1000
+            end = Console._getTime()  # time.time_ns() // 1000
             print(str(end - Console._timers[label]) + "ms")
             return str(end - Console._timers[label]) + "ms"
         except Exception:
@@ -1933,8 +1940,7 @@ class Console(object):
             [type]: [label: time - timer ended]
         """
         try:
-            import time
-            end = time.time_ns() // 1000
+            end = Console._getTime()  # time.time_ns() // 1000
             fin = end - Console._timers[label]
             del Console._timers[label]
             print(str(label) + ": " + str(fin) + "ms - timer ended")
