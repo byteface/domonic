@@ -215,7 +215,8 @@ class tag(object):
         *credit to the peeps on discord/python for this one*
         """
         kwargs = super().__getattribute__('kwargs')
-        # print(attr)
+        # print("sup::", attr)
+        # print("sup2::", kwargs)
 
         if attr in kwargs:
             return kwargs[attr]
@@ -228,6 +229,7 @@ class tag(object):
         if retry in kwargs:
             return kwargs[retry]
 
+        # raise AttributeError("This attribute or method does not appear to exist on this object:", attr)
         raise AttributeError
 
     # def __repr__(self):

@@ -57,6 +57,7 @@ class Math(js_object):
         def validation_decorator(*args, **kwargs):
             for n in args:
                 if type(n) != float and type(n) != int:
+                    # print(type(n))
                     raise ValueError("Value passed was NaN")
             return func(*args)
         return validation_decorator
@@ -262,10 +263,7 @@ class Global(object):
 
     # def global
 
-    # def Infinity:
-    # pass
-    """A numeric value that represents positive/negative infinity """
-    # pass
+    Infinity = float("inf")
 
     @staticmethod
     def isFinite():
@@ -1194,8 +1192,9 @@ class Number(float):
     # print(sys.float_info)
     MAX_VALUE = list(sys.float_info)[0]
     MIN_VALUE = list(sys.float_info)[3]
-    # NEGATIVE_INFINITY Represents negative infinity (returned on overflow) Number
-    # POSITIVE_INFINITY Represents infinity (returned on overflow)  Number
+    NEGATIVE_INFINITY = float("inf")  #: Represents negative infinity (returned on overflow) Number
+    POSITIVE_INFINITY = float("-inf")  #: Represents infinity (returned on overflow)  Number
+
     # prototype Allows you to add properties and methods to an object   Number
 
     def __init__(self, x="", *args, **kwargs):
@@ -1293,13 +1292,16 @@ class String(object):
         """ Removes whitespace from both ends of a string """
         return self.x.strip()
 
-    def charAt(self, index):
-        """ Returns the character at the specified index (position) """
-        return self.x[index]
+    def charAt(self, index: int):
+        """[Returns the character at the specified index (position)]
 
-    # def test():
-        # r = (re.search(r"regexp", "someString") != None)
-        # return r
+        Args:
+            index (int): [index position]
+
+        Returns:
+            [str]: [character]
+        """
+        return self.x[index]
 
     def replace(self, old, new):
         """
@@ -1312,11 +1314,6 @@ class String(object):
     # def localeCompare():
     # """ Compares two strings in the current locale """
     # pass
-
-    # def search():
-    # """ Searches a string for a specified value, or regular expression, and returns the position of the match  """
-    # if re.search(r"\d", "iphone 8"):
-    # print("Has a number")
 
     def substr(self, start=0, end=None):
         """ Extracts the characters from a string, beginning at a specified start position,
@@ -1335,16 +1332,68 @@ class String(object):
         # locale.setlocale()
         return self.x.upper()
 
-    # def compile():
-    # """ Deprecated in version 1.5. Compiles a regular expression    RegExp """
-    # pass
-    # def lastIndex Specifies:
-    # """ the index at which to start the next match    RegExp """
-    # def test():
-    # """ Tests for a match in a string. Returns true or false    RegExp """
-    # pass
 
-    # match()   Searches a string for a match against a regular expression, and returns the matches String
+class RegExp():
+
+    def __init__(self, expression):
+        self.expression = expression
+        #self.flag  #: A string that contains the flags of the RegExp object.
+        #self.dotAll  #: Whether . matches newlines or not.
+        # self.global # Whether to test the regular expression against all possible matches in a string, or only against the first.
+        #self.hasIndices  # Whether the regular expression result exposes the start and end indices of captured substrings.
+        #self.ignoreCase  # Whether to ignore case while attempting a match in a string.
+        #self.multiline  # Whether or not to search in strings across multiple lines.
+        #self.source  # The text of the pattern.
+        #self.sticky  # Whether or not the search is sticky.
+        #self.unicode  # Whether or not Unicode features are enabled.
+        #self.lastIndex  # The index at which to start the next match.
+
+    def compile(self):
+        """ (Re-)compiles a regular expression during execution of a script. """ 
+        pass
+
+    def exec(self, s: str):
+        """ Executes a search for a match in its string parameter. """
+        print("exec:", self.expression, s)
+        m = re.search(self.expression, s)
+        print(m)
+        if (m):
+            return [s for s in m.groups()]
+
+    def test(self, s: str):
+        """[Tests for a match in its string parameter.]
+
+        Args:
+            s (str): [a string to match]
+
+        Returns:
+            [bool]: [True if match else False]
+        """
+        m = re.match(self.expression, s)
+        # print(m)
+        if (m):
+            return True
+        else:
+            return False
+
+    def toString(self):
+        """" Returns a string representing the specified object. Overrides the Object.prototype.toString() method. """
+        pass
+
+    def __str__(self):
+        """" Returns a string representing the specified object. Overrides the Object.prototype.toString() method. """
+        pass
+
+    # def [@@match]()
+    # Performs match to given string and returns match result.
+    # def [@@matchAll]()
+    # Returns all matches of the regular expression against a string.
+    # def [@@replace]()
+    # Replaces matches in given string with new substring.
+    # def [@@search]()
+    # Searches the match in given string and returns the index the pattern found in the string.
+    # def [@@split]()
+    # Splits given string into an array by separating the strin
 
 
 # https://developer.mozilla.org/en-US/docs/Web/API/URL
