@@ -7,11 +7,30 @@
 import functools
 from functools import wraps
 
-# wrap whats returned in an element
-# def el(element):
-#     def wrap(f):
-#         return f()
-#     return wrap
+
+def el(element='div', string=False):
+    """[wraps the results of a function in an element]"""
+
+    if isinstance(element, str):
+        # tag = __import__('domonic.html.' + element)
+        # print(tag)
+        # - TODO - get element by name required on html class
+        from domonic.html import tag, tag_init
+        from domonic.dom import Element
+        element = type(element, (tag, Element), {'name': element, '__init__': tag_init})
+
+    def decorator(function):
+        def wrapper(*args, **kwargs):
+            result = function(*args, **kwargs)
+            if string == False:
+                return element(result)
+            else:
+                return str(element(result))
+        return wrapper
+    return decorator
+# @el(div)
+# @el(span)
+
 
 # def static(endpoint, update="11101"):
 #     '''
@@ -79,16 +98,6 @@ def instead(f, somethingelse):
         return somethingelse
     return new_f
 # @instead("something else instead of what was supposed to happen")
-
-
-def cash(func, currency="£"):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        r = func(*args, **kwargs)
-        formatted = currency + '{:.2f}'.format(r)
-        return formatted
-    return wrapper
-# @cash("12.1")
 
 
 # def lenient(*args, **kwargs):

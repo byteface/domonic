@@ -177,6 +177,24 @@ or you could use the DOM API...
 For more info about the DOM API navigate to that section...
 
 
+Decorators
+--------------------------------
+
+You can use decorators to wrap elements around function results
+
+.. code-block :: python
+	from domonic.decorators import el
+
+	@el(html)
+	@el(body)
+	@el(div)
+	def test():
+		return 'hi!'
+
+	print(test())
+	# <html><body><div>hi!</div></body></html>
+
+
 Magic methods
 --------------------------------
 

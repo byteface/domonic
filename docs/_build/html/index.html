@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: Generate HTML with Python 3 &#8212; domonic 0.3.12 documentation</title>
+    <title>Domonic: Generate HTML with Python 3 &#8212; domonic 0.3.18 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -53,7 +53,7 @@
 <li><p>html : Generate html with python 3 😎</p></li>
 <li><p>dom : DOM API in python 3 😲</p></li>
 <li><p>javascript : js API in python 3 😳</p></li>
-<li><p>terminal : call terminal commands with python3 😱 (<em>see at the end</em></p></li>
+<li><p>terminal || cmd : call terminal commands with python3 😱 (<em>see at the end</em>)</p></li>
 <li><p>JSON : utils for loading / decorating / transformin</p></li>
 <li><p>SVG : Generate svg using python (untested</p></li>
 <li><p>aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder</p></li>
@@ -117,6 +117,7 @@
 <li class="toctree-l2"><a class="reference internal" href="packages/html.html#script-tags">script tags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="packages/html.html#style-tags">style tags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="packages/html.html#create-elements">Create Elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/html.html#decorators">Decorators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="packages/html.html#magic-methods">Magic methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="packages/html.html#fugly">Fugly</a></li>
 <li class="toctree-l2"><a class="reference internal" href="packages/html.html#loading-pyml-templates">loading .pyml templates</a></li>
@@ -140,10 +141,8 @@
 <li class="toctree-l2"><a class="reference internal" href="packages/terminal.html#run-arbitrary-commands">run arbitrary commands…</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="packages/CDN.html">Domonic: CDN</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="packages/CDN.html#cdn-js">CDN_JS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="packages/CDN.html#cdn-css">CDN_CSS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="packages/CDN.html#cdn-img">CDN_IMG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/cmd.html">Domonic: cmd</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="packages/cmd.html#run-arbitrary-commands">run arbitrary commands…</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="packages/components.html">Domonic: templates and components</a><ul>
@@ -157,10 +156,6 @@
 <li class="toctree-l1"><a class="reference internal" href="packages/tween.html">Domonic: tween</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="packages/tween.html#easing-equations-you-can-pass-in">Easing equations you can pass in:</a></li>
 <li class="toctree-l2"><a class="reference internal" href="packages/tween.html#get-timer">get_timer</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="packages/x3d.html">Domonic: x3d</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="packages/x3d.html#id1">domonic.x3d</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="packages/dQuery.html">Domonic: dQuery</a><ul>
@@ -179,6 +174,34 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="packages/geom.html">Domonic: geom</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="packages/geom.html#id1">domonic.geom</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="packages/x3d.html">Domonic: x3d</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="packages/x3d.html#id1">domonic.x3d</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="packages/CDN.html">Domonic: CDN</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="packages/CDN.html#cdn-js">CDN_JS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/CDN.html#cdn-css">CDN_CSS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/CDN.html#cdn-img">CDN_IMG</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="packages/servers.html">Domonic: servers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#running-a-python-server-to-view-static-pages">Running a python server to view static pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#serving-dynamic-content">Serving dynamic content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-cherrypy">Using domonic with Cherrypy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-pyramid">Using domonic with Pyramid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-bottle">Using domonic with Bottle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-sanic">Using domonic with Sanic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-flask">Using domonic with Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-fastapi">Using domonic with FastAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-werkzeug">Using domonic with Werkzeug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-starlette">Using domonic with Starlette</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-tornado">Using domonic with Tornado</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-django">Using domonic with Django</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#spa-s">SPA’s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-aws-lambda">Using domonic with AWS lambda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="packages/servers.html#using-domonic-with-google-cloud-functions">Using domonic with Google Cloud Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="packages/autodocs.html">Domonic: autodocs</a><ul>
@@ -264,14 +287,16 @@
 <li class="toctree-l1"><a class="reference internal" href="packages/javascript.html">Domonic: Javascript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages/JSON.html">Domonic: JSON</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages/terminal.html">Domonic: terminal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/cmd.html">Domonic: cmd</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages/events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages/geom.html">Domonic: geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/x3d.html">Domonic: x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="packages/servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

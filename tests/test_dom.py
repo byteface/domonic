@@ -346,7 +346,7 @@ class domonicTestCase(unittest.TestCase):
         # anchors
 
     def test_dom_querySelector(self):
-        dom1 = html(div(div(div(div(div(div(div( div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
+        dom1 = html(div(div(div(div(div(div(div(div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
 
         result = dom1.querySelector('#thing')
         # print('--')
@@ -502,10 +502,10 @@ class domonicTestCase(unittest.TestCase):
                             div(_class="row").html(
                                 div(_class="col-lg-12 text-center").html(
                                     p(
-                                        "Email : ", 
+                                        "Email : ",
                                         a("user@website.com", _href="mailto:user@website.com"),
                                         br(),
-                                        "or Call us on : ", 
+                                        "or Call us on : ",
                                         a("123456789", _href="tel:123456789")
                                     ),
                                     ul(_class="mb-0 list-inline text-center").html(
@@ -614,6 +614,98 @@ class domonicTestCase(unittest.TestCase):
             print(r)
 
         print('>>>>>>>>>')  # works
+
+
+    def test_dom_decorators(self):
+        from domonic.decorators import el
+
+        @el(html)
+        @el(body)
+        @el(div)
+        def test():
+            return 'hi!'
+        print(test())
+        assert str(test()) == '<html><body><div>hi!</div></body></html>'
+        print('decorators work!')
+
+        @el(html, True)
+        @el(body, True)
+        @el(div, True)
+        def test():
+            return 'hi!'
+        assert test() == '<html><body><div>hi!</div></body></html>'
+        print('decorators work2!')
+
+        @el('html')
+        @el('body')
+        @el('div')
+        def test():
+            return 'hi!'
+        print(test())
+        assert str(test()) == '<html><body><div>hi!</div></body></html>'
+        print('decorators work3!')
+
+        @el(html, True)
+        @el(body)
+        @el('div')
+        def test():
+            return 'hi!'
+        print(test())
+        print('decorators work4!')
+
+
+    def test_domonic_window_console_log(self):
+        # note originally dom had everything from document
+        # this will likely move later versions
+
+        # window = Window()
+        # Window().console.log("test this")
+        # window.console.log("test this")
+
+        # c = Console()
+        # c.log()
+        # Console.log('test')
+        # someObject = { 'str': "Some text", 'id': 5 }
+        # Console.log(someObject)
+
+        # [09:27:13.475] ({str:"Some text", id:5})
+
+        count = 5
+        Console.log('--count: %d', count)
+        assert Console.log('count: %d', count) == "count: 5"
+        Console.log('--count:', count)
+        assert Console.log('count:', count) == "count: 5"
+
+        console.time("answer time")
+        console.timeLog("answer time")
+        console.timeEnd("answer time")
+
+        errorMsg = 'the # is not even'
+        for number in range(2, 5):
+            console.log('the # is ' + str(number))
+            console.assert_(number % 2 == 0, {'number': number, 'errorMsg': errorMsg})
+
+        console.info('test2')
+        console.warn('test3')
+
+        pass
+
+    def test_domonic_matches(self):
+        content = ul(_id="birds").html(
+            li("Orange-winged parrot"),
+            li("Philippine eagle", _class="endangered"),
+            li("Great white pelican")
+        )
+        birds = content.getElementsByTagName('li')
+        # print(birds)
+        for bird in birds:
+            # print(bird)
+            if bird.matches('.endangered'):
+                print('The ' + bird.textContent + ' is endangered!')
+
+
+    # def test_domonic_closest(self):
+
 
 
 if __name__ == '__main__':

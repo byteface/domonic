@@ -77,7 +77,7 @@ class domonicTestCase(unittest.TestCase):
 			)
 		)
 
-    	render( str(x3dom_test), "sphere_test.html" )
+    	render( str(x3dom_test) )#, "sphere_test.html" )
 
 
 if __name__ == '__main__':

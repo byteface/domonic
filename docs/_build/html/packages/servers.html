@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Domonic: servers &#8212; domonic 0.3.18 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Domonic: autodocs" href="autodocs.html" />
+    <link rel="prev" title="Domonic: CDN" href="CDN.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="domonic-servers">
+<h1>Domonic: servers<a class="headerlink" href="#domonic-servers" title="Permalink to this headline">¶</a></h1>
+<p>Generating static html files with domonic is fun.</p>
+<p>Python has a built-in server allowing you to view your generated files:</p>
+<div class="section" id="running-a-python-server-to-view-static-pages">
+<h2>Running a python server to view static pages<a class="headerlink" href="#running-a-python-server-to-view-static-pages" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">Desktop</span><span class="o">/</span><span class="n">yourproject</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">http</span><span class="o">.</span><span class="n">server</span> <span class="mi">8080</span>
+</pre></div>
+</div>
+<p>now go to localhost:8080 and view your website.</p>
+</div>
+<div class="section" id="serving-dynamic-content">
+<h2>Serving dynamic content<a class="headerlink" href="#serving-dynamic-content" title="Permalink to this headline">¶</a></h2>
+<p>For dynamic content you will need a better webserver.</p>
+<p>Domonic does not come with a webserver but there are plenty of great ones in the python community to choose from.</p>
+<p>Below are some examples of how to use domonic with some popular webservers</p>
+<p>WARNING: When generating dynamic content make sure to escape any user generated content to avoid <a class="reference external" href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html">XSS attacks.</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-cherrypy">
+<h2>Using domonic with Cherrypy<a class="headerlink" href="#using-domonic-with-cherrypy" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m venv venv
+. venv/bin/activate
+pip install cherrypy
+pip install domonic
+</pre></div>
+</div>
+<p>now create a file called app.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">cherrypy</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">HelloWorld</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
+                    <span class="n">html</span><span class="p">(</span>
+                    <span class="n">head</span><span class="p">(),</span>
+                    <span class="n">body</span><span class="p">(</span>
+                        <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s2">&quot;Hello, World!&quot;</span><span class="p">))</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+<span class="n">cherrypy</span><span class="o">.</span><span class="n">quickstart</span><span class="p">(</span><span class="n">HelloWorld</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>to run it do this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python app.py
+</pre></div>
+</div>
+<p>and visit localhost:8080 in your browser</p>
+<p><a class="reference external" href="https://pypi.org/project/CherryPy/">Find out more about Cherrypy here…</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-pyramid">
+<h2>Using domonic with Pyramid<a class="headerlink" href="#using-domonic-with-pyramid" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m venv venv
+. venv/bin/activate
+pip install pyramid
+pip install domonic
+</pre></div>
+</div>
+<p>now create a file called app.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
+<span class="kn">from</span> <span class="nn">pyramid.config</span> <span class="kn">import</span> <span class="n">Configurator</span>
+<span class="kn">from</span> <span class="nn">pyramid.response</span> <span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span>
+                    <span class="n">html</span><span class="p">(</span>
+                    <span class="n">head</span><span class="p">(),</span>
+                    <span class="n">body</span><span class="p">(</span>
+                        <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s2">&quot;Hello, World!&quot;</span><span class="p">))</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">Configurator</span><span class="p">()</span> <span class="k">as</span> <span class="n">config</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">hello_world</span><span class="p">,</span> <span class="n">route_name</span><span class="o">=</span><span class="s1">&#39;hello&#39;</span><span class="p">)</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">make_wsgi_app</span><span class="p">()</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">make_server</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>to run it do this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python app.py
+</pre></div>
+</div>
+<p>and visit localhost:8080 in your browser</p>
+<p><a class="reference external" href="https://trypyramid.com/">Find out more about Pyramid here…</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-bottle">
+<h2>Using domonic with Bottle<a class="headerlink" href="#using-domonic-with-bottle" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m venv venv
+. venv/bin/activate
+pip install bottle
+pip install domonic
+</pre></div>
+</div>
+<p>now create a file called app.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bottle</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">run</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/hello/&lt;name&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
+            <span class="n">html</span><span class="p">(</span>
+            <span class="n">head</span><span class="p">(),</span>
+            <span class="n">body</span><span class="p">(</span>
+                <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello, </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">))</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+<span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to run it do this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python app.py
+</pre></div>
+</div>
+<p>and visit <a class="reference external" href="http://localhost:8080/hello/yourname">http://localhost:8080/hello/yourname</a> in your browser</p>
+<p><a class="reference external" href="https://bottlepy.org/docs/dev/">Find out more about Bottle here…</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-sanic">
+<h2>Using domonic with Sanic<a class="headerlink" href="#using-domonic-with-sanic" title="Permalink to this headline">¶</a></h2>
+<p>A lot of the examples in the repo use Sanic. It’s like Flask and is async</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m venv venv
+. venv/bin/activate
+pip install sanic
+pip install domonic
+</pre></div>
+</div>
+<p>now create a file called app.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sanic</span> <span class="kn">import</span> <span class="n">Sanic</span>
+<span class="kn">from</span> <span class="nn">sanic</span> <span class="kn">import</span> <span class="n">response</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Sanic</span><span class="p">(</span><span class="s2">&quot;My Hello, world app&quot;</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">html</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span>
+        <span class="n">html</span><span class="p">(</span>
+        <span class="n">head</span><span class="p">(),</span>
+        <span class="n">body</span><span class="p">(</span>
+            <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="p">))</span>
+    <span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>to run it do this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python app.py
+</pre></div>
+</div>
+<p>and visit <a class="reference external" href="http://localhost:8000">http://localhost:8000</a> in your browser</p>
+<p><a class="reference external" href="https://sanic.readthedocs.io/en/stable/">Find out more about Sanic here…</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-flask">
+<h2>Using domonic with Flask<a class="headerlink" href="#using-domonic-with-flask" title="Permalink to this headline">¶</a></h2>
+<p>Flask comes with Jinja already but it’s still possible…</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m venv venv
+. venv/bin/activate
+pip install flask
+pip install domonic
+</pre></div>
+</div>
+<p>now create a file called app.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
+        <span class="n">html</span><span class="p">(</span>
+        <span class="n">head</span><span class="p">(),</span>
+        <span class="n">body</span><span class="p">(</span>
+            <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="p">))</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>to run it do this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python app.py
+</pre></div>
+</div>
+<p>and visit <a class="reference external" href="http://localhost:5000">http://localhost:5000</a> in your browser</p>
+<p><a class="reference external" href="https://flask.palletsprojects.com/en/2.0.x/">Find out more about Flask here…</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-fastapi">
+<h2>Using domonic with FastAPI<a class="headerlink" href="#using-domonic-with-fastapi" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m venv venv
+. venv/bin/activate
+pip install fastapi
+pip install uvicorn
+pip install domonic
+</pre></div>
+</div>
+<p>now create a file called app.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span> <span class="nn">fastapi.responses</span> <span class="kn">import</span> <span class="n">HTMLResponse</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">response_class</span><span class="o">=</span><span class="n">HTMLResponse</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">read_root</span><span class="p">():</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span>
+    <span class="n">html</span><span class="p">(</span>
+    <span class="n">head</span><span class="p">(),</span>
+    <span class="n">body</span><span class="p">(</span>
+        <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">))</span>
+        <span class="p">)</span>
+    <span class="p">))</span>
+</pre></div>
+</div>
+<p>to run it do this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uvicorn app:app --reload
+</pre></div>
+</div>
+<p>and visit <a class="reference external" href="http://localhost:8000">http://localhost:8000</a> in your browser</p>
+<p><a class="reference external" href="https://fastapi.tiangolo.com/">Find out more about FastAPI here…</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-werkzeug">
+<h2>Using domonic with Werkzeug<a class="headerlink" href="#using-domonic-with-werkzeug" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m venv venv
+. venv/bin/activate
+pip install werkzeug
+pip install domonic
+</pre></div>
+</div>
+<p>now create a file called app.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">werkzeug.wrappers</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="nd">@Request</span><span class="o">.</span><span class="n">application</span>
+<span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span>
+                    <span class="n">html</span><span class="p">(</span>
+                    <span class="n">head</span><span class="p">(),</span>
+                    <span class="n">body</span><span class="p">(</span>
+                        <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">))</span>
+                        <span class="p">)</span>
+                    <span class="p">)),</span> <span class="n">mimetype</span><span class="o">=</span><span class="s1">&#39;text/html&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">werkzeug.serving</span> <span class="kn">import</span> <span class="n">run_simple</span>
+    <span class="n">run_simple</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="n">application</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to run it do this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python app.py
+</pre></div>
+</div>
+<p>and visit <a class="reference external" href="http://localhost:4000/">http://localhost:4000/</a> in your browser</p>
+<p><a class="reference external" href="https://werkzeug.palletsprojects.com/en/2.0.x/">Find out more about Werkzeug here…</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-starlette">
+<h2>Using domonic with Starlette<a class="headerlink" href="#using-domonic-with-starlette" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m venv venv
+. venv/bin/activate
+pip install starlette
+pip install uvicorn
+pip install domonic
+</pre></div>
+</div>
+<p>now create a file called app.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlette.applications</span> <span class="kn">import</span> <span class="n">Starlette</span>
+<span class="kn">from</span> <span class="nn">starlette.responses</span> <span class="kn">import</span> <span class="n">HTMLResponse</span>
+<span class="kn">from</span> <span class="nn">starlette.routing</span> <span class="kn">import</span> <span class="n">Route</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">homepage</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">HTMLResponse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span>
+                <span class="n">html</span><span class="p">(</span>
+                <span class="n">head</span><span class="p">(),</span>
+                <span class="n">body</span><span class="p">(</span>
+                    <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">))</span>
+                    <span class="p">)</span>
+                <span class="p">))</span>
+        <span class="p">)</span>
+
+<span class="n">routes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">homepage</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlette</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">routes</span><span class="o">=</span><span class="n">routes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>to run it do this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uvicorn app:app --reload
+</pre></div>
+</div>
+<p>and visit <a class="reference external" href="http://localhost:8000">http://localhost:8000</a> in your browser</p>
+<p><a class="reference external" href="https://www.starlette.io/">Find out more about Starlette here…</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-tornado">
+<h2>Using domonic with Tornado<a class="headerlink" href="#using-domonic-with-tornado" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m venv venv
+. venv/bin/activate
+pip install tornado
+pip install domonic
+</pre></div>
+</div>
+<p>now create a file called app.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tornado.ioloop</span>
+<span class="kn">import</span> <span class="nn">tornado.web</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">MainHandler</span><span class="p">(</span><span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">RequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span>
+            <span class="n">html</span><span class="p">(</span>
+            <span class="n">head</span><span class="p">(),</span>
+            <span class="n">body</span><span class="p">(</span>
+                <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">))</span>
+                <span class="p">)</span>
+            <span class="p">)))</span>
+
+<span class="k">def</span> <span class="nf">make_app</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">MainHandler</span><span class="p">),</span>
+    <span class="p">])</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">make_app</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">8888</span><span class="p">)</span>
+    <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">current</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>to run it do this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python app.py
+</pre></div>
+</div>
+<p>and visit <a class="reference external" href="http://localhost:8888/">http://localhost:8888/</a> in your browser</p>
+<p><a class="reference external" href="https://www.tornadoweb.org/en/stable/">Find out more about Tornado here…</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-django">
+<h2>Using domonic with Django<a class="headerlink" href="#using-domonic-with-django" title="Permalink to this headline">¶</a></h2>
+<p>Django already has some kind of Jinja but more restrictive.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m venv venv
+. venv/bin/activate
+pip install django
+pip install domonic
+django-admin startproject mysite
+</pre></div>
+</div>
+<p>now cd into mysite and edit urls.py</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+<span class="kn">from</span> <span class="nn">domonic</span> <span class="kn">import</span> <span class="n">div</span><span class="p">,</span> <span class="n">span</span>
+
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">mywebpage</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s2">&quot;Hello World!&quot;</span><span class="p">))</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">mywebpage</span><span class="p">)</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;admin/&#39;</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>to run it do this from within mysite folder:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python manage.py runserver
+</pre></div>
+</div>
+<p>and visit <a class="reference external" href="http://localhost:8000/">http://localhost:8000/</a> in your browser</p>
+<p>Note: Django didn’t allow import * so there’s a conflict somewhere. I resolved by importing what I needed.</p>
+<p><a class="reference external" href="https://www.djangoproject.com/">Find out more about Django here…</a>.</p>
+<p>and if that wasn’t enough webservers to try out this isn’t even <a class="reference external" href="https://github.com/tbicr/web-framework-rank">a more complete list!!!</a>.</p>
+</div>
+<div class="section" id="spa-s">
+<h2>SPA’s<a class="headerlink" href="#spa-s" title="Permalink to this headline">¶</a></h2>
+<p>Now you have a framework you can use some simple javascript to call on endpoints to redraw parts of the dom.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">function</span> <span class="nx">redraw</span><span class="p">(</span><span class="nx">_id</span><span class="p">,</span> <span class="nx">endpoint</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fetch</span><span class="p">(</span><span class="nx">endpoint</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">){</span><span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">text</span><span class="p">();})</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">){</span>
+            <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">_id</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Checkout the ‘templates and components’ section to see how you can take your templating skills to the next level.</p>
+<p>Another alternative to running a webserver is running a serverless function. See below for more details.</p>
+</div>
+<div class="section" id="using-domonic-with-aws-lambda">
+<h2>Using domonic with AWS lambda<a class="headerlink" href="#using-domonic-with-aws-lambda" title="Permalink to this headline">¶</a></h2>
+<p>The original version of domonic was tags only and written to be used in an aws lambda function.</p>
+<p>the original POC code for that is <a class="reference external" href="https://github.com/byteface/domonic/blob/master/archive/poc.py">here in the archive</a>.</p>
+<p>You can just create a file called tags.py alongside your lambda with the AWS GUI and paste in the tags then import and use them.</p>
+<p>Alternatively to upload entire packages people tend to drop their lambda_function.py into the /site-packages folder of their virtualenv.</p>
+<p>Then zip and upload the whole thing.</p>
+<p><a class="reference external" href="https://aws.amazon.com/lambda/">Find out more about AWS Lambda here…</a>.</p>
+</div>
+<div class="section" id="using-domonic-with-google-cloud-functions">
+<h2>Using domonic with Google Cloud Functions<a class="headerlink" href="#using-domonic-with-google-cloud-functions" title="Permalink to this headline">¶</a></h2>
+<p>Google have ‘cloud functions’.</p>
+<p>Dealing with Package dependencies is here in their documentation.</p>
+<p><a class="reference external" href="https://cloud.google.com/functions/docs/writing/specifying-dependencies-python">https://cloud.google.com/functions/docs/writing/specifying-dependencies-python</a></p>
+<p><a class="reference external" href="https://cloud.google.com/functions">Find out more about Google Cloud Functions here…</a>.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">domonic</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=byteface&repo=domonic&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd.html">Domonic: cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Domonic: templates and components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tween.html">Domonic: tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">Domonic: geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: servers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-a-python-server-to-view-static-pages">Running a python server to view static pages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#serving-dynamic-content">Serving dynamic content</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-cherrypy">Using domonic with Cherrypy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-pyramid">Using domonic with Pyramid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-bottle">Using domonic with Bottle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-sanic">Using domonic with Sanic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-flask">Using domonic with Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-fastapi">Using domonic with FastAPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-werkzeug">Using domonic with Werkzeug</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-starlette">Using domonic with Starlette</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-tornado">Using domonic with Tornado</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-django">Using domonic with Django</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spa-s">SPA’s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-aws-lambda">Using domonic with AWS lambda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-domonic-with-google-cloud-functions">Using domonic with Google Cloud Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="CDN.html" title="previous chapter">Domonic: CDN</a></li>
+      <li>Next: <a href="autodocs.html" title="next chapter">Domonic: autodocs</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+      |
+      <a href="../_sources/packages/servers.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

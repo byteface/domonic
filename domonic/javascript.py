@@ -24,20 +24,377 @@ from multiprocessing.pool import ThreadPool as Pool
 import re
 
 
-class js_object(object):
-    """ js_object """
+class Object(object):
+    """ Object """
 
-    def valueOf(self):
-        """ Returns the primitive value of an array Array, Boolean, Date, Number, String"""
+    def __init__(self, attribs=None):
+        """
+        Creates a new Object
+
+        @param attribs: name/value pair
+        @type attribs: dict of key/value pairs
+        """
+        self.attribs = attribs
+
+    # def __str__(self):
+    #     """ Dumps the attributes of this Object """
+    #     pass
+
+    @staticmethod
+    def fromEntries(entries):
+        """
+        transforms a list of lists containing key and value into an object.
+
+        @param entries: a list containing key and value tuples. The key and value
+                        are separated by ':'
+        @type entries: list of tuple(string, string)
+        @returns: a { dict } object.
+
+        >>> fromEntries(entries)
+        {'a': 1, 'b': 2, 'c': 3}
+        """
+        return {k: v for k, v in entries}
+
+    # @staticmethod
+    # def assign(target, source):
+    #     """ Copies the values of all enumerable own properties from one or more source objects to a target object. """
+    #     if isinstance( source, dict ):
+    #     return target
+
+    # @staticmethod
+    # def create(proto, propertiesObject):
+    #     """ Creates a new object with the specified prototype object and properties. """
+    #     obj = {}
+    #     for key in proto.keys():
+    #         obj[key] = propertiesObject[key]
+    #     return obj
+
+    @staticmethod
+    def defineProperty(obj, prop, descriptor):
+        """ Adds the named property described by a given descriptor to an object. """
+        obj[prop] = descriptor
+
+    # @staticmethod
+    # def defineProperties(obj, props):
+    #     """ Adds the named properties described by the given descriptors to an object. """
+    #     for prop, desc in props.items():
+    #         obj.__define_property__(prop, desc)  # TODO - obviously that wont work
+
+    @staticmethod
+    def entries(obj):
+        """ Returns an array containing all of the [key, value] pairs of a given object's own enumerable string properties. """
+        if isinstance(obj, dict):
+            return [[k, v] for k, v in obj.items()]
+        if isinstance(obj, (float, int)):
+            return []
+
+    @staticmethod
+    def keys(obj):
+        """ Returns an array containing the names of all of the given object's own enumerable string properties."""
         pass
 
-    # def prototype:
-        """ Allows you to add properties and methods to an Array object Array, Boolean, Date"""
+    @classmethod
+    def values(obj):
+        """ Returns an array containing the values that correspond to all of a given object's own enumerable string properties. """
+        pass
+
+    @staticmethod
+    def getOwnPropertyDescriptor(obj, prop):
+        """ Returns a property descriptor for a named property on an object. """
+        # return getattr(obj, prop)
+        pass
+
+    @staticmethod
+    def getOwnPropertyDescriptors(obj):
+        """ Returns an object containing all own property descriptors for an object. """
+        # return vars(obj)
+        pass
+
+    @staticmethod
+    def getOwnPropertyNames(obj):
+        """ Returns an array containing the names of all of the given object's own enumerable and non-enumerable properties. """
+        # return [k for k in vars(obj).keys()]
+        pass
+
+    # @staticmethod
+    # def _is(value1, value2):
+    #     """ Compares if two values are the same value.
+    #     Equates all NaN values (which differs from both Abstract Equality Comparison and Strict Equality Comparison)."""
+    #     pass
+
+    # @staticmethod
+    # def getOwnPropertySymbols(obj):
+    #     """ Returns an array of all symbol properties found directly upon a given object. """
+    #     pass
+
+    # @staticmethod
+    # def getPrototypeOf(obj):
+    #     """ Returns the prototype (internal [[Prototype]] property) of the specified object. """
+    #     pass
+
+    # @staticmethod
+    # def isExtensible(obj):
+    #     """ Determines if extending of an object is allowed. """
+    #     pass
+
+    # @staticmethod
+    # def isFrozen(obj):
+    #     """ Determines if an object was frozen. """
+    #     pass
+
+    # @staticmethod
+    # def isSealed(obj):
+    #     """ Determines if an object is sealed. """
+    #     pass
+
+    # @staticmethod
+    # def preventExtensions(obj):
+    #     """ Prevents any extensions of an object. """
+    #     pass
+
+    # @staticmethod
+    # def seal(obj):
+    #     """ Prevents other code from deleting properties of an object. """
+    #     pass
+
+    # @staticmethod
+    # def setPrototypeOf(obj, prototype):
+    #     """ Sets the object's prototype (its internal [[Prototype]] property). """
+    #     pass
+
+    # @staticmethod
+    # def freeze(obj):
+    #     """ Freezes an object. Other code cannot delete or change its properties. """
+    #     pass
+
+    def valueOf(self):
+        """ Returns the primitive value of an array Array, Boolean, Date, Number, String """
+        pass
+
+    # def prototype(self):
+        """ Allows you to add properties and methods to an Array object Array, Boolean, Date """
         # pass
 
+    def __getattr__(self, name):
+        """
+        The __getattr__() method is called when the attribute 'name' is accessed.
+        """
+        if name == 'objectId':
+            return self.getId()
+        if name == 'proto':
+            return self.__class__.fromEntries(self.__attribs__)
+        return getattr(self, name)
 
-class Math(js_object):
-    """ Math class that mirrors javascript implementation """
+    def __defineGetter__(self):
+        """ Associates a function with a property that, when accessed, executes that function and returns its return value."""
+        raise NotImplementedError
+
+    def __defineSetter__(self):
+        """ Associates a function with a property that, when set, executes that function which modifies the property. """
+        raise NotImplementedError
+
+    def __lookupGetter__(self):
+        """ Returns the function associated with the specified property by the __defineGetter__() method. """
+        raise NotImplementedError
+
+    def __lookupSetter__(self):
+        """ Returns the function associated with the specified property by the __defineSetter__() method. """
+        raise NotImplementedError
+
+    def hasOwnProperty(self):
+        """ Returns a boolean indicating whether an object contains the specified property as a direct property of that object and not inherited through the prototype chain. """
+        raise NotImplementedError
+
+    def isPrototypeOf(self):
+        """ Returns a boolean indicating whether the object this method is called upon is in the prototype chain of the specified object. """
+        raise NotImplementedError
+
+    def propertyIsEnumerable(self):
+        """ Returns a boolean indicating if the internal ECMAScript [[Enumerable]] attribute is set. """
+        raise NotImplementedError
+
+    def toLocaleString(self):
+        """ Calls toString()."""
+        raise NotImplementedError
+
+    def toString(self):
+        """ Returns a string representation of the object."""
+        raise NotImplementedError
+
+    def valueOf(self):
+        """ Returns the primitive value of the specified object."""
+        raise NotImplementedError
+
+
+class Map(object):
+    """ Map holds key-value pairs and remembers the original insertion order of the keys.
+    """
+
+    def __init__(self, collection):
+        # TODO - parse the passed collectionn
+
+        # if isinstance( collection, list ):
+            # create a dict
+        # if isinstance( collection, dict ):
+            # create a dict
+
+        self._data = {}
+        self._order = []
+
+    def __contains__(self, key):
+        return key in self._dict
+
+    def __getitem__(self, key):
+        return self._dict[key]
+
+    def __setitem__(self, key, value):
+        if key not in self._dict:
+            self._order.append(key)
+            self._dict[key] = value
+
+    def __delitem__(self, key):
+        self._order.remove(key)
+        del self._dict[key]
+
+    def clear(self):
+        """ Removes all key-value pairs from the Map object. """
+        self._data = {}
+        self._order = []
+
+    def delete(self, key):
+        """ Returns true if an element in the Map object existed and has been removed, 
+        or false if the element does not exist. Map.prototype.has(key) will return false afterwards. """
+        try:
+            self._order.remove(key)
+            del self._dict[key]
+            return True
+        except Exception:
+            return False
+
+    def get(self, key, default=None):
+        """ Returns the value associated to the key, or undefined if there is none. """
+        return self._dict.get(key, default)
+
+    def has(self, key):
+        """ Returns a boolean asserting whether a value has been associated to the key in the Map object or not."""
+        return key in self._dict
+
+    def set(self, key, value):
+        """ Sets the value for the key in the Map object. Returns the Map object. """
+        if key not in self._dict:
+            self._order.append(key)
+            self._dict[key] = value
+        return self
+
+    def iterkeys(self):
+        return iter(self._order)
+
+    def iteritems(self):
+        for key in self._order:
+            yield key, self._dict[key]
+
+    def keys(self):
+        """ Returns a new Iterator object that contains the keys for each element in the Map object in insertion order. """
+        return list(self.iterkeys())
+
+    def values(self):
+        """ Returns a new Iterator object that contains the values for each element in the Map object in insertion order. """
+        return list(self.iteritems())
+
+    def entries(self):
+        """ Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order. """
+        return [(x, self._dict[x]) for x in self._order]
+
+    # def forEach(self, callbackFn[, thisArg]):
+    #     raise NotImplementedError
+
+    def update(self, ordered_dict):
+        for key, value in ordered_dict.iteritems():
+            self[key] = value
+
+    def __str__(self):
+        return str([(x, self._dict[x]) for x in self._order])
+
+
+class FormData(object):
+    """[utils for a form]
+
+    Args:
+        object ([str]): [takes a string or pyml object and returns a FormData]
+    """
+
+    def __init__(self, form):
+        """ creates a new FormData object. """
+        # TODO - parse to domonic.
+        # if isinstance(form, str):
+            # self._data = domonic.loads(form) # TODO - parser wont be done enough yet
+        # if isinstance(form, Node):
+            # self._data = form
+        raise NotImplementedError
+
+    def append(self, name, value, filename):
+        """ Appends a new value onto an existing key inside a FormData object, or adds the key if it does not already exist. """
+        # self._data.append((name, value, filename))
+        raise NotImplementedError
+
+    def delete(self, name):
+        """ Deletes a key/value pair from a FormData object. """
+        raise NotImplementedError
+
+    def entries(self):
+        """ Returns an iterator allowing to go through all key/value pairs contained in this object. """
+        raise NotImplementedError
+
+    def get(self, name):
+        """ Returns the first value associated with a given key from within a FormData object. """
+        raise NotImplementedError
+
+    def getAll(self, name):
+        """ Returns an array of all the values associated with a given key from within a FormData """
+        raise NotImplementedError
+
+    def has(self, name):
+        """ Returns a boolean stating whether a FormData object contains a certain key."""
+        raise NotImplementedError
+
+    def keys(self):
+        """ Returns an iterator allowing to go through all keys of the key/value pairs contained in this object."""
+        raise NotImplementedError
+
+    def set(self, name, value, filename):
+        """ Sets a new value for an existing key inside a FormData object, or adds the key/value if it does not already exist."""
+        raise NotImplementedError
+
+    def values(self):
+        """ Returns an iterator allowing to go through all values  contained in this object."""
+        raise NotImplementedError
+
+
+class Worker(object):
+    """[A background task that can be created via script, which can send messages back to its creator. 
+    Creating a worker is done by calling the Worker("path/to/worker/script") constructor.]
+    TODO - JSWorker - Node
+    Args:
+        object ([str]): [takes a path to a python script]
+    """
+
+    def postMessage(self):
+        """ Sends a message — consisting of any object — to the worker's inner scope. """
+        raise NotImplementedError
+
+    def terminate(self):
+        """ Immediately terminates the worker. This does not let worker finish its operations; it is halted at once.
+        ServiceWorker instances do not support this method. """
+        raise NotImplementedError
+
+
+class Math(Object):
+    """ Math class that mirrors javascript implementation.
+
+    i.e. you can pass strings and it will also work
+    Math.abs('-1')
+
+    """
 
     # CONSTANTS
     PI = 3.141592653589793
@@ -49,173 +406,201 @@ class Math(js_object):
     SQRT1_2 = 0.7071067811865476
     SQRT2 = 1.4142135623730951
 
-    # TODO - pass what types of validation? < may move to decorators
-    # i.e force numbers
-    # i.e positive/negative numbers allowed
-    # convert bool/string to number?
-    def validate(func):
+    def _force_number(func):
+        """[private decorator to make Math behave like javascript and turn strings, bools and None into numbers]]
+        """
         def validation_decorator(*args, **kwargs):
-            for n in args:
+            params = list(args)
+            for i, n in enumerate(params):
+
+                if type(n) == list or type(n) == tuple:
+                    if len(n) == 0:
+                        params[i] = n = 0
+                    elif len(n) == 1:
+                        params[i] = n = n[0]
+
+                if type(n) == str:
+                    if n == "":
+                        params[i] = n = 0
+                        continue
+
+                if n is None:
+                    params[i] = 0
+                    continue
+
                 if type(n) != float and type(n) != int:
-                    # print(type(n))
-                    raise ValueError("Value passed was NaN")
-            return func(*args)
+                    try:
+                        if '.' in n:
+                            params[i] = float(n)
+                        else:
+                            params[i] = int(n)
+                    except Exception:
+                        # raise ValueError("")
+                        # js returns None instead
+                        pass
+
+            args = tuple(params)
+            try:
+                return func(*args)
+            except Exception:
+                return None
+
         return validation_decorator
 
     @staticmethod
-    @validate
+    @_force_number
     def abs(x):
         """ Returns the absolute value of x """
         return abs(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def acos(x):
         """ Returns the arccosine of x, in radians """
         return math.acos(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def acosh(x):
         """ Returns the hyperbolic arccosine of x """
         return math.acosh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def asin(x):
         """ Returns the arcsine of x, in radians """
         return math.asin(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def asinh(x):
         """ Returns the hyperbolic arcsine of x """
         return math.asinh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def atan(x):
         """ Returns the arctangent of x as a numeric value between -PI/2 and PI/2 radians """
         return math.atan(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def atan2(x, y):
         """ Returns the arctangent of the quotient of its arguments """
         return math.atan2(x, y)
 
     @staticmethod
-    @validate
+    @_force_number
     def atanh(x):
         """ Returns the hyperbolic arctangent of x """
         return math.atanh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def cbrt(x):
         """ Returns the cubic root of x """
         # return math.cbrt(x)
         return round(math.pow(x, 1 / 3))
 
     @staticmethod
-    @validate
+    @_force_number
     def ceil(x):
         """ Returns x, rounded upwards to the nearest integer """
         return math.ceil(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def cos(x):
         """ Returns the cosine of x (x is in radians) """
         return math.cos(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def cosh(x):
         """ Returns the hyperbolic cosine of x """
         return math.cosh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def exp(x):
         """ Returns the value of Ex """
         return math.exp(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def floor(x):
         """ Returns x, rounded downwards to the nearest integer """
         return math.floor(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def log(x, y):
         """ Returns the natural logarithm (base E) of x """
         return math.log(x, y)
 
     @staticmethod
-    @validate
+    @_force_number
     def max(x, y):
         """ Returns the number with the highest value """
         return max(x, y)
 
     @staticmethod
-    @validate
+    @_force_number
     def min(x, y):
         """ Returns the number with the lowest value """
         return min(x, y)
 
     @staticmethod
-    @validate
+    @_force_number
     def random():
         """ Returns a random number between 0 and 1 """
         # return math.random(x)
         return random.random()
 
     @staticmethod
-    @validate
+    @_force_number
     def round(x):
         """ Rounds x to the nearest integer """
         return round(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def pow(x, y):
         """ Returns the value of x to the power of y """
         return math.pow(x, y)
 
     @staticmethod
-    @validate
+    @_force_number
     def sin(x):
         """ Returns the sine of x (x is in radians) """
         return math.sin(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def sinh(x):
         """ Returns the hyperbolic sine of x """
         return math.sinh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def sqrt(x):
         """ Returns the square root of x """
         return math.sqrt(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def tan(x):
         """ Returns the tangent of an angle """
         return math.tan(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def tanh(x):
         """ Returns the hyperbolic tangent of a number """
         return math.tanh(x)
 
     @staticmethod
-    @validate
+    @_force_number
     def trunc(x):
         """ Returns the integer part of a number (x) """
         return math.trunc(x)
@@ -301,12 +686,12 @@ class Global(object):
         return "NaN"
 
     @staticmethod
-    def parseFloat(x):
+    def parseFloat(x: str):
         """ Parses a string and returns a floating point number """
         return float(x)
 
     @staticmethod
-    def parseInt(x):
+    def parseInt(x: str):
         """ Parses a string and returns an integer """
         return int(x)
 
@@ -324,8 +709,20 @@ class Global(object):
         """ Deprecated in version 1.5. Use decodeURI() or decodeURIComponent() instead """
         # pass
 
+    @staticmethod
+    def require(path: str):
+        # if '.json' in path:
+            # TODO - loads json
+            # return
 
-class Date(js_object):
+        # '.'.join(path.split('/'))
+        # module = __import__(path)  # app.components.{component}
+        # my_class = getattr(module, component.title())
+        # return my_class()
+        pass
+
+
+class Date(Object):
     """ javascript date """
 
     def __init__(self, date: str = None, formatter='python'):
@@ -956,6 +1353,13 @@ class Array(object):
     """ javascript array """
 
     def __init__(self, *args):
+        """[An Array that behaves like a js array]
+        """
+        # casting
+        if len(args) == 1:
+            if isinstance(args[0], list):
+                self.args = args[0]
+                return
         self.args = list(args)
 
     def __getitem__(self, index):
@@ -964,10 +1368,24 @@ class Array(object):
     def __setitem__(self, index, value):
         self.args[index] = value
 
+    def __add__(self, value):
+        if isinstance(value, int):
+            raise ValueError('int not supported')
+        if isinstance(value, Array):
+            self.args = self.args + value.args
+        if isinstance(value, list):
+            self.args = self.args + value
+        return self.args
+
     def __len__(self):
         return len(self.args)
 
-        # TODO - all the dunder methods
+    def __eq__(self, other):
+        return isinstance(other, Array) and \
+            self.args == other.args
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __str___(self):
         return self.args
@@ -1009,7 +1427,7 @@ class Array(object):
         except ValueError:
             return -1
         except Exception as e:
-            print(e)
+            # print(e)
             return -1
 
     def isArray(self):
@@ -1026,7 +1444,7 @@ class Array(object):
         try:
             return len(self.args) - self.args[::-1].index(value) - 1
         except Exception as e:
-            print(e)
+            # print(e)
             return None
 
     def pop(self):
@@ -1061,24 +1479,38 @@ class Array(object):
         # return self.args
 
     def unshift(self, *args):
-        """ Adds new elements to the beginning of an array, and returns the new length """
+        """[Adds new elements to the beginning of an array, and returns the new length]
+
+        Returns:
+            [int]: [the length of the array]
+        """
         for i in reversed(args):
             self.args.insert(0, i)
         return len(self.args)
 
     def shift(self):
-        """ removes the first element from an array and returns that removed element """
+        """[removes the first element from an array and returns that removed element]
+
+        Returns:
+            [type]: [the removed array element]
+        """
         item = self.args[0]
         del self.args[0]
         return item
 
     def map(self, func):
-        #  written by .ai (https://6b.eleuther.ai/)
-        """ Creates a new array with the result of calling a function for each array element """
-        return [func(value) for value in self.args]
+        """[Creates a new array with the result of calling a function for each array element]
 
-    def some(self):
-        #  written by .ai (https://6b.eleuther.ai/)
+        Args:
+            func ([type]): [a function to call on each array element]
+
+        Returns:
+            [list]: [a new array]
+        """
+        # return [func(value) for value in self.args]
+        return map(self.args, func)
+
+    def some(self, func):
         """ Checks if any of the elements in an array pass a test """
         return any(func(value) for value in self.args)
 
@@ -1086,29 +1518,37 @@ class Array(object):
         """ Sorts the elements of an array """
         raise NotImplementedError
 
-    def reduce(self):
+    def reduce(self, func, value=None):
         """ Reduce the values of an array to a single value (going left-to-right) """
-        raise NotImplementedError
+        try:
+            return func(self.args[0], *self.args)
+        except IndexError:
+            return -1
 
-    def reduceRight(self):
+    def reduceRight(self, func, value=None):
         """ Reduce the values of an array to a single value (going right-to-left) """
         #  written by .ai (https://6b.eleuther.ai/)
-        #  Takes an array and reduces it based on a function in reverse order 
-        for value, index in zip(self.args, reversed(range(len(self.args)) - 1)):
-            yield func(value, index)
-        yield self.args[0]
+        #  Takes an array and reduces it based on a function in reverse order
+        try:
+            if value is None:
+                return func(value, *self.args)
+            else:
+                return func(self.args[0], value, *self.args[1:])
+        except IndexError:
+            return -1
 
     def filter(self, func):
         """
         Creates a new array with every element in an array that pass a test
-        even_numbers = someArr.filter( lambda x: x % 2 == 0 )
+        i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )
         """
         # written by .ai (https://6b.eleuther.ai/)
-        filtered = []
-        for value in self.args:
-            if func(value):
-                filtered.append(value)
-        return filtered
+        # filtered = []
+        # for value in self.args:
+        #     if func(value):
+        #         filtered.append(value)
+        # return filtered
+        return list(filter(func, self.args))
 
     def find(self):
         """ Returns the value of the first element in an array that pass a test """
@@ -1134,20 +1574,49 @@ class Array(object):
 
     def keys(self):
         """ Returns a Array Iteration Object, containing the keys of the original array """
-        raise NotImplementedError
+        for i in self.args:
+            yield i
 
-    def copyWithin(self):
-        """ Copies array elements within the array, to and from specified positions """
-        raise NotImplementedError
+    def copyWithin(self, target, start=0, end=None):
+        """ Copies array elements within the array, from start to end """
+        if end is None:
+            end = len(target)
+        for i in range(start, end):
+            self.args[i] = target[i]
 
     def entries(self):
-        """ Returns a key/value pair Array Iteration Object """
-        raise NotImplementedError
+        """[Returns a key/value pair Array Iteration Object]
 
-    def every(self, test):
-        """ Checks if every element in an array pass a test """
-        # written by .ai (https://6b.eleuther.ai/)
+        Yields:
+            [type]: [key/value pair]
+        """
+        for i in self.args:
+            yield [i, self.args[i]]
+
+    def every(self, func):
+        """[Checks if every element in an array pass a test]
+
+        Args:
+            func ([type]): [test function]
+
+        Returns:
+            [bool]: [if every array elemnt passed the test]
+        """
         return all(func(value) for value in self.args)
+
+    def at(self, index: int):
+        """[takes an integer value and returns the item at that index, 
+        allowing for positive and negative integers.
+        Negative integers count back from the last item in the array.]
+
+        Args:
+            index ([type]): [position of item]
+
+        Returns:
+            [type]: [item at the given position]
+        """
+        return self.args[index]
+
 
 
 class Navigator(object):
@@ -1208,18 +1677,56 @@ class Number(float):
         """ Checks whether a value is a safe integer """
         raise NotImplementedError
 
-    def toExponential(self, num):
+    def toExponential(self, num=None):
         """ Converts a number into an exponential notation """
-        return math.exp(num)
+        if num is not None:
+            # return math.exp(num)
+            # print('------')
+            exp = '{:e}'.format(Number(self.x).toFixed(num))
 
-    def toFixed(self, num):
-        """ Formats a number with x numbers of digits after the decimal point """
-        # return float(f"{0:.{{num}}f}".format(self.x))  # TODO - test
-        raise NotImplementedError
+            n = exp.split('e')[0].rstrip("0")
+            e = exp.split('e')[1].replace('0','')
 
-    def toPrecision(self, num):
-        """ Formats a number to x length """
-        raise NotImplementedError
+            return n + "e" + e
+        else:
+            # print('xxxxxx')
+            # print(self.x)
+            # return math.exp(self.x)
+            exp = '{:e}'.format(self.x)
+
+            n = exp.split('e')[0].rstrip("0")
+            e = exp.split('e')[1].replace('0','')
+
+            return n + "e" + e
+
+    def toFixed(self, digits: int):
+        """[formats a number using fixed-point notation.]
+
+        Args:
+            digits ([int]): [The number of digits to appear after the decimal point
+
+        Returns:
+            [str]: [A string representing the given number using fixed-point notation.]
+        """
+        # print("DIGIT!", digits)
+        # return float(f"{0:.{{digits}}f}".format(self.x))  # TODO - test
+        # raise NotImplementedError
+        # return str(math.pow(self.x, digits))
+        return round(self.x, digits)
+
+    def toPrecision(self, precision):
+        """[returns a string representing the Number object to the specified precision.]
+
+        Args:
+            precision ([int]): [An integer specifying the number of significant digits.]
+
+        Returns:
+            [str]: [A string representing a Number object in fixed-point or exponential notation rounded to precision significant digits]
+        """
+        precision = int(precision)
+        # return str(math.pow(self.x, precision))
+        # raise NotImplementedError
+        return str(round(self.x, precision))
 
 
 class String(object):
@@ -1228,30 +1735,30 @@ class String(object):
     def __init__(self, x="", *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
-        self.x = x
+        self.x = str(x)
 
     def __str__(self):
         return self.x
 
     @staticmethod
-    def charCodeAt(self, index):
+    def charCodeAt(self, index: int):
         """ Returns the Unicode of the character at the specified index """
         return ord(self.x[index])
 
     @staticmethod
-    def fromCharCode(self, code):
-        """ Converts Unicode values to characters """
-        return chr(code)
+    def fromCharCode(self, *codes):
+        """ returns a string created from the specified sequence of UTF-16 code units """
+        return "".join([str(chr(x)) for x in codes])
 
     @property
     def length(self):
         return len(self.x)
 
-    def repeat(self, count):
+    def repeat(self, count: int):
         """ Returns a new string with a specified number of copies of an existing string """
         return self.x * count
 
-    def startsWith(self, x, start=None, end=None):
+    def startsWith(self, x: str, start: int = None, end: int = None):
         """ Checks whether a string begins with specified characters """
         if start is None:
             start = 0
@@ -1260,13 +1767,13 @@ class String(object):
         # print(self.x.startswith(x, start, end))
         return self.x.startswith(x, start, end)
 
-    def substring(self, start, end=None):
+    def substring(self, start: int, end: int = None):
         """ Extracts the characters from a string, between two specified indices """
         if end is None:
             end = len(self.x)
         return self.x[start:end]
 
-    def endsWith(self, x, start=None, end=None):
+    def endsWith(self, x: str, start: int = None, end: int = None):
         """ Checks whether a string ends with specified string/characters """
         if start is None:
             start = 0
@@ -1282,10 +1789,10 @@ class String(object):
         """ Converts a string to uppercase letters """
         return self.x.upper()
 
-    def slice(self, start=0, end=None):
+    def slice(self, start: int = 0, end: int = None):
         """ Selects a part of an string, and returns the new string """
         if end is None:
-            end = len(self.x) - 1
+            end = len(self.x)
         return self.x[start:end]
 
     def trim(self):
@@ -1303,19 +1810,32 @@ class String(object):
         """
         return self.x[index]
 
-    def replace(self, old, new):
+    def replace(self, old: str, new: str):
         """
         Searches a string for a specified value, or a regular expression,
-        and returns a new string where the specified values are replaced
+        and returns a new string where the specified values are replaced.
+        only replaces first one.
+        """
+        return self.x.replace(old, new, 1)
+        # re.sub(r"regepx", "old", "new") # TODO - js one also takes a regex
+
+    def replaceAll(self, old: str, new: str):
+        """[returns a new string where the specified values are replaced. ES2021]
+
+        Args:
+            old ([str]): [word to remove]
+            new ([str]): [word to replace it with]
+
+        Returns:
+            [str]: [new string with all occurences of old word replaced]
         """
         return self.x.replace(old, new)
-        # re.sub(r"regepx", "old", "new") # TODO - js one also takes a regex
 
     # def localeCompare():
     # """ Compares two strings in the current locale """
     # pass
 
-    def substr(self, start=0, end=None):
+    def substr(self, start: int = 0, end: int = None):
         """ Extracts the characters from a string, beginning at a specified start position,
         and through the specified number of character """
         if end is None:
@@ -1331,6 +1851,20 @@ class String(object):
         """ Converts a string to uppercase letters, according to the host's locale """
         # locale.setlocale()
         return self.x.upper()
+
+    def indexOf(self, searchValue: str, fromIndex: int = 0):
+        """[returns the index within the calling String object of the first occurrence of the specified value, 
+        starting the search at fromIndex ]
+
+        Args:
+            searchValue (str): [The string value to search for.]
+            fromIndex (int): [An integer representing the index at which to start the search]
+
+        Returns:
+            [type]: [The index of the first occurrence of searchValue, or -1 if not found.]
+
+        """
+        return self.x.index(searchValue, fromIndex)
 
 
 class RegExp():
@@ -1354,9 +1888,9 @@ class RegExp():
 
     def exec(self, s: str):
         """ Executes a search for a match in its string parameter. """
-        print("exec:", self.expression, s)
+        # print("exec:", self.expression, s)
         m = re.search(self.expression, s)
-        print(m)
+        # print(m)
         if (m):
             return [s for s in m.groups()]
 
@@ -1398,9 +1932,8 @@ class RegExp():
 
 # https://developer.mozilla.org/en-US/docs/Web/API/URL
 
-
 class URL(object):
-    """ a tag extends from URL """
+    """ a-tag extends from URL """
 
     def __update__(self):
         # print( "update URL:", type(self), self  )
@@ -1409,26 +1942,30 @@ class URL(object):
             new = {}
             new['protocol'] = self.url.scheme
             new['hostname'] = self.url.hostname
+            new['href'] = self.url.geturl()
             new['port'] = self.url.port
             new['host'] = ''  # self.url.hostname
             new['pathname'] = self.url.path
             new['hash'] = ''  # self.url.hash
+            new['search'] = ''  # self.url.hash
 
             # update it with all the new ones
             new = {}
             new['protocol'] = self.protocol
             new['hostname'] = self.hostname
+            new['href'] = self.href
             new['port'] = self.port
             new['host'] = self.host
             new['pathname'] = self.pathname
             new['hash'] = self.hash  # self.hash
-
-            # rebuild
+            new['search'] = self.search  # self.url.query
+            new['_searchParams'] = self._searchParams  # URLSearchParams(self.url.query)
+            # NOTE - rebuild happening here
             self.url = urllib.parse.urlsplit(
-                new['protocol'] + "://" + new['host'] + new['pathname'] + new['hash'])
+                new['protocol'] + "://" + new['host'] + new['pathname'] + new['hash'] + new['search'])
 
-            # reset
             self.href = self.url.geturl()
+
         except Exception:  # as e:
             # print('fails on props called by init as they dont exist yet')
             # print(e)
@@ -1443,14 +1980,19 @@ class URL(object):
             url (str): a url
         """
         self.url = urllib.parse.urlsplit(url)
-        self.href = self.url.geturl()
-
+        self.href = url  # self.url.geturl()
         self.protocol = self.url.scheme
         self.hostname = self.url.hostname
         self.port = self.url.port
         self.host = self.url.hostname
         self.pathname = self.url.path
         self.hash = ''
+        self.search = self.url.query
+        self._searchParams = URLSearchParams(self.url.query)
+
+    @property
+    def searchParams(self):
+        return self._searchParams.toString()
 
     def toString(self):
         return str(self.href)
@@ -1459,6 +2001,7 @@ class URL(object):
 
     # @property
     # def href(self):
+    # TODO - check js vs tag. does js version remove query?. if so detect self.
     #     return self.href
 
     # @href.setter
@@ -1544,6 +2087,161 @@ class URL(object):
     # def origin(self):
         '''# origin    Returns the protocol, hostname and port number of a URL Location'''
 
+    def __str__(self):
+        return str(self.href)
+
+    # NOTE - node -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    # @staticmethod
+    # def domainToASCII(domain: str):
+    #     """[It returns the Punycode ASCII serialization of the domain. 
+    #     If domain is an invalid domain, the empty string is returned.]
+
+    #     Args:
+    #         domain (str): [description]
+    #     """
+    #     pass
+
+    # @staticmethod
+    # def domainToUnicode(domain: str):
+    #     """[returns the Unicode serialization of the domain. 
+    #     If the domain is invalid, the empty string is returned]
+
+    #     Args:
+    #         domain (str): [description]
+    #     """
+    #     pass
+
+    # @staticmethod
+    # def fileURLToPath(url: str):
+    #     """[summary]
+
+    #     Args:
+    #         url (str): [description]
+    #     """
+    #     pass
+
+    # @staticmethod
+    # def format(URL, options):
+    #     """[summary]
+
+    #     Args:
+    #         URL ([type]): [description]
+    #         options ([type]): [description]
+    #     """
+    #     pass
+
+    # @staticmethod
+    # def pathToFileURL(path: str):
+    #     """[summary]
+
+    #     Args:
+    #         path (str): [description]
+    #     """
+    #     pass
+
+    # @staticmethod
+    # def urlToHttpOptions(url: str):
+    #     """[summary]
+
+    #     Args:
+    #         url (str): [description]
+    #     """
+    #     pass
+
+
+class URLSearchParams:
+    """[utility methods to work with the query string of a URL]
+
+        created with help of https://6b.eleuther.ai/
+
+    """
+
+    def __init__(self, paramString):#, **paramsObj):
+        """[Returns a URLSearchParams object instance.]
+
+        Args:
+            paramString ([type]): [ i.e. q=URLUtils.searchParams&topic=api]
+        """
+        # TODO - escape
+        # import ast
+        # TODO - dont think i can do this cant urls params have duplicate keys?
+        # self.params = ast.literal_eval(paramString)
+        if isinstance(paramString, str):
+            if paramString.startswith('?'):
+                paramString = paramString[1:len(paramString)]
+
+            import urllib
+            self.params = urllib.parse.parse_qs(paramString)
+        elif hasattr(paramString, '__iter__'):
+            self.params = [item for sublist in paramString for item in sublist]
+        elif isinstance(paramString, dict):
+            self.params = dict([(key, item) for key, item in paramString.iteritems()])
+        else:
+            raise TypeError("Malformed paramString.  Must be a string or a dict with dict like items. Got: %s" % paramString)
+
+    def __iter__(self):
+        for attr in self.params.items():  # dir(self.params.items()):
+            # if not attr.startswith("__"):
+            yield attr
+
+    def append(self, key, value):
+        """ Appends a specified key/value pair as a new search parameter """
+        # TODO - ordereddict?
+        self.params[key].append(value)  # [key]=value
+
+    def delete(self, key):
+        """ Deletes the given search parameter, and its associated value, from the list of all search parameters. """
+        del self.params[key]
+
+    def has(self, key):
+        """ Returns a Boolean indicating if such a given parameter exists. """
+        return key in self.params
+
+    def entries(self):
+        """ Returns an iterator allowing iteration through all key/value pairs contained in this object. """
+        return self.params.items()
+
+    def forEach(self, func):
+        """ Allows iteration through all values contained in this object via a callback function. """
+        for key, value in self.params.items():
+            func(key, value)
+
+    def keys(self):
+        """ Returns an iterator allowing iteration through all keys of the key/value pairs contained in this object. """
+        return self.params.keys()
+
+    def get(self, key):
+        """ Returns the first value associated with the given search parameter. """
+        try:
+            return self.params.get(key, None)[0]
+        except Exception:
+            return None
+
+    def sort(self):
+        """ Sorts all key/value pairs, if any, by their keys. """
+        self.params.sort()
+
+    def values(self):
+        """ Returns an iterator allowing iteration through all values of the key/value pairs contained in this object. """
+        return self.params.values()
+
+    def toString(self):
+        """ Returns a string containing a query string suitable for use in a URL. """
+        # return '&'.join([str(x) for x in self.params])
+        return urllib.parse.urlencode(self.params, doseq=True)
+        # return str(self.params)
+
+    def set(self, key, value):
+        """ Sets the value associated with a given search parameter to the given value. If there are several values, the others are deleted. """
+        self.params[key] = (value)
+
+    def getAll(self, key):
+        """ Returns all the values associated with a given search parameter. """
+        return self.params.get(key)
+
+    def __str__(self):
+        return urllib.parse.urlencode(self.params, doseq=True)
+
 
 '''
 
@@ -1618,7 +2316,6 @@ class URL(object):
 # multiline Checks whether the "m" modifier is set  RegExp
 # namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection
 # removeNamedItem() Removes a specified attribute node  Attribute
-# search    Sets or returns the querystring part of a URL   Location
 # setNamedItem()    Sets the specified attribute node (by name) Attribute
 # source    Returns the text of the RegExp pattern  RegExp
 # specified Returns true if the attribute has been specified, otherwise it returns false    Attribute

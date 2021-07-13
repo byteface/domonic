@@ -21,7 +21,7 @@
 • [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲 <br />
 • [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 <br />
 • [dQuery](https://domonic.readthedocs.io/_modules/domonic/dQuery.html) - NEW. Recently started. utils for querying domonic. (alt + 0 for the º symbol)<br />
-• terminal : call terminal commands with python3 😱 (*see at the end*)<br />
+• terminal || cmd : call terminal commands with python3 😱 (*see at the end*)<br />
 • JSON : utils for loading / decorating / transforming<br />
 • SVG : Generate svg using python (untested)<br />
 • aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder)<br />
@@ -78,8 +78,29 @@ page = div(span('Hello World'))
 render(page, 'index.html')
 ```
 
+So you can build your own static site generator using python simply by serialising a dataset into pyml.
 
-So you can build your own static site generator using python
+### decorators
+
+You can use decorators to wrap elements around function results
+
+```python
+from domonic.decorators import el
+
+@el(html, True)
+@el(body)
+@el(div)
+def test():
+    return 'hi!'
+
+print(test())
+# <html><body><div>hi!</div></body></html>
+
+# returns pyml objects so call str to render
+assert str(test()) == '<html><body><div>hi!</div></body></html>'
+```
+
+It returns the tag object by default. You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.
 
 ### data-tags
 python doesn't allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags
@@ -408,6 +429,15 @@ command.run("echo hi")
 Take a look at the code in 'terminal.py' to see all the commands as there's loads. (Disclaimer: not all tested.)
 
 
+Windows users can use now use cmd.
+
+```python
+from domonic.cmd import *
+print(dir())
+print(dir("..\\")) 
+```
+
+
 ## DOCS
 
 https://domonic.readthedocs.io/
@@ -541,6 +571,9 @@ or to test a single function:
 python -m unittest tests.test_javascript.domonicTestCase.test_javascript_array
 python -m unittest tests.test_dQuery.domonicTestCase.test_dQuery_addClass
 python -m unittest tests.test_geom.domonicTestCase.test_vec2
+
+python3 -m unittest tests.test_cmd.domonicTestCase.test_cmd_dir
+
 ```
 
 or to test a whole module

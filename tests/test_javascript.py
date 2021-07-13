@@ -9,6 +9,7 @@ import unittest
 # import requests
 # from mock import patch
 
+from domonic.javascript import Object
 from domonic.javascript import Math
 from domonic.javascript import Global
 from domonic.javascript import Window
@@ -24,7 +25,57 @@ class domonicTestCase(unittest.TestCase):
 
     # domonic.javascript.Math
 
+    def test_domonic_Object(self):
+
+        o = Object()
+        print(o)
+
+        # obj = {'a': 1}
+        # copy = Object.assign({}, obj)
+        # print(copy)  # { a: 1 }
+
+        # print(Object().fromEntries())
+        arr = [['0', 'a'], ['1', 'b'], ['2', 'c']]
+        obj = Object.fromEntries(arr)
+        print(obj)
+        assert obj == {'0': "a", '1': "b", '2': "c"}
+
+        obj = {'foo': 'bar', 'baz': 42}
+        print(Object.entries(obj))
+        assert Object.entries(obj) == [['foo', 'bar'], ['baz', 42]]
+
+        # array like object
+        obj = {'0': 'a', '1': 'b', '2': 'c'}
+        assert Object.entries(obj) == [['0', 'a'], ['1', 'b'], ['2', 'c']]
+
+        # array like object with random key ordering
+        # anObj = {'100': 'a', '2': 'b', '7': 'c'}
+        # print(anObj)
+        # print(Object.entries(anObj))
+        # assert Object.entries(anObj) == [['2', 'b'], ['7', 'c'], ['100', 'a']]
+
+        # returns an empty array for any primitive type
+        assert Object.entries(100) == []
+
+        # iterate through key-value gracefully
+        # obj = {'a': 5, 'b': 7, 'c': 9}
+        # for key, value in Object.entries(obj):
+            # print(f'{key} {value}')  # "a 5", "b 7", "c 9"
+
     def test_domonic_abs(self):
+        # python -m unittest tests.test_javascript.domonicTestCase.test_domonic_abs
+
+        self.assertEqual(Math.abs('-1'), 1)
+        self.assertEqual(Math.abs(-2), 2)
+        self.assertEqual(Math.abs(None), 0)
+        self.assertEqual(Math.abs(''), 0)
+        self.assertEqual(Math.abs([]), 0)
+        self.assertEqual(Math.abs([2]), 2)
+        self.assertEqual(Math.abs([1, 2]), None)
+        self.assertEqual(Math.abs({}), None)
+        self.assertEqual(Math.abs('string'), None)
+        self.assertEqual(Math.abs(), None)
+
         self.assertEqual(100, Math.abs(-100.0))
 
     def test_domonic_LN2(self):
@@ -183,6 +234,10 @@ class domonicTestCase(unittest.TestCase):
         # window = Window()
         # Window().console.log("test this")
         # window.console.log("test this")
+
+        # c = Console()
+        # c.log()
+        # Console.log('test')
         pass
 
     def test_domonic_window_alert(self):
@@ -545,6 +600,103 @@ class domonicTestCase(unittest.TestCase):
         # test
 
 
+    def test_javascript_URLSearchParams(self):
+        print("test_javascript_URLSearchParams")
+
+        paramsString = "q=test&topic=api"
+        searchParams = URLSearchParams(paramsString)
+
+        # Iterate the search parameters.
+        for p in searchParams:
+            print(p)
+
+        assert searchParams.has("topic") == True  # True
+        # print( searchParams.get("topic") )
+        assert searchParams.get("topic") == "api"  # True
+        # searchParams.getAll("topic"); # ["api"]
+        assert searchParams.get("foo") is None  # true
+        print(searchParams.toString())
+        searchParams.append("topic", "webdev")
+        print(searchParams.toString())
+        assert searchParams.toString() == "q=test&topic=api&topic=webdev"
+        searchParams.set("topic", "More webdev")
+        assert searchParams.toString() == "q=test&topic=More+webdev"
+        searchParams.delete("topic")
+        assert searchParams.toString() == "q=test"
+
+        # GOTCHAS
+
+        paramsString1 = "http://example.com/search?query=%40"
+        searchParams1 = URLSearchParams(paramsString1)
+
+        assert searchParams1.has("query") == False
+        assert searchParams1.has("http://example.com/search?query") == True
+
+        assert searchParams1.get("query") == None
+        searchParams1.get("http://example.com/search?query")  # "@" (equivalent to decodeURIComponent('%40'))
+
+        paramsString2 = "?query=value"
+        searchParams2 = URLSearchParams(paramsString2)
+        print(searchParams2)
+        assert searchParams2.has("query") == True
+
+        url = URL("http://example.com/search?query=%40")
+
+        searchParams3 = URLSearchParams(url.search)
+
+        print(searchParams3)
+        # print(str(searchParams3))
+        # assert searchParams3.has("query") == True
+
+        base64 = window.btoa(String.fromCharCode(19, 224, 23, 64, 31, 128))  # base64 is "E+AXQB+A"
+        print(base64)
+        searchParams = URLSearchParams("q=foo&bin=" + str(base64))  # q=foo&bin=E+AXQB+A
+        # getBin = searchParams.get("bin")  # "E AXQB A" + char is replaced by spaces
+        # print(getBin)
+        # window.btoa(window.atob(getBin))  # "EAXQBA==" no error thrown
+        # window.btoa(String.fromCharCode(16, 5, 208, 4))  # "EAXQBA==" decodes to wrong binary value
+        # getBin.replace(r'/ /g', "+")  # "E+AXQB+A" is one solution
+
+        # or use set to add the parameter, but this increases the query string length
+        # searchParams.set("bin2", base64)  # "q=foo&bin=E+AXQB+A&bin2=E%2BAXQB%2BA" encodes + as %2B
+        # searchParams.get("bin2")  # "E+AXQB+A"
+
+    def test_javascript_FormData(self):
+        print("test_javascript_FormData")
+        # f = form(input(_type="text", _name="test", _id="test"))
+        # d = FormData(f)
+        # print(d)
+        pass
+
+    def test_javascript_Worker(self):
+        print("test_javascript_Worker")
+        # myWorker = Worker('/worker.py')
+        # first = document.querySelector('input#number1')
+        # second = document.querySelector('input#number2')
+        # first.onchange = lambda evt : \
+        #     myWorker.postMessage([first.value, second.value])
+        #     print('Message posted to worker')
+        pass
+
+    def test_javascript_at(self):
+        print("test_javascript_at")
+        myarr = Array(['a', 'b', 'c', 'd'])
+        assert myarr.at(-1) == 'd'
+        myarr = ['a', 'b', 'c', 'd']
+        myarr = Array(myarr)
+        assert myarr.at(-1) == 'd'
+        myarr = Array('a', 'b', 'c', 'd')
+        assert myarr.at(-1) == 'd'
+
+
+    # def test_javascript_Node(self):
+        # url = require('url');        
+        # console.log(url.domainToASCII('español.com'))
+        # console.log(url.domainToASCII('??.com'))
+        # console.log(url.domainToASCII('xn--iñvalid.com'))
+        # console.log(url.domainToUnicode('español.com'))
+        # console.log(url.domainToUnicode('??.com'))
+        # console.log(url.domainToUnicode('xn--iñvalid.com'))
 
 
 _intID = None

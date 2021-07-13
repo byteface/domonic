@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.utils &#8212; domonic 0.3.12 documentation</title>
+    <title>domonic.utils &#8212; domonic 0.3.18 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -74,27 +74,49 @@
             <span class="k">lambda</span> <span class="n">mo</span><span class="p">:</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">mo</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">s</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Utils.squash"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.squash">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">squash</span><span class="p">(</span><span class="n">the_list</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; turns a 2d array into a flat one &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">squash</span><span class="p">(</span><span class="n">the_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[turns a 2d array into a flat one]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            the_list ([type]): [a 2d array]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [a flattened 1d array]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">inner</span> <span class="k">for</span> <span class="n">outer</span> <span class="ow">in</span> <span class="n">the_list</span> <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="n">outer</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Utils.chunk"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.chunk">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="nb">list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; chunk a list into batches &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">),</span> <span class="n">size</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="Utils.dictify"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.dictify">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">dictify</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; turns a list into a dictionary where the list items are the keys &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">dictify</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[turns a list into a dictionary where the list items are the keys]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            arr ([type]): [list to change]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [a new dict where the list items are now the keys]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="n">some_str</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="ow">not</span> <span class="n">some_str</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
 
-    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Utils.unique"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.unique">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="n">some_arr</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">some_arr</span><span class="p">))</span>
+        <span class="sd">&quot;&quot;&quot;[removes duplicates from a list]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            some_arr ([type]): [list containing duplicates]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [a list containing no duplicates]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">some_arr</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Utils.chunks"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.chunks">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">chunks</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">iter</span><span class="p">):</span>
@@ -108,25 +130,65 @@
 
 <div class="viewcode-block" id="Utils.clean"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.clean">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; removes falsy values (False, None, 0 and “”) from a list &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;[removes falsy values (False, None, 0 and “”) from a list ]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lst ([type]): [lst to operate on]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [a new list with falsy values removed]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">lst</span><span class="p">))</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_vowels</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">each</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">string</span> <span class="k">if</span> <span class="n">each</span> <span class="ow">in</span> <span class="s1">&#39;aeiou&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="Utils.get_vowels"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.get_vowels">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_vowels</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[get a list of vowels from the word]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string ([str]): [the word to check]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [list]: [a list of vowels]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">each</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">string</span> <span class="k">if</span> <span class="n">each</span> <span class="ow">in</span> <span class="s1">&#39;aeiou&#39;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Utils.untitle"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.untitle">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">untitle</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; fooBar &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="nb">str</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
+    <span class="k">def</span> <span class="nf">untitle</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[the opposite of title]</span>
 
-    <span class="nd">@staticmethod</span>
+<span class="sd">        Args:</span>
+<span class="sd">            str ([type]): [the string to change]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [a string with the first character set to lowercase]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">string</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">string</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
+
+<div class="viewcode-block" id="Utils.merge_dictionaries"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.merge_dictionaries">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">merge_dictionaries</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">}</span>
+        <span class="sd">&quot;&quot;&quot;[merges 2 dicts]</span>
 
-    <span class="nd">@staticmethod</span>
+<span class="sd">        Args:</span>
+<span class="sd">            a ([type]): [dict a]</span>
+<span class="sd">            b ([type]): [dict b]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [dict]: [a new dict]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="Utils.to_dictionary"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.to_dictionary">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">to_dictionary</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
+        <span class="sd">&quot;&quot;&quot;[take a list of keys and values and returns a dict]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            keys ([type]): [a list of keys]</span>
+<span class="sd">            values ([type]): [a list of value]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [dict]: [a dictionary]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">most_frequent</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
@@ -137,17 +199,50 @@
         <span class="k">return</span> <span class="n">Counter</span><span class="p">(</span><span class="n">first</span><span class="p">)</span> <span class="o">==</span> <span class="n">Counter</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_palindrome</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">word</span> <span class="o">==</span> <span class="n">word</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Utils.acronym"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.acronym">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">acronym</span><span class="p">(</span><span class="n">sentence</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[pass a sentence, returns the acronym]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sentence ([str]): [typically 3 words]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [a TLA (three letter acronym)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">a</span></div>
+
+<div class="viewcode-block" id="Utils.frequency"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.frequency">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">frequency</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[check the frequency of elements in the data]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data ([type]): [the data to check]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [dict]: [a dict of elements and their frequency]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">freq</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">freq</span><span class="p">:</span>
                 <span class="n">freq</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">freq</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">freq</span>
+        <span class="k">return</span> <span class="n">freq</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">init_assets</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="s1">&#39;assets&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Utils.init_assets"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.init_assets">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">init_assets</span><span class="p">(</span><span class="nb">dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;assets&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[creates an assets directory with nested js/css/img dirs]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dir (str, optional): [default directory name]. Defaults to &#39;assets&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">domonic.terminal</span> <span class="kn">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">touch</span>
         <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">/js&quot;</span><span class="p">)</span>
@@ -155,12 +250,17 @@
         <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">/img&quot;</span><span class="p">)</span>
         <span class="n">touch</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">/js/master.js&quot;</span><span class="p">)</span>
         <span class="n">touch</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">dir</span><span class="si">}</span><span class="s2">/css/style.css&quot;</span><span class="p">)</span>
-        <span class="k">return</span>
+        <span class="k">return</span></div>
 
 <div class="viewcode-block" id="Utils.url2file"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.url2file">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">url2file</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        gen a safe filename from a url</span>
+    <span class="k">def</span> <span class="nf">url2file</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[gen a safe filename from a url. by replacing &#39;/&#39; for &#39;_&#39; and &#39;:&#39; for &#39;__&#39; ]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url ([str]): [the url to turn into a filename]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">urllib</span>
         <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
@@ -168,10 +268,18 @@
         <span class="n">filename</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote_plus</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">filename</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">permutations</span><span class="p">(</span><span class="n">word</span><span class="p">):</span>
+<div class="viewcode-block" id="Utils.permutations"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.permutations">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">permutations</span><span class="p">(</span><span class="n">word</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[provides all the possible permutations of a given word]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            word ([str]): [the word to get permutations for]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">permutations</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">permutations</span><span class="p">(</span><span class="n">word</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">permutations</span><span class="p">(</span><span class="n">word</span><span class="p">))]</span></div>
 
 <div class="viewcode-block" id="Utils.random_color"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.random_color">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">random_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -179,8 +287,16 @@
         <span class="n">r</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;#</span><span class="si">%02X%02X%02X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">(),</span> <span class="n">r</span><span class="p">(),</span> <span class="n">r</span><span class="p">()))</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">escape</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<div class="viewcode-block" id="Utils.escape"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.escape">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">escape</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[escape a string]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            s ([str]): [the string to escape]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chars</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;&amp;&quot;</span><span class="p">:</span> <span class="s2">&quot;&amp;amp;&quot;</span><span class="p">,</span>
             <span class="s1">&#39;&quot;&#39;</span><span class="p">:</span> <span class="s2">&quot;&amp;quot;&quot;</span><span class="p">,</span>
@@ -188,31 +304,70 @@
             <span class="s2">&quot;&gt;&quot;</span><span class="p">:</span> <span class="s2">&quot;&amp;gt;&quot;</span><span class="p">,</span>
             <span class="s2">&quot;&lt;&quot;</span><span class="p">:</span> <span class="s2">&quot;&amp;lt;&quot;</span>
         <span class="p">}</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chars</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chars</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">)</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">unescape</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<div class="viewcode-block" id="Utils.unescape"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.unescape">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">unescape</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[unescape a string]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            s ([str]): [the string to unescape]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;quot;&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;apos;&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">s</span>
+        <span class="k">return</span> <span class="n">s</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">replace_between</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">match</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="Utils.replace_between"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.replace_between">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">replace_between</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">match</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replacement</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[replace some text but only between certain indexes]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content (str): [the content whos text you will be replacing]</span>
+<span class="sd">            match (str): [the string to find]</span>
+<span class="sd">            replacement (str): [the string to replace it with]</span>
+<span class="sd">            start (int, optional): [start index]. Defaults to 0.</span>
+<span class="sd">            end (int, optional): [end index]. Defaults to 0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">front</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">start</span><span class="p">]</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
         <span class="n">end</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="n">end</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)]</span>
         <span class="n">mid</span> <span class="o">=</span> <span class="n">mid</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">replacement</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">front</span> <span class="o">+</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">end</span>
+        <span class="k">return</span> <span class="n">front</span> <span class="o">+</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">end</span></div>
 
-    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Utils.truncate"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.truncate">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[truncates a string and appends 3 dots]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str, optional): [the text to truncate]. Defaults to &#39;&#39;.</span>
+<span class="sd">            length (int, optional): [the max length]. Defaults to 0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">length</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">length</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">text</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">has_internet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;http://www.google.com/&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">requests</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No internet connection available.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
     <span class="c1"># def any_iter(arr):</span>
     <span class="c1">#     &#39;&#39;&#39; given a list. returns random until expired &#39;&#39;&#39;</span>
@@ -260,14 +415,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">Domonic: cmd</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>
 

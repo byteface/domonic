@@ -50,22 +50,24 @@ class domonicTestCase(unittest.TestCase):
         for i in range(10):
             print(0.1 * i)
 
-
         print(format)
 
         f = format(".1f")
+        # f = format(".0%")
 
+        print('>', f)
 
         for i in range(10):
+            print(i)
             print(f(0.1 * i))
 
-        # format(".0%")(0.123)  # rounded percentage, "12%"
-        # format("($.2f")(-3.5)  # localized fixed-point currency, "(£3.50)"
-        # format("+20")(42)  # space-filled and signed, "                 +42"
-        # format(".^20")(42)  # dot-filled and centered, ".........42........."
-        # format(".2s")(42e6)  # SI-prefix with two significant digits, "42M"
-        # format("#x")(48879)  # prefixed lowercase hexadecimal, "0xbeef"
-        # format(",.2r")(4223)  # grouped thousands with two significant digits, "4,200"
+        print(format(".0%")(0.123))  # rounded percentage, "12%"
+        print(format("($.2f")(-3.5))  # localized fixed-point currency, "(£3.50)"
+        print(format("+20")(42))  # space-filled and signed, "                 +42"
+        print(format(".^20")(42))  # dot-filled and centered, ".........42........."
+        print(format(".2s")(42e6))  # SI-prefix with two significant digits, "42M"
+        print(format("#x")(48879))  # prefixed lowercase hexadecimal, "0xbeef"
+        print(format(",.2r")(4223))  # grouped thousands with two significant digits, "4,200"
 
 
 if __name__ == '__main__':

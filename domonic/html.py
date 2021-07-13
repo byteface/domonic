@@ -83,6 +83,8 @@ class tag(object):
     The class from which all html tags extend.
     """
 
+    # TODO - slots?.
+
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
@@ -470,6 +472,8 @@ def create_element(name='custom_tag', *args, **kwargs):
     tag name needs to be set due to custom tags with hyphens can't be classnames.
     i.e. hypenated tags <some-custom-tag></some-custom-tag>
     '''
+    # TODO - check for existing elements first and return if available
+
     custom_tag = type('custom_tag', (tag, Element), {'name': name, '__init__': tag_init})
     # t = tag(*args, **kwargs)  #  TODO - this is not an element.
     t = custom_tag(*args, **kwargs)

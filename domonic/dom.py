@@ -448,6 +448,358 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
         raise NotImplementedError
 
 
+"""
+def AriaMixin():  #???
+
+    @property
+    def ariaAtomic(self):
+        return self.getAttribute('aria-atomic')
+
+    @ariaAtomic.setter
+    def ariaAtomic(self, value: str):
+        self.setAttribute('aria-atomic', value)
+
+    @property
+    def ariaAtomic(self):
+        return self.getAttribute('aria-atomic')
+
+    @property
+    def ariaAutoComplete(self):
+        return self.getAttribute('aria-autoComplete')
+
+    @ariaAutoComplete.setter
+    def ariaAutoComplete(self, value: str):
+        return self.getAttribute('aria-autoComplete')
+    
+    @property
+    def ariaBusy(self):
+        return self.getAttribute('aria-busy')
+
+    @ariaBusy.setter
+    def ariaBusy(self, value: str):
+        return self.getAttribute('aria-busy')
+    
+    @property
+    def ariaChecked(self):
+        return self.getAttribute('aria-checked')
+
+    @ariaChecked.setter
+    def ariaChecked(self, value: str):
+        return self.getAttribute('aria-checked')
+    
+    @property
+    def ariaColCount(self):
+        return self.getAttribute('aria-colCount')
+
+    @ariaColCount.setter
+    def ariaColCount(self, value: str):
+        return self.getAttribute('aria-colCount')
+    
+    @property
+    def ariaColIndex(self):
+        return self.getAttribute('aria-colIndex')
+
+    @ariaColIndex.setter
+    def ariaColIndex(self, value: str):
+        return self.getAttribute('aria-colIndex')
+    
+    @property
+    def ariaColIndexText(self):
+        return self.getAttribute('aria-colIndexText')
+
+    @ariaColIndexText.setter
+    def ariaColIndexText(self, value: str):
+        return self.getAttribute('aria-colIndexText')
+    
+    @property
+    def ariaColSpan(self):
+        return self.getAttribute('aria-colSpan')
+
+    @ariaColSpan.setter
+    def ariaColSpan(self, value: str):
+        return self.getAttribute('aria-colSpan')
+    
+    @property
+    def ariaCurrent(self):
+        return self.getAttribute('aria-current')
+
+    @ariaCurrent.setter
+    def ariaCurrent(self, value: str):
+        return self.getAttribute('aria-current')
+    
+    @property
+    def ariaDescription(self):
+        return self.getAttribute('aria-description')
+
+    @ariaDescription.setter
+    def ariaDescription(self, value: str):
+        return self.getAttribute('aria-description')
+    
+    @property
+    def ariaDisabled(self):
+        return self.getAttribute('aria-disabled')
+
+    @ariaDisabled.setter
+    def ariaDisabled(self, value: str):
+        return self.getAttribute('aria-disabled')
+    
+    @property
+    def ariaExpanded(self):
+        return self.getAttribute('aria-expanded')
+
+    @ariaExpanded.setter
+    def ariaExpanded(self, value: str):
+        return self.getAttribute('aria-expanded')
+    
+    @property
+    def ariaHasPopup(self):
+        return self.getAttribute('aria-hasPopup')
+
+    @ariaHasPopup.setter
+    def ariaHasPopup(self, value: str):
+        return self.getAttribute('aria-hasPopup')
+    
+    @property
+    def ariaHidden(self):
+        return self.getAttribute('aria-hidden')
+
+    @ariaHidden.setter
+    def ariaHidden(self, value: str):
+        return self.getAttribute('aria-hidden')
+    
+    @property
+    def ariaKeyShortcuts(self):
+        return self.getAttribute('aria-keyShortcuts')
+
+    @ariaKeyShortcuts.setter
+    def ariaKeyShortcuts(self, value: str):
+        return self.getAttribute('aria-keyShortcuts')
+    
+    @property
+    def ariaLabel(self):
+        return self.getAttribute('aria-label')
+
+    @ariaLabel.setter
+    def ariaLabel(self, value: str):
+        return self.getAttribute('aria-label')
+    
+    @property
+    def ariaLevel(self):
+        return self.getAttribute('aria-level')
+
+    @ariaLevel.setter
+    def ariaLevel(self, value: str):
+        return self.getAttribute('aria-level')
+    
+    @property
+    def ariaLive(self):
+        return self.getAttribute('aria-live')
+
+    @ariaLive.setter
+    def ariaLive(self, value: str):
+        return self.getAttribute('aria-live')
+    
+    @property
+    def ariaModal(self):
+        return self.getAttribute('aria-modal')
+
+    @ariaModal.setter
+    def ariaModal(self, value: str):
+        return self.getAttribute('aria-modal')
+    
+    @property
+    def ariaMultiline(self):
+        return self.getAttribute('aria-multiline')
+
+    @ariaMultiline.setter
+    def ariaMultiline(self, value: str):
+        return self.getAttribute('aria-multiline')
+    
+    @property
+    def ariaMultiSelectable(self):
+        return self.getAttribute('aria-multiSelectable')
+
+    @ariaMultiSelectable.setter
+    def ariaMultiSelectable(self, value: str):
+        return self.getAttribute('aria-multiSelectable')
+    
+    @property
+    def ariaOrientation(self):
+        return self.getAttribute('aria-orientation')
+
+    @ariaOrientation.setter
+    def ariaOrientation(self, value: str):
+        return self.getAttribute('aria-orientation')
+    
+    @property
+    def ariaPlaceholder(self):
+        return self.getAttribute('aria-placeholder')
+
+    @ariaPlaceholder.setter
+    def ariaPlaceholder(self, value: str):
+        return self.getAttribute('aria-placeholder')
+    
+    @property
+    def ariaPosInSet(self):
+        return self.getAttribute('aria-posInSet')
+
+    @ariaPosInSet.setter
+    def ariaPosInSet(self, value: str):
+        return self.getAttribute('aria-posInSet')
+    
+    @property
+    def ariaPressed(self):
+        return self.getAttribute('aria-pressed')
+
+    @ariaPressed.setter
+    def ariaPressed(self, value: str):
+        return self.getAttribute('aria-pressed')
+    
+    @property
+    def ariaReadOnly(self):
+        return self.getAttribute('aria-readOnly')
+
+    @ariaReadOnly.setter
+    def ariaReadOnly(self, value: str):
+        return self.getAttribute('aria-readOnly')
+    
+    @property
+    def ariaRelevant(self):
+        return self.getAttribute('aria-relevant')
+
+    @ariaRelevant.setter
+    def ariaRelevant(self, value: str):
+        return self.getAttribute('aria-relevant')
+    
+    @property
+    def ariaRequired(self):
+        return self.getAttribute('aria-required')
+
+    @ariaRequired.setter
+    def ariaRequired(self, value: str):
+        return self.getAttribute('aria-required')
+    
+    @property
+    def ariaRoleDescription(self):
+        return self.getAttribute('aria-roleDescription')
+
+    @ariaRoleDescription.setter
+    def ariaRoleDescription(self, value: str):
+        return self.getAttribute('aria-roleDescription')
+    
+    @property
+    def ariaRowCount(self):
+        return self.getAttribute('aria-rowCount')
+
+    @ariaRowCount.setter
+    def ariaRowCount(self, value: str):
+        return self.getAttribute('aria-rowCount')
+    
+    @property
+    def ariaRowIndex(self):
+        return self.getAttribute('aria-rowIndex')
+
+    @ariaRowIndex.setter
+    def ariaRowIndex(self, value: str):
+        return self.getAttribute('aria-rowIndex')
+    
+    @property
+    def ariaRowIndexText(self):
+        return self.getAttribute('aria-rowIndexText')
+
+    @ariaRowIndexText.setter
+    def ariaRowIndexText(self, value: str):
+        return self.getAttribute('aria-rowIndexText')
+    
+    @property
+    def ariaRowSpan(self):
+        return self.getAttribute('aria-rowSpan')
+
+    @ariaRowSpan.setter
+    def ariaRowSpan(self, value: str):
+        return self.getAttribute('aria-rowSpan')
+    
+    @property
+    def ariaSelected(self):
+        return self.getAttribute('aria-selected')
+
+    @ariaSelected.setter
+    def ariaSelected(self, value: str):
+        return self.getAttribute('aria-selected')
+    
+    @property
+    def ariaSetSize(self):
+        return self.getAttribute('aria-setSize')
+
+    @ariaSetSize.setter
+    def ariaSetSize(self, value: str):
+        return self.getAttribute('aria-setSize')
+    
+    @property
+    def ariaSort(self):
+        return self.getAttribute('aria-sort')
+
+    @ariaSort.setter
+    def ariaSort(self, value: str):
+        return self.getAttribute('aria-sort')
+    
+    @property
+    def ariaValueMax(self):
+        return self.getAttribute('aria-valueMax')
+
+    @ariaValueMax.setter
+    def ariaValueMax(self, value: str):
+        return self.getAttribute('aria-valueMax')
+    
+    @property
+    def ariaValueMin(self):
+        return self.getAttribute('aria-valueMin')
+
+    @ariaValueMin.setter
+    def ariaValueMin(self, value: str):
+        return self.getAttribute('aria-valueMin')
+    
+    @property
+    def ariaValueNow(self):
+        return self.getAttribute('aria-valueNow')
+
+    @ariaValueNow.setter
+    def ariaValueNow(self, value: str):
+        return self.getAttribute('aria-valueNow')
+    
+    @property
+    def ariaValueText(self):
+        return self.getAttribute('aria-valueText')
+
+    @ariaValueText.setter
+    def ariaValueText(self, value: str):
+        return self.getAttribute('aria-valueText')
+"""
+
+class NodeList(list):
+
+    def item(self, index):
+        """ Returns an item in the list by its index, or null if the index is out-of-bounds."""
+        # An alternative to accessing nodeList[i] (which instead returns  undefined when i is out-of-bounds). This is mostly useful for non-JavaScript DOM implementations.
+        return self[index]
+
+    def entries(self):
+        """ Returns an iterator, allowing code to go through all key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0 and the values are nodes."""
+        raise NotImplementedError
+
+    def forEach(self, func):
+        """ Executes a provided function once per NodeList element, passing the element as an argument to the function. """
+        raise NotImplementedError
+
+    def keys(self):
+        """ Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0.)"""
+        raise NotImplementedError
+
+    def values(self):
+        """ Returns an iterator allowing code to go through all values (nodes) of the key/value pairs contained in the collection."""
+        raise NotImplementedError
+
+
 class Element(Node):
     """ Baseclass for all html tags """
 
@@ -528,6 +880,37 @@ class Element(Node):
             pass
 
         return False
+
+    # https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
+    # @classmethod
+    def matches(self, s: str):
+        """[checks to see if the Element would be selected by the provided selectorString]
+
+        Args:
+            s (str): [css selector]
+
+        Returns:
+            [bool]: [True if selector maches Element otherwise False]
+        """
+        # print("matches:", s)
+        # print(self.document) # TODO - buggin?
+        # print(self.ownerDocument)
+        # matches = (self.document or self.ownerDocument).querySelectorAll(s)
+        matches = self.ownerDocument.querySelectorAll(s)
+        for match in matches:
+            if match == self:
+                return True
+        return False
+
+    # https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
+    # def closest(self, s: str):
+    #     el = self
+    #     while (el != None and el.nodeType == 1):  # TODO - nodeType
+    #         if (Element.matches(el, s)):
+    #             return el;
+    #         el = el.parentElement || el.parentNode
+    #     return None
+
 
     # @staticmethod
     def getElementsBySelector(self, all_selectors, document):
@@ -654,14 +1037,13 @@ class Element(Node):
         # dom.getElementById("myAnchor").accessKey = "w";
 
     @property
-    def attributes(self) -> List:
+    def attributes(self):
         """ Returns a List of an element's attributes """
         return self.attributes
 
     @property
-    def innerHTML(self) -> str:
+    def innerHTML(self):
         """ Sets or returns the content of an element """
-        # self.args = args
         return self.content
 
     @innerHTML.setter
@@ -670,6 +1052,21 @@ class Element(Node):
             # TODO - will need the parser to work for this to work properly. for now shove all on first content node
             self.args = (value,)
         return self.content
+
+    @property
+    def outerHTML(self):
+        return self
+
+    @outerHTML.setter
+    def outerHTML(self, value):
+        if isinstance(value, Element):
+            self = value
+        if isinstance(value, str):
+            # self = value
+            # TODO - parse
+            # TODO - will need the parser to work for this to work properly
+            pass
+        return self
 
     def html(self, *args):
         self.args = args
@@ -1453,18 +1850,28 @@ location = Location
 class Console(object):
 
     @staticmethod
-    def log(msg: str, substitute=None):
+    def log(msg: str, substitute=None, *args):
         """log
 
         prints a message to the console
 
         Args:
             msg (str): msg to log
-            substitute (str): replace %s with this
+            substitute : replaces %s or %d with this
         """
+        argstring = str(*args)
         if substitute is not None:
-            msg = substitute.join(msg.split('%s'))
-        print(msg)
+            if '%d' not in msg and '%s' not in msg:
+                argstring = argstring + " " + str(substitute)
+            elif isinstance(substitute, (int, float)):
+                msg = str(substitute).join(msg.split('%d'))
+            elif isinstance(substitute, str):
+                msg = substitute.join(msg.split('%s'))
+
+        # print(args)
+        print(msg + argstring)
+        return msg + argstring
+
 
     __count_var = 0
 
@@ -1484,24 +1891,92 @@ class Console(object):
         """
         raise error
 
+    _timers = {}
+
+    @staticmethod
+    def _getTime():
+        import time
+        try:
+            return time.time_ns() // 1000
+        except Exception:
+            # python 3.6 doesn't have _ns
+            return time.time() * 1000000
+
+    @staticmethod
+    def time(label: str):
+        """[starts a timer]
+
+        Args:
+            label (str): [The name to give the new timer.]
+        """
+        Console._timers[label] = Console._getTime()  # time.time_ns() // 1000
+
+    @staticmethod
+    def timeLog(label: str = None):
+        """[summary]
+
+        Args:
+            label (str): [The name to of the timer to log]
+
+        Returns:
+            [type]: [description]
+        """
+        try:
+            # if label = None
+            end = Console._getTime()  # time.time_ns() // 1000
+            print(str(end - Console._timers[label]) + "ms")
+            return str(end - Console._timers[label]) + "ms"
+        except Exception:
+            print('Timer ' + label + ' does not exist')
+
+    @staticmethod
+    def timeEnd(label: str):
+        """[stops a timer]
+
+        Args:
+            label (str): [The name to of the timer to stop]
+
+        Returns:
+            [type]: [label: time - timer ended]
+        """
+        try:
+            end = Console._getTime()  # time.time_ns() // 1000
+            fin = end - Console._timers[label]
+            del Console._timers[label]
+            print(str(label) + ": " + str(fin) + "ms - timer ended")
+            return str(label) + ": " + str(fin) + "ms - timer ended"
+        except Exception:
+            print('Timer ' + label + ' does not exist')
+
+    @staticmethod
+    def assert_(assertion: bool, msg):
+        """[return an error message if the assertion is false. If the assertion is true, nothing happens.]
+
+        Args:
+            assertion (bool): [any boolean expression]
+            msg (str): [output if expression if false]
+        """
+        if not assertion:
+            print(msg)
+            return msg
+
     def __init__(self, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
         # self.log = lambda msg : print(msg)
-        # assert()
         # clear()
         # group()
         # groupCollapsed()
         # groupEnd()
         # info()
         # def table(json_str, filter_array):
-        # time()
-        # timeEnd()
         # trace()
         # warn()
         __count_var = 0
 
 
+Console.info = Console.log
+Console.warn = Console.log
 console = Console
 
 
