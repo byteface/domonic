@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: autodocs &#8212; domonic 0.3.18 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.3.19 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -2326,6 +2326,18 @@ Math.abs(‘-1’)</p>
 <dt id="domonic.javascript.Number">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Number</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number" title="Permalink to this definition">¶</a></dt>
 <dd><p>javascript Number methods</p>
+<dl class="py attribute">
+<dt id="domonic.javascript.Number.NEGATIVE_INFINITY">
+<code class="sig-name descname">NEGATIVE_INFINITY</code><em class="property"> = inf</em><a class="headerlink" href="#domonic.javascript.Number.NEGATIVE_INFINITY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents negative infinity (returned on overflow) Number</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="domonic.javascript.Number.POSITIVE_INFINITY">
+<code class="sig-name descname">POSITIVE_INFINITY</code><em class="property"> = -inf</em><a class="headerlink" href="#domonic.javascript.Number.POSITIVE_INFINITY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents infinity (returned on overflow)  Number</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="domonic.javascript.Number.isInteger">
 <code class="sig-name descname">isInteger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.isInteger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.isInteger" title="Permalink to this definition">¶</a></dt>
@@ -2340,20 +2352,59 @@ Math.abs(‘-1’)</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.Number.toExponential">
-<code class="sig-name descname">toExponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toExponential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toExponential" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">toExponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toExponential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toExponential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a number into an exponential notation</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.javascript.Number.toFixed">
-<code class="sig-name descname">toFixed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toFixed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toFixed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Formats a number with x numbers of digits after the decimal point</p>
+<code class="sig-name descname">toFixed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">digits</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toFixed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toFixed" title="Permalink to this definition">¶</a></dt>
+<dd><p>[formats a number using fixed-point notation.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>digits</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [The number of digits to appear after the decimal point</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[A string representing the given number using fixed-point notation.]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.javascript.Number.toPrecision">
-<code class="sig-name descname">toPrecision</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toPrecision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toPrecision" title="Permalink to this definition">¶</a></dt>
-<dd><p>Formats a number to x length</p>
+<code class="sig-name descname">toPrecision</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">precision</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toPrecision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toPrecision" title="Permalink to this definition">¶</a></dt>
+<dd><p>[returns a string representing the Number object to the specified precision.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>precision</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [An integer specifying the number of significant digits.]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[A string representing a Number object in fixed-point or exponential notation rounded to precision significant digits]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Number.toString">
+<code class="sig-name descname">toString</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>[returns a string representing the specified Number object.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>base</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – [An integer in the range 2 through 36 specifying the base to use for representing numeric values.]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a string representing the specified Number object]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -2511,12 +2562,23 @@ Math.abs(‘-1’)</p>
 <dl class="py method">
 <dt id="domonic.javascript.String.charAt">
 <code class="sig-name descname">charAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charAt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.charAt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the character at the specified index (position)</p>
+<dd><p>[Returns the character at the specified index (position)]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – [index position]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[character]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.javascript.String.charCodeAt">
-<em class="property">static </em><code class="sig-name descname">charCodeAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charCodeAt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.charCodeAt" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">charCodeAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charCodeAt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.charCodeAt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the Unicode of the character at the specified index</p>
 </dd></dl>
 
@@ -2528,8 +2590,29 @@ Math.abs(‘-1’)</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.String.fromCharCode">
-<em class="property">static </em><code class="sig-name descname">fromCharCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">codes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCharCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.fromCharCode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fromCharCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">codes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCharCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.fromCharCode" title="Permalink to this definition">¶</a></dt>
 <dd><p>returns a string created from the specified sequence of UTF-16 code units</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.String.indexOf">
+<code class="sig-name descname">indexOf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchValue</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">fromIndex</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.indexOf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.indexOf" title="Permalink to this definition">¶</a></dt>
+<dd><p>[returns the index within the calling String object of the first occurrence of the specified value,
+starting the search at fromIndex ]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>searchValue</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – [The string value to search for.]</p></li>
+<li><p><strong>fromIndex</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – [An integer representing the index at which to start the search]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[The index of the first occurrence of searchValue, or -1 if not found.]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

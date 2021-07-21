@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "0.3.18"
+__version__ = "0.3.19"
 __license__ = 'MIT'
 '''
 __uri__ = "https://github.com/byteface/domonic"

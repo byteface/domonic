@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.3.18 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.3.19 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -57,6 +57,9 @@
 <span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span> <span class="k">as</span> <span class="n">Pool</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
+
+<span class="c1"># true = True</span>
+<span class="c1"># false = False</span>
 
 <div class="viewcode-block" id="Object"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object">[docs]</a><span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Object &quot;&quot;&quot;</span>
@@ -682,10 +685,7 @@
 
     <span class="c1"># def global</span>
 
-    <span class="c1"># def Infinity:</span>
-    <span class="c1"># pass</span>
-    <span class="sd">&quot;&quot;&quot;A numeric value that represents positive/negative infinity &quot;&quot;&quot;</span>
-    <span class="c1"># pass</span>
+    <span class="n">Infinity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Global.isFinite"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.isFinite">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isFinite</span><span class="p">():</span>
@@ -1385,6 +1385,11 @@
 
 <span class="n">window</span> <span class="o">=</span> <span class="n">Window</span>
 
+<span class="c1"># class null():</span>
+<span class="c1">#     def __str__(self):</span>
+<span class="c1">#         return &#39;&#39;</span>
+<span class="c1">#     def __repr__(self):</span>
+<span class="c1">#         return None</span>
 
 <div class="viewcode-block" id="Array"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array">[docs]</a><span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; javascript array &quot;&quot;&quot;</span>
@@ -1396,6 +1401,11 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">return</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="c1"># self.args = [None] * args[0]</span>
+                <span class="c1"># self.args = [null()] * args[0]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
@@ -1464,7 +1474,7 @@
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="c1"># print(e)</span>
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
 <div class="viewcode-block" id="Array.isArray"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.isArray">[docs]</a>    <span class="k">def</span> <span class="nf">isArray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1481,7 +1491,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="c1"># print(e)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Array.pop"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.pop">[docs]</a>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1697,13 +1707,15 @@
 
     <span class="c1"># print(sys.float_info)</span>
     <span class="n">MAX_VALUE</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">MIN_VALUE</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
-    <span class="c1"># NEGATIVE_INFINITY Represents negative infinity (returned on overflow) Number</span>
-    <span class="c1"># POSITIVE_INFINITY Represents infinity (returned on overflow)  Number</span>
+    <span class="n">MIN_VALUE</span> <span class="o">=</span> <span class="mf">5E-324</span>  <span class="c1"># CHANGE no longer &gt;  list(sys.float_info)[3]</span>
+
+    <span class="n">NEGATIVE_INFINITY</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>  <span class="c1">#: Represents negative infinity (returned on overflow) Number</span>
+    <span class="n">POSITIVE_INFINITY</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">)</span>  <span class="c1">#: Represents infinity (returned on overflow)  Number</span>
+
     <span class="c1"># prototype Allows you to add properties and methods to an object   Number</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">Number</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Number.isInteger"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.isInteger">[docs]</a>    <span class="k">def</span> <span class="nf">isInteger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks whether a value is an integer &quot;&quot;&quot;</span>
@@ -1713,18 +1725,98 @@
         <span class="sd">&quot;&quot;&quot; Checks whether a value is a safe integer &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Number.toExponential"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.toExponential">[docs]</a>    <span class="k">def</span> <span class="nf">toExponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+<div class="viewcode-block" id="Number.toExponential"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.toExponential">[docs]</a>    <span class="k">def</span> <span class="nf">toExponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts a number into an exponential notation &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">num</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Number</span><span class="p">(</span><span class="n">Number</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">toFixed</span><span class="p">(</span><span class="n">num</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Number.toFixed"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.toFixed">[docs]</a>    <span class="k">def</span> <span class="nf">toFixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Formats a number with x numbers of digits after the decimal point &quot;&quot;&quot;</span>
-        <span class="c1"># return float(f&quot;{0:.{{num}}f}&quot;.format(self.x))  # TODO - test</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">if</span> <span class="s1">&#39;e&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">exp</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># python already converts.</span>
 
-<div class="viewcode-block" id="Number.toPrecision"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.toPrecision">[docs]</a>    <span class="k">def</span> <span class="nf">toPrecision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Formats a number to x length &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;e&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;e&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;00&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="s2">&quot;0.&quot;</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">10</span><span class="p">:</span>  <span class="c1"># TODO - not correct. lazy way to strip left 0s only</span>
+                <span class="n">e</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="c1"># print(  &quot;AND:&quot;, n, &quot;e&quot; , e )</span>
+        <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">n</span> <span class="o">+</span> <span class="s2">&quot;e&quot;</span> <span class="o">+</span> <span class="n">e</span></div>
+
+<div class="viewcode-block" id="Number.toFixed"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.toFixed">[docs]</a>    <span class="k">def</span> <span class="nf">toFixed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digits</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[formats a number using fixed-point notation.]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            digits ([int]): [The number of digits to appear after the decimal point</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [A string representing the given number using fixed-point notation.]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(&quot;DIGIT!&quot;, digits)</span>
+        <span class="k">if</span> <span class="n">digits</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">digits</span><span class="o">=</span><span class="mi">0</span>
+
+        <span class="n">fstring</span> <span class="o">=</span> <span class="s2">&quot;{:.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">digits</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;f}&quot;</span>
+        <span class="k">return</span> <span class="n">fstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">digits</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Number.toPrecision"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.toPrecision">[docs]</a>    <span class="k">def</span> <span class="nf">toPrecision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precision</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[returns a string representing the Number object to the specified precision.]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            precision ([int]): [An integer specifying the number of significant digits.]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [A string representing a Number object in fixed-point or exponential notation rounded to precision significant digits]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">precision</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
+        <span class="c1"># return str(math.pow(self.x, precision))</span>
+        <span class="c1"># raise NotImplementedError</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">precision</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Number.toString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[returns a string representing the specified Number object.]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            base (int): [An integer in the range 2 through 36 specifying the base to use for representing numeric values.]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [a string representing the specified Number object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="kn">import</span> <span class="nn">string</span>
+        <span class="n">digs</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_letters</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">digs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sign</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*=</span> <span class="n">sign</span>
+        <span class="n">digits</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">:</span>
+            <span class="n">digits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">digs</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">%</span> <span class="n">base</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">/</span> <span class="n">base</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sign</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">digits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+
+        <span class="n">digits</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">digits</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="String"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String">[docs]</a><span class="k">class</span> <span class="nc">String</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -1733,18 +1825,18 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
         <span class="c1"># self.kwargs = kwargs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
 
-<div class="viewcode-block" id="String.charCodeAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charCodeAt">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">charCodeAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="c1"># @staticmethod</span>
+<div class="viewcode-block" id="String.charCodeAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charCodeAt">[docs]</a>    <span class="k">def</span> <span class="nf">charCodeAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the Unicode of the character at the specified index &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="String.fromCharCode"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.fromCharCode">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">fromCharCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">codes</span><span class="p">):</span>
+    <span class="c1"># @staticmethod</span>
+<div class="viewcode-block" id="String.fromCharCode"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.fromCharCode">[docs]</a>    <span class="k">def</span> <span class="nf">fromCharCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">codes</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; returns a string created from the specified sequence of UTF-16 code units &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">])</span></div>
 
@@ -1767,6 +1859,8 @@
 
 <div class="viewcode-block" id="String.substring"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.substring">[docs]</a>    <span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extracts the characters from a string, between two specified indices &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span></div>
@@ -1790,7 +1884,7 @@
 <div class="viewcode-block" id="String.slice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Selects a part of an string, and returns the new string &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="String.trim"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trim">[docs]</a>    <span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1798,12 +1892,15 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="String.charAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charAt">[docs]</a>    <span class="k">def</span> <span class="nf">charAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the character at the specified index (position) &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+        <span class="sd">&quot;&quot;&quot;[Returns the character at the specified index (position)]</span>
 
-    <span class="c1"># def test():</span>
-        <span class="c1"># r = (re.search(r&quot;regexp&quot;, &quot;someString&quot;) != None)</span>
-        <span class="c1"># return r</span>
+<span class="sd">        Args:</span>
+<span class="sd">            index (int): [index position]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [character]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="String.replace"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1830,11 +1927,6 @@
     <span class="c1"># &quot;&quot;&quot; Compares two strings in the current locale &quot;&quot;&quot;</span>
     <span class="c1"># pass</span>
 
-    <span class="c1"># def search():</span>
-    <span class="c1"># &quot;&quot;&quot; Searches a string for a specified value, or regular expression, and returns the position of the match  &quot;&quot;&quot;</span>
-    <span class="c1"># if re.search(r&quot;\d&quot;, &quot;iphone 8&quot;):</span>
-    <span class="c1"># print(&quot;Has a number&quot;)</span>
-
 <div class="viewcode-block" id="String.substr"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.substr">[docs]</a>    <span class="k">def</span> <span class="nf">substr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Extracts the characters from a string, beginning at a specified start position,</span>
 <span class="sd">        and through the specified number of character &quot;&quot;&quot;</span>
@@ -1850,18 +1942,84 @@
 <div class="viewcode-block" id="String.toLocaleUpperCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toLocaleUpperCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts a string to uppercase letters, according to the host&#39;s locale &quot;&quot;&quot;</span>
         <span class="c1"># locale.setlocale()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
 
-    <span class="c1"># def compile():</span>
-    <span class="c1"># &quot;&quot;&quot; Deprecated in version 1.5. Compiles a regular expression    RegExp &quot;&quot;&quot;</span>
-    <span class="c1"># pass</span>
-    <span class="c1"># def lastIndex Specifies:</span>
-    <span class="c1"># &quot;&quot;&quot; the index at which to start the next match    RegExp &quot;&quot;&quot;</span>
-    <span class="c1"># def test():</span>
-    <span class="c1"># &quot;&quot;&quot; Tests for a match in a string. Returns true or false    RegExp &quot;&quot;&quot;</span>
-    <span class="c1"># pass</span>
+<div class="viewcode-block" id="String.indexOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.indexOf">[docs]</a>    <span class="k">def</span> <span class="nf">indexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchValue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fromIndex</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[returns the index within the calling String object of the first occurrence of the specified value, </span>
+<span class="sd">        starting the search at fromIndex ]</span>
 
-    <span class="c1"># match()   Searches a string for a match against a regular expression, and returns the matches String</span>
+<span class="sd">        Args:</span>
+<span class="sd">            searchValue (str): [The string value to search for.]</span>
+<span class="sd">            fromIndex (int): [An integer representing the index at which to start the search]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [The index of the first occurrence of searchValue, or -1 if not found.]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">searchValue</span><span class="p">,</span> <span class="n">fromIndex</span><span class="p">)</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">RegExp</span><span class="p">():</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">expression</span>
+        <span class="c1">#self.flag  #: A string that contains the flags of the RegExp object.</span>
+        <span class="c1">#self.dotAll  #: Whether . matches newlines or not.</span>
+        <span class="c1"># self.global # Whether to test the regular expression against all possible matches in a string, or only against the first.</span>
+        <span class="c1">#self.hasIndices  # Whether the regular expression result exposes the start and end indices of captured substrings.</span>
+        <span class="c1">#self.ignoreCase  # Whether to ignore case while attempting a match in a string.</span>
+        <span class="c1">#self.multiline  # Whether or not to search in strings across multiple lines.</span>
+        <span class="c1">#self.source  # The text of the pattern.</span>
+        <span class="c1">#self.sticky  # Whether or not the search is sticky.</span>
+        <span class="c1">#self.unicode  # Whether or not Unicode features are enabled.</span>
+        <span class="c1">#self.lastIndex  # The index at which to start the next match.</span>
+
+    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; (Re-)compiles a regular expression during execution of a script. &quot;&quot;&quot;</span> 
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Executes a search for a match in its string parameter. &quot;&quot;&quot;</span>
+        <span class="c1"># print(&quot;exec:&quot;, self.expression, s)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expression</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="c1"># print(m)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()]</span>
+
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[Tests for a match in its string parameter.]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            s (str): [a string to match]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [bool]: [True if match else False]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expression</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="c1"># print(m)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot; Returns a string representing the specified object. Overrides the Object.prototype.toString() method. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot; Returns a string representing the specified object. Overrides the Object.prototype.toString() method. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># def [@@match]()</span>
+    <span class="c1"># Performs match to given string and returns match result.</span>
+    <span class="c1"># def [@@matchAll]()</span>
+    <span class="c1"># Returns all matches of the regular expression against a string.</span>
+    <span class="c1"># def [@@replace]()</span>
+    <span class="c1"># Replaces matches in given string with new substring.</span>
+    <span class="c1"># def [@@search]()</span>
+    <span class="c1"># Searches the match in given string and returns the index the pattern found in the string.</span>
+    <span class="c1"># def [@@split]()</span>
+    <span class="c1"># Splits given string into an array by separating the strin</span>
 
 
 <span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/URL</span>

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.3.18 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.3.19 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -1071,14 +1071,13 @@
         <span class="c1"># dom.getElementById(&quot;myAnchor&quot;).accessKey = &quot;w&quot;;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a List of an element&#39;s attributes &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or returns the content of an element &quot;&quot;&quot;</span>
-        <span class="c1"># self.args = args</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span>
 
     <span class="nd">@innerHTML</span><span class="o">.</span><span class="n">setter</span>
@@ -1929,14 +1928,22 @@
     <span class="n">_timers</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_getTime</span><span class="p">():</span>
+        <span class="kn">import</span> <span class="nn">time</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># python 3.6 doesn&#39;t have _ns</span>
+            <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000000</span>
+
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[starts a timer]</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            label (str): [The name to give the new timer.]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">time</span>
-        <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+        <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">_getTime</span><span class="p">()</span>  <span class="c1"># time.time_ns() // 1000</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">timeLog</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -1950,8 +1957,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># if label = None</span>
-            <span class="kn">import</span> <span class="nn">time</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">_getTime</span><span class="p">()</span>  <span class="c1"># time.time_ns() // 1000</span>
             <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;ms&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;ms&quot;</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -1968,8 +1974,7 @@
 <span class="sd">            [type]: [label: time - timer ended]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">time</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">_getTime</span><span class="p">()</span>  <span class="c1"># time.time_ns() // 1000</span>
             <span class="n">fin</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
             <span class="k">del</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
             <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;ms - timer ended&quot;</span><span class="p">)</span>
