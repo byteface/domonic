@@ -11,6 +11,7 @@ test:
 	python3 -m unittest tests.test_x3d
 	python3 -m unittest tests.test_dQuery
 	python3 -m unittest tests.test_geom
+	python3 -m unittest tests.test_d3
 
 build:
 	rm -r dist/
