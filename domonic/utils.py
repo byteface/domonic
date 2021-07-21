@@ -335,6 +335,17 @@ class Utils(object):
             print("No internet connection available.")
         return False
 
+    @staticmethod
+    def numberToBase(n, b):
+        if n == 0:
+            return [0]
+        digits = []
+        while n:
+            digits.append(int(n % b))
+            n //= b
+        return digits[::-1]
+
+
     # def any_iter(arr):
     #     ''' given a list. returns random until expired '''
     #     random.shuffle(arr)

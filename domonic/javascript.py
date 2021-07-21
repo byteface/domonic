@@ -24,6 +24,9 @@ from multiprocessing.pool import ThreadPool as Pool
 import re
 
 
+# true = True
+# false = False
+
 class Object(object):
     """ Object """
 
@@ -1348,6 +1351,11 @@ class Window(object):
 
 window = Window
 
+# class null():
+#     def __str__(self):
+#         return ''
+#     def __repr__(self):
+#         return None
 
 class Array(object):
     """ javascript array """
@@ -1359,6 +1367,11 @@ class Array(object):
         if len(args) == 1:
             if isinstance(args[0], list):
                 self.args = args[0]
+                return
+            elif isinstance(args[0], int):
+                # self.args = [None] * args[0]
+                # self.args = [null()] * args[0]
+                self.args = [""] * args[0]
                 return
         self.args = list(args)
 
@@ -1660,14 +1673,15 @@ class Number(float):
 
     # print(sys.float_info)
     MAX_VALUE = list(sys.float_info)[0]
-    MIN_VALUE = list(sys.float_info)[3]
+    MIN_VALUE = 5E-324  # CHANGE no longer >  list(sys.float_info)[3]
+
     NEGATIVE_INFINITY = float("inf")  #: Represents negative infinity (returned on overflow) Number
     POSITIVE_INFINITY = float("-inf")  #: Represents infinity (returned on overflow)  Number
 
     # prototype Allows you to add properties and methods to an object   Number
 
     def __init__(self, x="", *args, **kwargs):
-        self.x = x
+        self.x = Global.Number(x)
 
     def isInteger(self):
         """ Checks whether a value is an integer """
@@ -1680,24 +1694,28 @@ class Number(float):
     def toExponential(self, num=None):
         """ Converts a number into an exponential notation """
         if num is not None:
-            # return math.exp(num)
-            # print('------')
-            exp = '{:e}'.format(Number(self.x).toFixed(num))
-
-            n = exp.split('e')[0].rstrip("0")
-            e = exp.split('e')[1].replace('0','')
-
-            return n + "e" + e
+            exp = '{:e}'.format(Number(Number(self.x).toFixed(num)))
         else:
-            # print('xxxxxx')
-            # print(self.x)
-            # return math.exp(self.x)
             exp = '{:e}'.format(self.x)
 
-            n = exp.split('e')[0].rstrip("0")
-            e = exp.split('e')[1].replace('0','')
+        if 'e' in str(self.x):
+            exp = str(self.x)  # python already converts.
 
-            return n + "e" + e
+        n = exp.split('e')[0].rstrip("0")
+        e = exp.split('e')[1].replace('00', '0')
+
+        if n == "0.":
+            n = "0"
+
+        if int(e) != 0:
+            if int(e) < 10 and int(e) > -10:  # TODO - not correct. lazy way to strip left 0s only
+                e = e.replace('0', '')
+
+        # print(  "AND:", n, "e" , e )
+        if n.endswith('.'):
+            n = n.strip('.')
+
+        return n + "e" + e
 
     def toFixed(self, digits: int):
         """[formats a number using fixed-point notation.]
@@ -1709,10 +1727,11 @@ class Number(float):
             [str]: [A string representing the given number using fixed-point notation.]
         """
         # print("DIGIT!", digits)
-        # return float(f"{0:.{{digits}}f}".format(self.x))  # TODO - test
-        # raise NotImplementedError
-        # return str(math.pow(self.x, digits))
-        return round(self.x, digits)
+        if digits < 0:
+            digits=0
+
+        fstring = "{:." + str(digits) + "f}"
+        return fstring.format(round(self.x, digits))
 
     def toPrecision(self, precision):
         """[returns a string representing the Number object to the specified precision.]
@@ -1728,6 +1747,43 @@ class Number(float):
         # raise NotImplementedError
         return str(round(self.x, precision))
 
+    def toString(self, base: int):
+        """[returns a string representing the specified Number object.]
+
+        Args:
+            base (int): [An integer in the range 2 through 36 specifying the base to use for representing numeric values.]
+
+        Returns:
+            [str]: [a string representing the specified Number object]
+        """
+
+        if base is None:
+            return str(self.x)
+
+        import string
+        digs = string.digits + string.ascii_letters
+
+        if self.x < 0:
+            sign = -1
+        elif self.x == 0:
+            return digs[0]
+        else:
+            sign = 1
+
+        self.x *= sign
+        digits = []
+
+        while self.x:
+            digits.append(digs[int(self.x % base)])
+            self.x = int(self.x / base)
+
+        if sign < 0:
+            digits.append('-')
+
+        digits.reverse()
+
+        return ''.join(digits)
+
 
 class String(object):
     """ javascript String methods """
@@ -1740,12 +1796,12 @@ class String(object):
     def __str__(self):
         return self.x
 
-    @staticmethod
+    # @staticmethod
     def charCodeAt(self, index: int):
         """ Returns the Unicode of the character at the specified index """
         return ord(self.x[index])
 
-    @staticmethod
+    # @staticmethod
     def fromCharCode(self, *codes):
         """ returns a string created from the specified sequence of UTF-16 code units """
         return "".join([str(chr(x)) for x in codes])
@@ -1769,6 +1825,8 @@ class String(object):
 
     def substring(self, start: int, end: int = None):
         """ Extracts the characters from a string, between two specified indices """
+        if start < 0:
+            start = 0
         if end is None:
             end = len(self.x)
         return self.x[start:end]
