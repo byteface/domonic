@@ -54,7 +54,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">change</span> <span class="o">=</span> <span class="mi">0</span>
 
 
-<div class="viewcode-block" id="Tween"><a class="viewcode-back" href="../../../packages/tween.html#domonic.lerpy.tween.Tween">[docs]</a><span class="k">class</span> <span class="nc">Tween</span><span class="p">(</span><span class="n">EventDispatcher</span><span class="p">):</span>
+<div class="viewcode-block" id="Tween"><a class="viewcode-back" href="../../../packages/autodocs.html#domonic.lerpy.tween.Tween">[docs]</a><span class="k">class</span> <span class="nc">Tween</span><span class="p">(</span><span class="n">EventDispatcher</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    Tween is a complex lerp but you don&#39;t have do the math cos robert penner did already.</span>
@@ -201,14 +201,14 @@
         <span class="c1"># clearInt fails. because join won&#39;t allow as a &#39;return&#39; happens just after the stop</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_intID</span><span class="o">.</span><span class="n">stopped</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>  <span class="c1"># call stopped on the thread so program exits</span>
 
-<div class="viewcode-block" id="Tween.pause"><a class="viewcode-back" href="../../../packages/tween.html#domonic.lerpy.tween.Tween.pause">[docs]</a>    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Tween.pause"><a class="viewcode-back" href="../../../packages/autodocs.html#domonic.lerpy.tween.Tween.pause">[docs]</a>    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Pauses the tween from changing the values  &quot;&quot;&quot;</span>
         <span class="c1"># TODO - pause should modify timer so it DOESNT jump frames. at mo does the opposite.</span>
         <span class="c1"># seems to not increment. then suddenly jumps to catch up with where it should be</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">PAUSE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="k">else</span> <span class="n">TweenEvent</span><span class="o">.</span><span class="n">UNPAUSE</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Tween.unpause"><a class="viewcode-back" href="../../../packages/tween.html#domonic.lerpy.tween.Tween.unpause">[docs]</a>    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Tween.unpause"><a class="viewcode-back" href="../../../packages/autodocs.html#domonic.lerpy.tween.Tween.unpause">[docs]</a>    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; unpauses the tween &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">UNPAUSE</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span></div>
@@ -318,17 +318,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/html.html">Domonic: HTML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../packages/dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../packages/constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../packages/events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/decorators.html">Domonic: decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>

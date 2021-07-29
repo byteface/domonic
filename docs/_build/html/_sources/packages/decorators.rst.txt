@@ -49,13 +49,13 @@ now create a file called app.py
 called
 --------------------------------
 
-Python's lambda restrictions can force you to create anonymous success methods above calling functions.
+Python's lambda restrictions may force you to create anonymous success methods above calling functions.
 
-domonic has a unique type of decorator that calls a decorated method immediately after calling a passed method.
+domonic uses a unique type of decorator to call anonymouse methods immediately after calling the passed method.
 
-To use it, pass it a 2 functions, something to call beforehand, and an error method
+To use it, pass 2 functions, something to call BEFORE hand, and an error method
 
-Then you decorate an anonymous function to recieve the data of the first function you passed in.
+Then your decorated anonymous function will recieve the data of the first function you passed in as a parameter.
 
 Let me show you...
 
@@ -71,11 +71,9 @@ Let me show you...
         print(data.text)
 
 
-It's syntactic sugar for callbacks. Cool huh?!
+It's meant for anonymous functions and calls immediately. So don't go using it on class methods.
 
-Remember it's for anonymous functions and calls immediately. So don't go using it on class methods.
-
-Oh, and don't forget what it's 'called' ;)
+Just remember what it's 'called' ;)
 
 
 .. autoclass:: domonic.decorators

@@ -43,7 +43,7 @@
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="c1"># TODO - bring EventTarget here and get rid of this one?</span>
-<div class="viewcode-block" id="EventDispatcher"><a class="viewcode-back" href="../../packages/events.html#domonic.events.EventDispatcher">[docs]</a><span class="k">class</span> <span class="nc">EventDispatcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EventDispatcher"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.EventDispatcher">[docs]</a><span class="k">class</span> <span class="nc">EventDispatcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; EventDispatcher is a class you can extend to give your obj event dispatching abilities &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -89,7 +89,7 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">defaultPrevented</span></div>
 
 
-<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../packages/events.html#domonic.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; event &quot;&quot;&quot;</span>
     <span class="n">EMPTIED</span> <span class="o">=</span> <span class="s2">&quot;emptied&quot;</span>  <span class="c1">#:</span>
     <span class="n">ABORT</span> <span class="o">=</span> <span class="s2">&quot;abort&quot;</span>  <span class="c1">#:</span>
@@ -160,7 +160,7 @@
     <span class="k">def</span> <span class="nf">initEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Event.stopPropagation"><a class="viewcode-back" href="../../packages/events.html#domonic.events.Event.stopPropagation">[docs]</a>    <span class="k">def</span> <span class="nf">stopPropagation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Event.stopPropagation"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.Event.stopPropagation">[docs]</a>    <span class="k">def</span> <span class="nf">stopPropagation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[prevents further propagation of the current event in the capturing and bubbling phases]&quot;&quot;&quot;</span>
         <span class="c1"># self.defaultPrevented = True</span>
         <span class="c1"># self.returnValue = None</span>
@@ -192,7 +192,7 @@
 
 
 
-<div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; mouse events &quot;&quot;&quot;</span>
     <span class="n">CLICK</span> <span class="o">=</span> <span class="s2">&quot;click&quot;</span>  <span class="c1">#:</span>
     <span class="n">CONTEXTMENU</span> <span class="o">=</span> <span class="s2">&quot;contextmenu&quot;</span>  <span class="c1">#:</span>
@@ -291,7 +291,7 @@
     <span class="c1"># relatedTarget Returns the element related to the element that triggered the mouse event   MouseEvent, FocusEvent</span>
 
 
-<div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; keyboard events &quot;&quot;&quot;</span>
     <span class="n">KEYDOWN</span> <span class="o">=</span> <span class="s2">&quot;keydown&quot;</span>  <span class="c1">#:</span>
     <span class="n">KEYPRESS</span> <span class="o">=</span> <span class="s2">&quot;keypress&quot;</span>  <span class="c1">#:</span>
@@ -369,7 +369,7 @@
     <span class="c1"># location  Returns the location of a key on the keyboard or device KeyboardEvent</span>
 
 
-<div class="viewcode-block" id="UIEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.UIEvent">[docs]</a><span class="k">class</span> <span class="nc">UIEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="UIEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.UIEvent">[docs]</a><span class="k">class</span> <span class="nc">UIEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; UIEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="kc">None</span>
@@ -377,7 +377,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CompositionEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.CompositionEvent">[docs]</a><span class="k">class</span> <span class="nc">CompositionEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>
+<div class="viewcode-block" id="CompositionEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.CompositionEvent">[docs]</a><span class="k">class</span> <span class="nc">CompositionEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; CompositionEvent &quot;&quot;&quot;</span>
 
     <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;compositionstart&quot;</span>
@@ -390,7 +390,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="FocusEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.FocusEvent">[docs]</a><span class="k">class</span> <span class="nc">FocusEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="FocusEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.FocusEvent">[docs]</a><span class="k">class</span> <span class="nc">FocusEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; FocusEvent &quot;&quot;&quot;</span>
     <span class="n">BLUR</span> <span class="o">=</span> <span class="s2">&quot;blur&quot;</span>  <span class="c1">#:</span>
     <span class="n">FOCUS</span> <span class="o">=</span> <span class="s2">&quot;focus&quot;</span>  <span class="c1">#:</span>
@@ -402,7 +402,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TouchEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.TouchEvent">[docs]</a><span class="k">class</span> <span class="nc">TouchEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="TouchEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.TouchEvent">[docs]</a><span class="k">class</span> <span class="nc">TouchEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; TouchEvent &quot;&quot;&quot;</span>
     <span class="n">TOUCHCANCEL</span> <span class="o">=</span> <span class="s2">&quot;touchcancel&quot;</span>  <span class="c1">#:</span>
     <span class="n">TOUCHEND</span> <span class="o">=</span> <span class="s2">&quot;touchend&quot;</span>  <span class="c1">#:</span>
@@ -421,7 +421,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="WheelEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.WheelEvent">[docs]</a><span class="k">class</span> <span class="nc">WheelEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="WheelEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.WheelEvent">[docs]</a><span class="k">class</span> <span class="nc">WheelEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; WheelEvent &quot;&quot;&quot;</span>
     <span class="n">MOUSEWHEEL</span> <span class="o">=</span> <span class="s2">&quot;mousewheel&quot;</span>  <span class="c1"># DEPRECATED - USE WHEEL  #:</span>
     <span class="n">WHEEL</span> <span class="o">=</span> <span class="s2">&quot;wheel&quot;</span>  <span class="c1">#:</span>
@@ -434,7 +434,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AnimationEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.AnimationEvent">[docs]</a><span class="k">class</span> <span class="nc">AnimationEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="AnimationEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.AnimationEvent">[docs]</a><span class="k">class</span> <span class="nc">AnimationEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; AnimationEvent &quot;&quot;&quot;</span>
     <span class="n">ANIMATIONEND</span> <span class="o">=</span> <span class="s2">&quot;animationend&quot;</span>  <span class="c1">#:</span>
     <span class="n">ANIMATIONITERATION</span> <span class="o">=</span> <span class="s2">&quot;animationiteration&quot;</span>  <span class="c1">#:</span>
@@ -450,7 +450,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ClipboardEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.ClipboardEvent">[docs]</a><span class="k">class</span> <span class="nc">ClipboardEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="ClipboardEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.ClipboardEvent">[docs]</a><span class="k">class</span> <span class="nc">ClipboardEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ClipboardEvent &quot;&quot;&quot;</span>
     <span class="n">COPY</span> <span class="o">=</span> <span class="s2">&quot;copy&quot;</span>  <span class="c1">#:</span>
     <span class="n">CUT</span> <span class="o">=</span> <span class="s2">&quot;cut&quot;</span>  <span class="c1">#:</span>
@@ -462,7 +462,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ErrorEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.ErrorEvent">[docs]</a><span class="k">class</span> <span class="nc">ErrorEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="ErrorEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.ErrorEvent">[docs]</a><span class="k">class</span> <span class="nc">ErrorEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ErrorEvent &quot;&quot;&quot;</span>
     <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>  <span class="c1">#:</span>
 
@@ -475,7 +475,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SubmitEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.SubmitEvent">[docs]</a><span class="k">class</span> <span class="nc">SubmitEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="SubmitEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.SubmitEvent">[docs]</a><span class="k">class</span> <span class="nc">SubmitEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; SubmitEvent &quot;&quot;&quot;</span>
     <span class="n">SUBMIT</span> <span class="o">=</span> <span class="s2">&quot;submit&quot;</span>  <span class="c1">#:</span>
 
@@ -483,7 +483,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="PointerEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.PointerEvent">[docs]</a><span class="k">class</span> <span class="nc">PointerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="PointerEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.PointerEvent">[docs]</a><span class="k">class</span> <span class="nc">PointerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; PointerEvent &quot;&quot;&quot;</span>
     <span class="n">POINTER</span> <span class="o">=</span> <span class="s2">&quot;pointer&quot;</span>  <span class="c1">#:</span>
 
@@ -501,27 +501,27 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="BeforeUnloadEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.BeforeUnloadEvent">[docs]</a><span class="k">class</span> <span class="nc">BeforeUnloadEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="BeforeUnloadEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.BeforeUnloadEvent">[docs]</a><span class="k">class</span> <span class="nc">BeforeUnloadEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="n">BEFOREUNLOAD</span> <span class="o">=</span> <span class="s2">&quot;beforeunload&quot;</span>  <span class="c1">#:</span>
     <span class="sd">&quot;&quot;&quot; BeforeUnloadEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SVGEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.SVGEvent">[docs]</a><span class="k">class</span> <span class="nc">SVGEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="SVGEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.SVGEvent">[docs]</a><span class="k">class</span> <span class="nc">SVGEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; SVGEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TimerEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.TimerEvent">[docs]</a><span class="k">class</span> <span class="nc">TimerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="TimerEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.TimerEvent">[docs]</a><span class="k">class</span> <span class="nc">TimerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="n">TIMER</span> <span class="o">=</span> <span class="s2">&quot;timer&quot;</span>  <span class="c1">#:</span>
     <span class="sd">&quot;&quot;&quot; TimerEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; DragEvent &quot;&quot;&quot;</span>
     <span class="n">DRAG</span> <span class="o">=</span> <span class="s2">&quot;drag&quot;</span>  <span class="c1">#:</span>
     <span class="n">END</span> <span class="o">=</span> <span class="s2">&quot;dragend&quot;</span>  <span class="c1">#:</span>
@@ -538,7 +538,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="HashChangeEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.HashChangeEvent">[docs]</a><span class="k">class</span> <span class="nc">HashChangeEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="HashChangeEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.HashChangeEvent">[docs]</a><span class="k">class</span> <span class="nc">HashChangeEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; HashChangeEvent &quot;&quot;&quot;</span>
     <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;hashchange&quot;</span>  <span class="c1">#:</span>
 
@@ -548,7 +548,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="InputEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.InputEvent">[docs]</a><span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="InputEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.InputEvent">[docs]</a><span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; InputEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
@@ -564,7 +564,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="PageTransitionEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.PageTransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">PageTransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="PageTransitionEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.PageTransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">PageTransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; PageTransitionEvent &quot;&quot;&quot;</span>
     <span class="n">PAGEHIDE</span> <span class="o">=</span> <span class="s2">&quot;pagehide&quot;</span>  <span class="c1">#:</span>
     <span class="n">PAGESHOW</span> <span class="o">=</span> <span class="s2">&quot;pageshow&quot;</span>  <span class="c1">#:</span>
@@ -574,7 +574,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="PopStateEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.PopStateEvent">[docs]</a><span class="k">class</span> <span class="nc">PopStateEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="PopStateEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.PopStateEvent">[docs]</a><span class="k">class</span> <span class="nc">PopStateEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; PopStateEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="kc">None</span>
@@ -582,7 +582,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="StorageEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.StorageEvent">[docs]</a><span class="k">class</span> <span class="nc">StorageEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="StorageEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.StorageEvent">[docs]</a><span class="k">class</span> <span class="nc">StorageEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; StorageEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
@@ -598,7 +598,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TransitionEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.TransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">TransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="TransitionEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.TransitionEvent">[docs]</a><span class="k">class</span> <span class="nc">TransitionEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; TransitionEvent &quot;&quot;&quot;</span>
     <span class="n">TRANSITIONEND</span> <span class="o">=</span> <span class="s2">&quot;transitionend&quot;</span>  <span class="c1">#:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -611,7 +611,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ProgressEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.ProgressEvent">[docs]</a><span class="k">class</span> <span class="nc">ProgressEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="ProgressEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.ProgressEvent">[docs]</a><span class="k">class</span> <span class="nc">ProgressEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ProgressEvent &quot;&quot;&quot;</span>
     <span class="n">LOADSTART</span> <span class="o">=</span> <span class="s2">&quot;loadstart&quot;</span>  <span class="c1">#:</span>
 
@@ -619,7 +619,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CustomEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.CustomEvent">[docs]</a><span class="k">class</span> <span class="nc">CustomEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="CustomEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.CustomEvent">[docs]</a><span class="k">class</span> <span class="nc">CustomEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; CustomEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">detail</span> <span class="o">=</span> <span class="kc">None</span>
@@ -629,7 +629,7 @@
         <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="GamePadEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.GamePadEvent">[docs]</a><span class="k">class</span> <span class="nc">GamePadEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="GamePadEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.GamePadEvent">[docs]</a><span class="k">class</span> <span class="nc">GamePadEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; GamePadEvent &quot;&quot;&quot;</span>
     <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;gamepadconnected&quot;</span>  <span class="c1">#:</span>
     <span class="n">STOP</span> <span class="o">=</span> <span class="s2">&quot;gamepaddisconnected&quot;</span>  <span class="c1">#:</span>
@@ -639,7 +639,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TweenEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.TweenEvent">[docs]</a><span class="k">class</span> <span class="nc">TweenEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
+<div class="viewcode-block" id="TweenEvent"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.events.TweenEvent">[docs]</a><span class="k">class</span> <span class="nc">TweenEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; TweenEvent &quot;&quot;&quot;</span>
     <span class="n">START</span> <span class="o">=</span> <span class="s2">&quot;onStart&quot;</span>  <span class="c1">#:</span>
     <span class="n">STOP</span> <span class="o">=</span> <span class="s2">&quot;onStop&quot;</span>  <span class="c1">#:</span>
@@ -1043,17 +1043,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">Domonic: decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>

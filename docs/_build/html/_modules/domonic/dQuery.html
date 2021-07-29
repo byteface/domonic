@@ -39,6 +39,8 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">json</span>
+
 <span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="o">*</span>
@@ -50,14 +52,35 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">bindEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">targetElement</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[binds an event to a callback]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            event ([str]): [type of event]</span>
+<span class="sd">            callback (function): [callback function]</span>
+<span class="sd">            targetElement ([type]): [target element]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unbindEvent</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">targetElement</span><span class="p">)</span>
         <span class="n">targetElement</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;_type&#39;</span><span class="p">:</span> <span class="n">event</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="n">callback</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="n">targetElement</span><span class="p">})</span>
 
     <span class="k">def</span> <span class="nf">findEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[finds an event]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            event ([str]): [event]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [event]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;_type&#39;</span><span class="p">]]</span>
 
     <span class="k">def</span> <span class="nf">unbindEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">targetElement</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[unbinds an event]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            event ([str]): [event]</span>
+<span class="sd">            targetElement ([type]): [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">foundEvent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">findEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">foundEvent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">targetElement</span><span class="o">.</span><span class="n">removeEventListener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">foundEvent</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">],</span> <span class="kc">False</span><span class="p">)</span>
@@ -75,7 +98,8 @@
     <span class="n">DOM</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dom</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Return a collection of matched elements either found in the DOM based on passed arguments or created by passing an HTML string. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Return a collection of matched elements found in the DOM based on passed arguments,</span>
+<span class="sd">        or created by passing an HTML string. &quot;&quot;&quot;</span>
 
         <span class="c1"># if first char is &lt; . returs a new html dom node &lt; init() does this</span>
         <span class="c1"># if its a selector. execs on the current dom &lt; init() does this</span>
@@ -135,9 +159,10 @@
                 <span class="c1"># element by selector not working on just classes as always needs a tag</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
 
-                    <span class="c1"># NOTE - if jquery is not present in a webpage chrome assigns $ to querySelector NOT querySelectorAll</span>
+                    <span class="c1"># NOTE - if jquery is not present chrome assigns $ to querySelector NOT querySelectorAll</span>
                     <span class="c1"># so differing behaviours may be expected.</span>
-                    <span class="c1"># detect if there&#39;s a list in each method if not just do it to first item? so it does bit of both? aka .append</span>
+                    <span class="c1"># detect if there&#39;s a list in each method if not do it to first item?</span>
+                    <span class="c1"># so it does bit of both? aka .append</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dom</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="p">)</span>
                     <span class="k">return</span>
@@ -268,10 +293,11 @@
         <span class="k">return</span> <span class="n">target</span></div>
 
 <div class="viewcode-block" id="dQuery_el.attr"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.attr">[docs]</a>    <span class="k">def</span> <span class="nf">attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the value of an attribute for the first element in the set of matched elements or set one or more attributes for every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the value of an attribute for the first element in the set of matched elements</span>
+<span class="sd">        or set one or more attributes for every matched element.&quot;&quot;&quot;</span>
 
         <span class="c1"># if not isinstance(self.elements, (list, tuple)):</span>
-            <span class="c1"># self.elements = (self.elements,)</span>
+        <span class="c1">#     self.elements = (self.elements,)</span>
 
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -328,12 +354,13 @@
 <div class="viewcode-block" id="dQuery_el.clone"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.clone">[docs]</a>    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Create a deep copy of the set of matched elements.&quot;&quot;&quot;</span>
         <span class="c1"># if not isinstance(self.elements, (list, tuple)):</span>
-            <span class="c1"># self.elements = (self.elements,)</span>
+        <span class="c1">#     self.elements = (self.elements,)</span>
         <span class="c1"># new_elements = self.elements.clone()</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.closest"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.closest">[docs]</a>    <span class="k">def</span> <span class="nf">closest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; For each element in the set, get the first element that matches the selector by testing the element itself and traversing up through its ancestors in the DOM tree.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; For each element in the set, get the first element that matches the selector by testing the element itself</span>
+<span class="sd">        and traversing up through its ancestors in the DOM tree.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.contents"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.contents">[docs]</a>    <span class="k">def</span> <span class="nf">contents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -342,7 +369,8 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; The DOM node context originally passed to dQuery if none was passed then context will likely be the document. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; The DOM node context originally passed to dQuery if none was passed</span>
+<span class="sd">        then context will likely be the document. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="dQuery_el.contextmenu"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.contextmenu">[docs]</a>    <span class="k">def</span> <span class="nf">contextmenu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -350,11 +378,13 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.css"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.css">[docs]</a>    <span class="k">def</span> <span class="nf">css</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the value of a computed style property for the first element in the set of matched elements or set one or more CSS properties for every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the value of a computed style property for the first element in the set of matched elements</span>
+<span class="sd">        or set one or more CSS properties for every matched element.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="dQuery_el.data"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Store arbitrary data associated with the matched elements or return the value at the named data store for the first element in the set of matched elements.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Store arbitrary data associated with the matched elements or return the value at the named data store</span>
+<span class="sd">        for the first element in the set of matched elements.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.dblclick"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.dblclick">[docs]</a>    <span class="k">def</span> <span class="nf">dblclick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -366,7 +396,8 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.delegate"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.delegate">[docs]</a>    <span class="k">def</span> <span class="nf">delegate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Attach a handler to one or more events for all elements that match the selector, now or in the future, based on a specific set of root elements.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Attach a handler to one or more events for all elements that match the selector, now or in the future,</span>
+<span class="sd">        based on a specific set of root elements.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.dequeue"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.dequeue">[docs]</a>    <span class="k">def</span> <span class="nf">dequeue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -400,7 +431,8 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="dQuery_el.end"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.end">[docs]</a>    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; End the most recent filtering operation in the current chain and return the set of matched elements to its previous state.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; End the most recent filtering operation in the current chain and return the</span>
+<span class="sd">        set of matched elements to its previous state.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.eq"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.eq">[docs]</a>    <span class="k">def</span> <span class="nf">eq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
@@ -436,11 +468,13 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.find"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.find">[docs]</a>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the descendants of each element in the current set of matched elements, filtered by a selector, dQuery object, or element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the descendants of each element in the current set of matched elements, filtered by a selector,</span>
+<span class="sd">        dQuery object, or element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.finish"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.finish">[docs]</a>    <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Stop the currently-running animation, remove all queued animations, and complete all animations for the matched elements.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Stop the currently-running animation, remove all queued animations, and complete all animations</span>
+<span class="sd">        for the matched elements.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.first"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.first">[docs]</a>    <span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -466,7 +500,8 @@
     <span class="c1">#     raise NotImplementedError</span>
 
 <div class="viewcode-block" id="dQuery_el.has"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Reduce the set of matched elements to those that have a descendant</span>
+<span class="sd">        that matches the selector or DOM element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.hasClass"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.hasClass">[docs]</a>    <span class="k">def</span> <span class="nf">hasClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classname</span><span class="p">):</span>
@@ -481,21 +516,24 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="dQuery_el.height"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.height">[docs]</a>    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current computed height for the first element in the set of matched elements or set the height of every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current computed height for the first element in the set of matched elements or set the height</span>
+<span class="sd">        of every matched element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.hide"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Hide the matched elements.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-              <span class="n">el</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span>
+            <span class="n">el</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="dQuery_el.hover"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.hover">[docs]</a>    <span class="k">def</span> <span class="nf">hover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Bind one or two handlers to the matched elements, to be executed when the mouse pointer enters and leaves the elements.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Bind one or two handlers to the matched elements, to be executed when the mouse pointer enters and</span>
+<span class="sd">        leaves the elements.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.html"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.html">[docs]</a>    <span class="k">def</span> <span class="nf">html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the HTML contents of the first element in the set of matched elements or set the HTML contents of every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the HTML contents of the first element in the set of matched elements or set the HTML contents</span>
+<span class="sd">        of every matched element.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">html</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">innerHTML</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
@@ -512,11 +550,13 @@
         <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
 <div class="viewcode-block" id="dQuery_el.innerHeight"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.innerHeight">[docs]</a>    <span class="k">def</span> <span class="nf">innerHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current computed inner height (including padding but not border) for the first element in the set of matched elements or set the inner height of every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current computed inner height (including padding but not border) for the first element in the set</span>
+<span class="sd">        of matched elements or set the inner height of every matched element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.innerWidth"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.innerWidth">[docs]</a>    <span class="k">def</span> <span class="nf">innerWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current computed inner width (including padding but not border) for the first element in the set of matched elements or set the inner width of every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current computed inner width (including padding but not border) for the first element in the set</span>
+<span class="sd">        of matched elements or set the inner width of every matched element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.insertAfter"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.insertAfter">[docs]</a>    <span class="k">def</span> <span class="nf">insertAfter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>  <span class="c1"># TODO - test</span>
@@ -554,7 +594,8 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="c1"># def is(self):</span>
-        <span class="sd">&quot;&quot;&quot; Check the current matched set of elements against a selector, element, or dQuery object and return true if at least one of these elements matches the given arguments.&quot;&quot;&quot;</span></div>
+        <span class="sd">&quot;&quot;&quot; Check the current matched set of elements against a selector, element,</span>
+<span class="sd">        or dQuery object and return true if at least one of these elements matches the given arguments.&quot;&quot;&quot;</span></div>
         <span class="c1"># raise NotImplementedError</span>
 
 <div class="viewcode-block" id="dQuery_el.keydown"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.keydown">[docs]</a>    <span class="k">def</span> <span class="nf">keydown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -572,7 +613,7 @@
 <div class="viewcode-block" id="dQuery_el.last"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.last">[docs]</a>    <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reduce the set of matched elements to the final one in the set.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="nd">@property</span>
@@ -589,7 +630,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.map"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>  <span class="c1"># TODO - test</span>
-        <span class="sd">&quot;&quot;&quot; Pass each element in the current matched set through a function, </span>
+        <span class="sd">&quot;&quot;&quot; Pass each element in the current matched set through a function,</span>
 <span class="sd">        producing a new dQuery object containing the return values.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,)</span>
@@ -600,11 +641,13 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.mouseenter"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.mouseenter">[docs]</a>    <span class="k">def</span> <span class="nf">mouseenter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Bind an event handler to be fired when the mouse enters an element, or trigger that handler on an element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Bind an event handler to be fired when the mouse enters an element,</span>
+<span class="sd">        or trigger that handler on an element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.mouseleave"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.mouseleave">[docs]</a>    <span class="k">def</span> <span class="nf">mouseleave</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Bind an event handler to be fired when the mouse leaves an element, or trigger that handler on an element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Bind an event handler to be fired when the mouse leaves an element,</span>
+<span class="sd">        or trigger that handler on an element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.mousemove"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.mousemove">[docs]</a>    <span class="k">def</span> <span class="nf">mousemove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -623,7 +666,7 @@
         <span class="sd">&quot;&quot;&quot; Bind an event handler to the “mouseup” JavaScript event, or trigger that event on an element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="dQuery_el.next"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span> <span class="c1"># TODO - test</span>
+<div class="viewcode-block" id="dQuery_el.next"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span>  <span class="c1"># TODO - test</span>
         <span class="sd">&quot;&quot;&quot; Get the immediately following sibling of each element in the set of matched elements.</span>
 <span class="sd">        If a selector is provided, it retrieves the next sibling only if it matches that selector.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
@@ -637,11 +680,13 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="dQuery_el.nextAll"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.nextAll">[docs]</a>    <span class="k">def</span> <span class="nf">nextAll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get all following siblings of each element in the set of matched elements, optionally filtered by a selector.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get all following siblings of each element in the set of matched elements,</span>
+<span class="sd">        optionally filtered by a selector.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.nextUntil"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.nextUntil">[docs]</a>    <span class="k">def</span> <span class="nf">nextUntil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get all following siblings of each element up to but not including the element matched by the selector, DOM node, or dQuery object passed.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get all following siblings of each element up to but not including the element matched by the selector,</span>
+<span class="sd">        DOM node, or dQuery object passed.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="c1"># def not(self):</span>
@@ -658,7 +703,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">eventHandler</span><span class="o">.</span><span class="n">unbindEvent</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">el</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="dQuery_el.offset"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.offset">[docs]</a>    <span class="k">def</span> <span class="nf">offset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current coordinates of the first element, or set the coordinates of every element, in the set of matched elements, relative to the document.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current coordinates of the first element, or set the coordinates of every element,</span>
+<span class="sd">        in the set of matched elements, relative to the document.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.offsetParent"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.offsetParent">[docs]</a>    <span class="k">def</span> <span class="nf">offsetParent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -677,15 +723,19 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.outerHeight"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.outerHeight">[docs]</a>    <span class="k">def</span> <span class="nf">outerHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current computed outer height (including padding, border, and optionally margin) for the first element in the set of matched elements or set the outer height of every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current computed outer height (including padding, border,</span>
+<span class="sd">        and optionally margin) for the first element in the set of matched elements or set the outer height</span>
+<span class="sd">        of every matched element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.outerWidth"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.outerWidth">[docs]</a>    <span class="k">def</span> <span class="nf">outerWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current computed outer width (including padding, border, and optionally margin) for the first element in the set of matched elements or set the outer width of every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current computed outer width (including padding, border, and optionally margin) for the</span>
+<span class="sd">        first element in the set of matched elements or set the outer width of every matched element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.parent"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.parent">[docs]</a>    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">):</span>  <span class="c1"># TODO - test</span>
-        <span class="sd">&quot;&quot;&quot; Get the parent of each element in the current set of matched elements, optionally filtered by a selector.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the parent of each element in the current set of matched elements,</span>
+<span class="sd">        optionally filtered by a selector.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,)</span>
         <span class="n">parents</span> <span class="o">=</span> <span class="p">[]</span>
@@ -696,19 +746,23 @@
         <span class="k">return</span> <span class="n">parents</span></div>
 
 <div class="viewcode-block" id="dQuery_el.parents"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.parents">[docs]</a>    <span class="k">def</span> <span class="nf">parents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the ancestors of each element in the current set of matched elements, optionally filtered by a selector.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the ancestors of each element in the current set of matched elements,</span>
+<span class="sd">        optionally filtered by a selector.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.parentsUntil"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.parentsUntil">[docs]</a>    <span class="k">def</span> <span class="nf">parentsUntil</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the ancestors of each element in the current set of matched elements, up to but not including the element matched by the selector, DOM node, or dQuery object.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the ancestors of each element in the current set of matched elements,</span>
+<span class="sd">        up to but not including the element matched by the selector, DOM node, or dQuery object.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.position"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.position">[docs]</a>    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current coordinates of the first element in the set of matched elements, relative to the offset parent.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current coordinates of the first element in the set of matched elements,</span>
+<span class="sd">        relative to the offset parent.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.prepend"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.prepend">[docs]</a>    <span class="k">def</span> <span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Insert content, specified by the parameter, to the beginning of each element in the set of matched elements.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Insert content, specified by the parameter, to the beginning of each element</span>
+<span class="sd">        in the set of matched elements.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,)</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
@@ -724,23 +778,28 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="dQuery_el.prev"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.prev">[docs]</a>    <span class="k">def</span> <span class="nf">prev</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the immediately preceding sibling of each element in the set of matched elements. If a selector is provided, it retrieves the previous sibling only if it matches that selector.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the immediately preceding sibling of each element in the set of matched elements.</span>
+<span class="sd">        If a selector is provided, it retrieves the previous sibling only if it matches that selector.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.prevAll"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.prevAll">[docs]</a>    <span class="k">def</span> <span class="nf">prevAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get all preceding siblings of each element in the set of matched elements, optionally filtered by a selector.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get all preceding siblings of each element in the set of matched elements,</span>
+<span class="sd">        optionally filtered by a selector.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.prevUntil"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.prevUntil">[docs]</a>    <span class="k">def</span> <span class="nf">prevUntil</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get all preceding siblings of each element up to but not including the element matched by the selector, DOM node, or dQuery object.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get all preceding siblings of each element up to but not including the element matched by the selector,</span>
+<span class="sd">        DOM node, or dQuery object.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.promise"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.promise">[docs]</a>    <span class="k">def</span> <span class="nf">promise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Return a Promise object to observe when all actions of a certain type bound to the collection, queued or not, have finished.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Return a Promise object to observe when all actions of a certain type bound to the collection,</span>
+<span class="sd">        queued or not, have finished.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.prop"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.prop">[docs]</a>    <span class="k">def</span> <span class="nf">prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the value of a property for the first element in the set of matched elements or set one or more properties for every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the value of a property for the first element in the set of matched elements or set one or more properties</span>
+<span class="sd">        for every matched element.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -771,10 +830,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,)</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="n">el</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span> <span class="c1"># wont work . does this method even exist?</span>
+            <span class="n">el</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>  <span class="c1"># wont work . does this method even exist?</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="dQuery_el.removeAttr"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.removeAttr">[docs]</a>    <span class="k">def</span> <span class="nf">removeAttr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>  <span class="c1">#TODO - test</span>
+<div class="viewcode-block" id="dQuery_el.removeAttr"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.removeAttr">[docs]</a>    <span class="k">def</span> <span class="nf">removeAttr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>  <span class="c1"># TODO - test</span>
         <span class="sd">&quot;&quot;&quot; Remove an attribute from each element in the set of matched elements.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,)</span>
@@ -813,7 +872,8 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.replaceWith"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.replaceWith">[docs]</a>    <span class="k">def</span> <span class="nf">replaceWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">replacement</span><span class="p">):</span>  <span class="c1"># TODO - test</span>
-        <span class="sd">&quot;&quot;&quot; Replace each element in the set of matched elements with the provided new content and return the set of elements that was removed.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Replace each element in the set of matched elements with the provided new content and return the set</span>
+<span class="sd">         of elements that was removed.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,)</span>
         <span class="n">old_elements</span> <span class="o">=</span> <span class="p">[]</span>
@@ -831,11 +891,13 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.scrollLeft"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.scrollLeft">[docs]</a>    <span class="k">def</span> <span class="nf">scrollLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current horizontal position of the scroll bar for the first element in the set of matched elements or set the horizontal position of the scroll bar for every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current horizontal position of the scroll bar for the first element in the set of matched elements</span>
+<span class="sd">        or set the horizontal position of the scroll bar for every matched element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.scrollTop"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.scrollTop">[docs]</a>    <span class="k">def</span> <span class="nf">scrollTop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current vertical position of the scroll bar for the first element in the set of matched elements or set the vertical position of the scroll bar for every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current vertical position of the scroll bar for the first element in the set of matched elements</span>
+<span class="sd">        or set the vertical position of the scroll bar for every matched element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.select"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -901,7 +963,8 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="dQuery_el.slice"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>  <span class="c1"># TODO - test</span>
-        <span class="sd">&quot;&quot;&quot; Return a new dQuery object containing the set of matched elements starting at the specified index and ending at the specified index.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Return a new dQuery object containing the set of matched elements starting at the specified index</span>
+<span class="sd">        and ending at the specified index.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,)</span>
         <span class="k">return</span> <span class="n">dQuery</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">])</span></div>
@@ -927,7 +990,8 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.text"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.text">[docs]</a>    <span class="k">def</span> <span class="nf">text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newVal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the combined text contents of each element in the set of matched elements, including their descendants,</span>
+<span class="sd">        or set the text contents of the matched elements.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">newVal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
                 <span class="n">el</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">newVal</span>
@@ -937,7 +1001,7 @@
 <div class="viewcode-block" id="dQuery_el.toArray"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.toArray">[docs]</a>    <span class="k">def</span> <span class="nf">toArray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Retrieve all the elements contained in the dQuery set, as an array.&quot;&quot;&quot;</span>
         <span class="c1"># raise NotImplementedError</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">]</span></div>
@@ -987,7 +1051,8 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.undelegate"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.undelegate">[docs]</a>    <span class="k">def</span> <span class="nf">undelegate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Remove a handler from the event for all elements which match the current selector, based upon a specific set of root elements.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Remove a handler from the event for all elements which match the current selector,</span>
+<span class="sd">        based upon a specific set of root elements.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.unload"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.unload">[docs]</a>    <span class="k">def</span> <span class="nf">unload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -995,11 +1060,13 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.unwrap"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.unwrap">[docs]</a>    <span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Remove the parents of the set of matched elements from the DOM, leaving the matched elements in their place.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Remove the parents of the set of matched elements from the DOM,</span>
+<span class="sd">        leaving the matched elements in their place.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.val"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.val">[docs]</a>    <span class="k">def</span> <span class="nf">val</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newVal</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current value of the first element in the set of matched elements or set the value of every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current value of the first element in the set of matched elements</span>
+<span class="sd">        or set the value of every matched element.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">newVal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
                 <span class="n">el</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">newVal</span>
@@ -1008,7 +1075,8 @@
         <span class="c1"># return self</span>
 
 <div class="viewcode-block" id="dQuery_el.width"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.width">[docs]</a>    <span class="k">def</span> <span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Get the current computed width for the first element in the set of matched elements or set the width of every matched element.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Get the current computed width for the first element in the set of matched elements</span>
+<span class="sd">        or set the width of every matched element.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="dQuery_el.wrap"><a class="viewcode-back" href="../../packages/dQuery.html#domonic.dQuery.dQuery_el.wrap">[docs]</a>    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1024,448 +1092,204 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
+<span class="c1"># class Callbacks():  # TODO - untested. copilot wrote it</span>
 
+<span class="c1">#     def __init__(self):</span>
+<span class="c1">#         self.callbacks = {}</span>
 
-<span class="c1"># All Selector (“*”)</span>
-<span class="c1"># Selects all elements.</span>
-<span class="c1"># :animated Selector</span>
-<span class="c1"># Select all elements that are in the progress of an animation at the time the selector is run.</span>
-<span class="c1"># Attribute Contains Prefix Selector [name|=”value”]</span>
-<span class="c1"># Selects elements that have the specified attribute with a value either equal to a given string or starting with that string followed by a hyphen (-).</span>
+<span class="c1">#     def add(self, callback, *args):</span>
+<span class="c1">#         &quot;&quot;&quot;[Add a callback or a collection of callbacks to a callback list.]</span>
 
-<span class="c1"># Attribute Contains Selector [name*=”value”]</span>
-<span class="c1"># Selects elements that have the specified attribute with a value containing a given substring.</span>
+<span class="c1">#         Args:</span>
+<span class="c1">#             callback (function): [a callback]</span>
 
-<span class="c1"># Attribute Contains Word Selector [name~=”value”]</span>
-<span class="c1"># Selects elements that have the specified attribute with a value containing a given word, delimited by spaces.</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         if callback in self.callbacks:</span>
+<span class="c1">#             self.callbacks[callback].append(args)</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             self.callbacks[callback] = [args]</span>
 
-<span class="c1"># Attribute Ends With Selector [name$=”value”]</span>
-<span class="c1"># Selects elements that have the specified attribute with a value ending exactly with a given string. The comparison is case sensitive.</span>
+<span class="c1">#     def disable(self, callback):</span>
+<span class="c1">#         &quot;&quot;&quot;[Disable a callback or a collection of callbacks from doing anything.]</span>
 
-<span class="c1"># Attribute Equals Selector [name=”value”]</span>
-<span class="c1"># Selects elements that have the specified attribute with a value exactly equal to a certain value.</span>
+<span class="c1">#         Args:</span>
+<span class="c1">#             callback (function): [a callback]</span>
 
-<span class="c1"># Attribute Not Equal Selector [name!=”value”]</span>
-<span class="c1"># Select elements that either don’t have the specified attribute, or do have the specified attribute but not with a certain value.</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         self.callbacks[callback] = []</span>
 
-<span class="c1"># Attribute Starts With Selector [name^=”value”]</span>
-<span class="c1"># Selects elements that have the specified attribute with a value beginning exactly with a given string.</span>
+<span class="c1">#     def disabled(self, callback):</span>
+<span class="c1">#         &quot;&quot;&quot; Determine if the callbacks list has been disabled.&quot;&quot;&quot;</span>
+<span class="c1">#         return callback not in self.callbacks</span>
 
-<span class="c1"># :button Selector</span>
-<span class="c1"># Selects all button elements and elements of type button.</span>
+<span class="c1">#     def empty(self, callback):</span>
+<span class="c1">#         &quot;&quot;&quot; Remove all of the callbacks from a list.&quot;&quot;&quot;</span>
+<span class="c1">#         if callback in self.callbacks:</span>
+<span class="c1">#             del self.callbacks[callback]</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.add()</span>
-<span class="c1"># Add a callback or a collection of callbacks to a callback list.</span>
+<span class="c1">#     def fire(self, *args):</span>
+<span class="c1">#         &quot;&quot;&quot; Call all of the callbacks with the given arguments. &quot;&quot;&quot;</span>
+<span class="c1">#         for callback in self.callbacks:</span>
+<span class="c1">#             callback(*args)</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.disable()</span>
-<span class="c1"># Disable a callback list from doing anything more.</span>
+<span class="c1">#     def fired(self, *args):</span>
+<span class="c1">#         &quot;&quot;&quot; Determine if the callbacks have already been called at least once.&quot;&quot;&quot;</span>
+<span class="c1">#         return self.callbacks.fired</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.disabled()</span>
-<span class="c1"># Determine if the callbacks list has been disabled.</span>
+<span class="c1">#     def fireWith(self, *args):</span>
+<span class="c1">#         &quot;&quot;&quot;[Fire the callback(s) with the given arguments.]</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.empty()</span>
-<span class="c1"># Remove all of the callbacks from a list.</span>
+<span class="c1">#         Args:</span>
+<span class="c1">#             callback (function): [a callback]</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.fire()</span>
-<span class="c1"># Call all of the callbacks with the given arguments.</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         self.fire(*args)</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.fired()</span>
-<span class="c1"># Determine if the callbacks have already been called at least once.</span>
+<span class="c1">#     def has(self, callback=None):</span>
+<span class="c1">#         &quot;&quot;&quot; Determine whether or not the list has any callbacks attached.</span>
+<span class="c1">#         If a callback is provided as an argument, determine whether it is in a list. &quot;&quot;&quot;</span>
+<span class="c1">#         if callback is None:</span>
+<span class="c1">#             return bool(self.callbacks)</span>
+<span class="c1">#         return callback in self.callbacks</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.fireWith()</span>
-<span class="c1"># Call all callbacks in a list with the given context and arguments.</span>
+<span class="c1">#     def lock(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Lock a callback list in its current state. &quot;&quot;&quot;</span>
+<span class="c1">#         # TODO - test</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.has()</span>
-<span class="c1"># Determine whether or not the list has any callbacks attached. If a callback is provided as an argument, determine whether it is in a list.</span>
+<span class="c1">#     def locked(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Determine whether or not the callback list is locked.&quot;&quot;&quot;</span>
+<span class="c1">#         return self.lock</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.lock()</span>
-<span class="c1"># Lock a callback list in its current state.</span>
+<span class="c1">#     def remove(self, callback):</span>
+<span class="c1">#         &quot;&quot;&quot;[Remove a callback or a collection of callbacks from a callback list.]</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.locked()</span>
-<span class="c1"># Determine if the callbacks list has been locked.</span>
+<span class="c1">#         Args:</span>
+<span class="c1">#             callback (function): [a callback]</span>
 
-<span class="c1"># Callbacks Object</span>
-<span class="c1"># callbacks.remove()</span>
-<span class="c1"># Remove a callback or a collection of callbacks from a callback list.</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         if callback in self.callbacks:</span>
+<span class="c1">#             del self.callbacks[callback]</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             raise ValueError</span>
 
-<span class="c1"># :checkbox Selector</span>
-<span class="c1"># Selects all elements of type checkbox.</span>
 
-<span class="c1"># Selectors &gt; Form</span>
-<span class="c1"># :checked Selector</span>
-<span class="c1"># Matches all elements that are checked or selected.</span>
+<span class="c1"># class Deferred():</span>
 
-<span class="c1"># Selectors &gt; Hierarchy</span>
-<span class="c1"># Child Selector (“parent &gt; child”)</span>
-<span class="c1"># Selects all direct child elements specified by “child” of elements specified by “parent”.</span>
+<span class="c1">#     def __init__(self):</span>
+<span class="c1">#         pass</span>
 
-<span class="c1"># Selectors &gt; Basic</span>
-<span class="c1"># Class Selector (“.class”)</span>
-<span class="c1"># Selects all elements with the given class.</span>
+<span class="c1">#     def always(self, *args):</span>
+<span class="c1">#         &quot;&quot;&quot; Add handlers to be called when the Deferred object is either resolved or rejected.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<span class="c1"># :contains() Selector</span>
-<span class="c1"># Select all elements that contain the specified text.</span>
+<span class="c1">#     def catch(self, *args):</span>
+<span class="c1">#         &quot;&quot;&quot; Add handlers to be called when the Deferred object is rejected. &quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<span class="c1"># Selectors &gt; Form | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :radio Selector</span>
-<span class="c1"># Selects all elements of type radio.</span>
-
-
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.always()</span>
-<span class="c1"># Add handlers to be called when the Deferred object is either resolved or rejected.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.catch()</span>
-<span class="c1"># Add handlers to be called when the Deferred object is rejected.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.done()</span>
-<span class="c1"># Add handlers to be called when the Deferred object is resolved.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.fail()</span>
-<span class="c1"># Add handlers to be called when the Deferred object is rejected.</span>
-
-<span class="c1"># Deferred Object | Deprecated &gt; Deprecated 1.7 | Removed</span>
-<span class="c1"># deferred.isRejected()</span>
-<span class="c1"># Determine whether a Deferred object has been rejected.</span>
-
-<span class="c1"># Deferred Object | Deprecated &gt; Deprecated 1.7 | Removed</span>
-<span class="c1"># deferred.isResolved()</span>
-<span class="c1"># Determine whether a Deferred object has been resolved.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.notify()</span>
-<span class="c1"># Call the progressCallbacks on a Deferred object with the given args.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.notifyWith()</span>
-<span class="c1"># Call the progressCallbacks on a Deferred object with the given context and args.</span>
-
-<span class="c1"># Deferred Object | Deprecated &gt; Deprecated 1.8</span>
-<span class="c1"># deferred.pipe()</span>
-<span class="c1"># Utility method to filter and/or chain Deferreds.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.progress()</span>
-<span class="c1"># Add handlers to be called when the Deferred object generates progress notifications.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.promise()</span>
-<span class="c1"># Return a Deferred’s Promise object.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.reject()</span>
-<span class="c1"># Reject a Deferred object and call any failCallbacks with the given args.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.rejectWith()</span>
-<span class="c1"># Reject a Deferred object and call any failCallbacks with the given context and args.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.resolve()</span>
-<span class="c1"># Resolve a Deferred object and call any doneCallbacks with the given args.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.resolveWith()</span>
-<span class="c1"># Resolve a Deferred object and call any doneCallbacks with the given context and args.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.state()</span>
-<span class="c1"># Determine the current state of a Deferred object.</span>
-
-<span class="c1"># Deferred Object</span>
-<span class="c1"># deferred.then()</span>
-<span class="c1"># Add handlers to be called when the Deferred object is resolved, rejected, or still in progress.</span>
-
-
-<span class="c1"># Selectors &gt; Hierarchy</span>
-<span class="c1"># Descendant Selector (“ancestor descendant”)</span>
-<span class="c1"># Selects all elements that are descendants of a given ancestor.</span>
-
-
-<span class="c1"># Selectors &gt; Form</span>
-<span class="c1"># :disabled Selector</span>
-<span class="c1"># Selects all elements that are disabled.</span>
-
-<span class="c1"># Selectors &gt; dQuery Extensions | Selectors &gt; Visibility Filter</span>
-<span class="c1"># :visible Selector</span>
-<span class="c1"># Selects all elements that are visible.</span>
-
-<span class="c1"># .dquery</span>
-<span class="c1"># A string containing the dQuery version number.</span>
-
-<span class="c1"># Selectors &gt; Basic</span>
-<span class="c1"># Element Selector (“element”)</span>
-<span class="c1"># Selects all elements with the given tag name.</span>
-
-<span class="c1"># Selectors &gt; Content Filter</span>
-<span class="c1"># :empty Selector</span>
-<span class="c1"># Select all elements that have no children (including text nodes).</span>
-
-<span class="c1"># Selectors &gt; Form</span>
-<span class="c1"># :enabled Selector</span>
-<span class="c1"># Selects all elements that are enabled.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter | Deprecated &gt; Deprecated 3.4 | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :eq() Selector</span>
-<span class="c1"># Select the element at index n within the matched set.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter | Deprecated &gt; Deprecated 3.4 | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :even Selector</span>
-<span class="c1"># Selects even elements, zero-indexed. See also :odd.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.currentTarget</span>
-<span class="c1"># The current DOM element within the event bubbling phase.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.data</span>
-<span class="c1"># An optional object of data passed to an event method when the current executing handler is bound.</span>
-
-<span class="c1"># Events &gt; Event Object | Events</span>
-<span class="c1"># event.delegateTarget</span>
-<span class="c1"># The element where the currently-called dQuery event handler was attached.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.isDefaultPrevented()</span>
-<span class="c1"># Returns whether event.preventDefault() was ever called on this event object.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.isImmediatePropagationStopped()</span>
-<span class="c1"># Returns whether event.stopImmediatePropagation() was ever called on this event object.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.isPropagationStopped()</span>
-<span class="c1"># Returns whether event.stopPropagation() was ever called on this event object.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.metaKey</span>
-<span class="c1"># Indicates whether the META key was pressed when the event fired.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.namespace</span>
-<span class="c1"># The namespace specified when the event was triggered.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.pageX</span>
-<span class="c1"># The mouse position relative to the left edge of the document.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.pageY</span>
-<span class="c1"># The mouse position relative to the top edge of the document.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.preventDefault()</span>
-<span class="c1"># If this method is called, the default action of the event will not be triggered.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.relatedTarget</span>
-<span class="c1"># The other DOM element involved in the event, if any.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.result</span>
-<span class="c1"># The last value returned by an event handler that was triggered by this event, unless the value was undefined.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.stopImmediatePropagation()</span>
-<span class="c1"># Keeps the rest of the handlers from being executed and prevents the event from bubbling up the DOM tree.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.stopPropagation()</span>
-<span class="c1"># Prevents the event from bubbling up the DOM tree, preventing any parent handlers from being notified of the event.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.target</span>
-<span class="c1"># The DOM element that initiated the event.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.timeStamp</span>
-<span class="c1"># The difference in milliseconds between the time the browser created the event and January 1, 1970.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.type</span>
-<span class="c1"># Describes the nature of the event.</span>
-
-<span class="c1"># Events &gt; Event Object</span>
-<span class="c1"># event.which</span>
-<span class="c1"># For key or mouse events, this property indicates the specific key or button that was pressed.</span>
-
-<span class="c1"># Selectors &gt; Child Filter</span>
-<span class="c1"># :only-child Selector</span>
-<span class="c1"># Selects all elements that are the only child of their parent.</span>
-
-<span class="c1"># Selectors &gt; Child Filter</span>
-<span class="c1"># :only-of-type Selector</span>
-<span class="c1"># Selects all elements that have no siblings with the same element name.</span>
-
-
-<span class="c1"># Selectors &gt; Form | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :reset Selector</span>
-<span class="c1"># Selects all elements of type reset.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter</span>
-<span class="c1"># :root Selector</span>
-<span class="c1"># Selects the element that is the root of the document.</span>
-
-<span class="c1"># Selectors &gt; Form | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :file Selector</span>
-<span class="c1"># Selects all elements of type file.</span>
-<span class="c1"># Selectors &gt; Child Filter</span>
-<span class="c1"># :first-child Selector</span>
-<span class="c1"># Selects all elements that are the first child of their parent.</span>
-<span class="c1"># Selectors &gt; Child Filter</span>
-<span class="c1"># :first-of-type Selector</span>
-<span class="c1"># Selects all elements that are the first among siblings of the same element name.</span>
-<span class="c1"># Selectors &gt; Basic Filter | Deprecated &gt; Deprecated 3.4 | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :first Selector</span>
-<span class="c1"># Selects the first matched DOM element.</span>
-
-<span class="c1"># Selectors &gt; Content Filter | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :parent Selector</span>
-<span class="c1"># Select all elements that have at least one child node (either an element or text).</span>
-
-<span class="c1"># Selectors &gt; Form | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :password Selector</span>
-<span class="c1"># Selects all elements of type password.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter | Selectors &gt; Form</span>
-<span class="c1"># :focus Selector</span>
-<span class="c1"># Selects element if it is currently focused.</span>
-
-
-<span class="c1"># Selectors &gt; Basic Filter | Deprecated &gt; Deprecated 3.4 | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :gt() Selector</span>
-<span class="c1"># Select all elements at an index greater than index within the matched set.</span>
-
-<span class="c1"># Selectors &gt; Form | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :submit Selector</span>
-<span class="c1"># Selects all elements of type submit.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter</span>
-<span class="c1"># :target Selector</span>
-<span class="c1"># Selects the target element indicated by the fragment identifier of the document’s URI.</span>
-
-<span class="c1"># Selectors &gt; Form | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :text Selector</span>
-<span class="c1"># Selects all input elements of type text.</span>
-
-<span class="c1"># Selectors &gt; Attribute</span>
-<span class="c1"># Multiple Attribute Selector [name=”value”][name2=”value2″]</span>
-<span class="c1"># Matches elements that match all of the specified attribute filters.</span>
-
-<span class="c1"># Selectors &gt; Basic</span>
-<span class="c1"># Multiple Selector (“selector1, selector2, selectorN”)</span>
-<span class="c1"># Selects the combined results of all the specified selectors.</span>
-
-<span class="c1"># Selectors &gt; Attribute</span>
-<span class="c1"># Has Attribute Selector [name]</span>
-<span class="c1"># Selects elements that have the specified attribute, with any value.</span>
-
-<span class="c1"># Selectors &gt; Content Filter | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :has() Selector</span>
-<span class="c1"># Selects elements which contain at least one element that matches the specified selector.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :header Selector</span>
-<span class="c1"># Selects all elements that are headers, like h1, h2, h3 and so on.</span>
-
-<span class="c1"># Selectors &gt; dQuery Extensions | Selectors &gt; Visibility Filter</span>
-<span class="c1"># :hidden Selector</span>
-<span class="c1"># Selects all elements that are hidden.</span>
-
-<span class="c1"># Selectors &gt; Child Filter</span>
-<span class="c1"># :last-child Selector</span>
-<span class="c1"># Selects all elements that are the last child of their parent.</span>
-
-<span class="c1"># Selectors &gt; Child Filter</span>
-<span class="c1"># :last-of-type Selector</span>
-<span class="c1"># Selects all elements that are the last among siblings of the same element name.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter | Deprecated &gt; Deprecated 3.4 | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :last Selector</span>
-<span class="c1"># Selects the last matched element.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter | Deprecated &gt; Deprecated 3.4 | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :lt() Selector</span>
-<span class="c1"># Select all elements at an index less than index within the matched set.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter</span>
-<span class="c1"># :lang() Selector</span>
-<span class="c1"># Selects all elements of the specified language.</span>
-
-<span class="c1"># Selectors &gt; Form | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :selected Selector</span>
-<span class="c1"># Selects all elements that are selected.</span>
-
-<span class="c1"># Deprecated &gt; Deprecated 1.7 | Internals | Properties &gt; Properties of dQuery Object Instances | Removed</span>
-<span class="c1"># .selector</span>
-<span class="c1"># A selector representing selector passed to dQuery(), if any, when creating the original set.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter</span>
-<span class="c1"># :not() Selector</span>
-<span class="c1"># Selects all elements that do not match the given selector.</span>
-
-<span class="c1"># Selectors &gt; Child Filter</span>
-<span class="c1"># :nth-child() Selector</span>
-<span class="c1"># Selects all elements that are the nth-child of their parent.</span>
-
-<span class="c1"># Selectors &gt; Child Filter</span>
-<span class="c1"># :nth-last-child() Selector</span>
-<span class="c1"># Selects all elements that are the nth-child of their parent, counting from the last element to the first.</span>
-
-<span class="c1"># Selectors &gt; Child Filter</span>
-<span class="c1"># :nth-last-of-type() Selector</span>
-<span class="c1"># Selects all the elements that are the nth-child of their parent in relation to siblings with the same element name, counting from the last element to the first.</span>
-
-<span class="c1"># Selectors &gt; Child Filter</span>
-<span class="c1"># :nth-of-type() Selector</span>
-<span class="c1"># Selects all elements that are the nth child of their parent in relation to siblings with the same element name.</span>
-
-<span class="c1"># Selectors &gt; Basic Filter | Deprecated &gt; Deprecated 3.4 | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :odd Selector</span>
-<span class="c1"># Selects odd elements, zero-indexed. See also :even.</span>
-
-
-<span class="c1"># Selectors &gt; Basic</span>
-<span class="c1"># ID Selector (“#id”)</span>
-<span class="c1"># Selects a single element with the given id attribute.</span>
-
-<span class="c1"># Selectors &gt; Form | Selectors &gt; dQuery Extensions</span>
-<span class="c1"># :image Selector</span>
-<span class="c1"># Selects all elements of type image.</span>
-
-
-<span class="c1"># Selectors &gt; Hierarchy</span>
-<span class="c1"># Next Adjacent Selector (“prev + next”)</span>
-<span class="c1"># Selects all next elements matching “next” that are immediately preceded by a sibling “prev”.</span>
-
-<span class="c1"># Selectors &gt; Hierarchy</span>
-<span class="c1"># Next Siblings Selector (“prev ~ siblings”)</span>
-<span class="c1"># Selects all sibling elements that follow after the “prev” element, have the same parent, and match the filtering “siblings” selector.</span>
-
-<span class="c1"># Effects &gt; Custom | Deprecated &gt; Deprecated 3.0 | Properties &gt; Properties of the Global dQuery Object</span>
-<span class="c1"># dQuery.fx.interval</span>
-<span class="c1"># The rate (in milliseconds) at which animations fire.</span>
-
-<span class="c1"># Effects &gt; Custom | Properties &gt; Properties of the Global dQuery Object</span>
-<span class="c1"># dQuery.fx.off</span>
-<span class="c1"># Globally disable all animations.</span>
-
-<span class="c1"># :input Selector</span>
-<span class="c1"># Selects all input, textarea, select and button elements.</span>
+<span class="c1">#     def done(self, *args):</span>
+<span class="c1">#         &quot;&quot;&quot; Add handlers to be called when the Deferred object is resolved. &quot;&quot;&quot;</span>
+
+<span class="c1">#     def fail(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Add handlers to be called when the Deferred object is rejected.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def isRejected(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Determine whether a Deferred object has been rejected.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def isResolved(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Determine whether a Deferred object has been resolved.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def notify(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Call the progressCallbacks on a Deferred object with the given args.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def notifyWith(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Call the progressCallbacks on a Deferred object with the given context and args.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def pipe(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Utility method to filter and/or chain Deferreds.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def progress(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Add handlers to be called when the Deferred object generates progress notifications.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def promise(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Return a Deferred’s Promise object.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def reject(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Reject a Deferred object and call any failCallbacks with the given args.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def rejectWith(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Reject a Deferred object and call any failCallbacks with the given context and args.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def resolve(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Resolve a Deferred object and call any doneCallbacks with the given args.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def resolveWith(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Resolve a Deferred object and call any doneCallbacks with the given context and args.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def state(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Determine the current state of a Deferred object.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def then(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Add handlers to be called when the Deferred object is resolved, rejected, or still in progress.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+
+<span class="c1"># class Event():</span>
+
+<span class="c1">#     def __init__(self):</span>
+<span class="c1">#         self.currentTarget = None</span>
+<span class="c1">#         self.data = None</span>
+<span class="c1">#         self.delegateTarget = None</span>
+<span class="c1">#         self.metaKey = None</span>
+<span class="c1">#         self.namespace = None</span>
+<span class="c1">#         self.pageX = None</span>
+<span class="c1">#         self.pageY = None</span>
+<span class="c1">#         self.relatedTarget = None</span>
+<span class="c1">#         self.result = None</span>
+<span class="c1">#         self.target = None</span>
+<span class="c1">#         self.timeStamp = None</span>
+<span class="c1">#         self.type = None</span>
+<span class="c1">#         self.which = None</span>
+
+<span class="c1">#     def isDefaultPrevented(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns whether event.preventDefault() was ever called on this event object.&quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
+
+<span class="c1">#     def isImmediatePropagationStopped(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns whether event.stopImmediatePropagation() was ever called on this event object.&quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
+
+<span class="c1">#     def isPropagationStopped(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns whether event.stopPropagation() was ever called on this event object.&quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
+
+<span class="c1">#     def preventDefault(self):</span>
+<span class="c1">#         &quot;&quot;&quot; If this method is called,</span>
+<span class="c1">#           the default action of the event will not be triggered.&quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
+
+<span class="c1">#     def stopImmediatePropagation(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Keeps the rest of the handlers from being executed and</span>
+<span class="c1">#           prevents the event from bubbling up the DOM tree.&quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
+
+<span class="c1">#     def stopPropagation(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Prevents the event from bubbling up the DOM tree, preventing any parent handlers</span>
+<span class="c1">#           from being notified of the event.&quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
 
 
 <span class="k">def</span> <span class="nf">dproxy</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
@@ -1475,9 +1299,9 @@
     <span class="c1"># if type(q) is not str:</span>
     <span class="k">return</span> <span class="n">el</span>
     <span class="c1"># else:</span>
-        <span class="c1"># return el.elements</span>
+    <span class="c1">#     return el.elements</span>
     <span class="c1"># def __str__(self):</span>
-        <span class="c1"># return self.elements</span>
+    <span class="c1">#     return self.elements</span>
 
 
 <span class="k">class</span> <span class="nc">º</span><span class="p">(</span><span class="n">dQuery_el</span><span class="p">):</span>
@@ -1506,11 +1330,11 @@
 
             <span class="c1"># headers = {&#39;Content-type&#39;: contentType}</span>
             <span class="n">s</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
-            <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  <span class="c1">#, headers=headers)</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># , headers=headers)</span>
             <span class="n">prepped</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">prepare_request</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
             <span class="c1"># prepped.body = &#39;hello&#39;</span>
             <span class="c1"># prepped.headers[&#39;Keep-Dead&#39;] = &#39;parrot&#39;</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">prepped</span><span class="p">)</span>  <span class="c1">#, **kwargs)</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">prepped</span><span class="p">)</span>  <span class="c1"># , **kwargs)</span>
             <span class="c1"># resp = s.send(prepped,</span>
             <span class="c1">#     stream=stream,</span>
             <span class="c1">#     verify=verify,</span>
@@ -1537,7 +1361,8 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">ajaxPrefilter</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot; Handle custom Ajax options or modify existing options before each request is sent and before they are processed by .ajax &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Handle custom Ajax options or modify existing options before each request is sent</span>
+<span class="sd">        and before they are processed by .ajax &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@staticmethod</span>
@@ -1575,13 +1400,15 @@
     <span class="c1"># @staticmethod</span>
     <span class="c1"># @ty</span>
     <span class="c1"># def cssHooks:</span>
-        <span class="sd">&quot;&quot;&quot; Hook directly into dQuery to override how particular CSS properties are retrieved or set, normalize CSS property naming, or create custom properties. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Hook directly into dQuery to override how particular CSS properties are retrieved or set,</span>
+<span class="sd">        normalize CSS property naming, or create custom properties. &quot;&quot;&quot;</span>
         <span class="c1"># raise NotImplementedError</span>
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># @ty</span>
     <span class="c1"># def cssNumber:</span>
-        <span class="sd">&quot;&quot;&quot; An object containing all CSS properties that may be used without a unit. The .css method uses this object to see if it may append px to unitless values. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; An object containing all CSS properties that may be used without a unit.</span>
+<span class="sd">        The .css method uses this object to see if it may append px to unitless values. &quot;&quot;&quot;</span>
         <span class="c1"># raise NotImplementedError</span>
 
     <span class="nd">@staticmethod</span>
@@ -1591,7 +1418,9 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">Deferred</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot; A factory function that returns a chainable utility object with methods to register multiple callbacks into callback queues, invoke callback queues, and relay the success or failure state of any synchronous or asynchronous function. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; A factory function that returns a chainable utility object with methods to register multiple callbacks</span>
+<span class="sd">        into callback queues, invoke callback queues, and relay the success or failure state of</span>
+<span class="sd">        any synchronous or asynchronous function. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@staticmethod</span>
@@ -1623,7 +1452,7 @@
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataType</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dataType</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[simplified ajax request]</span>
 
 <span class="sd">        Args:</span>
@@ -1641,9 +1470,9 @@
         <span class="c1"># return r.content.decode(&quot;utf-8&quot;)</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">º</span><span class="o">.</span><span class="n">ajax</span><span class="p">({</span>
             <span class="s1">&#39;url&#39;</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
-            <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span>
-            <span class="s1">&#39;success&#39;</span><span class="p">:</span> <span class="n">success</span><span class="p">,</span>
-            <span class="s1">&#39;dataType&#39;</span><span class="p">:</span> <span class="n">dataType</span>
+            <span class="c1"># &#39;data&#39;: data,</span>
+            <span class="c1"># &#39;success&#39;: success,</span>
+            <span class="c1"># &#39;dataType&#39;: dataType</span>
         <span class="p">})</span>
         <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
 
@@ -1656,7 +1485,7 @@
     <span class="k">def</span> <span class="nf">getScript</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; execute another python file. &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">Popen</span>
-        <span class="n">Popen</span><span class="p">(</span><span class="s1">&#39;python &#39;</span><span class="o">+</span><span class="n">filename</span><span class="o">+</span><span class="s1">&#39;.py&#39;</span><span class="p">)</span>
+        <span class="n">Popen</span><span class="p">(</span><span class="s1">&#39;python &#39;</span> <span class="o">+</span> <span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.py&#39;</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>  <span class="c1"># TODO - test</span>
     <span class="k">def</span> <span class="nf">globalEval</span><span class="p">(</span><span class="n">code</span><span class="p">):</span>
@@ -1707,9 +1536,9 @@
         <span class="k">return</span> <span class="n">callable</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">isNumeric</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot; Determines whether its argument represents a JavaScript number. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">==</span> <span class="n">Number</span>
+    <span class="k">def</span> <span class="nf">isNumeric</span><span class="p">(</span><span class="n">thing</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Determine whether the argument is numeric. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Number</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isPlainObject</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
@@ -1760,7 +1589,8 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">param</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Create a serialized representation of an array, a plain object, or a dQuery object suitable for use in a URL query string or Ajax request.</span>
+        <span class="sd">&quot;&quot;&quot; Create a serialized representation of an array, a plain object,</span>
+<span class="sd">        or a dQuery object suitable for use in a URL query string or Ajax request.</span>
 <span class="sd">        In case a dQuery object is passed, it should contain input elements with name/value properties. &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -1823,12 +1653,14 @@
     <span class="c1"># @staticmethod</span>
     <span class="c1">#  @ty</span>
     <span class="c1"># def speed:</span>
-        <span class="c1"># &quot;&quot;&quot; Creates an object containing a set of properties ready to be used in the definition of custom animations. &quot;&quot;&quot;</span>
+        <span class="c1"># &quot;&quot;&quot; Creates an object containing a set of properties ready to be used in the definition</span>
+        <span class="c1"># of custom animations. &quot;&quot;&quot;</span>
         <span class="c1"># raise NotImplementedError</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">sub</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot; Creates a new copy of dQuery whose properties and methods can be modified without affecting the original dQuery object. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Creates a new copy of dQuery whose properties and methods can be modified without affecting</span>
+<span class="sd">        the original dQuery object. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="c1"># @staticmethod</span>
@@ -1870,11 +1702,9 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">when</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot; Provides a way to execute callback functions based on zero or more Thenable objects, </span>
+        <span class="sd">&quot;&quot;&quot; Provides a way to execute callback functions based on zero or more Thenable objects,</span>
 <span class="sd">        usually Deferred objects that represent asynchronous events. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
-
 
 
 <span class="n">dQuery</span> <span class="o">=</span> <span class="n">º</span>
@@ -1907,17 +1737,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">Domonic: decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>

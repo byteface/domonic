@@ -49,12 +49,12 @@
     <span class="s2">&quot;copy&quot;</span><span class="p">:</span> <span class="s2">&quot;cp&quot;</span><span class="p">,</span>
     <span class="s2">&quot;erase&quot;</span><span class="p">:</span> <span class="s2">&quot;rm&quot;</span><span class="p">,</span>
     <span class="s2">&quot;comp&quot;</span><span class="p">:</span> <span class="s2">&quot;diff&quot;</span><span class="p">,</span>
-    <span class="c1">#&quot;type_&quot;:&quot;cat&quot;, </span>
-    <span class="c1">#&quot;open&quot;:&quot;open&quot;,</span>
-    <span class="c1">#&quot;edit&quot;:&quot;vim&quot;,</span>
-    <span class="c1">#&quot;view&quot;:&quot;less&quot;,</span>
-    <span class="c1">#&quot;search&quot;:&quot;grep&quot;,</span>
-    <span class="c1">#&quot;replace&quot;:&quot;sed&quot;</span>
+    <span class="c1"># &quot;type_&quot;:&quot;cat&quot;,</span>
+    <span class="c1"># &quot;open&quot;:&quot;open&quot;,</span>
+    <span class="c1"># &quot;edit&quot;:&quot;vim&quot;,</span>
+    <span class="c1"># &quot;view&quot;:&quot;less&quot;,</span>
+    <span class="c1"># &quot;search&quot;:&quot;grep&quot;,</span>
+    <span class="c1"># &quot;replace&quot;:&quot;sed&quot;</span>
 <span class="p">}</span>
 
 
@@ -184,13 +184,13 @@
     <span class="c1"># def __add__(self, other):</span>
     <span class="c1">#     return str(self.result) + str(other)</span>
 
-    <span class="c1"># def __radd__(self, other): </span>
+    <span class="c1"># def __radd__(self, other):</span>
     <span class="c1">#     return str(other) + str(self.result)</span>
 
     <span class="c1"># def __call__(self, *args, **kwargs):</span>
     <span class="c1">#     self.run_command()</span>
     <span class="c1">#     return self.result</span>
-    
+
     <span class="c1"># def __getattr__(self, attr):</span>
     <span class="c1">#     if attr in equivelents_map:</span>
     <span class="c1">#         return Cmdcommand(equivelents_map[attr], *self.args, **self.kwargs)</span>
@@ -198,7 +198,6 @@
     <span class="c1"># def __del__(self):</span>
     <span class="c1">#     os.chdir(&quot;..&quot;)</span>
     <span class="c1">#     return</span>
-
 
 
 <div class="viewcode-block" id="cd"><a class="viewcode-back" href="../../packages/cmd.html#domonic.cmd.cd">[docs]</a><span class="k">class</span> <span class="nc">cd</span><span class="p">(</span><span class="n">Cmdcommand</span><span class="p">):</span>
@@ -233,6 +232,7 @@
             <span class="c1"># print(&#39;failed to touch:&#39;, e)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span></div>
 
+
 <span class="n">getmac</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;getmac&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;getmac&#39;</span><span class="p">})</span>  <span class="c1">#: display MAC address</span>
 <span class="n">ipconfig</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;ipconfig&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;ipconfig&#39;</span><span class="p">})</span>  <span class="c1">#: display IP network settings</span>
 <span class="n">shutdown</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;shutdown&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;shutdown&#39;</span><span class="p">})</span>  <span class="c1">#: shutdown the computer. (/s), triggers a restart (/r), or logs the user out (/l).</span>
@@ -263,11 +263,11 @@
 
 <span class="c1"># ssh = type(&#39;ssh&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;ssh&#39;})</span>
 
-<span class="n">chdir</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;chdir&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;chdir&#39;</span><span class="p">})</span>  <span class="c1">#: show current dir or can switch dir</span>
-<span class="c1">#clip = type(&#39;clip&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;clip&#39;})  #: Forwards the result of a command to the clipboard</span>
+<span class="n">chdir</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;chdir&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;chdir&#39;</span><span class="p">})</span>  <span class="c1"># : show current dir or can switch dir</span>
+<span class="c1"># clip = type(&#39;clip&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;clip&#39;})  # : Forwards the result of a command to the clipboard</span>
 
-<span class="c1">#find = type(&#39;find&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;find&#39;})</span>
-<span class="n">whoami</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;whoami&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;whoami&#39;</span><span class="p">})</span>  <span class="c1">#: information about the current user. /GROUP parameter </span>
+<span class="c1"># find = type(&#39;find&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;find&#39;})</span>
+<span class="n">whoami</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;whoami&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;whoami&#39;</span><span class="p">})</span>  <span class="c1">#: information about the current user. /GROUP parameter</span>
 
 <span class="n">logoff</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;logoff&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;logoff&#39;</span><span class="p">})</span>  <span class="c1">#: Logs the user out of Windows.</span>
 <span class="n">mrinfo</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;mrinfo&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;mrinfo&#39;</span><span class="p">})</span>  <span class="c1">#: Provides information on the router</span>
@@ -303,9 +303,9 @@
 <span class="sd">bitsadmin	Creates and monitors downloads and uploads</span>
 <span class="sd">chcp	Changes the current code page</span>
 <span class="sd">choice	Creates a selection list</span>
-<span class="sd">clip	Forwards the result of a command to the clipboard. </span>
+<span class="sd">clip	Forwards the result of a command to the clipboard.</span>
 <span class="sd">color	Changes the background</span>
-<span class="sd">command	Starts CMD.COM.	32-bit/DOS	 </span>
+<span class="sd">command	Starts CMD.COM.	32-bit/DOS</span>
 <span class="sd">date	Displays the current date and allows you to change it.</span>
 <span class="sd">debug	Starts debug</span>
 <span class="sd">doskey	Creates macros, recalls commands, and edits command input</span>
@@ -315,20 +315,20 @@
 <span class="sd">fasthelp	Displays helpful information about commands</span>
 <span class="sd">fastopen	Writes the position of a program into a specified list</span>
 <span class="sd">find	Searches through a file or multiple files for a particular character sequence.</span>
-<span class="sd">findstr	Finds character sequences in one or multiple files. </span>
+<span class="sd">findstr	Finds character sequences in one or multiple files.</span>
 <span class="sd">forcedos	Starts a program in the MS-DOS partial system</span>
-<span class="sd">graftabl	Enables the option to use extended characters of a specific code page in graphics mode.	32-bit/DOS	 </span>
-<span class="sd">graphics	Starts a program that can print graphics.	32-bit/DOS	 </span>
+<span class="sd">graftabl	Enables the option to use extended characters of a specific code page in graphics mode.	32-bit/DOS</span>
+<span class="sd">graphics	Starts a program that can print graphics.	32-bit/DOS</span>
 <span class="sd">help	Displays help text for a specific command (you can also use the /? command)</span>
 <span class="sd">kb16	Changes the country settings of the keyboard for DOS programs</span>
 <span class="sd">keyb	Changes the country settings of the keyboard for DOS programs</span>
 <span class="sd">lpq	Displays the status of a printer queue for computers that use a “line Printer Daemon” (LPD)</span>
-<span class="sd">lpr	Sends a file to a computer that uses a line printer daemon (LPD). </span>
+<span class="sd">lpr	Sends a file to a computer that uses a line printer daemon (LPD).</span>
 <span class="sd">md	Creates a new directory on the specified path.</span>
 <span class="sd">more	Outputs the content of a file (for example, a text file) by the page.</span>
 <span class="sd">msg	Sends a message to another user.</span>
-<span class="sd">nlsfunc	Provides country-specific information for language support.	32-bit/DOS	 </span>
-<span class="sd">ntbackup	Runs backup services directly from the command line or as part of batch or script files.	XP	 </span>
+<span class="sd">nlsfunc	Provides country-specific information for language support.	32-bit/DOS</span>
+<span class="sd">ntbackup	Runs backup services directly from the command line or as part of batch or script files.	XP</span>
 <span class="sd">path	Creates and displays the path for searching executable files</span>
 <span class="sd">pause	Pauses execution in batch files and scripts.</span>
 <span class="sd">popd	Changes to the folder saved by the pushd command.</span>
@@ -357,7 +357,7 @@
 <span class="sd">cipher	Displays and changes the encryption status of files and directories on NTFS partitions.</span>
 <span class="sd">comp	Compares the content of two files or two file sets.</span>
 <span class="sd">compact	Displays and changes the compression status of files and directories on NTFS partitions.</span>
-<span class="sd">copy	Copies a file or multiple files to another location. </span>
+<span class="sd">copy	Copies a file or multiple files to another location.</span>
 <span class="sd">cscript	Runs scripts over the Microsoft Script Host.</span>
 <span class="sd">del	Deletes a file or multiple files.</span>
 <span class="sd">deltree	Deletes a directory as well as all subdirectories and files within</span>
@@ -432,7 +432,7 @@
 <span class="sd">ktmutil	Starts the kernel transaction manager.</span>
 <span class="sd">label	Changes or deletes a drive’s label</span>
 <span class="sd">lh	Loads a program into the high memory area (UMB) – has the same function as loadhigh</span>
-<span class="sd">licensingdiag	Creates an XML and a CAB file that contain information on the Windows product licence </span>
+<span class="sd">licensingdiag	Creates an XML and a CAB file that contain information on the Windows product licence</span>
 <span class="sd">loadfix	Ensures that a program is loaded and executed above the first 64 KB of RAM.	32-bit/DOS</span>
 <span class="sd">loadhigh	Has the same function as lh</span>
 <span class="sd">lock	Locks a drive so that only a user-selected program can access it directly.	98/95</span>
@@ -458,7 +458,7 @@
 <span class="sd">pnputil	Installs plug-and-play devices from the command prompt.</span>
 <span class="sd">power	Uses the IDLE status of a processor to reduce energy consumption</span>
 <span class="sd">powercfg	Allows the user to change the computer’s energy options and control energy conservation plans.</span>
-<span class="sd">pwlauncher	Configures the startup options for Windows To Go with which you can boot Windows from a USB drive </span>
+<span class="sd">pwlauncher	Configures the startup options for Windows To Go with which you can boot Windows from a USB drive</span>
 <span class="sd">qprocess	Provides information on running processes.</span>
 <span class="sd">query	Displays the status of a particular service.</span>
 <span class="sd">quser	Provides information on the currently logged-in users.</span>
@@ -466,7 +466,7 @@
 <span class="sd">recimg	Creates a user-defined Windows image to restore the system.	8</span>
 <span class="sd">reg	Manages the registry of the command prompt.</span>
 <span class="sd">regini	Changes registry authorisations.</span>
-<span class="sd">register-cimprovider	Registers a common information model provider (CIM provider) in Windows </span>
+<span class="sd">register-cimprovider	Registers a common information model provider (CIM provider) in Windows</span>
 <span class="sd">regsvr32	Registers a DLL file in the registry.</span>
 <span class="sd">relog	Creates new performance indicator protocols from the data in the existing protocols.</span>
 <span class="sd">repair-bde	Repairs and decrypts defective drives that are encrypted with BitLocker.</span>
@@ -479,7 +479,7 @@
 <span class="sd">secedit	Analyses the security settings by comparing the current configurations with templates.</span>
 <span class="sd">setver	Sets a version number of MS-DOS that’s forwarded to a program</span>
 <span class="sd">setx	Creates or changes environmental variable in the user of system environment.</span>
-<span class="sd">sfc	Checks all important and protected system files. </span>
+<span class="sd">sfc	Checks all important and protected system files.</span>
 <span class="sd">smartdrv	Starts and manages the hard drive cache program SMARTDrive</span>
 <span class="sd">sys	Copies system files from MS-DOS and the command interpreter to another hard drive. This makes it bootable</span>
 <span class="sd">systeminfo	Displays information about the Windows installation, including all installed service packages.</span>
@@ -506,7 +506,7 @@
 <span class="sd">certreq	Manages and creates certificate registration requirements for certification authorities.</span>
 <span class="sd">certutil	Manages services related to certificate authentication.</span>
 <span class="sd">change	Changes the settings of a terminal server and can be used together with the parameters logon, port, or user</span>
-<span class="sd">checknetisolation	Checks the network capability of apps from the Windows Store </span>
+<span class="sd">checknetisolation	Checks the network capability of apps from the Windows Store</span>
 <span class="sd">chglogon	Enables, disables, or adjusts logins for terminal server sessions.</span>
 <span class="sd">chgport	Displays or changes the COM pin assignment of terminal servers for DOS compatibility.</span>
 <span class="sd">chgusr	Changes the installation mode of a terminal server.</span>
@@ -564,7 +564,6 @@
 <span class="sd">winrm	Manages secure connections between local and remote computers via the WS management protocol.</span>
 <span class="sd">winrs	Enables access to the command line of a remote computer via a secure connection to implement changes.</span>
 <span class="sd">wsmanhttpconfig	Manages functions of the Windows Remote Management (winrm).</span>
-
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
@@ -595,17 +594,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">Domonic: decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>

@@ -38,6 +38,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 
@@ -74,7 +75,7 @@
 <span class="sd">        its syntactical sugar for a callback i.e.</span>
 
 <span class="sd">        @called(</span>
-<span class="sd">            lambda: º.get(&#39;https://www.google.com&#39;),</span>
+<span class="sd">            lambda: º.ajax(&#39;https://www.google.com&#39;),</span>
 <span class="sd">            lambda err: print(&#39;error:&#39;, err))</span>
 <span class="sd">        def success(data=None):</span>
 <span class="sd">            print(&quot;sweet!&quot;)</span>
@@ -94,7 +95,6 @@
                 <span class="k">raise</span> <span class="n">e</span>
 
     <span class="k">return</span> <span class="n">decorator</span></div>
-
 
 <span class="c1"># def static(endpoint, update=&quot;11101&quot;):</span>
 <span class="c1">#     &#39;&#39;&#39;</span>
@@ -164,6 +164,22 @@
 <span class="c1"># @instead(&quot;something else instead of what was supposed to happen&quot;)</span>
 
 
+<div class="viewcode-block" id="deprecated"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.decorators.deprecated">[docs]</a><span class="k">def</span> <span class="nf">deprecated</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This is a decorator which can be used to mark functions</span>
+<span class="sd">    as deprecated. It will result in a warning being emitted</span>
+<span class="sd">    when the function is used.&quot;&quot;&quot;</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">new_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;always&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>  <span class="c1"># turn off filter</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Call to deprecated function </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                      <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+                      <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>  <span class="c1"># reset filter</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_func</span></div>
+<span class="c1"># considered this a few times</span>
+
+
 <span class="c1"># def catch(f):</span>
 <span class="c1">#     &quot;&quot;&quot; catch exceptions and return None &quot;&quot;&quot;</span>
 <span class="c1">#     def new_f():</span>
@@ -173,8 +189,6 @@
 <span class="c1">#             print(&#39;failed&#39;, e)</span>
 <span class="c1">#             return None</span>
 <span class="c1">#     return new_f</span>
-
-
 
 
 <span class="c1"># def lenient(*args, **kwargs):</span>
@@ -223,17 +237,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">Domonic: decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>

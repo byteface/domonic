@@ -2186,7 +2186,8 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 <dl class="py method">
 <dt id="domonic.javascript.FormData.append">
 <code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.FormData.append" title="Permalink to this definition">¶</a></dt>
-<dd><p>Appends a new value onto an existing key inside a FormData object, or adds the key if it does not already exist.</p>
+<dd><p>Appends a new value onto an existing key inside a FormData object,
+or adds the key if it does not already exist.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2228,7 +2229,8 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 <dl class="py method">
 <dt id="domonic.javascript.FormData.set">
 <code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.FormData.set" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets a new value for an existing key inside a FormData object, or adds the key/value if it does not already exist.</p>
+<dd><p>Sets a new value for an existing key inside a FormData object,
+or adds the key/value if it does not already exist.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2268,7 +2270,10 @@ has its this keyword set to the provided value,
 with a given sequence of arguments preceding any provided when the new function is called.]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>thisArg</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [The value to be passed as the this parameter to the target function func when the bound function is called.]</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>thisArg</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [The value to be passed as the this parameter to the target</p></li>
+<li><p><strong>func when the bound function is called.</strong><strong>]</strong> (<em>function</em>) – </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[A copy of the given function with the specified this value, and initial arguments (if provided).]</p>
@@ -2435,7 +2440,8 @@ or false if the element does not exist. Map.prototype.has(key) will return false
 <dl class="py method">
 <dt id="domonic.javascript.Map.entries">
 <code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Map.entries" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order.</p>
+<dd><p>Returns a new Iterator object that contains an array of [key, value]
+for each element in the Map object in insertion order.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2453,7 +2459,8 @@ or false if the element does not exist. Map.prototype.has(key) will return false
 <dl class="py method">
 <dt id="domonic.javascript.Map.keys">
 <code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Map.keys" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new Iterator object that contains the keys for each element in the Map object in insertion order.</p>
+<dd><p>Returns a new Iterator object that contains the keys
+for each element in the Map object in insertion order.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2465,7 +2472,8 @@ or false if the element does not exist. Map.prototype.has(key) will return false
 <dl class="py method">
 <dt id="domonic.javascript.Map.values">
 <code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Map.values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new Iterator object that contains the values for each element in the Map object in insertion order.</p>
+<dd><p>Returns a new Iterator object that contains the values
+for each element in the Map object in insertion order.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2562,7 +2570,8 @@ Math.abs(‘-1’)</p>
 <dd class="field-odd"><p><strong>precision</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [An integer specifying the number of significant digits.]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[A string representing a Number object in fixed-point or exponential notation rounded to precision significant digits]</p>
+<dd class="field-even"><p>[A string representing a Number object in fixed-point
+or exponential notation rounded to precision significant digits]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
@@ -2602,7 +2611,7 @@ Math.abs(‘-1’)</p>
 <dl class="py method">
 <dt id="domonic.javascript.Object.entries">
 <em class="property">static </em><code class="sig-name descname">entries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.entries" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an array containing all of the [key, value] pairs of a given object’s own enumerable string properties.</p>
+<dd><p>Returns an array containing all of the [key, value] pairs in the object.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2630,7 +2639,8 @@ Math.abs(‘-1’)</p>
 <dl class="py method">
 <dt id="domonic.javascript.Object.getOwnPropertyNames">
 <em class="property">static </em><code class="sig-name descname">getOwnPropertyNames</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.getOwnPropertyNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.getOwnPropertyNames" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an array containing the names of all of the given object’s own enumerable and non-enumerable properties.</p>
+<dd><p>Returns an array containing the names of all of the given object’s
+own enumerable and non-enumerable properties.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2691,7 +2701,8 @@ as a direct property of that object and not inherited through the prototype chai
 <dl class="py method">
 <dt id="domonic.javascript.Object.values">
 <em class="property">static </em><code class="sig-name descname">values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an array containing the values that correspond to all of a given object’s own enumerable string properties.</p>
+<dd><p>Returns an array containing the values that correspond to
+all of a given object’s own enumerable string properties.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2996,7 +3007,8 @@ and through the specified number of character</p>
 <dl class="py method">
 <dt id="domonic.javascript.URLSearchParams.set">
 <code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.set" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the value associated with a given search parameter to the given value. If there are several values, the others are deleted.</p>
+<dd><p>Sets the value associated with a given search parameter to the given value.
+If there are several values, the others are deleted.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3045,6 +3057,23 @@ and through the specified number of character</p>
 <dt id="domonic.javascript.Window.prompt">
 <em class="property">static </em><code class="sig-name descname">prompt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em>, <em class="sig-param"><span class="n">default_text</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Window.prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Window.prompt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays a dialog box that prompts the visitor for input</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Window.requestAnimationFrame">
+<em class="property">static </em><code class="sig-name descname">requestAnimationFrame</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Window.requestAnimationFrame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Window.requestAnimationFrame" title="Permalink to this definition">¶</a></dt>
+<dd><p>[requests a frame of an animation]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>callback</strong> (<em>callable</em>) – [the callback function]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -6601,7 +6630,7 @@ optional error handler. run the decorated function immediately.</p>
 <p>WARNING: this is not for the regular decorating of a function
 its syntactical sugar for a callback i.e.</p>
 <dl class="simple">
-<dt>&#64;called(</dt><dd><p>lambda: º.get(‘<a class="reference external" href="https://www.google.com">https://www.google.com</a>’),
+<dt>&#64;called(</dt><dd><p>lambda: º.ajax(‘<a class="reference external" href="https://www.google.com">https://www.google.com</a>’),
 lambda err: print(‘error:’, err))</p>
 </dd>
 <dt>def success(data=None):</dt><dd><p>print(“sweet!”)
@@ -6614,6 +6643,14 @@ print(data)</p>
 <dt id="domonic.decorators.check">
 <code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.decorators.check" title="Permalink to this definition">¶</a></dt>
 <dd><p>logs entry and exit of a function</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="domonic.decorators.deprecated">
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">deprecated</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#deprecated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.decorators.deprecated" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a decorator which can be used to mark functions
+as deprecated. It will result in a warning being emitted
+when the function is used.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -9802,17 +9839,18 @@ Just pass an easing equation from the easing package</p>
 <li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators.html">Domonic: decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="servers.html">Domonic: servers</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: autodocs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#domonic">domonic</a></li>

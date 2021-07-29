@@ -81,14 +81,19 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span> <span class="o">=</span> <span class="n">obj</span>  <span class="c1"># set the dict as the attribs</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">[</span><span class="s1">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">[</span><span class="s1">&#39;__module__&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__module__</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">[</span><span class="s1">&#39;__doc__&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__doc__</span>
-
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">[</span><span class="s1">&#39;__class__&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">[</span><span class="s1">&#39;__module__&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__module__</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">[</span><span class="s1">&#39;__doc__&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__doc__</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">[</span><span class="s1">&#39;__proto__&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+                <span class="c1"># self.__attribs__[&#39;__proto__&#39;].__class__ = Object</span>
+                <span class="c1"># self.__attribs__[&#39;__proto__&#39;].__attribs__ = self.__attribs__</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Object.__init__() failed to set attribs&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a string representation of the object.&quot;&quot;&quot;</span>
@@ -140,7 +145,6 @@
     <span class="c1">#     if isinstance( source, dict ):</span>
     <span class="c1">#     return target</span>
 
-
     <span class="c1"># @staticmethod</span>
     <span class="c1"># def create(proto, propertiesObject):</span>
     <span class="c1">#     &quot;&quot;&quot; Creates a new object with the specified prototype object and properties. &quot;&quot;&quot;</span>
@@ -159,7 +163,6 @@
     <span class="c1">#         obj[key] = propertiesObject[key]</span>
     <span class="c1">#     return obj</span>
 
-
 <div class="viewcode-block" id="Object.defineProperty"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.defineProperty">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">defineProperty</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">descriptor</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adds the named property described by a given descriptor to an object. &quot;&quot;&quot;</span>
@@ -173,7 +176,7 @@
 
 <div class="viewcode-block" id="Object.entries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.entries">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an array containing all of the [key, value] pairs of a given object&#39;s own enumerable string properties. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns an array containing all of the [key, value] pairs in the object. &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">[[</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
@@ -186,16 +189,17 @@
             <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
             <span class="k">return</span> <span class="p">[]</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>   <span class="c1"># TODO - this is probably wrong - we need to check whether the property is defined in the prototype chain</span></div>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>   <span class="c1"># TODO - this is probably wrong</span></div>
 
 <div class="viewcode-block" id="Object.values"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.values">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an array containing the values that correspond to all of a given object&#39;s own enumerable string properties. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns an array containing the values that correspond to</span>
+<span class="sd">        all of a given object&#39;s own enumerable string properties. &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
             <span class="k">return</span> <span class="p">[]</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>  <span class="c1"># TODO - this is probably wrong - we need to check whether the property is defined in the prototype chain</span></div>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>  <span class="c1"># TODO - this is probably wrong</span></div>
 
 <div class="viewcode-block" id="Object.getOwnPropertyDescriptor"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.getOwnPropertyDescriptor">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">getOwnPropertyDescriptor</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
@@ -206,7 +210,8 @@
 
 <div class="viewcode-block" id="Object.getOwnPropertyNames"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.getOwnPropertyNames">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">getOwnPropertyNames</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an array containing the names of all of the given object&#39;s own enumerable and non-enumerable properties. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns an array containing the names of all of the given object&#39;s</span>
+<span class="sd">        own enumerable and non-enumerable properties. &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Object</span><span class="p">):</span>
@@ -214,7 +219,6 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">prop</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">prop</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
-
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># def _is(value1, value2):</span>
@@ -350,7 +354,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">__defineSetter__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Associates a function with a property that, when set, executes that function which modifies the property. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Associates a function with a property that, when set, calls the function. &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
@@ -360,7 +364,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__lookupSetter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__lookupSetter__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the function associated with the specified property by the __defineSetter__() method. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">[</span><span class="n">prop</span><span class="p">]</span>
 
@@ -396,7 +400,6 @@
 <div class="viewcode-block" id="Object.valueOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.valueOf">[docs]</a>    <span class="k">def</span> <span class="nf">valueOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value of the object. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span></div></div>
-
 
 
 <div class="viewcode-block" id="Function"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Function">[docs]</a><span class="k">class</span> <span class="nc">Function</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -435,12 +438,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Function.bind"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Function.bind">[docs]</a>    <span class="k">def</span> <span class="nf">bind</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thisArg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[creates a new function that, when called, </span>
-<span class="sd">        has its this keyword set to the provided value, </span>
+        <span class="sd">&quot;&quot;&quot;[creates a new function that, when called,</span>
+<span class="sd">        has its this keyword set to the provided value,</span>
 <span class="sd">        with a given sequence of arguments preceding any provided when the new function is called.]</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            thisArg ([type]): [The value to be passed as the this parameter to the target function func when the bound function is called.]</span>
+<span class="sd">            thisArg ([type]): [The value to be passed as the this parameter to the target</span>
+<span class="sd">            function func when the bound function is called.]</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            [type]: [A copy of the given function with the specified this value, and initial arguments (if provided).]</span>
@@ -519,7 +523,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="Map.delete"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns true if an element in the Map object existed and has been removed, </span>
+        <span class="sd">&quot;&quot;&quot; Returns true if an element in the Map object existed and has been removed,</span>
 <span class="sd">        or false if the element does not exist. Map.prototype.has(key) will return false afterwards. &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -551,15 +555,18 @@
             <span class="k">yield</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Map.keys"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains the keys for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains the keys</span>
+<span class="sd">        for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iterkeys</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Map.values"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains the values for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains the values</span>
+<span class="sd">        for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iteritems</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Map.entries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.entries">[docs]</a>    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns a new Iterator object that contains an array of [key, value]</span>
+<span class="sd">        for each element in the Map object in insertion order. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">]</span></div>
 
     <span class="c1"># def forEach(self, callbackFn[, thisArg]):</span>
@@ -584,13 +591,14 @@
         <span class="sd">&quot;&quot;&quot; creates a new FormData object. &quot;&quot;&quot;</span>
         <span class="c1"># TODO - parse to domonic.</span>
         <span class="c1"># if isinstance(form, str):</span>
-            <span class="c1"># self._data = domonic.loads(form) # TODO - parser wont be done enough yet</span>
+        <span class="c1">#   self._data = domonic.loads(form) # TODO - parser wont be done enough yet</span>
         <span class="c1"># if isinstance(form, Node):</span>
-            <span class="c1"># self._data = form</span>
+        <span class="c1">#   self._data = form</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="FormData.append"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Appends a new value onto an existing key inside a FormData object, or adds the key if it does not already exist. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Appends a new value onto an existing key inside a FormData object,</span>
+<span class="sd">        or adds the key if it does not already exist. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="FormData.delete"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -618,7 +626,8 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="FormData.set"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Sets a new value for an existing key inside a FormData object, or adds the key/value if it does not already exist.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Sets a new value for an existing key inside a FormData object,</span>
+<span class="sd">        or adds the key/value if it does not already exist.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="FormData.values"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -627,7 +636,7 @@
 
 
 <div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;[A background task that can be created via script, which can send messages back to its creator. </span>
+    <span class="sd">&quot;&quot;&quot;[A background task that can be created via script, which can send messages back to its creator.</span>
 <span class="sd">    Creating a worker is done by calling the Worker(&quot;path/to/worker/script&quot;) constructor.]</span>
 <span class="sd">    TODO - JSWorker - Node</span>
 <span class="sd">    Args:</span>
@@ -1008,23 +1017,16 @@
 <div class="viewcode-block" id="Global.require"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.require">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">require</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Loads a script from a file &quot;&quot;&quot;</span>
-        
-        <span class="c1"># if &#39;.json&#39; in path:</span>
-            <span class="c1"># TODO - loads json</span>
-            <span class="c1"># return</span>
-
         <span class="c1"># &#39;.&#39;.join(path.split(&#39;/&#39;))</span>
         <span class="c1"># module = __import__(path)  # app.components.{component}</span>
         <span class="c1"># my_class = getattr(module, component.title())</span>
         <span class="c1"># return my_class()</span>
-        <span class="k">pass</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Global.setTimeout"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.setTimeout">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">setTimeout</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; use threads to create a timeout method &quot;&quot;&quot;</span></div>
-
-
-
+        <span class="sd">&quot;&quot;&quot; use threads to create a timeout method &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
     <span class="c1"># TODO - clearTimeout.</span>
     <span class="nd">@staticmethod</span>
@@ -1046,7 +1048,6 @@
 
     <span class="c1"># def reset(self):</span>
     <span class="c1">#     Performance._start = time.time()</span>
-
 
 
 <span class="n">performance</span> <span class="o">=</span> <span class="n">Performance</span><span class="p">()</span>
@@ -1107,7 +1108,7 @@
 
 <div class="viewcode-block" id="Date.getTimezoneOffset"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getTimezoneOffset">[docs]</a>    <span class="k">def</span> <span class="nf">getTimezoneOffset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the time difference between UTC time and local time, in minutes &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">utcoffset</span><span class="p">()</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">60</span> <span class="c1"># TODO - TEST</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">utcoffset</span><span class="p">()</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">60</span>  <span class="c1"># TODO - TEST</span></div>
 
 <div class="viewcode-block" id="Date.getUTCDate"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.getUTCDate">[docs]</a>    <span class="k">def</span> <span class="nf">getUTCDate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the day of the month, according to universal time (from 1-31) &quot;&quot;&quot;</span>
@@ -1197,7 +1198,7 @@
     <span class="c1"># Sets a date to a specified number of milliseconds after/before January 1, 1970</span>
 <div class="viewcode-block" id="Date.setTime"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.setTime">[docs]</a>    <span class="k">def</span> <span class="nf">setTime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milliseconds</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the number of milliseconds since January 1, 1970 &quot;&quot;&quot;</span>
-        <span class="c1">#test copilot</span>
+        <span class="c1"># test copilot</span>
         <span class="c1"># self.date.replace(millisecond=int(milliseconds))</span>
         <span class="c1"># return self.now() # TODO - is this right? - is this same as now()?</span>
         <span class="c1"># print(&#39;TODO: setTime&#39;)</span>
@@ -1450,8 +1451,6 @@
     <span class="c1"># def __call__(self, func):</span>
     <span class="c1">#     self.results.append(func)</span>
 
-    
-
 
 <div class="viewcode-block" id="Window"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window">[docs]</a><span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; window &quot;&quot;&quot;</span>
@@ -1555,7 +1554,7 @@
         <span class="c1"># undocumented - warning. use at own risk</span>
         <span class="c1"># note - kinda pointless atm. just use requests directly and you wont have to muck about with a Promise</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;fetch takes a single url string. For batches use fetch_set, fetch_threaded or fetch_pooled&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled&#39;</span><span class="p">)</span>
         <span class="n">f</span> <span class="o">=</span> <span class="n">Promise</span><span class="p">()</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">_do_request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
@@ -1639,14 +1638,21 @@
         <span class="kn">import</span> <span class="nn">base64</span>
         <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">dataString</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
 
-    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Window.requestAnimationFrame"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.requestAnimationFrame">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">requestAnimationFrame</span><span class="p">(</span><span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[requests a frame of an animation]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            callback (callable): [the callback function]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">perf</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">performance</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="n">perf</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="n">perf</span><span class="p">)</span></div></div>
 
 <span class="c1"># WINDOW</span>
 <span class="c1"># localStorage  Allows to save key/value pairs in a web browser. Stores the data with no expiration date    Window</span>
-<span class="c1"># requestAnimationFrame()   Requests the browser to call a function to update an animation before the next repaint  Window</span>
 <span class="c1"># blur()    Removes focus from an element   Element, Window</span>
 <span class="c1"># clearTimeout()    Clears a timer set with setTimeout()    Window</span>
 <span class="c1"># closed    Returns a Boolean value indicating whether a window has been closed or not  Window</span>
@@ -1704,6 +1710,7 @@
 <span class="c1">#     def __repr__(self):</span>
 <span class="c1">#         return None</span>
 
+
 <div class="viewcode-block" id="Array"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array">[docs]</a><span class="k">class</span> <span class="nc">Array</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; javascript array &quot;&quot;&quot;</span>
 
@@ -1753,15 +1760,6 @@
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">i</span>
-
-    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;int not supported&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Array</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">+</span> <span class="n">value</span><span class="o">.</span><span class="n">args</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">+</span> <span class="n">value</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span>
 
     <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -1922,17 +1920,9 @@
         <span class="sd">&quot;&quot;&quot; Checks if any of the elements in an array pass a test &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Array.sort"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="c1">#, *args, **kwargs):</span>
+<div class="viewcode-block" id="Array.sort"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="c1"># , *args, **kwargs):</span>
         <span class="sd">&quot;&quot;&quot; Sorts the elements of an array &quot;&quot;&quot;</span>
-        <span class="c1"># raise NotImplementedError</span>
         <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sup:::::::&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
-            <span class="c1"># print(&#39;sup22:::::::&#39;, args)</span>
-            <span class="c1"># print(&#39;sup22:::::::&#39;, kwargs)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sup&#39;</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
-            <span class="c1"># print(&#39;sup&#39;, self.args.sort(key=lambda *args:func(*args)))</span>
-            <span class="c1"># return self.args.sort(key=lambda *args:func(*args))</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;sup&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)))</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">))</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
@@ -1971,7 +1961,7 @@
 <div class="viewcode-block" id="Array.find"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.find">[docs]</a>    <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value of the first element in an array that pass a test &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">func</span><span class="p">(</span><span class="n">each</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">each</span></div>
 
 <div class="viewcode-block" id="Array.findIndex"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.findIndex">[docs]</a>    <span class="k">def</span> <span class="nf">findIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -2030,7 +2020,7 @@
         <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Array.at"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.at">[docs]</a>    <span class="k">def</span> <span class="nf">at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[takes an integer value and returns the item at that index, </span>
+        <span class="sd">&quot;&quot;&quot;[takes an integer value and returns the item at that index,</span>
 <span class="sd">        allowing for positive and negative integers.</span>
 <span class="sd">        Negative integers count back from the last item in the array.]</span>
 
@@ -2185,7 +2175,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&amp;</span> <span class="n">other</span>
 
     <span class="k">def</span> <span class="fm">__ior__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">|</span> <span class="n">other</span>   
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">|</span> <span class="n">other</span>
 
     <span class="k">def</span> <span class="fm">__ixor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">^</span> <span class="n">other</span>
@@ -2256,7 +2246,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># print(&quot;DIGIT!&quot;, digits)</span>
         <span class="k">if</span> <span class="n">digits</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">digits</span><span class="o">=</span><span class="mi">0</span>
+            <span class="n">digits</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">fstring</span> <span class="o">=</span> <span class="s2">&quot;{:.&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">digits</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;f}&quot;</span>
         <span class="k">return</span> <span class="n">fstring</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">digits</span><span class="p">))</span></div>
@@ -2268,7 +2258,8 @@
 <span class="sd">            precision ([int]): [An integer specifying the number of significant digits.]</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            [str]: [A string representing a Number object in fixed-point or exponential notation rounded to precision significant digits]</span>
+<span class="sd">            [str]: [A string representing a Number object in fixed-point</span>
+<span class="sd">            or exponential notation rounded to precision significant digits]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">precision</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">precision</span><span class="p">)</span>
         <span class="c1"># return str(math.pow(self.x, precision))</span>
@@ -2512,7 +2503,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="String.indexOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.indexOf">[docs]</a>    <span class="k">def</span> <span class="nf">indexOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchValue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fromIndex</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[returns the index within the calling String object of the first occurrence of the specified value, </span>
+        <span class="sd">&quot;&quot;&quot;[returns the index within the calling String object of the first occurrence of the specified value,</span>
 <span class="sd">        starting the search at fromIndex ]</span>
 
 <span class="sd">        Args:</span>
@@ -2533,19 +2524,19 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">expression</span>
-        <span class="c1">#self.flag  #: A string that contains the flags of the RegExp object.</span>
-        <span class="c1">#self.dotAll  #: Whether . matches newlines or not.</span>
+        <span class="c1"># self.flag  #: A string that contains the flags of the RegExp object.</span>
+        <span class="c1"># self.dotAll  #: Whether . matches newlines or not.</span>
         <span class="c1"># self.global # Whether to test the regular expression against all possible matches in a string, or only against the first.</span>
-        <span class="c1">#self.hasIndices  # Whether the regular expression result exposes the start and end indices of captured substrings.</span>
-        <span class="c1">#self.ignoreCase  # Whether to ignore case while attempting a match in a string.</span>
-        <span class="c1">#self.multiline  # Whether or not to search in strings across multiple lines.</span>
-        <span class="c1">#self.source  # The text of the pattern.</span>
-        <span class="c1">#self.sticky  # Whether or not the search is sticky.</span>
-        <span class="c1">#self.unicode  # Whether or not Unicode features are enabled.</span>
-        <span class="c1">#self.lastIndex  # The index at which to start the next match.</span>
+        <span class="c1"># self.hasIndices  # Whether the regular expression result exposes the start and end indices of captured substrings.</span>
+        <span class="c1"># self.ignoreCase  # Whether to ignore case while attempting a match in a string.</span>
+        <span class="c1"># self.multiline  # Whether or not to search in strings across multiple lines.</span>
+        <span class="c1"># self.source  # The text of the pattern.</span>
+        <span class="c1"># self.sticky  # Whether or not the search is sticky.</span>
+        <span class="c1"># self.unicode  # Whether or not Unicode features are enabled.</span>
+        <span class="c1"># self.lastIndex  # The index at which to start the next match.</span>
 
     <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; (Re-)compiles a regular expression during execution of a script. &quot;&quot;&quot;</span> 
+        <span class="sd">&quot;&quot;&quot; (Re-)compiles a regular expression during execution of a script. &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -2755,7 +2746,7 @@
     <span class="c1"># NOTE - node -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --</span>
     <span class="c1"># @staticmethod</span>
     <span class="c1"># def domainToASCII(domain: str):</span>
-    <span class="c1">#     &quot;&quot;&quot;[It returns the Punycode ASCII serialization of the domain. </span>
+    <span class="c1">#     &quot;&quot;&quot;[It returns the Punycode ASCII serialization of the domain.</span>
     <span class="c1">#     If domain is an invalid domain, the empty string is returned.]</span>
 
     <span class="c1">#     Args:</span>
@@ -2765,7 +2756,7 @@
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># def domainToUnicode(domain: str):</span>
-    <span class="c1">#     &quot;&quot;&quot;[returns the Unicode serialization of the domain. </span>
+    <span class="c1">#     &quot;&quot;&quot;[returns the Unicode serialization of the domain.</span>
     <span class="c1">#     If the domain is invalid, the empty string is returned]</span>
 
     <span class="c1">#     Args:</span>
@@ -2818,7 +2809,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paramString</span><span class="p">):</span><span class="c1">#, **paramsObj):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paramString</span><span class="p">):</span>  <span class="c1"># , **paramsObj):</span>
         <span class="sd">&quot;&quot;&quot;[Returns a URLSearchParams object instance.]</span>
 
 <span class="sd">        Args:</span>
@@ -2894,7 +2885,8 @@
         <span class="c1"># return str(self.params)</span>
 
 <div class="viewcode-block" id="URLSearchParams.set"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Sets the value associated with a given search parameter to the given value. If there are several values, the others are deleted. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Sets the value associated with a given search parameter to the given value.</span>
+<span class="sd">        If there are several values, the others are deleted. &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="URLSearchParams.getAll"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.getAll">[docs]</a>    <span class="k">def</span> <span class="nf">getAll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -3012,17 +3004,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">Domonic: decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
 </ul>

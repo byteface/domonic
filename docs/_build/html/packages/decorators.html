@@ -15,6 +15,8 @@
     <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Domonic: templates and components" href="components.html" />
+    <link rel="prev" title="Domonic: CDN" href="CDN.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -68,10 +70,10 @@ pip install domonic
 </div>
 <div class="section" id="called">
 <h2>called<a class="headerlink" href="#called" title="Permalink to this headline">¶</a></h2>
-<p>Python’s lambda restrictions can force you to create anonymous success methods above calling functions.</p>
-<p>domonic has a unique type of decorator that calls a decorated method immediately after calling a passed method.</p>
-<p>To use it, pass it a 2 functions, something to call beforehand, and an error method</p>
-<p>Then you decorate an anonymous function to recieve the data of the first function you passed in.</p>
+<p>Python’s lambda restrictions may force you to create anonymous success methods above calling functions.</p>
+<p>domonic uses a unique type of decorator to call anonymouse methods immediately after calling the passed method.</p>
+<p>To use it, pass 2 functions, something to call BEFORE hand, and an error method</p>
+<p>Then your decorated anonymous function will recieve the data of the first function you passed in as a parameter.</p>
 <p>Let me show you…</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>from domonic.decorators import called
 
@@ -83,9 +85,8 @@ def success<span class="o">(</span><span class="nv">data</span><span class="o">=
     print<span class="o">(</span>data.text<span class="o">)</span>
 </pre></div>
 </div>
-<p>It’s syntactic sugar for callbacks. Cool huh?!</p>
-<p>Remember it’s for anonymous functions and calls immediately. So don’t go using it on class methods.</p>
-<p>Oh, and don’t forget what it’s ‘called’ ;)</p>
+<p>It’s meant for anonymous functions and calls immediately. So don’t go using it on class methods.</p>
+<p>Just remember what it’s ‘called’ ;)</p>
 <dl class="py attribute">
 <dt>
 <code class="sig-prename descclassname">domonic.</code><code class="sig-name descname">decorators</code></dt>
@@ -119,21 +120,27 @@ def success<span class="o">(</span><span class="nv">data</span><span class="o">=
 
 
 <h3>Navigation</h3>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
 <li class="toctree-l1"><a class="reference internal" href="geom.html">Domonic: geom</a></li>
 <li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: decorators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#el">el</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#silence">silence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#called">called</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Domonic: templates and components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="servers.html">Domonic: servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
 </ul>
@@ -142,6 +149,8 @@ def success<span class="o">(</span><span class="nv">data</span><span class="o">=
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="CDN.html" title="previous chapter">Domonic: CDN</a></li>
+      <li>Next: <a href="components.html" title="next chapter">Domonic: templates and components</a></li>
   </ul></li>
 </ul>
 </div>

@@ -1,9 +1,13 @@
 Domonic: geom
 =================
 
-The geom package was mostly created by .ai and is largely untested.
+I've been using .ai to casually create a geom package.
 
-https://6b.eleuther.ai/
+It's already amazing. You shapes you can add together etc.
+
+Changes a lot atm so not documented yet.
+
+
 
 
 .. automodule:: domonic.geom
