@@ -13,7 +13,7 @@ If you haven't already, take a look at the project's
 
 [README.md file](README.md)
 
-and [domonic documentation](https://mypy.readthedocs.io/en/latest/),
+and [domonic documentation](https://readthedocs.org/projects/domonic/),
 
 The readme contains some tips on testing and running tests.
 
