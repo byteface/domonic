@@ -63,7 +63,8 @@ class Object(object):
 
     def __str__(self):
         """ Returns a string representation of the object."""
-        return self.toString()
+        # return self.toString()
+        return str(self.__attribs__)
 
     def __repr__(self):
         """ Returns a string representation of the object."""
@@ -304,15 +305,15 @@ class Object(object):
             return False
         return False
 
-    def __getattr__(self, name):
-        """
-        The __getattr__() method is called when the attribute 'name' is accessed.
-        """
-        if name == 'objectId':
-            return self.getId()
-        if name == 'proto':
-            return self.__class__.fromEntries(self.__attribs__)
-        return getattr(self, name)
+    # def __getattr__(self, name):
+    #     """
+    #     The __getattr__() method is called when the attribute 'name' is accessed.
+    #     """
+    #     if name == 'objectId':
+    #         return self.getId()
+    #     if name == 'proto':
+    #         return self.__class__.fromEntries(self.__attribs__)
+    #     return getattr(self, name)
 
     def __defineGetter__(self, prop, func):
         """ Adds a getter function for the specified property. """
@@ -339,7 +340,7 @@ class Object(object):
         as a direct property of that object and not inherited through the prototype chain. """
         # raise NotImplementedError
         # return hasattr(self, prop)
-        return self.attribs.get(prop, None) != None
+        return self.__attribs__.get(prop, None) != None
 
     def isPrototypeOf(self, obj):
         """ Returns a boolean indicating whether an object is a copy of this object. """
@@ -361,7 +362,8 @@ class Object(object):
 
     def toString(self):
         """ Returns a string representation of the object."""
-        return self.__str__()
+        # return self.__str__()
+        pass
 
     def valueOf(self):
         """ Returns the value of the object. """
@@ -933,7 +935,10 @@ class Global(object):
     @staticmethod
     def isNaN(x):
         """ Determines whether a value is an illegal number """
-        return math.isnan(x)
+        try:
+            return math.isnan(x)
+        except TypeError:
+            return True
 
     def NaN(self):
         """ "Not-a-Number" value """
@@ -1214,59 +1219,44 @@ class Date(Object):
 
     def toDateString(self):
         """ Converts the date portion of a Date object into a readable string """
-        # return str(self.date.getDate()) # TODO - test . copilot
-        # raise NotImplementedError
-        pass
-
-    def toGMTString(self):
-        """ Deprecated. Use the toUTCString() method instead """
-        # return self.toUTCString() # TODO - test . copilot
-        pass
-
-    def toJSON(self):
-        """  Returns the date as a string, formatted as a JSON date """
-        # import json
-        # return json.dumps(self.date)  # TODO - test . copilot
-        pass
-
-        # def default(o):
-        #     if isinstance(o, (datetime.date, datetime.datetime)):
-        #         return o.isoformat()
-        # raise NotImplementedError
-
-    def toISOString(self):
-        """ Returns the date as a string, using the ISO standard """
-        # return self.date.toISOString() # TODO - test . copilot
-        pass
-
-    def toLocaleDateString(self):
-        """ Returns the date portion of a Date object as a string, using locale conventions """
-        # return self.date.toLocaleDateString() # TODO - test . copilot
-        pass
-
-    def toLocaleString(self):
-        """ Converts a Date object to a string, using locale conventions """
-        # return self.date.toLocaleString()  # TODO - test . copilot
-        pass
-
-    def toLocaleTimeString(self):
-        """ Returns the time portion of a Date object as a string, using locale conventions """
-        # return self.date.toLocaleTimeString() # TODO - test . copilot
-        pass
-
-    def toTimeString(self):
-        """ Converts the time portion of a Date object to a string """
-        # return self.date.toTimeString() # TODO - test . copilot
-        pass
+        return self.date.strftime('%Y-%m-%d')
 
     def toUTCString(self):
         """ Converts a Date object to a string, according to universal time """
-        # return self.date.toUTCString() # TODO - test . copilot
-        pass
+        return self.date.strftime('%Y-%m-%d %H:%M:%S')
+
+    def toGMTString(self):
+        """ Deprecated. Use the toUTCString() method instead """
+        return self.toUTCString()
+
+    def toJSON(self):
+        """  Returns the date as a string, formatted as a JSON date """
+        import json
+        return json.dumps(self.date.strftime('%Y-%m-%d'))
+
+    def toISOString(self):
+        """ Returns the date as a string, using the ISO standard """
+        return self.date.strftime('%Y-%m-%d')
+
+    def toLocaleDateString(self):
+        """ Returns the date portion of a Date object as a string, using locale conventions """
+        return self.date.strftime('%x')
+
+    def toLocaleString(self):
+        """ Converts a Date object to a string, using locale conventions """
+        return self.date.strftime('%x')
+
+    def toLocaleTimeString(self):
+        """ Returns the time portion of a Date object as a string, using locale conventions """
+        return self.date.strftime('%X')
+
+    def toTimeString(self):
+        """ Converts the time portion of a Date object to a string """
+        return self.date.strftime('%X')
 
     def UTC(self):
         """ Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time """
-        return self.date.getTime()  # TODO - test . copilot
+        return self.date.utcnow()
 
 
 class Screen(object):

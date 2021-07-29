@@ -4,15 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Domonic: CDN &#8212; domonic 0.4.0 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Domonic: decorators" href="decorators.html" />
@@ -33,7 +33,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="domonic-cdn">
+  <section id="domonic-cdn">
 <h1>Domonic: CDN<a class="headerlink" href="#domonic-cdn" title="Permalink to this headline">¶</a></h1>
 <p>To quickly use and reference external assets when prototyping use the CDN package.</p>
 <p>Currently there are 3 types of CDN. .js, .css and .img</p>
@@ -46,7 +46,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.CDN</span> <span class="kn">import</span> <span class="n">CDN_JS</span>
 </pre></div>
 </div>
-<div class="section" id="cdn-js">
+<section id="cdn-js">
 <h2>CDN_JS<a class="headerlink" href="#cdn-js" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">script</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="n">CDN_JS</span><span class="o">.</span><span class="n">JQUERY_3_5_1</span><span class="p">)</span>
 </pre></div>
@@ -65,8 +65,8 @@
 <li><p>PIXI_5_3_3</p></li>
 <li><p>SOCKET_1_4_5</p></li>
 </ul>
-</div>
-<div class="section" id="cdn-css">
+</section>
+<section id="cdn-css">
 <h2>CDN_CSS<a class="headerlink" href="#cdn-css" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">classless_css</span> <span class="o">=</span> <span class="n">link</span><span class="p">(</span><span class="n">_rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span> <span class="n">_href</span><span class="o">=</span><span class="n">CDN_CSS</span><span class="o">.</span><span class="n">WATER_LATEST</span><span class="p">)</span>
 </pre></div>
@@ -85,8 +85,8 @@
 <li><p>FONTAWESOME_5_7_1</p></li>
 <li><p>MDI_5_4_55</p></li>
 </ul>
-</div>
-<div class="section" id="cdn-img">
+</section>
+<section id="cdn-img">
 <h2>CDN_IMG<a class="headerlink" href="#cdn-img" title="Permalink to this headline">¶</a></h2>
 <p>CDN_IMG has a placeholder service.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># to change it. do this...</span>
@@ -121,25 +121,25 @@
 <li><p><a class="reference external" href="https://keywordimg.com/420x320/random">https://keywordimg.com/420x320/random</a></p></li>
 <li><p><a class="reference external" href="http://www.dummysrc.com/430x320.png/22c5fc/17202A">http://www.dummysrc.com/430x320.png/22c5fc/17202A</a></p></li>
 </ul>
-<div class="section" id="id1">
+<section id="id1">
 <h3>domonic.CDN<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Refs to some useful .js and .css libs.</p>
 <p>use for prototyping. wget anything in later and create your own local references once ur happy</p>
 <p>TODO - integrity/cross origin/module?</p>
 <p>WARNING/NOTE - dont use. this isn’t released or documented. just ideas atm…</p>
 <dl class="py class">
-<dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.CDN.</code><code class="sig-name descname">CDN_CSS</code><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_CSS"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.CDN.</span></span><span class="sig-name descname"><span class="pre">CDN_CSS</span></span><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_CSS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Preferably use version numbers if available. user LATEST if it always gets the latest</p>
 </dd></dl>
 
 <dl class="py class">
-<dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.CDN.</code><code class="sig-name descname">CDN_IMG</code><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_IMG"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.CDN.</span></span><span class="sig-name descname"><span class="pre">CDN_IMG</span></span><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_IMG"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>CDN images</p>
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">PLACEHOLDER</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">HTTP</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">seperator</span><span class="o">=</span><span class="default_value">'/'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_IMG.PLACEHOLDER"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">PLACEHOLDER</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HTTP</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seperator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_IMG.PLACEHOLDER"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>to update do CDN_IMG.PLACEHOLDER_SERVICE = “placebear.com/g”
 usage : img(_src=CDN_IMG.PLACEHOLDER(300,100))
 default HTTP is none, to let the browser decide
@@ -150,23 +150,23 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py class">
-<dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.CDN.</code><code class="sig-name descname">CDN_JS</code><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_JS"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.CDN.</span></span><span class="sig-name descname"><span class="pre">CDN_JS</span></span><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_JS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>You will need to append the lib version number if you add any libs here
 # obvious candidates… <a class="reference external" href="https://github.com/sorrycc/awesome-javascript">https://github.com/sorrycc/awesome-javascript</a></p>
 </dd></dl>
 
-</div>
-<div class="section" id="domonic-utils">
+</section>
+<section id="domonic-utils">
 <h3>domonic.utils<a class="headerlink" href="#domonic-utils" title="Permalink to this headline">¶</a></h3>
 <p>snippets etc</p>
 <dl class="py class">
-<dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.utils.</code><code class="sig-name descname">Utils</code><a class="reference internal" href="../_modules/domonic/utils.html#Utils"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.utils.</span></span><span class="sig-name descname"><span class="pre">Utils</span></span><a class="reference internal" href="../_modules/domonic/utils.html#Utils"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>utils</p>
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">acronym</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sentence</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.acronym"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">acronym</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.acronym"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[pass a sentence, returns the acronym]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -182,38 +182,38 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">case_camel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_camel"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">case_camel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_camel"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>case_camel(‘camel-case’) &gt; ‘camelCase’</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">case_kebab</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_kebab"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">case_kebab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_kebab"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>kebab(‘camelCase’) # ‘camel-case’</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">case_snake</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_snake"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">case_snake</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_snake"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>snake(‘camelCase’) # ‘camel_case’</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">chunk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span></em>, <em class="sig-param"><span class="n">size</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.chunk"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.chunk"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>chunk a list into batches</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">chunks</code><span class="sig-paren">(</span><em class="sig-param">iterable</em>, <em class="sig-param">size</em>, <em class="sig-param">format=&lt;built-in function iter&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.chunks"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">iterable</span></em>, <em class="sig-param"><span class="pre">size</span></em>, <em class="sig-param"><span class="pre">format=&lt;built-in</span> <span class="pre">function</span> <span class="pre">iter&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.chunks"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">clean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lst</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.clean"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lst</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.clean"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[removes falsy values (False, None, 0 and “”) from a list ]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -229,8 +229,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">dictify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arr</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.dictify"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">dictify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.dictify"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[turns a list into a dictionary where the list items are the keys]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -246,8 +246,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">escape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.escape"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">escape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.escape"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[escape a string]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -263,8 +263,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">frequency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.frequency"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[check the frequency of elements in the data]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -280,8 +280,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">get_vowels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.get_vowels"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_vowels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.get_vowels"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[get a list of vowels from the word]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -297,8 +297,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">has_internet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="o">=</span><span class="default_value">'http://www.google.com/'</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.has_internet"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">has_internet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://www.google.com/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.has_internet"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[check if you have internet connection]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -317,8 +317,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">init_assets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dir</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">'assets'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.init_assets"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">init_assets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'assets'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.init_assets"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[creates an assets directory with nested js/css/img dirs]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -328,8 +328,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">merge_dictionaries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.merge_dictionaries"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">merge_dictionaries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.merge_dictionaries"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[merges 2 dicts]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -348,8 +348,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">permutations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">word</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.permutations"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">permutations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">word</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.permutations"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[provides all the possible permutations of a given word]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -365,14 +365,14 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">random_color</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.random_color"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">random_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.random_color"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>TODO - remove in 0.3 as we have color class.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">replace_between</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">content</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">match</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">replacement</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.replace_between"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">replace_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">match</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">replacement</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.replace_between"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[replace some text but only between certain indexes]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -394,8 +394,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">squash</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">the_list</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.squash"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">squash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">the_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.squash"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[turns a 2d array into a flat one]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -411,8 +411,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">to_dictionary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">keys</span></em>, <em class="sig-param"><span class="n">values</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.to_dictionary"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">to_dictionary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.to_dictionary"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[take a list of keys and values and returns a dict]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -431,8 +431,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">truncate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">length</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.truncate"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">truncate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.truncate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[truncates a string and appends 3 dots]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -451,8 +451,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">unescape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.unescape"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">unescape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.unescape"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[unescape a string]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -468,8 +468,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">unique</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">some_arr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.unique"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">some_arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[removes duplicates from a list]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -485,8 +485,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">untitle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.untitle"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">untitle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.untitle"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[the opposite of title]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -502,8 +502,8 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
-<dt>
-<em class="property">static </em><code class="sig-name descname">url2file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.url2file"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">url2file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.url2file"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[gen a safe filename from a url. by replacing ‘/’ for ‘_’ and ‘:’ for ‘__’ ]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -520,18 +520,18 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="domonic-decorators">
+</section>
+<section id="domonic-decorators">
 <h3>domonic.decorators<a class="headerlink" href="#domonic-decorators" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt>
-<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">called</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">before</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#called"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.decorators.</span></span><span class="sig-name descname"><span class="pre">called</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">before</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#called"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[calls before() passing the response as args to the decorated function.
 optional error handler. run the decorated function immediately.</p>
 <p>WARNING: this is not for the regular decorating of a function
 its syntactical sugar for a callback i.e.</p>
 <dl class="simple">
-<dt>&#64;called(</dt><dd><p>lambda: º.ajax(‘<a class="reference external" href="https://www.google.com">https://www.google.com</a>’),
+<dt>&#64;called(</dt><dd><p>lambda: º.ajax(’<a class="reference external" href="https://www.google.com">https://www.google.com</a>’),
 lambda err: print(‘error:’, err))</p>
 </dd>
 <dt>def success(data=None):</dt><dd><p>print(“sweet!”)
@@ -541,46 +541,46 @@ print(data)</p>
 </dd></dl>
 
 <dl class="py function">
-<dt>
-<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#check"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.decorators.</span></span><span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#check"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>logs entry and exit of a function</p>
 </dd></dl>
 
 <dl class="py function">
-<dt>
-<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">deprecated</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#deprecated"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.decorators.</span></span><span class="sig-name descname"><span class="pre">deprecated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#deprecated"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>This is a decorator which can be used to mark functions
 as deprecated. It will result in a warning being emitted
 when the function is used.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt>
-<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">el</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element</span><span class="o">=</span><span class="default_value">'div'</span></em>, <em class="sig-param"><span class="n">string</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#el"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.decorators.</span></span><span class="sig-name descname"><span class="pre">el</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'div'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#el"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[wraps the results of a function in an element]</p>
 </dd></dl>
 
 <dl class="py function">
-<dt>
-<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">instead</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">somethingelse</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#instead"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.decorators.</span></span><span class="sig-name descname"><span class="pre">instead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">somethingelse</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#instead"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>what to return if it fails</p>
 </dd></dl>
 
 <dl class="py function">
-<dt>
-<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">'info'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#log"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.decorators.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'info'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#log"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>&#64;log(logging.getLogger(‘main’), level=’warning’)</p>
 </dd></dl>
 
 <dl class="py function">
-<dt>
-<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">silence</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#silence"><span class="viewcode-link">[source]</span></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.decorators.</span></span><span class="sig-name descname"><span class="pre">silence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#silence"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>stop a function from doing anything</p>
 </dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -597,7 +597,7 @@ when the function is used.</p>
 
 
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=byteface&repo=domonic&type=watch&count=true&size=large&v=2"
+<iframe src="https://ghbtns.com/github-btn.html?user=byteface&repo=domonic&type=star&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
 
@@ -644,7 +644,7 @@ when the function is used.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

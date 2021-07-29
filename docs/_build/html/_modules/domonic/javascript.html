@@ -6,13 +6,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>domonic.javascript &#8212; domonic 0.4.0 documentation</title>
-    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -97,7 +96,8 @@
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a string representation of the object.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+        <span class="c1"># return self.toString()</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a string representation of the object.&quot;&quot;&quot;</span>
@@ -338,15 +338,15 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The __getattr__() method is called when the attribute &#39;name&#39; is accessed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;objectId&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getId</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;proto&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">fromEntries</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="c1"># def __getattr__(self, name):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     The __getattr__() method is called when the attribute &#39;name&#39; is accessed.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     if name == &#39;objectId&#39;:</span>
+    <span class="c1">#         return self.getId()</span>
+    <span class="c1">#     if name == &#39;proto&#39;:</span>
+    <span class="c1">#         return self.__class__.fromEntries(self.__attribs__)</span>
+    <span class="c1">#     return getattr(self, name)</span>
 
     <span class="k">def</span> <span class="nf">__defineGetter__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Adds a getter function for the specified property. &quot;&quot;&quot;</span>
@@ -373,7 +373,7 @@
 <span class="sd">        as a direct property of that object and not inherited through the prototype chain. &quot;&quot;&quot;</span>
         <span class="c1"># raise NotImplementedError</span>
         <span class="c1"># return hasattr(self, prop)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attribs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attribs__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="Object.isPrototypeOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.isPrototypeOf">[docs]</a>    <span class="k">def</span> <span class="nf">isPrototypeOf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a boolean indicating whether an object is a copy of this object. &quot;&quot;&quot;</span>
@@ -395,7 +395,8 @@
 
 <div class="viewcode-block" id="Object.toString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a string representation of the object.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+        <span class="c1"># return self.__str__()</span>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Object.valueOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object.valueOf">[docs]</a>    <span class="k">def</span> <span class="nf">valueOf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value of the object. &quot;&quot;&quot;</span>
@@ -967,7 +968,10 @@
 <div class="viewcode-block" id="Global.isNaN"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.isNaN">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">isNaN</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Determines whether a value is an illegal number &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="Global.NaN"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.NaN">[docs]</a>    <span class="k">def</span> <span class="nf">NaN</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; &quot;Not-a-Number&quot; value &quot;&quot;&quot;</span>
@@ -1248,59 +1252,44 @@
 
 <div class="viewcode-block" id="Date.toDateString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts the date portion of a Date object into a readable string &quot;&quot;&quot;</span>
-        <span class="c1"># return str(self.date.getDate()) # TODO - test . copilot</span>
-        <span class="c1"># raise NotImplementedError</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="Date.toGMTString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toGMTString">[docs]</a>    <span class="k">def</span> <span class="nf">toGMTString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Deprecated. Use the toUTCString() method instead &quot;&quot;&quot;</span>
-        <span class="c1"># return self.toUTCString() # TODO - test . copilot</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="Date.toJSON"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toJSON">[docs]</a>    <span class="k">def</span> <span class="nf">toJSON</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;  Returns the date as a string, formatted as a JSON date &quot;&quot;&quot;</span>
-        <span class="c1"># import json</span>
-        <span class="c1"># return json.dumps(self.date)  # TODO - test . copilot</span>
-        <span class="k">pass</span></div>
-
-        <span class="c1"># def default(o):</span>
-        <span class="c1">#     if isinstance(o, (datetime.date, datetime.datetime)):</span>
-        <span class="c1">#         return o.isoformat()</span>
-        <span class="c1"># raise NotImplementedError</span>
-
-<div class="viewcode-block" id="Date.toISOString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toISOString">[docs]</a>    <span class="k">def</span> <span class="nf">toISOString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the date as a string, using the ISO standard &quot;&quot;&quot;</span>
-        <span class="c1"># return self.date.toISOString() # TODO - test . copilot</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="Date.toLocaleDateString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the date portion of a Date object as a string, using locale conventions &quot;&quot;&quot;</span>
-        <span class="c1"># return self.date.toLocaleDateString() # TODO - test . copilot</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="Date.toLocaleString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Converts a Date object to a string, using locale conventions &quot;&quot;&quot;</span>
-        <span class="c1"># return self.date.toLocaleString()  # TODO - test . copilot</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="Date.toLocaleTimeString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the time portion of a Date object as a string, using locale conventions &quot;&quot;&quot;</span>
-        <span class="c1"># return self.date.toLocaleTimeString() # TODO - test . copilot</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="Date.toTimeString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Converts the time portion of a Date object to a string &quot;&quot;&quot;</span>
-        <span class="c1"># return self.date.toTimeString() # TODO - test . copilot</span>
-        <span class="k">pass</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Date.toUTCString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toUTCString">[docs]</a>    <span class="k">def</span> <span class="nf">toUTCString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts a Date object to a string, according to universal time &quot;&quot;&quot;</span>
-        <span class="c1"># return self.date.toUTCString() # TODO - test . copilot</span>
-        <span class="k">pass</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Date.toGMTString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toGMTString">[docs]</a>    <span class="k">def</span> <span class="nf">toGMTString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Deprecated. Use the toUTCString() method instead &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">toUTCString</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Date.toJSON"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toJSON">[docs]</a>    <span class="k">def</span> <span class="nf">toJSON</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Returns the date as a string, formatted as a JSON date &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">json</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Date.toISOString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toISOString">[docs]</a>    <span class="k">def</span> <span class="nf">toISOString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the date as a string, using the ISO standard &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Date.toLocaleDateString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleDateString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleDateString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the date portion of a Date object as a string, using locale conventions &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%x</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Date.toLocaleString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts a Date object to a string, using locale conventions &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%x</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Date.toLocaleTimeString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toLocaleTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the time portion of a Date object as a string, using locale conventions &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%X</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Date.toTimeString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.toTimeString">[docs]</a>    <span class="k">def</span> <span class="nf">toTimeString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Converts the time portion of a Date object to a string &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%X</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Date.UTC"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Date.UTC">[docs]</a>    <span class="k">def</span> <span class="nf">UTC</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">getTime</span><span class="p">()</span>  <span class="c1"># TODO - test . copilot</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="Screen"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Screen">[docs]</a><span class="k">class</span> <span class="nc">Screen</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -3033,7 +3022,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
