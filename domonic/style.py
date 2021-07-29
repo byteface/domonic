@@ -2474,3 +2474,43 @@ class Style(object):
     @style_set_decorator
     def zIndex(self, value=None, *args, **kwargs):
         self.__zIndex = value
+
+    # @property
+    # @style_get_decorator
+    # def zoomAndPan(self):
+    #     return self.__zoomAndPan
+
+    # @zoomAndPan.setter
+    # @style_set_decorator
+    # def zoomAndPan(self, value=None, *args, **kwargs):
+    #     self.__zoomAndPan = value
+
+    # @property
+    # @style_get_decorator
+    # def zoomAndResize(self):
+    #     return self.__zoomAndResize
+
+    # @zoomAndResize.setter
+    # @style_set_decorator
+    # def zoomAndResize(self, value=None, *args, **kwargs):
+    #     self.__zoomAndResize = value
+
+    @property
+    @style_get_decorator
+    def zoom(self):
+        return self.__zoom
+
+    @zoom.setter
+    @style_set_decorator
+    def zoom(self, value=None, *args, **kwargs):
+        self.__zoom = value
+
+    # @property
+    # @style_get_decorator
+    # def zoomType(self):
+    #     return self.__zoomType
+
+    # @zoomType.setter
+    # @style_set_decorator
+    # def zoomType(self, value=None, *args, **kwargs):
+    #     self.__zoomType = value

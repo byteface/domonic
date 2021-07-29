@@ -327,13 +327,93 @@ class Utils(object):
 
     @staticmethod
     def has_internet(url='http://www.google.com/', timeout=5):
+        """[check if you have internet connection]
+
+        Args:
+            url (str, optional): [the url to check]. Defaults to 'http://www.google.com/'.
+            timeout (int, optional): [the timeout]. Defaults to 5.
+
+        Returns:
+            [bool]: [description]
+        """
         import requests
         try:
             _ = requests.head(url, timeout=timeout)
             return True
         except requests.ConnectionError:
-            print("No internet connection available.")
-        return False
+            # print("No internet connection available.")
+            return False
+
+    # def get_ip(self):
+    #     """[get the current ip]
+
+    #     Returns:
+    #         [str]: [the current ip]
+    #     """
+    #     import socket
+    #     return socket.gethostbyname(socket.gethostname())
+
+    # def get_hostname(self):
+    #     """[get the current hostname]
+
+    #     Returns:
+    #         [str]: [the current hostname]
+    #     """
+    #     import socket
+    #     return socket.gethostname()
+
+    # def get_mac(self):
+    #     """[get the current mac]
+
+    #     Returns:
+    #         [str]: [the current mac]
+    #     """
+    #     import uuid
+    #     return uuid.UUID(int=uuid.getnode()).hex[-12:]
+
+    # def get_ip_mac(self):
+    #     """[get the current ip and mac]
+
+    #     Returns:
+    #         [str]: [the current ip and mac]
+    #     """
+    #     return self.get_ip() + "|" + self.get_mac()
+
+    # def get_os(self):
+    #     """[get the current os]
+
+    #     Returns:
+    #         [str]: [the current os]
+    #     """
+    #     import platform
+    #     return platform.system()
+
+    # def get_os_version(self):
+    #     """[get the current os version]
+
+    #     Returns:
+    #         [str]: [the current os version]
+    #     """
+    #     import platform
+    #     return platform.release()
+
+    # def get_os_arch(self):
+    #     """[get the current os architecture]
+
+    #     Returns:
+    #         [str]: [the current os architecture]
+    #     """
+    #     import platform
+    #     return platform.machine()
+
+    # def get_cpu(self):
+    #     """[get the current cpu]
+
+    #     Returns:
+    #         [str]: [the current cpu]
+    #     """
+    #     import platform
+    #     return platform.processor()
 
     @staticmethod
     def numberToBase(n, b):
@@ -344,20 +424,3 @@ class Utils(object):
             digits.append(int(n % b))
             n //= b
         return digits[::-1]
-
-
-    # def any_iter(arr):
-    #     ''' given a list. returns random until expired '''
-    #     random.shuffle(arr)
-    #     return (x for x in arr)
-
-    # @staticmethod
-    # def unless(value, condition):
-        # return value if condition else not value
-        # if any(pred(x.item) for x in sequence):
-
-    # TODO -
-    # def beautfiy(): # make nice
-    # def uglify(): # make not nice
-    # def simplify(sentence): # reduce a sentence to its meaning. remove uneeded words.
-    # def factualise():  # returns json document of modelled info from general text

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.cmd &#8212; domonic 0.3.18 documentation</title>
+    <title>domonic.cmd &#8212; domonic 0.4.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -44,13 +44,19 @@
 
 <span class="c1"># create a mapping of equivelent commands to call on terminal if user OS is not windows</span>
 <span class="n">equivelents_map</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;dir&quot;</span><span class="p">:</span><span class="s2">&quot;ls&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;move&quot;</span><span class="p">:</span><span class="s2">&quot;mv&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;copy&quot;</span><span class="p">:</span><span class="s2">&quot;cp&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;erase&quot;</span><span class="p">:</span><span class="s2">&quot;rm&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;comp&quot;</span><span class="p">:</span><span class="s2">&quot;diff&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;type_&quot;</span><span class="p">:</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;ls&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;move&quot;</span><span class="p">:</span> <span class="s2">&quot;mv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;copy&quot;</span><span class="p">:</span> <span class="s2">&quot;cp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;erase&quot;</span><span class="p">:</span> <span class="s2">&quot;rm&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;comp&quot;</span><span class="p">:</span> <span class="s2">&quot;diff&quot;</span><span class="p">,</span>
+    <span class="c1">#&quot;type_&quot;:&quot;cat&quot;, </span>
+    <span class="c1">#&quot;open&quot;:&quot;open&quot;,</span>
+    <span class="c1">#&quot;edit&quot;:&quot;vim&quot;,</span>
+    <span class="c1">#&quot;view&quot;:&quot;less&quot;,</span>
+    <span class="c1">#&quot;search&quot;:&quot;grep&quot;,</span>
+    <span class="c1">#&quot;replace&quot;:&quot;sed&quot;</span>
 <span class="p">}</span>
+
 
 <div class="viewcode-block" id="CmdException"><a class="viewcode-back" href="../../packages/cmd.html#domonic.cmd.CmdException">[docs]</a><span class="k">class</span> <span class="nc">CmdException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; raised if cmd throws an exception &quot;&quot;&quot;</span>
@@ -167,7 +173,32 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="c1"># def __repr__(self):</span>
+    <span class="c1">#     return f&quot;{self.__class__.__name__}({self.params})&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span></div>
+
+    <span class="c1"># def __add__(self, other):</span>
+    <span class="c1">#     return str(self.result) + str(other)</span>
+
+    <span class="c1"># def __radd__(self, other): </span>
+    <span class="c1">#     return str(other) + str(self.result)</span>
+
+    <span class="c1"># def __call__(self, *args, **kwargs):</span>
+    <span class="c1">#     self.run_command()</span>
+    <span class="c1">#     return self.result</span>
+    
+    <span class="c1"># def __getattr__(self, attr):</span>
+    <span class="c1">#     if attr in equivelents_map:</span>
+    <span class="c1">#         return Cmdcommand(equivelents_map[attr], *self.args, **self.kwargs)</span>
+
+    <span class="c1"># def __del__(self):</span>
+    <span class="c1">#     os.chdir(&quot;..&quot;)</span>
+    <span class="c1">#     return</span>
+
 
 
 <div class="viewcode-block" id="cd"><a class="viewcode-back" href="../../packages/cmd.html#domonic.cmd.cd">[docs]</a><span class="k">class</span> <span class="nc">cd</span><span class="p">(</span><span class="n">Cmdcommand</span><span class="p">):</span>
@@ -245,6 +276,26 @@
 <span class="c1"># cmd = type(&#39;cmd&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;cmd&#39;})  #: start command prompt - NOTE hangs</span>
 <span class="n">title</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;title&#39;</span><span class="p">})</span>  <span class="c1">#: Changes the title of the command prompt</span>
 <span class="n">tzutil</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;tzutil&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Cmdcommand</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;tzutil&#39;</span><span class="p">})</span>  <span class="c1">#: Displays the currently set time zone (/g) or changes it (/s)</span>
+
+<span class="c1"># bitsadmin = type(&#39;bitsadmin&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;bitsadmin&#39;})  #: Allows you to run commands on a remote computer</span>
+<span class="c1"># chcp = type(&#39;chcp&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;chcp&#39;})  #: Change the locale of the command prompt</span>
+<span class="c1"># cls = type(&#39;cls&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;cls&#39;})  #: Clears the screen</span>
+<span class="c1"># deluser = type(&#39;deluser&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;deluser&#39;})  #: Deletes a user</span>
+<span class="c1"># dir = type(&#39;dir&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;dir&#39;})  #: Displays the contents of a directory</span>
+<span class="c1"># dlls = type(&#39;dlls&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;dlls&#39;})  #: Lists the DLLs loaded by an executable</span>
+<span class="c1"># echo_ = type(&#39;echo_&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;echo_&#39;})  #: text output</span>
+<span class="c1"># echo = type(&#39;echo&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;echo&#39;})  #: text output</span>
+<span class="c1"># ed = type(&#39;ed&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;ed&#39;})  #: Edit a file</span>
+<span class="c1"># edlin = type(&#39;edlin&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;edlin&#39;})  #: Edit a file</span>
+<span class="c1"># exit = type(&#39;exit&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;exit&#39;})  #: Exits the command prompt</span>
+<span class="c1"># find = type(&#39;find&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;find&#39;})  #: Find a file or folder</span>
+<span class="c1"># findstr = type(&#39;findstr&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;findstr&#39;})  #: Find a string in files or folders</span>
+<span class="c1"># format = type(&#39;format&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;format&#39;})  #: Format a file</span>
+<span class="c1"># gpedit = type(&#39;gpedit&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;gpedit&#39;})  #: Edit the Group Policy</span>
+<span class="c1"># help = type(&#39;help&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;help&#39;})  #: Displays help files</span>
+<span class="c1"># help_ = type(&#39;help_&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;help_&#39;})  #: Displays help files</span>
+<span class="c1"># help_ctx = type(&#39;help_ctx&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;help_ctx&#39;})  #: Displays help files</span>
+<span class="c1"># help_nt = type(&#39;help_nt&#39;, (Cmdcommand,), {&#39;name&#39;: &#39;help_nt&#39;})  #: Displays help files</span>
 
 
 <span class="c1"># WINDOWS COMMANDS</span>

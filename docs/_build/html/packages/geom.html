@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: geom &#8212; domonic 0.3.18 documentation</title>
+    <title>Domonic: geom &#8212; domonic 0.4.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -39,155 +39,29 @@
 <p><a class="reference external" href="https://6b.eleuther.ai/">https://6b.eleuther.ai/</a></p>
 <div class="section" id="id1">
 <h2>domonic.geom<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>much of this was written by.ai
-(<a class="reference external" href="https://6b.eleuther.ai/">https://6b.eleuther.ai/</a>)</p>
-<p>most of this code was derivied by continually pasting back into eleuther</p>
-<p># TODO - tests for all these new functions. sadly the ai didn’t generate those.</p>
+<p>written by.ai</p>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">domonic.geom.</code><code class="sig-name descname">matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">m</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#matrix"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>[matrixs]</p>
 <dl class="py method">
 <dt>
+<code class="sig-name descname">rotate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#matrix.rotate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Rotates the point on the vector defined by the vectors m[0] and m[1].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">scale</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#matrix.scale"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Scales the point on the vector defined by the vectors m[0] and m[1].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#matrix.translate"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Translates the point on the vector defined by the vectors m[0] and m[1].</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.geom.</code><code class="sig-name descname">vec2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>[vec2]</p>
-<dl class="py method">
-<dt>
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.add"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Adds a point to this point. returns new one</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.copy"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Creates a copy of this Point object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">copyRotateAround</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">angle</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.copyRotateAround"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>moves the vector then rotate</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">cross</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.cross"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns the cross product of this and other. The cross product is considered 0
-perpendicular to each other point</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">dot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.dot"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns the dot product of these two vectors</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">equals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.equals"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns true if all vectors components are the same</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">interpolate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt1</span></em>, <em class="sig-param"><span class="n">pt2</span></em>, <em class="sig-param"><span class="n">t</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.interpolate"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Calculates the point that would be reached by this Point
-if we moved by a given distance vector over time t.
-Only floats are handled here.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">length</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.length"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>returns the length of this vector</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">negate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.negate"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Negate a vector. This results in vector with the same direction but different length</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">negative</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.negative"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>return vector but negative version</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">rotateAround</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">angle</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.rotateAround"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Rotates the vector around another point. In fact it returns the other point.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">squaredlength</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.squaredlength"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>returns the squared length of this vector</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">subtract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.subtract"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Subtract from this point. returns new one</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.geom.</code><code class="sig-name descname">vec3</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">z</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">w</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>[vec3]</p>
-<dl class="py method">
-<dt>
-<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span></em>, <em class="sig-param"><span class="n">amount</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.apply"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Moves the points x,y,z,w by amount.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.clone"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns a new instance of this vector3.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.copy"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Creates a copy of this object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.distance"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Returns the distance between this point and another vector3.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">equals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.equals"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Determine whether two objects are identical.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">subtract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.subtract"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Subtract from this point.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt>
-<em class="property">class </em><code class="sig-prename descclassname">domonic.geom.</code><code class="sig-name descname">vec4</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">z</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">w</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec4"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>[vec2]</p>
 </dd></dl>
 
 </div>

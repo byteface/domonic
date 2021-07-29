@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.JSON &#8212; domonic 0.3.18 documentation</title>
+    <title>domonic.JSON &#8212; domonic 0.4.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -54,7 +54,11 @@
 <div class="viewcode-block" id="JSON"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON">[docs]</a><span class="k">class</span> <span class="nc">JSON</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A class containing JSON utils &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># self.data = data</span>
+        <span class="c1"># self.json = json.dumps(data)</span>
+        <span class="c1"># self.json_obj = json.loads(self.json)</span>
+        <span class="c1"># self.json_str = json.dumps(self.json_obj)</span>
         <span class="k">pass</span>
 
     <span class="nd">@staticmethod</span>
@@ -217,8 +221,17 @@
 
         <span class="k">return</span> <span class="kc">False</span></div>
 
-    <span class="c1"># def value(self, query:str):</span>
-        <span class="c1"># pass</span>
+    <span class="c1"># def minify(json):</span>
+    <span class="c1">#     &quot;&quot;&quot; minifes a json string &quot;&quot;&quot;</span>
+    <span class="c1">#     return json.replace(&quot;\n&quot;, &quot;&quot;).replace(&quot; &quot;, &quot;&quot;)</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def is_array(json: str):</span>
+    <span class="c1">#     if type(json) != str:</span>
+    <span class="c1">#         return False</span>
+    <span class="c1">#     if json.startswith(&#39;[&#39;) and json.endswith(&#39;]&#39;):</span>
+    <span class="c1">#         return True</span>
+    <span class="c1">#     return False</span>
 
 
 <span class="sd">&#39;&#39;&#39;</span>

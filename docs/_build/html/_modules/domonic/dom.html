@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.3.18 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.4.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -229,8 +229,8 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodeType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the node type of a node &quot;&quot;&quot;</span>
-        <span class="c1"># pass</span>
-        <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ELEMENT_NODE</span>
+        <span class="c1"># return 1</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">localName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -350,12 +350,74 @@
 
 <div class="viewcode-block" id="Node.compareDocumentPosition"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.compareDocumentPosition">[docs]</a>    <span class="k">def</span> <span class="nf">compareDocumentPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">otherElement</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Compares the document position of two elements &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">otherElement</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">otherElement</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">compareDocumentPosition</span><span class="p">(</span><span class="n">otherElement</span><span class="o">.</span><span class="n">parentNode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
 
-        <span class="c1"># isDefaultNamespace()</span>
-        <span class="c1"># lookupNamespaceURI()</span>
-        <span class="c1"># lookupPrefix()</span>
-        <span class="c1"># normalize()</span>
+<div class="viewcode-block" id="Node.getPreviousSibling"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.getPreviousSibling">[docs]</a>    <span class="k">def</span> <span class="nf">getPreviousSibling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the previous sibling of an element. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">each</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">each</span><span class="o">.</span><span class="n">getPreviousSibling</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Node.getNextSibling"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.getNextSibling">[docs]</a>    <span class="k">def</span> <span class="nf">getNextSibling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the next sibling of an element. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">each</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">each</span><span class="o">.</span><span class="n">getNextSibling</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+    
+<div class="viewcode-block" id="Node.isDefaultNamespace"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.isDefaultNamespace">[docs]</a>    <span class="k">def</span> <span class="nf">isDefaultNamespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks if a namespace is the default namespace &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ns</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Node.lookupNamespaceURI"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.lookupNamespaceURI">[docs]</a>    <span class="k">def</span> <span class="nf">lookupNamespaceURI</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the namespace URI for a given prefix &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ns</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaceURI</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+    
+<div class="viewcode-block" id="Node.lookupPrefix"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.lookupPrefix">[docs]</a>    <span class="k">def</span> <span class="nf">lookupPrefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ns</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the prefix for a given namespace URI &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ns</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaceURI</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Node.normaliz"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.normaliz">[docs]</a>    <span class="k">def</span> <span class="nf">normaliz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Normalize a node&#39;s value &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span></div></div>
+
+    <span class="c1"># def isSupported(self, feature, version):</span>
+    <span class="c1">#     &quot;&quot;&quot; Checks if a feature is supported &quot;&quot;&quot;</span>
+    <span class="c1">#     return None</span>
+
+    <span class="c1"># def getUserData(self, key):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns the value of a user data item &quot;&quot;&quot;</span>
+    <span class="c1">#     return None</span>
+
+    <span class="c1"># def setUserData(self, key, value):</span>
+    <span class="c1">#     &quot;&quot;&quot; Sets a user data item &quot;&quot;&quot;</span>
+    <span class="c1">#     return None</span>
 
     <span class="c1"># def isSupported(self): return False #  🗑</span>
     <span class="c1"># getUserData() 🗑️</span>
@@ -416,26 +478,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span></div>
 
 
-<div class="viewcode-block" id="ChildNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode">[docs]</a><span class="k">class</span> <span class="nc">ChildNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ChildNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode">[docs]</a><span class="k">class</span> <span class="nc">ChildNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; not tested yet &quot;&quot;&quot;</span>
 
-    <span class="c1"># @classmethod??</span>
 <div class="viewcode-block" id="ChildNode.remove"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Removes this ChildNode from the children list of its parent. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">removeChild</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="ChildNode.before"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.before">[docs]</a>    <span class="k">def</span> <span class="nf">before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Inserts a set of Node or DOMString objects in the children list of this ChildNode&#39;s parent, just before this ChildNode. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<div class="viewcode-block" id="ChildNode.replaceWith"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.replaceWith">[docs]</a>    <span class="k">def</span> <span class="nf">replaceWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newChild</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Replaces this ChildNode with a new one. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">replaceChild</span><span class="p">(</span><span class="n">newChild</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="ChildNode.after"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.after">[docs]</a>    <span class="k">def</span> <span class="nf">after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Inserts a set of Node or DOMString objects in the children list of this ChildNode&#39;s parent, just after this ChildNode. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<div class="viewcode-block" id="ChildNode.before"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.before">[docs]</a>    <span class="k">def</span> <span class="nf">before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newChild</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Inserts a newChild node immediately before this ChildNode. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">insertBefore</span><span class="p">(</span><span class="n">newChild</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="ChildNode.replaceWith"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.replaceWith">[docs]</a>    <span class="k">def</span> <span class="nf">replaceWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">el</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Replaces this ChildNode in the children list of its parent with a set of Node or DOMString objects. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
-
+<div class="viewcode-block" id="ChildNode.after"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode.after">[docs]</a>    <span class="k">def</span> <span class="nf">after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newChild</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Inserts a newChild node immediately after this ChildNode. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">insertBefore</span><span class="p">(</span><span class="n">newChild</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div></div>
+        
 
 <span class="k">class</span> <span class="nc">Attr</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
@@ -811,6 +876,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NodeList"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList">[docs]</a><span class="k">class</span> <span class="nc">NodeList</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="c1"># TODO - not tested</span>
 
 <div class="viewcode-block" id="NodeList.item"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns an item in the list by its index, or null if the index is out-of-bounds.&quot;&quot;&quot;</span>
@@ -818,20 +884,24 @@
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="NodeList.entries"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList.entries">[docs]</a>    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an iterator, allowing code to go through all key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0 and the values are nodes.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="sd">&quot;&quot;&quot; Returns an iterator, allowing code to go through all key/value pairs contained in the collection. </span>
+<span class="sd">        (In this case, the keys are numbers starting from 0 and the values are nodes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NodeList.forEach"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList.forEach">[docs]</a>    <span class="k">def</span> <span class="nf">forEach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Executes a provided function once per NodeList element, passing the element as an argument to the function. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NodeList.keys"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0.)&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="sd">&quot;&quot;&quot; Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection. </span>
+<span class="sd">        (In this case, the keys are numbers starting from 0.)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="NodeList.values"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeList.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns an iterator allowing code to go through all values (nodes) of the key/value pairs contained in the collection.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+
 
 
 <div class="viewcode-block" id="Element"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element">[docs]</a><span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
@@ -1071,14 +1141,13 @@
         <span class="c1"># dom.getElementById(&quot;myAnchor&quot;).accessKey = &quot;w&quot;;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a List of an element&#39;s attributes &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or returns the content of an element &quot;&quot;&quot;</span>
-        <span class="c1"># self.args = args</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span>
 
     <span class="nd">@innerHTML</span><span class="o">.</span><span class="n">setter</span>
@@ -1259,20 +1328,22 @@
         <span class="sd">&#39;&#39;&#39; Sets or returns the value of the id attribute of an element&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">newid</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Element.innerText"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.innerText">[docs]</a>    <span class="k">def</span> <span class="nf">innerText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Sets or returns the text content of a node and its descendants&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">each</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">])</span></div>
+    <span class="c1"># Sets or returns the text content of a node and its descendants</span>
+    <span class="k">def</span> <span class="nf">innerText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">each</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">])</span>
 
-<div class="viewcode-block" id="Element.insertAdjacentElement"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentElement">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentElement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Inserts a HTML element at the specified position relative to the current element&#39;&#39;&#39;</span>
+    <span class="c1"># Inserts an element adjacent to the current element</span>
+<div class="viewcode-block" id="Element.insertAdjacentElement"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentElement">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentElement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Inserts an element adjacent to the current element &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.insertAdjacentHTML"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentHTML">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Inserts a HTML formatted text at the specified position relative to the current element&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Element.insertAdjacentHTML"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentHTML">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Inserts raw HTML adjacent to the current element &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.insertAdjacentText"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentText">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Inserts text into the specified position relative to the current element&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Element.insertAdjacentText"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentText">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Inserts text adjacent to the current element &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Element.isContentEditable"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.isContentEditable">[docs]</a>    <span class="k">def</span> <span class="nf">isContentEditable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1516,9 +1587,10 @@
 <span class="k">class</span> <span class="nc">DOMImplementation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># self.__domImplementation = None</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">createDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">createDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">qualifiedName</span><span class="p">,</span> <span class="n">doctype</span><span class="p">):</span>
         <span class="c1"># return Document()</span>
         <span class="c1"># from domonic.html import html</span>
         <span class="c1"># return html()</span>
@@ -1929,14 +2001,22 @@
     <span class="n">_timers</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_getTime</span><span class="p">():</span>
+        <span class="kn">import</span> <span class="nn">time</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># python 3.6 doesn&#39;t have _ns</span>
+            <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000000</span>
+
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[starts a timer]</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            label (str): [The name to give the new timer.]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">time</span>
-        <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+        <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">_getTime</span><span class="p">()</span>  <span class="c1"># time.time_ns() // 1000</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">timeLog</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -1950,8 +2030,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># if label = None</span>
-            <span class="kn">import</span> <span class="nn">time</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">_getTime</span><span class="p">()</span>  <span class="c1"># time.time_ns() // 1000</span>
             <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;ms&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;ms&quot;</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -1968,8 +2047,7 @@
 <span class="sd">            [type]: [label: time - timer ended]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">time</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">_getTime</span><span class="p">()</span>  <span class="c1"># time.time_ns() // 1000</span>
             <span class="n">fin</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
             <span class="k">del</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
             <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;ms - timer ended&quot;</span><span class="p">)</span>

@@ -110,6 +110,7 @@ hkern = type('hkern', (tag, Element), {'name': 'hkern', '__init__': svg_init})
 vkern = type('vkern', (tag, Element), {'name': 'vkern', '__init__': svg_init})
 animateColor = type('animateColor', (tag, Element), {'name': 'animateColor', '__init__': svg_init})
 
+
 # TODO --
 
 # _filter # builtin

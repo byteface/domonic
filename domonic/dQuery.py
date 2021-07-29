@@ -5,6 +5,8 @@
 
 """
 
+import json
+
 from domonic.dom import *
 from domonic.html import *
 from domonic.javascript import *
@@ -16,14 +18,35 @@ class EventHandler():
         self.events = []
 
     def bindEvent(self, event, callback, targetElement):
+        """[binds an event to a callback]
+
+        Args:
+            event ([str]): [type of event]
+            callback (function): [callback function]
+            targetElement ([type]): [target element]
+        """
         self.unbindEvent(event, targetElement)
         targetElement.addEventListener(event, callback, False)
         self.events.append({'_type': event, 'event': callback, 'target': targetElement})
 
     def findEvent(self, event):
+        """[finds an event]
+
+        Args:
+            event ([str]): [event]
+
+        Returns:
+            [type]: [event]
+        """
         return [e for e in self.events[0] if e == event['_type']]
 
     def unbindEvent(self, event, targetElement):
+        """[unbinds an event]
+
+        Args:
+            event ([str]): [event]
+            targetElement ([type]): [description]
+        """
         foundEvent = self.findEvent(event)
         if foundEvent is not None:
             targetElement.removeEventListener(event, foundEvent['event'], False)
@@ -38,315 +61,11 @@ class dQuery_el():
 
     """
 
-    @staticmethod
-    def ajax(url='/', type='GET', data=None, contentType=False, processData=False, cache=False, success=None, error=None):
-        raise NotImplementedError
-
-    @staticmethod
-    def ajaxPrefilter():
-        """ Handle custom Ajax options or modify existing options before each request is sent and before they are processed by .ajax """
-        raise NotImplementedError
-
-    @staticmethod
-    def ajaxSetup():
-        """ Set default values for future Ajax requests. Its use is not recommended. """
-        raise NotImplementedError
-
-    @staticmethod
-    def ajaxTransport():
-        """ Creates an object that handles the actual transmission of Ajax data. """
-        raise NotImplementedError
-
-    # @staticmethod
-    # @ty
-    # def boxModel:
-    #     """ States if the current page, in the user’s browser, is being rendered using the W3C CSS Box Model. """
-    #     raise NotImplementedError
-
-    # @staticmethod
-    # @ty
-    # def browser:
-        """ Contains flags for the useragent, read from navigator.userAgent. """
-        # raise NotImplementedError
-
-    @staticmethod
-    def Callbacks():
-        """ A multi-purpose callbacks list object that provides a powerful way to manage callback lists. """
-        raise NotImplementedError
-
-    @staticmethod
-    def contains(parent, child):
-        """ Check to see if a DOM element is a descendant of another DOM element. """
-        return parent.contains(child)
-
-    # @staticmethod
-    # @ty
-    # def cssHooks:
-        """ Hook directly into dQuery to override how particular CSS properties are retrieved or set, normalize CSS property naming, or create custom properties. """
-        # raise NotImplementedError
-
-    # @staticmethod
-    # @ty
-    # def cssNumber:
-        """ An object containing all CSS properties that may be used without a unit. The .css method uses this object to see if it may append px to unitless values. """
-        # raise NotImplementedError
-
-    # @staticmethod
-    # def data():
-    #     """ Store arbitrary data associated with the specified element and/or return the value that was set. """
-    #     raise NotImplementedError
-
-    @staticmethod
-    def Deferred():
-        """ A factory function that returns a chainable utility object with methods to register multiple callbacks into callback queues, invoke callback queues, and relay the success or failure state of any synchronous or asynchronous function. """
-        raise NotImplementedError
-
-    @staticmethod
-    def dequeue():
-        """ Execute the next function on the queue for the matched element. """
-        raise NotImplementedError
-
-    @staticmethod
-    def each(arr, func):
-        """ A generic iterator function, which can be used to seamlessly iterate over both objects and arrays. """
-        raise NotImplementedError
-
-    @staticmethod
-    def error():
-        """ Takes a string and throws an exception containing it. """
-        raise Exception(msg)
-
-    @staticmethod
-    def escapeSelector():
-        """ Escapes any character that has a special meaning in a CSS selector. """
-        raise NotImplementedError
-
-    @staticmethod
-    def extend(*args):
-        """ Merge the contents of two or more objects together into the first object. """
-        result = {}
-        for each in args:
-            result.update(each)
-        return result
-
-    @staticmethod
-    def get(url: str):
-        """ Load data from the server using a HTTP GET request. """
-        r = requests.get(url)
-        return r.content.decode("utf-8")
-
-    @staticmethod
-    def getJSON():
-        """ Load JSON-encoded data from the server using a GET HTTP request. """
-        raise NotImplementedError
-
-    @staticmethod
-    def getScript(filename, *args):
-        """ execute another python file. """
-        from subprocess import Popen
-        Popen('python '+filename+'.py')
-
-    @staticmethod
-    def globalEval():
-        """ Execute some JavaScript code globally. """
-        raise NotImplementedError
-
-    @staticmethod
-    def grep():
-        """ Finds the elements of an array which satisfy a filter function. The original array is not affected. """
-        raise NotImplementedError
-
-    @staticmethod
-    def hasData():
-        """ Determine whether an element has any dQuery data associated with it. """
-        raise NotImplementedError
-
-    @staticmethod
-    def holdReady():
-        """ Holds or releases the execution of dQuery’s ready event. """
-        raise NotImplementedError
-
-    @staticmethod
-    def htmlPrefilter():
-        """ Modify and filter HTML strings passed through dQuery manipulation methods. """
-        raise NotImplementedError
-
-    @staticmethod
-    def inArray(thing, arr):
-        """ Search for a specified value within an array and return its index or -1 if not found. """
-        for count, each in enumerate(arr):
-            if thing == each:
-                return count
-        return -1
-
-    @staticmethod
-    def isArray(item):
-        """ Determine whether the argument is an array. """
-        return type(item) == Array
-
-    @staticmethod
-    def isEmptyObject(dct):
-        """ Check to see if an object is empty (contains no enumerable properties). """
-        return not bool(dct)
-
-    @staticmethod
-    def isFunction(obj):
-        """ Determines if its argument is callable as a function. """
-        return callable(obj)
-
-    @staticmethod
-    def isNumeric():
-        """ Determines whether its argument represents a JavaScript number. """
-        return type(item) == Number
-
-    @staticmethod
-    def isPlainObject(obj):
-        """ Check to see if an object is a plain object created using “{}” """
-        return type(obj) is dict
-
-    @staticmethod
-    def isWindow():
-        """ Determine whether the argument is a window. """
-        raise NotImplementedError
-
-    @staticmethod
-    def isXMLDoc():
-        """ Check to see if a DOM node is within an XML document (or is an XML document). """
-        raise NotImplementedError
-
-    @staticmethod
-    def makeArray(somelist):
-        """ Convert an array-like object into a true JavaScript array. """
-        return Array(somelist)
-
-    @staticmethod
-    def map(arr, func):
-        """ Translate all items in an array or object to new array of items. """
-        return [func(value) for value in arr]
-
-    @staticmethod
-    def merge(one, *args):
-        """ Merge the contents of arrays into the first array. """
-        import itertools
-        one.append(list(itertools.chain(*args)))
-        return one
-
-    @staticmethod
-    def noConflict():
-        """ Relinquish dQuery’s control of the º variable. """
-        raise NotImplementedError
-
-    @staticmethod
-    def noop():
-        """ An empty function. """
-        pass
-
-    @staticmethod
-    def now():
-        """ Return a number representing the current time. """
-        return Date.now()
-
-    @staticmethod
-    def param():
-        """ Create a serialized representation of an array, a plain object, or a dQuery object suitable for use in a URL query string or Ajax request. In case a dQuery object is passed, it should contain input elements with name/value properties. """
-        raise NotImplementedError
-
-    @staticmethod
-    def parseHTML():
-        """ Parses a string into an array of DOM nodes. """
-        raise NotImplementedError
-
-    @staticmethod
-    def parseJSON():
-        """ Takes a well-formed JSON string and returns the resulting JavaScript value. """
-        raise NotImplementedError
-
-    @staticmethod
-    def parseXML():
-        """ Parses a string into an XML document. """
-        raise NotImplementedError
-
-    @staticmethod
-    def post(url, data, success):
-        """ Send data to the server using a HTTP POST request. """
-        r = requests.post(url, data)
-        # if r.ok:
-        #     succss()
-        return r.content.decode("utf-8")
-
-    @staticmethod
-    def proxy():
-        """ Takes a function and returns a new one that will always have a particular context. """
-        raise NotImplementedError
-
-    @staticmethod
-    def queue():
-        """ Show or manipulate the queue of functions to be executed on the matched element. """
-        raise NotImplementedError
-
-    # @staticmethod
-    # @ty
-    # def ready:
-        # """ A Promise-like object or “thenable” that resolves when the document is ready. """
-        # raise NotImplementedError
-
-
-    @staticmethod
-    def readyException():
-        """ Handles errors thrown synchronously in functions wrapped in dQuery """
-        raise NotImplementedError
-
-    @staticmethod
-    def removeData():
-        """ Remove a previously-stored piece of data. """
-        raise NotImplementedError
-
-    # @staticmethod
-    #  @ty
-    # def speed:
-        # """ Creates an object containing a set of properties ready to be used in the definition of custom animations. """
-        # raise NotImplementedError
-
-    @staticmethod
-    def sub():
-        """ Creates a new copy of dQuery whose properties and methods can be modified without affecting the original dQuery object. """
-        raise NotImplementedError
-
-    # @staticmethod
-    # def t:
-    #     """ A collection of properties that represent the presence of different browser features or bugs. """
-    #     raise NotImplementedError
-
-    @staticmethod
-    def trim(content):
-        """ Remove the whitespace from the beginning and end of a string. """
-        content = content.replace('\n', '').replace('\t', '').replace('\r', '').strip()
-        return content
-
-    # @staticmethod
-    # def type():
-    #     """ Determine the internal JavaScript [[Class]] of an object. """
-    #     raise NotImplementedError
-
-    @staticmethod
-    def unique():
-        """ Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers. """
-        raise NotImplementedError
-
-    @staticmethod
-    def uniqueSort():
-        """ Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers. """
-        raise NotImplementedError
-
-    @staticmethod
-    def when():
-        """ Provides a way to execute callback functions based on zero or more Thenable objects, usually Deferred objects that represent asynchronous events. """
-        raise NotImplementedError
-
     DOM = None
 
     def __init__(self, dom, *args, **kwargs):
-        """ Return a collection of matched elements either found in the DOM based on passed arguments or created by passing an HTML string. """
+        """ Return a collection of matched elements found in the DOM based on passed arguments,
+        or created by passing an HTML string. """
 
         # if first char is < . returs a new html dom node < init() does this
         # if its a selector. execs on the current dom < init() does this
@@ -406,9 +125,10 @@ class dQuery_el():
                 # element by selector not working on just classes as always needs a tag
                 if self.q[0] == '.':
 
-                    # NOTE - if jquery is not present in a webpage chrome assigns $ to querySelector NOT querySelectorAll
+                    # NOTE - if jquery is not present chrome assigns $ to querySelector NOT querySelectorAll
                     # so differing behaviours may be expected.
-                    # detect if there's a list in each method if not just do it to first item? so it does bit of both? aka .append
+                    # detect if there's a list in each method if not do it to first item?
+                    # so it does bit of both? aka .append
 
                     self.elements = self.dom.querySelectorAll(self.q)
                     return
@@ -539,10 +259,11 @@ class dQuery_el():
         return target
 
     def attr(self, property, value=None):
-        """ Get the value of an attribute for the first element in the set of matched elements or set one or more attributes for every matched element."""
+        """ Get the value of an attribute for the first element in the set of matched elements
+        or set one or more attributes for every matched element."""
 
         # if not isinstance(self.elements, (list, tuple)):
-            # self.elements = (self.elements,)
+        #     self.elements = (self.elements,)
 
         if value is not None:
             if self.elements[0].getAttribute(property) is not None:
@@ -553,12 +274,21 @@ class dQuery_el():
         else:
             return self.elements[0].getAttribute(property)
 
-    def before(self):
+    def before(self, content):  # TODO - test
         """ Insert content, specified by the parameter, before each element in the set of matched elements."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            p = el.parentNode
+            for i, n in enumerate(p.children):
+                if n == el:
+                    l = list(p.args)
+                    l.insert(i, content)
+                    p.args = tuple(l)
+        return self
 
-    def bind(self):
-        """ Attach a handler to an event for the elements."""
+    def bind(self, event, handler):
+        """ Attach a function to be executed when an event occurs on a set of matched elements."""
         raise NotImplementedError
 
     def blur(self):
@@ -569,9 +299,14 @@ class dQuery_el():
         """ Bind an event handler to the “change” JavaScript event, or trigger that event on an element."""
         raise NotImplementedError
 
-    def children(self):
+    def children(self, selector=None):  # TODO - test
         """ Get the children of each element in the set of matched elements, optionally filtered by a selector."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        if selector is None:
+            return self.elements
+        else:
+            return [el for el in self.elements if selector(el)]
 
     def clearQueue(self):
         """ Remove from the queue all items that have not yet been run."""
@@ -581,12 +316,17 @@ class dQuery_el():
         """ Bind an event handler to the “click” JavaScript event, or trigger that event on an element."""
         raise NotImplementedError
 
+    # Create a deep copy of the set of matched elements.
     def clone(self):
         """ Create a deep copy of the set of matched elements."""
+        # if not isinstance(self.elements, (list, tuple)):
+        #     self.elements = (self.elements,)
+        # new_elements = self.elements.clone()
         raise NotImplementedError
 
     def closest(self):
-        """ For each element in the set, get the first element that matches the selector by testing the element itself and traversing up through its ancestors in the DOM tree."""
+        """ For each element in the set, get the first element that matches the selector by testing the element itself
+        and traversing up through its ancestors in the DOM tree."""
         raise NotImplementedError
 
     def contents(self):
@@ -595,7 +335,8 @@ class dQuery_el():
 
     @property
     def context(self):
-        """ The DOM node context originally passed to dQuery if none was passed then context will likely be the document. """
+        """ The DOM node context originally passed to dQuery if none was passed
+        then context will likely be the document. """
         raise NotImplementedError
 
     def contextmenu(self):
@@ -603,11 +344,13 @@ class dQuery_el():
         raise NotImplementedError
 
     def css(self, prop, value):
-        """ Get the value of a computed style property for the first element in the set of matched elements or set one or more CSS properties for every matched element."""
+        """ Get the value of a computed style property for the first element in the set of matched elements
+        or set one or more CSS properties for every matched element."""
         pass
 
     def data(self):
-        """ Store arbitrary data associated with the matched elements or return the value at the named data store for the first element in the set of matched elements."""
+        """ Store arbitrary data associated with the matched elements or return the value at the named data store
+        for the first element in the set of matched elements."""
         raise NotImplementedError
 
     def dblclick(self):
@@ -619,7 +362,8 @@ class dQuery_el():
         raise NotImplementedError
 
     def delegate(self):
-        """ Attach a handler to one or more events for all elements that match the selector, now or in the future, based on a specific set of root elements."""
+        """ Attach a handler to one or more events for all elements that match the selector, now or in the future,
+        based on a specific set of root elements."""
         raise NotImplementedError
 
     def dequeue(self):
@@ -653,7 +397,8 @@ class dQuery_el():
         return self
 
     def end(self):
-        """ End the most recent filtering operation in the current chain and return the set of matched elements to its previous state."""
+        """ End the most recent filtering operation in the current chain and return the
+        set of matched elements to its previous state."""
         raise NotImplementedError
 
     def eq(self, index):
@@ -689,11 +434,13 @@ class dQuery_el():
         raise NotImplementedError
 
     def find(self):
-        """ Get the descendants of each element in the current set of matched elements, filtered by a selector, dQuery object, or element."""
+        """ Get the descendants of each element in the current set of matched elements, filtered by a selector,
+        dQuery object, or element."""
         raise NotImplementedError
 
     def finish(self):
-        """ Stop the currently-running animation, remove all queued animations, and complete all animations for the matched elements."""
+        """ Stop the currently-running animation, remove all queued animations, and complete all animations
+        for the matched elements."""
         raise NotImplementedError
 
     def first(self):
@@ -714,12 +461,13 @@ class dQuery_el():
         """ Bind an event handler to the “focusout” JavaScript event."""
         raise NotImplementedError
 
-    def get(self):
-        """ Retrieve the DOM elements matched by the dQuery object."""
-        raise NotImplementedError
+    # def get(self):
+    #     """ Retrieve the DOM elements matched by the dQuery object."""
+    #     raise NotImplementedError
 
     def has(self):
-        """ Reduce the set of matched elements to those that have a descendant that matches the selector or DOM element."""
+        """ Reduce the set of matched elements to those that have a descendant
+        that matches the selector or DOM element."""
         raise NotImplementedError
 
     def hasClass(self, classname):
@@ -734,49 +482,86 @@ class dQuery_el():
         return False
 
     def height(self):
-        """ Get the current computed height for the first element in the set of matched elements or set the height of every matched element."""
+        """ Get the current computed height for the first element in the set of matched elements or set the height
+        of every matched element."""
         raise NotImplementedError
 
     def hide(self):
         """ Hide the matched elements."""
         for el in self.elements:
-              el.style.display = 'none'
+            el.style.display = 'none'
         return self
 
     def hover(self):
-        """ Bind one or two handlers to the matched elements, to be executed when the mouse pointer enters and leaves the elements."""
+        """ Bind one or two handlers to the matched elements, to be executed when the mouse pointer enters and
+        leaves the elements."""
         raise NotImplementedError
 
     def html(self, html=None):
-        """ Get the HTML contents of the first element in the set of matched elements or set the HTML contents of every matched element."""
+        """ Get the HTML contents of the first element in the set of matched elements or set the HTML contents
+        of every matched element."""
         if html == None:
             return self.elements[0].innerHTML
         for el in self.elements:
             el.innerHTML = html
         return self
 
-    def index(self):
+    def index(self):  # TODO - test
         """ Search for a given element from among the matched elements."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for index, value in enumerate(self.elements):
+            if value == self.elements:
+                return index
+        return -1
 
     def innerHeight(self):
-        """ Get the current computed inner height (including padding but not border) for the first element in the set of matched elements or set the inner height of every matched element."""
+        """ Get the current computed inner height (including padding but not border) for the first element in the set
+        of matched elements or set the inner height of every matched element."""
         raise NotImplementedError
 
     def innerWidth(self):
-        """ Get the current computed inner width (including padding but not border) for the first element in the set of matched elements or set the inner width of every matched element."""
+        """ Get the current computed inner width (including padding but not border) for the first element in the set
+        of matched elements or set the inner width of every matched element."""
         raise NotImplementedError
 
-    def insertAfter(self):
-        """ Insert every element in the set of matched elements after the target."""
-        raise NotImplementedError
+    def insertAfter(self, target):  # TODO - test
+        """ Insert the matched elements after the specified target element."""
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
 
-    def insertBefore(self):
+        if isinstance(target, (list, tuple)):
+            for index, value in enumerate(target):
+                for el in self.elements:
+                    el.insertAfter(value)
+        elif isinstance(target, str):
+            for el in self.elements:
+                el.insertAfter(target)
+        elif isinstance(target, Element):
+            for el in self.elements:
+                el.insertAfter(target)
+
+        return self
+
+    def insertBefore(self, target):  # TODO - test
         """ Insert every element in the set of matched elements before the target."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        if isinstance(target, (list, tuple)):
+            for index, value in enumerate(target):
+                for el in self.elements:
+                    el.insertBefore(value)
+        elif isinstance(target, str):
+            for el in self.elements:
+                el.insertBefore(target)
+        elif isinstance(target, Element):
+            for el in self.elements:
+                el.insertBefore(target)
+        return self
 
     # def is(self):
-        """ Check the current matched set of elements against a selector, element, or dQuery object and return true if at least one of these elements matches the given arguments."""
+        """ Check the current matched set of elements against a selector, element,
+        or dQuery object and return true if at least one of these elements matches the given arguments."""
         # raise NotImplementedError
 
     def keydown(self):
@@ -794,7 +579,7 @@ class dQuery_el():
     def last(self):
         """ Reduce the set of matched elements to the final one in the set."""
         if isinstance(self.elements, list) or isinstance(self.elements, tuple):
-            self.elements = self.elements[len(self.elements)-1]
+            self.elements = self.elements[len(self.elements) - 1]
         return self
 
     @property
@@ -810,20 +595,25 @@ class dQuery_el():
         """ Load data from the server and place the returned HTML into the matched elements."""
         raise NotImplementedError
 
-    def map(self):
-        """ Pass each element in the current matched set through a function, producing a new dQuery object containing the return values."""
-        raise NotImplementedError
+    def map(self, func):  # TODO - test
+        """ Pass each element in the current matched set through a function,
+        producing a new dQuery object containing the return values."""
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        return dQuery(map(func, self.elements))
 
     def mousedown(self):
         """ Bind an event handler to the “mousedown” JavaScript event, or trigger that event on an element."""
         raise NotImplementedError
 
     def mouseenter(self):
-        """ Bind an event handler to be fired when the mouse enters an element, or trigger that handler on an element."""
+        """ Bind an event handler to be fired when the mouse enters an element,
+        or trigger that handler on an element."""
         raise NotImplementedError
 
     def mouseleave(self):
-        """ Bind an event handler to be fired when the mouse leaves an element, or trigger that handler on an element."""
+        """ Bind an event handler to be fired when the mouse leaves an element,
+        or trigger that handler on an element."""
         raise NotImplementedError
 
     def mousemove(self):
@@ -842,16 +632,27 @@ class dQuery_el():
         """ Bind an event handler to the “mouseup” JavaScript event, or trigger that event on an element."""
         raise NotImplementedError
 
-    def next(self):
-        """ Get the immediately following sibling of each element in the set of matched elements. If a selector is provided, it retrieves the next sibling only if it matches that selector."""
+    def next(self, selector):  # TODO - test
+        """ Get the immediately following sibling of each element in the set of matched elements.
+        If a selector is provided, it retrieves the next sibling only if it matches that selector."""
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        if isinstance(selector, str):
+            for el in self.elements:
+                el.next(selector)
+        elif isinstance(selector, Element):
+            for el in self.elements:
+                el.next(selector)
+        return self
+
+    def nextAll(self, selector):
+        """ Get all following siblings of each element in the set of matched elements,
+        optionally filtered by a selector."""
         raise NotImplementedError
 
-    def nextAll(self):
-        """ Get all following siblings of each element in the set of matched elements, optionally filtered by a selector."""
-        raise NotImplementedError
-
-    def nextUntil(self):
-        """ Get all following siblings of each element up to but not including the element matched by the selector, DOM node, or dQuery object passed."""
+    def nextUntil(self, selector):
+        """ Get all following siblings of each element up to but not including the element matched by the selector,
+        DOM node, or dQuery object passed."""
         raise NotImplementedError
 
     # def not(self):
@@ -868,7 +669,8 @@ class dQuery_el():
             self.eventHandler.unbindEvent(event, el)
 
     def offset(self):
-        """ Get the current coordinates of the first element, or set the coordinates of every element, in the set of matched elements, relative to the document."""
+        """ Get the current coordinates of the first element, or set the coordinates of every element,
+        in the set of matched elements, relative to the document."""
         raise NotImplementedError
 
     def offsetParent(self):
@@ -882,61 +684,88 @@ class dQuery_el():
         return self
 
     def one(self):
-        """ Attach a handler to an event for the elements. The handler is executed at most once per element per event type."""
+        """ Attach a handler to an event for the elements.
+        The handler is executed at most once per element per event type. """
         raise NotImplementedError
 
     def outerHeight(self):
-        """ Get the current computed outer height (including padding, border, and optionally margin) for the first element in the set of matched elements or set the outer height of every matched element."""
+        """ Get the current computed outer height (including padding, border,
+        and optionally margin) for the first element in the set of matched elements or set the outer height
+        of every matched element."""
         raise NotImplementedError
 
     def outerWidth(self):
-        """ Get the current computed outer width (including padding, border, and optionally margin) for the first element in the set of matched elements or set the outer width of every matched element."""
+        """ Get the current computed outer width (including padding, border, and optionally margin) for the
+        first element in the set of matched elements or set the outer width of every matched element."""
         raise NotImplementedError
 
-    def parent(self):
-        """ Get the parent of each element in the current set of matched elements, optionally filtered by a selector."""
-        raise NotImplementedError
+    def parent(self, selector):  # TODO - test
+        """ Get the parent of each element in the current set of matched elements,
+        optionally filtered by a selector."""
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        parents = []
+        if isinstance(selector, str):
+            for el in self.elements:
+                p = el.parent
+                parents.append(p)
+        return parents
 
     def parents(self):
-        """ Get the ancestors of each element in the current set of matched elements, optionally filtered by a selector."""
+        """ Get the ancestors of each element in the current set of matched elements,
+        optionally filtered by a selector."""
         raise NotImplementedError
 
     def parentsUntil(self):
-        """ Get the ancestors of each element in the current set of matched elements, up to but not including the element matched by the selector, DOM node, or dQuery object."""
+        """ Get the ancestors of each element in the current set of matched elements,
+        up to but not including the element matched by the selector, DOM node, or dQuery object."""
         raise NotImplementedError
 
     def position(self):
-        """ Get the current coordinates of the first element in the set of matched elements, relative to the offset parent."""
+        """ Get the current coordinates of the first element in the set of matched elements,
+        relative to the offset parent."""
         raise NotImplementedError
 
     def prepend(self, html):
-        """ Insert content, specified by the parameter, to the beginning of each element in the set of matched elements."""
+        """ Insert content, specified by the parameter, to the beginning of each element
+        in the set of matched elements."""
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
         for el in self.elements:
             el.innerHTML = html + el.innerHTML
         return self
 
-    def prependTo(self, target):
+    def prependTo(self, target):  # TODO - test 
         """ Insert every element in the set of matched elements to the beginning of the target."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            target.append(el)
+        return self
 
     def prev(self):
-        """ Get the immediately preceding sibling of each element in the set of matched elements. If a selector is provided, it retrieves the previous sibling only if it matches that selector."""
+        """ Get the immediately preceding sibling of each element in the set of matched elements.
+        If a selector is provided, it retrieves the previous sibling only if it matches that selector."""
         raise NotImplementedError
 
     def prevAll(self):
-        """ Get all preceding siblings of each element in the set of matched elements, optionally filtered by a selector."""
+        """ Get all preceding siblings of each element in the set of matched elements,
+        optionally filtered by a selector."""
         raise NotImplementedError
 
     def prevUntil(self):
-        """ Get all preceding siblings of each element up to but not including the element matched by the selector, DOM node, or dQuery object."""
+        """ Get all preceding siblings of each element up to but not including the element matched by the selector,
+        DOM node, or dQuery object."""
         raise NotImplementedError
 
     def promise(self):
-        """ Return a Promise object to observe when all actions of a certain type bound to the collection, queued or not, have finished."""
+        """ Return a Promise object to observe when all actions of a certain type bound to the collection,
+        queued or not, have finished."""
         raise NotImplementedError
 
     def prop(self, property, value):
-        """ Get the value of a property for the first element in the set of matched elements or set one or more properties for every matched element."""
+        """ Get the value of a property for the first element in the set of matched elements or set one or more properties
+        for every matched element."""
         if value is not None:
             if self.elements[0].getAttribute(property) is not None:
                 self.elements[0].setAttribute(property, value)
@@ -946,9 +775,13 @@ class dQuery_el():
         else:
             return self.elements[0].getAttribute(property)
 
-    def pushStack(self):
-        """ Add a collection of DOM elements onto the dQuery stack."""
-        raise NotImplementedError
+    def pushStack(self, stack):  # TODO - test
+        """ Add a collection of DOM elements onto the dQuery."""
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            el.append(stack)
+        return self
 
     def queue(self):
         """ Show or manipulate the queue of functions to be executed on the matched elements."""
@@ -958,13 +791,21 @@ class dQuery_el():
         """ Specify a function to execute when the DOM is fully loaded."""
         raise NotImplementedError
 
-    def remove(self):
+    def remove(self, items):  # TODO - test
         """ Remove the set of matched elements from the DOM."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            el.remove()  # wont work . does this method even exist?
+        return self
 
-    def removeAttr(self):
+    def removeAttr(self, attr):  # TODO - test
         """ Remove an attribute from each element in the set of matched elements."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            el.removeAttribute(attr)
+        return self
 
     def removeClass(self, classname):
         """ Remove a single class, multiple classes, or all classes from each element in the set of matched elements."""
@@ -984,17 +825,28 @@ class dQuery_el():
         """ Remove a previously-stored piece of data."""
         raise NotImplementedError
 
-    def removeProp(self):
+    def removeProp(self, prop):  # TODO -
         """ Remove a property for the set of matched elements."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            el.removeAttribute(prop)
+        return self
 
     def replaceAll(self):
         """ Replace each target element with the set of matched elements."""
         raise NotImplementedError
 
-    def replaceWith(self):
-        """ Replace each element in the set of matched elements with the provided new content and return the set of elements that was removed."""
-        raise NotImplementedError
+    def replaceWith(self, replacement):  # TODO - test
+        """ Replace each element in the set of matched elements with the provided new content and return the set
+         of elements that was removed."""
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        old_elements = []
+        for el in self.elements:
+            old_elements.append(el)
+            el.parentNode.replaceChild(replacement, el)
+        return self
 
     def resize(self):
         """ Bind an event handler to the “resize” JavaScript event, or trigger that event on an element."""
@@ -1005,11 +857,13 @@ class dQuery_el():
         raise NotImplementedError
 
     def scrollLeft(self):
-        """ Get the current horizontal position of the scroll bar for the first element in the set of matched elements or set the horizontal position of the scroll bar for every matched element."""
+        """ Get the current horizontal position of the scroll bar for the first element in the set of matched elements
+        or set the horizontal position of the scroll bar for every matched element."""
         raise NotImplementedError
 
     def scrollTop(self):
-        """ Get the current vertical position of the scroll bar for the first element in the set of matched elements or set the vertical position of the scroll bar for every matched element."""
+        """ Get the current vertical position of the scroll bar for the first element in the set of matched elements
+        or set the vertical position of the scroll bar for every matched element."""
         raise NotImplementedError
 
     def select(self):
@@ -1074,9 +928,12 @@ class dQuery_el():
         """ Return the number of elements in the dQuery object."""
         return len(self.elements)
 
-    def slice(self):
-        """ Reduce the set of matched elements to a subset specified by a range of indices."""
-        raise NotImplementedError
+    def slice(self, start, end):  # TODO - test
+        """ Return a new dQuery object containing the set of matched elements starting at the specified index
+        and ending at the specified index."""
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        return dQuery(self.elements[start:end])
 
     def slideDown(self):
         """ Display the matched elements with a sliding motion."""
@@ -1099,7 +956,8 @@ class dQuery_el():
         raise NotImplementedError
 
     def text(self, newVal=None):
-        """ Get the combined text contents of each element in the set of matched elements, including their descendants, or set the text contents of the matched elements."""
+        """ Get the combined text contents of each element in the set of matched elements, including their descendants,
+        or set the text contents of the matched elements."""
         if newVal is not None:
             for el in self.elements:
                 el.textContent = newVal
@@ -1109,14 +967,18 @@ class dQuery_el():
     def toArray(self):
         """ Retrieve all the elements contained in the dQuery set, as an array."""
         # raise NotImplementedError
-        if isinstance(self.elements, (list, tuple) ):
+        if isinstance(self.elements, (list, tuple)):
             return self.elements
         else:
             return [self.elements]
 
-    def toggle(self):
+    def toggle(self):  # TODO - test
         """ Display or hide the matched elements."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            el.style.display = '' if el.style.display == 'none' else 'none'
+        return self
 
     # @_listify
     def toggleClass(self, className):
@@ -1135,9 +997,16 @@ class dQuery_el():
         #         º(el).removeClass(className)
         raise NotImplementedError
 
-    def trigger(self):
+    def trigger(self, eventName, eventArg=None):  # TODO - test
         """ Execute all handlers and behaviors attached to the matched elements for the given event type."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            if el.nodeName == 'A':
+                el.triggerEvent(eventName, eventArg)
+            else:
+                el.trigger(eventName, eventArg)
+        return self
 
     def triggerHandler(self):
         """ Execute all handlers attached to an element for an event."""
@@ -1148,7 +1017,8 @@ class dQuery_el():
         raise NotImplementedError
 
     def undelegate(self):
-        """ Remove a handler from the event for all elements which match the current selector, based upon a specific set of root elements."""
+        """ Remove a handler from the event for all elements which match the current selector,
+        based upon a specific set of root elements."""
         raise NotImplementedError
 
     def unload(self):
@@ -1156,11 +1026,13 @@ class dQuery_el():
         raise NotImplementedError
 
     def unwrap(self):
-        """ Remove the parents of the set of matched elements from the DOM, leaving the matched elements in their place."""
+        """ Remove the parents of the set of matched elements from the DOM,
+        leaving the matched elements in their place."""
         raise NotImplementedError
 
     def val(self, newVal=None):
-        """ Get the current value of the first element in the set of matched elements or set the value of every matched element."""
+        """ Get the current value of the first element in the set of matched elements
+        or set the value of every matched element."""
         if newVal is not None:
             for el in self.elements:
                 el.value = newVal
@@ -1169,7 +1041,8 @@ class dQuery_el():
         # return self
 
     def width(self):
-        """ Get the current computed width for the first element in the set of matched elements or set the width of every matched element."""
+        """ Get the current computed width for the first element in the set of matched elements
+        or set the width of every matched element."""
         raise NotImplementedError
 
     def wrap(self):
@@ -1185,521 +1058,619 @@ class dQuery_el():
         raise NotImplementedError
 
 
+# class Callbacks():  # TODO - untested. copilot wrote it
 
+#     def __init__(self):
+#         self.callbacks = {}
 
-# All Selector (“*”)
-# Selects all elements.
-# :animated Selector
-# Select all elements that are in the progress of an animation at the time the selector is run.
-# Attribute Contains Prefix Selector [name|=”value”]
-# Selects elements that have the specified attribute with a value either equal to a given string or starting with that string followed by a hyphen (-).
+#     def add(self, callback, *args):
+#         """[Add a callback or a collection of callbacks to a callback list.]
 
-# Attribute Contains Selector [name*=”value”]
-# Selects elements that have the specified attribute with a value containing a given substring.
+#         Args:
+#             callback (function): [a callback]
 
-# Attribute Contains Word Selector [name~=”value”]
-# Selects elements that have the specified attribute with a value containing a given word, delimited by spaces.
+#         """
+#         if callback in self.callbacks:
+#             self.callbacks[callback].append(args)
+#         else:
+#             self.callbacks[callback] = [args]
 
-# Attribute Ends With Selector [name$=”value”]
-# Selects elements that have the specified attribute with a value ending exactly with a given string. The comparison is case sensitive.
+#     def disable(self, callback):
+#         """[Disable a callback or a collection of callbacks from doing anything.]
 
-# Attribute Equals Selector [name=”value”]
-# Selects elements that have the specified attribute with a value exactly equal to a certain value.
+#         Args:
+#             callback (function): [a callback]
 
-# Attribute Not Equal Selector [name!=”value”]
-# Select elements that either don’t have the specified attribute, or do have the specified attribute but not with a certain value.
+#         """
+#         self.callbacks[callback] = []
 
-# Attribute Starts With Selector [name^=”value”]
-# Selects elements that have the specified attribute with a value beginning exactly with a given string.
+#     def disabled(self, callback):
+#         """ Determine if the callbacks list has been disabled."""
+#         return callback not in self.callbacks
 
-# :button Selector
-# Selects all button elements and elements of type button.
+#     def empty(self, callback):
+#         """ Remove all of the callbacks from a list."""
+#         if callback in self.callbacks:
+#             del self.callbacks[callback]
 
-# Callbacks Object
-# callbacks.add()
-# Add a callback or a collection of callbacks to a callback list.
+#     def fire(self, *args):
+#         """ Call all of the callbacks with the given arguments. """
+#         for callback in self.callbacks:
+#             callback(*args)
 
-# Callbacks Object
-# callbacks.disable()
-# Disable a callback list from doing anything more.
+#     def fired(self, *args):
+#         """ Determine if the callbacks have already been called at least once."""
+#         return self.callbacks.fired
 
-# Callbacks Object
-# callbacks.disabled()
-# Determine if the callbacks list has been disabled.
+#     def fireWith(self, *args):
+#         """[Fire the callback(s) with the given arguments.]
 
-# Callbacks Object
-# callbacks.empty()
-# Remove all of the callbacks from a list.
+#         Args:
+#             callback (function): [a callback]
 
-# Callbacks Object
-# callbacks.fire()
-# Call all of the callbacks with the given arguments.
+#         """
+#         self.fire(*args)
 
-# Callbacks Object
-# callbacks.fired()
-# Determine if the callbacks have already been called at least once.
+#     def has(self, callback=None):
+#         """ Determine whether or not the list has any callbacks attached.
+#         If a callback is provided as an argument, determine whether it is in a list. """
+#         if callback is None:
+#             return bool(self.callbacks)
+#         return callback in self.callbacks
 
-# Callbacks Object
-# callbacks.fireWith()
-# Call all callbacks in a list with the given context and arguments.
+#     def lock(self):
+#         """ Lock a callback list in its current state. """
+#         # TODO - test
+#         raise NotImplementedError
 
-# Callbacks Object
-# callbacks.has()
-# Determine whether or not the list has any callbacks attached. If a callback is provided as an argument, determine whether it is in a list.
+#     def locked(self):
+#         """ Determine whether or not the callback list is locked."""
+#         return self.lock
 
-# Callbacks Object
-# callbacks.lock()
-# Lock a callback list in its current state.
+#     def remove(self, callback):
+#         """[Remove a callback or a collection of callbacks from a callback list.]
 
-# Callbacks Object
-# callbacks.locked()
-# Determine if the callbacks list has been locked.
+#         Args:
+#             callback (function): [a callback]
 
-# Callbacks Object
-# callbacks.remove()
-# Remove a callback or a collection of callbacks from a callback list.
+#         """
+#         if callback in self.callbacks:
+#             del self.callbacks[callback]
+#         else:
+#             raise ValueError
 
-# :checkbox Selector
-# Selects all elements of type checkbox.
 
-# Selectors > Form
-# :checked Selector
-# Matches all elements that are checked or selected.
+# class Deferred():
 
-# Selectors > Hierarchy
-# Child Selector (“parent > child”)
-# Selects all direct child elements specified by “child” of elements specified by “parent”.
+#     def __init__(self):
+#         pass
 
-# Selectors > Basic
-# Class Selector (“.class”)
-# Selects all elements with the given class.
+#     def always(self, *args):
+#         """ Add handlers to be called when the Deferred object is either resolved or rejected."""
+#         raise NotImplementedError
 
-# :contains() Selector
-# Select all elements that contain the specified text.
+#     def catch(self, *args):
+#         """ Add handlers to be called when the Deferred object is rejected. """
+#         raise NotImplementedError
 
-# Selectors > Form | Selectors > dQuery Extensions
-# :radio Selector
-# Selects all elements of type radio.
-
-
-
-# Deferred Object
-# deferred.always()
-# Add handlers to be called when the Deferred object is either resolved or rejected.
-
-# Deferred Object
-# deferred.catch()
-# Add handlers to be called when the Deferred object is rejected.
-
-# Deferred Object
-# deferred.done()
-# Add handlers to be called when the Deferred object is resolved.
-
-# Deferred Object
-# deferred.fail()
-# Add handlers to be called when the Deferred object is rejected.
-
-# Deferred Object | Deprecated > Deprecated 1.7 | Removed
-# deferred.isRejected()
-# Determine whether a Deferred object has been rejected.
-
-# Deferred Object | Deprecated > Deprecated 1.7 | Removed
-# deferred.isResolved()
-# Determine whether a Deferred object has been resolved.
-
-# Deferred Object
-# deferred.notify()
-# Call the progressCallbacks on a Deferred object with the given args.
-
-# Deferred Object
-# deferred.notifyWith()
-# Call the progressCallbacks on a Deferred object with the given context and args.
-
-# Deferred Object | Deprecated > Deprecated 1.8
-# deferred.pipe()
-# Utility method to filter and/or chain Deferreds.
-
-# Deferred Object
-# deferred.progress()
-# Add handlers to be called when the Deferred object generates progress notifications.
-
-# Deferred Object
-# deferred.promise()
-# Return a Deferred’s Promise object.
-
-# Deferred Object
-# deferred.reject()
-# Reject a Deferred object and call any failCallbacks with the given args.
-
-# Deferred Object
-# deferred.rejectWith()
-# Reject a Deferred object and call any failCallbacks with the given context and args.
-
-# Deferred Object
-# deferred.resolve()
-# Resolve a Deferred object and call any doneCallbacks with the given args.
-
-# Deferred Object
-# deferred.resolveWith()
-# Resolve a Deferred object and call any doneCallbacks with the given context and args.
-
-# Deferred Object
-# deferred.state()
-# Determine the current state of a Deferred object.
-
-# Deferred Object
-# deferred.then()
-# Add handlers to be called when the Deferred object is resolved, rejected, or still in progress.
-
-
-# Selectors > Hierarchy
-# Descendant Selector (“ancestor descendant”)
-# Selects all elements that are descendants of a given ancestor.
-
-
-# Selectors > Form
-# :disabled Selector
-# Selects all elements that are disabled.
-
-# Selectors > dQuery Extensions | Selectors > Visibility Filter
-# :visible Selector
-# Selects all elements that are visible.
-
-# .dquery
-# A string containing the dQuery version number.
-
-# Selectors > Basic
-# Element Selector (“element”)
-# Selects all elements with the given tag name.
-
-# Selectors > Content Filter
-# :empty Selector
-# Select all elements that have no children (including text nodes).
-
-# Selectors > Form
-# :enabled Selector
-# Selects all elements that are enabled.
-
-# Selectors > Basic Filter | Deprecated > Deprecated 3.4 | Selectors > dQuery Extensions
-# :eq() Selector
-# Select the element at index n within the matched set.
-
-# Selectors > Basic Filter | Deprecated > Deprecated 3.4 | Selectors > dQuery Extensions
-# :even Selector
-# Selects even elements, zero-indexed. See also :odd.
-
-# Events > Event Object
-# event.currentTarget
-# The current DOM element within the event bubbling phase.
-
-# Events > Event Object
-# event.data
-# An optional object of data passed to an event method when the current executing handler is bound.
-
-# Events > Event Object | Events
-# event.delegateTarget
-# The element where the currently-called dQuery event handler was attached.
-
-# Events > Event Object
-# event.isDefaultPrevented()
-# Returns whether event.preventDefault() was ever called on this event object.
-
-# Events > Event Object
-# event.isImmediatePropagationStopped()
-# Returns whether event.stopImmediatePropagation() was ever called on this event object.
-
-# Events > Event Object
-# event.isPropagationStopped()
-# Returns whether event.stopPropagation() was ever called on this event object.
-
-# Events > Event Object
-# event.metaKey
-# Indicates whether the META key was pressed when the event fired.
-
-# Events > Event Object
-# event.namespace
-# The namespace specified when the event was triggered.
-
-# Events > Event Object
-# event.pageX
-# The mouse position relative to the left edge of the document.
-
-# Events > Event Object
-# event.pageY
-# The mouse position relative to the top edge of the document.
-
-# Events > Event Object
-# event.preventDefault()
-# If this method is called, the default action of the event will not be triggered.
-
-# Events > Event Object
-# event.relatedTarget
-# The other DOM element involved in the event, if any.
-
-# Events > Event Object
-# event.result
-# The last value returned by an event handler that was triggered by this event, unless the value was undefined.
-
-# Events > Event Object
-# event.stopImmediatePropagation()
-# Keeps the rest of the handlers from being executed and prevents the event from bubbling up the DOM tree.
-
-# Events > Event Object
-# event.stopPropagation()
-# Prevents the event from bubbling up the DOM tree, preventing any parent handlers from being notified of the event.
-
-# Events > Event Object
-# event.target
-# The DOM element that initiated the event.
-
-# Events > Event Object
-# event.timeStamp
-# The difference in milliseconds between the time the browser created the event and January 1, 1970.
-
-# Events > Event Object
-# event.type
-# Describes the nature of the event.
-
-# Events > Event Object
-# event.which
-# For key or mouse events, this property indicates the specific key or button that was pressed.
-
-# Selectors > Child Filter
-# :only-child Selector
-# Selects all elements that are the only child of their parent.
-
-# Selectors > Child Filter
-# :only-of-type Selector
-# Selects all elements that have no siblings with the same element name.
-
-
-# Selectors > Form | Selectors > dQuery Extensions
-# :reset Selector
-# Selects all elements of type reset.
-
-# Selectors > Basic Filter
-# :root Selector
-# Selects the element that is the root of the document.
-
-# Selectors > Form | Selectors > dQuery Extensions
-# :file Selector
-# Selects all elements of type file.
-# Selectors > Child Filter
-# :first-child Selector
-# Selects all elements that are the first child of their parent.
-# Selectors > Child Filter
-# :first-of-type Selector
-# Selects all elements that are the first among siblings of the same element name.
-# Selectors > Basic Filter | Deprecated > Deprecated 3.4 | Selectors > dQuery Extensions
-# :first Selector
-# Selects the first matched DOM element.
-
-# Selectors > Content Filter | Selectors > dQuery Extensions
-# :parent Selector
-# Select all elements that have at least one child node (either an element or text).
-
-# Selectors > Form | Selectors > dQuery Extensions
-# :password Selector
-# Selects all elements of type password.
-
-# Selectors > Basic Filter | Selectors > Form
-# :focus Selector
-# Selects element if it is currently focused.
-
-
-# Selectors > Basic Filter | Deprecated > Deprecated 3.4 | Selectors > dQuery Extensions
-# :gt() Selector
-# Select all elements at an index greater than index within the matched set.
-
-# Selectors > Form | Selectors > dQuery Extensions
-# :submit Selector
-# Selects all elements of type submit.
-
-# Selectors > Basic Filter
-# :target Selector
-# Selects the target element indicated by the fragment identifier of the document’s URI.
-
-# Selectors > Form | Selectors > dQuery Extensions
-# :text Selector
-# Selects all input elements of type text.
-
-# Selectors > Attribute
-# Multiple Attribute Selector [name=”value”][name2=”value2″]
-# Matches elements that match all of the specified attribute filters.
-
-# Selectors > Basic
-# Multiple Selector (“selector1, selector2, selectorN”)
-# Selects the combined results of all the specified selectors.
-
-# Selectors > Attribute
-# Has Attribute Selector [name]
-# Selects elements that have the specified attribute, with any value.
-
-# Selectors > Content Filter | Selectors > dQuery Extensions
-# :has() Selector
-# Selects elements which contain at least one element that matches the specified selector.
-
-# Selectors > Basic Filter | Selectors > dQuery Extensions
-# :header Selector
-# Selects all elements that are headers, like h1, h2, h3 and so on.
-
-# Selectors > dQuery Extensions | Selectors > Visibility Filter
-# :hidden Selector
-# Selects all elements that are hidden.
-
-# Selectors > Child Filter
-# :last-child Selector
-# Selects all elements that are the last child of their parent.
-
-# Selectors > Child Filter
-# :last-of-type Selector
-# Selects all elements that are the last among siblings of the same element name.
-
-# Selectors > Basic Filter | Deprecated > Deprecated 3.4 | Selectors > dQuery Extensions
-# :last Selector
-# Selects the last matched element.
-
-# Selectors > Basic Filter | Deprecated > Deprecated 3.4 | Selectors > dQuery Extensions
-# :lt() Selector
-# Select all elements at an index less than index within the matched set.
-
-# Selectors > Basic Filter
-# :lang() Selector
-# Selects all elements of the specified language.
-
-# Selectors > Form | Selectors > dQuery Extensions
-# :selected Selector
-# Selects all elements that are selected.
-
-# Deprecated > Deprecated 1.7 | Internals | Properties > Properties of dQuery Object Instances | Removed
-# .selector
-# A selector representing selector passed to dQuery(), if any, when creating the original set.
-
-# Selectors > Basic Filter
-# :not() Selector
-# Selects all elements that do not match the given selector.
-
-# Selectors > Child Filter
-# :nth-child() Selector
-# Selects all elements that are the nth-child of their parent.
-
-# Selectors > Child Filter
-# :nth-last-child() Selector
-# Selects all elements that are the nth-child of their parent, counting from the last element to the first.
-
-# Selectors > Child Filter
-# :nth-last-of-type() Selector
-# Selects all the elements that are the nth-child of their parent in relation to siblings with the same element name, counting from the last element to the first.
-
-# Selectors > Child Filter
-# :nth-of-type() Selector
-# Selects all elements that are the nth child of their parent in relation to siblings with the same element name.
-
-# Selectors > Basic Filter | Deprecated > Deprecated 3.4 | Selectors > dQuery Extensions
-# :odd Selector
-# Selects odd elements, zero-indexed. See also :even.
-
-
-# Selectors > Basic
-# ID Selector (“#id”)
-# Selects a single element with the given id attribute.
-
-# Selectors > Form | Selectors > dQuery Extensions
-# :image Selector
-# Selects all elements of type image.
-
-
-# Selectors > Hierarchy
-# Next Adjacent Selector (“prev + next”)
-# Selects all next elements matching “next” that are immediately preceded by a sibling “prev”.
-
-# Selectors > Hierarchy
-# Next Siblings Selector (“prev ~ siblings”)
-# Selects all sibling elements that follow after the “prev” element, have the same parent, and match the filtering “siblings” selector.
-
-# Effects > Custom | Deprecated > Deprecated 3.0 | Properties > Properties of the Global dQuery Object
-# dQuery.fx.interval
-# The rate (in milliseconds) at which animations fire.
-
-# Effects > Custom | Properties > Properties of the Global dQuery Object
-# dQuery.fx.off
-# Globally disable all animations.
-
-# :input Selector
-# Selects all input, textarea, select and button elements.
-
-
-def º(q):
+#     def done(self, *args):
+#         """ Add handlers to be called when the Deferred object is resolved. """
+
+#     def fail(self):
+#         """ Add handlers to be called when the Deferred object is rejected."""
+#         raise NotImplementedError
+
+#     def isRejected(self):
+#         """ Determine whether a Deferred object has been rejected."""
+#         raise NotImplementedError
+
+#     def isResolved(self):
+#         """ Determine whether a Deferred object has been resolved."""
+#         raise NotImplementedError
+
+#     def notify(self):
+#         """ Call the progressCallbacks on a Deferred object with the given args."""
+#         raise NotImplementedError
+
+#     def notifyWith(self):
+#         """ Call the progressCallbacks on a Deferred object with the given context and args."""
+#         raise NotImplementedError
+
+#     def pipe(self):
+#         """ Utility method to filter and/or chain Deferreds."""
+#         raise NotImplementedError
+
+#     def progress(self):
+#         """ Add handlers to be called when the Deferred object generates progress notifications."""
+#         raise NotImplementedError
+
+#     def promise(self):
+#         """ Return a Deferred’s Promise object."""
+#         raise NotImplementedError
+
+#     def reject(self):
+#         """ Reject a Deferred object and call any failCallbacks with the given args."""
+#         raise NotImplementedError
+
+#     def rejectWith(self):
+#         """ Reject a Deferred object and call any failCallbacks with the given context and args."""
+#         raise NotImplementedError
+
+#     def resolve(self):
+#         """ Resolve a Deferred object and call any doneCallbacks with the given args."""
+#         raise NotImplementedError
+
+#     def resolveWith(self):
+#         """ Resolve a Deferred object and call any doneCallbacks with the given context and args."""
+#         raise NotImplementedError
+
+#     def state(self):
+#         """ Determine the current state of a Deferred object."""
+#         raise NotImplementedError
+
+#     def then(self):
+#         """ Add handlers to be called when the Deferred object is resolved, rejected, or still in progress."""
+#         raise NotImplementedError
+
+
+# class Event():
+
+#     def __init__(self):
+#         self.currentTarget = None
+#         self.data = None
+#         self.delegateTarget = None
+#         self.metaKey = None
+#         self.namespace = None
+#         self.pageX = None
+#         self.pageY = None
+#         self.relatedTarget = None
+#         self.result = None
+#         self.target = None
+#         self.timeStamp = None
+#         self.type = None
+#         self.which = None
+
+#     def isDefaultPrevented(self):
+#         """ Returns whether event.preventDefault() was ever called on this event object."""
+#         pass
+
+#     def isImmediatePropagationStopped(self):
+#         """ Returns whether event.stopImmediatePropagation() was ever called on this event object."""
+#         pass
+
+#     def isPropagationStopped(self):
+#         """ Returns whether event.stopPropagation() was ever called on this event object."""
+#         pass
+
+#     def preventDefault(self):
+#         """ If this method is called,
+#           the default action of the event will not be triggered."""
+#         pass
+
+#     def stopImmediatePropagation(self):
+#         """ Keeps the rest of the handlers from being executed and
+#           prevents the event from bubbling up the DOM tree."""
+#         pass
+
+#     def stopPropagation(self):
+#         """ Prevents the event from bubbling up the DOM tree, preventing any parent handlers
+#           from being notified of the event."""
+#         pass
+
+
+def dproxy(q):
     el = dQuery_el(q)
     el.init(q)
-
-    º.ajax = el.ajax
-    # º.boxModel = el.boxModel
-    # º.browser = el.browser
-    # º.cssHooks = el.cssHooks
-    # º.cssNumber = el.cssNumber
-    # º.ready = el.ready
-    # º.speed = el.speed
-    # º.support = el.support
-
-    º.ajaxPrefilter = el.ajaxPrefilter
-    º.ajaxSetup = el.ajaxSetup
-    º.ajaxTransport = el.ajaxTransport
-    º.Callbacks = el.Callbacks
-    º.contains = el.contains
-    º.data = el.data
-    º.Deferred = el.Deferred
-    º.dequeue = el.dequeue
-    º.each = el.each
-    º.error = el.error
-    º.escapeSelector = el.escapeSelector
-    º.extend = el.extend
-    º.get = el.get
-    º.getJSON = el.getJSON
-    º.getScript = el.getScript
-    º.globalEval = el.globalEval
-    º.grep = el.grep
-    º.hasData = el.hasData
-    º.holdReady = el.holdReady
-    º.htmlPrefilter = el.htmlPrefilter
-    º.inArray = el.inArray
-    º.isArray = el.isArray
-    º.isEmptyObject = el.isEmptyObject
-    º.isFunction = el.isFunction
-    º.isNumeric = el.isNumeric
-    º.isPlainObject = el.isPlainObject
-    º.isWindow = el.isWindow
-    º.isXMLDoc = el.isXMLDoc
-    º.makeArray = el.makeArray
-    º.map = el.map
-    º.merge = el.merge
-    º.noConflict = el.noConflict
-    º.noop = el.noop
-    º.now = el.now
-
-    º.param = el.param
-    º.parseHTML = el.parseHTML
-    º.parseJSON = el.parseJSON
-    º.parseXML = el.parseXML
-    º.post = el.post
-    º.proxy = el.proxy
-    º.queue = el.queue
-    º.readyException = el.readyException
-    º.removeData = el.removeData
-    º.sub = el.sub
-    º.trim = el.trim
-    # º.type = el.type
-    º.unique = el.unique
-    º.uniqueSort = el.uniqueSort
-    º.when = el.when
-
-    # º().append = el.append(q)
 
     # if type(q) is not str:
     return el
     # else:
-        # return el.elements
+    #     return el.elements
     # def __str__(self):
-        # return self.elements
+    #     return self.elements
+
+
+class º(dQuery_el):
+
+    def __init__(self, selector=None, *args, **kwargs):
+        super().__init__(selector, *args, **kwargs)
+        self.init(selector)
+
+    def __call__(self, *args, **kwargs):
+        return dproxy(args[0])
+
+    @staticmethod
+    def ajax(url='/', type='GET', data=None, contentType=False, processData=False, cache=False, success=None, error=None):
+        """ make an ajax request """
+        try:
+            # r = requests.get(url, timeout=3)
+            from requests import Request, Session
+
+            method = type
+
+            # if "callback_function" in kwargs:
+            #     del kwargs["callback_function"]
+
+            # if "error_handler" in kwargs:
+            #     del kwargs["error_handler"]
+
+            # headers = {'Content-type': contentType}
+            s = Session()
+            req = Request(method, url, data=data)  # , headers=headers)
+            prepped = s.prepare_request(req)
+            # prepped.body = 'hello'
+            # prepped.headers['Keep-Dead'] = 'parrot'
+            r = s.send(prepped)  # , **kwargs)
+            # resp = s.send(prepped,
+            #     stream=stream,
+            #     verify=verify,
+            #     proxies=proxies,
+            #     cert=cert,
+            #     timeout=timeout
+            # )
+            # print(r.status_code)
+            if r.status_code == 200:
+                print('sup')
+                if success is not None:
+                    success(r.text)
+            else:
+                print('sup2')
+                if error is not None:
+                    error(r.text)
+            s.close()
+
+            return r
+
+        except Exception as e:
+            print(f'Request Failed for URL: {url}', e)
+            return None
+
+    @staticmethod
+    def ajaxPrefilter():
+        """ Handle custom Ajax options or modify existing options before each request is sent
+        and before they are processed by .ajax """
+        raise NotImplementedError
+
+    @staticmethod
+    def ajaxSetup():
+        """ Set default values for future Ajax requests. Its use is not recommended. """
+        raise NotImplementedError
+
+    @staticmethod
+    def ajaxTransport():
+        """ Creates an object that handles the actual transmission of Ajax data. """
+        raise NotImplementedError
+
+    # @staticmethod
+    # @ty
+    # def boxModel:
+    #     """ States if the current page, in the user’s browser, is being rendered using the W3C CSS Box Model. """
+    #     raise NotImplementedError
+
+    # @staticmethod
+    # @ty
+    # def browser:
+        """ Contains flags for the useragent, read from navigator.userAgent. """
+        # raise NotImplementedError
+
+    @staticmethod
+    def Callbacks():
+        """ A multi-purpose callbacks list object that provides a powerful way to manage callback lists. """
+        raise NotImplementedError
+
+    @staticmethod
+    def contains(parent, child):
+        """ Check to see if a DOM element is a descendant of another DOM element. """
+        return parent.contains(child)
+
+    # @staticmethod
+    # @ty
+    # def cssHooks:
+        """ Hook directly into dQuery to override how particular CSS properties are retrieved or set,
+        normalize CSS property naming, or create custom properties. """
+        # raise NotImplementedError
+
+    # @staticmethod
+    # @ty
+    # def cssNumber:
+        """ An object containing all CSS properties that may be used without a unit.
+        The .css method uses this object to see if it may append px to unitless values. """
+        # raise NotImplementedError
+
+    @staticmethod
+    def data():
+        """ Store arbitrary data associated with the specified element and/or return the value that was set. """
+        raise NotImplementedError
+
+    @staticmethod
+    def Deferred():
+        """ A factory function that returns a chainable utility object with methods to register multiple callbacks
+        into callback queues, invoke callback queues, and relay the success or failure state of
+        any synchronous or asynchronous function. """
+        raise NotImplementedError
+
+    @staticmethod
+    def dequeue():
+        """ Execute the next function on the queue for the matched element. """
+        raise NotImplementedError
+
+    @staticmethod
+    def each(arr, func):
+        """ A generic iterator function, which can be used to seamlessly iterate over both objects and arrays. """
+        raise NotImplementedError
+
+    @staticmethod
+    def error():
+        """ Takes a string and throws an exception containing it. """
+        raise Exception(msg)
+
+    @staticmethod
+    def escapeSelector():
+        """ Escapes any character that has a special meaning in a CSS selector. """
+        raise NotImplementedError
+
+    @staticmethod
+    def extend(*args):
+        """ Merge the contents of two or more objects together into the first object. """
+        result = {}
+        for each in args:
+            result.update(each)
+        return result
+
+    @staticmethod
+    def get(url: str, data=None, dataType=False, success=None, error=None):
+        """[simplified ajax request]
+
+        Args:
+            url (str): [the url to request]
+            data ([type]): [the data to send]
+            dataType (bool, optional): [the dataType]. Defaults to False.
+            success ([type], optional): [a success function]. Defaults to None.
+            error ([type], optional): [an error method]. Defaults to None.
+
+        Returns:
+            [type]: [the response]
+        """
+        print("GO!")
+        # r = requests.get(url)
+        # return r.content.decode("utf-8")
+        r = º.ajax({
+            'url': url,
+            # 'data': data,
+            # 'success': success,
+            # 'dataType': dataType
+        })
+        return r.content.decode("utf-8")
+
+    @staticmethod
+    def getJSON():
+        """ Load JSON-encoded data from the server using a GET HTTP request. """
+        raise NotImplementedError
+
+    @staticmethod
+    def getScript(filename, *args):
+        """ execute another python file. """
+        from subprocess import Popen
+        Popen('python ' + filename + '.py')
+
+    @staticmethod  # TODO - test
+    def globalEval(code):
+        """ Execute some python code globally. """
+        return eval(code, globals(), locals())
+
+    @staticmethod  # TODO - test
+    def grep(arr, func):
+        """ Returns an array of elements from the original array which satisfy a filter function. """
+        return list(filter(func, arr))
+
+    @staticmethod
+    def hasData(element):
+        """ Determine whether an element has any dQuery data associated with it. """
+        raise NotImplementedError
+
+    @staticmethod
+    def holdReady():
+        """ Holds or releases the execution of dQuery’s ready event. """
+        raise NotImplementedError
+
+    @staticmethod
+    def htmlPrefilter():
+        """ Modify and filter HTML strings passed through dQuery manipulation methods. """
+        raise NotImplementedError
+
+    @staticmethod
+    def inArray(thing, arr):
+        """ Search for a specified value within an array and return its index or -1 if not found. """
+        for count, each in enumerate(arr):
+            if thing == each:
+                return count
+        return -1
+
+    @staticmethod
+    def isArray(item):
+        """ Determine whether the argument is an array. """
+        return type(item) == Array
+
+    @staticmethod
+    def isEmptyObject(dct):
+        """ Check to see if an object is empty (contains no enumerable properties). """
+        return not bool(dct)
+
+    @staticmethod
+    def isFunction(obj):
+        """ Determines if its argument is callable as a function. """
+        return callable(obj)
+
+    @staticmethod
+    def isNumeric(thing):
+        """ Determine whether the argument is numeric. """
+        return type(thing) in (int, float, Number)
+
+    @staticmethod
+    def isPlainObject(obj):
+        """ Check to see if an object is a plain object created using '{}' """
+        return type(obj) is dict
+
+    @staticmethod
+    def isWindow():
+        """ Determine whether the argument is a window. """
+        raise NotImplementedError
+
+    @staticmethod
+    def isXMLDoc():
+        """ Check to see if a DOM node is within an XML document (or is an XML document). """
+        raise NotImplementedError
+
+    @staticmethod
+    def makeArray(somelist):
+        """ Convert an array-like object into a true JavaScript array. """
+        return Array(somelist)
+
+    @staticmethod
+    def map(arr, func):
+        """ Translate all items in an array or object to new array of items. """
+        return [func(value) for value in arr]
+
+    @staticmethod
+    def merge(one, *args):
+        """ Merge the contents of arrays into the first array. """
+        import itertools
+        one.append(list(itertools.chain(*args)))
+        return one
+
+    @staticmethod
+    def noConflict():
+        """ Relinquish dQuery’s control of the º variable. """
+        raise NotImplementedError
+
+    @staticmethod
+    def noop():
+        """ An empty function. """
+        pass
+
+    @staticmethod
+    def now():
+        """ Return a number representing the current time. """
+        return Date.now()
+
+    @staticmethod
+    def param(obj):
+        """ Create a serialized representation of an array, a plain object,
+        or a dQuery object suitable for use in a URL query string or Ajax request.
+        In case a dQuery object is passed, it should contain input elements with name/value properties. """
+        if isinstance(obj, list):
+            return json.dumps(obj)
+        elif isinstance(obj, dict):
+            return json.dumps(obj)
+        elif isinstance(obj, dQuery):
+            return json.dumps(obj.inputs)
+        else:
+            raise TypeError(obj)
+
+    @staticmethod
+    def parseHTML():
+        """ Parses a string into an array of DOM nodes. """
+        raise NotImplementedError
+
+    @staticmethod
+    def parseJSON():
+        """ Takes a well-formed JSON string and returns the resulting JavaScript value. """
+        raise NotImplementedError
+
+    @staticmethod
+    def parseXML():
+        """ Parses a string into an XML document. """
+        raise NotImplementedError
+
+    @staticmethod
+    def post(url, data, success):
+        """ Send data to the server using a HTTP POST request. """
+        r = requests.post(url, data)
+        # if r.ok:
+        #     succss()
+        return r.content.decode("utf-8")
+
+    @staticmethod
+    def proxy(func):
+        """ Takes a function and returns a new one that will always have a particular context. """
+        raise NotImplementedError
+
+    @staticmethod
+    def queue():
+        """ Show or manipulate the queue of functions to be executed on the matched element. """
+        raise NotImplementedError
+
+    # @staticmethod
+    # @ty
+    # def ready:
+        # """ A Promise-like object or “thenable” that resolves when the document is ready. """
+        # raise NotImplementedError
+
+    @staticmethod
+    def readyException():
+        """ Handles errors thrown synchronously in functions wrapped in dQuery """
+        raise NotImplementedError
+
+    @staticmethod
+    def removeData():
+        """ Remove a previously-stored piece of data. """
+        raise NotImplementedError
+
+    # @staticmethod
+    #  @ty
+    # def speed:
+        # """ Creates an object containing a set of properties ready to be used in the definition
+        # of custom animations. """
+        # raise NotImplementedError
+
+    @staticmethod
+    def sub():
+        """ Creates a new copy of dQuery whose properties and methods can be modified without affecting
+        the original dQuery object. """
+        raise NotImplementedError
+
+    # @staticmethod
+    # def t:
+    #     """ A collection of properties that represent the presence of different browser features or bugs. """
+    #     raise NotImplementedError
+
+    @staticmethod
+    def trim(content):
+        """ Remove the whitespace from the beginning and end of a string. """
+        content = content.replace('\n', '').replace('\t', '').replace('\r', '').strip()
+        return content
+
+    # @staticmethod
+    # def type():
+    #     """ Determine the internal JavaScript [[Class]] of an object. """
+    #     raise NotImplementedError
+
+    @staticmethod
+    def unique(arr):  # TODO - test
+        """[removes duplicate elements.]
+
+        Args:
+            arr ([type]): [list of elements]
+
+        Returns:
+            [type]: [a sorted array without duplicates]
+        """
+        return list(set(arr))
+
+    @staticmethod
+    def uniqueSort(arr):  # TODO - test
+        """ Sorts an array of DOM elements, in place, with the duplicates removed.
+        Note that this only works on arrays of DOM elements, not strings or numbers. """
+        arr.sort()
+        arr = list(set(arr))
+        arr.sort()
+        return arr
+
+    @staticmethod
+    def when():
+        """ Provides a way to execute callback functions based on zero or more Thenable objects,
+        usually Deferred objects that represent asynchronous events. """
+        raise NotImplementedError
+
 
 dQuery = º

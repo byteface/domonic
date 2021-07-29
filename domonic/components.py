@@ -71,28 +71,12 @@ class Websocket(object):
         return evt
 
     def __init__(self, reference='socket', address='ws://0.0.0.0:5555', target="body",
-                    mouse_events=True,
-                    keyboard_events=True,
-                    ui_events=False,
-                    focus_events=False,
-                    touch_events=False,
-                    wheel_events=False,
-                    animation_events=False,
-                    clipboard_events=False,
-                    error_events=False,
-                    submit_events=False,
-                    pointer_events=False,
-                    before_unload_events=False,
-                    SVG_events=False,
-                    timer_events=False,
-                    drag_events=False,
-                    hashchange_events=False,
-                    input_events=False,
-                    page_transition_events=False,
-                    popstate_events=False,
-                    storage_events=False,
-                    transition_events=False,
-                    progress_events=False):
+                    mouse_events=True, keyboard_events=True,
+                    ui_events=False, focus_events=False, touch_events=False, wheel_events=False,
+                    animation_events=False, clipboard_events=False, error_events=False, submit_events=False,
+                    pointer_events=False, before_unload_events=False, SVG_events=False, timer_events=False,
+                    drag_events=False, hashchange_events=False, input_events=False, page_transition_events=False,
+                    popstate_events=False, storage_events=False, transition_events=False, progress_events=False):
 
         self.reference = reference
         self.address = address
@@ -124,8 +108,7 @@ class Websocket(object):
             $("''' + target + '''").on("''' + event + '''", function(event){
                 socket.send( stringify_object(event) );
             });
-            '''
-        )
+            ''')
         # TODO - no jquery. detect targets and use # addEventListener
 
     def __str__(self):
@@ -281,8 +264,7 @@ class Websocket(object):
                 return depth? obj: JSON.stringify(obj);
             }
 
-            $(document).ready(function(){ 
-
+            $(document).ready(function(){
             ''' + events + """
             });"""
             )
@@ -325,21 +307,21 @@ class SpriteCSS(object):
 
     """
     STYLE = lambda _id, width, height, spritesheet, time, steps, loop, y_offset, bg_color: """
-        ."""+_id+""" {
-          background:"""+bg_color+""";
-          width:"""+str(width)+"""px;
-          height:"""+str(height)+"""px;
-          background: url('"""+spritesheet+"""') left center;
-          animation:"""+_id+""" """+str(time)+"""s steps("""+str(steps)+""") infinite;
+        .""" + _id + """ {
+          background:""" + bg_color + """;
+          width:""" + str(width) + """px;
+          height:""" + str(height) + """px;
+          background: url('""" + spritesheet + """') left center;
+          animation:""" + _id + """ """ + str(time) + """s steps(""" + str(steps) + """) infinite;
         }
         /*
-        @keyframes """+_id+""" {
-            100% { background-position: -"""+str(steps*width)+"""px; }
+        @keyframes """ + _id + """ {
+            100% { background-position: -""" + str(steps * width) + """px; }
         }
         */
-        @keyframes """+_id+""" {
-            from { background-position:0px -"""+str(y_offset)+"""px; }
-            to { background-position:-"""+str(steps*width)+"""px -"""+str(y_offset)+"""px; }
+        @keyframes """ + _id + """ {
+            from { background-position:0px -""" + str(y_offset) + """px; }
+            to { background-position:-""" + str(steps * width) + """px -""" + str(y_offset) + """px; }
         }
     """
 
@@ -436,7 +418,7 @@ class ProgressBar(object):
     def __str__(self):
         # $('#progress_bar span').css('width', somevalue);
         return str(
-            div(span(_style="width:100%" ), _id="progress_bar", _class="meter")
+            div(span(_style="width:100%"), _id="progress_bar", _class="meter")
         )
 
 
@@ -499,7 +481,7 @@ class Modal(object):  # TODO - shouldn't this extend dom?
                     _class="modal-content",
                     _style="background-color:#fefefe;margin:15% auto;padding:20px;border:1px solid;width:80%;"
                 ),
-                _class="modal", 
+                _class="modal",
                 _style="display:none;position:fixed;z-index:1;left:0;top:0;width:100%;height:100%; \
                     overflow:auto;background-color:rgb(0,0,0);background-color:rgba(0,0,0,0.4);",
                 _id=self.reference

@@ -308,3 +308,90 @@ class Sine():
     @staticmethod
     def easeInOut(t, b, c, d, aa, bb):
         return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b
+
+
+# class Angle():
+    
+#     @staticmethod
+#     def easeIn(t, b, c, d, aa, bb):
+#         return -c * (t/d - 1) + b
+
+#     @staticmethod
+#     def easeOut(t, b, c, d, aa, bb):
+#         return c * (t/d) + b
+
+#     @staticmethod
+#     def easeInOut(t, b, c, d, aa, bb):
+#         if t==0:
+#             return b
+#         elif t==d:
+#             return b+c
+#         else:
+#             return -c/2 * (t/d - 2) + b
+
+# class Zoom():
+#     @staticmethod
+#     def easeIn(t, b, c, d, aa, bb):
+#         return c * t/d + b
+
+#     @staticmethod
+#     def easeOut(t, b, c, d, aa, bb):
+#         return c * (t - d/2)/d + b
+
+#     @staticmethod
+#     def easeInOut(t, b, c, d, aa, bb):
+#         if t<d/2:
+#             return c/2 * t/d + b
+#         t-=d/2
+#         return c/2 * (t/d - 1) + b
+
+'''
+class Exponential():
+    
+    @staticmethod
+    def easeIn(t, b, c, d, aa, bb):
+        if t == 0:
+            return b
+        else:
+            return c * Math.pow(2, 10 * (t/d - 1)) + b
+
+    @staticmethod
+    def easeOut(t, b, c, d, aa, bb):
+        if t == d:
+            return b + c
+        else:
+            return c * (-Math.pow(2, -10 * t/d) + 1) + b
+
+    @staticmethod
+    def easeInOut(t, b, c, d, aa, bb):
+        if t==0:
+            return b
+        elif t==d:
+            return b+c
+
+        t = t / (d * 0.5)
+
+        if t < 1:
+            return c/2 * Math.pow(2, 10 * (t - 1)) + b
+        t -= 1
+        return c/2 * (-Math.pow(2, -10 * t) + 2) + b
+'''
+
+# class PressIn():
+    
+#     @staticmethod
+#     def easeIn(t, b, c, d, aa, bb):
+#         return c - b*t/d
+
+#     @staticmethod
+#     def easeOut(t, b, c, d, aa, bb):
+#         return b*t/d + c
+
+#     @staticmethod
+#     def easeInOut(t, b, c, d, aa, bb):
+#         if t==0:
+#             return b
+#         t *= 2
+#         if t < 1:
+#             return c - b*t/d
+#         return b*t/d + c

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.lerpy.tween &#8212; domonic 0.3.18 documentation</title>
+    <title>domonic.lerpy.tween &#8212; domonic 0.4.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -262,6 +262,33 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_timePaused</span> <span class="o">+=</span> <span class="p">(</span><span class="n">timeCurrent</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timePrevious</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_timePrevious</span> <span class="o">=</span> <span class="n">timeCurrent</span></div>
+
+
+    <span class="c1"># def _dispatchEvent(self, event):</span>
+    <span class="c1">#     if event.type == TweenEvent.UPDATE_START:</span>
+    <span class="c1">#         self._timeStart = get_timer()</span>
+    <span class="c1">#         self._timePaused = 0</span>
+    <span class="c1">#         self._timePrevious = self._timeStart</span>
+    <span class="c1">#         self._position = 0</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.UPDATE_END:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.START:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.STOP:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.PAUSE:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.UNPAUSE:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.RESET:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.COMPLETE:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.UPDATE:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         super(Tween, self)._dispatchEvent(event)</span>
 </pre></div>
 
           </div>

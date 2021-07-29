@@ -14,16 +14,23 @@ class Game():
 
     @staticmethod
     def roll_dice():
-        """[roll_dice]
+        """[rolls a dice]
 
         Returns:
             [int]: [between 1 and 6]
         """
         return Math.round(Math.random() * 6)
-    # dice_roll = roll_dice
 
-    # @staticmethod
-    # def pick_a_card():
+    @staticmethod
+    def pick_a_card():
+        """[selects a random suit and card]
+
+        Returns:
+            [str]: [a card from the deck]
+        """
+        suits = ["♠", "♥", "♦", "♣"]
+        cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+        return random.choice(cards) + random.choice(suits)
 
     @staticmethod
     def random_bool():
@@ -37,6 +44,7 @@ class Game():
     @staticmethod
     def random_char():
         return chr(random.choice(range(ord('A'), ord('Z') + 1)))
+
 
     # @staticmethod
     # def bingo():

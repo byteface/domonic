@@ -24,6 +24,12 @@ for rows in keyboard:
         row.appendChild(key_tmpl(key))
     kb.appendChild(str(row))
 
+
+# generate a piano - lol - copilot is funny
+# piano = div( _style="width:100%;height:100%;")
+# piano.appendChild(img(src=CDN_CSS.piano, _style="width:100%;height:100%;"))
+
+
 # render webpage
 css = link(_rel="stylesheet", _href=CDN_CSS.MARX)
 render( html(

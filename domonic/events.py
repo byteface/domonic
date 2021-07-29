@@ -121,10 +121,30 @@ class Event(object):
         self.timeStamp = int(round(time.time() * 1000))
 
     def composedPath(self):
-        pass
+        return self.type + ":" + str(self.timeStamp)
 
     def initEvent(self, _type=None, *args, **kwargs):
         self.__init__(_type, args, kwargs)
+
+    def stopPropagation(self):
+        """[prevents further propagation of the current event in the capturing and bubbling phases]"""
+        # self.defaultPrevented = True
+        # self.returnValue = None
+        # self.originalTarget = None
+        # self.explicitOriginalTarget = None
+        # self.target = None
+        # self.srcElement = None
+        # self.bubbles = None
+        # self.cancelable = None
+        # self.cancelBubble = None
+        # self.composed = None
+        # self.currentTarget = None
+        # self.eventPhase = None
+        # self.isTrusted = None
+        # self.returnValue = None
+        # self.timeStamp = int(round(time.time() * 1000))
+        # self.type = None
+        pass
 
     def msConvertURL(self):
         pass
@@ -135,8 +155,7 @@ class Event(object):
     def stopImmediatePropagation(self):
         pass
 
-    def stopPropagation(self):
-        pass
+
 
 
 class MouseEvent(Event):
@@ -290,6 +309,25 @@ class KeyboardEvent(Event):
     @property
     def unicode(self):
         return self.key
+
+    # @property
+    # def keyCode(self):
+    #     return self.keyCode
+
+    # @property
+    # def charCode(self):
+    #     return self.charCode
+
+    # @property
+    # def code(self):
+    #     return self.code
+
+    # @property
+    # def key(self):
+    #     return self.key
+
+    # def isComposing(self, *args, **kwargs):
+    #     pass
 
     # KeyboardEvent
     # isComposing   Returns whether the state of the event is composing or not  InputEvent, KeyboardEvent

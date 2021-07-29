@@ -5,10 +5,27 @@
 """
 
 
+class Entity():
+
+    def __init__(self, entity: str):
+        self.entity = entity
+
+    def __str__(self):
+        import html
+        return html.unescape(self.character)
+
+
 class Char():
 
-    def __init__(self):
-        pass
+    def __init__(self, character: str):
+        self.character = character
+
+    def __str__(self):
+        import html
+        return html.escape(self.character)
+
+    # def __repr__(self):
+    #     return self.character
 
     # web
     # ASCII Characters (Printable)
@@ -81,7 +98,7 @@ class Char():
     CLOSING_SQUARE_BRACKET = '&#93;'  #: ]
     CARET = '&#94;'  #: ^
     UNDERSCORE = '&#95;'  #: _
-    GRAVE_ACCENT = '&#96;'  #:   
+    GRAVE_ACCENT = '&#96;'  #:
     LOWERCASE_A = '&#97;'  #: a
     LOWERCASE_B = '&#98;'  #: b
     LOWERCASE_C = '&#99;'  #: c
@@ -181,7 +198,7 @@ class Char():
     YUML = '&yuml;'  #: ÿ
 
     # ISO-8859-1 Symbols
-    NBSP = '&nbsp;' #:
+    NBSP = '&nbsp;'  #:
     IEXCL = '&iexcl;'  #: ¡
     CENT = '&cent;'  #: ¢
     POUND = '&pound;'  #: £

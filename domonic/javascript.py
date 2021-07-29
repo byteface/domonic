@@ -2,6 +2,7 @@
     domonic.javascript
     ====================================
     - https://www.w3schools.com/jsref/jsref_reference.asp
+    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 """
 
 # from typing import *
@@ -28,20 +29,45 @@ import re
 # false = False
 
 class Object(object):
-    """ Object """
+    """ Creates a Mock Javascript Object in python """
 
-    def __init__(self, attribs=None):
+    def __init__(self, obj={}, *args, **kwargs):
+        """[Creates a Mock Javascript Object in python]
+
+        Args:
+            obj ([type]): [pass an object, dict or callable to the contructor]
         """
-        Creates a new Object
+        self.__attribs__ = {}
+        if callable(obj):
+            self.__attribs__ = {}
+            self.__attribs__['__call__'] = obj
+            self.__attribs__['__call__'].__name__ = '__call__'
+            self.__attribs__['__call__'].__doc__ = 'The function object itself.'
+            # self.__attribs__['__call__'].__module__ = '__main__'
+        elif isinstance(obj, dict):
+            self.__attribs__ = obj  # set the dict as the attribs
+        else:
+            try:
+                self.__attribs__ = {}
+                self.__attribs__.update(obj.__attribs__)
+                self.__attribs__.update(kwargs)
+                self.__attribs__.update(args)
+                self.__attribs__['__class__'] = obj.__class__.__name__
+                self.__attribs__['__module__'] = obj.__module__
+                self.__attribs__['__doc__'] = obj.__doc__
+                self.__attribs__['__proto__'] = obj
+                # self.__attribs__['__proto__'].__class__ = Object
+                # self.__attribs__['__proto__'].__attribs__ = self.__attribs__
+            except Exception as e:
+                print("Object.__init__() failed to set attribs", e)
 
-        @param attribs: name/value pair
-        @type attribs: dict of key/value pairs
-        """
-        self.attribs = attribs
+    def __str__(self):
+        """ Returns a string representation of the object."""
+        return self.toString()
 
-    # def __str__(self):
-    #     """ Dumps the attributes of this Object """
-    #     pass
+    def __repr__(self):
+        """ Returns a string representation of the object."""
+        return self.toString()
 
     @staticmethod
     def fromEntries(entries):
@@ -60,13 +86,44 @@ class Object(object):
 
     # @staticmethod
     # def assign(target, source):
-    #     """ Copies the values of all enumerable own properties from one or more source objects to a target object. """
+        # """ Copies the values of all enumerable own properties from one or more source objects to a target object. """
+        # if isinstance( target, dict ):
+        #     if isinstance( source, dict ):
+        #         for k, v in source.items():
+        #             target[k] = v
+        #     else:
+        #         for k, v in source.attribs.items():
+        #             target[k] = v
+        # else:
+        #     if isinstance( source, dict ):
+        #         for k, v in source.items():
+        #             setattr(target, k, v)
+        #     else:
+        #         for k, v in source.attribs.items():
+        #             setattr(target, k, v)
+
+        # return target
+
+        # for prop in source.attribs:
+        #     if source.propertyIsEnumerable(prop):
+        #         target.__attribs__[prop] = source.__attribs__[prop]
+        # return target
     #     if isinstance( source, dict ):
     #     return target
 
     # @staticmethod
     # def create(proto, propertiesObject):
     #     """ Creates a new object with the specified prototype object and properties. """
+    #     if isinstance(propertiesObject, dict):
+    #         return Object(propertiesObject)
+    #     elif isinstance(propertiesObject, Object):
+    #         return propertiesObject
+    #     elif isinstance(propertiesObject, list):
+    #         return Object.fromEntries(propertiesObject)
+    #     else:
+    #         return propertiesObject
+
+        # return Object(propertiesObject)
     #     obj = {}
     #     for key in proto.keys():
     #         obj[key] = propertiesObject[key]
@@ -85,7 +142,7 @@ class Object(object):
 
     @staticmethod
     def entries(obj):
-        """ Returns an array containing all of the [key, value] pairs of a given object's own enumerable string properties. """
+        """ Returns an array containing all of the [key, value] pairs in the object. """
         if isinstance(obj, dict):
             return [[k, v] for k, v in obj.items()]
         if isinstance(obj, (float, int)):
@@ -94,30 +151,40 @@ class Object(object):
     @staticmethod
     def keys(obj):
         """ Returns an array containing the names of all of the given object's own enumerable string properties."""
-        pass
+        if isinstance(obj, dict):
+            return obj.keys()
+        if isinstance(obj, (float, int)):
+            return []
+        return obj.__attribs__.keys()   # TODO - this is probably wrong
 
-    @classmethod
+    @staticmethod
     def values(obj):
-        """ Returns an array containing the values that correspond to all of a given object's own enumerable string properties. """
-        pass
+        """ Returns an array containing the values that correspond to
+        all of a given object's own enumerable string properties. """
+        if isinstance(obj, dict):
+            return obj.values()
+        if isinstance(obj, (float, int)):
+            return []
+        return obj.__attribs__.values()  # TODO - this is probably wrong
 
     @staticmethod
     def getOwnPropertyDescriptor(obj, prop):
         """ Returns a property descriptor for a named property on an object. """
-        # return getattr(obj, prop)
-        pass
-
-    @staticmethod
-    def getOwnPropertyDescriptors(obj):
-        """ Returns an object containing all own property descriptors for an object. """
-        # return vars(obj)
-        pass
+        if isinstance(obj, dict):
+            return obj[prop]
+        return obj.__attribs__[prop]
 
     @staticmethod
     def getOwnPropertyNames(obj):
-        """ Returns an array containing the names of all of the given object's own enumerable and non-enumerable properties. """
-        # return [k for k in vars(obj).keys()]
-        pass
+        """ Returns an array containing the names of all of the given object's
+        own enumerable and non-enumerable properties. """
+        if isinstance(obj, dict):
+            return obj.keys()
+        elif isinstance(obj, Object):
+            return obj.__attribs__.keys()
+        elif isinstance(obj, object):
+            return [prop for prop in dir(obj) if not prop.startswith('__')]
+        return obj.__attribs__.keys()
 
     # @staticmethod
     # def _is(value1, value2):
@@ -125,58 +192,117 @@ class Object(object):
     #     Equates all NaN values (which differs from both Abstract Equality Comparison and Strict Equality Comparison)."""
     #     pass
 
-    # @staticmethod
-    # def getOwnPropertySymbols(obj):
-    #     """ Returns an array of all symbol properties found directly upon a given object. """
-    #     pass
+    @staticmethod
+    def getOwnPropertySymbols(obj):
+        """ Returns an array of all symbol properties found directly upon a given object. """
+        if isinstance(obj, dict):
+            return []
+        return [prop for prop in dir(obj) if not prop.startswith('__')]
 
-    # @staticmethod
-    # def getPrototypeOf(obj):
-    #     """ Returns the prototype (internal [[Prototype]] property) of the specified object. """
-    #     pass
+    @staticmethod
+    def getPrototypeOf(obj):
+        """ Returns the prototype (internal [[Prototype]] property) of the specified object. """
+        if isinstance(obj, dict):
+            return obj
+        elif isinstance(obj, Object):
+            return obj.prototype
+        elif isinstance(obj, object):
+            return obj.__class__
+        return obj.__proto__
 
     # @staticmethod
     # def isExtensible(obj):
     #     """ Determines if extending of an object is allowed. """
-    #     pass
+    #     if isinstance(obj, dict):
+    #         return True
+    #     elif isinstance(obj, Object):
+    #         return obj.extensible
+    #     elif isinstance(obj, object):
+    #         return True
+    #     return False
 
     # @staticmethod
     # def isFrozen(obj):
     #     """ Determines if an object was frozen. """
-    #     pass
+    #     if isinstance(obj, dict):
+    #         return False
+    #     elif isinstance(obj, Object):
+    #         return obj.frozen
+    #     elif isinstance(obj, object):
+    #         return False
+    #     return False
 
     # @staticmethod
     # def isSealed(obj):
     #     """ Determines if an object is sealed. """
-    #     pass
+    #     if isinstance(obj, dict):
+    #         return False
+    #     elif isinstance(obj, Object):
+    #         return obj.sealed
+    #     elif isinstance(obj, object):
+    #         return False
+    #     return False
 
     # @staticmethod
     # def preventExtensions(obj):
     #     """ Prevents any extensions of an object. """
-    #     pass
+    #     if isinstance(obj, dict):
+    #         return False
+    #     elif isinstance(obj, Object):
+    #         obj.extensible = False
+    #         return True
+    #     elif isinstance(obj, object):
+    #         return False
+    #     return False
 
     # @staticmethod
     # def seal(obj):
     #     """ Prevents other code from deleting properties of an object. """
-    #     pass
+    #     if isinstance(obj, dict):
+    #         return False
+    #     elif isinstance(obj, Object):
+    #         obj.sealed = True
+    #         return True
+    #     elif isinstance(obj, object):
+    #         return False
+    #     return False
 
     # @staticmethod
     # def setPrototypeOf(obj, prototype):
     #     """ Sets the object's prototype (its internal [[Prototype]] property). """
-    #     pass
+    #     if isinstance(obj, dict):
+    #         return False
+    #     elif isinstance(obj, Object):
+    #         obj.prototype = prototype
+    #         return True
+    #     elif isinstance(obj, object):
+    #         return False
+    #     return False
 
     # @staticmethod
     # def freeze(obj):
     #     """ Freezes an object. Other code cannot delete or change its properties. """
-    #     pass
+    #     if isinstance(obj, dict):
+    #         return False
+    #     elif isinstance(obj, Object):
+    #         obj.frozen = True
+    #         return True
+    #     elif isinstance(obj, object):
+    #         return False
+    #     return False
 
-    def valueOf(self):
-        """ Returns the primitive value of an array Array, Boolean, Date, Number, String """
-        pass
-
-    # def prototype(self):
-        """ Allows you to add properties and methods to an Array object Array, Boolean, Date """
-        # pass
+    def prototype(self, obj):
+        """
+        prototype and allows you to add properties and methods to this object
+        """
+        if isinstance(obj, dict):
+            return False
+        elif isinstance(obj, Object):
+            obj.prototype = self
+            return True
+        elif isinstance(obj, object):
+            return False
+        return False
 
     def __getattr__(self, name):
         """
@@ -188,44 +314,133 @@ class Object(object):
             return self.__class__.fromEntries(self.__attribs__)
         return getattr(self, name)
 
-    def __defineGetter__(self):
-        """ Associates a function with a property that, when accessed, executes that function and returns its return value."""
-        raise NotImplementedError
+    def __defineGetter__(self, prop, func):
+        """ Adds a getter function for the specified property. """
+        self.__attribs__[prop] = property(func)
+        return self
 
-    def __defineSetter__(self):
-        """ Associates a function with a property that, when set, executes that function which modifies the property. """
-        raise NotImplementedError
+    def __defineSetter__(self, prop, func):
+        """ Associates a function with a property that, when set, calls the function. """
+        self.__attribs__[prop] = property(func)
+        return self
 
-    def __lookupGetter__(self):
-        """ Returns the function associated with the specified property by the __defineGetter__() method. """
-        raise NotImplementedError
+    def __lookupGetter__(self, prop):
+        """
+        Returns the getter function for the specified property.
+        """
+        return self.__attribs__[prop]
 
-    def __lookupSetter__(self):
+    def __lookupSetter__(self, prop):
         """ Returns the function associated with the specified property by the __defineSetter__() method. """
-        raise NotImplementedError
+        return self.__attribs__[prop]
 
-    def hasOwnProperty(self):
-        """ Returns a boolean indicating whether an object contains the specified property as a direct property of that object and not inherited through the prototype chain. """
-        raise NotImplementedError
+    def hasOwnProperty(self, prop):
+        """ Returns a boolean indicating whether an object contains the specified property
+        as a direct property of that object and not inherited through the prototype chain. """
+        # raise NotImplementedError
+        # return hasattr(self, prop)
+        return self.attribs.get(prop, None) != None
 
-    def isPrototypeOf(self):
-        """ Returns a boolean indicating whether the object this method is called upon is in the prototype chain of the specified object. """
-        raise NotImplementedError
+    def isPrototypeOf(self, obj):
+        """ Returns a boolean indicating whether an object is a copy of this object. """
+        if isinstance(obj, Object):
+            return obj.prototype == self
+        elif isinstance(obj, dict):
+            return obj == self
+        elif isinstance(obj, object):
+            return obj.__class__ == self.__class__ and obj.__dict__ == self.__dict__
+        return obj.__class__ == self.__class__ and obj.__proto__ == self
 
-    def propertyIsEnumerable(self):
-        """ Returns a boolean indicating if the internal ECMAScript [[Enumerable]] attribute is set. """
-        raise NotImplementedError
+    # def propertyIsEnumerable(self, prop):
+    #     """ Returns a boolean indicating whether the specified property is enumerable. """
+    #     pass
 
     def toLocaleString(self):
-        """ Calls toString()."""
-        raise NotImplementedError
+        """ Calls toString()"""
+        return self.toString()
 
     def toString(self):
         """ Returns a string representation of the object."""
-        raise NotImplementedError
+        return self.__str__()
 
     def valueOf(self):
-        """ Returns the primitive value of the specified object."""
+        """ Returns the value of the object. """
+        return self
+
+
+class Function(object):
+    """ a Function object """
+
+    def __init__(self, func):
+        self.func = func
+        self.arguments = []
+        self.caller = None
+        self.displayName = None
+        self.length = None
+        self.name = None
+        # self.isCallable = True
+        # self.constructor = False
+        # self.__proto__ = None
+        # self.prototype = None
+        # self.extensible = True
+        # self.frozen = False
+        # self.sealed = False
+        # self.__class__ = Function
+        # self.__dict__ = {}
+        # self.__attribs__ = {}
+        # self.__methods__ = {}
+
+    def apply(self, thisArg=None, *args, **kwargs):
+        """[calls a function with a given this value, and arguments provided as an array]
+
+        Args:
+            thisArg ([type]): [The value of this provided for the call to func.]
+
+        Returns:
+            [type]: [result of calling the function.]
+        """
+        if thisArg is not None:
+            return self.func(args)
+        return self.func()
+
+    def bind(self, thisArg, *args, **kwargs):
+        """[creates a new function that, when called,
+        has its this keyword set to the provided value,
+        with a given sequence of arguments preceding any provided when the new function is called.]
+
+        Args:
+            thisArg ([type]): [The value to be passed as the this parameter to the target
+            function func when the bound function is called.]
+
+        Returns:
+            [type]: [A copy of the given function with the specified this value, and initial arguments (if provided).]
+        """
+        from functools import partial
+        bound_f = partial(self.func, *args, *kwargs)
+        return bound_f
+        # raise NotImplementedError
+
+    # @staticmethod
+    def call(self, thisArg=None, *args, **kwargs):
+        """[calls a function with a given this value and arguments provided individually.]
+
+        Args:
+            thisArg ([type]): [description]
+
+        Returns:
+            [type]: [result of calling the function.]
+        """
+        # raise NotImplementedError
+        # print(thisArg)
+        # print(args)
+        if thisArg is not None:
+            # return self.func(thisArg, args)
+            return self.func(*args)
+        return self.func()
+
+    def toString(self):
+        """[Returns a string representing the source code of the function. Overrides the]
+        """
         raise NotImplementedError
 
 
@@ -234,12 +449,21 @@ class Map(object):
     """
 
     def __init__(self, collection):
-        # TODO - parse the passed collectionn
+        """[Pass a list or collection to make a Map object]
 
-        # if isinstance( collection, list ):
-            # create a dict
-        # if isinstance( collection, dict ):
-            # create a dict
+        Args:
+            collection ([type]): [a list or dict]
+
+        """
+        # parses the passed collectionn
+        if isinstance(collection, list):
+            # create a dict from the list
+            self.collection = dict(zip(collection, collection))
+        if isinstance(collection, dict):
+            # use the passed dict
+            self.collection = collection
+        else:
+            raise TypeError("Map requires a list or dict.")
 
         self._data = {}
         self._order = []
@@ -265,7 +489,7 @@ class Map(object):
         self._order = []
 
     def delete(self, key):
-        """ Returns true if an element in the Map object existed and has been removed, 
+        """ Returns true if an element in the Map object existed and has been removed,
         or false if the element does not exist. Map.prototype.has(key) will return false afterwards. """
         try:
             self._order.remove(key)
@@ -297,15 +521,18 @@ class Map(object):
             yield key, self._dict[key]
 
     def keys(self):
-        """ Returns a new Iterator object that contains the keys for each element in the Map object in insertion order. """
+        """ Returns a new Iterator object that contains the keys
+        for each element in the Map object in insertion order. """
         return list(self.iterkeys())
 
     def values(self):
-        """ Returns a new Iterator object that contains the values for each element in the Map object in insertion order. """
+        """ Returns a new Iterator object that contains the values
+        for each element in the Map object in insertion order. """
         return list(self.iteritems())
 
     def entries(self):
-        """ Returns a new Iterator object that contains an array of [key, value] for each element in the Map object in insertion order. """
+        """ Returns a new Iterator object that contains an array of [key, value]
+        for each element in the Map object in insertion order. """
         return [(x, self._dict[x]) for x in self._order]
 
     # def forEach(self, callbackFn[, thisArg]):
@@ -330,14 +557,14 @@ class FormData(object):
         """ creates a new FormData object. """
         # TODO - parse to domonic.
         # if isinstance(form, str):
-            # self._data = domonic.loads(form) # TODO - parser wont be done enough yet
+        #   self._data = domonic.loads(form) # TODO - parser wont be done enough yet
         # if isinstance(form, Node):
-            # self._data = form
+        #   self._data = form
         raise NotImplementedError
 
     def append(self, name, value, filename):
-        """ Appends a new value onto an existing key inside a FormData object, or adds the key if it does not already exist. """
-        # self._data.append((name, value, filename))
+        """ Appends a new value onto an existing key inside a FormData object,
+        or adds the key if it does not already exist. """
         raise NotImplementedError
 
     def delete(self, name):
@@ -365,7 +592,8 @@ class FormData(object):
         raise NotImplementedError
 
     def set(self, name, value, filename):
-        """ Sets a new value for an existing key inside a FormData object, or adds the key/value if it does not already exist."""
+        """ Sets a new value for an existing key inside a FormData object,
+        or adds the key/value if it does not already exist."""
         raise NotImplementedError
 
     def values(self):
@@ -374,12 +602,16 @@ class FormData(object):
 
 
 class Worker(object):
-    """[A background task that can be created via script, which can send messages back to its creator. 
+    """[A background task that can be created via script, which can send messages back to its creator.
     Creating a worker is done by calling the Worker("path/to/worker/script") constructor.]
     TODO - JSWorker - Node
     Args:
         object ([str]): [takes a path to a python script]
     """
+
+    def __init__(self, script):
+        """ creates a new Worker object. """
+        raise NotImplementedError
 
     def postMessage(self):
         """ Sends a message — consisting of any object — to the worker's inner scope. """
@@ -608,6 +840,49 @@ class Math(Object):
         """ Returns the integer part of a number (x) """
         return math.trunc(x)
 
+    # TODO - test
+    @staticmethod
+    # @_force_number
+    def hypot(*args):
+        """ returns the square root of the sum of squares of its arguments """
+        return math.hypot(*args)
+
+    # TODO - test
+    @staticmethod
+    # @_force_number
+    def log2(*args):
+        """ returns the square root of the sum of squares of its arguments """
+        return math.log2(*args)
+
+    # TODO - test
+    @staticmethod
+    # @_force_number
+    def loglp(*args):
+        """ returns the natural logarithm (base e) of 1 + a number, that is """
+        return math.loglp(*args)
+
+    # TODO - test
+    @staticmethod
+    @_force_number
+    def log10(x):
+        """ function returns the base 10 logarithm of a number, that is """
+        return math.log10(x)
+
+    # TODO - test
+    @staticmethod
+    @_force_number
+    def fround(x):
+        """ returns the nearest 32-bit single precision float representation of a Number """
+        # return math.log10(x)
+        raise NotImplementedError
+
+    # TODO - test
+    @staticmethod
+    @_force_number
+    def clz32(x):
+        """ returns the number of leading zero bits in the 32-bit binary representation of a number. """
+        raise NotImplementedError
+
 
 # import urllib
 
@@ -616,6 +891,7 @@ class Global(object):
     """ javascript global methods """
 
     NaN = "NaN"
+    Infinity = float("inf")
 
     # TODO - https://stackoverflow.com/questions/747641/what-is-the-difference-between-decodeuricomponent-and-decodeuri
 
@@ -644,32 +920,24 @@ class Global(object):
         """ Deprecated in version 1.5. Use encodeURI() or encodeURIComponent() """
         # pass
 
-    # @staticmethod
-    # def eval():
+    @staticmethod
+    def eval(pythonstring):
         """ Evaluates a string and executes it as if it was script code """
-        # pass
-
-    # def global
-
-    Infinity = float("inf")
+        eval(pythonstring)
 
     @staticmethod
-    def isFinite():
-        """ Determines whether a value is a finite, legal number """
-        pass
+    def isFinite(x):  # TODO - test
+        """ Returns true if x is a finite number """
+        return math.isfinite(x)
 
     @staticmethod
     def isNaN(x):
         """ Determines whether a value is an illegal number """
-        if type(x) != float and type(x) != int:
-            return True
-
-        # TODO - math.isnan
-
-        return False
+        return math.isnan(x)
 
     def NaN(self):
         """ "Not-a-Number" value """
+        # return self.NaN
         return "NaN"
 
     @staticmethod
@@ -714,15 +982,41 @@ class Global(object):
 
     @staticmethod
     def require(path: str):
-        # if '.json' in path:
-            # TODO - loads json
-            # return
-
+        """ Loads a script from a file """
         # '.'.join(path.split('/'))
         # module = __import__(path)  # app.components.{component}
         # my_class = getattr(module, component.title())
         # return my_class()
+        raise NotImplementedError
+
+    @staticmethod
+    def setTimeout(callback, t, *args, **kwargs):
+        """ use threads to create a timeout method """
+        raise NotImplementedError
+
+    # TODO - clearTimeout.
+    @staticmethod
+    def clearTimeout(job):
+        print(job)
+        job.cancel()
+
+
+class Performance():
+
+    _start = time.time()
+
+    def __init__(self):
         pass
+
+    def now(self):
+        end = time.time()
+        return end - Performance._start
+
+    # def reset(self):
+    #     Performance._start = time.time()
+
+
+performance = Performance()
 
 
 class Date(Object):
@@ -778,9 +1072,9 @@ class Date(Object):
         return int(str(time.time()).split('.')[0])
         # TODO - whats difference between this and 'now()' ?
 
-    # def getTimezoneOffset(self):
+    def getTimezoneOffset(self):
         """ Returns the time difference between UTC time and local time, in minutes """
-        # pass
+        return self.date.now().utcoffset().total_seconds() / 60  # TODO - TEST
 
     def getUTCDate(self):
         """ Returns the day of the month, according to universal time (from 1-31) """
@@ -800,7 +1094,7 @@ class Date(Object):
 
     def getUTCMilliseconds(self):
         """ Returns the milliseconds, according to universal time (from 0-999) """
-        pass
+        return round(self.date.utcnow().microsecond / 1000)
 
     def getUTCMinutes(self):
         """ Returns the minutes, according to universal time (from 0-59) """
@@ -822,14 +1116,6 @@ class Date(Object):
     def now():
         """ Returns the number of milliseconds since midnight Jan 1, 1970 """
         return round(time.time() * 1000)
-
-    # def onstorage(self):
-        # """ The event occurs when a Web Storage area is updated StorageEvent"""
-        # pass
-
-    # def ontimeupdate(self):
-        # """ The event occurs when the playing position has changed (like when the user fast forwards to a different point in the media) Event"""
-        # pass
 
     # @staticmethod
     def parse(self, date_string):
@@ -875,8 +1161,14 @@ class Date(Object):
         self.date.replace(second=int(seconds))
         # return self.now()
 
-    def setTime(self):
-        """ Sets a date to a specified number of milliseconds after/before January 1, 1970 """
+    # Sets a date to a specified number of milliseconds after/before January 1, 1970
+    def setTime(self, milliseconds=None):
+        """ Sets the number of milliseconds since January 1, 1970 """
+        # test copilot
+        # self.date.replace(millisecond=int(milliseconds))
+        # return self.now() # TODO - is this right? - is this same as now()?
+        # print('TODO: setTime')
+        # raise NotImplementedErro
         pass
 
     def setUTCDate(self, day):
@@ -922,53 +1214,59 @@ class Date(Object):
 
     def toDateString(self):
         """ Converts the date portion of a Date object into a readable string """
+        # return str(self.date.getDate()) # TODO - test . copilot
+        # raise NotImplementedError
         pass
 
     def toGMTString(self):
         """ Deprecated. Use the toUTCString() method instead """
+        # return self.toUTCString() # TODO - test . copilot
         pass
 
     def toJSON(self):
         """  Returns the date as a string, formatted as a JSON date """
+        # import json
+        # return json.dumps(self.date)  # TODO - test . copilot
+        pass
 
         # def default(o):
         #     if isinstance(o, (datetime.date, datetime.datetime)):
         #         return o.isoformat()
-
-        pass
+        # raise NotImplementedError
 
     def toISOString(self):
         """ Returns the date as a string, using the ISO standard """
+        # return self.date.toISOString() # TODO - test . copilot
         pass
 
     def toLocaleDateString(self):
         """ Returns the date portion of a Date object as a string, using locale conventions """
+        # return self.date.toLocaleDateString() # TODO - test . copilot
         pass
 
     def toLocaleString(self):
         """ Converts a Date object to a string, using locale conventions """
+        # return self.date.toLocaleString()  # TODO - test . copilot
         pass
 
     def toLocaleTimeString(self):
         """ Returns the time portion of a Date object as a string, using locale conventions """
+        # return self.date.toLocaleTimeString() # TODO - test . copilot
         pass
 
     def toTimeString(self):
         """ Converts the time portion of a Date object to a string """
+        # return self.date.toTimeString() # TODO - test . copilot
         pass
 
     def toUTCString(self):
         """ Converts a Date object to a string, according to universal time """
+        # return self.date.toUTCString() # TODO - test . copilot
         pass
 
     def UTC(self):
         """ Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time """
-        # timezone.utc
-        pass
-
-    # def valueOf():
-    """ Returns the primitive value of an array Array, Boolean, Date, Number, String"""
-    # pass
+        return self.date.getTime()  # TODO - test . copilot
 
 
 class Screen(object):
@@ -1000,6 +1298,7 @@ class Screen(object):
 
     def availHeight(self):
         ''' Returns the height of the screen (excluding the Windows Taskbar) '''
+        # return self.height
         raise NotImplementedError
 
     def availWidth(self):
@@ -1046,6 +1345,9 @@ class Job(threading.Thread):
         while not self.stopped.wait(self.interval.total_seconds()):
             self.execute(*self.args, **self.kwargs)
 
+    # def __str__(self):
+    #     return "Job every %s" % self.interval
+
 
 class SetInterval(object):
 
@@ -1057,6 +1359,9 @@ class SetInterval(object):
         signal.signal(signal.SIGINT, self.signal_handler)
         self.job = Job(timedelta(microseconds=time * 1000), function, *args, **kwargs)
         self.job.start()
+
+    # def stop(self):
+    #     self.job.stop()
 
 
 class Promise(object):
@@ -1108,6 +1413,9 @@ class FetchedSet(object):  # not a promise
     def oncomplete(self, func):  # runs once all results are back
         func(self.results)
         return
+
+    # def __call__(self, func):
+    #     self.results.append(func)
 
 
 class Window(object):
@@ -1212,7 +1520,7 @@ class Window(object):
         # undocumented - warning. use at own risk
         # note - kinda pointless atm. just use requests directly and you wont have to muck about with a Promise
         if type(url) is not str:
-            raise ValueError('fetch takes a single url string. For batches use fetch_set, fetch_threaded or fetch_pooled')
+            raise ValueError('fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled')
         f = Promise()
         r = window._do_request(url, f, *kwargs)
         return f.resolve(r)
@@ -1296,10 +1604,21 @@ class Window(object):
         import base64
         return base64.b64decode(dataString).decode()
 
+    @staticmethod
+    def requestAnimationFrame(callback):
+        """[requests a frame of an animation]
+
+        Args:
+            callback (callable): [the callback function]
+
+        Returns:
+            [type]: [description]
+        """
+        perf = Global.performance.now()
+        return callback(perf)
 
 # WINDOW
 # localStorage  Allows to save key/value pairs in a web browser. Stores the data with no expiration date    Window
-# requestAnimationFrame()   Requests the browser to call a function to update an animation before the next repaint  Window
 # blur()    Removes focus from an element   Element, Window
 # clearTimeout()    Clears a timer set with setTimeout()    Window
 # closed    Returns a Boolean value indicating whether a window has been closed or not  Window
@@ -1357,6 +1676,7 @@ window = Window
 #     def __repr__(self):
 #         return None
 
+
 class Array(object):
     """ javascript array """
 
@@ -1400,11 +1720,21 @@ class Array(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def __str___(self):
-        return self.args
-
     def __repr__(self):
         return str(self.args)
+
+    def __iter__(self):
+        for i in self.args:
+            yield i
+
+    def __sub__(self, value):
+        if isinstance(value, int):
+            raise ValueError('int not supported')
+        if isinstance(value, Array):
+            self.args = self.args - value.args
+        if isinstance(value, list):
+            self.args = self.args - value
+        return self.args
 
     def toString(self):
         ''' Converts an array to a string, and returns the result '''
@@ -1415,9 +1745,15 @@ class Array(object):
         """ Sets or returns the number of elements in an array """
         return len(self.args)
 
-    def concat(self, value):
-        """ Joins two or more arrays, and returns a copy of the joined arrays """
-        return self.args.extend(value)
+    def concat(self, *args):
+        """[Joins two or more arrays, and returns a copy of the joined arrays]
+
+        Returns:
+            [list]: [returns a copy of the joined arrays]
+        """
+        for a in args:
+            self.args += a
+        return self.args
 
     def fill(self):
         """ Fill the elements in an array with a static value """
@@ -1443,9 +1779,20 @@ class Array(object):
             # print(e)
             return -1
 
-    def isArray(self):
-        """ Checks whether an object is an array  """
-        raise NotImplementedError
+    @staticmethod
+    def isArray(self, thing):
+        """[Checks whether an object is an array]
+
+        Args:
+            thing ([type]): [thing to check]
+
+        Returns:
+            [bool]: [True if the object is list, tuple or Array]
+        """
+        if isinstance(thing, (list, tuple, Array)):
+            return True
+        else:
+            return False
 
     def join(self, value):
         """ Joins all elements of an array into a string  """
@@ -1476,8 +1823,19 @@ class Array(object):
         self.args = self.args[::-1]
         return self.args
 
-    def slice(self, start, stop, step=1):
-        """ Selects a part of an array, and returns the new array """
+    def slice(self, start=0, stop=None, step=1):
+        """[Selects a part of an array, and returns the new array]
+
+        Args:
+            start ([int]): [index to slice from]
+            stop ([int], optional): [index to slice to]. Defaults to end of the array.
+            step (int, optional): [description]. Defaults to 1.
+
+        Returns:
+            [type]: [new array]
+        """
+        if stop is None:
+            stop = len(self.args)
         return self.args[slice(start, stop, step)]
 
     def splice(self, start, delete_count=None, *items):
@@ -1520,16 +1878,19 @@ class Array(object):
         Returns:
             [list]: [a new array]
         """
-        # return [func(value) for value in self.args]
-        return map(self.args, func)
+        # print(func)
+        return [func(value) for value in self.args]
+        # return map(self.args, func)
 
     def some(self, func):
         """ Checks if any of the elements in an array pass a test """
         return any(func(value) for value in self.args)
 
-    def sort(self):
+    def sort(self, func=None):  # , *args, **kwargs):
         """ Sorts the elements of an array """
-        raise NotImplementedError
+        if func is not None:
+            return self.args.sort(key=func(*self.args))
+        return sorted(self.args)
 
     def reduce(self, func, value=None):
         """ Reduce the values of an array to a single value (going left-to-right) """
@@ -1563,9 +1924,11 @@ class Array(object):
         # return filtered
         return list(filter(func, self.args))
 
-    def find(self):
+    def find(self, func):
         """ Returns the value of the first element in an array that pass a test """
-        raise NotImplementedError
+        for each in self.args:
+            if func(each):
+                return each
 
     def findIndex(self, value):
         """ Returns the index of the first element in an array that pass a test """
@@ -1581,9 +1944,14 @@ class Array(object):
         for value in self.args:
             func(value)
 
-    # def from():
-        """ Creates an array from an object """
-        # raise NotImplementedError
+    # def from(self, obj):
+    #     """[Creates an array from an object]
+
+    #     Args:
+    #         obj ([type]): [description]
+    #     """
+        # return [obj]
+        # return [obj]
 
     def keys(self):
         """ Returns a Array Iteration Object, containing the keys of the original array """
@@ -1618,7 +1986,7 @@ class Array(object):
         return all(func(value) for value in self.args)
 
     def at(self, index: int):
-        """[takes an integer value and returns the item at that index, 
+        """[takes an integer value and returns the item at that index,
         allowing for positive and negative integers.
         Negative integers count back from the last item in the array.]
 
@@ -1629,7 +1997,6 @@ class Array(object):
             [type]: [item at the given position]
         """
         return self.args[index]
-
 
 
 class Navigator(object):
@@ -1683,6 +2050,123 @@ class Number(float):
     def __init__(self, x="", *args, **kwargs):
         self.x = Global.Number(x)
 
+    def __add__(self, other):
+        return self.x + other
+
+    def __sub__(self, other):
+        return self.x - other
+
+    def __mul__(self, other):
+        return self.x * other
+
+    def __div__(self, other):
+        return self.x / other
+
+    def __mod__(self, other):
+        return self.x % other
+
+    def __pow__(self, other):
+        return self.x ** other
+
+    def __neg__(self):
+        return -self.x
+
+    def __pos__(self):
+        return +self.x
+
+    def __abs__(self):
+        return abs(self.x)
+
+    def __invert__(self):
+        return ~self.x
+
+    def __lt__(self, other):
+        return self.x < other
+
+    def __le__(self, other):
+        return self.x <= other
+
+    def __eq__(self, other):
+        return self.x == other
+
+    def __ne__(self, other):
+        return self.x != other
+
+    def __gt__(self, other):
+        return self.x > other
+
+    def __ge__(self, other):
+        return self.x >= other
+
+    def __and__(self, other):
+        return self.x & other
+
+    def __or__(self, other):
+        return self.x | other
+
+    def __xor__(self, other):
+        return self.x ^ other
+
+    def __lshift__(self, other):
+        return self.x << other
+
+    def __rshift__(self, other):
+        return self.x >> other
+
+    def __iadd__(self, other):
+        return self.x + other
+
+    def __isub__(self, other):
+        return self.x - other
+
+    def __imul__(self, other):
+        return self.x * other
+
+    def __idiv__(self, other):
+        return self.x / other
+
+    def __imod__(self, other):
+        return self.x % other
+
+    def __ipow__(self, other):
+        return self.x ** other
+
+    def __ilshift__(self, other):
+        return self.x << other
+
+    def __irshift__(self, other):
+        return self.x >> other
+
+    def __iand__(self, other):
+        return self.x & other
+
+    def __ior__(self, other):
+        return self.x | other
+
+    def __ixor__(self, other):
+        return self.x ^ other
+
+    def __floordiv__(self, other):
+        return self.x // other
+
+    def __rfloordiv__(self, other):
+        return other // self.x
+
+    def __ifloordiv__(self, other):
+        return other // self.x
+
+    def __truediv__(self, other):
+        return self.x / other
+
+    def __rtruediv__(self, other):
+        return other / self.x
+
+    def __itruediv__(self, other):
+        return other / self.x
+
+    def __rmod__(self, other):
+        return other % self.x
+
     def isInteger(self):
         """ Checks whether a value is an integer """
         return (type(self.x) == int)
@@ -1728,7 +2212,7 @@ class Number(float):
         """
         # print("DIGIT!", digits)
         if digits < 0:
-            digits=0
+            digits = 0
 
         fstring = "{:." + str(digits) + "f}"
         return fstring.format(round(self.x, digits))
@@ -1740,7 +2224,8 @@ class Number(float):
             precision ([int]): [An integer specifying the number of significant digits.]
 
         Returns:
-            [str]: [A string representing a Number object in fixed-point or exponential notation rounded to precision significant digits]
+            [str]: [A string representing a Number object in fixed-point
+            or exponential notation rounded to precision significant digits]
         """
         precision = int(precision)
         # return str(math.pow(self.x, precision))
@@ -1795,6 +2280,79 @@ class String(object):
 
     def __str__(self):
         return self.x
+
+    # def __repr__(self):
+    #     return self.x
+
+    def __getitem__(self, item):
+        # print(item)
+        return self.x[item]
+
+    def __add__(self, other):
+        return self.x + other
+
+    def __radd__(self, other):
+        return self.x + other
+
+    def __iadd__(self, other):
+        return self.x + other
+
+    def __sub__(self, other):
+        return self.x - other
+
+    def __rsub__(self, other):
+        return other - self.x
+
+    def __isub__(self, other):
+        return self.x - other
+
+    def __mul__(self, other):
+        return self.x * int(other)
+
+    def __rmul__(self, other):
+        return self.x * int(other)
+
+    def __imul__(self, other):
+        return self.x * int(other)
+
+    def split(self, expr):
+        """[can split a string based on a regex]
+
+        Args:
+            expr ([str]): [valid regex or string to split on]
+
+        Returns:
+            [list]: [list of str]
+        """
+
+        # if isinstance( expr, RegExp)
+
+        import re
+        # print( '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.', type(expr) )
+        is_regex = False
+        try:
+            re.compile(expr)
+            is_regex = True
+        except re.error:
+            is_regex = False
+
+        if is_regex:
+            return re.split(expr, self.x)
+        else:
+            return self.x.split(expr)
+
+    def concat(self, *args, seperator=""):
+        """[concatenates the string arguments to the calling string and returns a new string.]
+
+        Args:
+            seperator (str, optional): []. Defaults to "".
+
+        Returns:
+            [type]: [A new string containing the combined text of the strings provided.]
+        """
+        args = list(args)
+        args.insert(0, self.x)
+        return seperator.join(args)
 
     # @staticmethod
     def charCodeAt(self, index: int):
@@ -1911,7 +2469,7 @@ class String(object):
         return self.x.upper()
 
     def indexOf(self, searchValue: str, fromIndex: int = 0):
-        """[returns the index within the calling String object of the first occurrence of the specified value, 
+        """[returns the index within the calling String object of the first occurrence of the specified value,
         starting the search at fromIndex ]
 
         Args:
@@ -1922,26 +2480,29 @@ class String(object):
             [type]: [The index of the first occurrence of searchValue, or -1 if not found.]
 
         """
-        return self.x.index(searchValue, fromIndex)
+        try:
+            return self.x.index(searchValue, fromIndex)
+        except ValueError:
+            return -1
 
 
 class RegExp():
 
     def __init__(self, expression):
         self.expression = expression
-        #self.flag  #: A string that contains the flags of the RegExp object.
-        #self.dotAll  #: Whether . matches newlines or not.
+        # self.flag  #: A string that contains the flags of the RegExp object.
+        # self.dotAll  #: Whether . matches newlines or not.
         # self.global # Whether to test the regular expression against all possible matches in a string, or only against the first.
-        #self.hasIndices  # Whether the regular expression result exposes the start and end indices of captured substrings.
-        #self.ignoreCase  # Whether to ignore case while attempting a match in a string.
-        #self.multiline  # Whether or not to search in strings across multiple lines.
-        #self.source  # The text of the pattern.
-        #self.sticky  # Whether or not the search is sticky.
-        #self.unicode  # Whether or not Unicode features are enabled.
-        #self.lastIndex  # The index at which to start the next match.
+        # self.hasIndices  # Whether the regular expression result exposes the start and end indices of captured substrings.
+        # self.ignoreCase  # Whether to ignore case while attempting a match in a string.
+        # self.multiline  # Whether or not to search in strings across multiple lines.
+        # self.source  # The text of the pattern.
+        # self.sticky  # Whether or not the search is sticky.
+        # self.unicode  # Whether or not Unicode features are enabled.
+        # self.lastIndex  # The index at which to start the next match.
 
     def compile(self):
-        """ (Re-)compiles a regular expression during execution of a script. """ 
+        """ (Re-)compiles a regular expression during execution of a script. """
         pass
 
     def exec(self, s: str):
@@ -2151,7 +2712,7 @@ class URL(object):
     # NOTE - node -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     # @staticmethod
     # def domainToASCII(domain: str):
-    #     """[It returns the Punycode ASCII serialization of the domain. 
+    #     """[It returns the Punycode ASCII serialization of the domain.
     #     If domain is an invalid domain, the empty string is returned.]
 
     #     Args:
@@ -2161,7 +2722,7 @@ class URL(object):
 
     # @staticmethod
     # def domainToUnicode(domain: str):
-    #     """[returns the Unicode serialization of the domain. 
+    #     """[returns the Unicode serialization of the domain.
     #     If the domain is invalid, the empty string is returned]
 
     #     Args:
@@ -2214,7 +2775,7 @@ class URLSearchParams:
 
     """
 
-    def __init__(self, paramString):#, **paramsObj):
+    def __init__(self, paramString):  # , **paramsObj):
         """[Returns a URLSearchParams object instance.]
 
         Args:
@@ -2290,7 +2851,8 @@ class URLSearchParams:
         # return str(self.params)
 
     def set(self, key, value):
-        """ Sets the value associated with a given search parameter to the given value. If there are several values, the others are deleted. """
+        """ Sets the value associated with a given search parameter to the given value.
+        If there are several values, the others are deleted. """
         self.params[key] = (value)
 
     def getAll(self, key):
@@ -2301,16 +2863,21 @@ class URLSearchParams:
         return urllib.parse.urlencode(self.params, doseq=True)
 
 
+# TODO - test
+class Error(Exception):
+    ''' Raise Errors '''
+    def __init__(self, message, *args, **kwargs):
+        self.message = message
+        super(Error, self).__init__(message)
+    # def __str__(self):
+    #     return self.message
+
+
 '''
 
 # BELOW is legacy data from a dump of ALL dom/js methods. was looking for useful things to port back when this was the only class.
 # -- leave here for now - ill delete stuff later. it reminds me what i haven't covered
 
-# class Error():
-    # message   Sets or returns an error message (a string) Error
-    # message = ""
-    # def __init__():
-        # pass
 
 # class ClipboardData():
     # clipboardData Returns an object containing the data affected by the clipboard operation
@@ -2363,19 +2930,14 @@ class URLSearchParams:
 
 # clear()   Clears the console  Console, Storage
 # debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements
-# detail    Returns a number that indicates how many times the mouse was clicked    UiEvent
 # elapsedTime   Returns the number of seconds a transition has been running
 # error()   Outputs an error message to the console Console
-# exec()    Tests for a match in a string. Returns the first match  RegExp
 # getItem() Returns the value of the specified key name Storage
 # getNamedItem()    Returns a specified attribute node from a NamedNodeMap  Attribute
-# ignoreCase    Checks whether the "i" modifier is set  RegExp
 # item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection
-# multiline Checks whether the "m" modifier is set  RegExp
 # namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection
 # removeNamedItem() Removes a specified attribute node  Attribute
 # setNamedItem()    Sets the specified attribute node (by name) Attribute
-# source    Returns the text of the RegExp pattern  RegExp
 # specified Returns true if the attribute has been specified, otherwise it returns false    Attribute
 
 '''

@@ -51,7 +51,7 @@ tools = {
 	"eyedropper" : "mdi-eyedropper",
 	"eraser" : "mdi-eraser",
 	"hand" : "mdi-hand-left",
-	"zoom" : "mdi-magnify",
+	"zoom" : "mdi-magnify"
 }
 
 # render the toolbars

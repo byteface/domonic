@@ -10,13 +10,19 @@ from domonic.javascript import window
 
 # create a mapping of equivelent commands to call on terminal if user OS is not windows
 equivelents_map = {
-    "dir":"ls",
-    "move":"mv",
-    "copy":"cp",
-    "erase":"rm",
-    "comp":"diff",
-    "type_":"cat", 
+    "dir": "ls",
+    "move": "mv",
+    "copy": "cp",
+    "erase": "rm",
+    "comp": "diff",
+    # "type_":"cat",
+    # "open":"open",
+    # "edit":"vim",
+    # "view":"less",
+    # "search":"grep",
+    # "replace":"sed"
 }
+
 
 class CmdException(Exception):
     """ raised if cmd throws an exception """
@@ -135,6 +141,30 @@ class Cmdcommand():
     def __getitem__(self, index):
         return self.result.splitlines()[index]
 
+    # def __repr__(self):
+    #     return f"{self.__class__.__name__}({self.params})"
+
+    def __iter__(self):
+        return iter(self.result.splitlines())
+
+    # def __add__(self, other):
+    #     return str(self.result) + str(other)
+
+    # def __radd__(self, other):
+    #     return str(other) + str(self.result)
+
+    # def __call__(self, *args, **kwargs):
+    #     self.run_command()
+    #     return self.result
+
+    # def __getattr__(self, attr):
+    #     if attr in equivelents_map:
+    #         return Cmdcommand(equivelents_map[attr], *self.args, **self.kwargs)
+
+    # def __del__(self):
+    #     os.chdir("..")
+    #     return
+
 
 class cd(Cmdcommand):
     """
@@ -168,6 +198,7 @@ class touch(Cmdcommand):
             # print('failed to touch:', e)
             self.result = ''
 
+
 getmac = type('getmac', (Cmdcommand,), {'name': 'getmac'})  #: display MAC address
 ipconfig = type('ipconfig', (Cmdcommand,), {'name': 'ipconfig'})  #: display IP network settings
 shutdown = type('shutdown', (Cmdcommand,), {'name': 'shutdown'})  #: shutdown the computer. (/s), triggers a restart (/r), or logs the user out (/l).
@@ -198,11 +229,11 @@ gpresult = type('gpresult', (Cmdcommand,), {'name': 'gpresult'})  #: display gro
 
 # ssh = type('ssh', (Cmdcommand,), {'name': 'ssh'})
 
-chdir = type('chdir', (Cmdcommand,), {'name': 'chdir'})  #: show current dir or can switch dir
-#clip = type('clip', (Cmdcommand,), {'name': 'clip'})  #: Forwards the result of a command to the clipboard
+chdir = type('chdir', (Cmdcommand,), {'name': 'chdir'})  # : show current dir or can switch dir
+# clip = type('clip', (Cmdcommand,), {'name': 'clip'})  # : Forwards the result of a command to the clipboard
 
-#find = type('find', (Cmdcommand,), {'name': 'find'})
-whoami = type('whoami', (Cmdcommand,), {'name': 'whoami'})  #: information about the current user. /GROUP parameter 
+# find = type('find', (Cmdcommand,), {'name': 'find'})
+whoami = type('whoami', (Cmdcommand,), {'name': 'whoami'})  #: information about the current user. /GROUP parameter
 
 logoff = type('logoff', (Cmdcommand,), {'name': 'logoff'})  #: Logs the user out of Windows.
 mrinfo = type('mrinfo', (Cmdcommand,), {'name': 'mrinfo'})  #: Provides information on the router
@@ -212,15 +243,35 @@ tasklist = type('tasklist', (Cmdcommand,), {'name': 'tasklist'})  #: Lists all r
 title = type('title', (Cmdcommand,), {'name': 'title'})  #: Changes the title of the command prompt
 tzutil = type('tzutil', (Cmdcommand,), {'name': 'tzutil'})  #: Displays the currently set time zone (/g) or changes it (/s)
 
+# bitsadmin = type('bitsadmin', (Cmdcommand,), {'name': 'bitsadmin'})  #: Allows you to run commands on a remote computer
+# chcp = type('chcp', (Cmdcommand,), {'name': 'chcp'})  #: Change the locale of the command prompt
+# cls = type('cls', (Cmdcommand,), {'name': 'cls'})  #: Clears the screen
+# deluser = type('deluser', (Cmdcommand,), {'name': 'deluser'})  #: Deletes a user
+# dir = type('dir', (Cmdcommand,), {'name': 'dir'})  #: Displays the contents of a directory
+# dlls = type('dlls', (Cmdcommand,), {'name': 'dlls'})  #: Lists the DLLs loaded by an executable
+# echo_ = type('echo_', (Cmdcommand,), {'name': 'echo_'})  #: text output
+# echo = type('echo', (Cmdcommand,), {'name': 'echo'})  #: text output
+# ed = type('ed', (Cmdcommand,), {'name': 'ed'})  #: Edit a file
+# edlin = type('edlin', (Cmdcommand,), {'name': 'edlin'})  #: Edit a file
+# exit = type('exit', (Cmdcommand,), {'name': 'exit'})  #: Exits the command prompt
+# find = type('find', (Cmdcommand,), {'name': 'find'})  #: Find a file or folder
+# findstr = type('findstr', (Cmdcommand,), {'name': 'findstr'})  #: Find a string in files or folders
+# format = type('format', (Cmdcommand,), {'name': 'format'})  #: Format a file
+# gpedit = type('gpedit', (Cmdcommand,), {'name': 'gpedit'})  #: Edit the Group Policy
+# help = type('help', (Cmdcommand,), {'name': 'help'})  #: Displays help files
+# help_ = type('help_', (Cmdcommand,), {'name': 'help_'})  #: Displays help files
+# help_ctx = type('help_ctx', (Cmdcommand,), {'name': 'help_ctx'})  #: Displays help files
+# help_nt = type('help_nt', (Cmdcommand,), {'name': 'help_nt'})  #: Displays help files
+
 
 # WINDOWS COMMANDS
 '''
 bitsadmin	Creates and monitors downloads and uploads
 chcp	Changes the current code page
 choice	Creates a selection list
-clip	Forwards the result of a command to the clipboard. 
+clip	Forwards the result of a command to the clipboard.
 color	Changes the background
-command	Starts CMD.COM.	32-bit/DOS	 
+command	Starts CMD.COM.	32-bit/DOS
 date	Displays the current date and allows you to change it.
 debug	Starts debug
 doskey	Creates macros, recalls commands, and edits command input
@@ -230,20 +281,20 @@ edlin	Creates and edits text files within the command prompt
 fasthelp	Displays helpful information about commands
 fastopen	Writes the position of a program into a specified list
 find	Searches through a file or multiple files for a particular character sequence.
-findstr	Finds character sequences in one or multiple files. 
+findstr	Finds character sequences in one or multiple files.
 forcedos	Starts a program in the MS-DOS partial system
-graftabl	Enables the option to use extended characters of a specific code page in graphics mode.	32-bit/DOS	 
-graphics	Starts a program that can print graphics.	32-bit/DOS	 
+graftabl	Enables the option to use extended characters of a specific code page in graphics mode.	32-bit/DOS
+graphics	Starts a program that can print graphics.	32-bit/DOS
 help	Displays help text for a specific command (you can also use the /? command)
 kb16	Changes the country settings of the keyboard for DOS programs
 keyb	Changes the country settings of the keyboard for DOS programs
 lpq	Displays the status of a printer queue for computers that use a “line Printer Daemon” (LPD)
-lpr	Sends a file to a computer that uses a line printer daemon (LPD). 
+lpr	Sends a file to a computer that uses a line printer daemon (LPD).
 md	Creates a new directory on the specified path.
 more	Outputs the content of a file (for example, a text file) by the page.
 msg	Sends a message to another user.
-nlsfunc	Provides country-specific information for language support.	32-bit/DOS	 
-ntbackup	Runs backup services directly from the command line or as part of batch or script files.	XP	 
+nlsfunc	Provides country-specific information for language support.	32-bit/DOS
+ntbackup	Runs backup services directly from the command line or as part of batch or script files.	XP
 path	Creates and displays the path for searching executable files
 pause	Pauses execution in batch files and scripts.
 popd	Changes to the folder saved by the pushd command.
@@ -272,7 +323,7 @@ attrib	Changes attributes of specified files. With the parameter +R you can prot
 cipher	Displays and changes the encryption status of files and directories on NTFS partitions.
 comp	Compares the content of two files or two file sets.
 compact	Displays and changes the compression status of files and directories on NTFS partitions.
-copy	Copies a file or multiple files to another location. 
+copy	Copies a file or multiple files to another location.
 cscript	Runs scripts over the Microsoft Script Host.
 del	Deletes a file or multiple files.
 deltree	Deletes a directory as well as all subdirectories and files within
@@ -347,7 +398,7 @@ icacls	Edits and displays the access control list.
 ktmutil	Starts the kernel transaction manager.
 label	Changes or deletes a drive’s label
 lh	Loads a program into the high memory area (UMB) – has the same function as loadhigh
-licensingdiag	Creates an XML and a CAB file that contain information on the Windows product licence 
+licensingdiag	Creates an XML and a CAB file that contain information on the Windows product licence
 loadfix	Ensures that a program is loaded and executed above the first 64 KB of RAM.	32-bit/DOS
 loadhigh	Has the same function as lh
 lock	Locks a drive so that only a user-selected program can access it directly.	98/95
@@ -373,7 +424,7 @@ pnpunattend	Automates the installation of device drivers
 pnputil	Installs plug-and-play devices from the command prompt.
 power	Uses the IDLE status of a processor to reduce energy consumption
 powercfg	Allows the user to change the computer’s energy options and control energy conservation plans.
-pwlauncher	Configures the startup options for Windows To Go with which you can boot Windows from a USB drive 
+pwlauncher	Configures the startup options for Windows To Go with which you can boot Windows from a USB drive
 qprocess	Provides information on running processes.
 query	Displays the status of a particular service.
 quser	Provides information on the currently logged-in users.
@@ -381,7 +432,7 @@ reagentc	Configures the Windows recovery environment
 recimg	Creates a user-defined Windows image to restore the system.	8
 reg	Manages the registry of the command prompt.
 regini	Changes registry authorisations.
-register-cimprovider	Registers a common information model provider (CIM provider) in Windows 
+register-cimprovider	Registers a common information model provider (CIM provider) in Windows
 regsvr32	Registers a DLL file in the registry.
 relog	Creates new performance indicator protocols from the data in the existing protocols.
 repair-bde	Repairs and decrypts defective drives that are encrypted with BitLocker.
@@ -394,7 +445,7 @@ sdbinst	Applies user-defined database files (SDB).
 secedit	Analyses the security settings by comparing the current configurations with templates.
 setver	Sets a version number of MS-DOS that’s forwarded to a program
 setx	Creates or changes environmental variable in the user of system environment.
-sfc	Checks all important and protected system files. 
+sfc	Checks all important and protected system files.
 smartdrv	Starts and manages the hard drive cache program SMARTDrive
 sys	Copies system files from MS-DOS and the command interpreter to another hard drive. This makes it bootable
 systeminfo	Displays information about the Windows installation, including all installed service packages.
@@ -421,7 +472,7 @@ atmadm	Displays information on asynchronous transfer mode (ATM).	XP
 certreq	Manages and creates certificate registration requirements for certification authorities.
 certutil	Manages services related to certificate authentication.
 change	Changes the settings of a terminal server and can be used together with the parameters logon, port, or user
-checknetisolation	Checks the network capability of apps from the Windows Store 
+checknetisolation	Checks the network capability of apps from the Windows Store
 chglogon	Enables, disables, or adjusts logins for terminal server sessions.
 chgport	Displays or changes the COM pin assignment of terminal servers for DOS compatibility.
 chgusr	Changes the installation mode of a terminal server.
@@ -479,5 +530,4 @@ wecutil	Creates and managements subscriptions for events.
 winrm	Manages secure connections between local and remote computers via the WS management protocol.
 winrs	Enables access to the command line of a remote computer via a secure connection to implement changes.
 wsmanhttpconfig	Manages functions of the Windows Remote Management (winrm).
-
 '''

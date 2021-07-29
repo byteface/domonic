@@ -319,7 +319,7 @@ class domonicTestCase(unittest.TestCase):
         print(d.setMinutes(10))
         print(d.setMonth(10))
         print(d.setSeconds(10))
-        print(d.setTime())
+        print(d.setTime(1000))
         print(d.setUTCDate(1))
         print(d.setUTCFullYear(1928))
         print(d.setUTCHours(3))
@@ -697,6 +697,79 @@ class domonicTestCase(unittest.TestCase):
         # console.log(url.domainToUnicode('español.com'))
         # console.log(url.domainToUnicode('??.com'))
         # console.log(url.domainToUnicode('xn--iñvalid.com'))
+
+
+    # def test_javascript_call(self):
+
+    #     class Product():
+    #         def __init__(self, name, price):
+    #             self.name = name
+    #             self.price = price
+
+    #     class Food():
+    #         def __init__(self, name, price):
+    #             Function(Product).call(self, name, price)
+    #             self.category = 'food'
+
+    #     class Toy():
+    #         def __init__(self, name, price):
+    #             Function(Product).call(self, name, price)
+    #             self.category = 'toy'
+
+    #     cheese = Food('feta', 5)
+    #     fun = Toy('robot', 40)
+
+    #     print(cheese)
+    #     print(fun)
+
+    def test_javascript_called(self):
+
+        from domonic.decorators import called
+        from domonic.dQuery import º, dQuery_el
+
+        # import time
+        # @called(lambda:time.sleep(2))
+        # def anon( data=None ):
+        #     print("func you")
+        #     print(data)
+
+        # import time
+        # @called(time.sleep(2)) # calls right away without lambda. but doesnt pass data. can i detect it?
+        # def anon( data=None ):
+        #     print("func you")
+        #     print(data)
+
+        @called(
+            lambda: º.ajax('https://www.google.com'),
+            lambda err: print('error:', err))
+        def success(data=None):
+            print("sweet!")
+            print(data.text)
+
+
+    def test_javascript_numbersandstrings(self):
+        print("test_javascript_numbersnstrings")
+
+        n = Number(1)
+        n2 = Number(2)
+        print(n + n2)
+
+        s = String('a')
+        s2 = String('b')
+        print(s + s2)
+        print(s * n2)
+
+        test = String("test")
+        # print(test - 2) # considering allowing this
+
+        print(test[0:1])
+
+        print(test.toUpperCase())
+        print(test.toLowerCase())
+        print(test.toLocaleLowerCase())
+        print(test.toLocaleUpperCase())
+
+
 
 
 _intID = None

@@ -20,7 +20,11 @@ def return_json(func):
 class JSON(object):
     """ A class containing JSON utils """
 
-    def __init__(self):
+    def __init__(self, data):
+        # self.data = data
+        # self.json = json.dumps(data)
+        # self.json_obj = json.loads(self.json)
+        # self.json_str = json.dumps(self.json_obj)
         pass
 
     @staticmethod
@@ -183,8 +187,17 @@ class JSON(object):
 
         return False
 
-    # def value(self, query:str):
-        # pass
+    # def minify(json):
+    #     """ minifes a json string """
+    #     return json.replace("\n", "").replace(" ", "")
+
+    # @staticmethod
+    # def is_array(json: str):
+    #     if type(json) != str:
+    #         return False
+    #     if json.startswith('[') and json.endswith(']'):
+    #         return True
+    #     return False
 
 
 '''

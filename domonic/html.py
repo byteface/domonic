@@ -77,6 +77,9 @@ class TemplateError(IndexError):
         self.message = message + self.hint
         super().__init__(self.message)
 
+    # def __str__(self):
+    #     return self.message
+
 
 class tag(object):
     """
@@ -210,6 +213,27 @@ class tag(object):
         except Exception as e:
             print(e)
             raise ValueError
+
+    # def __add__(self, item):
+    #     try:
+    #         self.args = self.args + (item,)
+    #         return self
+    #     except Exception as e:
+    #         print(e)
+    #         raise ValueError
+    
+    # def __sub__(self, item):
+    #     try:
+    #         self.args = self.args - (item,)
+    #         return self
+    #     except Exception as e:
+    #         print(e)
+    #         raise ValueError
+
+    # def render()
+
+
+
 
     def __getattr__(self, attr):
         """
@@ -449,6 +473,12 @@ class doctype():
     def __str__(self):
         return "<!DOCTYPE html>"
 
+    def __repr__(self):
+        return "<!DOCTYPE html>"
+
+    def __call__(self, *args, **kwargs):
+        return self.__str__()
+
 
 class comment():
     """comment
@@ -464,6 +494,12 @@ class comment():
 
     def __str__(self):
         return f"<!-- {self.content} -->"
+
+    def __repr__(self):
+        return f"<!-- {self.content} -->"
+
+    def __call__(self, *args, **kwargs):
+        return self.__str__()
 
 
 def create_element(name='custom_tag', *args, **kwargs):

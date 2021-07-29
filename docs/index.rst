@@ -97,7 +97,8 @@ usage
 The User Guide
 ----------------
 
-Here you can find instructions for getting the most out of Domonic.
+Here you can find some instructions for getting the most out of Domonic.
+
 
 .. toctree::
    :maxdepth: 2
@@ -105,17 +106,18 @@ Here you can find instructions for getting the most out of Domonic.
    packages/html
    packages/dom
    packages/javascript
+   packages/events
+   packages/dQuery
    packages/JSON
+   packages/constants
    packages/terminal
    packages/cmd
-   packages/components
    packages/tween
-   packages/dQuery
-   packages/constants
-   packages/events
    packages/geom
    packages/x3d
    packages/CDN
+   packages/decorators
+   packages/components
    packages/servers
    packages/autodocs
 

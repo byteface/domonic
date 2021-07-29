@@ -62,4 +62,3 @@ mscarry = type('mscarry', (tag, Node), {'name': 'mscarry', '__init__': mathml_in
 munder = type('munder', (tag, Node), {'name': 'munder', '__init__': mathml_init})
 munderover = type('munderover', (tag, Node), {'name': 'munderover', '__init__': mathml_init})
 none = type('none', (tag, Node), {'name': 'none', '__init__': mathml_init})
-

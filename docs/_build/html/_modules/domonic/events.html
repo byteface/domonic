@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.events &#8212; domonic 0.3.18 documentation</title>
+    <title>domonic.events &#8212; domonic 0.4.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -155,10 +155,30 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">timeStamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">composedPath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeStamp</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">initEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Event.stopPropagation"><a class="viewcode-back" href="../../packages/events.html#domonic.events.Event.stopPropagation">[docs]</a>    <span class="k">def</span> <span class="nf">stopPropagation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[prevents further propagation of the current event in the capturing and bubbling phases]&quot;&quot;&quot;</span>
+        <span class="c1"># self.defaultPrevented = True</span>
+        <span class="c1"># self.returnValue = None</span>
+        <span class="c1"># self.originalTarget = None</span>
+        <span class="c1"># self.explicitOriginalTarget = None</span>
+        <span class="c1"># self.target = None</span>
+        <span class="c1"># self.srcElement = None</span>
+        <span class="c1"># self.bubbles = None</span>
+        <span class="c1"># self.cancelable = None</span>
+        <span class="c1"># self.cancelBubble = None</span>
+        <span class="c1"># self.composed = None</span>
+        <span class="c1"># self.currentTarget = None</span>
+        <span class="c1"># self.eventPhase = None</span>
+        <span class="c1"># self.isTrusted = None</span>
+        <span class="c1"># self.returnValue = None</span>
+        <span class="c1"># self.timeStamp = int(round(time.time() * 1000))</span>
+        <span class="c1"># self.type = None</span>
+        <span class="k">pass</span></div>
 
     <span class="k">def</span> <span class="nf">msConvertURL</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
@@ -167,10 +187,9 @@
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">stopImmediatePropagation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="nf">stopPropagation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
+
+
 
 
 <div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
@@ -324,6 +343,25 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">unicode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span></div>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def keyCode(self):</span>
+    <span class="c1">#     return self.keyCode</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def charCode(self):</span>
+    <span class="c1">#     return self.charCode</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def code(self):</span>
+    <span class="c1">#     return self.code</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def key(self):</span>
+    <span class="c1">#     return self.key</span>
+
+    <span class="c1"># def isComposing(self, *args, **kwargs):</span>
+    <span class="c1">#     pass</span>
 
     <span class="c1"># KeyboardEvent</span>
     <span class="c1"># isComposing   Returns whether the state of the event is composing or not  InputEvent, KeyboardEvent</span>

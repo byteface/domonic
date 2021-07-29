@@ -3,8 +3,13 @@
     ====================================
 """
 
+from domonic.geom import vec3, vec4
+
 
 class Color():
+    """
+        a class for all possible colors
+    """
 
     @staticmethod
     def random_hex():
@@ -33,6 +38,46 @@ class Color():
             h = h.lstrip('#')
         return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
+    # @staticmethod
+    # def hsl2rgb(h, s, l):
+    #     """ convert hsl to rgb """
+    #     if s == 0:
+    #         return l, l, l
+    #     if l < 0.5:
+    #         if s == 1:
+    #             return l * (1 + l), l * 2, l * 2
+    #         if s == 2:
+    #             return l * 2, l * (1 + l), l * 2
+    #         if s == 3:
+    #             return l * 2, l * 2, l * (1 + l)
+    #     else:
+    #         if s == 1:
+    #             return l * (1 - l), l * 2, l * 2
+    #         if s == 2:
+    #             return l * (1 - l), l * 2, l * (1 + l)
+    #         if s == 3:
+    #             return l * (1 - l), l * (1 + l), l * 2
+
+    # @staticmethod
+    # def rgb2hsl(r, g, b):
+    #     """ convert rgb to hsl """
+    #     maxv = max(r, g, b)
+    #     minv = min(r, g, b)
+    #     l = (maxv + minv) / 2
+    #     if maxv == minv:
+    #         return 0.0, 0.0, l
+    #     s = (maxv - minv) / (maxv + minv)
+    #     if r == maxv:
+    #         h = (g - b) / (maxv - minv)
+    #     elif g == maxv:
+    #         h = 2 + (b - r) / (maxv - minv)
+    #     else:
+    #         h = 4 + (r - g) / (maxv - minv)
+    #     h *= 60
+    #     if h < 0:
+    #         h += 360
+    #     return h, s, l
+
     @staticmethod
     def rgb2hex(a, b, c):
         """[rgb2hex]
@@ -50,17 +95,30 @@ class Color():
         # elif isinstance(a, (tuple, list)):
         return '#%02x%02x%02x' % (a, b, c)
 
+    @staticmethod
+    def fromRGBA(r, g, b, a):
+        return Color(r, g, b, a)
+
+    # @staticmethod
+    # def fromHsl(h, s, l):
+    #     return Color(h, s, l)
+
+    @staticmethod
+    def fromHex(hex):
+        """ create a color from a hex string """
+        return Color(hex)
+
     def __init__(self, *args, **kwargs):
         # TODO - if type is vec4 / if hash / if word
-        # if isinstance( args[0], vec4 ):
-        #     self.r = float(args[0])
-        #     self.g = float(args[0])
-        #     self.b = float(args[0])
-        #     self.a = float(args[0])
-        # if isinstance( args[0], vec3 ):
-        #     self.r = float(args[0])
-        #     self.g = float(args[0])
-        #     self.b = float(args[0])
+        if isinstance(args[0], vec4):
+            self.r = args[0][0]
+            self.g = args[0][1]
+            self.b = args[0][2]
+            self.a = args[0][3]
+        if isinstance(args[0], vec3):
+            self.r = args[0][0]
+            self.g = args[0][1]
+            self.b = args[0][2]
         if isinstance(args[0], str):
             if args[0].startswith('#'):
                 self.r, self.g, self.b = Color.hex2rgb(args[0])
@@ -70,51 +128,95 @@ class Color():
             if len(args) == 4:
                 self.r, self.g, self.b, self.a = args
 
-        # self.alpha
-        # self.red
-        # self.green
-        # self.blue
-        # self.gray
-        # self.hue
-        # self.saturation
-        # self.brightness
-        # self.lightness
+        self.alpha = kwargs.get('alpha', 1.0)
+        self.red = kwargs.get('red', self.r)
+        self.green = kwargs.get('green', self.g)
+        self.blue = kwargs.get('blue', self.b)
+        # self.gray = kwargs.get('gray', self.r)
+        self.hue = kwargs.get('hue', 0.0)
+        self.saturation = kwargs.get('saturation', 1.0)
+        self.brightness = kwargs.get('brightness', 1.0)
+        self.lightness = kwargs.get('lightness', 1.0)
+
         # print(self.r, self.g, self.b)
 
-    # set(*args)
-    # convert(type)
-    # hasAlpha()
-    # equals(color)
-    # clone()
+    def toRGB(self):
+        """[returns the color as RGB]
 
-    # def add(number)
-    # def add(color)
-    # def __add__(color)
+        Returns:
+            [tuple]: [ (r, g, b) ]
+        """
+        return (self.r, self.g, self.b)
 
-    # def subtract(number)
-    # def subtract(color)
-    # def __sub__(color)
+    def toHsl(self):
+        """ returns the hsl for the color """
+        return (self.hue, self.saturation, self.brightness)
 
-    # def multiply(number)
-    # def multiply(color)
-    # def __mul__(color)
-
-    # def divide(number)
-    # def divide(color)
-    # def __div__(color)
+    # def toString(self):
+        # return str(self)
 
     def __str__(self):
         return Color.rgb2hex(self.r, self.g, self.b)
 
+    def toHsv(self):
+        """ get the hsv for the color """
+        return (self.hue, self.saturation, self.brightness)
+
     def toCSS(self):
-        return str(self)
+        """ return the color as a CSS string """
+        return '#%02x%02x%02x' % (self.r, self.g, self.b)
 
     def toHex(self):
         return str(self)
 
-    # def toRGB(hex)
-    # def toRGBA(hex)
-    # def transform(matrix)
+    def toRGBA(self):
+        return (self.r, self.g, self.b, self.a)
+
+    def convert(self, to):
+        """ convert the color to another color """
+        if to == 'rgb':
+            return self.toRGB()
+        if to == 'hsl':
+            return self.toHsl()
+        if to == 'hsv':
+            return self.toHsv()
+        if to == 'hex':
+            return self.toHex()
+        if to == 'css':
+            return self.toCSS()
+
+    # set(*args)
+
+    def hasAlpha(self):
+        """[does the color have an alpha channel]
+
+        Returns:
+            [bool]: [True if alpha channel exists else False]
+        """
+        return self.a > 0
+
+    def equals(self, color):
+        return self.r == color.r and self.g == color.g and self.b == color.b
+
+    def __eq__(self, other):
+        """ check if two colors are equal """
+        return self.r == other.r and self.g == other.g and self.b == other.b
+
+    def __add__(self, other):
+        """ add two colors together """
+        return Color(self.r + other.r, self.g + other.g, self.b + other.b)
+
+    def __sub__(self, color):
+        """ subtract a color from this color """
+        return Color(self.r - color.r, self.g - color.g, self.b - color.b)
+
+    def __mul__(self, color):
+        """ multiply a color with this color """
+        return Color(self.r * color.r, self.g * color.g, self.b * color.b)
+
+    def __div__(self, color):
+        """ divide a color with this color """
+        return Color(self.r / color.r, self.g / color.g, self.b / color.b)
 
     # web
     Black = "#000000"  #:

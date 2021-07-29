@@ -158,6 +158,11 @@ class Path():
     def __str__(self):
         return self._
 
+    # def __repr__(self):
+    #     return self._
+
+
+
 
 # def path():
 #     return Path

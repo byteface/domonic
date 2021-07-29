@@ -27,7 +27,6 @@ input('ok')
 print("# And you are left with:", reduced)
 
 
-
 # from time import sleep
 # from domonic.javascript import Math
 # ADD = Math.round(Math.random()*5)*2

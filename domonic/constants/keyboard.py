@@ -113,4 +113,5 @@ class KeyCode():
     # TODO - modifiers
 
     def __init__(self):
+        """ constructor for the keyboard class """
         pass

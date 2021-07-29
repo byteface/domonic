@@ -4,6 +4,7 @@
 
 """
 
+import warnings
 import functools
 from functools import wraps
 
@@ -31,6 +32,35 @@ def el(element='div', string=False):
 # @el(div)
 # @el(span)
 
+
+def called(before=None, error=None):
+    """[calls before() passing the response as args to the decorated function.
+        optional error handler. run the decorated function immediately.
+
+        WARNING: this is not for the regular decorating of a function
+        its syntactical sugar for a callback i.e.
+
+        @called(
+            lambda: º.ajax('https://www.google.com'),
+            lambda err: print('error:', err))
+        def success(data=None):
+            print("sweet!")
+            print(data)
+
+        """
+    def decorator(function):
+        nonlocal before
+        nonlocal error
+        try:
+            r = before()
+            return function(r)
+        except Exception as e:
+            if error is not None:
+                error(e)
+            else:
+                raise e
+
+    return decorator
 
 # def static(endpoint, update="11101"):
 #     '''
@@ -98,6 +128,33 @@ def instead(f, somethingelse):
         return somethingelse
     return new_f
 # @instead("something else instead of what was supposed to happen")
+
+
+def deprecated(func):
+    """This is a decorator which can be used to mark functions
+    as deprecated. It will result in a warning being emitted
+    when the function is used."""
+    @functools.wraps(func)
+    def new_func(*args, **kwargs):
+        warnings.simplefilter('always', DeprecationWarning)  # turn off filter
+        warnings.warn("Call to deprecated function {}.".format(func.__name__),
+                      category=DeprecationWarning,
+                      stacklevel=2)
+        warnings.simplefilter('default', DeprecationWarning)  # reset filter
+        return func(*args, **kwargs)
+    return new_func
+# considered this a few times
+
+
+# def catch(f):
+#     """ catch exceptions and return None """
+#     def new_f():
+#         try:
+#             return f()
+#         except Exception as e:
+#             print('failed', e)
+#             return None
+#     return new_f
 
 
 # def lenient(*args, **kwargs):

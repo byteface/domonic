@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: autodocs &#8212; domonic 0.3.18 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.4.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -711,18 +711,18 @@ i.e. hypenated tags &lt;some-custom-tag&gt;&lt;/some-custom-tag&gt;</p>
 <p>methods on the dom</p>
 <dl class="py class">
 <dt id="domonic.dom.ChildNode">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">ChildNode</code><a class="reference internal" href="../_modules/domonic/dom.html#ChildNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.ChildNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.dom.</code><code class="sig-name descname">ChildNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ChildNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.ChildNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>not tested yet</p>
 <dl class="py method">
 <dt id="domonic.dom.ChildNode.after">
-<code class="sig-name descname">after</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">el</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ChildNode.after"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.ChildNode.after" title="Permalink to this definition">¶</a></dt>
-<dd><p>Inserts a set of Node or DOMString objects in the children list of this ChildNode’s parent, just after this ChildNode.</p>
+<code class="sig-name descname">after</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newChild</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ChildNode.after"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.ChildNode.after" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a newChild node immediately after this ChildNode.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.dom.ChildNode.before">
-<code class="sig-name descname">before</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">el</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ChildNode.before"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.ChildNode.before" title="Permalink to this definition">¶</a></dt>
-<dd><p>Inserts a set of Node or DOMString objects in the children list of this ChildNode’s parent, just before this ChildNode.</p>
+<code class="sig-name descname">before</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newChild</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ChildNode.before"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.ChildNode.before" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a newChild node immediately before this ChildNode.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -733,8 +733,8 @@ i.e. hypenated tags &lt;some-custom-tag&gt;&lt;/some-custom-tag&gt;</p>
 
 <dl class="py method">
 <dt id="domonic.dom.ChildNode.replaceWith">
-<code class="sig-name descname">replaceWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">el</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ChildNode.replaceWith"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.ChildNode.replaceWith" title="Permalink to this definition">¶</a></dt>
-<dd><p>Replaces this ChildNode in the children list of its parent with a set of Node or DOMString objects.</p>
+<code class="sig-name descname">replaceWith</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newChild</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#ChildNode.replaceWith"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.ChildNode.replaceWith" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces this ChildNode with a new one.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1092,27 +1092,21 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="domonic.dom.Element.innerText">
-<code class="sig-name descname">innerText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.innerText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.innerText" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets or returns the text content of a node and its descendants</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="domonic.dom.Element.insertAdjacentElement">
-<code class="sig-name descname">insertAdjacentElement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.insertAdjacentElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.insertAdjacentElement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Inserts a HTML element at the specified position relative to the current element</p>
+<code class="sig-name descname">insertAdjacentElement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">element</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.insertAdjacentElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.insertAdjacentElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts an element adjacent to the current element</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.dom.Element.insertAdjacentHTML">
-<code class="sig-name descname">insertAdjacentHTML</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.insertAdjacentHTML"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.insertAdjacentHTML" title="Permalink to this definition">¶</a></dt>
-<dd><p>Inserts a HTML formatted text at the specified position relative to the current element</p>
+<code class="sig-name descname">insertAdjacentHTML</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">html</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.insertAdjacentHTML"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.insertAdjacentHTML" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts raw HTML adjacent to the current element</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.dom.Element.insertAdjacentText">
-<code class="sig-name descname">insertAdjacentText</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.insertAdjacentText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.insertAdjacentText" title="Permalink to this definition">¶</a></dt>
-<dd><p>Inserts text into the specified position relative to the current element</p>
+<code class="sig-name descname">insertAdjacentText</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">position</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.insertAdjacentText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Element.insertAdjacentText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts text adjacent to the current element</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1397,6 +1391,18 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="domonic.dom.Node.getNextSibling">
+<code class="sig-name descname">getNextSibling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.getNextSibling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Node.getNextSibling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the next sibling of an element.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.Node.getPreviousSibling">
+<code class="sig-name descname">getPreviousSibling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.getPreviousSibling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Node.getPreviousSibling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the previous sibling of an element.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="domonic.dom.Node.hasChildNodes">
 <em class="property">property </em><code class="sig-name descname">hasChildNodes</code><a class="headerlink" href="#domonic.dom.Node.hasChildNodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if an element has any child nodes, otherwise false</p>
@@ -1406,6 +1412,12 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 <dt id="domonic.dom.Node.insertBefore">
 <code class="sig-name descname">insertBefore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_node</span></em>, <em class="sig-param"><span class="n">reference_node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.insertBefore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Node.insertBefore" title="Permalink to this definition">¶</a></dt>
 <dd><p>inserts a node before a reference node as a child of a specified parent node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.Node.isDefaultNamespace">
+<code class="sig-name descname">isDefaultNamespace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ns</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.isDefaultNamespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Node.isDefaultNamespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a namespace is the default namespace</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1427,6 +1439,18 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="domonic.dom.Node.lookupNamespaceURI">
+<code class="sig-name descname">lookupNamespaceURI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ns</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.lookupNamespaceURI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Node.lookupNamespaceURI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the namespace URI for a given prefix</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.Node.lookupPrefix">
+<code class="sig-name descname">lookupPrefix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ns</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.lookupPrefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Node.lookupPrefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the prefix for a given namespace URI</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="domonic.dom.Node.nodeName">
 <em class="property">property </em><code class="sig-name descname">nodeName</code><a class="headerlink" href="#domonic.dom.Node.nodeName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the name of a node</p>
@@ -1442,6 +1466,12 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 <dt id="domonic.dom.Node.nodeValue">
 <em class="property">property </em><code class="sig-name descname">nodeValue</code><a class="headerlink" href="#domonic.dom.Node.nodeValue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets or returns the value of a node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.dom.Node.normaliz">
+<code class="sig-name descname">normaliz</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.normaliz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.Node.normaliz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize a node’s value</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1479,7 +1509,8 @@ or the current node if it’s the topmost node in the tree]</p>
 <dd><dl class="py method">
 <dt id="domonic.dom.NodeList.entries">
 <code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.NodeList.entries" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an iterator, allowing code to go through all key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0 and the values are nodes.</p>
+<dd><p>Returns an iterator, allowing code to go through all key/value pairs contained in the collection.
+(In this case, the keys are numbers starting from 0 and the values are nodes.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1497,7 +1528,8 @@ or the current node if it’s the topmost node in the tree]</p>
 <dl class="py method">
 <dt id="domonic.dom.NodeList.keys">
 <code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.dom.NodeList.keys" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0.)</p>
+<dd><p>Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection.
+(In this case, the keys are numbers starting from 0.)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1569,6 +1601,7 @@ or the current position of the caret.</p>
 <h2>domonic.javascript<a class="headerlink" href="#domonic-javascript" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://www.w3schools.com/jsref/jsref_reference.asp">https://www.w3schools.com/jsref/jsref_reference.asp</a></p></li>
+<li><p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference</a></p></li>
 </ul>
 <dl class="py class">
 <dt id="domonic.javascript.Array">
@@ -1595,8 +1628,16 @@ Negative integers count back from the last item in the array.]</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.Array.concat">
-<code class="sig-name descname">concat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.concat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.concat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Joins two or more arrays, and returns a copy of the joined arrays</p>
+<code class="sig-name descname">concat</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.concat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.concat" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Joins two or more arrays, and returns a copy of the joined arrays]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[returns a copy of the joined arrays]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1648,7 +1689,7 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.Array.find">
-<code class="sig-name descname">find</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.find" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.find" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the value of the first element in an array that pass a test</p>
 </dd></dl>
 
@@ -1678,8 +1719,19 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.Array.isArray">
-<code class="sig-name descname">isArray</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.isArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.isArray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks whether an object is an array</p>
+<em class="property">static </em><code class="sig-name descname">isArray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">thing</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.isArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.isArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Checks whether an object is an array]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>thing</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [thing to check]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[True if the object is list, tuple or Array]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1769,8 +1821,23 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.Array.slice">
-<code class="sig-name descname">slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span></em>, <em class="sig-param"><span class="n">step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.slice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Selects a part of an array, and returns the new array</p>
+<code class="sig-name descname">slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Selects a part of an array, and returns the new array]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [index to slice from]</p></li>
+<li><p><strong>stop</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em><em>, </em><em>optional</em>) – [index to slice to]. Defaults to end of the array.</p></li>
+<li><p><strong>step</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – [description]. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[new array]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1781,7 +1848,7 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.Array.sort">
-<code class="sig-name descname">sort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.sort" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Array.sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sorts the elements of an array</p>
 </dd></dl>
 
@@ -1875,6 +1942,12 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 <dt id="domonic.javascript.Date.getTime">
 <code class="sig-name descname">getTime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Date.getTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Date.getTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of milliseconds since midnight Jan 1 1970, and a specified date</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Date.getTimezoneOffset">
+<code class="sig-name descname">getTimezoneOffset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Date.getTimezoneOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Date.getTimezoneOffset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the time difference between UTC time and local time, in minutes</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1987,8 +2060,8 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.Date.setTime">
-<code class="sig-name descname">setTime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Date.setTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Date.setTime" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets a date to a specified number of milliseconds after/before January 1, 1970</p>
+<code class="sig-name descname">setTime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">milliseconds</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Date.setTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Date.setTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the number of milliseconds since January 1, 1970</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2095,6 +2168,12 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 
 </dd></dl>
 
+<dl class="py exception">
+<dt id="domonic.javascript.Error">
+<em class="property">exception </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise Errors</p>
+</dd></dl>
+
 <dl class="py class">
 <dt id="domonic.javascript.FormData">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">FormData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">form</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.FormData" title="Permalink to this definition">¶</a></dt>
@@ -2161,6 +2240,71 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="domonic.javascript.Function">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Function</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Function" title="Permalink to this definition">¶</a></dt>
+<dd><p>a Function object</p>
+<dl class="py method">
+<dt id="domonic.javascript.Function.apply">
+<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">thisArg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Function.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Function.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>[calls a function with a given this value, and arguments provided as an array]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>thisArg</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [The value of this provided for the call to func.]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[result of calling the function.]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Function.bind">
+<code class="sig-name descname">bind</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">thisArg</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Function.bind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Function.bind" title="Permalink to this definition">¶</a></dt>
+<dd><p>[creates a new function that, when called,
+has its this keyword set to the provided value,
+with a given sequence of arguments preceding any provided when the new function is called.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>thisArg</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [The value to be passed as the this parameter to the target function func when the bound function is called.]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[A copy of the given function with the specified this value, and initial arguments (if provided).]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Function.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">thisArg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Function.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Function.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>[calls a function with a given this value and arguments provided individually.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>thisArg</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em>]</em>) – [description]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[result of calling the function.]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Function.toString">
+<code class="sig-name descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Function.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Function.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Returns a string representing the source code of the function. Overrides the]</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="domonic.javascript.Global">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Global</code><a class="reference internal" href="../_modules/domonic/javascript.html#Global"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Global" title="Permalink to this definition">¶</a></dt>
 <dd><p>javascript global methods</p>
@@ -2207,9 +2351,15 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="domonic.javascript.Global.eval">
+<em class="property">static </em><code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pythonstring</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Global.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates a string and executes it as if it was script code</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="domonic.javascript.Global.isFinite">
-<em class="property">static </em><code class="sig-name descname">isFinite</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.isFinite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Global.isFinite" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines whether a value is a finite, legal number</p>
+<em class="property">static </em><code class="sig-name descname">isFinite</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.isFinite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Global.isFinite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if x is a finite number</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2228,6 +2378,18 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 <dt id="domonic.javascript.Global.parseInt">
 <em class="property">static </em><code class="sig-name descname">parseInt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.parseInt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Global.parseInt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parses a string and returns an integer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Global.require">
+<em class="property">static </em><code class="sig-name descname">require</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.require"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Global.require" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a script from a file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Global.setTimeout">
+<em class="property">static </em><code class="sig-name descname">setTimeout</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">callback</span></em>, <em class="sig-param"><span class="n">t</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.setTimeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Global.setTimeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>use threads to create a timeout method</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2310,10 +2472,28 @@ or false if the element does not exist. Map.prototype.has(key) will return false
 
 <dl class="py class">
 <dt id="domonic.javascript.Math">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Math</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Math"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Math" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Math</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Math"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Math" title="Permalink to this definition">¶</a></dt>
 <dd><p>Math class that mirrors javascript implementation.</p>
 <p>i.e. you can pass strings and it will also work
 Math.abs(‘-1’)</p>
+<dl class="py method">
+<dt id="domonic.javascript.Math.hypot">
+<em class="property">static </em><code class="sig-name descname">hypot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Math.hypot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Math.hypot" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the square root of the sum of squares of its arguments</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Math.log2">
+<em class="property">static </em><code class="sig-name descname">log2</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Math.log2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Math.log2" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the square root of the sum of squares of its arguments</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Math.loglp">
+<em class="property">static </em><code class="sig-name descname">loglp</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Math.loglp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Math.loglp" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the natural logarithm (base e) of 1 + a number, that is</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -2326,6 +2506,18 @@ Math.abs(‘-1’)</p>
 <dt id="domonic.javascript.Number">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Number</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number" title="Permalink to this definition">¶</a></dt>
 <dd><p>javascript Number methods</p>
+<dl class="py attribute">
+<dt id="domonic.javascript.Number.NEGATIVE_INFINITY">
+<code class="sig-name descname">NEGATIVE_INFINITY</code><em class="property"> = inf</em><a class="headerlink" href="#domonic.javascript.Number.NEGATIVE_INFINITY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents negative infinity (returned on overflow) Number</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="domonic.javascript.Number.POSITIVE_INFINITY">
+<code class="sig-name descname">POSITIVE_INFINITY</code><em class="property"> = -inf</em><a class="headerlink" href="#domonic.javascript.Number.POSITIVE_INFINITY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents infinity (returned on overflow)  Number</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="domonic.javascript.Number.isInteger">
 <code class="sig-name descname">isInteger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.isInteger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.isInteger" title="Permalink to this definition">¶</a></dt>
@@ -2340,28 +2532,68 @@ Math.abs(‘-1’)</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.Number.toExponential">
-<code class="sig-name descname">toExponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toExponential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toExponential" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">toExponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toExponential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toExponential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a number into an exponential notation</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.javascript.Number.toFixed">
-<code class="sig-name descname">toFixed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toFixed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toFixed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Formats a number with x numbers of digits after the decimal point</p>
+<code class="sig-name descname">toFixed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">digits</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toFixed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toFixed" title="Permalink to this definition">¶</a></dt>
+<dd><p>[formats a number using fixed-point notation.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>digits</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [The number of digits to appear after the decimal point</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[A string representing the given number using fixed-point notation.]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.javascript.Number.toPrecision">
-<code class="sig-name descname">toPrecision</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toPrecision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toPrecision" title="Permalink to this definition">¶</a></dt>
-<dd><p>Formats a number to x length</p>
+<code class="sig-name descname">toPrecision</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">precision</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toPrecision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toPrecision" title="Permalink to this definition">¶</a></dt>
+<dd><p>[returns a string representing the Number object to the specified precision.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>precision</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>]</em>) – [An integer specifying the number of significant digits.]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[A string representing a Number object in fixed-point or exponential notation rounded to precision significant digits]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Number.toString">
+<code class="sig-name descname">toString</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Number.toString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Number.toString" title="Permalink to this definition">¶</a></dt>
+<dd><p>[returns a string representing the specified Number object.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>base</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – [An integer in the range 2 through 36 specifying the base to use for representing numeric values.]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a string representing the specified Number object]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="domonic.javascript.Object">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attribs</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="py method">
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Mock Javascript Object in python</p>
+<dl class="py method">
 <dt id="domonic.javascript.Object.defineProperty">
 <em class="property">static </em><code class="sig-name descname">defineProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">prop</span></em>, <em class="sig-param"><span class="n">descriptor</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.defineProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.defineProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds the named property described by a given descriptor to an object.</p>
@@ -2396,27 +2628,34 @@ Math.abs(‘-1’)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="domonic.javascript.Object.getOwnPropertyDescriptors">
-<em class="property">static </em><code class="sig-name descname">getOwnPropertyDescriptors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.getOwnPropertyDescriptors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.getOwnPropertyDescriptors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an object containing all own property descriptors for an object.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="domonic.javascript.Object.getOwnPropertyNames">
 <em class="property">static </em><code class="sig-name descname">getOwnPropertyNames</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.getOwnPropertyNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.getOwnPropertyNames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an array containing the names of all of the given object’s own enumerable and non-enumerable properties.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="domonic.javascript.Object.getOwnPropertySymbols">
+<em class="property">static </em><code class="sig-name descname">getOwnPropertySymbols</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.getOwnPropertySymbols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.getOwnPropertySymbols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array of all symbol properties found directly upon a given object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.Object.getPrototypeOf">
+<em class="property">static </em><code class="sig-name descname">getPrototypeOf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.getPrototypeOf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.getPrototypeOf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the prototype (internal [[Prototype]] property) of the specified object.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="domonic.javascript.Object.hasOwnProperty">
-<code class="sig-name descname">hasOwnProperty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.hasOwnProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.hasOwnProperty" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a boolean indicating whether an object contains the specified property as a direct property of that object and not inherited through the prototype chain.</p>
+<code class="sig-name descname">hasOwnProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prop</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.hasOwnProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.hasOwnProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean indicating whether an object contains the specified property
+as a direct property of that object and not inherited through the prototype chain.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.javascript.Object.isPrototypeOf">
-<code class="sig-name descname">isPrototypeOf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.isPrototypeOf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.isPrototypeOf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a boolean indicating whether the object this method is called upon is in the prototype chain of the specified object.</p>
+<code class="sig-name descname">isPrototypeOf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.isPrototypeOf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.isPrototypeOf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a boolean indicating whether an object is a copy of this object.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2426,15 +2665,15 @@ Math.abs(‘-1’)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="domonic.javascript.Object.propertyIsEnumerable">
-<code class="sig-name descname">propertyIsEnumerable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.propertyIsEnumerable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.propertyIsEnumerable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a boolean indicating if the internal ECMAScript [[Enumerable]] attribute is set.</p>
+<dt id="domonic.javascript.Object.prototype">
+<code class="sig-name descname">prototype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.prototype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.prototype" title="Permalink to this definition">¶</a></dt>
+<dd><p>prototype and allows you to add properties and methods to this object</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.javascript.Object.toLocaleString">
 <code class="sig-name descname">toLocaleString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.toLocaleString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.toLocaleString" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calls toString().</p>
+<dd><p>Calls toString()</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2446,12 +2685,12 @@ Math.abs(‘-1’)</p>
 <dl class="py method">
 <dt id="domonic.javascript.Object.valueOf">
 <code class="sig-name descname">valueOf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.valueOf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.valueOf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the primitive value of the specified object.</p>
+<dd><p>Returns the value of the object.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.javascript.Object.values">
-<em class="property">classmethod </em><code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.values" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Object.values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an array containing the values that correspond to all of a given object’s own enumerable string properties.</p>
 </dd></dl>
 
@@ -2511,13 +2750,41 @@ Math.abs(‘-1’)</p>
 <dl class="py method">
 <dt id="domonic.javascript.String.charAt">
 <code class="sig-name descname">charAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charAt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.charAt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the character at the specified index (position)</p>
+<dd><p>[Returns the character at the specified index (position)]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – [index position]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[character]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="domonic.javascript.String.charCodeAt">
-<em class="property">static </em><code class="sig-name descname">charCodeAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charCodeAt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.charCodeAt" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">charCodeAt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charCodeAt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.charCodeAt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the Unicode of the character at the specified index</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.String.concat">
+<code class="sig-name descname">concat</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">seperator</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.concat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.concat" title="Permalink to this definition">¶</a></dt>
+<dd><p>[concatenates the string arguments to the calling string and returns a new string.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seperator</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – []. Defaults to “”.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[A new string containing the combined text of the strings provided.]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2528,8 +2795,29 @@ Math.abs(‘-1’)</p>
 
 <dl class="py method">
 <dt id="domonic.javascript.String.fromCharCode">
-<em class="property">static </em><code class="sig-name descname">fromCharCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">codes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCharCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.fromCharCode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fromCharCode</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">codes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCharCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.fromCharCode" title="Permalink to this definition">¶</a></dt>
 <dd><p>returns a string created from the specified sequence of UTF-16 code units</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.String.indexOf">
+<code class="sig-name descname">indexOf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">searchValue</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span></em>, <em class="sig-param"><span class="n">fromIndex</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.indexOf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.indexOf" title="Permalink to this definition">¶</a></dt>
+<dd><p>[returns the index within the calling String object of the first occurrence of the specified value,
+starting the search at fromIndex ]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>searchValue</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – [The string value to search for.]</p></li>
+<li><p><strong>fromIndex</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – [An integer representing the index at which to start the search]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[The index of the first occurrence of searchValue, or -1 if not found.]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2570,6 +2858,23 @@ only replaces first one.</p>
 <dt id="domonic.javascript.String.slice">
 <code class="sig-name descname">slice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.slice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Selects a part of an string, and returns the new string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.javascript.String.split">
+<code class="sig-name descname">split</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">expr</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.String.split" title="Permalink to this definition">¶</a></dt>
+<dd><p>[can split a string based on a regex]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>expr</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>]</em>) – [valid regex or string to split on]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[list of str]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2752,7 +3057,7 @@ and through the specified number of character</p>
 
 <dl class="py class">
 <dt id="domonic.javascript.Worker">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Worker</code><a class="reference internal" href="../_modules/domonic/javascript.html#Worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Worker" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.javascript.</code><code class="sig-name descname">Worker</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">script</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.javascript.Worker" title="Permalink to this definition">¶</a></dt>
 <dd><p>[A background task that can be created via script, which can send messages back to its creator.
 Creating a worker is done by calling the Worker(“path/to/worker/script”) constructor.]
 TODO - JSWorker - Node
@@ -3942,7 +4247,7 @@ ServiceWorker instances do not support this method.</p>
 <h2>domonic.JSON<a class="headerlink" href="#domonic-json" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="domonic.JSON.JSON">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.JSON.</code><code class="sig-name descname">JSON</code><a class="reference internal" href="../_modules/domonic/JSON.html#JSON"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.JSON.JSON" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.JSON.</code><code class="sig-name descname">JSON</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#JSON"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.JSON.JSON" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class containing JSON utils</p>
 <dl class="py method">
 <dt id="domonic.JSON.JSON.csv2json">
@@ -4407,6 +4712,12 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dt id="domonic.events.Event.WAITING">
 <code class="sig-name descname">WAITING</code><em class="property"> = 'waiting'</em><a class="headerlink" href="#domonic.events.Event.WAITING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="domonic.events.Event.stopPropagation">
+<code class="sig-name descname">stopPropagation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#Event.stopPropagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.events.Event.stopPropagation" title="Permalink to this definition">¶</a></dt>
+<dd><p>[prevents further propagation of the current event in the capturing and bubbling phases]</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -6056,6 +6367,26 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="domonic.utils.Utils.has_internet">
+<em class="property">static </em><code class="sig-name descname">has_internet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="o">=</span><span class="default_value">'http://www.google.com/'</span></em>, <em class="sig-param"><span class="n">timeout</span><span class="o">=</span><span class="default_value">5</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.has_internet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.utils.Utils.has_internet" title="Permalink to this definition">¶</a></dt>
+<dd><p>[check if you have internet connection]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – [the url to check]. Defaults to ‘<a class="reference external" href="http://www.google.com/">http://www.google.com/</a>’.</p></li>
+<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – [the timeout]. Defaults to 5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="domonic.utils.Utils.init_assets">
 <em class="property">static </em><code class="sig-name descname">init_assets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dir</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></span> <span class="o">=</span> <span class="default_value">'assets'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.init_assets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.utils.Utils.init_assets" title="Permalink to this definition">¶</a></dt>
 <dd><p>[creates an assets directory with nested js/css/img dirs]</p>
@@ -6262,6 +6593,23 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </div>
 <span class="target" id="module-domonic.decorators"></span><div class="section" id="domonic-decorators">
 <h2>domonic.decorators<a class="headerlink" href="#domonic-decorators" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="domonic.decorators.called">
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">called</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">before</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">error</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#called"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.decorators.called" title="Permalink to this definition">¶</a></dt>
+<dd><p>[calls before() passing the response as args to the decorated function.
+optional error handler. run the decorated function immediately.</p>
+<p>WARNING: this is not for the regular decorating of a function
+its syntactical sugar for a callback i.e.</p>
+<dl class="simple">
+<dt>&#64;called(</dt><dd><p>lambda: º.get(‘<a class="reference external" href="https://www.google.com">https://www.google.com</a>’),
+lambda err: print(‘error:’, err))</p>
+</dd>
+<dt>def success(data=None):</dt><dd><p>print(“sweet!”)
+print(data)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt id="domonic.decorators.check">
 <code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.decorators.check" title="Permalink to this definition">¶</a></dt>
@@ -9398,155 +9746,29 @@ Just pass an easing equation from the easing package</p>
 </div>
 <span class="target" id="module-domonic.geom"></span><div class="section" id="domonic-geom">
 <h2>domonic.geom<a class="headerlink" href="#domonic-geom" title="Permalink to this headline">¶</a></h2>
-<p>much of this was written by.ai
-(<a class="reference external" href="https://6b.eleuther.ai/">https://6b.eleuther.ai/</a>)</p>
-<p>most of this code was derivied by continually pasting back into eleuther</p>
-<p># TODO - tests for all these new functions. sadly the ai didn’t generate those.</p>
+<p>written by.ai</p>
 <dl class="py class">
 <dt id="domonic.geom.matrix">
 <em class="property">class </em><code class="sig-prename descclassname">domonic.geom.</code><code class="sig-name descname">matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">m</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>[matrixs]</p>
+<dl class="py method">
+<dt id="domonic.geom.matrix.rotate">
+<code class="sig-name descname">rotate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#matrix.rotate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.matrix.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotates the point on the vector defined by the vectors m[0] and m[1].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="domonic.geom.matrix.scale">
+<code class="sig-name descname">scale</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#matrix.scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.matrix.scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scales the point on the vector defined by the vectors m[0] and m[1].</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="domonic.geom.matrix.translate">
 <code class="sig-name descname">translate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#matrix.translate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.matrix.translate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Translates the point on the vector defined by the vectors m[0] and m[1].</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt id="domonic.geom.vec2">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.geom.</code><code class="sig-name descname">vec2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2" title="Permalink to this definition">¶</a></dt>
-<dd><p>[vec2]</p>
-<dl class="py method">
-<dt id="domonic.geom.vec2.add">
-<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a point to this point. returns new one</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a copy of this Point object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.copyRotateAround">
-<code class="sig-name descname">copyRotateAround</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">angle</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.copyRotateAround"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.copyRotateAround" title="Permalink to this definition">¶</a></dt>
-<dd><p>moves the vector then rotate</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.cross">
-<code class="sig-name descname">cross</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.cross"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.cross" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the cross product of this and other. The cross product is considered 0
-perpendicular to each other point</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.dot">
-<code class="sig-name descname">dot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.dot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.dot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the dot product of these two vectors</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.equals">
-<code class="sig-name descname">equals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.equals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.equals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns true if all vectors components are the same</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.interpolate">
-<code class="sig-name descname">interpolate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt1</span></em>, <em class="sig-param"><span class="n">pt2</span></em>, <em class="sig-param"><span class="n">t</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.interpolate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the point that would be reached by this Point
-if we moved by a given distance vector over time t.
-Only floats are handled here.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.length">
-<code class="sig-name descname">length</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.length" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns the length of this vector</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.negate">
-<code class="sig-name descname">negate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.negate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.negate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Negate a vector. This results in vector with the same direction but different length</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.negative">
-<code class="sig-name descname">negative</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.negative"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.negative" title="Permalink to this definition">¶</a></dt>
-<dd><p>return vector but negative version</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.rotateAround">
-<code class="sig-name descname">rotateAround</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">angle</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.rotateAround"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.rotateAround" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotates the vector around another point. In fact it returns the other point.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.squaredlength">
-<code class="sig-name descname">squaredlength</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.squaredlength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.squaredlength" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns the squared length of this vector</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec2.subtract">
-<code class="sig-name descname">subtract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec2.subtract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec2.subtract" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subtract from this point. returns new one</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="domonic.geom.vec3">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.geom.</code><code class="sig-name descname">vec3</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">z</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">w</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec3" title="Permalink to this definition">¶</a></dt>
-<dd><p>[vec3]</p>
-<dl class="py method">
-<dt id="domonic.geom.vec3.apply">
-<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span></em>, <em class="sig-param"><span class="n">amount</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec3.apply" title="Permalink to this definition">¶</a></dt>
-<dd><p>Moves the points x,y,z,w by amount.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec3.clone">
-<code class="sig-name descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec3.clone" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a new instance of this vector3.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec3.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec3.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a copy of this object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec3.distance">
-<code class="sig-name descname">distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec3.distance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the distance between this point and another vector3.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec3.equals">
-<code class="sig-name descname">equals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.equals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec3.equals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine whether two objects are identical.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.geom.vec3.subtract">
-<code class="sig-name descname">subtract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec3.subtract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec3.subtract" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subtract from this point.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="domonic.geom.vec4">
-<em class="property">class </em><code class="sig-prename descclassname">domonic.geom.</code><code class="sig-name descname">vec4</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">z</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">w</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/geom.html#vec4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#domonic.geom.vec4" title="Permalink to this definition">¶</a></dt>
-<dd><p>[vec2]</p>
 </dd></dl>
 
 </div>

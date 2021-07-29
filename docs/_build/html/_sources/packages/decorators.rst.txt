@@ -1,0 +1,83 @@
+Domonic: decorators
+======================
+
+Everyone loves python decorators
+
+We have a few in domonic to make life more fun!
+
+
+el
+--------------------------------
+
+You can use the el decorator to wrap elements around function results.
+
+.. code-block :: bash
+
+    from domonic.decorators import el
+
+    @el(html, True)
+    @el(body)
+    @el(div)
+    def test():
+        return 'hi!'
+
+    print(test())
+    # <html><body><div>hi!</div></body></html>
+
+    # returns pyml objects so call str to render
+    assert str(test()) == '<html><body><div>hi!</div></body></html>'
+
+
+It returns the tag object by default. 
+
+You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.
+
+
+silence
+--------------------------------
+
+.. code-block :: bash
+
+    python3 -m venv venv
+    . venv/bin/activate
+    pip install pyramid
+    pip install domonic
+
+now create a file called app.py
+
+
+called
+--------------------------------
+
+Python's lambda restrictions can force you to create anonymous success methods above calling functions.
+
+domonic has a unique type of decorator that calls a decorated method immediately after calling a passed method.
+
+To use it, pass it a 2 functions, something to call beforehand, and an error method
+
+Then you decorate an anonymous function to recieve the data of the first function you passed in.
+
+Let me show you...
+
+.. code-block :: bash
+
+    from domonic.decorators import called
+
+    @called(
+        lambda: º.ajax('https://www.google.com'),
+        lambda err: print('error:', err))
+    def success(data=None):
+        print("Sweet as a Nut!")
+        print(data.text)
+
+
+It's syntactic sugar for callbacks. Cool huh?!
+
+Remember it's for anonymous functions and calls immediately. So don't go using it on class methods.
+
+Oh, and don't forget what it's 'called' ;)
+
+
+.. autoclass:: domonic.decorators
+    :members:
+    :noindex:

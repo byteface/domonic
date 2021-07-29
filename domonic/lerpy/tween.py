@@ -228,3 +228,30 @@ class Tween(EventDispatcher):
                 self._timePaused += (timeCurrent - self._timePrevious)
 
             self._timePrevious = timeCurrent
+
+
+    # def _dispatchEvent(self, event):
+    #     if event.type == TweenEvent.UPDATE_START:
+    #         self._timeStart = get_timer()
+    #         self._timePaused = 0
+    #         self._timePrevious = self._timeStart
+    #         self._position = 0
+    #         self.dispatchEvent(event)
+    #     elif event.type == TweenEvent.UPDATE_END:
+    #         self.dispatchEvent(event)
+    #     elif event.type == TweenEvent.START:
+    #         self.dispatchEvent(event)
+    #     elif event.type == TweenEvent.STOP:
+    #         self.dispatchEvent(event)
+    #     elif event.type == TweenEvent.PAUSE:
+    #         self.dispatchEvent(event)
+    #     elif event.type == TweenEvent.UNPAUSE:
+    #         self.dispatchEvent(event)
+    #     elif event.type == TweenEvent.RESET:
+    #         self.dispatchEvent(event)
+    #     elif event.type == TweenEvent.COMPLETE:
+    #         self.dispatchEvent(event)
+    #     elif event.type == TweenEvent.UPDATE:
+    #         self.dispatchEvent(event)
+    #     else:
+    #         super(Tween, self)._dispatchEvent(event)

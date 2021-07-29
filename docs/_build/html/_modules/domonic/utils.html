@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.utils &#8212; domonic 0.3.18 documentation</title>
+    <title>domonic.utils &#8212; domonic 0.4.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -359,31 +359,107 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">text</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span></div>
 
-    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Utils.has_internet"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.has_internet">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">has_internet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;http://www.google.com/&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[check if you have internet connection]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url (str, optional): [the url to check]. Defaults to &#39;http://www.google.com/&#39;.</span>
+<span class="sd">            timeout (int, optional): [the timeout]. Defaults to 5.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [bool]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">requests</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">_</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No internet connection available.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+            <span class="c1"># print(&quot;No internet connection available.&quot;)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
 
-    <span class="c1"># def any_iter(arr):</span>
-    <span class="c1">#     &#39;&#39;&#39; given a list. returns random until expired &#39;&#39;&#39;</span>
-    <span class="c1">#     random.shuffle(arr)</span>
-    <span class="c1">#     return (x for x in arr)</span>
+    <span class="c1"># def get_ip(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current ip]</span>
 
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def unless(value, condition):</span>
-        <span class="c1"># return value if condition else not value</span>
-        <span class="c1"># if any(pred(x.item) for x in sequence):</span>
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current ip]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import socket</span>
+    <span class="c1">#     return socket.gethostbyname(socket.gethostname())</span>
 
-    <span class="c1"># TODO -</span>
-    <span class="c1"># def beautfiy(): # make nice</span>
-    <span class="c1"># def uglify(): # make not nice</span>
-    <span class="c1"># def simplify(sentence): # reduce a sentence to its meaning. remove uneeded words.</span>
-    <span class="c1"># def factualise():  # returns json document of modelled info from general text</span>
+    <span class="c1"># def get_hostname(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current hostname]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current hostname]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import socket</span>
+    <span class="c1">#     return socket.gethostname()</span>
+
+    <span class="c1"># def get_mac(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current mac]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current mac]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import uuid</span>
+    <span class="c1">#     return uuid.UUID(int=uuid.getnode()).hex[-12:]</span>
+
+    <span class="c1"># def get_ip_mac(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current ip and mac]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current ip and mac]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return self.get_ip() + &quot;|&quot; + self.get_mac()</span>
+
+    <span class="c1"># def get_os(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current os]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current os]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import platform</span>
+    <span class="c1">#     return platform.system()</span>
+
+    <span class="c1"># def get_os_version(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current os version]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current os version]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import platform</span>
+    <span class="c1">#     return platform.release()</span>
+
+    <span class="c1"># def get_os_arch(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current os architecture]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current os architecture]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import platform</span>
+    <span class="c1">#     return platform.machine()</span>
+
+    <span class="c1"># def get_cpu(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current cpu]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current cpu]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import platform</span>
+    <span class="c1">#     return platform.processor()</span>
+
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">numberToBase</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">digits</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">digits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">%</span> <span class="n">b</span><span class="p">))</span>
+            <span class="n">n</span> <span class="o">//=</span> <span class="n">b</span>
+        <span class="k">return</span> <span class="n">digits</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
 </pre></div>
 
           </div>

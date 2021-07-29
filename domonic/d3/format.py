@@ -47,7 +47,7 @@ prefixExponent = None
 
 
 def formatPrefixAuto(x, p):
-    
+
     print("formatPrefixAuto1",x,p)
 
     d = formatDecimalParts(x, p)

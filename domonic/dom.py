@@ -195,8 +195,8 @@ class Node(EventTarget):
     @property
     def nodeType(self):
         """ Returns the node type of a node """
-        # pass
-        return 1
+        return self.ELEMENT_NODE
+        # return 1
 
     @property
     def localName(self):
@@ -316,12 +316,74 @@ class Node(EventTarget):
 
     def compareDocumentPosition(self, otherElement):
         """ Compares the document position of two elements """
-        raise NotImplementedError
+        if self.parentNode is None:
+            if otherElement.parentNode is None:
+                return 0
+            else:
+                return 1
+        else:
+            if otherElement.parentNode is None:
+                return -1
+            else:
+                return self.parentNode.compareDocumentPosition(otherElement.parentNode)
+        return 0
 
-        # isDefaultNamespace()
-        # lookupNamespaceURI()
-        # lookupPrefix()
-        # normalize()
+    def getPreviousSibling(self):
+        """ Returns the previous sibling of an element. """
+        if self.parentNode is None:
+            return None
+        else:
+            for each in self.parentNode.childNodes:
+                if each == self:
+                    return each.getPreviousSibling()
+            return None
+
+    def getNextSibling(self):
+        """ Returns the next sibling of an element. """
+        if self.parentNode is None:
+            return None
+        else:
+            for each in self.parentNode.childNodes:
+                if each == self:
+                    return each.getNextSibling()
+            return None
+
+    def isDefaultNamespace(self, ns):
+        """ Checks if a namespace is the default namespace """
+        if ns == self.namespace:
+            return True
+        else:
+            return False
+
+    def lookupNamespaceURI(self, ns):
+        """ Returns the namespace URI for a given prefix """
+        if ns == self.namespace:
+            return self.namespaceURI
+        else:
+            return None
+
+    def lookupPrefix(self, ns):
+        """ Returns the prefix for a given namespace URI """
+        if ns == self.namespaceURI:
+            return self.prefix
+        else:
+            return None
+
+    def normaliz(self):
+        """ Normalize a node's value """
+        return None
+
+    # def isSupported(self, feature, version):
+    #     """ Checks if a feature is supported """
+    #     return None
+
+    # def getUserData(self, key):
+    #     """ Returns the value of a user data item """
+    #     return None
+
+    # def setUserData(self, key, value):
+    #     """ Sets a user data item """
+    #     return None
 
     # def isSupported(self): return False #  🗑
     # getUserData() 🗑️
@@ -382,25 +444,28 @@ class ParentNode(object):
         self.args = args
 
 
-class ChildNode(object):
+class ChildNode(Node):
     """ not tested yet """
 
-    # @classmethod??
     def remove(self):
         """ Removes this ChildNode from the children list of its parent. """
-        raise NotImplementedError
+        self.parentNode.removeChild(self)
+        return self
 
-    def before(self, el):
-        """ Inserts a set of Node or DOMString objects in the children list of this ChildNode's parent, just before this ChildNode. """
-        raise NotImplementedError
+    def replaceWith(self, newChild):
+        """ Replaces this ChildNode with a new one. """
+        self.parentNode.replaceChild(newChild, self)
+        return self
 
-    def after(self, el):
-        """ Inserts a set of Node or DOMString objects in the children list of this ChildNode's parent, just after this ChildNode. """
-        raise NotImplementedError
+    def before(self, newChild):
+        """ Inserts a newChild node immediately before this ChildNode. """
+        self.parentNode.insertBefore(newChild, self)
+        return self
 
-    def replaceWith(self, el):
-        """ Replaces this ChildNode in the children list of its parent with a set of Node or DOMString objects. """
-        raise NotImplementedError
+    def after(self, newChild):
+        """ Inserts a newChild node immediately after this ChildNode. """
+        self.parentNode.insertBefore(newChild, self)
+        return self
 
 
 class Attr(object):
@@ -470,7 +535,7 @@ def AriaMixin():  #???
     @ariaAutoComplete.setter
     def ariaAutoComplete(self, value: str):
         return self.getAttribute('aria-autoComplete')
-    
+
     @property
     def ariaBusy(self):
         return self.getAttribute('aria-busy')
@@ -478,7 +543,7 @@ def AriaMixin():  #???
     @ariaBusy.setter
     def ariaBusy(self, value: str):
         return self.getAttribute('aria-busy')
-    
+
     @property
     def ariaChecked(self):
         return self.getAttribute('aria-checked')
@@ -486,7 +551,7 @@ def AriaMixin():  #???
     @ariaChecked.setter
     def ariaChecked(self, value: str):
         return self.getAttribute('aria-checked')
-    
+
     @property
     def ariaColCount(self):
         return self.getAttribute('aria-colCount')
@@ -494,7 +559,7 @@ def AriaMixin():  #???
     @ariaColCount.setter
     def ariaColCount(self, value: str):
         return self.getAttribute('aria-colCount')
-    
+
     @property
     def ariaColIndex(self):
         return self.getAttribute('aria-colIndex')
@@ -502,7 +567,7 @@ def AriaMixin():  #???
     @ariaColIndex.setter
     def ariaColIndex(self, value: str):
         return self.getAttribute('aria-colIndex')
-    
+
     @property
     def ariaColIndexText(self):
         return self.getAttribute('aria-colIndexText')
@@ -510,7 +575,7 @@ def AriaMixin():  #???
     @ariaColIndexText.setter
     def ariaColIndexText(self, value: str):
         return self.getAttribute('aria-colIndexText')
-    
+
     @property
     def ariaColSpan(self):
         return self.getAttribute('aria-colSpan')
@@ -518,7 +583,7 @@ def AriaMixin():  #???
     @ariaColSpan.setter
     def ariaColSpan(self, value: str):
         return self.getAttribute('aria-colSpan')
-    
+
     @property
     def ariaCurrent(self):
         return self.getAttribute('aria-current')
@@ -526,7 +591,7 @@ def AriaMixin():  #???
     @ariaCurrent.setter
     def ariaCurrent(self, value: str):
         return self.getAttribute('aria-current')
-    
+
     @property
     def ariaDescription(self):
         return self.getAttribute('aria-description')
@@ -534,7 +599,7 @@ def AriaMixin():  #???
     @ariaDescription.setter
     def ariaDescription(self, value: str):
         return self.getAttribute('aria-description')
-    
+
     @property
     def ariaDisabled(self):
         return self.getAttribute('aria-disabled')
@@ -542,7 +607,7 @@ def AriaMixin():  #???
     @ariaDisabled.setter
     def ariaDisabled(self, value: str):
         return self.getAttribute('aria-disabled')
-    
+
     @property
     def ariaExpanded(self):
         return self.getAttribute('aria-expanded')
@@ -550,7 +615,7 @@ def AriaMixin():  #???
     @ariaExpanded.setter
     def ariaExpanded(self, value: str):
         return self.getAttribute('aria-expanded')
-    
+
     @property
     def ariaHasPopup(self):
         return self.getAttribute('aria-hasPopup')
@@ -558,7 +623,7 @@ def AriaMixin():  #???
     @ariaHasPopup.setter
     def ariaHasPopup(self, value: str):
         return self.getAttribute('aria-hasPopup')
-    
+
     @property
     def ariaHidden(self):
         return self.getAttribute('aria-hidden')
@@ -566,7 +631,7 @@ def AriaMixin():  #???
     @ariaHidden.setter
     def ariaHidden(self, value: str):
         return self.getAttribute('aria-hidden')
-    
+
     @property
     def ariaKeyShortcuts(self):
         return self.getAttribute('aria-keyShortcuts')
@@ -574,7 +639,7 @@ def AriaMixin():  #???
     @ariaKeyShortcuts.setter
     def ariaKeyShortcuts(self, value: str):
         return self.getAttribute('aria-keyShortcuts')
-    
+
     @property
     def ariaLabel(self):
         return self.getAttribute('aria-label')
@@ -582,7 +647,7 @@ def AriaMixin():  #???
     @ariaLabel.setter
     def ariaLabel(self, value: str):
         return self.getAttribute('aria-label')
-    
+
     @property
     def ariaLevel(self):
         return self.getAttribute('aria-level')
@@ -590,7 +655,7 @@ def AriaMixin():  #???
     @ariaLevel.setter
     def ariaLevel(self, value: str):
         return self.getAttribute('aria-level')
-    
+
     @property
     def ariaLive(self):
         return self.getAttribute('aria-live')
@@ -598,7 +663,7 @@ def AriaMixin():  #???
     @ariaLive.setter
     def ariaLive(self, value: str):
         return self.getAttribute('aria-live')
-    
+
     @property
     def ariaModal(self):
         return self.getAttribute('aria-modal')
@@ -606,7 +671,7 @@ def AriaMixin():  #???
     @ariaModal.setter
     def ariaModal(self, value: str):
         return self.getAttribute('aria-modal')
-    
+
     @property
     def ariaMultiline(self):
         return self.getAttribute('aria-multiline')
@@ -614,7 +679,7 @@ def AriaMixin():  #???
     @ariaMultiline.setter
     def ariaMultiline(self, value: str):
         return self.getAttribute('aria-multiline')
-    
+
     @property
     def ariaMultiSelectable(self):
         return self.getAttribute('aria-multiSelectable')
@@ -622,7 +687,7 @@ def AriaMixin():  #???
     @ariaMultiSelectable.setter
     def ariaMultiSelectable(self, value: str):
         return self.getAttribute('aria-multiSelectable')
-    
+
     @property
     def ariaOrientation(self):
         return self.getAttribute('aria-orientation')
@@ -630,7 +695,7 @@ def AriaMixin():  #???
     @ariaOrientation.setter
     def ariaOrientation(self, value: str):
         return self.getAttribute('aria-orientation')
-    
+
     @property
     def ariaPlaceholder(self):
         return self.getAttribute('aria-placeholder')
@@ -638,7 +703,7 @@ def AriaMixin():  #???
     @ariaPlaceholder.setter
     def ariaPlaceholder(self, value: str):
         return self.getAttribute('aria-placeholder')
-    
+
     @property
     def ariaPosInSet(self):
         return self.getAttribute('aria-posInSet')
@@ -646,7 +711,7 @@ def AriaMixin():  #???
     @ariaPosInSet.setter
     def ariaPosInSet(self, value: str):
         return self.getAttribute('aria-posInSet')
-    
+
     @property
     def ariaPressed(self):
         return self.getAttribute('aria-pressed')
@@ -654,7 +719,7 @@ def AriaMixin():  #???
     @ariaPressed.setter
     def ariaPressed(self, value: str):
         return self.getAttribute('aria-pressed')
-    
+
     @property
     def ariaReadOnly(self):
         return self.getAttribute('aria-readOnly')
@@ -662,7 +727,7 @@ def AriaMixin():  #???
     @ariaReadOnly.setter
     def ariaReadOnly(self, value: str):
         return self.getAttribute('aria-readOnly')
-    
+
     @property
     def ariaRelevant(self):
         return self.getAttribute('aria-relevant')
@@ -670,7 +735,7 @@ def AriaMixin():  #???
     @ariaRelevant.setter
     def ariaRelevant(self, value: str):
         return self.getAttribute('aria-relevant')
-    
+
     @property
     def ariaRequired(self):
         return self.getAttribute('aria-required')
@@ -678,7 +743,7 @@ def AriaMixin():  #???
     @ariaRequired.setter
     def ariaRequired(self, value: str):
         return self.getAttribute('aria-required')
-    
+
     @property
     def ariaRoleDescription(self):
         return self.getAttribute('aria-roleDescription')
@@ -686,7 +751,7 @@ def AriaMixin():  #???
     @ariaRoleDescription.setter
     def ariaRoleDescription(self, value: str):
         return self.getAttribute('aria-roleDescription')
-    
+
     @property
     def ariaRowCount(self):
         return self.getAttribute('aria-rowCount')
@@ -694,7 +759,7 @@ def AriaMixin():  #???
     @ariaRowCount.setter
     def ariaRowCount(self, value: str):
         return self.getAttribute('aria-rowCount')
-    
+
     @property
     def ariaRowIndex(self):
         return self.getAttribute('aria-rowIndex')
@@ -702,7 +767,7 @@ def AriaMixin():  #???
     @ariaRowIndex.setter
     def ariaRowIndex(self, value: str):
         return self.getAttribute('aria-rowIndex')
-    
+
     @property
     def ariaRowIndexText(self):
         return self.getAttribute('aria-rowIndexText')
@@ -710,7 +775,7 @@ def AriaMixin():  #???
     @ariaRowIndexText.setter
     def ariaRowIndexText(self, value: str):
         return self.getAttribute('aria-rowIndexText')
-    
+
     @property
     def ariaRowSpan(self):
         return self.getAttribute('aria-rowSpan')
@@ -718,7 +783,7 @@ def AriaMixin():  #???
     @ariaRowSpan.setter
     def ariaRowSpan(self, value: str):
         return self.getAttribute('aria-rowSpan')
-    
+
     @property
     def ariaSelected(self):
         return self.getAttribute('aria-selected')
@@ -726,7 +791,7 @@ def AriaMixin():  #???
     @ariaSelected.setter
     def ariaSelected(self, value: str):
         return self.getAttribute('aria-selected')
-    
+
     @property
     def ariaSetSize(self):
         return self.getAttribute('aria-setSize')
@@ -734,7 +799,7 @@ def AriaMixin():  #???
     @ariaSetSize.setter
     def ariaSetSize(self, value: str):
         return self.getAttribute('aria-setSize')
-    
+
     @property
     def ariaSort(self):
         return self.getAttribute('aria-sort')
@@ -742,7 +807,7 @@ def AriaMixin():  #???
     @ariaSort.setter
     def ariaSort(self, value: str):
         return self.getAttribute('aria-sort')
-    
+
     @property
     def ariaValueMax(self):
         return self.getAttribute('aria-valueMax')
@@ -750,7 +815,7 @@ def AriaMixin():  #???
     @ariaValueMax.setter
     def ariaValueMax(self, value: str):
         return self.getAttribute('aria-valueMax')
-    
+
     @property
     def ariaValueMin(self):
         return self.getAttribute('aria-valueMin')
@@ -758,7 +823,7 @@ def AriaMixin():  #???
     @ariaValueMin.setter
     def ariaValueMin(self, value: str):
         return self.getAttribute('aria-valueMin')
-    
+
     @property
     def ariaValueNow(self):
         return self.getAttribute('aria-valueNow')
@@ -766,7 +831,7 @@ def AriaMixin():  #???
     @ariaValueNow.setter
     def ariaValueNow(self, value: str):
         return self.getAttribute('aria-valueNow')
-    
+
     @property
     def ariaValueText(self):
         return self.getAttribute('aria-valueText')
@@ -776,28 +841,34 @@ def AriaMixin():  #???
         return self.getAttribute('aria-valueText')
 """
 
+
 class NodeList(list):
+    # TODO - not tested
 
     def item(self, index):
         """ Returns an item in the list by its index, or null if the index is out-of-bounds."""
-        # An alternative to accessing nodeList[i] (which instead returns  undefined when i is out-of-bounds). This is mostly useful for non-JavaScript DOM implementations.
+        # An alternative to accessing nodeList[i] (which instead returns  undefined when i is out-of-bounds).
+        # This is mostly useful for non-JavaScript DOM implementations.
         return self[index]
 
     def entries(self):
-        """ Returns an iterator, allowing code to go through all key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0 and the values are nodes."""
-        raise NotImplementedError
+        """ Returns an iterator, allowing code to go through all key/value pairs contained in the collection.
+        (In this case, the keys are numbers starting from 0 and the values are nodes."""
+        return iter(self)
 
     def forEach(self, func):
         """ Executes a provided function once per NodeList element, passing the element as an argument to the function. """
-        raise NotImplementedError
+        for e in self:
+            func(e)
 
     def keys(self):
-        """ Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection. (In this case, the keys are numbers starting from 0.)"""
-        raise NotImplementedError
+        """ Returns an iterator, allowing code to go through all the keys of the key/value pairs contained in the collection.
+        (In this case, the keys are numbers starting from 0.)"""
+        return iter(range(len(self)))
 
     def values(self):
         """ Returns an iterator allowing code to go through all values (nodes) of the key/value pairs contained in the collection."""
-        raise NotImplementedError
+        return iter(self)
 
 
 class Element(Node):
@@ -910,7 +981,6 @@ class Element(Node):
     #             return el;
     #         el = el.parentElement || el.parentNode
     #     return None
-
 
     # @staticmethod
     def getElementsBySelector(self, all_selectors, document):
@@ -1224,20 +1294,22 @@ class Element(Node):
         ''' Sets or returns the value of the id attribute of an element'''
         self.setAttribute('id', newid)
 
-    def innerText(self):
-        ''' Sets or returns the text content of a node and its descendants'''
+    # Sets or returns the text content of a node and its descendants
+    def innerText(self, *args):
+        self.args = args
         return ''.join([each.__str__() for each in self.args])
 
-    def insertAdjacentElement(self):
-        '''Inserts a HTML element at the specified position relative to the current element'''
+    # Inserts an element adjacent to the current element
+    def insertAdjacentElement(self, position: str, element):
+        """ Inserts an element adjacent to the current element """
         raise NotImplementedError
 
-    def insertAdjacentHTML(self):
-        '''Inserts a HTML formatted text at the specified position relative to the current element'''
+    def insertAdjacentHTML(self, position: str, html: str):
+        """ Inserts raw HTML adjacent to the current element """
         raise NotImplementedError
 
-    def insertAdjacentText(self):
-        '''Inserts text into the specified position relative to the current element'''
+    def insertAdjacentText(self, position: str, text: str):
+        """ Inserts text adjacent to the current element """
         raise NotImplementedError
 
     def isContentEditable(self):
@@ -1481,9 +1553,10 @@ class Element(Node):
 class DOMImplementation(object):
 
     def __init__(self):
+        # self.__domImplementation = None
         pass
 
-    def createDocument(self):
+    def createDocument(self, namespaceURI, qualifiedName, doctype):
         # return Document()
         # from domonic.html import html
         # return html()

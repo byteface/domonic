@@ -6,8 +6,10 @@
 
 """
 
-__version__ = "0.3.18"
+__version__ = "0.4.0"
 __license__ = 'MIT'
+__author__ = "@byteface"
+
 '''
 __uri__ = "https://github.com/byteface/domonic"
 # https://domonic.readthedocs.io/
@@ -41,6 +43,7 @@ class domonic:
 
     JS_MASTER = "assets/js/master.js"
     CSS_STYLE = "assets/css/style.css"
+
 
     @staticmethod
     def get(url: str):

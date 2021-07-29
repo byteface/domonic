@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.style &#8212; domonic 0.3.18 documentation</title>
+    <title>domonic.style &#8212; domonic 0.4.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -2507,7 +2507,47 @@
     <span class="nd">@zIndex</span><span class="o">.</span><span class="n">setter</span>
     <span class="nd">@style_set_decorator</span>
     <span class="k">def</span> <span class="nf">zIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__zIndex</span> <span class="o">=</span> <span class="n">value</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__zIndex</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># @style_get_decorator</span>
+    <span class="c1"># def zoomAndPan(self):</span>
+    <span class="c1">#     return self.__zoomAndPan</span>
+
+    <span class="c1"># @zoomAndPan.setter</span>
+    <span class="c1"># @style_set_decorator</span>
+    <span class="c1"># def zoomAndPan(self, value=None, *args, **kwargs):</span>
+    <span class="c1">#     self.__zoomAndPan = value</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># @style_get_decorator</span>
+    <span class="c1"># def zoomAndResize(self):</span>
+    <span class="c1">#     return self.__zoomAndResize</span>
+
+    <span class="c1"># @zoomAndResize.setter</span>
+    <span class="c1"># @style_set_decorator</span>
+    <span class="c1"># def zoomAndResize(self, value=None, *args, **kwargs):</span>
+    <span class="c1">#     self.__zoomAndResize = value</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@style_get_decorator</span>
+    <span class="k">def</span> <span class="nf">zoom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__zoom</span>
+
+    <span class="nd">@zoom</span><span class="o">.</span><span class="n">setter</span>
+    <span class="nd">@style_set_decorator</span>
+    <span class="k">def</span> <span class="nf">zoom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__zoom</span> <span class="o">=</span> <span class="n">value</span></div>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># @style_get_decorator</span>
+    <span class="c1"># def zoomType(self):</span>
+    <span class="c1">#     return self.__zoomType</span>
+
+    <span class="c1"># @zoomType.setter</span>
+    <span class="c1"># @style_set_decorator</span>
+    <span class="c1"># def zoomType(self, value=None, *args, **kwargs):</span>
+    <span class="c1">#     self.__zoomType = value</span>
 </pre></div>
 
           </div>
