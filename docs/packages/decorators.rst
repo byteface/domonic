@@ -33,18 +33,6 @@ It returns the tag object by default.
 You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.
 
 
-silence
---------------------------------
-
-.. code-block :: bash
-
-    python3 -m venv venv
-    . venv/bin/activate
-    pip install pyramid
-    pip install domonic
-
-now create a file called app.py
-
 
 called
 --------------------------------
@@ -73,7 +61,14 @@ Let me show you...
 
 It's meant for anonymous functions and calls immediately. So don't go using it on class methods.
 
-Just remember what it's 'called' ;)
+It's also called iffe. (so you can know when ur just passing nothing)
+
+.. code-block :: bash
+
+    @iife()
+    def sup():
+        print("sup!")
+        return True
 
 
 .. autoclass:: domonic.decorators

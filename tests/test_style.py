@@ -13,7 +13,7 @@ from domonic.style import *
 from domonic.dom import *
 
 
-class domonicTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     def test_domonic_css(self):
 

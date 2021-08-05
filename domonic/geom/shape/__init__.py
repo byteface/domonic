@@ -780,6 +780,13 @@ class Polyline(Shape):
 #         super().__init__(self.color='blue')
 
 
+# class Wave():
+
+#     def __init__(self, color=None, *args):
+#         self.color = color
+
+
+
 
 
 from domonic.geom.shape.shapes import Circle

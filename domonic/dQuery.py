@@ -287,17 +287,33 @@ class dQuery_el():
                     p.args = tuple(l)
         return self
 
-    def bind(self, event, handler):
+    def bind(self, event, handler):  # TODO - untested
         """ Attach a function to be executed when an event occurs on a set of matched elements."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            el.addEventListener(event, handler)
+        return self
 
-    def blur(self):
+    def blur(self, handler):  # TODO - untested
         """ Bind an event handler to the “blur” JavaScript event, or trigger that event on an element."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            el.triggerEvent('blur')
+        return self
 
-    def change(self):
+    def change(self, handler):  # TODO - untested... from description sound like would be something like this?
         """ Bind an event handler to the “change” JavaScript event, or trigger that event on an element."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        for el in self.elements:
+            if el.hasEvent('change'):
+                el.triggerEvent('change')
+            else:
+                el.addEventListener('change', handler)
+            # el.triggerEvent('change')
+        return self
 
     def children(self, selector=None):  # TODO - test
         """ Get the children of each element in the set of matched elements, optionally filtered by a selector."""
@@ -310,6 +326,11 @@ class dQuery_el():
 
     def clearQueue(self):
         """ Remove from the queue all items that have not yet been run."""
+        # if not isinstance(self.elements, (list, tuple)):
+        #     self.elements = (self.elements,)
+        # for el in self.elements:
+        #     el.clearQueue()
+        # return self
         raise NotImplementedError
 
     def click(self):
@@ -324,10 +345,11 @@ class dQuery_el():
         # new_elements = self.elements.clone()
         raise NotImplementedError
 
-    def closest(self):
+
+    def closest(self, selector=None):
         """ For each element in the set, get the first element that matches the selector by testing the element itself
         and traversing up through its ancestors in the DOM tree."""
-        raise NotImplementedError
+        raise NotImplementedError        
 
     def contents(self):
         """ Get the children of each element in the set of matched elements, including text and comment nodes."""
@@ -910,9 +932,9 @@ class dQuery_el():
 
         return "&".join(q)
 
-    def serializeArray(self):
-        """ Encode a set of form elements as an array of names and values."""
-        raise NotImplementedError
+    def serializeArray(self, array):
+        """ Encode an array of form elements as a string for submission."""
+        raise notImplementedError
 
     def show(self):
         """ Display the matched elements."""
@@ -920,9 +942,14 @@ class dQuery_el():
             el.style.display = ''
         return self
 
-    def siblings(self):
-        """ Get the siblings of each element in the set of matched elements, optionally filtered by a selector."""
-        raise NotImplementedError
+    def siblings(self, selector):  # TODO - untested
+        """ Return the siblings of the matched elements. filter by selector."""
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+        siblings = []
+        for el in self.elements:
+            siblings.append(el.parentNode.getElementsByTagName(selector))
+        return siblings
 
     def size(self):
         """ Return the number of elements in the dQuery object."""
@@ -1003,9 +1030,11 @@ class dQuery_el():
             self.elements = (self.elements,)
         for el in self.elements:
             if el.nodeName == 'A':
-                el.triggerEvent(eventName, eventArg)
+                # el.triggerEvent(eventName, eventArg)
+                el.dispatchEvent(eventName, eventArg)
             else:
-                el.trigger(eventName, eventArg)
+                # el.trigger(eventName, eventArg)
+                el.dispatchEvent(eventName, eventArg)
         return self
 
     def triggerHandler(self):
@@ -1400,14 +1429,19 @@ class º(dQuery_el):
         raise NotImplementedError
 
     @staticmethod
-    def error():
+    def error(msg):
         """ Takes a string and throws an exception containing it. """
         raise Exception(msg)
 
     @staticmethod
-    def escapeSelector():
-        """ Escapes any character that has a special meaning in a CSS selector. """
-        raise NotImplementedError
+    def escapeSelector(selector):  # TODO - untested
+        """ Returns a string with all special characters replaced with their respective character codes. """
+        if type(selector) is str:
+            selector = selector.replace(' ', '\\s').replace('.', '\\.').replace('#', '\\#').replace('[', '\\[').replace(']', '\\]')
+            # selector = re.sub(r'([^\w\.-])', '\\\1', selector)
+            return selector.replace(' ', '%20')
+        else:
+            return selector
 
     @staticmethod
     def extend(*args):
@@ -1512,12 +1546,12 @@ class º(dQuery_el):
         return type(obj) is dict
 
     @staticmethod
-    def isWindow():
-        """ Determine whether the argument is a window. """
-        raise NotImplementedError
+    def isWindow(obj):
+        """ Determine whether the argument is a window object. """
+        return type(obj) is Window
 
     @staticmethod
-    def isXMLDoc():
+    def isXMLDoc(obj):
         """ Check to see if a DOM node is within an XML document (or is an XML document). """
         raise NotImplementedError
 

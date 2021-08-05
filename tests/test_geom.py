@@ -12,7 +12,7 @@ from domonic.geom import *
 from domonic.constants.color import Color
 
 
-class domonicTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     # @silence
     def test_vec2(self):

@@ -52,6 +52,8 @@ def called(before=None, error=None):
         nonlocal before
         nonlocal error
         try:
+            if before is None:
+                return function()
             r = before()
             return function(r)
         except Exception as e:
@@ -61,6 +63,9 @@ def called(before=None, error=None):
                 raise e
 
     return decorator
+
+
+iife = called  # pass None for an iife
 
 # def static(endpoint, update="11101"):
 #     '''

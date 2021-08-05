@@ -13,7 +13,7 @@ from domonic.html import *
 from domonic.JSON import *
 
 
-# class domonicTestCase(unittest.TestCase):
+# class TestCase(unittest.TestCase):
 
 # if __name__ == '__main__':
 #     unittest.main()

@@ -3,7 +3,7 @@ Domonic: Javascript
 
 There's a javascript package that mimics the js API.
 
-It's useful for things like porting javascript code to python but also if you already know javascript:
+It's useful for things like quickly porting javascript code to python but also if you already know javascript:
 
 .. code-block :: python
 
@@ -25,8 +25,11 @@ It's useful for things like porting javascript code to python but also if you al
 	# Global.decodeURIComponent(...
 	# Global.encodeComponent(...
 
-	# from domonic.javascript import Date
+	# from domonic.javascript import Date, String, Number
 	# etc..
+
+
+As as all of the usual String and Numbers methods you may be familiar with.
 
 
 setInterval

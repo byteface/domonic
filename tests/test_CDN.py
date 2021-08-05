@@ -13,7 +13,7 @@ from domonic.html import *
 from domonic.CDN import *
 
 
-class domonicTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     def test_domonic_CDN(self):
         myjs = script(_src=CDN_JS.JQUERY_3_5_1)

@@ -9,7 +9,7 @@ from domonic.terminal import *
 from domonic.decorators import silence
 
 
-class domonicTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     def test_bash_ls(self):
         files = ls()

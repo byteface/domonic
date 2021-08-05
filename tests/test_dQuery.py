@@ -16,10 +16,10 @@ from domonic.html import *
 from domonic.dQuery import *
 
 
-class domonicTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     # domonic.dQuery.º
-    def test_dQuery_hello(self):
+    def test_hello(self):
         d = html(head(body(li(_class='things'), div(_id="test"))))
         º(d)
         print('---** -')
@@ -40,15 +40,15 @@ class domonicTestCase(unittest.TestCase):
 
         pass
 
-    def test_dQuery_add(self):
+    def test_add(self):
         # test = º('<p></p>').add('<h1>').add(div())
         # print(test)
         pass
 
-    def test_dQuery_addBack(self):
+    def test_addBack(self):
         pass
 
-    def test_dQuery_addClass(self):
+    def test_addClass(self):
         a = º('<div id="test2"></div><div id="test3"></div>')
         assert str(a) == '<div id="test2"></div><div id="test3"></div>'
         a.addClass('one')
@@ -61,7 +61,7 @@ class domonicTestCase(unittest.TestCase):
         # for el in a.elements:
             # print(el.getAttribute("class"))
 
-    def test_dQuery_after(self):
+    def test_after(self):
         # TODO - sort the parser... positional error on this as not multiline
         # tags = º('<div id="test1"><h1>asd</h1></div>')
         # print(tags)
@@ -72,31 +72,31 @@ class domonicTestCase(unittest.TestCase):
         print(app)
         # pass
 
-    def test_dQuery_ajaxComplete(self):
+    def test_ajaxComplete(self):
         pass
 
-    def test_dQuery_ajaxError(self):
+    def test_ajaxError(self):
         pass
 
-    def test_dQuery_ajaxSend(self):
+    def test_ajaxSend(self):
         pass
 
-    def test_dQuery_ajaxStart(self):
+    def test_ajaxStart(self):
         pass
 
-    def test_dQuery_ajaxStop(self):
+    def test_ajaxStop(self):
         pass
 
-    def test_dQuery_ajaxSuccess(self):
+    def test_ajaxSuccess(self):
         pass
 
-    def test_dQuery_andSelf(self):
+    def test_andSelf(self):
         pass
 
-    def test_dQuery_animate(self):
+    def test_animate(self):
         pass
 
-    def test_dQuery_append(self):
+    def test_append(self):
         print("TEST APPEND")
         # doc = html()
         # º(doc)
@@ -106,10 +106,10 @@ class domonicTestCase(unittest.TestCase):
         # self.assertEqual(str(d), '<div>some text</div>')
         pass
 
-    def test_dQuery_appendTo(self):
+    def test_appendTo(self):
         pass
 
-    def test_dQuery_attr(self):
+    def test_attr(self):
         a = º('<div id="test2"></div>')
         a.addClass('one')
         assert str(a) == '<div id="test2" class="one"></div>'
@@ -119,324 +119,324 @@ class domonicTestCase(unittest.TestCase):
         assert str(a) == '<div id="somethingelse" class="one"></div>'
         # print(a.elements[0])
 
-    def test_dQuery_before(self):
+    def test_before(self):
         pass
 
-    def test_dQuery_bind(self):
+    def test_bind(self):
         pass
 
-    def test_dQuery_blur(self):
+    def test_blur(self):
         pass
 
-    def test_dQuery_change(self):
+    def test_change(self):
         pass
 
-    def test_dQuery_children(self):
+    def test_children(self):
         pass
 
-    def test_dQuery_clearQueue(self):
+    def test_clearQueue(self):
         pass
 
-    def test_dQuery_click(self):
+    def test_click(self):
         pass
 
-    def test_dQuery_clone(self):
+    def test_clone(self):
         pass
 
-    def test_dQuery_closest(self):
+    def test_closest(self):
         pass
 
-    def test_dQuery_contents(self):
+    def test_contents(self):
         pass
 
-    def test_dQuery_context(self):
+    def test_context(self):
         pass
 
-    def test_dQuery_contextmenu(self):
+    def test_contextmenu(self):
         pass
 
-    def test_dQuery_css(self):
+    def test_css(self):
         pass
 
-    def test_dQuery_data(self):
+    def test_data(self):
         pass
 
-    def test_dQuery_dblclick(self):
+    def test_dblclick(self):
         pass
 
-    def test_dQuery_delay(self):
+    def test_delay(self):
         pass
 
-    def test_dQuery_delegate(self):
+    def test_delegate(self):
         pass
 
-    def test_dQuery_dequeue(self):
+    def test_dequeue(self):
         pass
 
-    def test_dQuery_detach(self):
+    def test_detach(self):
         pass
 
-    def test_dQuery_die(self):
+    def test_die(self):
         pass
 
-    def test_dQuery_each(self):
+    def test_each(self):
         pass
 
-    def test_dQuery_empty(self):
+    def test_empty(self):
         pass
 
-    def test_dQuery_end(self):
+    def test_end(self):
         pass
 
-    def test_dQuery_eq(self):
+    def test_eq(self):
         pass
 
-    def test_dQuery_error(self):
+    def test_error(self):
         pass
 
-    def test_dQuery_even(self):
+    def test_even(self):
         pass
 
-    def test_dQuery_fadeIn(self):
+    def test_fadeIn(self):
         pass
 
-    def test_dQuery_fadeOut(self):
+    def test_fadeOut(self):
         pass
 
-    def test_dQuery_fadeTo(self):
+    def test_fadeTo(self):
         pass
 
-    def test_dQuery_fadeToggle(self):
+    def test_fadeToggle(self):
         pass
 
-    def test_dQuery_filter(self):
+    def test_filter(self):
         pass
 
-    def test_dQuery_find(self):
+    def test_find(self):
         pass
 
-    def test_dQuery_finish(self):
+    def test_finish(self):
         pass
 
-    def test_dQuery_first(self):
+    def test_first(self):
         pass
 
-    def test_dQuery_focus(self):
+    def test_focus(self):
         pass
 
-    def test_dQuery_focusin(self):
+    def test_focusin(self):
         pass
 
-    def test_dQuery_focusout(self):
+    def test_focusout(self):
         pass
 
-    def test_dQuery_get(self):
+    def test_get(self):
         pass
 
-    def test_dQuery_has(self):
+    def test_has(self):
         pass
 
-    def test_dQuery_hasClass(self):
+    def test_hasClass(self):
         a = º('<div id="test2"></div>')
         a.addClass('one').addClass('two').addClass('three')
         assert a.hasClass('one') == True
         assert a.hasClass('five') == False
 
-    def test_dQuery_height(self):
+    def test_height(self):
         pass
 
-    def test_dQuery_hide(self):
+    def test_hide(self):
         pass
 
-    def test_dQuery_hover(self):
+    def test_hover(self):
         pass
 
-    def test_dQuery_html(self):
+    def test_html(self):
         pass
 
-    def test_dQuery_index(self):
+    def test_index(self):
         pass
 
-    def test_dQuery_innerHeight(self):
+    def test_innerHeight(self):
         pass
 
-    def test_dQuery_innerWidth(self):
+    def test_innerWidth(self):
         pass
 
-    def test_dQuery_insertAfter(self):
+    def test_insertAfter(self):
         pass
 
-    def test_dQuery_insertBefore(self):
+    def test_insertBefore(self):
         pass
 
-    # def test_dQuery_is(self):
+    # def test_is(self):
         # pass
 
-    def test_dQuery_keydown(self):
+    def test_keydown(self):
         pass
 
-    def test_dQuery_keypress(self):
+    def test_keypress(self):
         pass
 
-    def test_dQuery_keyup(self):
+    def test_keyup(self):
         pass
 
-    def test_dQuery_last(self):
+    def test_last(self):
         things = º('<li></li><li></li><li></li><li></li><li data-tag="me"></li>')
         assert str(things.last()) == '<li data-tag="me"></li>'
 
-    def test_dQuery_length(self):
+    def test_length(self):
         pass
 
-    def test_dQuery_live(self):
+    def test_live(self):
         pass
 
-    def test_dQuery_load(self):
+    def test_load(self):
         pass
 
-    def test_dQuery_map(self):
+    def test_map(self):
         pass
 
-    def test_dQuery_mousedown(self):
+    def test_mousedown(self):
         pass
 
-    def test_dQuery_mouseenter(self):
+    def test_mouseenter(self):
         pass
 
-    def test_dQuery_mouseleave(self):
+    def test_mouseleave(self):
         pass
 
-    def test_dQuery_mousemove(self):
+    def test_mousemove(self):
         pass
 
-    def test_dQuery_mouseout(self):
+    def test_mouseout(self):
         pass
 
-    def test_dQuery_mouseover(self):
+    def test_mouseover(self):
         pass
 
-    def test_dQuery_mouseup(self):
+    def test_mouseup(self):
         pass
 
-    def test_dQuery_next(self):
+    def test_next(self):
         pass
 
-    def test_dQuery_nextAll(self):
+    def test_nextAll(self):
         pass
 
-    def test_dQuery_nextUntil(self):
+    def test_nextUntil(self):
         pass
 
-    # def test_dQuery_not(self):
+    # def test_not(self):
         # pass
 
-    def test_dQuery_odd(self):
+    def test_odd(self):
         pass
 
     def off(self, event):
         pass
 
-    def test_dQuery_offset(self):
+    def test_offset(self):
         pass
 
-    def test_dQuery_offsetParent(self):
+    def test_offsetParent(self):
         pass
 
     def on(self, event, callback):
         pass
 
-    def test_dQuery_one(self):
+    def test_one(self):
         pass
 
-    def test_dQuery_outerHeight(self):
+    def test_outerHeight(self):
         pass
 
-    def test_dQuery_outerWidth(self):
+    def test_outerWidth(self):
         pass
 
-    def test_dQuery_parent(self):
+    def test_parent(self):
         pass
 
-    def test_dQuery_parents(self):
+    def test_parents(self):
         pass
 
-    def test_dQuery_parentsUntil(self):
+    def test_parentsUntil(self):
         pass
 
-    def test_dQuery_position(self):
+    def test_position(self):
         pass
 
     def prepend(self, html):
         pass
 
-    def test_dQuery_prependTo(self):
+    def test_prependTo(self):
         pass
 
-    def test_dQuery_prev(self):
+    def test_prev(self):
         pass
 
-    def test_dQuery_prevAll(self):
+    def test_prevAll(self):
         pass
 
-    def test_dQuery_prevUntil(self):
+    def test_prevUntil(self):
         pass
 
-    def test_dQuery_promise(self):
+    def test_promise(self):
         pass
 
-    def test_dQuery_prop(self):
+    def test_prop(self):
         pass
 
-    def test_dQuery_pushStack(self):
+    def test_pushStack(self):
         pass
 
-    def test_dQuery_queue(self):
+    def test_queue(self):
         pass
 
-    def test_dQuery_ready(self):
+    def test_ready(self):
         pass
 
-    def test_dQuery_remove(self):
+    def test_remove(self):
         pass
 
-    def test_dQuery_removeAttr(self):
+    def test_removeAttr(self):
         pass
 
-    def test_dQuery_removeClass(self):
+    def test_removeClass(self):
         a = º('<div id="test2"></div>')
         a.addClass('one').addClass('two').addClass('three')
         assert a.hasClass('one') == True
         a.removeClass('one')
         assert a.hasClass('one') == False
 
-    def test_dQuery_removeData(self):
+    def test_removeData(self):
         pass
 
-    def test_dQuery_removeProp(self):
+    def test_removeProp(self):
         pass
 
-    def test_dQuery_replaceAll(self):
+    def test_replaceAll(self):
         pass
 
-    def test_dQuery_replaceWith(self):
+    def test_replaceWith(self):
         pass
 
-    def test_dQuery_resize(self):
+    def test_resize(self):
         pass
 
-    def test_dQuery_scroll(self):
+    def test_scroll(self):
         pass
 
-    def test_dQuery_scrollLeft(self):
+    def test_scrollLeft(self):
         pass
 
-    def test_dQuery_scrollTop(self):
+    def test_scrollTop(self):
         pass
 
-    def test_dQuery_select(self):
+    def test_select(self):
         pass
 
-    def test_dQuery_serialize(self):
+    def test_serialize(self):
         page = html(form(
             select(_name="single",).html(
                 option("Single", _selected=True),
@@ -453,37 +453,37 @@ class domonicTestCase(unittest.TestCase):
         º(page)
         print(º('form').serialize())
 
-    def test_dQuery_serializeArray(self):
+    def test_serializeArray(self):
         pass
 
-    def test_dQuery_show(self):
+    def test_show(self):
         pass
 
-    def test_dQuery_siblings(self):
+    def test_siblings(self):
         pass
 
-    def test_dQuery_size(self):
+    def test_size(self):
         pass
 
-    def test_dQuery_slice(self):
+    def test_slice(self):
         pass
 
-    def test_dQuery_slideDown(self):
+    def test_slideDown(self):
         pass
 
-    def test_dQuery_slideToggle(self):
+    def test_slideToggle(self):
         pass
 
-    def test_dQuery_slideUp(self):
+    def test_slideUp(self):
         pass
 
-    def test_dQuery_stop(self):
+    def test_stop(self):
         pass
 
-    def test_dQuery_submit(self):
+    def test_submit(self):
         pass
 
-    def test_dQuery_text(self):
+    def test_text(self):
         page = html(form(
                 select(_name="single",).html(
                     option("a", _selected=True),
@@ -499,13 +499,13 @@ class domonicTestCase(unittest.TestCase):
         assert º('div').text() == ['test', 'test']
         assert str(page) == '<html><form><select name="single"><option selected="True">a</option><option>b</option></select></form><div>test</div><div>test</div></html>'
 
-    def test_dQuery_toArray(self):
+    def test_toArray(self):
         pass
 
-    def test_dQuery_toggle(self):
+    def test_toggle(self):
         pass
 
-    def test_dQuery_toggleClass(self):
+    def test_toggleClass(self):
         # page = html(form(
         #         select(_name="single",).html(
         #             option("a", _selected=True),
@@ -523,41 +523,41 @@ class domonicTestCase(unittest.TestCase):
         # print(page)
         pass
 
-    def test_dQuery_trigger(self):
+    def test_trigger(self):
         pass
 
-    def test_dQuery_triggerHandler(self):
+    def test_triggerHandler(self):
         pass
 
-    def test_dQuery_unbind(self):
+    def test_unbind(self):
         pass
 
-    def test_dQuery_undelegate(self):
+    def test_undelegate(self):
         pass
 
-    def test_dQuery_unload(self):
+    def test_unload(self):
         pass
 
-    def test_dQuery_unwrap(self):
+    def test_unwrap(self):
         pass
 
-    def test_dQuery_val(self):
+    def test_val(self):
         pass
 
-    def test_dQuery_width(self):
+    def test_width(self):
         pass
 
-    def test_dQuery_wrap(self):
+    def test_wrap(self):
         pass
 
-    def test_dQuery_wrapAll(self):
+    def test_wrapAll(self):
         pass
 
-    def test_dQuery_wrapInner(self):
+    def test_wrapInner(self):
         pass
 
-    def test_dQuery_staticmethods(self):
-        print("test_dQuery_staticmethods::::::::::::::::::")
+    def test_staticmethods(self):
+        print("test_staticmethods::::::::::::::::::")
 
         d = html()
         º(d)
@@ -617,7 +617,7 @@ class domonicTestCase(unittest.TestCase):
         # º.isXMLDoc()
         # º.makeArray()
         # º.map()
-        
+
         first = ["a", "b", "c"]
         second = ["d", "e", "f"]
         result = º.merge(º.merge([], first), second)

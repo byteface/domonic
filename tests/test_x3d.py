@@ -15,7 +15,7 @@ from domonic.x3d import *
 from domonic.decorators import silence
 
 
-class domonicTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     # @silence
     def test_domonic_x3dom(self):

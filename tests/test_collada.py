@@ -13,7 +13,7 @@ from domonic.collada import *
 from domonic.decorators import silence
 
 
-class domonicTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     # @silence
     def test_domonic_collada(self):

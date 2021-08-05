@@ -14,7 +14,7 @@ from domonic.html import *
 from domonic.JSON import *
 
 
-class domonicTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     SOMEJSON = '''
     { "items": [
@@ -60,16 +60,16 @@ class domonicTestCase(unittest.TestCase):
         # data = JSON.parse(SOMEJSON)
         # print(data)
 
-        t = JSON.tablify(domonicTestCase.SOMEJSON2)
+        t = JSON.tablify(TestCase.SOMEJSON2)
         print(t)
 
-        t = JSON.tablify(json.loads(domonicTestCase.SOMEJSON2))
+        t = JSON.tablify(json.loads(TestCase.SOMEJSON2))
         print(t)
 
-        t = JSON.tablify(domonicTestCase.SOMEJSON)
+        t = JSON.tablify(TestCase.SOMEJSON)
         print(t)
 
-        # t = JSON.csvify(domonicTestCase.SOMEJSON)
+        # t = JSON.csvify(TestCase.SOMEJSON)
         # print(t)
 
         # t = JSON.csv2json("data.csv")

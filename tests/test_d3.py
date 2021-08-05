@@ -27,7 +27,7 @@ from domonic.d3.dispatch import dispatch, Dispatch
 
 
 
-class domonicTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
 
     # domonic.d3.d3
     # def test_d3_hello(self):

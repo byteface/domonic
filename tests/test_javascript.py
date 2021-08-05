@@ -21,18 +21,61 @@ from domonic.javascript import String
 from domonic.javascript import *
 
 
-class domonicTestCase(unittest.TestCase):
+from inspect import stack
+
+
+class TestCase(unittest.TestCase):
 
     # domonic.javascript.Math
 
-    def test_domonic_Object(self):
+    def test_object(self):
 
         o = Object()
         print(o)
+        print(type(o))
 
-        # obj = {'a': 1}
-        # copy = Object.assign({}, obj)
-        # print(copy)  # { a: 1 }
+        myObj = Object()
+        string = 'myString'
+        rand = Math.random()
+        obj1 = Object()
+        myObj.type = 'Dot syntax'
+        myObj['date created'] = 'String with space'
+        myObj[string] = 'String value'
+        myObj[rand] = 'Random Number'
+        myObj[obj1] = 'Object'
+        myObj[''] = 'Even an empty string'
+
+
+        assert myObj.type == 'Dot syntax'
+        assert myObj['date created'] == 'String with space'
+        assert myObj[string] == 'String value'
+        assert myObj[rand] == 'Random Number'
+        # assert myObj[obj1] == 'Object' # TODO - does js do this?
+        assert myObj[''] == 'Even an empty string'
+
+        assert o is not myObj
+
+        myCar = Object()
+        propertyName = 'make'
+        myCar[propertyName] = 'Ford'
+        assert myCar[propertyName] == 'Ford'
+        propertyName = 'model'
+        myCar[propertyName] = 'Mustang'
+        assert myCar[propertyName] == 'Mustang'
+
+        def showProps(obj, objName):
+            result = ''
+            for i in obj:
+                if obj.hasOwnProperty(i):
+                    result += objName + "." + str(i) + "= " + obj[i] + "\n"
+            return result
+
+        showProps(myCar, "myCar")
+        # print(showProps(myCar, "myCar"))
+
+        obj = {'a': 1}
+        copy = Object.assign({}, obj)
+        assert copy == {'a': 1}
 
         # print(Object().fromEntries())
         arr = [['0', 'a'], ['1', 'b'], ['2', 'c']]
@@ -48,6 +91,18 @@ class domonicTestCase(unittest.TestCase):
         obj = {'0': 'a', '1': 'b', '2': 'c'}
         assert Object.entries(obj) == [['0', 'a'], ['1', 'b'], ['2', 'c']]
 
+        # def listAllProperties(o):
+        #     result = []
+        #     objectToInspect = o
+        #     while objectToInspect != None:
+        #         print(objectToInspect)
+        #         objectToInspect = Object.getPrototypeOf(objectToInspect)
+        #         result = Array(result).concat(Object.getOwnPropertyNames(objectToInspect))
+
+        #     return result
+        # print(listAllProperties(myCar))
+
+
         # array like object with random key ordering
         # anObj = {'100': 'a', '2': 'b', '7': 'c'}
         # print(anObj)
@@ -58,12 +113,46 @@ class domonicTestCase(unittest.TestCase):
         assert Object.entries(100) == []
 
         # iterate through key-value gracefully
-        # obj = {'a': 5, 'b': 7, 'c': 9}
-        # for key, value in Object.entries(obj):
-            # print(f'{key} {value}')  # "a 5", "b 7", "c 9"
+        obj = {'a': 5, 'b': 7, 'c': 9}
+        for key, value in Object.entries(obj):
+            print(f'{key} {value}')  # "a 5", "b 7", "c 9"
+
+        # class Car(Object):
+        #     def __init__(self, make, model, year):
+        #         super().__init__()
+        #         self.make = make
+        #         self.model = model
+        #         self.year = year
+        #         # super().__init__()
+
+        # mycar = Car('Eagle', 'Talon TSi', 1993)
+        # print(mycar)
+        # print(mycar.make)
+        # print(mycar.__attribs__)
+
+    # Animal properties and method encapsulation
+
+
+    # TODO - to get reference back to self. in a dict it needs to readd the method and pass self
+    Animal = {
+        'type': 'Invertebrates',  # Default value of properties
+        # 'displayType': lambda self: print("STACK!!!!!",stack()[1].function)  # Method which will display type of Animal
+        'displayType': lambda self: print(self.type)
+    }
+    animal1 = Object.create(Animal)
+    print(animal1)
+    # print(animal1['type'])
+    print(animal1.__dict__)
+    animal1.displayType(animal1)  # Output:Invertebrates #TODO - need to work without passing self
+
+    fish = Object.create(Animal)
+    fish.type = 'Fishes'
+    fish.displayType(animal1)  # Output:Fishes
+
+
 
     def test_domonic_abs(self):
-        # python -m unittest tests.test_javascript.domonicTestCase.test_domonic_abs
+        # python -m unittest tests.test_javascript.TestCase.test_domonic_abs
 
         self.assertEqual(Math.abs('-1'), 1)
         self.assertEqual(Math.abs(-2), 2)
@@ -745,6 +834,13 @@ class domonicTestCase(unittest.TestCase):
         def success(data=None):
             print("sweet!")
             print(data.text)
+
+        from domonic.decorators import iife
+
+        @iife()
+        def sup():
+            print("sup!")
+            return True
 
 
     def test_javascript_numbersandstrings(self):

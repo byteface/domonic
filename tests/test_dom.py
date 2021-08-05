@@ -15,7 +15,7 @@ from domonic.dom import *
 from domonic import *
 
 
-class domonicTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
     """ Tests for the dom package """
 
     def test_dom_Node(self):
@@ -117,16 +117,15 @@ class domonicTestCase(unittest.TestCase):
         somenewdiv = div('im new')
         sometag.appendChild(somenewdiv)
 
-        print("parent tests")
-        print(somenewdiv.parentNode)
-        print(type(somenewdiv.parentNode))
-        print(somenewdiv.parentNode.id)
+        assert str(somenewdiv.parentNode) == '<div id="test" thingy="test22">asdfasdf<div></div><div>yo</div><div>im new</div></div>'
+        assert isinstance(somenewdiv.parentNode, div)
+        assert somenewdiv.parentNode.id == "test"
         print(somenewdiv.parentElement)
         print(somenewdiv.previousSibling)
-        print(somenewdiv.previousSibling.nextSibling)
+        assert str(somenewdiv.previousSibling.nextSibling) == "<div>im new</div>"
 
         mylist = ul(li(1), li(2), li(3))
-        print(mylist[1])
+        assert str(mylist[1]) == "<li>2</li>"
 
         mylist = ul(li(), li(), li())
         print(*mylist)
@@ -147,9 +146,9 @@ class domonicTestCase(unittest.TestCase):
         a1 += "how"
         a1 += "are"
         a1 += "you"
-        print(a1)
+        assert str(a1) == "<button>hihowareyou</button>"
         a1 -= "hi"
-        # print(a1)
+        assert str(a1) == "<button>howareyou</button>"
         # print(div(_test="1", **{"_data-test": ""}))
 
         print(sometag.id)

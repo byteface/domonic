@@ -563,16 +563,16 @@ There are tests used during dev. They are useful as code examples and to see wha
 See Makefile to run all tests:
 
 ```bash
-make test
+make test  # default tests ubuntu. so will fail on window when terminal test runs. comment out locally if that's the case
 ```
 
 or to test a single function:
 ```bash
-python -m unittest tests.test_javascript.domonicTestCase.test_javascript_array
-python -m unittest tests.test_dQuery.domonicTestCase.test_dQuery_addClass
-python -m unittest tests.test_geom.domonicTestCase.test_vec2
+python -m unittest tests.test_javascript.TestCase.test_javascript_array
+python -m unittest tests.test_dQuery.TestCase.test_addClass
+python -m unittest tests.test_geom.TestCase.test_vec2
 
-python3 -m unittest tests.test_cmd.domonicTestCase.test_cmd_dir
+python3 -m unittest tests.test_cmd.TestCase.test_cmd_dir  # only windows
 
 ```
 

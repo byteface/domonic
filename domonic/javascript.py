@@ -31,21 +31,28 @@ import re
 class Object(object):
     """ Creates a Mock Javascript Object in python """
 
-    def __init__(self, obj={}, *args, **kwargs):
+    def __init__(self, obj=None, *args, **kwargs):
         """[Creates a Mock Javascript Object in python]
 
         Args:
             obj ([type]): [pass an object, dict or callable to the contructor]
         """
+        # print('object created!')
+        if obj is None:
+            obj = {}
+
         self.__attribs__ = {}
         if callable(obj):
             self.__attribs__ = {}
             self.__attribs__['__call__'] = obj
-            self.__attribs__['__call__'].__name__ = '__call__'
-            self.__attribs__['__call__'].__doc__ = 'The function object itself.'
+            # self.__attribs__['__call__'].__name__ = '__call__'
+            # self.__attribs__['__call__'].__doc__ = 'The function object itself.'
             # self.__attribs__['__call__'].__module__ = '__main__'
         elif isinstance(obj, dict):
             self.__attribs__ = obj  # set the dict as the attribs
+            # self.__attribs__['__dict__'] = obj  # set the dict as the attribs
+            self.__dict__ = {**self.__dict__, **obj}  # set the dict as the attribs?
+            print('YO!')
         else:
             try:
                 self.__attribs__ = {}
@@ -66,9 +73,9 @@ class Object(object):
         # return self.toString()
         return str(self.__attribs__)
 
-    def __repr__(self):
-        """ Returns a string representation of the object."""
-        return self.toString()
+    # def __repr__(self):
+    #     """ Returns a string representation of the object."""
+    #     return self.toString()
 
     @staticmethod
     def fromEntries(entries):
@@ -85,44 +92,44 @@ class Object(object):
         """
         return {k: v for k, v in entries}
 
-    # @staticmethod
-    # def assign(target, source):
-        # """ Copies the values of all enumerable own properties from one or more source objects to a target object. """
-        # if isinstance( target, dict ):
-        #     if isinstance( source, dict ):
-        #         for k, v in source.items():
-        #             target[k] = v
-        #     else:
-        #         for k, v in source.attribs.items():
-        #             target[k] = v
-        # else:
-        #     if isinstance( source, dict ):
-        #         for k, v in source.items():
-        #             setattr(target, k, v)
-        #     else:
-        #         for k, v in source.attribs.items():
-        #             setattr(target, k, v)
+    @staticmethod
+    def assign(target, source):
+        """ Copies the values of all enumerable own properties from one or more source objects to a target object. """
+        if isinstance(target, dict):
+            if isinstance(source, dict):
+                for k, v in source.items():
+                    target[k] = v
+            else:
+                for k, v in source.__attribs__.items():
+                    target[k] = v
+        else:
+            if isinstance(source, dict):
+                for k, v in source.items():
+                    setattr(target, k, v)
+            else:
+                for k, v in source.attribs.items():
+                    setattr(target, k, v)
 
         # return target
-
-        # for prop in source.attribs:
+        # for prop in source.__attribs__:
         #     if source.propertyIsEnumerable(prop):
         #         target.__attribs__[prop] = source.__attribs__[prop]
-        # return target
-    #     if isinstance( source, dict ):
-    #     return target
+        return target
 
-    # @staticmethod
-    # def create(proto, propertiesObject):
-    #     """ Creates a new object with the specified prototype object and properties. """
-    #     if isinstance(propertiesObject, dict):
-    #         return Object(propertiesObject)
-    #     elif isinstance(propertiesObject, Object):
-    #         return propertiesObject
-    #     elif isinstance(propertiesObject, list):
-    #         return Object.fromEntries(propertiesObject)
-    #     else:
-    #         return propertiesObject
+    @staticmethod
+    def create(proto, propertiesObject=None):
+        """ Creates a new object with the specified prototype object and properties. """
+        if propertiesObject is None:
+            return Object(proto)
+
+        if isinstance(propertiesObject, dict):
+            return Object(propertiesObject)
+        elif isinstance(propertiesObject, Object):
+            return propertiesObject
+        elif isinstance(propertiesObject, list):
+            return Object.fromEntries(propertiesObject)
+        else:
+            return propertiesObject
 
         # return Object(propertiesObject)
     #     obj = {}
@@ -362,12 +369,82 @@ class Object(object):
 
     def toString(self):
         """ Returns a string representation of the object."""
-        # return self.__str__()
-        pass
+        return '[' + self.__class__.__name__ + ': ' + str(self.__attribs__) + ']'
 
     def valueOf(self):
         """ Returns the value of the object. """
         return self
+
+    def __str__(self):
+        """ Returns a string representation of the object. """
+        return self.toString()
+
+    # def __repr__(self):
+    #     """ Returns a string representation of the object. """
+    #     return self.toString()
+
+    def __iter__(self):
+        """ Iterates over object's properties. """
+        for prop in self.__attribs__:
+            yield prop
+        for key in self.__dict__:
+            yield key
+        return
+
+    def __hash__(self):
+        """ Returns the hash of the object. """
+        return hash(self.toString())
+
+    def __eq__(self, other):
+        """ Compares two objects. """
+        if isinstance(other, Object):
+            return self.toString() == other.toString()
+        return False
+
+    def __ne__(self, other):
+        """ Compares two objects. """
+        if isinstance(other, Object):
+            return self.toString() != other.toString()
+        return True
+
+    def __nonzero__(self):
+        """ Returns whether the object is false. """
+        return self.toString() != ''    
+
+    def __bool__(self): 
+        """ Returns whether the object is false. """
+        return self.toString() != ''
+
+    # def __dict__(self):
+    #     """ Returns the object's attributes as a dictionary. """
+    #     return self.__attribs__
+
+    def __getitem__(self, key):
+        """ Returns the value of the specified property. """
+        # print('getting', key)
+        return self.__attribs__[key]
+
+    def __setitem__(self, key, value):
+        """ Sets the value of the specified property. """
+        # print('SETTING')
+        # print(key, value)
+        self.__attribs__[key] = value
+
+    def __delitem__(self, key):
+        """ Deletes the specified property. """
+        del self.__attribs__[key]
+
+    def __len__(self):
+        """ Returns the number of properties. """
+        return len(self.__attribs__)
+
+    def __contains__(self, key):
+        """ Returns whether the specified property exists. """
+        return key in self.__attribs__
+
+    # def __call__(self, *args, **kwargs):
+    #     """ Calls the object. """
+    #     return self.toString()
 
 
 class Function(object):

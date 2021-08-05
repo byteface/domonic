@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Domonic: autodocs &#8212; domonic 0.4.0 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.4.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -2480,7 +2480,7 @@ for each element in the Map object in insertion order.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="domonic.javascript.Math">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">Math</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Math"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Math" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">Math</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Math"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Math" title="Permalink to this definition">¶</a></dt>
 <dd><p>Math class that mirrors javascript implementation.</p>
 <p>i.e. you can pass strings and it will also work
 Math.abs(‘-1’)</p>
@@ -2600,8 +2600,20 @@ or exponential notation rounded to precision significant digits]</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="domonic.javascript.Object">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">Object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Object" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">Object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Mock Javascript Object in python</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Object.assign">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.assign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Object.assign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies the values of all enumerable own properties from one or more source objects to a target object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Object.create">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proto</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propertiesObject</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Object.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new object with the specified prototype object and properties.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="domonic.javascript.Object.defineProperty">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">defineProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.defineProperty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Object.defineProperty" title="Permalink to this definition">¶</a></dt>
@@ -6657,6 +6669,23 @@ when the function is used.</p>
 <dt class="sig sig-object py" id="domonic.decorators.el">
 <span class="sig-prename descclassname"><span class="pre">domonic.decorators.</span></span><span class="sig-name descname"><span class="pre">el</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'div'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#el"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.decorators.el" title="Permalink to this definition">¶</a></dt>
 <dd><p>[wraps the results of a function in an element]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="domonic.decorators.iife">
+<span class="sig-prename descclassname"><span class="pre">domonic.decorators.</span></span><span class="sig-name descname"><span class="pre">iife</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">before</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#domonic.decorators.iife" title="Permalink to this definition">¶</a></dt>
+<dd><p>[calls before() passing the response as args to the decorated function.
+optional error handler. run the decorated function immediately.</p>
+<p>WARNING: this is not for the regular decorating of a function
+its syntactical sugar for a callback i.e.</p>
+<dl class="simple">
+<dt>&#64;called(</dt><dd><p>lambda: º.ajax(’<a class="reference external" href="https://www.google.com">https://www.google.com</a>’),
+lambda err: print(‘error:’, err))</p>
+</dd>
+<dt>def success(data=None):</dt><dd><p>print(“sweet!”)
+print(data)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
