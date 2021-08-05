@@ -144,6 +144,31 @@ This command will attempt to generate a template from a webpage. (only simple pa
 Then you can edit/tweak it to get what you need and build new components quicker.
 
 
+INSTALLING - (linux/mac only)
+
+If you like you can install domonic to your .bashprofile
+
+.. code-block :: python
+
+  python3 -m domonic --install
+
+Now in your terminal whenever you want to start a new project you can type...
+
+.. code-block :: python
+
+  project mycoolproject
+
+and it will smash out a basic project for you.
+
+you can also now access the docs quickly simply by typing...
+
+.. code-block :: python
+
+  domonic -h
+
+Finally, you can open and edit .bashprofile to tweak it to your own preferences.
+
+
 Join-In
 ----------------
 Feel free to join in if you find it useful.
@@ -160,6 +185,7 @@ https://github.com/byteface/Blueberry/
 
 A cron viewer:
 https://github.com/byteface/ezcron/
+
 
 
 Disclaimer

@@ -5,6 +5,50 @@
 """
 
 import argparse
+import os
+
+
+prog = '''
+
+function project(){
+    PROJECT_NAME=$1
+    mkdir $PROJECT_NAME
+    cd $PROJECT_NAME
+
+    mkdir static
+    mkdir static/js
+    mkdir static/css
+    mkdir static/img
+    mkdir static/data
+
+    mkdir archive
+    touch app.py
+    touch README.md
+    touch MakeFile
+
+    mkdir app
+    touch app/__init__.py
+
+    git init
+    touch .gitignore
+
+    touch static/js/master.js
+    touch static/css/styles.css
+    touch static/data/data.json
+
+    python3 -m venv venv
+    . venv/bin/activate
+
+    pip3 install requests
+    pip3 install sanic
+    pip3 install domonic
+    pip3 freeze >> requirements.txt
+
+    chmod -R 777 static
+    open .
+}
+
+'''
 
 
 # class domonic_ui(object):
@@ -15,6 +59,7 @@ import argparse
 #         pass
 
 
+
 def parse_args():
     parser = argparse.ArgumentParser(add_help=False, prog="domonic", usage="%(prog)s [options]", description="Generate HTML with Python 3")
     parser.add_argument('-a', '--assets', help="generate as assets directory with common files", action='store_true')
@@ -22,6 +67,8 @@ def parse_args():
     parser.add_argument('-h', '--help', action='store_true')  # launch the docs
     parser.add_argument('-v', '--version', action='store_true')
     # parser.add_argument('-u', '--ui', help="launches a UI")
+
+    parser.add_argument('-i', '--install', action='store_true')  # add 'projects' to the .bashprofile or .bashrc
 
     # parser.add_argument('-w', '--website', action='store_true')  # launch the docs
     # parser.add_argument('-s', '--server', help="runs python -m http.server", type=str)
@@ -65,23 +112,50 @@ def do_things(arguments):
         print(__version__)
         return __version__
 
-    if arguments.server is True:
-        # import sys
-        # sys.argv = ['python', '-m', 'http.server']
-        # sys.argv.extend(['--bind', '0.0.0.0', '8000'])
-        # sys.call_command('http.server')
-        import os   
-        os.system('python -m http.server 8000 --bind 0.0.0.0')
-        # from http.server import HTTPServer, SimpleHTTPRequestHandler
-        # import socketserver
-        # PORT = 8000
-        # httpd = socketserver.TCPServer(("", PORT), SimpleHTTPRequestHandler)
-        # print("serving at port", PORT)
-        # httpd.serve_forever()
+    # if arguments.server is True:
+        # port = domonic.get(arguments.server)
+        # os.system('python -m http.server ' + port)
 
+    if arguments.install is True:
+        # detect operating system and attempts to append prog to the .bashprofile or .bashrc
+        if os.name == 'nt':
+            print('Sorry, this install is currently unavaialable for windows')
+        else:
+
+            # detect if the user has a bashrc or bashprofile
+            if os.path.exists(os.path.expanduser('~/.bashrc')):
+
+                # dont do it if alreay exists
+                if 'function project()' not in open(os.path.expanduser('~/.bashrc')).read():
+                    print('found .bashrc')
+                    with open(os.path.expanduser('~/.bashrc'), 'a') as f:
+                        f.write('\n\n# domonic\n')
+                        f.write(prog)
+                        f.write('alias domonic="python3 -m domonic"\n')
+                else:
+                    print('already installed. You need to manually remove it from ~/.bashrc')
+        
+            elif os.path.exists(os.path.expanduser('~/.bash_profile')):
+
+                if 'function project()' not in open(os.path.expanduser('~/.bash_profile')).read():
+                    print('found .bash_profile')
+                    with open(os.path.expanduser('~/.bash_profile'), 'a') as f:
+                        f.write('\n\n# domonic\n')
+                        f.write(prog)
+                        f.write('alias domonic="python3 -m domonic"\n')
+                else:
+                    print('already installed. You need to manually remove it from ~/.bash_profile')
+
+            else:
+                print('no bashrc or bash_profile found. you need to manually add the following to your .bashrc or .bash_profile')
+                print(prog)
 
 
 
 if __name__ == "__main__":
     args = parse_args()
     do_things(args)
+
+
+
+# def install():

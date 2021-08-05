@@ -108,6 +108,13 @@ python doesn't allow hyphens in parameter names. so use variable keyword argumen
 div("test", **{"_data-test":"test"} )
 ```
 
+or for example a colon...
+
+```python
+t = div( **{"_:test":"something"} )
+str(t)
+```
+
 ### DOM
 
 #### createElement
@@ -130,7 +137,7 @@ There's an evolving DOM. Check code/docs to see what's currently implemented. i.
 mysite.querySelectorAll('button')
 
 ```
-
+*note - still in dev. use getElementsBySelector for more complex selectors
 
 ### javascript
 
@@ -155,7 +162,7 @@ print(url.hash)
 # Global.decodeURIComponent(...
 # Global.encodeComponent(...
 
-# from domonic.javascript import Date
+# from domonic.javascript import Date, String, Number
 # etc..
 ```
 
