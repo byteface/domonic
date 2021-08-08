@@ -146,7 +146,7 @@ async def play(request):
     game = Game(request)
     game.state.word = get_word() # get a random word to start playing with
     request.ctx.session['game'] = asdict(game.state)
-    
+
     intro = header(
         h1("HANGMAN!"),
         div("Can you guess the word? type a letter using the keyboard to guess."),
