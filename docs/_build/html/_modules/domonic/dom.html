@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.4.0 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.4.3 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -383,15 +383,17 @@
 
 <div class="viewcode-block" id="Node.isDefaultNamespace"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.isDefaultNamespace">[docs]</a>    <span class="k">def</span> <span class="nf">isDefaultNamespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ns</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks if a namespace is the default namespace &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">ns</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ns</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaceURI</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Node.lookupNamespaceURI"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.lookupNamespaceURI">[docs]</a>    <span class="k">def</span> <span class="nf">lookupNamespaceURI</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ns</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the namespace URI for a given prefix &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">ns</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaceURI</span>
+        <span class="c1"># namespaces = {&#39;xml&#39;: &#39;http://www.w3.org/XML/1998/namespace&#39;, &#39;svg&#39;: &#39;http://www.w3.org/2000/svg&#39;, &#39;xlink&#39;: &#39;http://www.w3.org/1999/xlink&#39;, &#39;xmlns&#39;: &#39;http://www.w3.org/2000/xmlns/&#39;, &#39;xm&#39;: &#39;http://www.w3.org/2001/xml-events&#39;, &#39;xh&#39;: &#39;http://www.w3.org/1999/xhtml&#39;}</span>
+        <span class="kn">from</span> <span class="nn">domonic.constants</span> <span class="kn">import</span> <span class="n">namespaces</span>
+        <span class="k">if</span> <span class="n">ns</span> <span class="ow">in</span> <span class="n">namespaces</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">namespaces</span><span class="p">[</span><span class="n">ns</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
@@ -402,7 +404,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Node.normaliz"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.normaliz">[docs]</a>    <span class="k">def</span> <span class="nf">normaliz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Node.normalize"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Normalize a node&#39;s value &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">None</span></div></div>
 
@@ -1256,6 +1258,27 @@
         <span class="sd">&quot;&quot;&quot; Gives focus to an element &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
+<div class="viewcode-block" id="Element.setAttributeNodeNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.setAttributeNodeNS">[docs]</a>    <span class="k">def</span> <span class="nf">setAttributeNodeNS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the attribute node of an element &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Element.getAttributeNodeNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getAttributeNodeNS">[docs]</a>    <span class="k">def</span> <span class="nf">getAttributeNodeNS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the attribute node of an element &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Element.setAttributeNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.setAttributeNS">[docs]</a>    <span class="k">def</span> <span class="nf">setAttributeNS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">localName</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets an attribute in the given namespace &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Element.getAttributeNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getAttributeNS">[docs]</a>    <span class="k">def</span> <span class="nf">getAttributeNS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">localName</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the value of the specified attribute &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">localName</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Element.removeAttributeNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.removeAttributeNS">[docs]</a>    <span class="k">def</span> <span class="nf">removeAttributeNS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">localName</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Removes an attribute from an element &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
 <div class="viewcode-block" id="Element.getAttribute"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns the specified attribute value of an element node &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1349,9 +1372,13 @@
         <span class="sd">&#39;&#39;&#39; Returns true if the content of an element is editable, otherwise false&#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Element.isDefaultNamespace"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.isDefaultNamespace">[docs]</a>    <span class="k">def</span> <span class="nf">isDefaultNamespace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Returns true if a specified namespaceURI is the default, otherwise false&#39;&#39;&#39;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="c1"># def isDefaultNamespace(self, namespaceURI: str):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns true if the specified namespace is the default namespace &quot;&quot;&quot;</span>
+    <span class="c1">#     if namespaceURI in self.defaultNamespace:</span>
+    <span class="c1">#         return True</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         return False</span>
 
 <div class="viewcode-block" id="Element.lang"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.lang">[docs]</a>    <span class="k">def</span> <span class="nf">lang</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets or returns the value of the lang attribute of an element &quot;&quot;&quot;</span>
@@ -1608,9 +1635,11 @@
 
 
 <div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Baseclass for the html tag &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; the Document class is also the baseclass for the html tag &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; init Creates a new Document &quot;&quot;&quot;</span>
+        <span class="c1"># print(&#39;setting document !!!!&#39;)</span>
         <span class="c1"># self.doc = doc</span>
         <span class="c1"># self.uri = uri</span>
         <span class="c1"># self.documentURI = uri</span>
@@ -1618,13 +1647,29 @@
         <span class="c1"># self.raw</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># ??</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># print(&#39;setting document !!!!&#39;)</span>
+            <span class="k">global</span> <span class="n">document</span>
+            <span class="n">document</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to set document&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># print(&#39;setting document !!!!&#39;)</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="n">instance</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">documentElement</span> <span class="o">=</span> <span class="n">instance</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">URL</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">javascript</span><span class="o">.</span><span class="n">URL</span><span class="p">()</span><span class="o">.</span><span class="n">href</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">baseURI</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">javascript</span><span class="o">.</span><span class="n">URL</span><span class="p">()</span><span class="o">.</span><span class="n">href</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># print(&#39;setting document baby!!!!&#39;)</span>
+            <span class="k">global</span> <span class="n">document</span>
+            <span class="n">document</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="c1"># print(document)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to set document&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">instance</span>
 
     <span class="c1"># TODO - still not great as it also returns &#39;links&#39; when searching for &#39;li&#39;</span>
@@ -1716,6 +1761,14 @@
         <span class="c1"># TODO - self closing tags - need a &#39;tag&#39; factory. need the tags in .html package to register with it.</span>
         <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="n">tag</span><span class="p">,</span> <span class="n">tag_init</span>
         <span class="n">el</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">_type</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">el</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Document.createElementNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.createElementNS">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">createElementNS</span><span class="p">(</span><span class="n">namespaceURI</span><span class="p">,</span> <span class="n">qualifiedName</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Creates an element with the specified namespace URI and qualified name.&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="n">tag</span><span class="p">,</span> <span class="n">tag_init</span>
+        <span class="n">el</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">qualifiedName</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">qualifiedName</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
+        <span class="n">el</span><span class="o">.</span><span class="n">namespaceURI</span> <span class="o">=</span> <span class="n">namespaceURI</span>
         <span class="k">return</span> <span class="n">el</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Document.createEvent"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.createEvent">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -1912,10 +1965,6 @@
         <span class="k">pass</span></div></div>
 
 
-<span class="n">document</span> <span class="o">=</span> <span class="n">Document</span>
-<span class="c1"># doc = Document</span>
-
-
 <span class="k">class</span> <span class="nc">Location</span><span class="p">():</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2086,40 +2135,49 @@
 <span class="n">console</span> <span class="o">=</span> <span class="n">Console</span>
 
 
-<span class="k">class</span> <span class="nc">dom</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>  <span class="c1"># don&#39;t think this class is need now as the package is the &#39;dom&#39;</span>
-    <span class="n">console</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;console&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">console</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;console&#39;</span><span class="p">})</span>
-    <span class="n">location</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">location</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;location&#39;</span><span class="p">})</span>
-    <span class="n">document</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;document&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">document</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;document&#39;</span><span class="p">})</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">console</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_console</span>
+<span class="c1"># document will be set when a Document is created. the last created document is the document that will be used</span>
+<span class="c1"># it can also be set manually</span>
+<span class="k">global</span> <span class="n">document</span>
+<span class="n">document</span> <span class="o">=</span> <span class="n">Document</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
 
-        <span class="c1"># self.console = dom.console</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">class dom(object):  # don&#39;t think this class is need now as the package is the &#39;dom&#39;</span>
+<span class="sd">    console = type(&#39;console&#39;, (console,), {&#39;name&#39;: &#39;console&#39;})</span>
+<span class="sd">    location = type(&#39;location&#39;, (location,), {&#39;name&#39;: &#39;location&#39;})</span>
+<span class="sd">    document = type(&#39;document&#39;, (document,), {&#39;name&#39;: &#39;document&#39;})</span>
 
-        <span class="c1"># self.location = type(&#39;location&#39;, (location,), {&#39;name&#39;:&#39;location&#39;})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">console</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;console&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">dom</span><span class="o">.</span><span class="n">console</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;console&#39;</span><span class="p">})</span>
-        <span class="c1"># self.doc = type(&#39;document&#39;, (DOM,), {&#39;name&#39;:&#39;document&#39;})</span>
+<span class="sd">    @property</span>
+<span class="sd">    def console(self):</span>
+<span class="sd">        return self._console</span>
 
-        <span class="c1"># self.attr = type(&#39;attribute&#39;, (DOM,), {&#39;name&#39;:&#39;attribute&#39;})</span>
-        <span class="c1"># self.el = type(&#39;element&#39;, (DOM,), {&#39;name&#39;:&#39;element&#39;})</span>
-        <span class="c1"># self.events = type(&#39;events&#39;, (DOM,), {&#39;name&#39;:&#39;events&#39;})</span>
-        <span class="c1"># self.event.Objects</span>
-        <span class="c1"># self.geo = type(&#39;geo&#39;, (DOM,), {&#39;name&#39;:&#39;geo&#39;})</span>
-        <span class="c1"># self.history = type(&#39;history&#39;, (DOM,), {&#39;name&#39;:&#39;history&#39;})</span>
-        <span class="c1"># self.HTMLCollection</span>
-        <span class="c1"># self.location = type(&#39;location&#39;, (DOM,), {&#39;name&#39;:&#39;location&#39;})</span>
-        <span class="c1"># self.navigator = type(&#39;navigator&#39;, (DOM,), {&#39;name&#39;:&#39;navigator&#39;})</span>
-        <span class="c1"># self.screen = type(&#39;screen&#39;, (DOM,), {&#39;name&#39;:&#39;screen&#39;})</span>
-        <span class="c1"># self.style = type(&#39;style&#39;, (DOM,), {&#39;name&#39;:&#39;style&#39;})</span>
-        <span class="c1"># self.window = type(&#39;window&#39;, (DOM,), {&#39;name&#39;:&#39;window&#39;})</span>
-        <span class="c1"># self.webstorage = type(&#39;webstorage&#39;, (DOM,), {&#39;name&#39;:&#39;webstorage&#39;})</span>
+<span class="sd">    def __init__(self, *args, **kwargs):</span>
+<span class="sd">        self.args = args</span>
+<span class="sd">        self.kwargs = kwargs</span>
 
-        <span class="k">pass</span>
+<span class="sd">        # self.console = dom.console</span>
+
+<span class="sd">        # self.location = type(&#39;location&#39;, (location,), {&#39;name&#39;:&#39;location&#39;})</span>
+<span class="sd">        self.console = type(&#39;console&#39;, (dom.console,), {&#39;name&#39;: &#39;console&#39;})</span>
+<span class="sd">        # self.doc = type(&#39;document&#39;, (DOM,), {&#39;name&#39;:&#39;document&#39;})</span>
+
+<span class="sd">        # self.attr = type(&#39;attribute&#39;, (DOM,), {&#39;name&#39;:&#39;attribute&#39;})</span>
+<span class="sd">        # self.el = type(&#39;element&#39;, (DOM,), {&#39;name&#39;:&#39;element&#39;})</span>
+<span class="sd">        # self.events = type(&#39;events&#39;, (DOM,), {&#39;name&#39;:&#39;events&#39;})</span>
+<span class="sd">        # self.event.Objects</span>
+<span class="sd">        # self.geo = type(&#39;geo&#39;, (DOM,), {&#39;name&#39;:&#39;geo&#39;})</span>
+<span class="sd">        # self.history = type(&#39;history&#39;, (DOM,), {&#39;name&#39;:&#39;history&#39;})</span>
+<span class="sd">        # self.HTMLCollection</span>
+<span class="sd">        # self.location = type(&#39;location&#39;, (DOM,), {&#39;name&#39;:&#39;location&#39;})</span>
+<span class="sd">        # self.navigator = type(&#39;navigator&#39;, (DOM,), {&#39;name&#39;:&#39;navigator&#39;})</span>
+<span class="sd">        # self.screen = type(&#39;screen&#39;, (DOM,), {&#39;name&#39;:&#39;screen&#39;})</span>
+<span class="sd">        # self.style = type(&#39;style&#39;, (DOM,), {&#39;name&#39;:&#39;style&#39;})</span>
+<span class="sd">        # self.window = type(&#39;window&#39;, (DOM,), {&#39;name&#39;:&#39;window&#39;})</span>
+<span class="sd">        # self.webstorage = type(&#39;webstorage&#39;, (DOM,), {&#39;name&#39;:&#39;webstorage&#39;})</span>
+
+<span class="sd">        pass</span>
+<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
           </div>

@@ -15,7 +15,7 @@
 [![Python package](https://github.com/byteface/domonic/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/byteface/domonic/actions/workflows/python-package.yml)
 
 
-#### Contains several evolving packages: (but by no means are any of them complete)
+#### Contains several evolving packages:
 
 • [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎 <br />
 • [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲 <br />
@@ -130,14 +130,36 @@ print(site)
 
 ```
 
-There's an evolving DOM. Check code/docs to see what's currently implemented. i.e
+There's an evolving DOM.
+
+```python
+mysite.querySelectorAll('button')  # *note - still in dev. use getElementsBySelector for more complex selectors
+
+# mysite.getElementsBySelector
+```
+
+To use the DOM either reference your root 'html' node or import the dom modules global 'document'
 
 ```python
 
-mysite.querySelectorAll('button')
+# access the document via the html tag
+mydom = html()
+# mydom.getElementbyID...
+
+# or by importing the document global
+from domonic.dom import document
+# document.createElement...
+print(document)
 
 ```
-*note - still in dev. use getElementsBySelector for more complex selectors
+The last 'html()' you created will always be the 'document'. You can also set it manually but it needs to ne a Document instance. Before a 'html' class is created there is an empty document so that static methods can be available.
+
+Remember python globals are only to that module (unlike other langs). so you will have to import document explicitly when you need it (per method call) as using '*' won't work.
+
+To learn more about he webAPI click here.
+https://developer.mozilla.org/en-US/docs/Web/API
+
+And check the code/docs to see what's currently implemented.
 
 ### javascript
 
@@ -165,7 +187,6 @@ print(url.hash)
 # from domonic.javascript import Date, String, Number
 # etc..
 ```
-
 
 You can use setInterval and clearInterval with params
 

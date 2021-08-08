@@ -510,11 +510,11 @@ class Function(object):
             [type]: [result of calling the function.]
         """
         # raise NotImplementedError
-        # print(thisArg)
-        # print(args)
+        print(thisArg)
+        print(args)
         if thisArg is not None:
-            # return self.func(thisArg, args)
-            return self.func(*args)
+            return self.func(thisArg, args)
+            # return self.func(this=thisArg, *args)
         return self.func()
 
     def toString(self):

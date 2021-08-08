@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.4.0 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.4.3 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -543,11 +543,11 @@
 <span class="sd">            [type]: [result of calling the function.]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># raise NotImplementedError</span>
-        <span class="c1"># print(thisArg)</span>
-        <span class="c1"># print(args)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">thisArg</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">thisArg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># return self.func(thisArg, args)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">thisArg</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+            <span class="c1"># return self.func(this=thisArg, *args)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Function.toString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Function.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Domonic: autodocs &#8212; domonic 0.4.2 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.4.3 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -742,7 +742,7 @@ i.e. hypenated tags &lt;some-custom-tag&gt;&lt;/some-custom-tag&gt;</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="domonic.dom.Document">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.dom.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Document" title="Permalink to this definition">¶</a></dt>
-<dd><p>Baseclass for the html tag</p>
+<dd><p>the Document class is also the baseclass for the html tag</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="domonic.dom.Document.anchors">
 <span class="sig-name descname"><span class="pre">anchors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.anchors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Document.anchors" title="Permalink to this definition">¶</a></dt>
@@ -795,6 +795,12 @@ i.e. hypenated tags &lt;some-custom-tag&gt;&lt;/some-custom-tag&gt;</p>
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">createElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.createElement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Document.createElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates an Element node -
 WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.dom.Document.createElementNS">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">createElementNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualifiedName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.createElementNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Document.createElementNS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an element with the specified namespace URI and qualified name.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1014,9 +1020,21 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="domonic.dom.Element.getAttributeNS">
+<span class="sig-name descname"><span class="pre">getAttributeNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Element.getAttributeNS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the specified attribute</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="domonic.dom.Element.getAttributeNode">
 <span class="sig-name descname"><span class="pre">getAttributeNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Element.getAttributeNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the specified attribute node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.dom.Element.getAttributeNodeNS">
+<span class="sig-name descname"><span class="pre">getAttributeNodeNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNodeNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Element.getAttributeNodeNS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the attribute node of an element</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1113,12 +1131,6 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 <dt class="sig sig-object py" id="domonic.dom.Element.isContentEditable">
 <span class="sig-name descname"><span class="pre">isContentEditable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.isContentEditable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Element.isContentEditable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the content of an element is editable, otherwise false</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="domonic.dom.Element.isDefaultNamespace">
-<span class="sig-name descname"><span class="pre">isDefaultNamespace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.isDefaultNamespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Element.isDefaultNamespace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns true if a specified namespaceURI is the default, otherwise false</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1253,6 +1265,12 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="domonic.dom.Element.removeAttributeNS">
+<span class="sig-name descname"><span class="pre">removeAttributeNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttributeNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Element.removeAttributeNS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes an attribute from an element</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="domonic.dom.Element.removeAttributeNode">
 <span class="sig-name descname"><span class="pre">removeAttributeNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttributeNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Element.removeAttributeNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes a specified attribute node, and returns the removed node</p>
@@ -1301,9 +1319,21 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="domonic.dom.Element.setAttributeNS">
+<span class="sig-name descname"><span class="pre">setAttributeNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.setAttributeNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Element.setAttributeNS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets an attribute in the given namespace</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="domonic.dom.Element.setAttributeNode">
 <span class="sig-name descname"><span class="pre">setAttributeNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.setAttributeNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Element.setAttributeNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets or changes the specified attribute node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.dom.Element.setAttributeNodeNS">
+<span class="sig-name descname"><span class="pre">setAttributeNodeNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.setAttributeNodeNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Element.setAttributeNodeNS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the attribute node of an element</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1469,8 +1499,8 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="domonic.dom.Node.normaliz">
-<span class="sig-name descname"><span class="pre">normaliz</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.normaliz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Node.normaliz" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="domonic.dom.Node.normalize">
+<span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Node.normalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Normalize a node’s value</p>
 </dd></dl>
 
@@ -1593,7 +1623,40 @@ or the current position of the caret.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="domonic.dom.document">
 <span class="sig-prename descclassname"><span class="pre">domonic.dom.</span></span><span class="sig-name descname"><span class="pre">document</span></span><a class="headerlink" href="#domonic.dom.document" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#domonic.dom.Document" title="domonic.dom.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.dom.Document</span></code></a></p>
+<dd><dl>
+<dt>class dom(object):  # don’t think this class is need now as the package is the ‘dom’</dt><dd><p>console = type(‘console’, (console,), {‘name’: ‘console’})
+location = type(‘location’, (location,), {‘name’: ‘location’})
+document = type(‘document’, (document,), {‘name’: ‘document’})</p>
+<p>&#64;property
+def console(self):</p>
+<blockquote>
+<div><p>return self._console</p>
+</div></blockquote>
+<dl>
+<dt>def __init__(self, <a href="#id3"><span class="problematic" id="id4">*</span></a>args, <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs):</dt><dd><p>self.args = args
+self.kwargs = kwargs</p>
+<p># self.console = dom.console</p>
+<p># self.location = type(‘location’, (location,), {‘name’:’location’})
+self.console = type(‘console’, (dom.console,), {‘name’: ‘console’})
+# self.doc = type(‘document’, (DOM,), {‘name’:’document’})</p>
+<p># self.attr = type(‘attribute’, (DOM,), {‘name’:’attribute’})
+# self.el = type(‘element’, (DOM,), {‘name’:’element’})
+# self.events = type(‘events’, (DOM,), {‘name’:’events’})
+# self.event.Objects
+# self.geo = type(‘geo’, (DOM,), {‘name’:’geo’})
+# self.history = type(‘history’, (DOM,), {‘name’:’history’})
+# self.HTMLCollection
+# self.location = type(‘location’, (DOM,), {‘name’:’location’})
+# self.navigator = type(‘navigator’, (DOM,), {‘name’:’navigator’})
+# self.screen = type(‘screen’, (DOM,), {‘name’:’screen’})
+# self.style = type(‘style’, (DOM,), {‘name’:’style’})
+# self.window = type(‘window’, (DOM,), {‘name’:’window’})
+# self.webstorage = type(‘webstorage’, (DOM,), {‘name’:’webstorage’})</p>
+<p>pass</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

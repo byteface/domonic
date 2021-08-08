@@ -4,6 +4,10 @@
 
 """
 
+namespaces = {'xml': 'http://www.w3.org/XML/1998/namespace', 'svg': 'http://www.w3.org/2000/svg', 'xlink': 'http://www.w3.org/1999/xlink',
+              'xmlns': 'http://www.w3.org/2000/xmlns/', 'xm': 'http://www.w3.org/2001/xml-events', 'xh': 'http://www.w3.org/1999/xhtml'}
+
+
 # gravitational_constant = 6.67384e-11
 # planck_constant = 6.62606957e-34
 # speed_of_light = 299792458

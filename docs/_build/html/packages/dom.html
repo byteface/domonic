@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Domonic: DOM &#8212; domonic 0.4.2 documentation</title>
+    <title>Domonic: DOM &#8212; domonic 0.4.3 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -40,6 +40,7 @@
 <h2>createElement<a class="headerlink" href="#createelement" title="Permalink to this headline">¶</a></h2>
 <p>Here’s an exmaple of creating your own elements using the DOM API</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="n">document</span>
 
 <span class="n">site</span> <span class="o">=</span> <span class="n">html</span><span class="p">()</span>
 <span class="n">el</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;myelement&#39;</span><span class="p">)</span>
@@ -47,8 +48,31 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="queryselectorall">
+<h2>querySelectorAll<a class="headerlink" href="#queryselectorall" title="Permalink to this headline">¶</a></h2>
+<p>NOTE … (this still in dev.)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mysite</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">)</span>  <span class="c1"># *note - still in dev. use getElementsBySelector for more complex selectors</span>
+<span class="c1"># mysite.getElementsBySelector</span>
+</pre></div>
+</div>
+<p>To use the DOM either reference your root ‘html’ node or import the dom modules global ‘document’</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># access the document via the html tag</span>
+<span class="n">mydom</span> <span class="o">=</span> <span class="n">html</span><span class="p">()</span>
+<span class="c1"># mydom.getElementbyID...</span>
+
+<span class="c1"># or by importing the document global</span>
+<span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="n">document</span>
+<span class="c1"># document.createElement...</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">document</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The last ‘html()’ you created will always be the ‘document’. You can also set it manually but it needs to ne a Document instance.
+Before a ‘html’ class is created there is an empty document so that static methods can be available.</p>
+<p><em>a note on globals</em>
+Remember python globals are only to that module (unlike other langs). So you will have to import document explicitly when you need it (per method call)</p>
 <p>See the examples folder for other uses of a python virtual DOM.</p>
-<p>A full list of available methods are below…</p>
+<p>The full list of available DOM methods are listed below…</p>
 <section id="id1">
 <h3>domonic.dom<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>methods on the dom</p>
@@ -85,7 +109,7 @@
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.dom.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Baseclass for the html tag</p>
+<dd><p>the Document class is also the baseclass for the html tag</p>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">anchors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.anchors"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -138,6 +162,12 @@
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">createElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.createElement"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Creates an Element node -
 WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">createElementNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualifiedName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.createElementNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Creates an element with the specified namespace URI and qualified name.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -358,8 +388,20 @@ WARNING THIS WILL NOT CREATE A ‘DOMONIC ELEMENT’ (yet), so it wont have feat
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">getAttributeNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns the value of the specified attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">getAttributeNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns the specified attribute node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">getAttributeNodeNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.getAttributeNodeNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Sets the attribute node of an element</p>
 </dd></dl>
 
 <dl class="py method">
@@ -456,12 +498,6 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">isContentEditable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.isContentEditable"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns true if the content of an element is editable, otherwise false</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">isDefaultNamespace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.isDefaultNamespace"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns true if a specified namespaceURI is the default, otherwise false</p>
 </dd></dl>
 
 <dl class="py method">
@@ -597,6 +633,12 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">removeAttributeNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttributeNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Removes an attribute from an element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">removeAttributeNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.removeAttributeNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Removes a specified attribute node, and returns the removed node</p>
 </dd></dl>
@@ -645,8 +687,20 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">setAttributeNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.setAttributeNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Sets an attribute in the given namespace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">setAttributeNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.setAttributeNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Sets or changes the specified attribute node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">setAttributeNodeNS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.setAttributeNodeNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Sets the attribute node of an element</p>
 </dd></dl>
 
 <dl class="py property">
@@ -813,7 +867,7 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">normaliz</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.normaliz"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Normalize a node’s value</p>
 </dd></dl>
 
@@ -936,7 +990,40 @@ or the current position of the caret.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">domonic.dom.</span></span><span class="sig-name descname"><span class="pre">document</span></span></dt>
-<dd><p>alias of <a class="reference internal" href="autodocs.html#domonic.dom.Document" title="domonic.dom.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.dom.Document</span></code></a></p>
+<dd><dl>
+<dt>class dom(object):  # don’t think this class is need now as the package is the ‘dom’</dt><dd><p>console = type(‘console’, (console,), {‘name’: ‘console’})
+location = type(‘location’, (location,), {‘name’: ‘location’})
+document = type(‘document’, (document,), {‘name’: ‘document’})</p>
+<p>&#64;property
+def console(self):</p>
+<blockquote>
+<div><p>return self._console</p>
+</div></blockquote>
+<dl>
+<dt>def __init__(self, <a href="#id4"><span class="problematic" id="id5">*</span></a>args, <a href="#id6"><span class="problematic" id="id7">**</span></a>kwargs):</dt><dd><p>self.args = args
+self.kwargs = kwargs</p>
+<p># self.console = dom.console</p>
+<p># self.location = type(‘location’, (location,), {‘name’:’location’})
+self.console = type(‘console’, (dom.console,), {‘name’: ‘console’})
+# self.doc = type(‘document’, (DOM,), {‘name’:’document’})</p>
+<p># self.attr = type(‘attribute’, (DOM,), {‘name’:’attribute’})
+# self.el = type(‘element’, (DOM,), {‘name’:’element’})
+# self.events = type(‘events’, (DOM,), {‘name’:’events’})
+# self.event.Objects
+# self.geo = type(‘geo’, (DOM,), {‘name’:’geo’})
+# self.history = type(‘history’, (DOM,), {‘name’:’history’})
+# self.HTMLCollection
+# self.location = type(‘location’, (DOM,), {‘name’:’location’})
+# self.navigator = type(‘navigator’, (DOM,), {‘name’:’navigator’})
+# self.screen = type(‘screen’, (DOM,), {‘name’:’screen’})
+# self.style = type(‘style’, (DOM,), {‘name’:’style’})
+# self.window = type(‘window’, (DOM,), {‘name’:’window’})
+# self.webstorage = type(‘webstorage’, (DOM,), {‘name’:’webstorage’})</p>
+<p>pass</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -1724,6 +1811,7 @@ or the current position of the caret.</p>
 <li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: DOM</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#createelement">createElement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#queryselectorall">querySelectorAll</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>

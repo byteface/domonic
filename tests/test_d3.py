@@ -11,7 +11,7 @@ import unittest
 # from mock import patch
 # from domonic.javascript import Math
 
-# from domonic.dom import *
+from domonic.dom import *
 from domonic.html import *
 from domonic.d3 import *
 
@@ -25,6 +25,7 @@ from domonic.d3.dispatch import dispatch, Dispatch
 # from domonic.d3.polygon import *
 # from domonic.d3.timer import *
 
+from domonic.d3.selection import *
 
 
 class TestCase(unittest.TestCase):
@@ -645,6 +646,218 @@ class TestCase(unittest.TestCase):
         # d.call("foo")
         # print(foo)
         # assert foo == 1 # TODO - fails
+
+
+    def test_select(self):
+
+        # document is a global so has to be implicitely imported
+        from domonic.dom import document
+        print(document)
+
+        # page = html(body())
+
+        # somebody = document.createElement('sometag')
+        # print(str(somebody))
+
+        # d3.select("body") 
+        page = html(body())
+        # print( select("body") )
+        # select("body").append("svg")
+        # select("body").append("svg").attr("width", 960)
+        # select("body").append("svg").attr("width", 960).attr("height", 500).attr("byte", "face")
+
+        select("body").append("svg").attr("width", 960).attr("height", 500)  #.append("g")
+        select("svg").append("g")
+        # select("body").append("svg")
+
+        # select("body").append("svg")
+        # print(select("body").append("svg"))
+
+        print(str(page))
+
+        # d3.select("body")
+        #   .append("svg")
+        #     .attr("width", 960)
+        #     .attr("height", 500)
+        #   .append("g")
+        #     .attr("transform", "translate(20,20)")
+        #   .append("rect")
+        #     .attr("width", 920)
+        #     .attr("height", 460);
+
+
+        # 
+        # #.append("svg").attr("width", 960).attr("height", 500).append("g").attr("transform", "translate(20,20)").append("rect").attr("width", 920).attr("height", 460)
+
+
+        page = html(
+            head(
+                meta(_charset="utf-8"),
+                meta(**{"_http-equiv": "X-UA-Compatible"}, _content="IE=edge"),
+                title('website.com'),
+                meta(_name="description", _content=""),
+                meta(_name="viewport", _content="width=device-width, initial-scale=1"),
+                meta(_name="robots", _content="all,follow"),
+                link(_rel="stylesheet", _href="static/css/bootstrap.min.css"),
+                link(_rel="shortcut icon", _href="favicon.png")
+            ),
+            body(
+                div(_class="overlay").html(
+                    div(_class="content h-100 d-flex align-items-center").html(
+                        div(_class="container text-center text-black").html(
+                            p("Welcome to the information age", _class="headings-font-family text-uppercase lead"),
+                            h1("We are", span("COMPANY", _class="font-weight-bold d-block"), _class="text-uppercase hero-text text-black"),
+                            p("And this is our company website", _class="headings-font-family text-uppercase lead")
+                        )
+                    )
+                ),
+                header(_class="header sticky-top").html(
+                    nav(_class="navbar navbar-expand-lg bg-white border-bottom py-0").html(
+                        div(_class="container").html(
+                            h6("website.com"),
+                            div(_id="navbarSupportedContent", _class="collapse navbar-collapse").html(
+                                ul(_class="navbar-nav ml-auto px-3").html(
+                                    li(a("Home", _href="", _class="nav-link text-uppercase link-scroll"), _class="nav-item active"),
+                                    li(a("About", _href="#about", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
+                                    li(a("Services", _href="#services", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
+                                    li(a("Team", _href="#team", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
+                                    li(a("Contact", _href="#contact", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
+                                )
+                            )
+                        )
+                    )
+                ),
+                section(_id="about", _class="about").html(
+                    div(_class="container").html(
+                        div(_class="row mb-5").html(
+                            div(_class="col-lg-12").html(
+                                header(_style="padding-top:20px;").html(
+                                    h6("About us", _class="lined text-uppercase"),
+                                ),
+                                p("Specialists in xxxxx.", _class="lead"),
+                                p("COMPANY can provide xxxxxx solutions. We have expertise in the following areas."),
+                                div(_class="row").html(
+                                    div(_class="col-lg-6").html(
+                                        ul(_class="mb-0").html(
+                                            li("A"),
+                                            li("B"),
+                                            li("C"),
+                                        )
+                                    ),
+                                    div(_class="col-lg-6").html(
+                                        ul(_class="mb-0").html(
+                                            li("1"),
+                                            li("2"),
+                                            li("3"),
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                div(_class="row text-white text-center", _style="background: url(static/img/header.jpg); padding:20px;").html(
+                    div(_class="col-lg-12").html(
+                        h5(_class="text-uppercase font-weight-bold").html(
+                            i(_class="far fa-image mr-2", ), "Headline."),
+                        p("Lorem ipsum."),
+                    ),
+                    div(_class="col-lg-12").html(
+                        h5(_class="text-uppercase font-weight-bold").html(
+                            i(_class="far fa-image mr-2", ), "Headline."),
+                        p("Lorem ipsum."),
+                    ),
+
+                ),
+                section(_id="services", _class="bg-gray").html(
+                    div(_class="container").html(
+                        header(_class="text-center mb-5").html(
+                            #  h2("Services", _class="lined text-uppercase"),
+                        ),
+                        div(_class="row text-center").html(
+                            div(_class="col-lg-4").html(
+                                div(_class="bg-white mb-4 p-4").html(
+                                    h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
+                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    p("Lorem ipsum.", _class="small text-gray"),
+                                )
+                            ),
+                            div(_class="col-lg-4").html(
+                                div(_class="bg-white mb-4 p-4").html(
+                                    h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
+                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    p("Lorem ipsum.", _class="small text-gray"),
+                                )
+                            ),
+                            div(_class="col-lg-4").html(
+                                div(_class="bg-white mb-4 p-4").html(
+                                    h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
+                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    p("Lorem ipsum.", _class="small text-gray"),
+                                )
+                            ),
+                        )
+                    ),
+                    section(_id="team").html(
+                        div(_class="container").html(
+                            header(_class="text-center mb-5").html(
+                                # h2("Our team", _class="text-uppercase lined"),
+                            ),
+                            div(_class="row text-center").html(
+                                # div(_class="col-lg-3 col-md-6 mb-4").html(
+                                div(_class="col-lg-12").html(
+                                    img(_src="static/img/gol.gif", _alt="Username", _class="img-fluid mb-4", _width="300px;", _height="300px;"),
+                                    h4(_class="font-weight-bold text-uppercase").html(
+                                        a("Username", _href="#", _class="no-anchor-style")
+                                    ),
+                                    p("Director", _class="small text-gray text-uppercase"),
+                                ),
+                            )
+                        )
+                    ),
+                    section(_id="contact").html(
+                        div(_class="container").html(
+                            header(_class="text-center mb-5").html(
+                                #  h2("Contact", _class="text-uppercase lined"),
+                            ),
+                            div(_class="row").html(
+                                div(_class="col-lg-12 text-center").html(
+                                    p(
+                                        "Email : ",
+                                        a("user@website.com", _href="mailto:user@website.com"),
+                                        br(),
+                                        "or Call us on : ",
+                                        a("123456789", _href="tel:123456789")
+                                    ),
+                                    ul(_class="mb-0 list-inline text-center").html(
+                                        li(a(i(_class="fab fa-twitter"), _href="https://twitter.com/user", _class="social-link social-link-twitter"), _class="list-inline-item"),
+                                        li(a(i(_class="fab fa-linkedin"), _rel="nofollow", _href="https://www.linkedin.com/in/user/", _class="social-link social-link-instagram"), _class="list-inline-item"),
+                                        li(a(i(_class="fas fa-envelope"), _href="mailto:user@website.com", _class="social-link social-link-email"), _class="list-inline-item")
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    footer(_style="padding:20px;").html(
+                        div(_class="row text-center").html(
+                            div(_class="col-lg-12 text-center").html(
+                                p("Copyright &copy; 2021 COMPANY. All rights Reserved.", _class="mb-0 text-gray"),
+                            )
+                        )
+                    ),
+                    script(_src="static/js/jquery.min.js"),
+                    link(_rel="stylesheet", _href="https://use.fontawesome.com/releases/v5.7.1/css/all.css", _integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr", _crossorigin="anonymous")
+                )
+            )
+        )
+
+        # selectAll("p").attr("class", "graf").style("color", "red")
+        # selectAll("p").attr("class", "test")
+        selectAll("p").append("div")
+        print(page)
+
+        # select("body").append("svg").attr("width", 960).attr("height", 500).append("g").attr("transform", "translate(20,20)").append("rect").attr("width", 920).attr("height", 460)
+
 
 
 if __name__ == '__main__':

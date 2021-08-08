@@ -350,15 +350,17 @@ class Node(EventTarget):
 
     def isDefaultNamespace(self, ns):
         """ Checks if a namespace is the default namespace """
-        if ns == self.namespace:
+        if ns == self.namespaceURI:
             return True
         else:
             return False
 
     def lookupNamespaceURI(self, ns):
         """ Returns the namespace URI for a given prefix """
-        if ns == self.namespace:
-            return self.namespaceURI
+        # namespaces = {'xml': 'http://www.w3.org/XML/1998/namespace', 'svg': 'http://www.w3.org/2000/svg', 'xlink': 'http://www.w3.org/1999/xlink', 'xmlns': 'http://www.w3.org/2000/xmlns/', 'xm': 'http://www.w3.org/2001/xml-events', 'xh': 'http://www.w3.org/1999/xhtml'}
+        from domonic.constants import namespaces
+        if ns in namespaces:
+            return namespaces[ns]
         else:
             return None
 
@@ -369,7 +371,7 @@ class Node(EventTarget):
         else:
             return None
 
-    def normaliz(self):
+    def normalize(self):
         """ Normalize a node's value """
         return None
 
@@ -1223,6 +1225,27 @@ class Element(Node):
         """ Gives focus to an element """
         raise NotImplementedError
 
+    def setAttributeNodeNS(self, attr):
+        """ Sets the attribute node of an element """
+        raise NotImplementedError
+
+    def getAttributeNodeNS(self, attr):
+        """ Sets the attribute node of an element """
+        raise NotImplementedError
+
+    def setAttributeNS(self, namespaceURI, localName, value):
+        """ Sets an attribute in the given namespace """
+        raise NotImplementedError
+
+    def getAttributeNS(self, namespaceURI, localName):
+        """ Returns the value of the specified attribute """
+        return self.getAttribute(localName)
+
+    def removeAttributeNS(self, namespaceURI, localName):
+        """ Removes an attribute from an element """
+        raise NotImplementedError
+
+
     def getAttribute(self, attribute: str) -> str:
         """ Returns the specified attribute value of an element node """
         try:
@@ -1316,9 +1339,13 @@ class Element(Node):
         ''' Returns true if the content of an element is editable, otherwise false'''
         raise NotImplementedError
 
-    def isDefaultNamespace(self):
-        '''Returns true if a specified namespaceURI is the default, otherwise false'''
-        raise NotImplementedError
+
+    # def isDefaultNamespace(self, namespaceURI: str):
+    #     """ Returns true if the specified namespace is the default namespace """
+    #     if namespaceURI in self.defaultNamespace:
+    #         return True
+    #     else:
+    #         return False
 
     def lang(self):
         """ Sets or returns the value of the lang attribute of an element """
@@ -1575,9 +1602,11 @@ class DOMImplementation(object):
 
 
 class Document(Element):
-    """ Baseclass for the html tag """
+    """ the Document class is also the baseclass for the html tag """
 
     def __init__(self, *args, **kwargs):
+        """ init Creates a new Document """
+        # print('setting document !!!!')
         # self.doc = doc
         # self.uri = uri
         # self.documentURI = uri
@@ -1585,13 +1614,29 @@ class Document(Element):
         # self.raw
         self.body = ""  # ??
         super().__init__(*args, **kwargs)
+        try:
+            # print('setting document !!!!')
+            global document
+            document = self
+        except Exception as e:
+            print('failed to set document', e)
 
     def __new__(cls, *args, **kwargs):
+        # print('setting document !!!!')
         instance = super().__new__(cls)
         instance.__init__(*args, **kwargs)
         instance.documentElement = instance
         instance.URL = domonic.javascript.URL().href
         instance.baseURI = domonic.javascript.URL().href
+
+        try:
+            # print('setting document baby!!!!')
+            global document
+            document = instance
+            # print(document)
+        except Exception as e:
+            print('failed to set document', e)
+
         return instance
 
     # TODO - still not great as it also returns 'links' when searching for 'li'
@@ -1683,6 +1728,14 @@ class Document(Element):
         # TODO - self closing tags - need a 'tag' factory. need the tags in .html package to register with it.
         from domonic.html import tag, tag_init
         el = type(_type, (tag, Element), {'name': _type, '__init__': tag_init})
+        return el()
+
+    @staticmethod
+    def createElementNS(namespaceURI, qualifiedName, options=None):
+        """ Creates an element with the specified namespace URI and qualified name."""
+        from domonic.html import tag, tag_init
+        el = type(qualifiedName, (tag, Element), {'name': qualifiedName, '__init__': tag_init})
+        el.namespaceURI = namespaceURI
         return el()
 
     @staticmethod
@@ -1879,10 +1932,6 @@ class Document(Element):
         pass
 
 
-document = Document
-# doc = Document
-
-
 class Location():
 
     def __init__(self, *args, **kwargs):
@@ -2053,6 +2102,14 @@ Console.warn = Console.log
 console = Console
 
 
+
+# document will be set when a Document is created. the last created document is the document that will be used
+# it can also be set manually
+global document
+document = Document
+
+
+'''
 class dom(object):  # don't think this class is need now as the package is the 'dom'
     console = type('console', (console,), {'name': 'console'})
     location = type('location', (location,), {'name': 'location'})
@@ -2087,3 +2144,4 @@ class dom(object):  # don't think this class is need now as the package is the '
         # self.webstorage = type('webstorage', (DOM,), {'name':'webstorage'})
 
         pass
+'''
