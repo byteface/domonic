@@ -127,6 +127,12 @@ async def convert(request):
     code = data.strip('"').lstrip('"')
 
     output = domonic.parse(code)
+
+    # output = domonic.evaluate(output)  # eval - should fix up params
+    #render(page, 'tmp/'+Utils.url2file(SITE)+'.pyml') # write evaulated
+    # outp = domonic.domonify(page)
+
+
     # print(output)
     return json({"output": output})
 

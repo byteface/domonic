@@ -95,6 +95,7 @@ class TestCase(unittest.TestCase):
 
         print("NOW>>>>")
         mylist = li() / 10
+        print(mylist)
         myobj = domonic.load(mylist)
         print(myobj)
 

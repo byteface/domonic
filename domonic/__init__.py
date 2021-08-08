@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "0.4.3"
+__version__ = "0.4.4"
 __license__ = 'MIT'
 __author__ = "@byteface"
 
@@ -105,8 +105,21 @@ class domonic:
         if not isinstance(pyml, str):
             raise ValueError("domonify requires a string not:", type(pyml))
 
+        print("HI>>", pyml)
+
         s = domonic.evaluate(pyml, *args, **kwargs)
-        p = eval(s, {**kwargs, **globals()})
+
+        # NOTE - valid chunks of pyml can still not eval if they are not wrapped
+        # i.e. a list not in aa ul or ol. when on single line evaulate will fix
+        # but on mulitple lines it will not.
+        try:
+            p = eval(s, {**kwargs, **globals()})
+        except Exception as e:
+            print("Failed to evaluate as mulitline trying again:", e)
+            pyml = ''.join(pyml.splitlines())  # try again on a single line 
+            s = domonic.evaluate(pyml, *args, **kwargs)
+            p = eval(s, {**kwargs, **globals()})
+
         return p
 
     @staticmethod
@@ -926,7 +939,7 @@ class domonic:
             page = '\n'.join(fixed)
 
         # page = ''.join(page.splitlines())
-        page = ''.join(page.splitlines())
+        # page = ''.join(page.splitlines())
 
         # if not minify and indent:
         #     print('>>',len(page))
