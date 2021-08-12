@@ -82,6 +82,7 @@ def window(node):
 def styleValue(node, name):
     return node.style.getPropertyValue(name) or defaultView(node).getComputedStyle(node, None).getPropertyValue(name)
 
+
 def sparse(self, update):
     return Array(len(update))
 
@@ -106,6 +107,58 @@ class EnterNode():
 
     def querySelectorAll(self, selector):
         return self._parent.querySelectorAll(selector)
+
+
+class ClassList():
+
+    def __init__(self, node):
+        print('class list is in town')
+        self._node = node
+        self._names = classArray(node.getAttribute("class") or "")
+
+    def add(self, name):
+        i = String(self._names).indexOf(name)
+        if i < 0:
+            self._names.append(name)
+            self._node.setAttribute("class", " ".join(self._names))
+
+    def remove(self, name):
+        i = self._names.indexOf(name)
+        if i >= 0:
+            self._names.splice(i, 1)
+            self._node.setAttribute("class", " ".join(self._names))
+
+    def contains(self, name):
+        return self._names.indexOf(name) >= 0
+
+
+def classArray(string):
+    return String(string).trim().split(r'/^|\s+/')
+
+
+def classList(node):
+    print("classList::")
+    # print(node.classList)
+
+    # return node.classList or ClassList(node)
+    return ClassList(node)
+
+def classedAdd(node, names):
+    mylist = classList(node)
+    i = -1
+    n = len(names)
+    while i < n:
+        mylist.add(names[i])
+        i += 1
+
+
+def classedRemove(node, names):
+    list = classList(node)
+    i = -1
+    n = len(names)
+    while i < n:
+        list.remove(names[i])
+        i += 1
 
 
 # import selection_append from "./append.js";
@@ -725,7 +778,66 @@ class Selection():
 
     # import selection_text from "./text.js";
     # import selection_classed from "./classed.js";
+
     # def classed: selection_classed,
+
+    def classedTrue(self, names, value):
+        print("classedTrue::::")
+        return lambda this, *args: classedAdd(this, names)
+
+    def classedFalse(self, names, value):
+        return lambda this, *args: classedRemove(this, names)
+
+    def classedFunction(self, names, value):
+        # TODO write this commented out javascript as python instead
+        # return function() {
+        # (value.apply(this, arguments) ? classedAdd : classedRemove)(this, names)
+        # }
+        def anon(this, *args):
+            nonlocal names
+            nonlocal value
+            # nonlocal this
+            # nonlocal args
+            print('classedFunction', names, value)
+            v = value.apply(this, args)
+            if v == None:
+                classedRemove(this, names)
+            else:
+                classedAdd(this, names)
+        return anon
+
+    def classed(self, name, value, *args):
+        names = classArray(str(name))
+        print(names)
+        # if (args.length < 2):
+        if value == None:
+            list = classList(this.node())
+            i = -1
+            n = len(names)
+            while (i < n):
+                if not list.contains(names[i]):
+                    return False
+                i += 1
+            return True
+
+        # TODO write this commented out javascript as python instead
+        # return this.each((typeof value === "function"
+        #     ? classedFunction : value
+        #     ? classedTrue
+        #     : classedFalse)(names, value));
+        # }
+        # print( 'hey',value, callable(value) )
+
+        if value == None:
+            func = self.classedFalse
+        elif callable(value):
+            func = self.classedFunction
+        else:
+            func = self.classedTrue
+
+        self.each(func(names, value))
+
+
     # def text: selection_text,
     def textRemove(self):
         self.this.textContent = ""
@@ -858,12 +970,12 @@ class Selection():
     # import selection_clone from "./clone.js";
     # def clone: selection_clone,
     def selection_cloneShallow(self):
-        clone = this.cloneNode(false)
+        clone = this.cloneNode(False)
         parent = self.this.parentNode
         return parent.insertBefore(clone, this.nextSibling) if parent else clone
 
     def selection_cloneDeep(self):
-        clone = this.cloneNode(true)
+        clone = this.cloneNode(False)
         parent = self.this.parentNode
         return parent.insertBefore(clone, self.this.nextSibling) if parent else clone
 
@@ -891,7 +1003,7 @@ class Selection():
         #     if (i >= 0) name = t.slice(i + 1), t = t.slice(0, i)
         #     return {type: t, name: name}
         # });
-        return [{type: t[0], name: t[1]} for t in re.findall(r'\.([^\.]+)', typenames)]
+        return [{'type': t[0], 'name': t[1]} for t in re.findall(r'\.([^\.]+)', typenames)]
 
     def onRemove(self, typename):
         # TODO - write this as python
@@ -1007,14 +1119,14 @@ class Selection():
                     o.value = value
                     return
         self.node().addEventListener(typenames[0].type, value, options)
-        o = {type: typenames[0].type, name: typenames[0].name, value: value, listener: value, options: options}
+        o = {'type': typenames[0].type, 'name': typenames[0].name, 'value': value, 'listener': value, 'options': options}
         self.node().__on.push(o)
         return self
 
     # import selection_dispatch from "./dispatch.js";
     # def dispatch: selection_dispatch,
     # import defaultView from "../window.js";
-    def dispatchEvent(node, type, params):
+    def dispatchEvent(self, node, type, params):
         window = defaultView(node)
         event = window.CustomEvent
         # TODO - write this as python
@@ -1036,13 +1148,13 @@ class Selection():
         node.dispatchEvent(event)
         return node
 
-    def dispatchConstant(type, params):
-        return lambda: dispatchEvent(this, type, params)
+    def dispatchConstant(self, type, params):
+        return lambda this: dispatchEvent(this, type, params)
 
-    def dispatchFunction(type, params):
-        return lambda: dispatchEvent(this, type, params.apply(this, arguments))
+    def dispatchFunction(self, type, params, *args):
+        return lambda this: dispatchEvent(this, type, params.apply(this, args))
 
-    def dispatch(type, params):
+    def dispatch(self, type, params):
         # return this.each((typeof params === "function"
         #     ? dispatchFunction
         #     : dispatchConstant)(type, params))
@@ -1086,11 +1198,11 @@ def local():
 class Local():
 
     def __init__(self):
-        nextId += 1
-        this._ = "@" + (nextId).toString(36)
+        self.nextId = 0#+= 1
+        self._ = "@" + String(self.nextId).toString(36)
 
     def get(self, node):
-        id = this._
+        id = self._
         while not (id in node):
             node = node.parentNode
             if node is None:
@@ -1099,23 +1211,23 @@ class Local():
 
     def set(self, node, value):
         node[this._] = value
-        return node[this._]
+        return node[self._]
 
     def remove(self, node):
         for i in range(0, len(node)):
-            if node[i] == this._:
+            if node[i] == self._:
                 a = node.remove(i)
                 # del node[i]
                 return a
         # return this._ in node and delete node[this._]
 
-    def toString():
-        return this._
+    def toString(self):
+        return self._
 
 
 # export {default as matcher} from "./matcher.js";
 def matcher(selector):
-    return lambda:  this.matches(selector)
+    return lambda this: this.matches(selector)
 
 
 def childMatcher(selector):
@@ -1136,9 +1248,9 @@ def pointer(event, node):
     event = sourceEvent(event)
     if node == None:
         node = event.currentTarget
-    if (node):
+    if node:
         svg = node.ownerSVGElement or node
-    if (svg.createSVGPoint):
+    if svg.createSVGPoint:
         point = svg.createSVGPoint()
         point.x = event.clientX
         point.y = event.clientY
