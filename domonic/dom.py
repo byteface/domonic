@@ -7,7 +7,7 @@
 from typing import *
 import re
 
-from domonic.style import Style
+from domonic.style import CSSStyleDeclaration as Style
 import domonic.javascript
 from domonic.events import *
 
@@ -1531,6 +1531,7 @@ class Element(Node):
 
     @property
     def style(self):
+        print('style GETTER!')
         """ returns the value of the style attribute of an element """
         if self.__style is None:
             self.style = Style()
@@ -1612,6 +1613,7 @@ class Document(Element):
         # self.documentURI = uri
         # self.documentElement = self
         # self.raw
+        # self.stylesheets = StyleSheetList()
         self.body = ""  # ??
         super().__init__(*args, **kwargs)
         try:

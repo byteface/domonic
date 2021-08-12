@@ -43,11 +43,6 @@ from domonic.d3.selection import *
 # from.domonic.d3.zoom import *
 
 
-
-
-
-
-
 class d3_el():
     """
     d3_el - contains the d3_el class and its methods

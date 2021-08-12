@@ -657,36 +657,106 @@ class TestCase(unittest.TestCase):
         assert(mystr.toLowerCase() == "some string")
         assert(mystr.toUpperCase() == "SOME STRING")
 
-        print(type(mystr))
-        print(mystr.length)
+        # print(type(mystr))
+        # print(mystr.length)
         assert(mystr.length == 11)
 
         assert(mystr.repeat(2) == "Some StringSome String")
-        print(mystr)
-        print(mystr)
-        print(mystr)
+        # print(mystr)
+        # print(mystr)
+        # print(mystr)
         assert(mystr.startsWith('S'))
         # assert(mystr.endsWith('g'))
 
-        print(">>", mystr.substr(1))
+        # print(">>", mystr.substr(1))
         assert(mystr.substr(1) == 'ome String')
 
-        # def substring
+        #substring
+        # print(mystr)
+        # print(mystr.substring(1, 3))
+        assert(mystr.substring(1, 3) == 'om')
+
         # slice
-        # trim
+        # print(mystr.slice(1, 3))
+        assert(mystr.slice(1, 3) == 'om')
+
+        # test trim
+        mystr = String("   Some String   ")
+        assert(mystr.trim() == "Some String")
+
         # charAt
+        mystr = String("Some String")
+        assert(mystr.charAt(1) == 'o')
+        assert(mystr.charAt(5) == 'S')
+
         # charCodeAt
-        # fromCharCode
+        assert(mystr.charCodeAt(1) == 111)
+        assert(mystr.fromCharCode(111) == 'o')
+
         # test
+        # assert(mystr.test('a') == True)
+        # assert(mystr.test('b') == False)
+
         # replace
+        # print(mystr.replace('S', 'X'))
+        assert(mystr.replace('S', 'X') == "Xome String")
+        assert(mystr.replace(' ', 'X') == "SomeXString")
+        assert(mystr.replace('S', 'X') != "Xome Xtring")
+
         # localeCompare
+        # assert(mystr.localeCompare('a', 'b') == -1)
+        # assert(mystr.localeCompare('a', 'a') == 0)
+        # assert(mystr.localeCompare('a', 'A') == 1)
+        # assert(mystr.localeCompare('a', 'aa') == -1)
+        # assert(mystr.localeCompare('a', 'Aa') == -1)
+
         # search
+        mystr = String("Some String")
+        assert(mystr.search('a') == False)
+        assert(mystr.search('o') == True)
+
         # substr
+        print(mystr.substr(1, 2))
+        assert(mystr.substr(1, 2) == 'om')
+        assert(mystr.substr(1, 3) == 'ome')
+        assert(mystr.substr(1, 4) == 'ome ')
+        assert(mystr.substr(1, 5) == 'ome S')
+
+
         # toLocaleLowerCase
+        # print(mystr.toLocaleLowerCase())
+        assert(mystr.toLocaleLowerCase() == 'some string')
+        # print(mystr.toLocaleLowerCase())
+        assert(mystr.toLocaleLowerCase() == 'some string')
+
         # toLocaleUpperCase
+        # print(mystr.toLocaleUpperCase())
+        assert(mystr.toLocaleUpperCase() == 'SOME STRING')
+
         # compile
+        # print(mystr.compile())
+        # assert(mystr.compile() == '"Some String"')
+
         # lastIndex
-        # test
+        # print(mystr.lastIndexOf('o'))
+        assert(mystr.lastIndexOf('o') == 1)
+
+        # replace
+        assert mystr.codePointAt(1) == 111
+        # print(mystr.padEnd(2))
+        # print(f"-{mystr}-")
+        print(f"---{mystr.padEnd(13)}-")
+        assert mystr.padEnd(13) == "Some String  "
+        assert mystr.padStart(13) == "  Some String"
+        assert mystr.padStart(13, '-') == "--Some String"
+        # assert mystr.localeCompare('a', 'a') == 0
+
+        assert mystr.includes('a') == False
+        assert mystr.includes('Some') == True
+        # assert mystr.matchAll(['a', 'b']) == False # TODO - dont think this is supposed to take lists?
+        # assert mystr.match('a', 'b') == False # TODO
+        # assert mystr.trimStart(1) == "Some" # TODO
+        # assert mystr.trimEnd(1) == "String" # TODO
 
 
     def test_javascript_URLSearchParams(self):
@@ -866,7 +936,101 @@ class TestCase(unittest.TestCase):
         print(test.toLocaleUpperCase())
 
 
+    def test_set(self):
 
+        mySet1 = Set()
+
+        mySet1.add(1)           # Set [ 1 ]
+        assert mySet1.size == 1
+        assert mySet1.contains(1) == True
+        assert mySet1.contains(2) == False
+
+        mySet1.add(5)           # Set [ 1, 5 ]
+        assert mySet1.size == 2
+        assert mySet1.contains(1) == True
+        assert mySet1.contains(2) == False
+        assert mySet1.contains(5) == True
+
+        mySet1.add(5)           # Set [ 1, 5 ]
+        assert mySet1.size == 2
+        assert mySet1.contains(1) == True
+
+        mySet1.add('some text') # Set [ 1, 5, 'some text' ]
+        assert mySet1.size == 3
+        assert mySet1.contains(1) == True
+        assert mySet1.contains(2) == False
+        assert mySet1.contains(5) == True
+        assert mySet1.contains('some text') == True
+        assert mySet1.contains('text') == False
+
+        '''
+        # TODO - make the following work. js sets can have dictionaries in them
+        o = {'a': 1, 'b': 2}
+        mySet1.add(o)  # TODO - ok. so we learned something. i nearly never use sets so this is a nice example of difference between python and javascript sets. 
+        assert mySet1.size == 4
+        assert mySet1.contains(a) == True
+
+        mySet1.add({a: 1, b: 2})   # o is referencing a different object, so this is okay
+
+        assert mySet1.has(1) == True
+        assert mySet1.has(3) == False
+        assert mySet1.has(5) == True
+        assert mySet1.has(Math.sqrt(25)) == True
+        assert mySet1.has('Some Text'.toLowerCase()) == True
+        assert mySet1.has(o) == True
+
+        mySet1.size == 5
+
+        mySet1.delete(5)    # removes 5 from the set
+        assert mySet1.has(5) == False
+
+        mySet1.size == 4
+
+        console.log(mySet1)
+        # logs Set(4) [ 1, "some text", {…}, {…} ] in Firefox
+        # logs Set(4) { 1, "some text", {…}, {…} } in Chrome
+        '''
+
+    # def test_storage(self):
+    #     print("test_storage")
+
+    #     myObj = Storage()
+    #     myObj.name = 'John'
+    #     myObj.age = 30
+    #     myObj.address = '123 Main St'
+
+    #     assert myObj.name == 'John'
+    #     assert myObj.age == 30
+    #     assert myObj.address == '123 Main St'
+
+    #     window.localStorage.setItem('myObj', myObj)
+    #     window.localStorage.getItem('myObj')
+    #     myObj2 = window.localStorage.getItem('myObj')
+    #     assert myObj2.name == 'John'
+    #     assert myObj2.age == 30
+
+
+    # def test_reflect(self):
+    #     print("test_reflect")
+    #     myObj = {'name': 'John', 'age': 30, 'address': '123 Main St'}
+
+    #     myObj2 = Reflect(myObj)
+    #     assert myObj2.name == 'John'
+    #     assert myObj2.age == 30
+    #     assert myObj2.address == '123 Main St'
+    #     assert myObj2.toString() == '{"name": "John", "age": 30, "address": "123 Main St"}'
+
+    
+    # def test_symbol(self):
+    #     print("test_symbol")
+    #     symbol = Symbol('x')
+
+    #     assert symbol.name == 'x'
+    #     assert symbol.value == 0
+    #     assert symbol.toString() == 'x'
+    #     assert symbol.toNumber() == 0
+    #     assert symbol.toString(True) == '0'
+        
 
 _intID = None
 _results = []

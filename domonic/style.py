@@ -6,6 +6,188 @@
 from .utils import Utils
 
 
+class StyleSheet():
+    """ An object implementing the StyleSheet interface represents a single style sheet. 
+    CSS style sheets will further implement the more specialized CSSStyleSheet interface.
+    """
+
+    def __init__(self):
+        self.disabled = True  # a boolean value representing whether the current stylesheet has been applied or not
+
+    @property
+    def href(self):
+        """ Returns a DOMString representing the location of the stylesheet."""
+        raise NotImplementedError
+
+    @property
+    def media(self):
+        """ Returns a MediaList representing the intended destination medium for style information. """
+        raise NotImplementedError
+
+    @property
+    def ownerNode(self):
+        """ Returns a Node associating this style sheet with the current document. """
+        raise NotImplementedError
+
+    @property
+    def parentStyleSheet(self):
+        """ Returns a StyleSheet including this one, if any; returns null if there aren't any. """
+        raise NotImplementedError
+
+    @property
+    def title(self):
+        """ Returns a DOMString representing the advisory title of the current style sheet. """
+        raise NotImplementedError
+
+    @property
+    def type(self):
+        """ Returns a DOMString representing the style sheet language for this style sheet. """
+        raise NotImplementedError
+
+
+class StyleSheetList():
+    """ An instance of this object can be returned by Document.styleSheets.
+        it can be iterated over in a standard for loop over its indices, or converted to an Array.
+    """
+
+    def __init__(self):
+        self.styleSheets = []
+        # self.styleSheets.append(StyleSheet())
+
+    '''
+    def _populate_stylesheets_from_document(self):
+        """ parse the document to find all the stylesheets and add them to the list.
+        """
+        # get loaded styles
+        # sheets = document.getElementsByTagName("style")
+        # for sheet in sheets:
+            # get the content of the style sheet
+        raise NotImplementedError
+    '''
+
+    @property
+    def length(self):
+        """ Returns the number of CSSStyleSheet objects in the collection. """
+        return len(self.styleSheets)
+
+    def item(self, index):
+        """ Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index."""
+        return self.styleSheets[index]
+
+
+class CSSRule():
+    """ The CSSRule interface represents a single CSS rule. 
+    There are several types of rules which inherit properties from CSSRule. 
+
+    CSSStyleRule
+    CSSImportRule
+    CSSMediaRule
+    CSSFontFaceRule
+    CSSPageRule
+    CSSNamespaceRule
+    CSSKeyframesRule
+    CSSKeyframeRule
+    CSSCounterStyleRule
+    CSSDocumentRule
+    CSSSupportsRule
+    CSSFontFeatureValuesRule
+    CSSViewportRule
+    """
+
+    def __init__(self):
+        pass
+
+    @property
+    def cssText(self):
+        """ Represents the textual representation of the rule, e.g. "h1,h2 { font-size: 16pt }" or "@import 'url'". 
+        To access or modify parts of the rule (e.g. the value of "font-size" in the example) 
+        use the properties on the specialized interface for the rule's type.
+        """
+        pass
+
+    @property
+    def parentRule(self):
+        """ Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an @media block, the parent rule would be that CSSMediaRule. """
+        raise NotImplementedError
+
+    def parentStyleSheet(self):
+        """ Returns the CSSStyleSheet object for the style sheet that contains this rule """
+        raise NotImplementedError
+
+    def type(self):
+        """ Returns one of the Type constants to determine which type of rule is represented. """
+        raise NotImplementedError
+
+
+class CSSRuleList():
+    """ A CSSRuleList represents an ordered collection of read-only CSSRule objects.
+    While the CSSRuleList object is read-only, and cannot be directly modified,
+    it is considered a live object, as the content can change over time.
+    """
+
+    def __init__(self):
+        self.rules = []
+        raise NotImplementedError
+
+    def length(self):
+        """ Returns an integer representing the number of CSSRule objects in the collection. """
+        raise NotImplementedError
+
+    def item(self):
+        """ Gets a single CSSRule."""
+        raise NotImplementedError
+
+
+class CSSStyleSheet(StyleSheet):
+    """ Creates a new CSSStyleSheet object. """
+
+    @property
+    def cssRules():  # -> 'CSSStyleRuleList':
+        """ Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects that comprise the stylesheet. """
+        # return CSSStyleRuleList()
+        raise NotImplementedError
+
+    @property
+    def ownerRule(self):
+        """ If this stylesheet is imported into the document using an @import rule, 
+        the ownerRule property returns the corresponding CSSImportRule; otherwise, this property's value is null. """
+        raise NotImplementedError
+
+    def deleteRule(self):
+        """ Deletes the rule at the specified index into the stylesheet's rule list. """
+        raise NotImplementedError
+
+    def insertRule(self):
+        """ Inserts a new rule at the specified position in the stylesheet, given the textual representation of the rule."""
+        raise NotImplementedError
+
+    def replace(self):
+        """ Asynchronously replaces the content of the stylesheet and returns a Promise that resolves with the updated CSSStyleSheet."""
+        raise NotImplementedError
+
+    def replaceSync(self):
+        """ Synchronously replaces the content of the stylesheet."""
+        raise NotImplementedError
+
+    @property
+    def rules():
+        """ The rules property is functionally identical to the standard cssRules property
+            it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.
+        """
+        raise NotImplementedError
+
+    # Legacy methods
+    def addRule(self):
+        """ Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply to the matching elements.
+            This differs from insertRule(), which takes the textual representation of the entire rule as a single string.
+        """
+        raise NotImplementedError
+
+    def removeRule(self):
+        """ Functionally identical to deleteRule(); removes the rule at the specified index from the stylesheet's rule list. """
+        raise NotImplementedError
+
+
 class Style(object):
     """[ js syntax styles ]
         # TODO - just add normal float?
@@ -14,6 +196,7 @@ class Style(object):
     """
 
     def __init__(self, parent_node=None):
+        print('*** MADE A STYLE11 ***')
 
         self._members_checked = 0
 
@@ -575,6 +758,7 @@ class Style(object):
 
         self.zIndex = 'auto'
         '''Sets or returns the stack order of a positioned element 2'''
+
 
     def style_set_decorator(func):
         from functools import wraps
@@ -2514,3 +2698,76 @@ class Style(object):
     # @style_set_decorator
     # def zoomType(self, value=None, *args, **kwargs):
     #     self.__zoomType = value
+
+    # Modifies an existing CSS property or creates a new CSS property in the declaration block. """
+    # def setProperty(self, property, value):
+        # print('shut your fucking mouth!')
+        # self[property] = value
+
+
+class CSSStyleDeclaration(Style):
+    """ The CSSStyleDeclaration interface represents an object that is a CSS declaration block, 
+    and exposes style information and various style-related methods and properties.
+
+    A CSSStyleDeclaration object can be exposed using three different APIs:
+
+    Via HTMLElement.style, which deals with the inline styles of a single element (e.g., <div style="...">).
+    Via the CSSStyleSheet API. For example, document.styleSheets[0].cssRules[0].style returns a CSSStyleDeclaration object on the first CSS rule in the document's first stylesheet.
+    Via Window.getComputedStyle(), which exposes the CSSStyleDeclaration object as a read-only interface.
+    """
+
+    def __init__(self, parentNode=None, *args, **kwargs):
+        print('*** MADE A STYLE ***')
+        # super(Style).__init__(*args, **kwargs)
+        super().__init__(parentNode, *args, **kwargs)
+
+    @property
+    def cssText(self):
+        """ Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
+        Setting this attribute changes the inline style. If you want a text representation of a computed declaration block, 
+        you can get it with JSON.stringify()."""
+        raise NotImplementedError
+
+    @property
+    def length(self):
+        """ The number of properties. See the item() method below."""
+        raise NotImplementedError
+
+    @property
+    def parentRule(self):
+        """ The containing CSSRule. """
+        raise NotImplementedError
+
+    # @property
+    # def cssFloat(self):
+    #     """ Special alias for the float CSS property. """
+    #     raise NotImplementedError
+
+    def getPropertyPriority(self):
+        """ Returns the optional priority, "important"."""
+        raise NotImplementedError
+
+    def getPropertyValue(self):
+        """ Returns the property value given a property name. """
+        raise NotImplementedError
+
+    def item(self):
+        """ Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.
+            An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).
+            This is mostly useful for non-JavaScript DOM implementations.
+        """
+        raise NotImplementedError
+
+    def removeProperty(self):
+        """ Removes a property from the CSS declaration block. """
+        raise NotImplementedError
+
+    # Modifies an existing CSS property or creates a new CSS property in the declaration block. """
+    def setProperty(self, property, value, priority=None):
+        print('is this magic!')
+        # self[property] = value
+        setattr(self, property, value)
+
+    def getPropertyCSSValue(self):
+        """ Only supported via getComputedStyle in Firefox. Returns the property value as a CSSPrimitiveValue or null for shorthand properties. """
+        raise NotImplementedError

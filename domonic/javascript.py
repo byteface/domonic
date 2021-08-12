@@ -23,7 +23,8 @@ import gc
 import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
 import re
-
+import json
+import os
 
 # true = True
 # false = False
@@ -510,12 +511,13 @@ class Function(object):
             [type]: [result of calling the function.]
         """
         # raise NotImplementedError
+        print('CALL!!')
         print(thisArg)
         print(args)
         if thisArg is not None:
             return self.func(thisArg, args)
             # return self.func(this=thisArg, *args)
-        return self.func()
+        return self.func(args)
 
     def toString(self):
         """[Returns a string representing the source code of the function. Overrides the]
@@ -1485,8 +1487,71 @@ class FetchedSet(object):  # not a promise
     #     self.results.append(func)
 
 
+class Storage():
+
+    def __init__(self, filepath=None):
+        """[localstorage. destroys on each session unless you pass the optional filepath]
+
+        Args:
+            filepath ([type], optional): [filepath]. give us a file to write to
+        """
+        self.storage = {}
+        self.has_file = False
+        if filepath:
+            self.filepath = filepath
+            self.has_file = True
+        # check if file exists. if so load it in . if not create it
+        if filepath:
+            if os.path.exists(filepath):
+                with open(filepath, 'r') as f:
+                    self.storage = json.load(f)
+            else:
+                with open(filepath, 'w') as f:
+                    json.dump(self.storage, f)
+
+    def __getitem__(self, key):
+        return self.storage[key]
+
+    def __setitem__(self, key, value):
+        self.storage[key] = value
+        if self.has_file:
+            self._save()
+
+    def __len__(self):
+        return len(self.storage.keys())
+
+    @property
+    def length(self):
+        """ Returns an integer representing the number of data items stored in the Storage object. """
+        return len(self.storage.keys())
+
+    def _save(self):
+        if self.has_file:
+            with open(self.filepath, 'w') as f:
+                json.dump(self.storage, f)
+            return True
+        return False
+
+    def setItem(self, keyName, keyValue):
+        """ Adds that key to the storage, or update that key's value if it already exists """
+        self.storage[keyName] = keyValue
+        self._update_file()
+
+    def key(self, keyName):
+        """ Returns the value of the key if it exists, otherwise returns None """
+        return self.storage.get(keyName, None)
+
+    def removeItem(self, keyName):
+        """ Removes the key and its value from the storage """
+        if keyName in self.storage:
+            del self.storage[keyName]
+            self._update_file()
+
+
 class Window(object):
     """ window """
+
+    localStorage = Storage()
 
     def __init__(self, *args, **kwargs):
         # self.console = dom.console
@@ -1747,6 +1812,21 @@ window = Window
 class Array(object):
     """ javascript array """
 
+    @staticmethod
+    def from_(object):  # TODO - test
+        """ Creates a new Array instance from an array-like or iterable object. """
+        return Array(object)
+
+    @staticmethod
+    def isArray(object):  # TODO - test
+        """ Returns true if the specified object is an Array instance. """
+        return type(object) is Array or type(object) is list or type(object) is tuple
+
+    @staticmethod
+    def of(*args):  # TODO - test
+        """ Creates a new Array instance with a variable number of arguments, regardless of number or type of the arguments. """
+        return Array(args)
+
     def __init__(self, *args):
         """[An Array that behaves like a js array]
         """
@@ -1793,6 +1873,8 @@ class Array(object):
     def __iter__(self):
         for i in self.args:
             yield i
+    
+
 
     def __sub__(self, value):
         if isinstance(value, int):
@@ -2064,6 +2146,91 @@ class Array(object):
             [type]: [item at the given position]
         """
         return self.args[index]
+
+
+class Set():
+
+    def __init__(self, *args):
+        """[The Set object lets you store unique values of any type, whether primitive values or object references.
+
+        TODO - will need to store dictionaries unlike a python set
+        https://stackoverflow.com/questions/34097959/add-a-dictionary-to-a-set-with-union
+
+        ]
+        """
+        self.args = set(args)
+
+    def __iter__(self):
+        return iter(self.args)
+
+    def __len__(self):
+        return len(self.args)
+
+    def __contains__(self, item):
+        return item in self.args
+
+    def __repr__(self):
+        return repr(self.args)
+
+    def __str__(self):
+        return str(self.args)
+
+    @property
+    def species(self):
+        """ The constructor function that is used to create derived objects. """
+        # return self.args
+        raise NotImplementedError
+
+    @property
+    def size(self):
+        """ Returns the number of values in the Set object. """
+        return len(self.args)
+
+    def add(self, value):
+        """ Appends value to the Set object. Returns the Set object with added value. """
+        print(type(self.args), value)
+        self.args.add(value)
+        return self.args
+
+    def clear(self):
+        """ Removes all elements from the Set object. """
+        self.args.clear()
+
+    def delete(self, value):
+        """ Removes the element associated to the value
+        returns a boolean asserting whether an element was successfully removed or not. """
+        return self.args.remove(value)
+
+    def has(self, value):
+        """ Returns a boolean asserting whether an element is present with the given value in the Set object or not. """
+        return value in self.args
+
+    def contains(self, value):
+        """ Returns a boolean asserting whether an element is present with the given value in the Set object or not. """
+        return value in self.args
+
+    # Set.prototype[@@iterator]()
+    # Returns a new iterator object that yields the values for each element in the Set object in insertion order.
+
+    def values(self):
+        """ Returns a new iterator object that yields the values for each element in the Set object in insertion order. """
+        return iter(self.args)
+
+    # def keys(self):
+    #     """ An alias for values """ #?
+    #     return self.values()
+
+    def entries(self):
+        """ Returns a new iterator object that contains an array of [value, value] for each element in the Set object, in insertion order. """
+        return iter([[i, self.args[i]] for i in self.args])
+        # This is similar to the Map object, so that each entry's key is the same as its value for a Set.
+
+    def forEach(self, callbackFn, thisArg=None):
+        """ Calls callbackFn once for each value present in the Set object, in insertion order.
+        If a thisArg parameter is provided, it will be used as the this value for each invocation of callbackFn.
+        """
+        for i in self.args:
+            callbackFn(i, thisArg)
 
 
 class Navigator(object):
@@ -2340,6 +2507,33 @@ class Number(float):
 class String(object):
     """ javascript String methods """
 
+    @staticmethod
+    def fromCodePoint(codePoint: int):
+        """ Converts a Unicode code point into a string """
+        return chr(codePoint)
+
+    @staticmethod
+    def toCodePoint(char: str):
+        """ Converts a Unicode string into a code point """
+        return ord(char)
+
+    @staticmethod
+    def raw(string):
+        """ Returns the string as-is """
+        import re
+        return re.escape(string)
+
+    # @staticmethod
+    # def fromCharCode(code: int):
+    #     """ Converts a Unicode code point into a string """
+    #     return chr(code)
+
+    @staticmethod
+    def toCharCode(char: str):
+        """ Converts a Unicode string into a code point """
+        return ord(char)
+
+
     def __init__(self, x="", *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
@@ -2499,7 +2693,10 @@ class String(object):
         and returns a new string where the specified values are replaced.
         only replaces first one.
         """
-        return self.x.replace(old, new, 1)
+        if callable(new):
+            return new(self.x, old)
+        else:
+            return self.x.replace(old, new, 1)
         # re.sub(r"regepx", "old", "new") # TODO - js one also takes a regex
 
     def replaceAll(self, old: str, new: str):
@@ -2551,6 +2748,91 @@ class String(object):
             return self.x.index(searchValue, fromIndex)
         except ValueError:
             return -1
+
+    def codePointAt(self, index: int):
+        """ Returns the Unicode code point at the specified index """
+        return ord(self.x[index])
+
+    def padEnd(self, length: int, padChar: str = " "):
+        """ Pads the end of a string with a specified character """
+        return str(self.x + padChar * (length - len(self.x)))
+
+    def padStart(self, length: int, padChar: str = " "):
+        """ Pads the start of a string with a specified character """
+        return padChar * (length - len(self.x)) + self.x
+
+    def localeCompare(self, comparisonString: str, locale: str = None, *args):
+        """ method returns a number indicating whether a reference string comes before,
+            or after, or is the same as the given string in sort order """
+        # if locale is None:
+        #     locale = self.locale
+        # return locale.strcoll(self.x, comparisonString, *args)
+        # pass
+        raise NotImplementedError
+
+    def trimStart(self, length: int):
+        """ Removes whitespace from the start of a string """
+        return self.x.lstrip()
+
+    def trimEnd(self, length: int):
+        """ Removes whitespace from the end of a string """
+        return self.x.rstrip()
+
+    def includes(self, searchValue: str, position: int = 0):
+        """[returns true if the specified string is found within the calling String object,]
+
+        Args:
+            searchValue (str): [The string value to search for.]
+            position (int, optional): [the position to search from]. Defaults to 0.
+
+        Returns:
+            [type]: [a boolean value indicating whether the search value was found.]
+        """
+        return searchValue in self.x[position:]
+
+    def search(self, searchValue: str, position: int = 0):
+        """[returns true if the specified string is found within the calling String object,]
+        starting at the specified position.
+        Args:
+            searchValue (str): [The string value to search for.]
+            position (int, optional): [the position to search from]. Defaults to 0.
+        Returns:
+            [type]: [a boolean value indicating whether the search value was found.]
+        """
+        return searchValue in self.x[position:]
+
+    def matchAll(self, pattern: str):
+        """
+        Searches a string for a specified value, or a regular expression,
+        and returns a new string where the specified values are replaced.
+        only replaces first one.
+        """
+        return re.sub(pattern, "", self.x)
+
+    def match(self, pattern: str):
+        """
+        Searches a string for a specified value, or a regular expression,
+        and returns a new string where the specified values are replaced.
+        only replaces first one.
+        """
+        return re.match(pattern, self.x)
+
+    def compile(self, pattern: str):
+        """
+        Searches a string for a specified value, or a regular expression,
+        and returns a new string where the specified values are replaced.
+        only replaces first one.
+        """
+        return re.compile(pattern)
+
+    def lastIndexOf(self, searchValue: str, fromIndex: int = 0):
+        """
+        returns the last index within the calling String object of the first occurrence of the specified value,
+        starting the search at fromIndex
+        """
+        return self.x.rindex(searchValue, fromIndex)
+
+    # def test(self, pattern: str):? was this on string?
 
 
 class RegExp():
@@ -2939,12 +3221,268 @@ class Error(Exception):
     # def __str__(self):
     #     return self.message
 
+# Error
+# AggregateError
+# EvalError
+# InternalError
+# RangeError
+# ReferenceError
+# SyntaxError
+# TypeError
+# URIError
+
+
+# ---- STUBBING OUT SOME NEW ONES TO WORK ON 
+
+class Reflect():
+    """
+    The Reflect object provides the following static functions which have the same names as the proxy handler methods.
+    Some of these methods are also the same as corresponding methods on Object,
+    although they do have some subtle differences between them.
+    """
+
+    @staticmethod
+    def ownKeys(target):
+        """ Returns an array of the target object's own (not inherited) property keys. """
+        return target.keys()
+        # return target.__dict__.keys()
+
+    @staticmethod
+    def apply(target, thisArgument, argumentsList):
+        """ Calls a target function with arguments as specified by the argumentsList parameter. See also Function.prototype.apply(). """
+        raise NotImplementedError
+
+    @staticmethod
+    def construct(target, argumentsList, newTarget):
+        """ The new operator as a function. Equivalent to calling new target(...argumentsList). Also provides the option to specify a different prototype. """
+        raise NotImplementedError
+
+    @staticmethod
+    def defineProperty(target, propertyKey, attributes):
+        """ Similar to Object.defineProperty(). Returns a Boolean that is true if the property was successfully defined. """
+        raise NotImplementedError
+
+    @staticmethod
+    def deleteProperty(target, propertyKey):
+        """ The delete operator as a function. Equivalent to calling delete target[propertyKey]. """
+        raise NotImplementedError
+
+    @staticmethod
+    def get(target, propertyKey, receiver):
+        """ Returns the value of the property. Works like getting a property from an object (target[propertyKey]) as a function. """
+        raise NotImplementedError
+
+    @staticmethod
+    def getOwnPropertyDescriptor(target, propertyKey):
+        """ Similar to Object.getOwnPropertyDescriptor(). Returns a property descriptor of the given property if it exists on the object,  undefined otherwise. """
+        raise NotImplementedError
+
+    @staticmethod
+    def getPrototypeOf(target):
+        """ Same as Object.getPrototypeOf(). """
+        raise NotImplementedError
+
+    @staticmethod
+    def has(target, propertyKey):
+        """ Returns a Boolean indicating whether the target has the property. Either as own or inherited. Works like the in operator as a function. """
+        raise NotImplementedError
+
+    @staticmethod
+    def isExtensible(target):
+        """ Same as Object.isExtensible(). Returns a Boolean that is true if the target is extensible. """
+        raise NotImplementedError
+
+    @staticmethod
+    def preventExtensions(target):
+        """ Similar to Object.preventExtensions(). Returns a Boolean that is true if the update was successful. """
+        raise NotImplementedError
+
+    @staticmethod
+    def set(target, propertyKey, value, receiver):
+        """ A function that assigns values to properties. Returns a Boolean that is true if the update was successful. """
+        raise NotImplementedError
+
+    @staticmethod
+    def setPrototypeOf(target, prototype):
+        """ A function that sets the prototype of an object. Returns a Boolean that is true if the update was successful. """
+        raise NotImplementedError
+
+
+class Symbol():
+
+    # a global registry for symbols
+    registry = []
+
+    # Creates a new Symbol object.
+    def __init__(self, symbol):
+        self.symbol = symbol
+        self.description = None
+        self.registry.append(self)
+        # self.__class__.registry = self.registry
+
+    def hasInstance(self, obj):
+        """[A method determining if a constructor object recognizes an object as its instance. Used by instanceof.]
+
+        Args:
+            obj ([type]): [a constructor object]
+
+        Returns:
+            [type]: [True if obj is an instance of this symbol, False otherwise]
+        """
+        return self.symbol == obj.symbol
+
+    def isConcatSpreadable(self):
+        """ A Boolean value indicating if an object should be flattened to its array elements. Used by Array.prototype.concat()."""
+        return False
+
+    def iterator(self, obj):
+        """ A method returning the default iterator for an object. Used by for...of. """
+        return iter(obj)
+
+    def asyncIterator(self, obj):
+        """ A method that returns the default AsyncIterator for an object. Used by for await...of. """
+        return iter(obj)
+
+    # A method that matches against a string, also used to determine if an object may be used as a regular expression.
+    def match(self, item):
+        """ A method that matches the symbol against a string, also used to determine if an object may be used as a regular expression. """
+        raise NotImplementedError
+
+    # A method that returns an iterator, that yields matches of the regular expression against a string.
+    # Used by String.prototype.matchAll().
+    # def matchAll(self, obj):
+    #     if isinstance(obj, str):
+    #         return obj == self.symbol
+    #     return False
+
+    # A method that replaces matched substrings of a string. Used by String.prototype.replace().
+    # def replace(self, 
+
+    # A method that returns the index within a string that matches the regular expression. Used by String.prototype.search().
+    def search(self):
+        raise NotImplementedError
+
+    # A method that splits a string at the indices that match a regular expression. Used by String.prototype.split().
+    def split(self):
+        raise NotImplementedError
+
+    # A constructor function that is used to create derived objects.
+    def species(self):
+        raise NotImplementedError
+
+    # A method converting an object to a primitive value.
+    def toPrimitive(self):
+        raise NotImplementedError
+
+    # A string value used for the default description of an object. Used by Object.prototype.toString().
+    def toStringTag(self):
+        raise NotImplementedError
+
+    # An object value of whose own and inherited property names are excluded from the with environment bindings of the associated object.
+    def unscopables(self):
+        raise NotImplementedError
+
+    # @staticmethod
+    # def for(key):
+    #     """ Searches for existing Symbols with the given key and returns it if found. 
+    #     Otherwise a new Symbol gets created in the global Symbol registry with key. """
+    #     raise NotImplementedError
+
+    # @staticmethod
+    # def keyFor(sym)
+    #     """ Retrieves a shared Symbol key from the global Symbol registry for the given Symbol. """
+    #     raise NotImplementedError
+
+    def toSource(self):
+        """ Returns a string containing the source of the Symbol. Overrides the Object.prototype.toSource() method. """
+        raise NotImplementedError
+
+    def toString(self):
+        """ Returns a string containing the description of the Symbol. Overrides the Object.prototype.toString() method. """
+        raise NotImplementedError
+
+    def valueOf(self):
+        """ Returns the Symbol. Overrides the Object.prototype.valueOf() method. """
+        raise NotImplementedError
+
 
 '''
 
-# BELOW is legacy data from a dump of ALL dom/js methods. was looking for useful things to port back when this was the only class.
-# -- leave here for now - ill delete stuff later. it reminds me what i haven't covered
+class Atomics():
+    """
+    The Atomics object provides atomic operations as static methods. 
+    They are used with SharedArrayBuffer and ArrayBuffer objects.
 
+    When memory is shared, multiple threads can read and write the same data in memory. Atomic operations make sure that predictable values are written and read, 
+    that operations are finished before the next operation starts and that operations are not interrupted.
+
+    Wait and notify
+    The wait() and notify() methods are modeled on Linux futexes ("fast user-space mutex") and provide ways for waiting until a certain condition
+    becomes true and are typically used as blocking constructs.
+    """
+
+    @staticmethod
+    def add(array, index, value):
+        """ Adds the provided value to the existing value at the specified index of the array. 
+            Returns the old value at that index."""
+        return array.add(index, value)
+
+    def and_(array, index, value):
+        """ Computes a bitwise AND on the value at the specified index of the array with the provided value.
+        Returns the old value at that index."""
+        raise NotImplementedError
+
+    @staticmethod
+    """ Stores a value at the specified index of the array, if it equals a value. Returns the old value."""
+    def compareExchange(array, index, value):
+        raise NotImplementedError
+
+    @staticmethod
+    def exchange():
+        """ Stores a value at the specified index of the array. Returns the old value."""
+        raise NotImplementedError
+
+    @staticmethod
+    def isLockFree(size):
+        """ An optimization primitive that can be used to determine whether to use locks or atomic operations.
+        Returns true if an atomic operation on arrays of the given element size will be implemented using a hardware atomic operation (as opposed to a lock). Experts only."""
+        raise NotImplementedError
+
+    @staticmethod
+    def load():
+        """ Returns the value at the specified index of the array."""
+        raise NotImplementedError
+
+    # @staticmethod
+    # """ Notifies agents that are waiting on the specified index of the array. Returns the number of agents that were notified."""
+    # def notify(
+
+    @staticmethod
+    def or_():
+        """ Computes a bitwise OR on the value at the specified index of the array with the provided value. Returns the old value at that index."""
+        raise NotImplementedError
+
+    @staticmethod
+    def store():
+        """ Stores a value at the specified index of the array. Returns the value."""
+        raise NotImplementedError
+    @staticmethod
+    def sub():
+        """ Subtracts a value at the specified index of the array. Returns the old value at that index."""
+        raise NotImplementedError
+    @staticmethod
+    def wait():
+        """ Verifies that the specified index of the array still contains a value and sleeps awaiting or times out. Returns either "ok", "not-equal", or "timed-out". If waiting is not allowed in the calling agent then it throws an Error exception. (Most browsers will not allow wait() on the browser's main thread.)"""
+        raise NotImplementedError
+    @staticmethod
+    def xor():
+        """ Computes a bitwise XOR on the value at the specified index of the array with the provided value. Returns the old value at that index."""
+        raise NotImplementedError
+
+'''
+
+
+'''
 
 # class ClipboardData():
     # clipboardData Returns an object containing the data affected by the clipboard operation
@@ -2964,18 +3502,6 @@ class Error(Exception):
     #     """ Loads a specific URL from the history list """
     #     raise NotImplementedError
 
-# class Storage():
-    # def __init__():
-        # pass
-    # def setItem(self):
-        # """ Adds that key to the storage, or update that key's value if it already exists """
-        # raise NotImplementedError
-    # def key():
-    #     """ Returns the name of the nth key in the storage """
-    #     raise NotImplementedError
-    # def removeItem():
-    #     """  Removes that key from the storage """
-    #     raise NotImplementedError
 
 # class Geolocation():
     # def __init__():
@@ -2994,6 +3520,11 @@ class Error(Exception):
     """ an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition() and Geolocation.watchPosition() """
     def watchPosition():
     """   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   """
+
+
+
+# BELOW is legacy data from a dump of ALL dom/js methods. was looking for useful things to port back when this was the only class.
+# -- leave here for now - ill delete stuff later. it reminds me what i haven't covered
 
 # clear()   Clears the console  Console, Storage
 # debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements

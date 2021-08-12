@@ -344,6 +344,24 @@ class Utils(object):
             # print("No internet connection available.")
             return False
 
+    '''
+    @staticmethod
+    def yeahnah(x):
+        """ returns a boolean for any given user reply
+        """
+        reply = x.lower()
+        if reply.lower() in ['yeah', "y", "yes", "yup", "si", "yep", "yeah", "yep"]:
+            return True
+        elif reply.lower() in ['nah', "no", "nope", "n"]:
+            return False
+        else:
+            # return a probability between 0 and 1 for either yes or no based on which list has the most similar words to the input
+            # return max([float(reply.count(x)) / len(reply) for x in ['yeah', "y", "yes", "yup", "si", "yep", "yeah", "yep"]]) > max([float(reply.count(x)) / len(reply) for x in ['nah', "n", "no", "nope", "nop", "nope", "n", "nope"]])
+            # return max([float(reply.count(x)) / len(reply) for x in ['yeah', "y", "yes", "yup", "si", "yep", "yeah", "yep"]]) > 0.5
+        else:
+            return None
+    '''
+
     # def get_ip(self):
     #     """[get the current ip]
 

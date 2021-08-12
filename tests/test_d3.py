@@ -853,10 +853,23 @@ class TestCase(unittest.TestCase):
 
         # selectAll("p").attr("class", "graf").style("color", "red")
         # selectAll("p").attr("class", "test")
-        selectAll("p").append("div")
+        # selectAll("p").append(div)
+        # selectAll("p").append('div')
+        # selectAll("p").attr("class", "graf").style("color", "red")
+        selectAll("p").style("color", "red")
         print(page)
 
         # select("body").append("svg").attr("width", 960).attr("height", 500).append("g").attr("transform", "translate(20,20)").append("rect").attr("width", 920).attr("height", 460)
+
+
+    def test_select2(self):
+
+        # selectAll("p").attr("class", "graf").style("color", "red")
+
+        pass
+
+
+
 
 
 
