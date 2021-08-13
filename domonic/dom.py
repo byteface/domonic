@@ -1531,7 +1531,7 @@ class Element(Node):
 
     @property
     def style(self):
-        print('style GETTER!')
+        # print('style GETTER!')
         """ returns the value of the style attribute of an element """
         if self.__style is None:
             self.style = Style()
@@ -1607,7 +1607,6 @@ class Document(Element):
 
     def __init__(self, *args, **kwargs):
         """ init Creates a new Document """
-        # print('setting document !!!!')
         # self.doc = doc
         # self.uri = uri
         # self.documentURI = uri
@@ -1617,14 +1616,12 @@ class Document(Element):
         self.body = ""  # ??
         super().__init__(*args, **kwargs)
         try:
-            # print('setting document !!!!')
             global document
             document = self
         except Exception as e:
             print('failed to set document', e)
 
     def __new__(cls, *args, **kwargs):
-        # print('setting document !!!!')
         instance = super().__new__(cls)
         instance.__init__(*args, **kwargs)
         instance.documentElement = instance
@@ -1632,10 +1629,8 @@ class Document(Element):
         instance.baseURI = domonic.javascript.URL().href
 
         try:
-            # print('setting document baby!!!!')
             global document
             document = instance
-            # print(document)
         except Exception as e:
             print('failed to set document', e)
 

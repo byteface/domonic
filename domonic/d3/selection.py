@@ -76,6 +76,8 @@ def window(node):
     return (node.ownerDocument and node.ownerDocument.defaultView) or (node.document and node) or node.defaultView
 
 
+defaultView = window
+
 # import selection_select from "./select.js";
 
 # import selection_style from "./style.js";
@@ -137,11 +139,9 @@ def classArray(string):
 
 
 def classList(node):
-    print("classList::")
-    # print(node.classList)
-
     # return node.classList or ClassList(node)
     return ClassList(node)
+
 
 def classedAdd(node, names):
     mylist = classList(node)
@@ -224,23 +224,13 @@ class Selection():
     # import selectorAll from "../selectorAll.js";
 
     def arrayAll(self, select, *args):
-        return lambda: array(select.apply(self.this, args))
+        return lambda: array(Function(select).apply(self.this, args))
 
     def selectAll(self, select):
         if callable(select):
             select = self.arrayAll(select)
         else:
             select = self.selectorAll(select)
-
-        # TODO - wrewrite this as python
-        # for (var groups = this._groups, m = groups.length, subgroups = [], parents = [], j = 0; j < m; ++j) {
-        #     for (var group = groups[j], n = group.length, node, i = 0; i < n; ++i) {
-        #     if (node = group[i]) {
-        #         subgroups.push(select.call(node, node.__data__, i, group));
-        #         parents.push(node);
-        #     }
-        #     }
-        # }
 
         groups = self._groups
         m = len(groups)
@@ -506,7 +496,7 @@ class Selection():
     def call(self, *args):
         callback = args[0]
         arguments[0] = self
-        callback.apply(None, args)
+        Function(callback).apply(None, args)
         return self
 
     # import selection_nodes from "./nodes.js";
@@ -576,7 +566,7 @@ class Selection():
                 # try:
                 node.__data__ = None
                 Function(callback).call(node, node.__data__, i, group)
-                print('worked on this one')
+                # print('worked on this one')
                 # except Exception as e:
                     # print(e)
                     # print('failed. no __data__ on node mate', e)
@@ -614,7 +604,7 @@ class Selection():
             nonlocal value
             nonlocal name
             nonlocal args
-            v = value.apply(this, args)
+            v = Function(value).apply(this, args)
             if v == None:
                 this.removeAttribute(name)
             else:
@@ -662,37 +652,37 @@ class Selection():
     # def style: selection_style,
     # import defaultView from "../window.js";
     def _styleRemove(self, name, value, priority=None):
-        print('styleing remove')
+        # print('styleing remove')
         def anon(this, *args):
-            print('_styleRemove :anon/name', name)
+            # print('_styleRemove :anon/name', name)
             this.style.removeProperty(name)
         return anon
 
     def _styleConstant(self, name, value, priority=None):
-        print('style constant was called')
+        # print('style constant was called')
         def anon(this, *args):
-            print('THE FUNC WAS CALLED')
+            # print('THE FUNC WAS CALLED')
             nonlocal name
             nonlocal value
             nonlocal priority
-            print('_styleConstantxxx :anon/name', name, type(this), this)
-            print('aaa',this)
-            print('aaaaawtf')
-            print('bbb',this.style)
-            print('ccc')
+            # print('_styleConstantxxx :anon/name', name, type(this), this)
+            # print('aaa',this)
+            # print('aaaaawtf')
+            # print('bbb',this.style)
+            # print('ccc')
             this.style.setProperty(name, value, priority)
         return anon
 
     def _styleFunction(self, name, value, priority=None):
-        print('styling fucntion')
+        # print('styling fucntion')
         def anon(this, *args):
-            print('styling fucntion:anon/name', name)
-            v = value.apply(this, args)
-            print('dark mavis',v)
+            # print('styling fucntion:anon/name', name)
+            v = Function(value).apply(this, args)
+            # print('dark mavis',v)
             if v == None:
                 this.style.removeProperty(name)
             else:
-                print('how you doin')
+                # print('how you doin')
                 this.style.setProperty(name, v, priority)
         return anon
 
@@ -700,7 +690,7 @@ class Selection():
         if value == None:
             return styleValue(self.node(), name)
 
-        print('hi!!!!!!!!')
+        # print('hi!!!!!!!!')
         if value == None:  # ?? need to understand what below is doing
             func = self._styleRemove#(name, value, priority)
         elif callable(value):
@@ -721,7 +711,7 @@ class Selection():
 
     def append(self, name, *args):
         create = name if callable(name) else creator(name)
-        print(create)
+        # print(create)
 
         def anon(this, *args):
             # print("THIS", this, args)
@@ -751,7 +741,7 @@ class Selection():
 
     def propertyFunction(self, name, value):
         def anon(this, *args):
-            v = value.apply(this, args)
+            v = Function(value).apply(this, args)
             if v == None:
                 del this[name]
             else:
@@ -782,7 +772,7 @@ class Selection():
     # def classed: selection_classed,
 
     def classedTrue(self, names, value):
-        print("classedTrue::::")
+        # print("classedTrue::::")
         return lambda this, *args: classedAdd(this, names)
 
     def classedFalse(self, names, value):
@@ -798,8 +788,8 @@ class Selection():
             nonlocal value
             # nonlocal this
             # nonlocal args
-            print('classedFunction', names, value)
-            v = value.apply(this, args)
+            # print('classedFunction', names, value)
+            v = Function(value).apply(this, args)
             if v == None:
                 classedRemove(this, names)
             else:
@@ -839,21 +829,23 @@ class Selection():
 
 
     # def text: selection_text,
-    def textRemove(self):
+    def _textRemove(self):
         self.this.textContent = ""
 
-    def textConstant(self, value):
-        def anon(this):
+    def _textConstant(self, value):
+        def anon(this, *args):
             this.textContent = value
         return anon
 
-    def textFunction(self, value):
+    def _textFunction(self, value):
         def anon(this, *args):
-            v = value.apply(this, args)
+            v = Function(value).apply(this, args)
             this.textContent = "" if v == None else v
         return anon
 
-    def text(self, value):
+    def text(self, value=None):
+        if value == None:
+            return self.node()._textContent
         # return arguments.length
         #     ? this.each(value == null
         #         ? textRemove : (typeof value === "function"
@@ -861,13 +853,13 @@ class Selection():
         #         : textConstant)(value))
         #     : this.node().textContent
         if value == None:
-            func = textRemove
+            func = self._textRemove
         elif callable(value):
-            func = textFunction
+            func = self._textFunction
         else:
-            func = textConstant
-        return func(value)
+            func = self._textConstant
 
+        self.each(func(value))
 
     # import selection_html from "./html.js";
     # def html: selection_html,
@@ -881,7 +873,7 @@ class Selection():
 
     def htmlFunction(value):
         def anon(this, *args):
-            v = value.apply(this, args)
+            v = Function(value).apply(this, args)
             this.innerHTML = "" if v == None else v
         return anon
 
@@ -923,7 +915,7 @@ class Selection():
 
     def append(self, name, *args):
         create = name if callable(name) else creator(name)
-        print(create)
+        # print(create)
 
         def anon(this, *args):
             # print("THIS", this, args)
@@ -955,7 +947,7 @@ class Selection():
         # })
         create = name if callable(name) else creator(name)
         select = before == None or before == "null" or before == "undefined" or before == "null"
-        return self.select(lambda: self.this.insertBefore(create.apply(self, args), select))
+        return self.select(lambda: self.this.insertBefore(Function(create).apply(self, args), select))
 
     # import selection_remove from "./remove.js";
     # def remove: selection_remove,
@@ -1068,7 +1060,7 @@ class Selection():
                         o.value = value
                         return
                 this.addEventListener(typename.type, value, options)
-                o = {type: typename.type, name: typename.name, value: value, listener: value, options: options}
+                o = {'type': typename.type, 'name': typename.name, 'value': value, 'listener': value, 'options': options}
                 if not on:
                     this.__on = [o]
                 else:
@@ -1077,9 +1069,9 @@ class Selection():
 
 
     def on(self, typename, value, options, *args):
-        typenames = parseTypenames(typename + "")
+        typenames = parseTypenames(str(typename))
         i = None
-        n = typenames.length
+        n = len(typenames)
         t = None
 
         # TODO - write this as python
@@ -1152,7 +1144,7 @@ class Selection():
         return lambda this: dispatchEvent(this, type, params)
 
     def dispatchFunction(self, type, params, *args):
-        return lambda this: dispatchEvent(this, type, params.apply(this, args))
+        return lambda this: dispatchEvent(this, type, Object(params).apply(this, args))
 
     def dispatch(self, type, params):
         # return this.each((typeof params === "function"
@@ -1264,10 +1256,6 @@ def pointer(event, node):
     return [event.pageX, event.pageY]
 
 
-# export {default as pointers} from "./pointers.js";
-# import pointer from "./pointer.js";
-# import sourceEvent from "./sourceEvent.js";
-
 def pointers(events, node):
     if events.target is not None:  # i.e., instanceof Event, not TouchList or iterable
         events = sourceEvent(events)
@@ -1278,14 +1266,11 @@ def pointers(events, node):
     return Array.from_(events, lambda event: pointer(event, node))
 
 
-# export {default as select} from "./select.js";
-# export {default as selectAll} from "./selectAll.js";
 def empty():
     return []
 
 
 def selectAll(selector):
-    # print(selector)
     from domonic.dom import document  # bring in the global document
     # print(document)
     if isinstance(selector, str):
@@ -1293,9 +1278,3 @@ def selectAll(selector):
         # return Selection([document.getElementsBySelector(selector, document)], [document.documentElement])
     else:
         return Selection([array(selector)], root, document)
-
-
-# export {default as selection} from "./selection/index.js";
-# export {default as selector} from "./selector.js";
-# export {default as selectorAll} from "./selectorAll.js";
-# export {styleValue as style} from "./selection/style.js";

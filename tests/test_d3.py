@@ -860,7 +860,11 @@ class TestCase(unittest.TestCase):
         # print(page)
 
         selection.classed("foo bar", True)
-        # selection.classed("teat", lambda: Math.random() > 0.5)
+        # print( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", Math.random() )
+        selection.classed("test", lambda this: Math.random() > 0.2) # seems to always do it
+        # print(page)
+        # print(selection.text())
+        selection.text("CHANGE")
         print(page)
 
         # select("body").append("svg").attr("width", 960).attr("height", 500).append("g").attr("transform", "translate(20,20)").append("rect").attr("width", 920).attr("height", 460)

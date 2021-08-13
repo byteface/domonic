@@ -53,7 +53,6 @@ class Object(object):
             self.__attribs__ = obj  # set the dict as the attribs
             # self.__attribs__['__dict__'] = obj  # set the dict as the attribs
             self.__dict__ = {**self.__dict__, **obj}  # set the dict as the attribs?
-            print('YO!')
         else:
             try:
                 self.__attribs__ = {}
@@ -422,13 +421,10 @@ class Object(object):
 
     def __getitem__(self, key):
         """ Returns the value of the specified property. """
-        # print('getting', key)
         return self.__attribs__[key]
 
     def __setitem__(self, key, value):
         """ Sets the value of the specified property. """
-        # print('SETTING')
-        # print(key, value)
         self.__attribs__[key] = value
 
     def __delitem__(self, key):
@@ -511,9 +507,9 @@ class Function(object):
             [type]: [result of calling the function.]
         """
         # raise NotImplementedError
-        print('CALL!!')
-        print(thisArg)
-        print(args)
+        # print('CALL!!')
+        # print(thisArg)
+        # print(args)
         if thisArg is not None:
             return self.func(thisArg, args)
             # return self.func(this=thisArg, *args)
@@ -1081,7 +1077,7 @@ class Global(object):
     # TODO - clearTimeout.
     @staticmethod
     def clearTimeout(job):
-        print(job)
+        # print(job)
         job.cancel()
 
 
@@ -2188,7 +2184,7 @@ class Set():
 
     def add(self, value):
         """ Appends value to the Set object. Returns the Set object with added value. """
-        print(type(self.args), value)
+        # print(type(self.args), value)
         self.args.add(value)
         return self.args
 
