@@ -130,7 +130,12 @@ print(site)
 
 ```
 
-There's an evolving DOM.
+There's an evolving DOM API. To learn more about the webAPI go here.
+
+https://developer.mozilla.org/en-US/docs/Web/API
+
+And check the code/docs to see what's currently been implemented.
+
 
 ```python
 mysite.querySelectorAll('button')  # *note - still in dev. use getElementsBySelector for more complex selectors
@@ -152,14 +157,10 @@ from domonic.dom import document
 print(document)
 
 ```
-The last 'html()' you created will always be the 'document'. You can also set it manually but it needs to ne a Document instance. Before a 'html' class is created there is an empty document so that static methods can be available.
+The last 'html()' created will always be the 'document'. You can set it manually but it needs to be a Document instance. Before a 'html' class is created it is just an empty document so that static methods can be available.
 
 Remember python globals are only to that module (unlike other langs). so you will have to import document explicitly when you need it (per method call) as using '*' won't work.
 
-To learn more about he webAPI click here.
-https://developer.mozilla.org/en-US/docs/Web/API
-
-And check the code/docs to see what's currently implemented.
 
 ### javascript
 
