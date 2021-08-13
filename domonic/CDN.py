@@ -77,7 +77,7 @@ class CDN_JS(object):
     X3DOM = "https://www.x3dom.org/download/x3dom.js"
     AFRAME_1_2 = "https://aframe.io/releases/1.2.0/aframe.min.js"
     BRYTHON_3_9_5 = "https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js"
-    MATHML = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=MML_HTMLorMML"  # polyfill to render mathml
+    MATHML = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=MML_HTMLorMML"  # polyfill mathml
     # def find_on_cdn():
     # https://cdn.jsdelivr.net/npm/
     # https://cdnjs.cloudflare.com/ajax/libs/

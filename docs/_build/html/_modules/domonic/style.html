@@ -40,7 +40,7 @@
 
 
 <div class="viewcode-block" id="StyleSheet"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.StyleSheet">[docs]</a><span class="k">class</span> <span class="nc">StyleSheet</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot; An object implementing the StyleSheet interface represents a single style sheet. </span>
+    <span class="sd">&quot;&quot;&quot; An object implementing the StyleSheet interface represents a single style sheet.</span>
 <span class="sd">    CSS style sheets will further implement the more specialized CSSStyleSheet interface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -109,8 +109,8 @@
 
 
 <div class="viewcode-block" id="CSSRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRule">[docs]</a><span class="k">class</span> <span class="nc">CSSRule</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot; The CSSRule interface represents a single CSS rule. </span>
-<span class="sd">    There are several types of rules which inherit properties from CSSRule. </span>
+    <span class="sd">&quot;&quot;&quot; The CSSRule interface represents a single CSS rule.</span>
+<span class="sd">    There are several types of rules which inherit properties from CSSRule.</span>
 
 <span class="sd">    CSSStyleRule</span>
 <span class="sd">    CSSImportRule</span>
@@ -132,7 +132,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cssText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Represents the textual representation of the rule, e.g. &quot;h1,h2 { font-size: 16pt }&quot; or &quot;@import &#39;url&#39;&quot;. </span>
+        <span class="sd">&quot;&quot;&quot; Represents the textual representation of the rule, e.g. &quot;h1,h2 { font-size: 16pt }&quot; or &quot;@import &#39;url&#39;&quot;.</span>
 <span class="sd">        To access or modify parts of the rule (e.g. the value of &quot;font-size&quot; in the example) </span>
 <span class="sd">        use the properties on the specialized interface for the rule&#39;s type.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -182,7 +182,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ownerRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; If this stylesheet is imported into the document using an @import rule, </span>
+        <span class="sd">&quot;&quot;&quot; If this stylesheet is imported into the document using an @import rule,</span>
 <span class="sd">        the ownerRule property returns the corresponding CSSImportRule; otherwise, this property&#39;s value is null. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
@@ -2739,7 +2739,7 @@
 
 
 <div class="viewcode-block" id="CSSStyleDeclaration"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration">[docs]</a><span class="k">class</span> <span class="nc">CSSStyleDeclaration</span><span class="p">(</span><span class="n">Style</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; The CSSStyleDeclaration interface represents an object that is a CSS declaration block, </span>
+    <span class="sd">&quot;&quot;&quot; The CSSStyleDeclaration interface represents an object that is a CSS declaration block,</span>
 <span class="sd">    and exposes style information and various style-related methods and properties.</span>
 
 <span class="sd">    A CSSStyleDeclaration object can be exposed using three different APIs:</span>
@@ -2757,7 +2757,8 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cssText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.</span>
-<span class="sd">        Setting this attribute changes the inline style. If you want a text representation of a computed declaration block, </span>
+<span class="sd">        Setting this attribute changes the inline style.</span>
+<span class="sd">        If you want a text representation of a computed declaration block, </span>
 <span class="sd">        you can get it with JSON.stringify().&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 

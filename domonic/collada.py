@@ -589,7 +589,6 @@ class xml_header():
         return '<?xml version="1.0"?>'
 
 
-
 '''
 
 # The asset tag describes the author and environment of the file

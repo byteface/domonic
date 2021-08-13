@@ -15,7 +15,7 @@ def formatDecimal(x, ignore=None):
         return Number(x).toString(10)
 
 
-def formatDecimalParts(x, p = None):
+def formatDecimalParts(x, p=None):
     """[ Computes the decimal coefficient and exponent of the specified number x with
         significant digits p, where x is positive and p is in [1, 21] or undefined.
         For example, formatDecimalParts(1.23) returns ["123", 0].]
@@ -48,16 +48,17 @@ prefixExponent = None
 
 def formatPrefixAuto(x, p):
 
-    print("formatPrefixAuto1",x,p)
+    # print("formatPrefixAuto1",x,p)
 
     d = formatDecimalParts(x, p)
     if not d:
         return str(x)
 
-    print("formatPrefixAuto22",x,p)
+    # print("formatPrefixAuto22",x,p)
 
     coefficient = d[0]
-    if d[1] == '' : d[1] = 0
+    if d[1] == '':
+        d[1] = 0
 
     exponent = int(d[1])
 
@@ -85,7 +86,8 @@ def formatRounded(x, p):
         return str(x)
     coefficient = d[0]
 
-    if d[1] == '': d[1] = 0
+    if d[1] == '':
+        d[1] = 0
 
     exponent = int(d[1])
 
@@ -96,6 +98,7 @@ def formatRounded(x, p):
             return String(coefficient).slice(0, exponent + 1) + "." + String(coefficient).slice(exponent + 1)
         else:
             return coefficient + "0".join(Array(exponent - len(coefficient) + 2))
+
 
 formatTypes = {
             "%": lambda x, p: Number(x * 100).toFixed(p),
@@ -132,11 +135,11 @@ def formatGroup(grouping, thousands):
             if (length + g + 1) > width:
                 g = Math.max(1, width - length)
 
-            a = i-g
+            a = i - g
             i -= g
             t.append(String(value).substring(a, i + g))
 
-            length += (g+1)
+            length += (g + 1)
             if length > width:
                 break
 
@@ -197,7 +200,6 @@ class FormatSpecifier():
         return self.toString()
 
 
-
 # import formatTrim from "./formatTrim.js";
 
 # // Trims insignificant zeros, e.g., replaces 1.2000k with 1.2k.
@@ -231,6 +233,7 @@ def formatTrim(s):
 def identity(x):
     return x
 
+
 map = Array.map
 prefixes = ["y", "z", "a", "f", "p", "n", "µ", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"]
 
@@ -239,8 +242,10 @@ class NewFormatProxy():
     def __init__(self, nf, specifier):
         self.func = nf
         self.specifier = specifier
+
     def __call__(self, *args, **kwargs):
         return self.func(*args, **kwargs)
+
     def __str__(self, *args, **kwargs):
         return str(self.specifier)
 
@@ -354,7 +359,7 @@ class formatLocale():
                 # If a negative value rounds to zero after formatting, and no explicit positive sign is requested, hide the sign.
                 if (valueNegative and value == 0 and sign != "+"):
                     valueNegative = False
-                
+
                 # Compute the prefix and suffix.
                 valuePrefix = ((sign if sign == "(" else self.minus) if valueNegative else "" if (sign == "-" or sign == "(") else sign) + valuePrefix
 
@@ -457,11 +462,11 @@ def set_locale(code):
         "en-IN": {"decimal": ".", "thousands": ",", "grouping": [3, 2, 2, 2, 2, 2, 2, 2, 2, 2], "currency": ["₹", ""]},
         "en-US": {"decimal": ".", "thousands": ",", "grouping": [3], "currency": ["$", ""]},
         "uk-UA": {"decimal": ",", "thousands": "\u00a0", "grouping": [3], "currency": ["", "\u00a0₴."]},
-        "zh-CN": {"decimal": ".", "thousands": ",","grouping": [3], "currency": ["¥", ""]},
-        "sv-SE": {"decimal": ",", "thousands": "\u00a0","grouping": [3], "currency": ["", " kr"]},
+        "zh-CN": {"decimal": ".", "thousands": ",", "grouping": [3], "currency": ["¥", ""]},
+        "sv-SE": {"decimal": ",", "thousands": "\u00a0", "grouping": [3], "currency": ["", " kr"]},
         "sl-SI": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["", "\u00a0€"]},
         "ru-RU": {"decimal": ",", "thousands": "\u00a0", "grouping": [3], "currency": ["", "\u00a0руб."]},
-        "pt-PT": {"decimal": ",","thousands": "\u00a0","grouping": [3],"currency": ["", "\u00a0€"]},
+        "pt-PT": {"decimal": ",","thousands": "\u00a0","grouping": [3], "currency": ["", "\u00a0€"]},
         "pt-BR": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["R$", ""]},
         "pl-PL": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["", "zł"]},
         "nl-NL": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["€\u00a0", ""]},
@@ -474,13 +479,13 @@ def set_locale(code):
         "fr-FR": {"decimal": ",", "thousands": "\u00a0", "grouping": [3], "currency": ["", "\u00a0€"], "percent": "\u202f%"},
         "es-ES": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["", "\u00a0€"]},
         "de-DE": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["", "\u00a0€"]},
-        "ar-YE": {"decimal": "\u066b", "thousands": "\u066c", "grouping": [3], "currency": ["", " \u0631\u002e\u0649\u002e"], "numerals" : ["\u0660", "\u0661", "\u0662", "\u0663", "\u0664", "\u0665", "\u0666", "\u0667", "\u0668", "\u0669"]}
+        "ar-YE": {"decimal": "\u066b", "thousands": "\u066c", "grouping": [3], "currency": ["", " \u0631\u002e\u0649\u002e"], "numerals": ["\u0660", "\u0661", "\u0662", "\u0663", "\u0664", "\u0665", "\u0666", "\u0667", "\u0668", "\u0669"]}
 
     }[code]
     return formatLocale(loc)
 
-# formatDefaultLocale, 
-# format, 
+# formatDefaultLocale
+# format
 # precisionFixed
 # precisionPrefix
 # precisionRound

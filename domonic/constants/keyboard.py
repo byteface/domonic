@@ -110,7 +110,14 @@ class KeyCode():
     Y = '89'  #:
     Z = '9'  #:
 
-    # TODO - modifiers
+    # TODO - do the modifiers
+
+    # find attribute by value
+    # def get_letter(self, attr):
+    #     for key, value in self.__dict__.iteritems():
+    #         if value == attr:
+    #             return key
+    #     return None
 
     def __init__(self):
         """ constructor for the keyboard class """

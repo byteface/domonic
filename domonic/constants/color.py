@@ -19,7 +19,10 @@ class Color():
             [str]: [random hex color]
         """
         import random
-        r = lambda: random.randint(0, 255)
+
+        def r():
+            return random.randint(0, 255)
+        # r = lambda: random.randint(0, 255)
         return '#%02X%02X%02X' % (r(), r(), r())
         # import secrets
         # rgba = '#'+secrets.token_hex(4)

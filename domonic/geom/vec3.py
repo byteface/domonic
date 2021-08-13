@@ -6,6 +6,7 @@
 import math
 from domonic.javascript import Math
 
+
 class vec3():
     """[vec3]
     """

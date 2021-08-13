@@ -7,6 +7,7 @@
 from domonic.geom import vec2
 from domonic.svg import *
 
+
 class vertex(vec2):
     """
     A vertex is a point in the shape.
@@ -30,6 +31,7 @@ class vertex(vec2):
 
     # def __repr__(self):
     #     return '{} {} {}'.format(self.x, self.y, self.color)
+
 
 Point = vertex
 
@@ -168,7 +170,6 @@ class Shape(Point):
     #     self.__y = y
 
 
-
 class Line(Shape):
 
     def __init__(self, p1, p2, color=None, *args):
@@ -217,7 +218,7 @@ class Line(Shape):
     def __add__(self, other):
         return Line(self.p1, other.p2)
 
-    def __sub__(self, other):# self - other
+    def __sub__(self, other):  # self - other
         return Line(self.p1, other.p1)
 
     def __mul__(self, other):
@@ -518,14 +519,14 @@ class Rect(Shape):
     def __ge__(self, other):
         return self.x >= other.x and self.y >= other.y and self.width >= other.width and self.height >= other.height
 
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height
+    # def __eq__(self, other):
+    #     return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height
 
-    def __ne__(self, other):
-        return self.x != other.x or self.y != other.y or self.width != other.width or self.height != other.height
+    # def __ne__(self, other):
+    #     return self.x != other.x or self.y != other.y or self.width != other.width or self.height != other.height
 
-    def __hash__(self):
-        return hash((self.x, self.y, self.width, self.height))
+    # def __hash__(self):
+    #     return hash((self.x, self.y, self.width, self.height))
 
 
 class Square(Rect):
@@ -712,7 +713,7 @@ class Polyline(Shape):
 
     def __imul__(self, other):
         self.points *= other
-        return self 
+        return self
 
     def __imod__(self, other):
         self.points %= other
@@ -784,9 +785,6 @@ class Polyline(Shape):
 
 #     def __init__(self, color=None, *args):
 #         self.color = color
-
-
-
 
 
 from domonic.geom.shape.shapes import Circle

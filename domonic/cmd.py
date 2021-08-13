@@ -185,7 +185,7 @@ rmdir = type('rmdir', (Cmdcommand,), {'name': 'rmdir'})  #: delete directory
 copy = type('copy', (Cmdcommand,), {'name': 'copy'})  #: copy files
 
 fsutil = type('fsutil', (Cmdcommand,), {'name': 'fsutil'})
-fc = type('fc', (Cmdcommand,), {'name': 'fc'}) # compare files and display the differences
+fc = type('fc', (Cmdcommand,), {'name': 'fc'})  # compare files and display the differences
 
 
 class touch(Cmdcommand):

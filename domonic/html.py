@@ -239,17 +239,14 @@ class tag(object):
 
     # def render()
 
-
-
-
     def __getattr__(self, attr):
         """
         allows dot notation for reading attributes
         *credit to the peeps on discord/python for this one*
         """
         kwargs = super().__getattribute__('kwargs')
-        print("sup::", attr)
-        print("sup2::", kwargs)
+        # print("sup::", attr)
+        # print("sup2::", kwargs)
 
         if attr in kwargs:
             return kwargs[attr]

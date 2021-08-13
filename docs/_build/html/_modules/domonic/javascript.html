@@ -63,6 +63,7 @@
 <span class="c1"># true = True</span>
 <span class="c1"># false = False</span>
 
+
 <div class="viewcode-block" id="Object"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Object">[docs]</a><span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Creates a Mock Javascript Object in python &quot;&quot;&quot;</span>
 
@@ -407,9 +408,9 @@
         <span class="sd">&quot;&quot;&quot; Returns the value of the object. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a string representation of the object. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
+    <span class="c1"># def __str__(self):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns a string representation of the object. &quot;&quot;&quot;</span>
+    <span class="c1">#     return self.toString()</span>
 
     <span class="c1"># def __repr__(self):</span>
     <span class="c1">#     &quot;&quot;&quot; Returns a string representation of the object. &quot;&quot;&quot;</span>
@@ -441,9 +442,9 @@
 
     <span class="k">def</span> <span class="nf">__nonzero__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns whether the object is false. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span>    
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns whether the object is false. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span>
 
@@ -1901,8 +1902,6 @@
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">i</span>
-    
-
 
     <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -2560,7 +2559,6 @@
     <span class="k">def</span> <span class="nf">toCharCode</span><span class="p">(</span><span class="n">char</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Converts a Unicode string into a code point &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="n">char</span><span class="p">)</span></div>
-
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.args = args</span>
@@ -3260,7 +3258,7 @@
 <span class="c1"># URIError</span>
 
 
-<span class="c1"># ---- STUBBING OUT SOME NEW ONES TO WORK ON </span>
+<span class="c1"># ---- STUBBING OUT SOME NEW ONES TO WORK ON</span>
 
 <div class="viewcode-block" id="Reflect"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect">[docs]</a><span class="k">class</span> <span class="nc">Reflect</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -3384,7 +3382,7 @@
     <span class="c1">#     return False</span>
 
     <span class="c1"># A method that replaces matched substrings of a string. Used by String.prototype.replace().</span>
-    <span class="c1"># def replace(self, </span>
+    <span class="c1"># def replace(self,</span>
 
     <span class="c1"># A method that returns the index within a string that matches the regular expression. Used by String.prototype.search().</span>
     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3412,7 +3410,7 @@
 
     <span class="c1"># @staticmethod</span>
     <span class="c1"># def for(key):</span>
-    <span class="c1">#     &quot;&quot;&quot; Searches for existing Symbols with the given key and returns it if found. </span>
+    <span class="c1">#     &quot;&quot;&quot; Searches for existing Symbols with the given key and returns it if found.</span>
     <span class="c1">#     Otherwise a new Symbol gets created in the global Symbol registry with key. &quot;&quot;&quot;</span>
     <span class="c1">#     raise NotImplementedError</span>
 
@@ -3438,20 +3436,21 @@
 
 <span class="sd">class Atomics():</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<span class="sd">    The Atomics object provides atomic operations as static methods. </span>
+<span class="sd">    The Atomics object provides atomic operations as static methods</span>
 <span class="sd">    They are used with SharedArrayBuffer and ArrayBuffer objects.</span>
 
-<span class="sd">    When memory is shared, multiple threads can read and write the same data in memory. Atomic operations make sure that predictable values are written and read, </span>
+<span class="sd">    When memory is shared, multiple threads can read and write the same data in memory.</span>
+<span class="sd">    Atomic operations make sure that predictable values are written and read,</span>
 <span class="sd">    that operations are finished before the next operation starts and that operations are not interrupted.</span>
 
 <span class="sd">    Wait and notify</span>
-<span class="sd">    The wait() and notify() methods are modeled on Linux futexes (&quot;fast user-space mutex&quot;) and provide ways for waiting until a certain condition</span>
-<span class="sd">    becomes true and are typically used as blocking constructs.</span>
+<span class="sd">    The wait() and notify() methods are modeled on Linux futexes (&quot;fast user-space mutex&quot;) and provide ways for waiting</span>
+<span class="sd">    until a certain condition becomes true and are typically used as blocking constructs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <span class="sd">    @staticmethod</span>
 <span class="sd">    def add(array, index, value):</span>
-<span class="sd">        &quot;&quot;&quot; Adds the provided value to the existing value at the specified index of the array. </span>
+<span class="sd">        &quot;&quot;&quot; Adds the provided value to the existing value at the specified index of the array.</span>
 <span class="sd">            Returns the old value at that index.&quot;&quot;&quot;</span>
 <span class="sd">        return array.add(index, value)</span>
 

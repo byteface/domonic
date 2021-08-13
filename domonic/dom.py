@@ -30,7 +30,6 @@ class EventTarget:
             return
 
         stack = self.listeners[_type]
-
         for thing in stack:
             if thing == callback:
                 stack.remove(thing)

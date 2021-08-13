@@ -50,6 +50,12 @@ function project(){
 
 '''
 
+# def install():
+# def clone_webpage(url):
+# clone a webpage and all the resources for that page with wget
+# import os
+# os.system('wget -r -l1 -A.js,.css,.jpg,.jpeg,.png,.gif,.svg ' + url)
+
 
 # class domonic_ui(object):
 #     """
@@ -57,7 +63,6 @@ function project(){
 #     """
 #     def __init__(self):
 #         pass
-
 
 
 def parse_args():
@@ -73,7 +78,7 @@ def parse_args():
     # parser.add_argument('-w', '--website', action='store_true')  # launch the docs
     # parser.add_argument('-s', '--server', help="runs python -m http.server", type=str)
     # parser.add_argument('-u', '--url', help="url to launch the server", type=str)
-    
+
     # -- ideas
     # -- change all file extensions. from, to
     # -- generate assets/app/license/readme/sitemap.
@@ -134,7 +139,7 @@ def do_things(arguments):
                         f.write('alias domonic="python3 -m domonic"\n')
                 else:
                     print('already installed. You need to manually remove it from ~/.bashrc')
-        
+
             elif os.path.exists(os.path.expanduser('~/.bash_profile')):
 
                 if 'function project()' not in open(os.path.expanduser('~/.bash_profile')).read():
@@ -151,11 +156,6 @@ def do_things(arguments):
                 print(prog)
 
 
-
 if __name__ == "__main__":
     args = parse_args()
     do_things(args)
-
-
-
-# def install():

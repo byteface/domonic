@@ -7,7 +7,7 @@ from .utils import Utils
 
 
 class StyleSheet():
-    """ An object implementing the StyleSheet interface represents a single style sheet. 
+    """ An object implementing the StyleSheet interface represents a single style sheet.
     CSS style sheets will further implement the more specialized CSSStyleSheet interface.
     """
 
@@ -76,8 +76,8 @@ class StyleSheetList():
 
 
 class CSSRule():
-    """ The CSSRule interface represents a single CSS rule. 
-    There are several types of rules which inherit properties from CSSRule. 
+    """ The CSSRule interface represents a single CSS rule.
+    There are several types of rules which inherit properties from CSSRule.
 
     CSSStyleRule
     CSSImportRule
@@ -99,7 +99,7 @@ class CSSRule():
 
     @property
     def cssText(self):
-        """ Represents the textual representation of the rule, e.g. "h1,h2 { font-size: 16pt }" or "@import 'url'". 
+        """ Represents the textual representation of the rule, e.g. "h1,h2 { font-size: 16pt }" or "@import 'url'".
         To access or modify parts of the rule (e.g. the value of "font-size" in the example) 
         use the properties on the specialized interface for the rule's type.
         """
@@ -149,7 +149,7 @@ class CSSStyleSheet(StyleSheet):
 
     @property
     def ownerRule(self):
-        """ If this stylesheet is imported into the document using an @import rule, 
+        """ If this stylesheet is imported into the document using an @import rule,
         the ownerRule property returns the corresponding CSSImportRule; otherwise, this property's value is null. """
         raise NotImplementedError
 
@@ -2706,7 +2706,7 @@ class Style(object):
 
 
 class CSSStyleDeclaration(Style):
-    """ The CSSStyleDeclaration interface represents an object that is a CSS declaration block, 
+    """ The CSSStyleDeclaration interface represents an object that is a CSS declaration block,
     and exposes style information and various style-related methods and properties.
 
     A CSSStyleDeclaration object can be exposed using three different APIs:
@@ -2724,7 +2724,8 @@ class CSSStyleDeclaration(Style):
     @property
     def cssText(self):
         """ Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
-        Setting this attribute changes the inline style. If you want a text representation of a computed declaration block, 
+        Setting this attribute changes the inline style.
+        If you want a text representation of a computed declaration block, 
         you can get it with JSON.stringify()."""
         raise NotImplementedError
 

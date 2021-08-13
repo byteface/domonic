@@ -46,7 +46,6 @@ from domonic.geom.shape import Rect
 # from domonic.geom.shape import BoundingCircle
 
 
-
 class matrix(object):
     """[matrixs]
     """
@@ -184,7 +183,7 @@ class Layer(object):
             shape.show()
         return self
 
-    def hide(self): # hide all shapes
+    def hide(self):  # hide all shapes
         for shape in self.shapes:
             shape.hide()
         return self
@@ -286,9 +285,6 @@ class Timeline(object):
 
     def stop(self):
         self.is_playing = False
-
-
-
 
 # class Interactive(object):#??
     # def handle_click_event(self):

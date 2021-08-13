@@ -102,7 +102,7 @@ class vec2():
     def __le__(self, other):
         return (self.x <= other.x and self.y <= other.y)
 
-    def __gt__(self, other):    
+    def __gt__(self, other):
         return (self.x > other.x and self.y > other.y)
 
     def __ge__(self, other):
@@ -287,8 +287,6 @@ class vec2():
         """ returns a random point in a rectangle """
         vec = vec2.random(min_x, max_x, min_y, max_y)
         return vec.add(vec2.random(0, 1))
-
-
 
     # def rotateAround(self, target, angle):
     #     """ Rotates the vector around another point. In fact it returns the other point."""

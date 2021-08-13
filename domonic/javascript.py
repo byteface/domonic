@@ -30,6 +30,7 @@ import os
 # true = True
 # false = False
 
+
 class Object(object):
     """ Creates a Mock Javascript Object in python """
 
@@ -374,9 +375,9 @@ class Object(object):
         """ Returns the value of the object. """
         return self
 
-    def __str__(self):
-        """ Returns a string representation of the object. """
-        return self.toString()
+    # def __str__(self):
+    #     """ Returns a string representation of the object. """
+    #     return self.toString()
 
     # def __repr__(self):
     #     """ Returns a string representation of the object. """
@@ -408,9 +409,9 @@ class Object(object):
 
     def __nonzero__(self):
         """ Returns whether the object is false. """
-        return self.toString() != ''    
+        return self.toString() != ''
 
-    def __bool__(self): 
+    def __bool__(self):
         """ Returns whether the object is false. """
         return self.toString() != ''
 
@@ -1868,8 +1869,6 @@ class Array(object):
     def __iter__(self):
         for i in self.args:
             yield i
-    
-
 
     def __sub__(self, value):
         if isinstance(value, int):
@@ -2527,7 +2526,6 @@ class String(object):
     def toCharCode(char: str):
         """ Converts a Unicode string into a code point """
         return ord(char)
-
 
     def __init__(self, x="", *args, **kwargs):
         # self.args = args
@@ -3227,7 +3225,7 @@ class Error(Exception):
 # URIError
 
 
-# ---- STUBBING OUT SOME NEW ONES TO WORK ON 
+# ---- STUBBING OUT SOME NEW ONES TO WORK ON
 
 class Reflect():
     """
@@ -3351,7 +3349,7 @@ class Symbol():
     #     return False
 
     # A method that replaces matched substrings of a string. Used by String.prototype.replace().
-    # def replace(self, 
+    # def replace(self,
 
     # A method that returns the index within a string that matches the regular expression. Used by String.prototype.search().
     def search(self):
@@ -3379,7 +3377,7 @@ class Symbol():
 
     # @staticmethod
     # def for(key):
-    #     """ Searches for existing Symbols with the given key and returns it if found. 
+    #     """ Searches for existing Symbols with the given key and returns it if found.
     #     Otherwise a new Symbol gets created in the global Symbol registry with key. """
     #     raise NotImplementedError
 
@@ -3405,20 +3403,21 @@ class Symbol():
 
 class Atomics():
     """
-    The Atomics object provides atomic operations as static methods. 
+    The Atomics object provides atomic operations as static methods
     They are used with SharedArrayBuffer and ArrayBuffer objects.
 
-    When memory is shared, multiple threads can read and write the same data in memory. Atomic operations make sure that predictable values are written and read, 
+    When memory is shared, multiple threads can read and write the same data in memory.
+    Atomic operations make sure that predictable values are written and read,
     that operations are finished before the next operation starts and that operations are not interrupted.
 
     Wait and notify
-    The wait() and notify() methods are modeled on Linux futexes ("fast user-space mutex") and provide ways for waiting until a certain condition
-    becomes true and are typically used as blocking constructs.
+    The wait() and notify() methods are modeled on Linux futexes ("fast user-space mutex") and provide ways for waiting
+    until a certain condition becomes true and are typically used as blocking constructs.
     """
 
     @staticmethod
     def add(array, index, value):
-        """ Adds the provided value to the existing value at the specified index of the array. 
+        """ Adds the provided value to the existing value at the specified index of the array.
             Returns the old value at that index."""
         return array.add(index, value)
 

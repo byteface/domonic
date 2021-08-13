@@ -272,17 +272,14 @@
 
     <span class="c1"># def render()</span>
 
-
-
-
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        allows dot notation for reading attributes</span>
 <span class="sd">        *credit to the peeps on discord/python for this one*</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s1">&#39;kwargs&#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sup::&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sup2::&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># print(&quot;sup::&quot;, attr)</span>
+        <span class="c1"># print(&quot;sup2::&quot;, kwargs)</span>
 
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>

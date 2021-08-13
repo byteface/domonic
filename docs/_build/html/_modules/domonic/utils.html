@@ -42,6 +42,8 @@
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">islice</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 
+<span class="kn">from</span> <span class="nn">domonic.decorators</span> <span class="kn">import</span> <span class="n">deprecated</span>
+
 
 <div class="viewcode-block" id="Utils"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils">[docs]</a><span class="k">class</span> <span class="nc">Utils</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; utils &quot;&quot;&quot;</span>
@@ -280,11 +282,12 @@
         <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">permutations</span>
         <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">permutations</span><span class="p">(</span><span class="n">word</span><span class="p">))]</span></div>
 
-<div class="viewcode-block" id="Utils.random_color"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.random_color">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="nd">@deprecated</span>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">random_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; TODO - remove in 0.3 as we have color class. &#39;&#39;&#39;</span>
         <span class="n">r</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;#</span><span class="si">%02X%02X%02X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">(),</span> <span class="n">r</span><span class="p">(),</span> <span class="n">r</span><span class="p">()))</span></div>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;#</span><span class="si">%02X%02X%02X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">(),</span> <span class="n">r</span><span class="p">(),</span> <span class="n">r</span><span class="p">()))</span>
 
 <div class="viewcode-block" id="Utils.escape"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.Utils.escape">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">escape</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>

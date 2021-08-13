@@ -9,6 +9,8 @@ from re import sub
 from itertools import chain, islice
 from collections import Counter
 
+from domonic.decorators import deprecated
+
 
 class Utils(object):
     """ utils """
@@ -247,6 +249,7 @@ class Utils(object):
         from itertools import permutations
         return [''.join(perm) for perm in list(permutations(word))]
 
+    @deprecated
     @staticmethod
     def random_color(self):
         ''' TODO - remove in 0.3 as we have color class. '''

@@ -345,11 +345,10 @@ class dQuery_el():
         # new_elements = self.elements.clone()
         raise NotImplementedError
 
-
     def closest(self, selector=None):
         """ For each element in the set, get the first element that matches the selector by testing the element itself
         and traversing up through its ancestors in the DOM tree."""
-        raise NotImplementedError        
+        raise NotImplementedError
 
     def contents(self):
         """ Get the children of each element in the set of matched elements, including text and comment nodes."""
@@ -934,7 +933,7 @@ class dQuery_el():
 
     def serializeArray(self, array):
         """ Encode an array of form elements as a string for submission."""
-        raise notImplementedError
+        raise NotImplementedError
 
     def show(self):
         """ Display the matched elements."""
@@ -1024,7 +1023,7 @@ class dQuery_el():
         #         º(el).removeClass(className)
         raise NotImplementedError
 
-    def trigger(self, eventName, eventArg=None):  # TODO - test
+    def trigger(self, eventName, eventArg=None):  # TODO - test
         """ Execute all handlers and behaviors attached to the matched elements for the given event type."""
         if not isinstance(self.elements, (list, tuple)):
             self.elements = (self.elements,)

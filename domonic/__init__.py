@@ -39,11 +39,11 @@ from domonic.javascript import *
 from domonic.utils import Utils
 from domonic.components import Input
 
+
 class domonic:
 
     JS_MASTER = "assets/js/master.js"
     CSS_STYLE = "assets/css/style.css"
-
 
     @staticmethod
     def get(url: str):
@@ -116,7 +116,7 @@ class domonic:
             p = eval(s, {**kwargs, **globals()})
         except Exception as e:
             print("Failed to evaluate as mulitline trying again:", e)
-            pyml = ''.join(pyml.splitlines())  # try again on a single line 
+            pyml = ''.join(pyml.splitlines())  # try again on a single line
             s = domonic.evaluate(pyml, *args, **kwargs)
             p = eval(s, {**kwargs, **globals()})
 
@@ -174,10 +174,10 @@ class domonic:
                 pyml[num - 2] = pyml[num - 2] + ").html("  # need to know when to close tag comma vs wrap
                 pyml = '\n'.join(pyml)
                 # print(pyml)
-                return domonic.evaluate(pyml) # try again
+                return domonic.evaluate(pyml)  # try again
                 # pass
                 # pyml += ").html("
-                # domonic.domonify(pyml) # try again  s and load   
+                # domonic.domonify(pyml) # try again  s and load
 
             # TODO -  if " does not match opening parenthesis '{' (<string>, line 9)
             # TODO -  keyword argument repeated (<string>, line 617)
@@ -189,7 +189,7 @@ class domonic:
     @staticmethod
     def _is_valid_pyml(line):
         """
-        tests a line. 
+        tests a line
         returns True or False with replacement
         """
         try:
@@ -200,7 +200,7 @@ class domonic:
 
             if line[0] in ['"', "_", "*"]:
                 test_line = "div(" + line
-                if test_line[len(test_line)-1] != ')':
+                if test_line[len(test_line) - 1] != ')':
                     test_line = test_line + ')'
 
             if line == "),":
@@ -215,11 +215,10 @@ class domonic:
             print('FAIL:', line, e)
             # print(e)
             # rety fix_hyphen_tags
-            if ')' in line: # if there was a bracket return that at least
+            if ')' in line:  # if there was a bracket return that at least
                 return False, ""
             return False, ""
         return False, ""
-
 
     @staticmethod
     def dent(pyml, use_tabs=False):
@@ -238,14 +237,13 @@ class domonic:
                 dentage += 1
             if char == ")":
                 dentage -= 1
-            if lastchar == "\n": # TODO - if file doesn't have newlines already
+            if lastchar == "\n":  # TODO - if file doesn't have newlines already
                 char = tabs_or_spaces * dentage + char
             lastchar = char
             dented += char
             if dentage < 0:
                 dentage = 0
         return dented
-
 
     @staticmethod
     def parse(  page: str,
@@ -294,7 +292,6 @@ class domonic:
         comments = re.compile(r'<!--(.|\s)*?-->')
         page = comments.sub('', page)
         # page = page.strip('\n').strip()
-
 
         # remove abnormal spacing between tag attributes (TODO- maybe 2 spaces is valid somewhere?)
         page = page.replace('   ', ' ')
@@ -406,7 +403,7 @@ class domonic:
             page = re.sub(f"<{tag} ", f'\n{tag}(\n', page, flags=re.IGNORECASE)
             page = re.sub(f"</{tag}>", '\n),\n', page, flags=re.IGNORECASE)
 
-            reg = '/>' # NOTE - er?? this is global!
+            reg = '/>'  # NOTE - er?? this is global!
             pattern = re.compile(reg)
             page = re.sub(pattern, '\n),\n', page)  # , flags=re.IGNORECASE )
 
@@ -416,21 +413,21 @@ class domonic:
         increase_index = 0  # by the amount of new chars you add
         last_tag = None
         for index, char in enumerate(page):
-            index = index + increase_index # TODO does this need to go back to zero.? is any of this code still relevant?
+            index = index + increase_index  # TODO does this need to go back to zero.? is any of this code still relevant?
             if char == "(":
-                open_count +=1
-                flag = (open_count>0)
+                open_count += 1
+                flag = (open_count > 0)
                 tag = page[index - 4] + page[index - 3] + page[index - 2] + page[index - 1]
                 last_tag = tag
             if char == ")":
-                open_count -=1
-                flag = (open_count>0)
+                open_count -= 1
+                flag = (open_count > 0)
             if char == ">":# and flag is True:
-                if 'meta' in tag or 'link' in tag or 'hr' in tag: #??... dont think this is catching anymore
+                if 'meta' in tag or 'link' in tag or 'hr' in tag:  # ??... dont think this is catching anymore
                     page = f"{page[:index]}\n),\n{page[index+1:]}"
                     increase_index += 3
-                    open_count -=1
-                    flag = (open_count>0)
+                    open_count -= 1
+                    flag = (open_count > 0)
                     continue
                 page = f'{page[:index]},\n{page[index+1:]}'
                 increase_index += 1
@@ -494,7 +491,7 @@ class domonic:
             # pattern = re.compile(reg)
             # page = re.sub(pattern, '"""),', page)  # , flags=re.IGNORECASE )
 
-        page = '\n)\n'.join(page.split(',)')) # newline this one?. not sure about this one anymore. seems brutal at this stage
+        page = '\n)\n'.join(page.split(',)'))  # newline this one?. not sure about this one anymore. seems brutal at this stage
 
         customtags = re.findall(r'<[-a-zA-Z]+', page)
         if len(customtags) > 0:
@@ -513,9 +510,7 @@ class domonic:
         page = page.replace('>', '\n(\n')
         page = page.replace('<', '')
 
-
         # print(":::",page)
-
         # page = page.replace('>', '\n,\n')  # < note. changed to not closing tag
         # page = page.replace('<', '\n(\n')
 
@@ -527,16 +522,16 @@ class domonic:
                 # return line # its an opening multi-line string so continue.
 
             values = re.findall('"([^"]*)"', line)
-            if len(values)>0:
+            if len(values) > 0:
                 for value in values:
-                    line = line.replace(value,encode_attr_content(value))
+                    line = line.replace(value, encode_attr_content(value))
 
             values = re.findall("'([^']*)'", line)
-            if len(values)>0:
+            if len(values) > 0:
                 for value in values:
-                    line = line.replace(value,encode_attr_content(value))
+                    line = line.replace(value, encode_attr_content(value))
 
-            params = line.replace('" _','", _')
+            params = line.replace('" _', '", _')
             params = line.strip().strip(',').strip().split(',')
 
             for count, each in enumerate(params):
@@ -548,24 +543,24 @@ class domonic:
 
                 if 'style' in key or 'title' in key:
                     for i, att in enumerate(attributes):
-                        val = val.replace(att, '$DoMo'+str(i)+'NiC$')
+                        val = val.replace(att, '$DoMo' + str(i) + 'NiC$')
 
                 # checks string lines have quotes both sides
                 if val is None or val == "":
                     val = 'true'
                 if val == ' ':
                     val = '" "'
-                if val[-1] not in ['"',",","*",")","$QUOTE$"]:
-                    val = val+'"'
-                if val[0] not in ['"',",","*","("]: # note. added opener.
-                    val = '"'+val
+                if val[-1] not in ['"', ",", "*", ")", "$QUOTE$"]:
+                    val = val + '"'
+                if val[0] not in ['"', ",", "*", "("]:  # note. added opener.
+                    val = '"' + val
                 if val == None or val == '"':
                     val = '""'
 
                 val = val.replace("-", "$HYPHEN$")
 
                 if '_' in key:  # or '_' not in key: # skip as its a single attribute with multiple key:values
-                    if '-' not in key: # TODO - may still have to do other ones as below?
+                    if '-' not in key:  # TODO - may still have to do other ones as below?
                         newparam = f'{key}={val}'
                         params[count] = newparam
                         continue
@@ -573,7 +568,7 @@ class domonic:
                 if '-' in key:
                     key = key.lstrip('_')  # if already has an underscore remove it as we add it below
                     END = ""
-                    if len(line) - (line.find(val)+len(val)) < 3:
+                    if len(line) - (line.find(val) + len(val)) < 3:
                         # print('last attribute in line')
                         END = ","
 
@@ -586,7 +581,7 @@ class domonic:
             line = ', '.join(params)
             line = line.replace('" _', '", _')
 
-            if( line[len(line)-1] in ["'",'"',")","$QUOTE$","}","e"]): # TODO 'e' is the last letter of True. crap check
+            if( line[len(line) - 1] in ["'", '"', ")", "$QUOTE$", "}", "e"]):  # TODO 'e' is the last letter of True. crap check
                 line = line + ","
 
             return line
@@ -602,9 +597,9 @@ class domonic:
         def parse_attributes(line):
 
             values = re.findall('"([^"]*)"', line)
-            if len(values)>0:
+            if len(values) > 0:
                 for value in values:
-                    line = line.replace(value,encode_attr_content(value))
+                    line = line.replace(value, encode_attr_content(value))
 
             # import re
             # values = re.findall("'([^']*)'", line)
@@ -614,15 +609,15 @@ class domonic:
 
             # NOTE - bad! as will skip some params
             if line.count('"') % 2 == 1:
-                return line # its an opening multi-line string so continue.
+                return line  # its an opening multi-line string so continue.
                 #continue
 
             # prevents single attrib with missing quotes from losing content. (or throw unclean html errors?)(start doing that you'll never stop)
-            if line.count('=')<2: # if only 1 attr
-                if line.count('"')<1 and line.count("'")<1:
+            if line.count('=') < 2:  # if only 1 attr
+                if line.count('"') < 1 and line.count("'") < 1:
                     line = line.replace( ',', '$COMMA$')
                     parts = line.split('=')
-                    line = parts[0] + "=" + '"'+parts[1]+'"'
+                    line = parts[0] + "=" + '"' + parts[1] + '"'
                     # print(line)
 
             attribs = re.findall(r"((?:(?!\s|=).)*)\s*?=\s*?[\"']?((?:(?<=\")(?:(?<=\\)\"|[^\"])*|(?<=')(?:(?<=\\)'|[^'])*)|(?:(?!\"|')(?:(?!\/>|>|\s).)+))", line)
@@ -633,47 +628,47 @@ class domonic:
                     val = each[1].strip()
                     oldval = val
 
-                    is_quote = lambda x : x == '"' or x == "'"
+                    is_quote = lambda x: x == '"' or x == "'"
                     try:
-                        has_left_quote = is_quote(line[line.find(val)-1])
+                        has_left_quote = is_quote(line[line.find(val) - 1])
                     except Exception as e:
                         has_right_quote = False
 
                     try:
-                        has_right_quote = is_quote(line[line.find(val)+(len(val))])
+                        has_right_quote = is_quote(line[line.find(val) + (len(val))])
                     except Exception as e:
                         has_right_quote = False
 
-                    val = val.replace('"','&quot;') # they don't always get caught by encode
-                    val = val.replace(',','&#44;')
+                    val = val.replace('"', '&quot;')  # they don't always get caught by encode
+                    val = val.replace(',', '&#44;')
                     # val = val.replace(';',' &#59;')
 
                     if 'style' in key or 'title' in key:
                         for i, att in enumerate(attributes):
-                            val = val.replace( att, '$DoMo'+str(i)+'NiC$')
+                            val = val.replace(att, '$DoMo' + str(i) + 'NiC$')
 
                     if '-' in key and key[0] != '_':
-                        line = line.replace(key,'_'+key)
+                        line = line.replace(key, '_' + key)
                         continue
 
                     if 'font-size' in key:
-                        line = line.replace('font-size', key)# update to prepended underscore
-                        continue # these keys are transformed later
+                        line = line.replace('font-size', key)  # update to prepended underscore
+                        continue  # these keys are transformed later
 
                     # val = val.replace("\n", "") # remove newlines in atttribute content as causes EOL when parsing
 
-                    if len(key)>20 or '//' in key: # data-analytics-exit-link << NOTE 15 limit easilty buckles. bad way to check for content in keys
+                    if len(key) > 20 or '//' in key:  # data-analytics-exit-link << NOTE 15 limit easilty buckles. bad way to check for content in keys
                         continue
 
                     # if key not in attributes: # THEN IT MUST BE NORMAL TEXT. strict tho
-                       # continue
-                    if key.istitle(): # very weak check for normal text TODO. normal text with equals gets through.
+                    # continue
+                    if key.istitle():  # very weak check for normal text TODO. normal text with equals gets through.
                         continue
 
-                    if val==None or val=="":
+                    if val == None or val == "":
                         val = 'true'
 
-                    newval=""
+                    newval = ""
                     if type(val) != bool:
 
                         # checks string lines have quotes both sides
@@ -682,33 +677,32 @@ class domonic:
                         if val == ' ':
                             val = '" "'
                         if not has_right_quote:
-                            val = val+'"'
+                            val = val + '"'
                         if not has_left_quote:
-                            val = '"'+val
+                            val = '"' + val
                         if val == None or val == '"':
                             val = '""'
 
                         newval = val.replace("-", "$HYPHEN$")
 
                     if '_' not in key and '-' not in key:
-                        if ':' in key: # i.e. xml:"lang=en-US"
+                        if ':' in key:  # i.e. xml:"lang=en-US"
                             parts = key.split(':')
                             key = parts[0]
-                            if len(parts)>1:
-                                if len(parts[1])>1:
+                            if len(parts) > 1:
+                                if len(parts[1]) > 1:
                                     newval = parts[1] + "=" + newval
-                                    line = line.replace(":"+parts[1],"")
+                                    line = line.replace(":" + parts[1], "")
 
-                        line = line.replace(key+"=",', _'+key+"=")
-                        line = line.replace(key+" =",', _'+key+"=")
-                        if type(val) != bool and len(val)>0:
-                            line = Utils.replace_between( line, oldval, str(newval), line.find(key), line.find(key)+(len(key)-1)+(len(val)-1)+1 )# final +1 is the equal sign
+                        line = line.replace(key + "=", ', _' + key + "=")
+                        line = line.replace(key + " =", ', _' + key + "=")
+                        if type(val) != bool and len(val) > 0:
+                            line = Utils.replace_between(line, oldval, str(newval), line.find(key), line.find(key) + (len(key) - 1) + (len(val) - 1) + 1)  # final +1 is the equal sign
 
             line = line.replace('" _', '", _')
-            line = line.replace("' _", "', _") # single quote version of same thing
+            line = line.replace("' _", "', _")  # single quote version of same thing
             # line = line.strip()
             return line
-
 
         # SECOND PASS. split onto lines and fix hyphen tags
         cleaned = []
@@ -729,30 +723,30 @@ class domonic:
                 continue
 
             if line == ",":
-                if len(lines[count-1])>0:
-                    if lines[count-1][len(lines[count-1])-1] == ',':
+                if len(lines[count - 1]) > 0:
+                    if lines[count - 1][len(lines[count - 1]) - 1] == ',':
                         continue
 
             if '=' in line:
-                line = parse_attributes(line) # < TODO -  normal content with equals in is getting caught here
+                line = parse_attributes(line)  # < TODO -  normal content with equals in is getting caught here
 
                 # solo attributes
 
                 # TODO - should really be doing these much sooner no?
                 # TODO - breaking class in css content when they have attribute names .i.e. hidden. SORTDE> shoudl be fixed now
                 # aria-hidden also affected.?. by why it doing with no spaces
-                if '(' not in line and ')' not in line and line[0] != '"': # TODO - not if it already has an equals
+                if '(' not in line and ')' not in line and line[0] != '"':  # TODO - not if it already has an equals
                     for each in solo_attributes:
-                        pos=line.find(each)
+                        pos = line.find(each)
                         # if pos < 1: continue
 
                         # if the previous attribute has a leading quote already don't prepend one
                         # we assume it doesn't to start.
                         has_leading_quote = False
                         PREP = '"'
-                        if pos>5:
+                        if pos > 5:
                             # check 4 chars back if quote set false.
-                            if '"' in line[pos-5:pos]: # TODO - or if just the word True
+                            if '"' in line[pos - 5:pos]:  # TODO - or if just the word True
                                 has_leading_quote = True
                             if has_leading_quote:
                                 PREP = ''
@@ -783,7 +777,7 @@ class domonic:
                 line = fix_hyphen_tags(line)
 
                 # any leftover solo hyphenataed data-tags
-                hyphenated = re.findall(r' [-A-Za-z]+\w+(?:-\w+)+',line)
+                hyphenated = re.findall(r' [-A-Za-z]+\w+(?:-\w+)+', line)
                 for each in hyphenated:
                     line = line.replace(each, f'**\u007b"_{each}":{True}\u007d,')
 
@@ -802,22 +796,22 @@ class domonic:
                             line = f'"{line}"'
 
             is_multiline_string = False
-            if line.count('"') % 2 == 1: # find opening quotes to multilines (odd number)
+            if line.count('"') % 2 == 1:  # find opening quotes to multilines (odd number)
 
-                if count < len(lines)-1:
-                    next_line = lines[count+1]
+                if count < len(lines) - 1:
+                    next_line = lines[count + 1]
                 if count > 0:
-                    prev_line = lines[count-1]
+                    prev_line = lines[count - 1]
 
                 # if its just a class and not content. bring them up onto the same line
                 if '_class' in line:
-                    if '(' not in next_line: # and '"' not in next_line:
-                        line = line + lines.pop(count+1) # merge the next line to this one
+                    if '(' not in next_line:  # and '"' not in next_line:
+                        line = line + lines.pop(count + 1)  # merge the next line to this one
                         line = line.replace('\n', "")
                         line = line.replace("  ", " ")
-                        if line.count('"') % 2 == 1: # if still odd
-                            line = line + '"' # add a quote
-                        next(lines_iterator, None) # skip the iterator along by 1
+                        if line.count('"') % 2 == 1:  # if still odd
+                            line = line + '"'  # add a quote
+                        next(lines_iterator, None)  # skip the iterator along by 1
 
                 else:
                     if is_multiline_string == False:
@@ -840,22 +834,21 @@ class domonic:
         for count, line in enumerate(page.splitlines()):
             line = line.strip('\n')
             line = line.strip()
-            if line[len(line)-1] == '"':
-                if count < len(lines)-1:
-                    if lines[count+1][0] != ')':
+            if line[len(line) - 1] == '"':
+                if count < len(lines) - 1:
+                    if lines[count + 1][0] != ')':
                         line = line + ','
             if "_" in line:  # normal text can have underscores. this will break
                 line = fix_hyphen_tags(line)
 
-            if len(line)<5 and '"' in line: # need to stop making these in first place
+            if len(line) < 5 and '"' in line:  # need to stop making these in first place
                 if line == '",",':
                     continue
 
             fixed.append(line)
         page = '\n'.join(fixed)
 
-
-        def clean_junk(page):        
+        def clean_junk(page):
             page = page.replace('",","', '","')
             page = page.replace('",",', '",')
             page = page.replace('", ",', '",')
@@ -866,11 +859,11 @@ class domonic:
             page = page.replace(', "\n)', '\n)')
 
             # page = page.replace(',",', ',') < VALID
-            page = page.replace(',  ,', ',') # < new bug. due to single attributes having big space in front for some reason
+            page = page.replace(',  ,', ',')  # < new bug. due to single attributes having big space in front for some reason
             page = page.replace(', ",', ',')
             page = page.replace(',,', ',')
             page = page.replace(', ,', ',')
-            page = page.replace(',"",', ',') # careul. new and covers up somethings else. solo attributes still not done well
+            page = page.replace(',"",', ',')  # careul. new and covers up somethings else. solo attributes still not done well
 
             page = page.replace('( ,*', '(*')
             page = page.replace('( , *', '(*')
@@ -885,7 +878,7 @@ class domonic:
             page = page.replace('),\n"\n),', '),\n),')
             page = page.replace('},\n"\n),', '}\n),')
 
-            page = page.replace('"_, _', '"_') # when solo hyphenated custom attribute is first on a line.
+            page = page.replace('"_, _', '"_')  # when solo hyphenated custom attribute is first on a line.
 
             # page = page.replace('),\n",\n', '(')  # < break things but is also valid. text sentences can start with a comma
             # 2 issues. this also turns a closer into an opener. when catching a true case
@@ -910,17 +903,17 @@ class domonic:
         page = page.replace("$SEMICOLON$", ";")
 
         for count, att in enumerate(attributes):
-            page = page.replace('$DoMo'+str(count)+'NiC$', att) # undo encoding that saves attr content
+            page = page.replace('$DoMo' + str(count) + 'NiC$', att)  # undo encoding that saves attr content
 
         if remove_broken_lines:
             print('attempting to remove broken lines')
-            fixed=[]
+            fixed = []
             for count, line in enumerate(page.splitlines()):
                 line = line.strip('\n')
                 is_fixed, newline = domonic._is_valid_pyml(line)
                 if is_fixed:
                     fixed.append(newline)
-                else: # break line into bits to keep any working parts
+                else:  # break line into bits to keep any working parts
                     # print("BAD:", line)
                     parts = line.split(',')
                     keepers = []
@@ -932,7 +925,7 @@ class domonic:
                         if is_working:
                             keepers.append(p)
                     line = ','.join(keepers)
-                    is_fixed, newline = domonic._is_valid_pyml(line+",")
+                    is_fixed, newline = domonic._is_valid_pyml(line + ",")
                     if is_fixed:
                         fixed.append(newline)
                         # print("FIXED:", line)

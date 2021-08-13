@@ -156,8 +156,6 @@ class Event(object):
         pass
 
 
-
-
 class MouseEvent(Event):
     """ mouse events """
     CLICK = "click"  #:
@@ -534,6 +532,7 @@ class PageTransitionEvent(Event):
     """ PageTransitionEvent """
     PAGEHIDE = "pagehide"  #:
     PAGESHOW = "pageshow"  #:
+
     def __init__(self, _type, *args, **kwargs):
         self.persisted = None
         """ Returns whether the webpage was cached by the browser """
@@ -567,6 +566,7 @@ class StorageEvent(Event):
 class TransitionEvent(Event):
     """ TransitionEvent """
     TRANSITIONEND = "transitionend"  #:
+
     def __init__(self, _type, *args, **kwargs):
         self.propertyName = None
         """ Returns the name of the transition"""
