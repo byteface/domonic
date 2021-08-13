@@ -3,6 +3,7 @@
     ====================================
     - https://www.w3schools.com/jsref/jsref_reference.asp
     - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
+
 """
 
 # from typing import *
@@ -81,11 +82,9 @@ class Object(object):
     def fromEntries(entries):
         """
         transforms a list of lists containing key and value into an object.
-
-        @param entries: a list containing key and value tuples. The key and value
-                        are separated by ':'
+        @param entries: a list containing key and value tuples. The key and value are separated by ':'
         @type entries: list of tuple(string, string)
-        @returns: a { dict } object.
+        @returns: a dict object.
 
         >>> fromEntries(entries)
         {'a': 1, 'b': 2, 'c': 3}

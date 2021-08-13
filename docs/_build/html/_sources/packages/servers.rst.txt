@@ -491,7 +491,51 @@ Note: Django didn't allow import * so there's a conflict somewhere. I resolved b
 `Find out more about Django here... <https://www.djangoproject.com/>`_.
 
 
+
+Using domonic with aiohttp
+--------------------------------
+
+.. code-block :: bash
+
+    python3 -m venv venv
+    . venv/bin/activate
+    pip install aiohttp
+    pip install domonic
+
+now create a file called app.py
+
+.. code-block :: python
+
+    from domonic.html import *
+    from aiohttp import web
+
+    async def handle(request):
+        name = request.match_info.get('name', "Anonymous")
+        page = html(head(),body(div(span("Hello, World!"))))
+        return web.Response(text=str(page), content_type='text/html')
+
+    app = web.Application()
+    app.add_routes([web.get('/', handle),
+                    web.get('/{name}', handle)])
+
+    if __name__ == '__main__':
+        web.run_app(app)
+
+
+to run it do this:
+
+.. code-block :: bash
+
+    python app.py
+
+and visit http://localhost:8080/ in your browser
+
+`Find out more about aiohttp here... <https://docs.aiohttp.org/en/stable/>`_.
+
+
+
 and if that wasn't enough webservers to try out this isn't even `a more complete list!!! <https://github.com/tbicr/web-framework-rank>`_.
+
 
 
 SPA's
@@ -529,6 +573,8 @@ Alternatively to upload entire packages people tend to drop their lambda_functio
 Then zip and upload the whole thing.
 
 `Find out more about AWS Lambda here... <https://aws.amazon.com/lambda/>`_.
+
+or even try an ASGI adapter on your lambda with magnum!... <https://mangum.io/>`_.
 
 
 Using domonic with Google Cloud Functions

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.html &#8212; domonic 0.4.0 documentation</title>
+    <title>domonic.html &#8212; domonic 0.4.5 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -236,7 +236,14 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="c1"># print(&#39;getting an item::&#39;, index, type(index))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="c1"># elif isinstance(index, str):</span>
+        <span class="c1">#     if index.startswith(&#39;_&#39;):</span>
+        <span class="c1">#         return self.kwargs[index]</span>
+        <span class="c1">#     else:</span>
+        <span class="c1">#         return getattr(self, index)</span>
 
     <span class="k">def</span> <span class="fm">__rshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -254,7 +261,7 @@
     <span class="c1">#     except Exception as e:</span>
     <span class="c1">#         print(e)</span>
     <span class="c1">#         raise ValueError</span>
-    
+
     <span class="c1"># def __sub__(self, item):</span>
     <span class="c1">#     try:</span>
     <span class="c1">#         self.args = self.args - (item,)</span>
@@ -274,8 +281,8 @@
 <span class="sd">        *credit to the peeps on discord/python for this one*</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="s1">&#39;kwargs&#39;</span><span class="p">)</span>
-        <span class="c1"># print(&quot;sup::&quot;, attr)</span>
-        <span class="c1"># print(&quot;sup2::&quot;, kwargs)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sup::&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sup2::&quot;</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
@@ -288,7 +295,11 @@
         <span class="k">if</span> <span class="n">retry</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">retry</span><span class="p">]</span>
 
-        <span class="c1"># raise AttributeError(&quot;This attribute or method does not appear to exist on this object:&quot;, attr)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">super</span><span class="p">(),</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;This attribute or method does not appear to exist on this object:&quot;</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+
         <span class="k">raise</span> <span class="ne">AttributeError</span></div>
 
     <span class="c1"># def __repr__(self):</span>

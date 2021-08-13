@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.style &#8212; domonic 0.4.0 documentation</title>
+    <title>domonic.style &#8212; domonic 0.4.5 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -39,6 +39,188 @@
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">Utils</span>
 
 
+<div class="viewcode-block" id="StyleSheet"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.StyleSheet">[docs]</a><span class="k">class</span> <span class="nc">StyleSheet</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; An object implementing the StyleSheet interface represents a single style sheet. </span>
+<span class="sd">    CSS style sheets will further implement the more specialized CSSStyleSheet interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># a boolean value representing whether the current stylesheet has been applied or not</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">href</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a DOMString representing the location of the stylesheet.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">media</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a MediaList representing the intended destination medium for style information. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ownerNode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a Node associating this style sheet with the current document. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parentStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a StyleSheet including this one, if any; returns null if there aren&#39;t any. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a DOMString representing the advisory title of the current style sheet. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a DOMString representing the style sheet language for this style sheet. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="StyleSheetList"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.StyleSheetList">[docs]</a><span class="k">class</span> <span class="nc">StyleSheetList</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; An instance of this object can be returned by Document.styleSheets.</span>
+<span class="sd">        it can be iterated over in a standard for loop over its indices, or converted to an Array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">styleSheets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># self.styleSheets.append(StyleSheet())</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    def _populate_stylesheets_from_document(self):</span>
+<span class="sd">        &quot;&quot;&quot; parse the document to find all the stylesheets and add them to the list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        # get loaded styles</span>
+<span class="sd">        # sheets = document.getElementsByTagName(&quot;style&quot;)</span>
+<span class="sd">        # for sheet in sheets:</span>
+<span class="sd">            # get the content of the style sheet</span>
+<span class="sd">        raise NotImplementedError</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the number of CSSStyleSheet objects in the collection. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">styleSheets</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StyleSheetList.item"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.StyleSheetList.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">styleSheets</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="CSSRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRule">[docs]</a><span class="k">class</span> <span class="nc">CSSRule</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; The CSSRule interface represents a single CSS rule. </span>
+<span class="sd">    There are several types of rules which inherit properties from CSSRule. </span>
+
+<span class="sd">    CSSStyleRule</span>
+<span class="sd">    CSSImportRule</span>
+<span class="sd">    CSSMediaRule</span>
+<span class="sd">    CSSFontFaceRule</span>
+<span class="sd">    CSSPageRule</span>
+<span class="sd">    CSSNamespaceRule</span>
+<span class="sd">    CSSKeyframesRule</span>
+<span class="sd">    CSSKeyframeRule</span>
+<span class="sd">    CSSCounterStyleRule</span>
+<span class="sd">    CSSDocumentRule</span>
+<span class="sd">    CSSSupportsRule</span>
+<span class="sd">    CSSFontFeatureValuesRule</span>
+<span class="sd">    CSSViewportRule</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cssText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Represents the textual representation of the rule, e.g. &quot;h1,h2 { font-size: 16pt }&quot; or &quot;@import &#39;url&#39;&quot;. </span>
+<span class="sd">        To access or modify parts of the rule (e.g. the value of &quot;font-size&quot; in the example) </span>
+<span class="sd">        use the properties on the specialized interface for the rule&#39;s type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parentRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an @media block, the parent rule would be that CSSMediaRule. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="CSSRule.parentStyleSheet"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRule.parentStyleSheet">[docs]</a>    <span class="k">def</span> <span class="nf">parentStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the CSSStyleSheet object for the style sheet that contains this rule &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CSSRule.type"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRule.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns one of the Type constants to determine which type of rule is represented. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="CSSRuleList"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRuleList">[docs]</a><span class="k">class</span> <span class="nc">CSSRuleList</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; A CSSRuleList represents an ordered collection of read-only CSSRule objects.</span>
+<span class="sd">    While the CSSRuleList object is read-only, and cannot be directly modified,</span>
+<span class="sd">    it is considered a live object, as the content can change over time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="CSSRuleList.length"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRuleList.length">[docs]</a>    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an integer representing the number of CSSRule objects in the collection. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CSSRuleList.item"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRuleList.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Gets a single CSSRule.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="CSSStyleSheet"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet">[docs]</a><span class="k">class</span> <span class="nc">CSSStyleSheet</span><span class="p">(</span><span class="n">StyleSheet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates a new CSSStyleSheet object. &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cssRules</span><span class="p">():</span>  <span class="c1"># -&gt; &#39;CSSStyleRuleList&#39;:</span>
+        <span class="sd">&quot;&quot;&quot; Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects that comprise the stylesheet. &quot;&quot;&quot;</span>
+        <span class="c1"># return CSSStyleRuleList()</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ownerRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; If this stylesheet is imported into the document using an @import rule, </span>
+<span class="sd">        the ownerRule property returns the corresponding CSSImportRule; otherwise, this property&#39;s value is null. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="CSSStyleSheet.deleteRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.deleteRule">[docs]</a>    <span class="k">def</span> <span class="nf">deleteRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Deletes the rule at the specified index into the stylesheet&#39;s rule list. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CSSStyleSheet.insertRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.insertRule">[docs]</a>    <span class="k">def</span> <span class="nf">insertRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Inserts a new rule at the specified position in the stylesheet, given the textual representation of the rule.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CSSStyleSheet.replace"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Asynchronously replaces the content of the stylesheet and returns a Promise that resolves with the updated CSSStyleSheet.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CSSStyleSheet.replaceSync"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.replaceSync">[docs]</a>    <span class="k">def</span> <span class="nf">replaceSync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Synchronously replaces the content of the stylesheet.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rules</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot; The rules property is functionally identical to the standard cssRules property</span>
+<span class="sd">            it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1"># Legacy methods</span>
+<div class="viewcode-block" id="CSSStyleSheet.addRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.addRule">[docs]</a>    <span class="k">def</span> <span class="nf">addRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply to the matching elements.</span>
+<span class="sd">            This differs from insertRule(), which takes the textual representation of the entire rule as a single string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CSSStyleSheet.removeRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.removeRule">[docs]</a>    <span class="k">def</span> <span class="nf">removeRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Functionally identical to deleteRule(); removes the rule at the specified index from the stylesheet&#39;s rule list. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
 <div class="viewcode-block" id="Style"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.Style">[docs]</a><span class="k">class</span> <span class="nc">Style</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;[ js syntax styles ]</span>
 <span class="sd">        # TODO - just add normal float?</span>
@@ -47,6 +229,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** MADE A STYLE11 ***&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_members_checked</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -608,6 +791,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">zIndex</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
         <span class="sd">&#39;&#39;&#39;Sets or returns the stack order of a positioned element 2&#39;&#39;&#39;</span>
+
 
     <span class="k">def</span> <span class="nf">style_set_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
@@ -2547,6 +2731,79 @@
     <span class="c1"># @style_set_decorator</span>
     <span class="c1"># def zoomType(self, value=None, *args, **kwargs):</span>
     <span class="c1">#     self.__zoomType = value</span>
+
+    <span class="c1"># Modifies an existing CSS property or creates a new CSS property in the declaration block. &quot;&quot;&quot;</span>
+    <span class="c1"># def setProperty(self, property, value):</span>
+        <span class="c1"># print(&#39;shut your fucking mouth!&#39;)</span>
+        <span class="c1"># self[property] = value</span>
+
+
+<div class="viewcode-block" id="CSSStyleDeclaration"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration">[docs]</a><span class="k">class</span> <span class="nc">CSSStyleDeclaration</span><span class="p">(</span><span class="n">Style</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; The CSSStyleDeclaration interface represents an object that is a CSS declaration block, </span>
+<span class="sd">    and exposes style information and various style-related methods and properties.</span>
+
+<span class="sd">    A CSSStyleDeclaration object can be exposed using three different APIs:</span>
+
+<span class="sd">    Via HTMLElement.style, which deals with the inline styles of a single element (e.g., &lt;div style=&quot;...&quot;&gt;).</span>
+<span class="sd">    Via the CSSStyleSheet API. For example, document.styleSheets[0].cssRules[0].style returns a CSSStyleDeclaration object on the first CSS rule in the document&#39;s first stylesheet.</span>
+<span class="sd">    Via Window.getComputedStyle(), which exposes the CSSStyleDeclaration object as a read-only interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parentNode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** MADE A STYLE ***&#39;</span><span class="p">)</span>
+        <span class="c1"># super(Style).__init__(*args, **kwargs)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parentNode</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cssText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.</span>
+<span class="sd">        Setting this attribute changes the inline style. If you want a text representation of a computed declaration block, </span>
+<span class="sd">        you can get it with JSON.stringify().&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; The number of properties. See the item() method below.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parentRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; The containing CSSRule. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def cssFloat(self):</span>
+    <span class="c1">#     &quot;&quot;&quot; Special alias for the float CSS property. &quot;&quot;&quot;</span>
+    <span class="c1">#     raise NotImplementedError</span>
+
+<div class="viewcode-block" id="CSSStyleDeclaration.getPropertyPriority"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration.getPropertyPriority">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyPriority</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the optional priority, &quot;important&quot;.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CSSStyleDeclaration.getPropertyValue"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration.getPropertyValue">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the property value given a property name. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CSSStyleDeclaration.item"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.</span>
+<span class="sd">            An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).</span>
+<span class="sd">            This is mostly useful for non-JavaScript DOM implementations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="CSSStyleDeclaration.removeProperty"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration.removeProperty">[docs]</a>    <span class="k">def</span> <span class="nf">removeProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Removes a property from the CSS declaration block. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="c1"># Modifies an existing CSS property or creates a new CSS property in the declaration block. &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">setProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;is this magic!&#39;</span><span class="p">)</span>
+        <span class="c1"># self[property] = value</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CSSStyleDeclaration.getPropertyCSSValue"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration.getPropertyCSSValue">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyCSSValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Only supported via getComputedStyle in Firefox. Returns the property value as a CSSPrimitiveValue or null for shorthand properties. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 </pre></div>
 
           </div>

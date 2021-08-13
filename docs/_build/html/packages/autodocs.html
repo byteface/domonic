@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Domonic: autodocs &#8212; domonic 0.4.4 documentation</title>
+    <title>Domonic: autodocs &#8212; domonic 0.4.5 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -1769,6 +1769,12 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Array.from_">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">from_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.from_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Array.from_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Array instance from an array-like or iterable object.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="domonic.javascript.Array.includes">
 <span class="sig-name descname"><span class="pre">includes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.includes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Array.includes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if an array contains the specified element</p>
@@ -1836,6 +1842,12 @@ i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )</p>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Array.of">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Array.of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Array.of" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new Array instance with a variable number of arguments, regardless of number or type of the arguments.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2692,13 +2704,10 @@ or exponential notation rounded to precision significant digits]</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="domonic.javascript.Object.fromEntries">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">fromEntries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entries</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Object.fromEntries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Object.fromEntries" title="Permalink to this definition">¶</a></dt>
-<dd><p>transforms a list of lists containing key and value into an object.</p>
-<dl class="simple">
-<dt>&#64;param entries: a list containing key and value tuples. The key and value</dt><dd><p>are separated by ‘:’</p>
-</dd>
-</dl>
-<p>&#64;type entries: list of tuple(string, string)
-&#64;returns: a { dict } object.</p>
+<dd><p>transforms a list of lists containing key and value into an object.
+&#64;param entries: a list containing key and value tuples. The key and value are separated by ‘:’
+&#64;type entries: list of tuple(string, string)
+&#64;returns: a dict object.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fromEntries</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span>
 <span class="go">{&#39;a&#39;: 1, &#39;b&#39;: 2, &#39;c&#39;: 3}</span>
 </pre></div>
@@ -2788,6 +2797,92 @@ all of a given object’s own enumerable string properties.</p>
 <dd></dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">Reflect</span></span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Reflect object provides the following static functions which have the same names as the proxy handler methods.
+Some of these methods are also the same as corresponding methods on Object,
+although they do have some subtle differences between them.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.apply">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thisArgument</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argumentsList</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls a target function with arguments as specified by the argumentsList parameter. See also Function.prototype.apply().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.construct">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">construct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argumentsList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newTarget</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.construct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.construct" title="Permalink to this definition">¶</a></dt>
+<dd><p>The new operator as a function. Equivalent to calling new target(…argumentsList). Also provides the option to specify a different prototype.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.defineProperty">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">defineProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propertyKey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.defineProperty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.defineProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to Object.defineProperty(). Returns a Boolean that is true if the property was successfully defined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.deleteProperty">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">deleteProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propertyKey</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.deleteProperty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.deleteProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>The delete operator as a function. Equivalent to calling delete target[propertyKey].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.get">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propertyKey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the property. Works like getting a property from an object (target[propertyKey]) as a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.getOwnPropertyDescriptor">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">getOwnPropertyDescriptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propertyKey</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.getOwnPropertyDescriptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.getOwnPropertyDescriptor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to Object.getOwnPropertyDescriptor(). Returns a property descriptor of the given property if it exists on the object,  undefined otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.getPrototypeOf">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">getPrototypeOf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.getPrototypeOf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.getPrototypeOf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as Object.getPrototypeOf().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.has">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">has</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propertyKey</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.has"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.has" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Boolean indicating whether the target has the property. Either as own or inherited. Works like the in operator as a function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.isExtensible">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">isExtensible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.isExtensible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.isExtensible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as Object.isExtensible(). Returns a Boolean that is true if the target is extensible.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.ownKeys">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">ownKeys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.ownKeys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.ownKeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array of the target object’s own (not inherited) property keys.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.preventExtensions">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">preventExtensions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.preventExtensions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.preventExtensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to Object.preventExtensions(). Returns a Boolean that is true if the update was successful.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.set">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propertyKey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that assigns values to properties. Returns a Boolean that is true if the update was successful.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.Reflect.setPrototypeOf">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">setPrototypeOf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prototype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.setPrototypeOf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.setPrototypeOf" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that sets the prototype of an object. Returns a Boolean that is true if the update was successful.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="domonic.javascript.Screen">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">Screen</span></span><a class="reference internal" href="../_modules/domonic/javascript.html#Screen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Screen" title="Permalink to this definition">¶</a></dt>
 <dd><p>screen</p>
@@ -2857,6 +2952,20 @@ all of a given object’s own enumerable string properties.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.codePointAt">
+<span class="sig-name descname"><span class="pre">codePointAt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.codePointAt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.codePointAt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Unicode code point at the specified index</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.compile">
+<span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.compile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.compile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches a string for a specified value, or a regular expression,
+and returns a new string where the specified values are replaced.
+only replaces first one.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="domonic.javascript.String.concat">
 <span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seperator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.concat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.concat" title="Permalink to this definition">¶</a></dt>
 <dd><p>[concatenates the string arguments to the calling string and returns a new string.]</p>
@@ -2886,6 +2995,32 @@ all of a given object’s own enumerable string properties.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.fromCodePoint">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">fromCodePoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">codePoint</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fromCodePoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.fromCodePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a Unicode code point into a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.includes">
+<span class="sig-name descname"><span class="pre">includes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchValue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.includes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.includes" title="Permalink to this definition">¶</a></dt>
+<dd><p>[returns true if the specified string is found within the calling String object,]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>searchValue</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – [The string value to search for.]</p></li>
+<li><p><strong>position</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – [the position to search from]. Defaults to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a boolean value indicating whether the search value was found.]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="domonic.javascript.String.indexOf">
 <span class="sig-name descname"><span class="pre">indexOf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchValue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromIndex</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.indexOf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.indexOf" title="Permalink to this definition">¶</a></dt>
 <dd><p>[returns the index within the calling String object of the first occurrence of the specified value,
@@ -2904,6 +3039,54 @@ starting the search at fromIndex ]</p>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.lastIndexOf">
+<span class="sig-name descname"><span class="pre">lastIndexOf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchValue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromIndex</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.lastIndexOf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.lastIndexOf" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the last index within the calling String object of the first occurrence of the specified value,
+starting the search at fromIndex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.localeCompare">
+<span class="sig-name descname"><span class="pre">localeCompare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comparisonString</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">locale</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.localeCompare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.localeCompare" title="Permalink to this definition">¶</a></dt>
+<dd><p>method returns a number indicating whether a reference string comes before,
+or after, or is the same as the given string in sort order</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.match">
+<span class="sig-name descname"><span class="pre">match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches a string for a specified value, or a regular expression,
+and returns a new string where the specified values are replaced.
+only replaces first one.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.matchAll">
+<span class="sig-name descname"><span class="pre">matchAll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.matchAll"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.matchAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches a string for a specified value, or a regular expression,
+and returns a new string where the specified values are replaced.
+only replaces first one.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.padEnd">
+<span class="sig-name descname"><span class="pre">padEnd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">padChar</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.padEnd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.padEnd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pads the end of a string with a specified character</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.padStart">
+<span class="sig-name descname"><span class="pre">padStart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">padChar</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.padStart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.padStart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pads the start of a string with a specified character</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.raw">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.raw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the string as-is</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2936,6 +3119,25 @@ only replaces first one.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchValue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>[returns true if the specified string is found within the calling String object,]
+starting at the specified position.
+:param searchValue: [The string value to search for.]
+:type searchValue: str
+:param position: [the position to search from]. Defaults to 0.
+:type position: int, optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[a boolean value indicating whether the search value was found.]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2983,6 +3185,18 @@ and through the specified number of character</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.toCharCode">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">toCharCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">char</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.toCharCode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.toCharCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a Unicode string into a code point</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.toCodePoint">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">toCodePoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">char</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.toCodePoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.toCodePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a Unicode string into a code point</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="domonic.javascript.String.toLocaleLowerCase">
 <span class="sig-name descname"><span class="pre">toLocaleLowerCase</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.toLocaleLowerCase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.toLocaleLowerCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a string to lowercase letters, according to the host’s locale</p>
@@ -3010,6 +3224,18 @@ and through the specified number of character</p>
 <dt class="sig sig-object py" id="domonic.javascript.String.trim">
 <span class="sig-name descname"><span class="pre">trim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.trim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.trim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes whitespace from both ends of a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.trimEnd">
+<span class="sig-name descname"><span class="pre">trimEnd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.trimEnd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.trimEnd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes whitespace from the end of a string</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.javascript.String.trimStart">
+<span class="sig-name descname"><span class="pre">trimStart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.trimStart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.String.trimStart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes whitespace from the start of a string</p>
 </dd></dl>
 
 </dd></dl>
@@ -5204,6 +5430,203 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <span class="target" id="module-domonic.style"></span><section id="domonic-style">
 <h2>domonic.style<a class="headerlink" href="#domonic-style" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="domonic.style.CSSRule">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.style.</span></span><span class="sig-name descname"><span class="pre">CSSRule</span></span><a class="reference internal" href="../_modules/domonic/style.html#CSSRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>The CSSRule interface represents a single CSS rule.
+There are several types of rules which inherit properties from CSSRule.</p>
+<p>CSSStyleRule
+CSSImportRule
+CSSMediaRule
+CSSFontFaceRule
+CSSPageRule
+CSSNamespaceRule
+CSSKeyframesRule
+CSSKeyframeRule
+CSSCounterStyleRule
+CSSDocumentRule
+CSSSupportsRule
+CSSFontFeatureValuesRule
+CSSViewportRule</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.CSSRule.cssText">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cssText</span></span><a class="headerlink" href="#domonic.style.CSSRule.cssText" title="Permalink to this definition">¶</a></dt>
+<dd><p>16pt }” or “&#64;import ‘url’”.
+To access or modify parts of the rule (e.g. the value of “font-size” in the example)
+use the properties on the specialized interface for the rule’s type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Represents the textual representation of the rule, e.g. “h1,h2 { font-size</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.CSSRule.parentRule">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">parentRule</span></span><a class="headerlink" href="#domonic.style.CSSRule.parentRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an &#64;media block, the parent rule would be that CSSMediaRule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSRule.parentStyleSheet">
+<span class="sig-name descname"><span class="pre">parentStyleSheet</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSRule.parentStyleSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSRule.parentStyleSheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the CSSStyleSheet object for the style sheet that contains this rule</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSRule.type">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSRule.type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSRule.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns one of the Type constants to determine which type of rule is represented.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="domonic.style.CSSRuleList">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.style.</span></span><span class="sig-name descname"><span class="pre">CSSRuleList</span></span><a class="reference internal" href="../_modules/domonic/style.html#CSSRuleList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSRuleList" title="Permalink to this definition">¶</a></dt>
+<dd><p>A CSSRuleList represents an ordered collection of read-only CSSRule objects.
+While the CSSRuleList object is read-only, and cannot be directly modified,
+it is considered a live object, as the content can change over time.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSRuleList.item">
+<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSRuleList.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSRuleList.item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a single CSSRule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSRuleList.length">
+<span class="sig-name descname"><span class="pre">length</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSRuleList.length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSRuleList.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an integer representing the number of CSSRule objects in the collection.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleDeclaration">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.style.</span></span><span class="sig-name descname"><span class="pre">CSSStyleDeclaration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parentNode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleDeclaration" title="Permalink to this definition">¶</a></dt>
+<dd><p>The CSSStyleDeclaration interface represents an object that is a CSS declaration block,
+and exposes style information and various style-related methods and properties.</p>
+<p>A CSSStyleDeclaration object can be exposed using three different APIs:</p>
+<p>Via HTMLElement.style, which deals with the inline styles of a single element (e.g., &lt;div style=”…”&gt;).
+Via the CSSStyleSheet API. For example, document.styleSheets[0].cssRules[0].style returns a CSSStyleDeclaration object on the first CSS rule in the document’s first stylesheet.
+Via Window.getComputedStyle(), which exposes the CSSStyleDeclaration object as a read-only interface.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleDeclaration.cssText">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cssText</span></span><a class="headerlink" href="#domonic.style.CSSStyleDeclaration.cssText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
+Setting this attribute changes the inline style. If you want a text representation of a computed declaration block,
+you can get it with JSON.stringify().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleDeclaration.getPropertyCSSValue">
+<span class="sig-name descname"><span class="pre">getPropertyCSSValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration.getPropertyCSSValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleDeclaration.getPropertyCSSValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only supported via getComputedStyle in Firefox. Returns the property value as a CSSPrimitiveValue or null for shorthand properties.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleDeclaration.getPropertyPriority">
+<span class="sig-name descname"><span class="pre">getPropertyPriority</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration.getPropertyPriority"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleDeclaration.getPropertyPriority" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the optional priority, “important”.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleDeclaration.getPropertyValue">
+<span class="sig-name descname"><span class="pre">getPropertyValue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration.getPropertyValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleDeclaration.getPropertyValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the property value given a property name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleDeclaration.item">
+<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleDeclaration.item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.
+An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).
+This is mostly useful for non-JavaScript DOM implementations.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleDeclaration.length">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">length</span></span><a class="headerlink" href="#domonic.style.CSSStyleDeclaration.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of properties. See the item() method below.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleDeclaration.parentRule">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">parentRule</span></span><a class="headerlink" href="#domonic.style.CSSStyleDeclaration.parentRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>The containing CSSRule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleDeclaration.removeProperty">
+<span class="sig-name descname"><span class="pre">removeProperty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration.removeProperty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleDeclaration.removeProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a property from the CSS declaration block.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleSheet">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.style.</span></span><span class="sig-name descname"><span class="pre">CSSStyleSheet</span></span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleSheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new CSSStyleSheet object.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleSheet.addRule">
+<span class="sig-name descname"><span class="pre">addRule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.addRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleSheet.addRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply to the matching elements.
+This differs from insertRule(), which takes the textual representation of the entire rule as a single string.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleSheet.cssRules">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">cssRules</span></span><a class="headerlink" href="#domonic.style.CSSStyleSheet.cssRules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects that comprise the stylesheet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleSheet.deleteRule">
+<span class="sig-name descname"><span class="pre">deleteRule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.deleteRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleSheet.deleteRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the rule at the specified index into the stylesheet’s rule list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleSheet.insertRule">
+<span class="sig-name descname"><span class="pre">insertRule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.insertRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleSheet.insertRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a new rule at the specified position in the stylesheet, given the textual representation of the rule.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleSheet.ownerRule">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ownerRule</span></span><a class="headerlink" href="#domonic.style.CSSStyleSheet.ownerRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this stylesheet is imported into the document using an &#64;import rule,
+the ownerRule property returns the corresponding CSSImportRule; otherwise, this property’s value is null.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleSheet.removeRule">
+<span class="sig-name descname"><span class="pre">removeRule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.removeRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleSheet.removeRule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Functionally identical to deleteRule(); removes the rule at the specified index from the stylesheet’s rule list.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleSheet.replace">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleSheet.replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asynchronously replaces the content of the stylesheet and returns a Promise that resolves with the updated CSSStyleSheet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleSheet.replaceSync">
+<span class="sig-name descname"><span class="pre">replaceSync</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.replaceSync"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSStyleSheet.replaceSync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synchronously replaces the content of the stylesheet.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.CSSStyleSheet.rules">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">rules</span></span><a class="headerlink" href="#domonic.style.CSSStyleSheet.rules" title="Permalink to this definition">¶</a></dt>
+<dd><p>The rules property is functionally identical to the standard cssRules property
+it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="domonic.style.Style">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.style.</span></span><span class="sig-name descname"><span class="pre">Style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#Style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.Style" title="Permalink to this definition">¶</a></dt>
 <dd><p>[ js syntax styles ]
@@ -6326,6 +6749,68 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <dt class="sig sig-object py" id="domonic.style.Style.zIndex">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">zIndex</span></span><a class="headerlink" href="#domonic.style.Style.zIndex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets or returns the stack order of a positioned element 2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="domonic.style.StyleSheet">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.style.</span></span><span class="sig-name descname"><span class="pre">StyleSheet</span></span><a class="reference internal" href="../_modules/domonic/style.html#StyleSheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.StyleSheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object implementing the StyleSheet interface represents a single style sheet.
+CSS style sheets will further implement the more specialized CSSStyleSheet interface.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.StyleSheet.href">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">href</span></span><a class="headerlink" href="#domonic.style.StyleSheet.href" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DOMString representing the location of the stylesheet.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.StyleSheet.media">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">media</span></span><a class="headerlink" href="#domonic.style.StyleSheet.media" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a MediaList representing the intended destination medium for style information.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.StyleSheet.ownerNode">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ownerNode</span></span><a class="headerlink" href="#domonic.style.StyleSheet.ownerNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Node associating this style sheet with the current document.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.StyleSheet.parentStyleSheet">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">parentStyleSheet</span></span><a class="headerlink" href="#domonic.style.StyleSheet.parentStyleSheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a StyleSheet including this one, if any; returns null if there aren’t any.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.StyleSheet.title">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">title</span></span><a class="headerlink" href="#domonic.style.StyleSheet.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DOMString representing the advisory title of the current style sheet.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.StyleSheet.type">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#domonic.style.StyleSheet.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a DOMString representing the style sheet language for this style sheet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="domonic.style.StyleSheetList">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.style.</span></span><span class="sig-name descname"><span class="pre">StyleSheetList</span></span><a class="reference internal" href="../_modules/domonic/style.html#StyleSheetList"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.StyleSheetList" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of this object can be returned by Document.styleSheets.
+it can be iterated over in a standard for loop over its indices, or converted to an Array.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.style.StyleSheetList.item">
+<span class="sig-name descname"><span class="pre">item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#StyleSheetList.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.StyleSheetList.item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="domonic.style.StyleSheetList.length">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">length</span></span><a class="headerlink" href="#domonic.style.StyleSheetList.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of CSSStyleSheet objects in the collection.</p>
 </dd></dl>
 
 </dd></dl>
