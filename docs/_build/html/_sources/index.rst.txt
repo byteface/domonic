@@ -118,6 +118,7 @@ Here you can find some instructions for getting the most out of Domonic.
    packages/CDN
    packages/decorators
    packages/components
+   packages/utils
    packages/servers
    packages/autodocs
 

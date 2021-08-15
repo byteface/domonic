@@ -94,7 +94,7 @@ class tag(object):
         # self.name = 'tag'  # not set which means extended tags that don't use create_element will break
         try:
             self.content = ''.join([each.__str__() for each in args])
-            self.attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in kwargs.items()])
+            self.__attributes__ = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in kwargs.items()])
         except IndexError as e:
             raise TemplateError(e)
         # except Exception as e:
@@ -110,7 +110,7 @@ class tag(object):
         return
 
     @property
-    def attributes(self):
+    def __attributes__(self):
         try:
             return ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
         except IndexError as e:
@@ -118,8 +118,8 @@ class tag(object):
         # except Exception as e:
             # print(e)
 
-    @attributes.setter
-    def attributes(self, ignore):
+    @__attributes__.setter
+    def __attributes__(self, ignore):
         try:
             self.__attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
         except IndexError as e:
@@ -128,7 +128,7 @@ class tag(object):
             # print(e)
 
     def __str__(self):
-        return f"<{self.name}{self.attributes}>{self.content}</{self.name}>"
+        return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
 
     def __mul__(self, other):
         """
@@ -267,7 +267,7 @@ class tag(object):
         raise AttributeError
 
     # def __repr__(self):
-    #     return f"<{self.name}{self.attributes}>{self.content}</{self.name}>"
+    #     return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
 
     # def __setitem__(self,key,value):
         # self.args[key] = value
@@ -280,7 +280,7 @@ class tag(object):
 
 class closed_tag(tag):
     def __str__(self):
-        return f"<{self.name}{self.attributes} />"
+        return f"<{self.name}{self.__attributes__} />"
 
 
 def tag_init(self, *args, **kwargs):

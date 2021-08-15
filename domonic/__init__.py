@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "0.4.5"
+__version__ = "0.4.6"
 __license__ = 'MIT'
 __author__ = "@byteface"
 
@@ -105,7 +105,7 @@ class domonic:
         if not isinstance(pyml, str):
             raise ValueError("domonify requires a string not:", type(pyml))
 
-        print("HI>>", pyml)
+        # print("HI>>", pyml)
 
         s = domonic.evaluate(pyml, *args, **kwargs)
 
@@ -116,12 +116,13 @@ class domonic:
             p = eval(s, {**kwargs, **globals()})
         except Exception as e:
             print("Failed to evaluate as mulitline trying again:", e)
-            pyml = ''.join(pyml.splitlines())  # try again on a single line
+            pyml = ''.join(pyml.splitlines()).strip(',')  # try again on a single line
             s = domonic.evaluate(pyml, *args, **kwargs)
             p = eval(s, {**kwargs, **globals()})
 
         return p
 
+    LAST_ERR = None  # to stop re-eval
     @staticmethod
     def evaluate(pyml: str, *args, **kwargs):
         """ [
@@ -146,13 +147,14 @@ class domonic:
         try:
             # TODO - strip any potentially bad/dangerous code before eval.
             p = eval(pyml, {**kwargs, **globals()})
+            domonic.LAST_ERR = None
             return pyml  # ????
         except Exception as e:
             # import sys
             # old_log = sys.stdout
             # log_file = open("fail.log","w")
             # sys.stdout = log_file
-            print(e)
+            # print(e)
             # sys.stdout = old_log
 
             # if end of file err. add a closed curly
@@ -164,20 +166,39 @@ class domonic:
                     return domonic.evaluate(pyml)  # try again
 
             if "positional argument follows keyword argument" in str(e):
-                # print(e)
-                num = str(e).split('line')[1]
-                if ')' in num:
-                    num = num.split(')')[0]
-                num = num.strip()
-                num = int(num)
+
+                '''
+                # print(Utils.digits(e))
+                if str(e) == domonic.LAST_ERR:  # only allow 1 error per line
+                    # raise ValueError("Recursion limit exceeded")
+                    domonic.LAST_ERR = None
+                    # raise  # Exception("Recursion limit exceeded") # TODO - cant raise as called by self
+                    try:
+                        return
+                    except Exception as e:
+                        raise Exception("Recursion limit exceeded")
+                else:
+                    domonic.LAST_ERR = str(e)
+                # return
+                '''
+                num = int(Utils.digits(str(e)))  # go backwards from this line. to the one before it opened
                 pyml = pyml.splitlines()
-                pyml[num - 2] = pyml[num - 2] + ").html("  # need to know when to close tag comma vs wrap
+
+                # NOTE - working backwards from the error line. we try to wrap any content.
+                # if already wrapped, we don't want to wrap again. so move back 1 line until we can wrap again
+                # this is because a node may take several lines.
+                countback = 2
+                start_line = pyml[num-countback]
+                while '_' not in start_line:
+                    countback += 1
+                    line = pyml[num-countback]
+                    if 'html' not in line:
+                        start_line = line
+                pyml[num-countback] = start_line + ").html("  # need to know when to close tag comma vs wrap
+
+                # pyml[num - 2] = pyml[num - 2] + ").html(" + str(num)   # need to know when to close tag comma vs wrap
                 pyml = '\n'.join(pyml)
-                # print(pyml)
                 return domonic.evaluate(pyml)  # try again
-                # pass
-                # pyml += ").html("
-                # domonic.domonify(pyml) # try again  s and load
 
             # TODO -  if " does not match opening parenthesis '{' (<string>, line 9)
             # TODO -  keyword argument repeated (<string>, line 617)

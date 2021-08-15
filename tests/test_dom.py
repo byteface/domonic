@@ -703,8 +703,86 @@ class TestCase(unittest.TestCase):
             if bird.matches('.endangered'):
                 print('The ' + bird.textContent + ' is endangered!')
 
-
     # def test_domonic_closest(self):
+
+    def test_sanitize(self):
+
+        # our input string to clean
+        # stringToClean = 'Some text <b><i>with</i></b> <blink>tags</blink>, including a rogue script <script>alert(1)</script> def. # TODO - failing due to blink tag
+
+        # TODO - parser is stripping last space off the string
+        # stringToClean = 'Some text <b><i>with</i></b> <p>tags</p>, including a rogue script <script>alert(1)</script> def.'
+        # result = Sanitizer().sanitizeToString(stringToClean)
+        # console.log("result::", result)
+        # assert result == "Some text <b><i>with</i></b> <blink>tags</blink>, including a rogue script def."
+        # return
+
+        sample = "<div style='cool'><span id='span1' class='theclass' style='font-weight: bold'>hello</span></div>"
+        # sample = '<div style="cool"><span id="span1" class="theclass" style="font-weight: bold">hello</span></div>'
+
+        # Allow only <span style>: <span style='font-weight: bold'>...</span>
+        s1 = Sanitizer({'allowAttributes': {"style": ["span"]}}).sanitize(sample)
+        # print(type(s1))
+        # print(s1)
+        assert str(s1) == '<div><span style="font-weight: bold">hello</span></div>'
+
+        # Allow style, but not on span: <span>...</span>
+        s2 = Sanitizer({'allowAttributes': {"style": ["div"]}}).sanitize(sample)
+        # print(s2)
+        assert str(s2) == '<div style="cool"><span>hello</span></div>'
+
+        # Allow style on any elements: <span style='font-weight: bold'>...</span>
+        s3 = Sanitizer({'allowAttributes': {"style": ["*"]}}).sanitize(sample)
+        # print("3::::", s3)
+        # print(str(s3))
+        # Note - check why is id/class not a default config?
+        assert str(s3) == '<div style="cool"><span style="font-weight: bold">hello</span></div>'
+
+        # Drop <span id>: <span class='theclass' style='font-weight: bold'>...</span>
+        s4 = Sanitizer({'dropAttributes': {"id": ["span"]}}).sanitize(sample)
+        # print("4::::", s4)
+        assert str(s4) == '<div style="cool"><span class="theclass" style="font-weight: bold">hello</span></div>'
+
+        # Drop id, everywhere: <span class='theclass' style='font-weight: bold'>...</span>
+        s5 = Sanitizer({'dropAttributes': {"id": ["*"]}}).sanitize(sample)
+        print("5::::", s5)
+        print(s5)
+        assert str(s5) == '<div style="cool"><span class="theclass" style="font-weight: bold">hello</span></div>'
+
+        # Comments will be dropped by default.
+        # comment = to_node("Hello  World!")
+        # Sanitizer().sanitize(comment)  # "Hello  World!"
+        # Sanitizer({'allowComments': True}).sanitize(comment)  # Same as comment.
+
+
+        # Does the default config allow script elements?
+        # Sanitizer.getDefaultConfiguration().allowElements.includes("script")  # false
+
+        # We found a Sanitizer instance. Does it have an allow-list configured?
+        # a_sanitizer = ...;
+        # !!a_sanitizer.getConfiguration().allowElements # true, if an allowElements list is configured
+
+        # If it does have an allow elements list, does it include the <div> element?
+        # a_sanitizer.getConfiguration().allowElements.includes("div")  # true, if "div" is in allowElements.
+
+        # Note that the getConfiguration method might do some normalization. E.g., it won’t
+        # contain key/value pairs that are not declare in the IDL.
+        # Object.keys(new Sanitizer({madeUpDictionaryKey: "Hello"}).getConfiguration())  # []
+
+        # As a Sanitizer’s config describes its operation, a new sanitizer with
+        # another instance’s configuration should behave identically.
+        # (For illustration purposes only. It would make more sense to just use a directly.)
+        # a = /* ... a Sanitizer we found somewhere ... */;
+        # b = Sanitizer(a.getConfiguration());  // b should behave the same as a.
+
+        # getDefaultConfiguration() and new Sanitizer().getConfiguration should be the same.
+        # (For illustration purposes only. There are better ways of implementing
+        # object equality in JavaScript.)
+        # JSON.stringify(Sanitizer.getDefaultConfiguration()) == JSON.stringify(new Sanitizer().getConfiguration());  // true
+
+
+
+
 
 
 

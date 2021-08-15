@@ -328,6 +328,29 @@ class Utils(object):
         else:
             return text + "..."
 
+
+    @staticmethod
+    def digits(text=''):
+        """[takes a string of mix of digits and letters and returns a string of digits]
+
+        Args:
+            text (str, optional): [the text to change]. Defaults to ''.
+
+        Returns:
+            [str]: [a string of digits]
+        """
+        if isinstance(text, int):
+            return str(text)
+        elif isinstance(text, float):
+            return str(int(text))
+        elif isinstance(text, str):
+            return ''.join(i for i in text if i.isdigit())
+        else:
+            try:
+                return str(text)
+            except Exception:
+                raise ValueError("text must be a string")
+
     @staticmethod
     def has_internet(url='http://www.google.com/', timeout=5):
         """[check if you have internet connection]
