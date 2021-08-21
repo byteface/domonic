@@ -355,9 +355,12 @@ class DomonicJS(object):
 
     def __str__(self):
         return script("""
-            window.domonic = {'version':'0.1'}; // || domonic
+            window.domonic = {'version':'0.0.2'}; // || domonic.js
             function print(msg){
                 console.log(msg);
+            }
+            function title(str){
+                return str.charAt(0).toUpper();
             }
             """
         )

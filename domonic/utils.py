@@ -370,6 +370,14 @@ class Utils(object):
             # print("No internet connection available.")
             return False
 
+
+    # def convert_file(filepath, filetype=None):
+    #     """
+    #         convert a file to a different file type
+    #         mostly deals with config files
+    #     """
+    #  files = ['json', 'ini', 'xml', 'yaml', 'yml', 'toml', 'properties', 'conf', 'rc', 'sh', 'bash', 'bat', 'cmd', 'c', 'cpp', 'h', 'hpp', 'java', 'js', 'json', 'md', 'markdown', 'pl', 'py', 'rb', 'sh', 'sql', 'txt', 'xml', 'yaml', 'yml', 'toml']
+
     '''
     @staticmethod
     def yeahnah(x):
