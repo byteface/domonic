@@ -1000,7 +1000,7 @@ class TestCase(unittest.TestCase):
         args = ("hello", "world")
         kwargs = {"foo": "bar"}
 
-        timer_id = Global.setTimeout(callback, 1, *args, **kwargs)
+        timer_id = Global.setTimeout(callback, 1000, *args, **kwargs)
         callback.assert_not_called()
 
         assert timer_id in Global._Global__timers
@@ -1018,9 +1018,8 @@ class TestCase(unittest.TestCase):
         args = ("hello", "world")
         kwargs = {"foo": "bar"}
 
-        timer_id = Global.setTimeout(callback, 1, *args, **kwargs)
+        timer_id = Global.setTimeout(callback, 1000, *args, **kwargs)
         callback.assert_not_called()
-
 
         assert timer_id in Global._Global__timers
         Global.clearTimeout(timer_id)
@@ -1028,6 +1027,36 @@ class TestCase(unittest.TestCase):
 
         time.sleep(1.5)
         callback.assert_not_called()
+
+    def test_timeouts(self):
+        def somefunc():
+            print("hi")
+        someID = Global.setTimeout(somefunc, 2000)
+        Global.clearTimeout(someID)
+        time.sleep(2.5)
+        # nice!
+
+        # from domonic.javascript import setTimeout, clearTimeout
+        # setTimeout(somefunc, 2000)
+        # time.sleep(2.5)
+
+        # from domonic.javascript import setInterval, clearInterval
+        # def somefunc2():
+            # print("testing interval")
+        # interval_id = setInterval(somefunc2, 2000)
+        # time.sleep(10)
+        # clearInterval(interval_id)
+        # time.sleep(4)
+        # print('end')
+
+        # from domonic.javascript import window
+        # intID = window.setInterval(somefunc2, 2000)
+        # time.sleep(10)
+        # clearInterval(intID)  # not clearing brings it back to life!
+
+
+
+
 
     # def test_storage(self):
     #     print("test_storage")

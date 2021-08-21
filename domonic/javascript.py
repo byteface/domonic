@@ -1072,24 +1072,41 @@ class Global(object):
         raise NotImplementedError
 
     @staticmethod
-    def setTimeout(callback, t, *args, **kwargs) -> int:
-        """ Call a function after a set duration """
+    def setTimeout(callback, t, *args, **kwargs):  # -> int: - TODO/FIX - for some reason types are breaking my linting on this project?
+        """[sets a timer which executes a function or evaluates an expression after a specified delay]
 
+        Args:
+            callback (function): [method to be executed after the delay]
+            t ([int]): [milliseconds]
 
-        timer = threading.Timer(t, callback, args=args, kwargs=kwargs)
-
+        Returns:
+            [str]: [an identifier for the timer]
+        """
+        timer = threading.Timer(t / 1000, callback, args=args, kwargs=kwargs)
         timer_id = id(timer)
         Global.__timers[timer_id] = timer
-
         timer.start()
-
         return timer_id
 
     @staticmethod
-    def clearTimeout(job):
-        """ Cancel a previously scheduled job from executing. """
+    def clearTimeout(timeoutID):
+        """ [cancels a timer set with setTimeout()]
 
-        Global.__timers.pop(job).cancel()
+        Args:
+            timeoutID ([str]): [the identifier returned by setTimeout()]
+        """
+        Global.__timers.pop(timeoutID).cancel()
+
+
+# NOTE - for globals use the class to make them but then register them here
+decodeURI = Global.decodeURI
+decodeURIComponent = Global.decodeURIComponent
+encodeURI = Global.encodeURI
+encodeURIComponent = Global.encodeURIComponent
+parseFloat = Global.parseFloat
+parseInt = Global.parseInt
+setTimeout = Global.setTimeout
+clearTimeout = Global.clearTimeout
 
 
 class Performance():
@@ -1599,19 +1616,8 @@ class Window(object):
         data = input()
         return data
 
-    @staticmethod
-    def setTimeout(function, t, *args, **kwargs):
-        """ Calls a function or evaluates an expression after a specified number of milliseconds """
-        import time
-        time.sleep(t / 1000)  # TODO - still blocks
-        function()
-        return
-
-    # TODO - clearTimeout.
-    @staticmethod
-    def clearTimeout(job):
-        # job.stop()
-        pass
+    setTimeout = Global.setTimeout
+    clearTimeout = Global.clearTimeout
 
     @staticmethod
     def clearInterval(job):
@@ -1756,10 +1762,18 @@ class Window(object):
         perf = Global.performance.now()
         return callback(perf)
 
+
+# these probably should have been on global. will see about moving them later
+setInterval = Window.setInterval
+clearInterval = Window.clearInterval
+
+Global.setInterval = Window.setInterval
+Global.clearInterval = Window.clearInterval
+
+
 # WINDOW
 # localStorage  Allows to save key/value pairs in a web browser. Stores the data with no expiration date    Window
 # blur()    Removes focus from an element   Element, Window
-# clearTimeout()    Clears a timer set with setTimeout()    Window
 # closed    Returns a Boolean value indicating whether a window has been closed or not  Window
 # close()   Closes the output stream previously opened with document.open() Document, Window
 # confirm() Displays a dialog box with a message and an OK and a Cancel button  Window
@@ -1800,7 +1814,6 @@ class Window(object):
 # scrollX   An alias of pageXOffset Window
 # scrollY   An alias of pageYOffset Window
 # sessionStorage    Allows to save key/value pairs in a web browser. Stores the data for one session    Window
-# setTimeout()  Calls a function or evaluates an expression after a specified number of milliseconds    Window
 # stop()    Stops the window from loading   Window
 # status    Sets or returns the text in the statusbar of a window   Window
 # top   Returns the topmost browser window  Window

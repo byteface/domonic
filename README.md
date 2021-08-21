@@ -181,9 +181,11 @@ print(url.host)
 print(url.pathname)
 print(url.hash)
 
+# you can use Global class to import all the js methods from the global namespace i.e
 # from domonic.javascript import Global
 # Global.decodeURIComponent(...
 # Global.encodeComponent(...
+# Global.setInterval(...
 
 # from domonic.javascript import Date, String, Number
 # etc..
@@ -193,6 +195,8 @@ You can use setInterval and clearInterval with params
 
 ```python
 
+from domonic.javascript import setInterval, clearInterval
+
 x=0
 
 def hi(inc):
@@ -200,14 +204,24 @@ def hi(inc):
     x = x+inc
     print(x)
 
-test = window.setInterval(hi, 1000, 2)
+test = setInterval(hi, 1000, 2)
 import time
 time.sleep(5)
-window.clearInterval(test)
+clearInterval(test)
 print(f"Final value of x:{x}")
 
+```
+
+Or for a single delayed function call use setTimeout, clearTimeout
+
+```python
+
+from domonic.javascript import setTimeout, clearTimeout
+
+timeoutID = setTimeout(hi, 1000)
 
 ```
+
 
 a-tags inherits from URL:
 

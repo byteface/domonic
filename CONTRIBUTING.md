@@ -81,3 +81,17 @@ Issue-tracker conventions
 -------------------------
 
 I aim to reply to all issues promptly but I may not be able for somethings or might be busy so please also be patient.
+
+
+Thanks
+-------------------------
+
+domonic has benefitted also from bug fixes and features by other people.
+
+I'd like to thank here...
+
+William MacMillan - wmacmillan
+Jordan Cottle - Jordan-Cottle
+Alfas Esty - alfasst
+
+and of course dependabot[bot]

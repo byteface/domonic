@@ -46,6 +46,9 @@ from domonic.geom.shape import Rect
 # from domonic.geom.shape import BoundingCircle
 
 
+# __all__ # TODO - i think this is i need to use
+
+
 class matrix(object):
     """[matrixs]
     """
