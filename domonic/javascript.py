@@ -1082,6 +1082,9 @@ class Global(object):
         Returns:
             [str]: [an identifier for the timer]
         """
+        if isinstance(callback, str):
+            callback = eval(callback)
+
         timer = threading.Timer(t / 1000, callback, args=args, kwargs=kwargs)
         timer_id = id(timer)
         Global.__timers[timer_id] = timer
