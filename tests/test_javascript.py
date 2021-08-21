@@ -6,6 +6,7 @@
 
 import time
 import unittest
+from unittest.mock import Mock
 # import requests
 # from mock import patch
 
@@ -849,7 +850,7 @@ class TestCase(unittest.TestCase):
 
 
     # def test_javascript_Node(self):
-        # url = require('url');        
+        # url = require('url');
         # console.log(url.domainToASCII('español.com'))
         # console.log(url.domainToASCII('??.com'))
         # console.log(url.domainToASCII('xn--iñvalid.com'))
@@ -966,7 +967,7 @@ class TestCase(unittest.TestCase):
         '''
         # TODO - make the following work. js sets can have dictionaries in them
         o = {'a': 1, 'b': 2}
-        mySet1.add(o)  # TODO - ok. so we learned something. i nearly never use sets so this is a nice example of difference between python and javascript sets. 
+        mySet1.add(o)  # TODO - ok. so we learned something. i nearly never use sets so this is a nice example of difference between python and javascript sets.
         assert mySet1.size == 4
         assert mySet1.contains(a) == True
 
@@ -990,6 +991,43 @@ class TestCase(unittest.TestCase):
         # logs Set(4) [ 1, "some text", {…}, {…} ] in Firefox
         # logs Set(4) { 1, "some text", {…}, {…} } in Chrome
         '''
+
+    def test_setTimeout(self):
+        """ Test the Global.setTimeout function calls the callback. """
+
+        callback = Mock()
+
+        args = ("hello", "world")
+        kwargs = {"foo": "bar"}
+
+        timer_id = Global.setTimeout(callback, 1, *args, **kwargs)
+        callback.assert_not_called()
+
+        assert timer_id in Global._Global__timers
+
+        time.sleep(1.5)
+
+        callback.assert_called_once()
+        callback.assert_called_with(*args, **kwargs)
+
+    def test_clearTimeout(self):
+        """ Test that Global.clearTimeout function can cancel a timeout. """
+
+        callback = Mock()
+
+        args = ("hello", "world")
+        kwargs = {"foo": "bar"}
+
+        timer_id = Global.setTimeout(callback, 1, *args, **kwargs)
+        callback.assert_not_called()
+
+
+        assert timer_id in Global._Global__timers
+        Global.clearTimeout(timer_id)
+        assert timer_id not in Global._Global__timers
+
+        time.sleep(1.5)
+        callback.assert_not_called()
 
     # def test_storage(self):
     #     print("test_storage")
@@ -1020,7 +1058,7 @@ class TestCase(unittest.TestCase):
     #     assert myObj2.address == '123 Main St'
     #     assert myObj2.toString() == '{"name": "John", "age": 30, "address": "123 Main St"}'
 
-    
+
     # def test_symbol(self):
     #     print("test_symbol")
     #     symbol = Symbol('x')
@@ -1030,7 +1068,7 @@ class TestCase(unittest.TestCase):
     #     assert symbol.toString() == 'x'
     #     assert symbol.toNumber() == 0
     #     assert symbol.toString(True) == '0'
-        
+
 
 _intID = None
 _results = []

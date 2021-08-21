@@ -970,6 +970,8 @@ class Global(object):
     NaN = "NaN"
     Infinity = float("inf")
 
+    __timers= {}
+
     # TODO - https://stackoverflow.com/questions/747641/what-is-the-difference-between-decodeuricomponent-and-decodeuri
 
     @staticmethod
@@ -1070,15 +1072,24 @@ class Global(object):
         raise NotImplementedError
 
     @staticmethod
-    def setTimeout(callback, t, *args, **kwargs):
-        """ use threads to create a timeout method """
-        raise NotImplementedError
+    def setTimeout(callback, t, *args, **kwargs) -> int:
+        """ Call a function after a set duration """
 
-    # TODO - clearTimeout.
+
+        timer = threading.Timer(t, callback, args=args, kwargs=kwargs)
+
+        timer_id = id(timer)
+        Global.__timers[timer_id] = timer
+
+        timer.start()
+
+        return timer_id
+
     @staticmethod
     def clearTimeout(job):
-        # print(job)
-        job.cancel()
+        """ Cancel a previously scheduled job from executing. """
+
+        Global.__timers.pop(job).cancel()
 
 
 class Performance():
