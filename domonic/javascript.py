@@ -28,6 +28,23 @@ import json
 import os
 
 
+def function(python_str):
+    """[evals a string i.e.
+
+    sup = function('''print(hi)''')
+    
+    sup()
+
+    ]
+
+    Args:
+        python_str ([str]): [some valid python code as a string]
+    """
+    def anon():
+        return eval(python_str)
+    return anon
+
+
 # TODO - list all javascript keywords to python keywords
 true = True
 false = False
