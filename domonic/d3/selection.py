@@ -23,8 +23,8 @@ def namespace(name):
     i = String(prefix).indexOf(":")
     if i > 0:
         prefix = String(name).slice(0, i)
-    if (i >= 0 and (prefix) != "xmlns"):
-        name = name.slice(i + 1)
+    if i >= 0 and prefix != "xmlns":
+        name = String(name).slice(i + 1)
     return {"space": namespaces[prefix], "local": name} if Object(namespaces).hasOwnProperty(prefix) else name  # eslint-disable-line no-prototype-builtins
 
 
@@ -48,7 +48,7 @@ def creatorFixed(fullname):
 
 def creator(name):
     fullname = namespace(name)
-    print(fullname)
+    # print(fullname)
     func = creatorFixed if isinstance(fullname, dict) else creatorInherit
     return func(fullname)
 
@@ -58,7 +58,7 @@ def none():
 
 
 def selector(selector):
-    return None if selector == None else lambda: this.querySelector(selector)
+    return None if selector == None else lambda: document.querySelector(selector)
 
 # // Given something array like (or null), returns something that is strictly an
 # // array. This is used to ensure that array-like objects passed to d3.selectAll
@@ -67,7 +67,7 @@ def selector(selector):
 # // HTMLCollection or NodeList. However, note that selection.selectAll will use a
 # // static NodeList as a group, since it safely derived from querySelectorAll.
 def array(x):
-    b =  x if Array.isArray(x) else Array.from_(x)
+    b = x if Array.isArray(x) else Array.from_(x)
     return [] if x == None else b
 
 
@@ -114,7 +114,7 @@ class EnterNode():
 class ClassList():
 
     def __init__(self, node):
-        print('class list is in town')
+        # print('class list is in town')
         self._node = node
         self._names = classArray(node.getAttribute("class") or "")
 
@@ -172,23 +172,22 @@ class Selection():
     def __init__(self, groups, parents, this=None):
         self._groups = groups
         self._parents = parents
-        self.this = this  # context switcher
+        self.this = None
+        if this is None:
+            # self.this = root[0]
+            # self.this = self._groups#[0]
+            # self.this = self._groups  #.__iter__()
+            pass
+        else:
+            self.this = this  # context switcher
+
+    # unpack groups into a list of nodes
+    def __iter__(self):
+        return self._groups.__iter__()
 
     def select(self, select):
         if not callable(select):
             select = selector(select)
-
-        # TODO write this commented out javascript as python instead
-
-        # for (var groups = self._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
-        #     for (var group = groups[j], n = group.length, subgroup = subgroups[j] = new Array(n), node, subnode, i = 0; i < n; ++i) {
-        #     if ((node = group[i]) && (subnode = select.call(node, node.__data__, i, group))) {
-        #         if ("__data__" in node) subnode.__data__ = node.__data__;
-        #         subgroup[i] = subnode;
-
-        #     }
-        # }
-
 
         groups = self._groups
         m = len(groups)
@@ -199,26 +198,34 @@ class Selection():
             subgroup = subgroups[j] = Array(n)
             for i in range(n):
                 node = group[i]
-                print("node", node)
                 if node is None:
                     print('NODE WAS NONE.err?')
                     continue
                 try:
+                    # print(node.__data__)
                     node.__data__ = None
-                    print('bipm', select)
+                    # print('bipm', select)
                     subnode = Function(select).call(node, node.__data__, i, group)
                 except Exception as e:
-                    print(e)
+                    # print(e)
                     print('failed. no __data__ on node')
                     subnode = None
+                # if subnode is not None:
+                #     if "__data__" in subnode:
+                #         subnode.__data__ = subnode.__data__
+                #     subgroup[i] = subnode
+                    # subnode.__data__ = node.__data__
+                    # subgroup[i] = subnode
+                # print('super::', node, subnode)
                 if "__data__" in node:
                     subnode.__data__ = node.__data__
                 subgroup[i] = subnode
             j += 1
+
+        # print("this was set to", self.this)
         return Selection(subgroups, self._parents, self.this)
 
     # import selection_selectAll from "./selectAll.js";
-    # def selectAll: selection_selectAll,
     # import {Selection} from "./index.js";
     # import array from "../array.js";
     # import selectorAll from "../selectorAll.js";
@@ -230,7 +237,7 @@ class Selection():
         if callable(select):
             select = self.arrayAll(select)
         else:
-            select = self.selectorAll(select)
+            select = selectorAll(select)
 
         groups = self._groups
         m = len(groups)
@@ -242,17 +249,26 @@ class Selection():
             for i in range(n):
                 node = group[i]
                 if node is None:
+                    print('selectaAll : NODE WAS NONE.err?')
                     continue
-                subgroups.append(select.call(node, node.__data__, i, group))
-                parents.append(node)
+
+                try:
+                    # print(node.__data__)
+                    node.__data__ = None  # TODO - only do this if not there
+                    subgroups.append(Function(select).call(node, node.__data__, i, group))
+                    parents.append(node)
+                except Exception as e:
+                    # print(e)
+                    print('failed. no __data__ on node')
+
+                # subgroups.append(Function(select).call(node, node.__data__, i, group))
+                # parents.append(node)
             j += 1
-        return Selection(subgroups, parents)
+        return Selection(subgroups, parents, self.this)
 
     # import selection_selectChild from "./selectChild.js";
-    # def selectChild: selection_selectChild,    
     # import {childMatcher} from "../matcher.js";
-
-    # var find = Array.prototype.find;
+    find = Array.prototype.find
 
     def childFind(self, match):
         return lambda: find.call(this.children, match)
@@ -491,32 +507,20 @@ class Selection():
             return 0
         return None
 
-    # import selection_call from "./call.js";    
-    # def call: selection_call,
+    # import selection_call from "./call.js"
     def call(self, *args):
+        args = list(args)
         callback = args[0]
-        arguments[0] = self
+        args[0] = self
         Function(callback).apply(None, args)
         return self
 
     # import selection_nodes from "./nodes.js";
-    # def nodes: selection_nodes,
     def nodes(self):
         return Array.from_(self.this)
 
     # import selection_node from "./node.js";
-    # def node: selection_node,
     def node(self):
-
-        # TODO write this commented out javascript as python instead
-        # for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
-        #     for (var group = groups[j], i = 0, n = group.length; i < n; ++i) {
-        #     var node = group[i];
-        #     if (node) return node;
-        #     }
-        # }
-        # return null;
-
         groups = self._groups
         j = 0
         m = len(groups)
@@ -541,17 +545,17 @@ class Selection():
     # import selection_empty from "./empty.js";
     # def empty: selection_empty,
     def empty(self):
-        return not this.node()
+        # return not self.this.node()
+        if isinstance(self.this, list):
+            return not self.this
+
+        if self.node() is None:
+            return True
+        return False
+        # return not self.this.node()
 
     # import selection_each from "./each.js";
-    # def each: selection_each,
     def each(self, callback):
-        # TODO - rewrite this as python
-        # for (var groups = self._groups, j = 0, m = groups.length; j < m; ++j) {
-        #     for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
-        #     if (node = group[i]) callback.call(node, node.__data__, i, group);
-        #     }
-        # }
         groups = self._groups
         j = 0
         m = len(groups)
@@ -576,7 +580,6 @@ class Selection():
         return self
 
     # import selection_attr from "./attr.js";
-    # def attr: selection_attr,
     def attrRemove(self, name):
         # return lambda this: this.removeAttribute(name)
         self.this.removeAttribute(name)
@@ -591,8 +594,16 @@ class Selection():
         # print('setting:::', name, value)
         # print('setting:::', self.this)
         # return lambda: self.setAttribute(name, value)
-        self.this.setAttribute(name, value)
-        return self
+        # self.this.setAttribute(name, value)
+        # return self
+
+        def anon(this, *args):
+            nonlocal name
+            nonlocal value
+            # this.textContent = value
+            return this.setAttribute(name, value)
+
+        return anon
 
     def attrConstantNS(self, fullname, value):
         # return lambda this: this.setAttributeNS(fullname['space'], fullname['local'], value)
@@ -625,29 +636,28 @@ class Selection():
         return anon
 
     def attr(self, name, value, *args):
-
-        print("NAME!!", name, value, args)
-
+        # print("NAME!!", name, value, args)
         fullname = namespace(name)
 
-        # if len(args) < 2: #4:
-        #     node = self.node()
-        #     print(node)
-        #     return node.getAttributeNS(fullname['space'], fullname['local']) if isinstance(fullname, dict) else node.getAttribute(fullname)
+        # if len(args) > 0: #4:
+        if value is None:
+            node = self.node()
+            print(node)
+            return node.getAttributeNS(fullname['space'], fullname['local']) if isinstance(fullname, dict) else node.getAttribute(fullname)
 
-        a = self.attrRemoveNS if isinstance(fullname, dict) else self.attrRemove
-        b = self.attrFunctionNS if isinstance(fullname, dict) else self.attrFunction
-        c = self.attrConstantNS if isinstance(fullname, dict) else self.attrConstant
+        a = self.attrRemoveNS if getattr(fullname, 'local', None) is not None else self.attrRemove
+        b = self.attrFunctionNS if getattr(fullname, 'local', None) is not None else self.attrFunction
+        c = self.attrConstantNS if getattr(fullname, 'local', None) is not None else self.attrConstant
 
-        if value == None:
+        if value is None:
             func = a
         elif callable(value):
             func = b
         else:
             func = c
 
-        return func(fullname, value)
-
+        self.each(func(fullname, value))
+        return self
 
     # def style: selection_style,
     # import defaultView from "../window.js";
@@ -701,13 +711,6 @@ class Selection():
         p = "" if priority == None else priority
         return self.each(func(name, value, p))
 
-    #   return arguments.length > 1
-    #       ? this.each((value == null
-    #             ? styleRemove : typeof value === "function"
-    #             ? styleFunction
-    #             : styleConstant)(name, value, priority == null ? "" : priority))
-    #       : styleValue(this.node(), name)
-
 
     def append(self, name, *args):
         create = name if callable(name) else creator(name)
@@ -717,18 +720,17 @@ class Selection():
             # print("THIS", this, args)
             nonlocal create
             # nonlocal self
-
             # print("self is::", self)
-            self.this = Function(create).apply(self, args)
+            n = Function(create).apply(self, args)
+            # print('n is::', n)
             # print("self this is::", self.this)
-            return this.appendChild(self.this)
+            # self.this = this
+            return this.appendChild(n)
 
-        return self.select(anon)
-
-
+        self.select(anon)
+        return self
 
     # import selection_property from "./property.js";
-    # def property: selection_property,
     def propertyRemove(self, name):
         def anon(this):
             del this[name]
@@ -798,7 +800,7 @@ class Selection():
 
     def classed(self, name, value, *args):
         names = classArray(str(name))
-        print(names)
+        # print(names)
         # if (args.length < 2):
         if value == None:
             list = classList(this.node())
@@ -862,16 +864,15 @@ class Selection():
         self.each(func(value))
 
     # import selection_html from "./html.js";
-    # def html: selection_html,
     def htmlRemove(self):
         self.this.innerHTML = ""
 
-    def htmlConstant(value):
+    def htmlConstant(self, value):
         def anon(this):
             this.innerHTML = value
         return anon
 
-    def htmlFunction(value):
+    def htmlFunction(self, value):
         def anon(this, *args):
             v = Function(value).apply(this, args)
             this.innerHTML = "" if v == None else v
@@ -895,7 +896,6 @@ class Selection():
 
 
     # import selection_raise from "./raise.js";
-    # def raise: selection_raise,
     # def _raise(self):
     #     if (this.nextSibling):
     #         this.parentNode.appendChild(this)
@@ -912,26 +912,7 @@ class Selection():
     def lower(self):
         return self.each(lower)
 
-
-    def append(self, name, *args):
-        create = name if callable(name) else creator(name)
-        # print(create)
-
-        def anon(this, *args):
-            # print("THIS", this, args)
-            nonlocal create
-            # nonlocal self
-
-            # print("self is::", self)
-            self.this = Function(create).apply(self, args)
-            # print("self this is::", self.this)
-            return this.appendChild(self.this)
-
-        return self.select(anon)
-
-
     # import selection_insert from "./insert.js";
-    # def insert: selection_insert,
     # import creator from "../creator.js"; # already in?
     # import selector from "../selector.js"; # already in?
 
@@ -960,7 +941,6 @@ class Selection():
         return self.each(remove)
 
     # import selection_clone from "./clone.js";
-    # def clone: selection_clone,
     def selection_cloneShallow(self):
         clone = this.cloneNode(False)
         parent = self.this.parentNode
@@ -975,16 +955,14 @@ class Selection():
         return this.select(selection_cloneDeep if deep else selection_cloneShallow)
 
     # import selection_datum from "./datum.js";
-    # def datum: selection_datum,
     def datum(self, value=None, *args):
         # return arguments.length
         #     ? this.property("__data__", value)
         #     : this.node().__data__;
         # }
-        return self.this.property("__data__", value) if value is not None else this.node().__data__
+        return self.this.property("__data__", value) if value is not None else self.node().__data__
 
     # import selection_on from "./on.js";
-    # def on: selection_on,
     def contextListener(self, listener):
         return lambda event: listener.call(self.this, event, self.this.__data__)
 
@@ -1262,7 +1240,6 @@ def pointers(events, node):
     if node == None:
         node = events.currentTarget
     events = events.touches or [events]
-
     return Array.from_(events, lambda event: pointer(event, node))
 
 
@@ -1274,7 +1251,11 @@ def selectAll(selector):
     from domonic.dom import document  # bring in the global document
     # print(document)
     if isinstance(selector, str):
-        return Selection([document.querySelectorAll(selector)], [document.documentElement], document)
+        return Selection([document.querySelectorAll(selector)], [document.documentElement])
         # return Selection([document.getElementsBySelector(selector, document)], [document.documentElement])
     else:
-        return Selection([array(selector)], root, document)
+        return Selection([array(selector)], root)
+
+
+def selectorAll(selector):
+    return empty if selector == None else lambda: document.querySelectorAll(selector)

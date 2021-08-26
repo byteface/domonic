@@ -68,7 +68,7 @@ class TestCase(unittest.TestCase):
             result = ''
             for i in obj:
                 if obj.hasOwnProperty(i):
-                    result += objName + "." + str(i) + "= " + obj[i] + "\n"
+                    result += objName + "." + str(i) + "= " + str(obj[i]) + "\n"
             return result
 
         showProps(myCar, "myCar")

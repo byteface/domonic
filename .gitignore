@@ -1,9 +1,9 @@
-.DStore
 .DS_Store
+.Trashes
+.vscode
 *.pyc
 venv
-__pycache__
-domonic.egg-info
+__pycache__/
+
 dist
-.vscode
-*_tmp
+domonic.egg-info

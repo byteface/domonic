@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.4.5 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.4.8 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -125,6 +125,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 🗑️</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_parents</span><span class="p">()</span>
+
+        <span class="c1"># attempt to set init namespaceURI based on the tag name</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rootNode</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">tagName</span> <span class="o">==</span> <span class="s1">&#39;html&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namespaceURI</span> <span class="o">=</span> <span class="s1">&#39;http://www.w3.org/1999/xhtml&#39;</span>
+            <span class="k">elif</span> <span class="n">n</span><span class="o">.</span><span class="n">tagName</span> <span class="o">==</span> <span class="s1">&#39;svg&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namespaceURI</span> <span class="o">=</span> <span class="s1">&#39;http://www.w3.org/2000/svg&#39;</span>
+            <span class="k">elif</span> <span class="n">n</span><span class="o">.</span><span class="n">tagName</span> <span class="o">==</span> <span class="s1">&#39;xhtml&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namespaceURI</span> <span class="o">=</span> <span class="s1">&#39;http://www.w3.org/1999/xhtml&#39;</span>
+            <span class="k">elif</span> <span class="n">n</span><span class="o">.</span><span class="n">tagName</span> <span class="o">==</span> <span class="s1">&#39;xml&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namespaceURI</span> <span class="o">=</span> <span class="s1">&#39;http://www.w3.org/XML/1998/namespace&#39;</span>
+            <span class="k">elif</span> <span class="n">n</span><span class="o">.</span><span class="n">tagName</span> <span class="o">==</span> <span class="s1">&#39;xlink&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namespaceURI</span> <span class="o">=</span> <span class="s1">&#39;http://www.w3.org/1999/xlink&#39;</span>
+            <span class="k">elif</span> <span class="n">n</span><span class="o">.</span><span class="n">tagName</span> <span class="o">==</span> <span class="s1">&#39;math&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">namespaceURI</span> <span class="o">=</span> <span class="s1">&#39;http://www.w3.org/1998/Math/MathML&#39;</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># print(&#39;nope!&#39;, e)</span>
+            <span class="k">pass</span>
+
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -1288,7 +1310,7 @@
 
 <div class="viewcode-block" id="Element.setAttributeNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.setAttributeNS">[docs]</a>    <span class="k">def</span> <span class="nf">setAttributeNS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">localName</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets an attribute in the given namespace &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">localName</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Element.getAttributeNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.getAttributeNS">[docs]</a>    <span class="k">def</span> <span class="nf">getAttributeNS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">localName</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value of the specified attribute &quot;&quot;&quot;</span>
@@ -1376,9 +1398,17 @@
         <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">each</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">])</span>
 
     <span class="c1"># Inserts an element adjacent to the current element</span>
-<div class="viewcode-block" id="Element.insertAdjacentElement"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentElement">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentElement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.insertAdjacentElement"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentElement">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentElement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>  <span class="c1"># TODO - test. these look wrong.</span>
         <span class="sd">&quot;&quot;&quot; Inserts an element adjacent to the current element &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="n">position</span> <span class="o">=</span> <span class="n">position</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">position</span> <span class="o">==</span> <span class="s1">&#39;BEFOREBEGIN&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insertBefore</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">firstElementChild</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">position</span> <span class="o">==</span> <span class="s1">&#39;AFTERBEGIN&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insertBefore</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">firstElementChild</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">position</span> <span class="o">==</span> <span class="s1">&#39;AFTEREND&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insertAfter</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">firstElementChild</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="n">position</span> <span class="o">==</span> <span class="s1">&#39;BEFOREEND&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">insertBefore</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastElementChild</span><span class="p">())</span>        </div>
 
 <div class="viewcode-block" id="Element.insertAdjacentHTML"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.insertAdjacentHTML">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Inserts raw HTML adjacent to the current element &quot;&quot;&quot;</span>
@@ -1638,20 +1668,30 @@
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">createDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">qualifiedName</span><span class="p">,</span> <span class="n">doctype</span><span class="p">):</span>
-        <span class="c1"># return Document()</span>
-        <span class="c1"># from domonic.html import html</span>
-        <span class="c1"># return html()</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">if</span> <span class="n">namespaceURI</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">namespaceURI</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">qualifiedName</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">qualifiedName</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">doctype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">doctype</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">createElementNS</span><span class="p">(</span><span class="n">namespaceURI</span><span class="p">,</span> <span class="n">qualifiedName</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">doctype</span> <span class="o">=</span> <span class="n">doctype</span>
+        <span class="k">return</span> <span class="n">d</span>
 
-    <span class="k">def</span> <span class="nf">createDocumentType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="k">def</span> <span class="nf">createDocumentType</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qualifiedName</span><span class="p">,</span> <span class="n">publicId</span><span class="p">,</span> <span class="n">systemId</span><span class="p">):</span>
+        <span class="c1"># d = DocumentType()</span>
+        <span class="c1"># d.name = qualifiedName</span>
+        <span class="c1"># d.publicId = publicId</span>
+        <span class="c1"># d.systemId = systemId</span>
+        <span class="c1"># return d</span>
+        <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">createHTMLDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># return Document()</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">hasFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># return Document()</span>
+    <span class="k">def</span> <span class="nf">hasFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">featureList</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 
@@ -1669,6 +1709,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># ??</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># print(&#39;sup1&#39;)</span>
             <span class="k">global</span> <span class="n">document</span>
             <span class="n">document</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -1682,8 +1723,10 @@
         <span class="n">instance</span><span class="o">.</span><span class="n">baseURI</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">javascript</span><span class="o">.</span><span class="n">URL</span><span class="p">()</span><span class="o">.</span><span class="n">href</span>
 
         <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># print(&#39;sup2&#39;)</span>
             <span class="k">global</span> <span class="n">document</span>
             <span class="n">document</span> <span class="o">=</span> <span class="n">instance</span>
+            <span class="c1"># from domonic.dom import document</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;failed to set document&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 
@@ -1724,6 +1767,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; returns the document&#39;s body (the &lt;body&gt; element) &quot;&quot;&quot;</span>
+        <span class="c1"># print(&#39;Hi there!!&#39;)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">querySelector</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">)</span>
 
     <span class="nd">@body</span><span class="o">.</span><span class="n">setter</span>

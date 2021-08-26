@@ -336,12 +336,12 @@ class SpriteCSS(object):
                 div(_class=self.id)
             )
         )
+# _ss = SpriteCSS( path )
 
 
 # other sprite types may be needed...
-# _ss = BaseSprite()
 # _ss = Sprite()
-# _ss = SpriteCSS( path )
+# _ss = BaseSprite()
 # _ss = SpriteJS( path )
 # _ss = SpriteSVG( path )
 # _ss = SpriteGIF( path )
@@ -362,6 +362,14 @@ class DomonicJS(object):
             function title(str){
                 return str.charAt(0).toUpper();
             }
+            //class list() {
+            //    constructor(list) {
+            //        this.list = list;
+            //    }
+            //    append(item) {
+            //        this.list.push(item);
+            //    }
+            //}
             """
         )
 

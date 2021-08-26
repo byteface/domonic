@@ -32,6 +32,19 @@ def el(element='div', string=False):
 # @el(div)
 # @el(span)
 
+# def doctype(doctype):
+#     """
+#     @doctype('html')
+#     @doctype('xhtml')
+#     @doctype('xml')
+#     """
+#     def decorator(f):
+#         @wraps(f)
+#         def wrapper(*args, **kwargs):
+#             return f(*args, **kwargs)
+#         return wrapper
+#     return decorator
+
 
 def called(before=None, error=None):
     """[calls before() passing the response as args to the decorated function.
@@ -149,6 +162,18 @@ def deprecated(func):
         return func(*args, **kwargs)
     return new_func
 # considered this a few times
+
+
+# def evt(event, *args, **kwargs):  #TODO
+#     """
+#     a decorator that will call a function when an event is triggered.
+#     """
+#     def decorator(f):
+#         def wrapper(*args, **kwargs):
+#             return f(*args, **kwargs)
+#         return wrapper
+    # return decorator
+# @evt('event', 'args', 'kwargs')
 
 
 # def catch(f):

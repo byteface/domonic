@@ -27,15 +27,28 @@ import re
 import json
 import os
 
-# true = True
-# false = False
+
+# TODO - list all javascript keywords to python keywords
+true = True
+false = False
+null = None
+undefined = None
+# globalThis # TODO - do i need to use inpect? or is globals() ok?
+
+
+class Boolean():
+    """[Creates a Boolean Object. 
+        Warning this is NOT a boolean type. for that use Global.Boolean()]
+    ] """
+    def __init__(self, value=False):
+        self.value = Global.Boolean(value)
 
 
 class Object(object):
-    """ Creates a Mock Javascript Object in python """
+
 
     def __init__(self, obj=None, *args, **kwargs):
-        """[Creates a Mock Javascript Object in python]
+        """[Creates a Javascript-like Object in python]
 
         Args:
             obj ([type]): [pass an object, dict or callable to the contructor]
@@ -44,36 +57,44 @@ class Object(object):
         if obj is None:
             obj = {}
 
-        self.__attribs__ = {}
+        self.prototype = self.__class__
+        self.__extensible = True
+        self.__frozen = False
+        self.__sealed = False
+
+        for arg in args:
+            self.__dict__.update(arg)
+        self.__dict__.update(kwargs)
+
+        # self.__dict__ = {}
         if callable(obj):
-            self.__attribs__ = {}
-            self.__attribs__['__call__'] = obj
-            # self.__attribs__['__call__'].__name__ = '__call__'
-            # self.__attribs__['__call__'].__doc__ = 'The function object itself.'
-            # self.__attribs__['__call__'].__module__ = '__main__'
-        elif isinstance(obj, dict):
-            self.__attribs__ = obj  # set the dict as the attribs
-            # self.__attribs__['__dict__'] = obj  # set the dict as the attribs
-            self.__dict__ = {**self.__dict__, **obj}  # set the dict as the attribs?
+            self.__dict__.update(obj())
+        if isinstance(obj, dict):
+            self.__dict__.update(obj)
         else:
             try:
-                self.__attribs__ = {}
-                self.__attribs__.update(obj.__attribs__)
-                self.__attribs__.update(kwargs)
-                self.__attribs__.update(args)
-                self.__attribs__['__class__'] = obj.__class__.__name__
-                self.__attribs__['__module__'] = obj.__module__
-                self.__attribs__['__doc__'] = obj.__doc__
-                self.__attribs__['__proto__'] = obj
-                # self.__attribs__['__proto__'].__class__ = Object
-                # self.__attribs__['__proto__'].__attribs__ = self.__attribs__
+                self.__dict__ = {}
+                self.__dict__.update(obj.__dict__)
+                self.__dict__.update(kwargs)
+                self.__dict__.update(args)
+                # self.__dict__['__class__'] = obj.__class__.__name__
+                # self.__dict__['__module__'] = obj.__module__
+                # self.__dict__['__doc__'] = obj.__doc__
+                # self.__dict__['__proto__'] = obj
+                # self.__dict__['__proto__'].__class__ = Object
+                # self.__dict__['__proto__'].__dict__ = self.__dict__
             except Exception as e:
                 print("Object.__init__() failed to set attribs", e)
 
     def __str__(self):
-        """ Returns a string representation of the object."""
-        # return self.toString()
-        return str(self.__attribs__)
+        """ Returns a string representation of the object """
+        d = self.__dict__.copy()
+        for k, v in list(d.items()):
+            if '__' in k:
+                del d[k]
+            if 'prototype' in k:
+                del d[k]
+        return str(d)
 
     # def __repr__(self):
     #     """ Returns a string representation of the object."""
@@ -100,7 +121,7 @@ class Object(object):
                 for k, v in source.items():
                     target[k] = v
             else:
-                for k, v in source.__attribs__.items():
+                for k, v in source.__dict__.items():
                     target[k] = v
         else:
             if isinstance(source, dict):
@@ -111,9 +132,9 @@ class Object(object):
                     setattr(target, k, v)
 
         # return target
-        # for prop in source.__attribs__:
+        # for prop in source.__dict__:
         #     if source.propertyIsEnumerable(prop):
-        #         target.__attribs__[prop] = source.__attribs__[prop]
+        #         target.__dict__[prop] = source.__dict__[prop]
         return target
 
     @staticmethod
@@ -163,7 +184,7 @@ class Object(object):
             return obj.keys()
         if isinstance(obj, (float, int)):
             return []
-        return obj.__attribs__.keys()   # TODO - this is probably wrong
+        return obj.__dict__.keys()   # TODO - this is probably wrong
 
     @staticmethod
     def values(obj):
@@ -173,14 +194,14 @@ class Object(object):
             return obj.values()
         if isinstance(obj, (float, int)):
             return []
-        return obj.__attribs__.values()  # TODO - this is probably wrong
+        return obj.__dict__.values()  # TODO - this is probably wrong
 
     @staticmethod
     def getOwnPropertyDescriptor(obj, prop):
         """ Returns a property descriptor for a named property on an object. """
         if isinstance(obj, dict):
             return obj[prop]
-        return obj.__attribs__[prop]
+        return obj.__dict__[prop]
 
     @staticmethod
     def getOwnPropertyNames(obj):
@@ -189,10 +210,10 @@ class Object(object):
         if isinstance(obj, dict):
             return obj.keys()
         elif isinstance(obj, Object):
-            return obj.__attribs__.keys()
+            return obj.__dict__.keys()
         elif isinstance(obj, object):
             return [prop for prop in dir(obj) if not prop.startswith('__')]
-        return obj.__attribs__.keys()
+        return obj.__dict__.keys()
 
     # @staticmethod
     # def _is(value1, value2):
@@ -218,40 +239,17 @@ class Object(object):
             return obj.__class__
         return obj.__proto__
 
-    # @staticmethod
+    # @property #TODO - static or prop?
     # def isExtensible(obj):
-    #     """ Determines if extending of an object is allowed. """
-    #     if isinstance(obj, dict):
-    #         return True
-    #     elif isinstance(obj, Object):
-    #         return obj.extensible
-    #     elif isinstance(obj, object):
-    #         return True
-    #     return False
+    #     """ Determines if extending of an object is allowed """
+    #     return obj.__extensible
 
-    # @staticmethod
-    # def isFrozen(obj):
-    #     """ Determines if an object was frozen. """
-    #     if isinstance(obj, dict):
-    #         return False
-    #     elif isinstance(obj, Object):
-    #         return obj.frozen
-    #     elif isinstance(obj, object):
-    #         return False
-    #     return False
-
-    # @staticmethod
+    # @property #TODO - static or prop?
     # def isSealed(obj):
-    #     """ Determines if an object is sealed. """
-    #     if isinstance(obj, dict):
-    #         return False
-    #     elif isinstance(obj, Object):
-    #         return obj.sealed
-    #     elif isinstance(obj, object):
-    #         return False
-    #     return False
+    #     """ Determines if an object is sealed """
+    #     return obj.__sealed
 
-    # @staticmethod
+    # @property
     # def preventExtensions(obj):
     #     """ Prevents any extensions of an object. """
     #     if isinstance(obj, dict):
@@ -263,7 +261,7 @@ class Object(object):
     #         return False
     #     return False
 
-    # @staticmethod
+    # @property
     # def seal(obj):
     #     """ Prevents other code from deleting properties of an object. """
     #     if isinstance(obj, dict):
@@ -275,7 +273,7 @@ class Object(object):
     #         return False
     #     return False
 
-    # @staticmethod
+    # @property
     # def setPrototypeOf(obj, prototype):
     #     """ Sets the object's prototype (its internal [[Prototype]] property). """
     #     if isinstance(obj, dict):
@@ -287,67 +285,55 @@ class Object(object):
     #         return False
     #     return False
 
-    # @staticmethod
-    # def freeze(obj):
-    #     """ Freezes an object. Other code cannot delete or change its properties. """
+    @property #TODO - static or prop?
+    def isFrozen(self, obj):
+        """ Determines if an object was frozen. """
+        return self.__isFrozen
+
+    @staticmethod #TODO - static or prop?
+    def freeze(obj):
+        """ Freezes an object. Other code cannot delete or change its properties. """
+        obj.__isFrozen = True    
+
+    # def prototype(self, obj):
+    #     """
+    #     prototype and allows you to add properties and methods to this object
+    #     """
     #     if isinstance(obj, dict):
     #         return False
     #     elif isinstance(obj, Object):
-    #         obj.frozen = True
+    #         obj.prototype = self
     #         return True
     #     elif isinstance(obj, object):
     #         return False
     #     return False
 
-    def prototype(self, obj):
-        """
-        prototype and allows you to add properties and methods to this object
-        """
-        if isinstance(obj, dict):
-            return False
-        elif isinstance(obj, Object):
-            obj.prototype = self
-            return True
-        elif isinstance(obj, object):
-            return False
-        return False
-
-    # def __getattr__(self, name):
-    #     """
-    #     The __getattr__() method is called when the attribute 'name' is accessed.
-    #     """
-    #     if name == 'objectId':
-    #         return self.getId()
-    #     if name == 'proto':
-    #         return self.__class__.fromEntries(self.__attribs__)
-    #     return getattr(self, name)
-
     def __defineGetter__(self, prop, func):
         """ Adds a getter function for the specified property. """
-        self.__attribs__[prop] = property(func)
+        self.__dict__[prop] = property(func)
         return self
 
     def __defineSetter__(self, prop, func):
         """ Associates a function with a property that, when set, calls the function. """
-        self.__attribs__[prop] = property(func)
+        self.__dict__[prop] = property(func)
         return self
 
     def __lookupGetter__(self, prop):
         """
         Returns the getter function for the specified property.
         """
-        return self.__attribs__[prop]
+        return self.__dict__[prop]
 
     def __lookupSetter__(self, prop):
         """ Returns the function associated with the specified property by the __defineSetter__() method. """
-        return self.__attribs__[prop]
+        return self.__dict__[prop]
 
     def hasOwnProperty(self, prop):
         """ Returns a boolean indicating whether an object contains the specified property
         as a direct property of that object and not inherited through the prototype chain. """
         # raise NotImplementedError
         # return hasattr(self, prop)
-        return self.__attribs__.get(prop, None) != None
+        return self.__dict__.get(prop, None) != None
 
     def isPrototypeOf(self, obj):
         """ Returns a boolean indicating whether an object is a copy of this object. """
@@ -369,27 +355,20 @@ class Object(object):
 
     def toString(self):
         """ Returns a string representation of the object."""
-        return '[' + self.__class__.__name__ + ': ' + str(self.__attribs__) + ']'
+        return '[' + self.__class__.__name__ + ': ' + str(self.__dict__) + ']'
 
     def valueOf(self):
         """ Returns the value of the object. """
         return self
 
-    # def __str__(self):
-    #     """ Returns a string representation of the object. """
-    #     return self.toString()
-
-    # def __repr__(self):
-    #     """ Returns a string representation of the object. """
-    #     return self.toString()
-
     def __iter__(self):
         """ Iterates over object's properties. """
-        for prop in self.__attribs__:
+        for prop in self.__dict__:
             yield prop
         for key in self.__dict__:
             yield key
-        return
+        # return
+        # return self.__dict__.__iter__()
 
     def __hash__(self):
         """ Returns the hash of the object. """
@@ -417,39 +396,88 @@ class Object(object):
 
     # def __dict__(self):
     #     """ Returns the object's attributes as a dictionary. """
-    #     return self.__attribs__
+    #     return self.__dict__
 
     def __getitem__(self, key):
         """ Returns the value of the specified property. """
-        return self.__attribs__[key]
+        # return self.__dict__[key]
+        # return self.__dict__.get(key, None)
+        return self.__dict__.get(key)
+
+    def __deepcopy__(self, memo):
+        """ Makes a deep copy of the object. """
+        return self.__class__(self.__dict__)
 
     def __setitem__(self, key, value):
         """ Sets the value of the specified property. """
-        self.__attribs__[key] = value
+        # self.__dict__[key] = value
+        return self.__dict__.__setitem__(key, value)
 
     def __delitem__(self, key):
         """ Deletes the specified property. """
-        del self.__attribs__[key]
+        del self.__dict__[key]
 
     def __len__(self):
         """ Returns the number of properties. """
-        return len(self.__attribs__)
+        return len(self.__dict__)
 
     def __contains__(self, key):
-        """ Returns whether the specified property exists. """
-        return key in self.__attribs__
+        """[Returns whether the specified property exists.]
+
+        Args:
+            key ([str]): [The name of the property to check for.]
+
+        Returns:
+            [bool]: [True if the specified property exists. Otherwise, False.]
+        """
+        return key in self.__dict__
+
+    def __getattr__(self, name):
+        """[gets the value of the specified property]
+
+        Args:
+            name ([str]): [the name of the property]
+
+        Returns:
+            [str]: [the value of the specified property]
+        """
+        return self.__getitem__(name)
+
+    def __setattr__(self, name, val):
+        """[sets the value of the specified property]
+
+        Args:
+            name ([str]): [the name of the property]
+            val ([str]): [the value of the property]
+
+        Returns:
+            [str]: [the value of the property]
+        """
+        return self.__setitem__(name, val)
+
+    def __delattr__(self, name):
+        """[deletes the specified property]
+
+        Args:
+            name ([str]): [the name of the property]
+
+        Returns:
+            [type]: [the value of the property]
+        """
+        return self.__delitem__(name)
+
 
     # def __call__(self, *args, **kwargs):
     #     """ Calls the object. """
     #     return self.toString()
 
 
-class Function(object):
+class Function(Object):
     """ a Function object """
 
-    def __init__(self, func):
+    def __init__(self, func, *args, **kwargs):
         self.func = func
-        self.arguments = []
+        self.arguments = args
         self.caller = None
         self.displayName = None
         self.length = None
@@ -457,16 +485,8 @@ class Function(object):
         # self.isCallable = True
         # self.constructor = False
         # self.__proto__ = None
-        # self.prototype = None
-        # self.extensible = True
-        # self.frozen = False
-        # self.sealed = False
-        # self.__class__ = Function
-        # self.__dict__ = {}
-        # self.__attribs__ = {}
-        # self.__methods__ = {}
 
-    def apply(self, thisArg=None, *args, **kwargs):
+    def apply(self, thisArg=None, args=None, **kwargs):
         """[calls a function with a given this value, and arguments provided as an array]
 
         Args:
@@ -476,8 +496,14 @@ class Function(object):
             [type]: [result of calling the function.]
         """
         if thisArg is not None:
-            return self.func(args)
-        return self.func()
+            try:
+                return self.func(args)  # kwargs?
+            except TypeError:
+                return self.func()
+        try:
+            return self.func(*args)
+        except TypeError:
+            return self.func()
 
     def bind(self, thisArg, *args, **kwargs):
         """[creates a new function that, when called,
@@ -510,10 +536,23 @@ class Function(object):
         # print('CALL!!')
         # print(thisArg)
         # print(args)
-        if thisArg is not None:
-            return self.func(thisArg, args)
+        # if thisArg is not None:
+            # return self.func(thisArg, *args)
             # return self.func(this=thisArg, *args)
-        return self.func(args)
+
+        print('AAAARGGS!!', args)
+
+        if thisArg is not None:
+            try:
+                return self.func(thisArg)  # kwargs?
+            except TypeError as e:
+                print(e)
+                return self.func()
+
+        try:
+            return self.func(*args)
+        except TypeError:
+            return self.func()
 
     def toString(self):
         """[Returns a string representing the source code of the function. Overrides the]
@@ -1039,14 +1078,40 @@ class Global(object):
         return "NaN"
 
     @staticmethod
+    def Boolean(x):  # TODO - test
+        if isinstance(x, int):
+            return bool(x)
+        elif isinstance(x, str):
+            if x.lower() == 'true':
+                return True
+            elif x.lower() == 'false':
+                return False
+            elif x == '':
+                return False
+            else:
+                return True
+        elif isinstance(x, bool):
+            return x
+        elif isinstance(x, (list, tuple, dict, object)):
+            return True
+        elif x is None:
+            return False
+        else:
+            return True
+
+    @staticmethod
     def parseFloat(x: str):
         """ Parses a string and returns a floating point number """
-        return float(x)
+        # return float(x)
+        import ast
+        return float(ast.literal_eval(x))
 
     @staticmethod
     def parseInt(x: str):
         """ Parses a string and returns an integer """
-        return int(x)
+        # return int(x)
+        import ast
+        return int(ast.literal_eval(x))
 
     @staticmethod
     def String(x):
@@ -1582,7 +1647,7 @@ class Window(object):
 
     def __init__(self, *args, **kwargs):
         # self.console = dom.console
-        # self.document = dom.document
+        # self.document = Document
         # self.location = ''#dom.location
         self.location = None
         # globals()?
@@ -1773,77 +1838,32 @@ clearInterval = Window.clearInterval
 Global.setInterval = Window.setInterval
 Global.clearInterval = Window.clearInterval
 
-
-# WINDOW
-# localStorage  Allows to save key/value pairs in a web browser. Stores the data with no expiration date    Window
-# blur()    Removes focus from an element   Element, Window
-# closed    Returns a Boolean value indicating whether a window has been closed or not  Window
-# close()   Closes the output stream previously opened with document.open() Document, Window
-# confirm() Displays a dialog box with a message and an OK and a Cancel button  Window
-# defaultStatus Sets or returns the default text in the statusbar of a window   Window
-# defaultView   Returns the window object associated with a document, or null if none is available. Document
-# document  Returns the Document object for the window (See Document object)    Window
-# focus()   Gives focus to an element   Element, Window
-# frameElement  Returns the <iframe> element in which the current window is inserted    Window
-# getComputedStyle()    Gets the current computed CSS styles applied to an element  Window
-# getSelection()    Returns a Selection object representing the range of text selected by the user  Window
-# history   Returns the History object for the window (See History object)  Window
-# innerHeight   Returns the height of the window's content area (viewport) including scrollbars Window
-# innerWidth    Returns the width of a window's content area (viewport) including scrollbars    Window
-# location  Returns the Location object for the window (See Location object)    Window
-# matchMedia()  Returns a MediaQueryList object representing the specified CSS media query string   Window
-# moveBy()  Moves a window relative to its current position Window
-# moveTo()  Moves a window to the specified position    Window
-# name  Sets or returns an error name   Error, Attribute, Window
-# navigator Returns the Navigator object for the window (See Navigator object)  Window
-# onpopstate    The event occurs when the window's history changes  PopStateEvent
-# open()    Opens an HTML output stream to collect output from document.write() Document, Window
-# opener    Returns a reference to the window that created the window   Window
-# outerHeight   Returns the height of the browser window, including toolbars/scrollbars Window
-# outerWidth    Returns the width of the browser window, including toolbars/scrollbars  Window
-# pageXOffset   Returns the pixels the current document has been scrolled (horizontally) from the upper left corner of the window   Window
-# pageYOffset   Returns the pixels the current document has been scrolled (vertically) from the upper left corner of the window Window
-# parent    Returns the parent window of the current window Window
-# _print()   Prints the content of the current window    Window
-# resizeBy()    Resizes the window by the specified pixels  Window
-# resizeTo()    Resizes the window to the specified width and height    Window
-# screen    Returns the Screen object for the window (See Screen object)    Window
-# screenLeft    Returns the horizontal coordinate of the window relative to the screen  Window
-# screenTop Returns the vertical coordinate of the window relative to the screen    Window
-# scroll()  Deprecated. This method has been replaced by the scrollTo() method. Window
-# scrollBy()    Scrolls the document by the specified number of pixels  Window
-# scrollIntoView()  Scrolls the specified element into the visible area of the browser window   Element
-# scrollTo()    Scrolls the document to the specified coordinates   Window
-# scrollX   An alias of pageXOffset Window
-# scrollY   An alias of pageYOffset Window
-# sessionStorage    Allows to save key/value pairs in a web browser. Stores the data for one session    Window
-# stop()    Stops the window from loading   Window
-# status    Sets or returns the text in the statusbar of a window   Window
-# top   Returns the topmost browser window  Window
-# view  Returns a reference to the Window object where the event occurred   UiEvent
-
-
 window = Window
-
-# class null():
-#     def __str__(self):
-#         return ''
-#     def __repr__(self):
-#         return None
 
 
 class Array(object):
     """ javascript array """
 
     @staticmethod
-    def from_(object):  # TODO - test
+    def from_(obj):  # TODO - test
         """ Creates a new Array instance from an array-like or iterable object. """
-        return Array(object)
-
-    @staticmethod
-    def isArray(object):  # TODO - test
-        """ Returns true if the specified object is an Array instance. """
-        return type(object) is Array or type(object) is list or type(object) is tuple
+        # return Array(object)
+        if isinstance(obj, Array):
+            return obj
+        elif isinstance(obj, list):
+            return Array(*obj)
+        elif isinstance(obj, tuple):
+            items = list(obj)
+            return Array(*items)
+        elif isinstance(obj, dict):
+            items = list(obj.items())
+            return Array(*items)
+        # if it is iterable unpack it
+        elif hasattr(obj, '__iter__'):
+            items = list(obj)
+            return Array(*items)
+        else:
+            return Array([obj])
 
     @staticmethod
     def of(*args):  # TODO - test
@@ -1864,6 +1884,7 @@ class Array(object):
                 self.args = [""] * args[0]
                 return
         self.args = list(args)
+        self.prototype = self
 
     def __getitem__(self, index):
         return self.args[index]
@@ -1896,6 +1917,7 @@ class Array(object):
     def __iter__(self):
         for i in self.args:
             yield i
+        # self.args.__iter__()
 
     def __sub__(self, value):
         if isinstance(value, int):
@@ -1925,9 +1947,28 @@ class Array(object):
             self.args += a
         return self.args
 
-    def fill(self):
+    def flat(self, depth=1):  # TODO - test
+        """[Flattens an array into a single-dimensional array or a depth of arrays]
+        """
+        if depth < 1:
+            raise ValueError('depth must be greater than 0')
+        if depth == 1:
+            return self.args
+        flat = []
+        for i in self.args:
+            flat += i.flat(depth - 1)
+        return flat
+
+    def flatMap(self, fn):  # TODO - test
+        """[Maps a function over an array and flattens the result]
+        """
+        return Array(fn(i) for i in self.args)
+
+    def fill(self):  # TODO - test
         """ Fill the elements in an array with a static value """
-        raise NotImplementedError
+        for i in range(len(self.args)):
+            self.args[i] = 0
+        return self.args
 
     def includes(self, value):
         """ Check if an array contains the specified element """
@@ -1950,7 +1991,7 @@ class Array(object):
             return -1
 
     @staticmethod
-    def isArray(self, thing):
+    def isArray(thing):
         """[Checks whether an object is an array]
 
         Args:
@@ -2114,15 +2155,6 @@ class Array(object):
         for value in self.args:
             func(value)
 
-    # def from(self, obj):
-    #     """[Creates an array from an object]
-
-    #     Args:
-    #         obj ([type]): [description]
-    #     """
-        # return [obj]
-        # return [obj]
-
     def keys(self):
         """ Returns a Array Iteration Object, containing the keys of the original array """
         for i in self.args:
@@ -2167,6 +2199,9 @@ class Array(object):
             [type]: [item at the given position]
         """
         return self.args[index]
+
+
+Array.prototype = Array
 
 
 class Set():
@@ -2496,7 +2531,6 @@ class Number(float):
         Returns:
             [str]: [a string representing the specified Number object]
         """
-
         if base is None:
             return str(self.x)
 
@@ -2857,18 +2891,130 @@ class String(object):
 
 class RegExp():
 
-    def __init__(self, expression):
+    def __init__(self, expression, flags=""):
         self.expression = expression
-        # self.flag  #: A string that contains the flags of the RegExp object.
-        # self.dotAll  #: Whether . matches newlines or not.
-        # self.global # Whether to test the regular expression against all possible matches in a string, or only against the first.
-        # self.hasIndices  # Whether the regular expression result exposes the start and end indices of captured substrings.
-        # self.ignoreCase  # Whether to ignore case while attempting a match in a string.
+        self.flags = flags.lower()  #: A string that contains the flags of the RegExp object.
         # self.multiline  # Whether or not to search in strings across multiple lines.
         # self.source  # The text of the pattern.
-        # self.sticky  # Whether or not the search is sticky.
-        # self.unicode  # Whether or not Unicode features are enabled.
+        # self.sticky  # Whether or not the search is sticky
         # self.lastIndex  # The index at which to start the next match.
+
+    @property
+    def dotAll(self):
+        """[Whether . matches newlines or not.]
+
+        Returns:
+            [bool]: [True if dot matches newlines, False otherwise]
+        """
+        return "s" in self.flags
+
+    @dotAll.setter
+    def dotAll(self, value: bool):
+        """[Whether . matches newlines or not.]
+        Args:
+            value (bool): [True if dot matches newlines, False otherwise]
+        """
+        if 's' not in self.flags:
+            self.flags += "s" if value else ""
+
+    @property
+    def multiline(self):
+        """[Whether . matches newlines or not.]
+        Returns:
+            [bool]: [True if dot matches newlines, False otherwise]
+        """
+        return "m" in self.flags
+
+    @multiline.setter
+    def multiline(self, value: bool):
+        """[Whether . matches newlines or not.]
+        Args:
+            value (bool): [True if dot matches newlines, False otherwise]
+        """
+        if 'm' not in self.flags:
+            self.flags += "m" if value else ""
+
+    @property
+    def source(self):
+        """[The text of the pattern.]
+        Returns:
+            [str]: [The text of the pattern.]
+        """
+        return self.expression
+
+    @property
+    def global_(self):
+        """[Whether to test the regular expression against all possible matches in a string, 
+        or only against the first.]
+
+        Returns:
+            [bool]: [True if global, False otherwise]
+        """
+        return "g" in self.flags
+
+    @global_.setter
+    def global_(self, value: bool):
+        """[Whether to test the regular expression against all possible matches in a string, 
+        or only against the first.]
+        Args:
+            value (bool): [True if global, False otherwise]
+        """
+        if 'g' not in self.flags:
+            self.flags += "g" if value else ""
+
+    @property
+    def hasIndices(self):
+        """[Whether the regular expression result exposes the start and end indices of captured substrings.]
+
+        Returns:
+            [bool]: [True if hasIndices, False otherwise]
+        """
+        return "d" in self.flags
+
+    @hasIndices.setter
+    def hasIndices(self, value: bool):
+        """[Whether the regular expression result exposes the start and end indices of captured substrings.]
+        Args:
+            value (bool): [True if hasIndices, False otherwise]
+        """
+        if 'd' not in self.flags:
+            self.flags += "d" if value else ""
+
+    @property
+    def ignoreCase(self):
+        """[Whether to ignore case while attempting a match in a string.]
+
+        Returns:
+            [bool]: [True if ignoreCase, False otherwise]
+        """
+        return "i" in self.flags
+
+    @ignoreCase.setter
+    def ignoreCase(self, value: bool):
+        """[Whether to ignore case while attempting a match in a string.]
+        Args:
+            value (bool): [True if ignoreCase, False otherwise]
+        """
+        if 'i' not in self.flags:
+            self.flags += "i" if value else ""
+
+    @property
+    def unicode(self):
+        """[Whether or not Unicode features are enabled.]
+
+        Returns:
+            [bool]: [True if unicode, False otherwise]
+        """
+        return "u" in self.flags
+
+    @unicode.setter
+    def unicode(self, value: bool):
+        """[Whether or not Unicode features are enabled.]
+        Args:
+            value (bool): [True if unicode, False otherwise]
+        """
+        if 'u' not in self.flags:
+            self.flags += "u" if value else ""
 
     def compile(self):
         """ (Re-)compiles a regular expression during execution of a script. """
@@ -2899,12 +3045,13 @@ class RegExp():
             return False
 
     def toString(self):
-        """" Returns a string representing the specified object. Overrides the Object.prototype.toString() method. """
-        pass
+        """ Returns a string representation of the RegExp object. """
+        return self.__str__()
 
     def __str__(self):
-        """" Returns a string representing the specified object. Overrides the Object.prototype.toString() method. """
-        pass
+        """" Returns a string representing the specified object. 
+        Overrides the Object.prototype.toString() method. """
+        return self.expression
 
     # def [@@match]()
     # Performs match to given string and returns match result.
@@ -3252,7 +3399,7 @@ class Error(Exception):
 # URIError
 
 
-# ---- STUBBING OUT SOME NEW ONES TO WORK ON
+# ---- STUBBING OUT SOME NEW ONES TO WORK ON ----
 
 class Reflect():
     """

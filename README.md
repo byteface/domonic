@@ -20,7 +20,7 @@
 • [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎 <br />
 • [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲 <br />
 • [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 <br />
-• [dQuery](https://domonic.readthedocs.io/_modules/domonic/dQuery.html) - NEW. Recently started. utils for querying domonic. (alt + 0 for the º symbol)<br />
+• [dQuery](https://domonic.readthedocs.io/_modules/domonic/dQuery.html) - utils for querying domonic. (alt + 0 for the º symbol)<br />
 • terminal || cmd : call terminal commands with python3 😱 (*see at the end*)<br />
 • JSON : utils for loading / decorating / transforming<br />
 • SVG : Generate svg using python (untested)<br />
@@ -30,6 +30,8 @@ See the docs/code for more features...
 https://domonic.readthedocs.io/
 
 or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
+
+(small footprint. under 250kb compressed with only a few common lightweight dependencies)
 
 
 ## HTML Templating with Python 3
@@ -159,8 +161,23 @@ print(document)
 ```
 The last 'html()' created will always be the 'document'. You can set it manually but it needs to be a Document instance. Before a 'html' class is created it is just an empty document so that static methods can be available.
 
-Remember python globals are only to that module (unlike other langs). so you will have to import document explicitly when you need it (per method call) as using '*' won't work.
+Remember python globals are only to that module (unlike other langs). so you will have to import document explicitly when you need it (per method call after setting it). i.e
 
+```python
+
+print(document)
+d = html(body("Hello"))
+print(document)  # no change
+print('body1', d.doctype)
+print('body2', domonic.dom.document.doctype)
+print('body3', document.doctype)
+from domonic.dom import document  # re-import to get the updated document
+print('body4', document.doctype)
+```
+
+notice how before it was imported it was still just a class not an instance.
+
+So in most cases just use your own root node and not document as it will be the only one that will be updated unless you import after any html node creation. the global is for when you need to access the document from a different module(file)
 
 ### javascript
 
@@ -221,7 +238,6 @@ from domonic.javascript import setTimeout, clearTimeout
 timeoutID = setTimeout(hi, 1000)
 
 ```
-
 
 a-tags inherits from URL:
 
@@ -284,7 +300,6 @@ style("""
 """),
 ```
 
-
 ### JSON (utils)
 
 decorate any function that returns python objects to return json instead
@@ -337,9 +352,7 @@ print(json_data)
 more to come...
 
 
-### SVG (untested)
-
-Well I tested circle and that works...  But should be fine :)
+### SVG
 
 All tags extend 'Node' and 'tag'. So will have DOM and magic methods available to them. see the docs.
 
@@ -352,6 +365,7 @@ All tags extend 'Node' and 'tag'. So will have DOM and magic methods available t
         mysvg.appendChild(circ / 10)
         print(mysvg)
 ```
+
 
 ### Tweening
 

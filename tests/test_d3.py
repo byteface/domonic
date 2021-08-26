@@ -26,6 +26,10 @@ from domonic.d3.dispatch import dispatch, Dispatch
 # from domonic.d3.timer import *
 
 from domonic.d3.selection import *
+from domonic.decorators import silence
+
+
+import domonic.d3 as d3
 
 
 class TestCase(unittest.TestCase):
@@ -667,14 +671,26 @@ class TestCase(unittest.TestCase):
         # select("body").append("svg").attr("width", 960).attr("height", 500).attr("byte", "face")
 
         select("body").append("svg").attr("width", 960).attr("height", 500)  #.append("g")
-        select("svg").append("g")
+
+        b = select("svg").append("g")
+
+        # print(b)
+        # print(*b)
+        # return
+
         # select("body").append("svg")
 
         # select("body").append("svg")
         # print(select("body").append("svg"))
+        c = d3.select("svg")
+        print('gubbins:', *c)
+        # return
 
+        print(select("svg").append("g"))
+        print("shoudlbe::",b)
+        print("shoudlbe::",*b)
         print(str(page))
-
+        # return
         # d3.select("body")
         #   .append("svg")
         #     .attr("width", 960)
@@ -861,12 +877,30 @@ class TestCase(unittest.TestCase):
 
         selection.classed("foo bar", True)
         # print( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", Math.random() )
-        selection.classed("test", lambda this: Math.random() > 0.2) # seems to always do it
+        selection.classed("test", lambda this: Math.random() > 0.2)  # seems to always do it
         # print(page)
         # print(selection.text())
         selection.text("CHANGE")
         print(page)
 
+        selection = d3.selectAll('p')
+        print(selection)
+        # print(*selection)
+
+        print("Nodes::", selection.nodes())
+        print("Nodes::", selection.node())
+
+        elements = Array.from_(selection)
+        print("Elements::", elements)
+
+        print(selection.empty())
+
+        def name(selection, first, last):
+            selection.attr("first-name", first).attr("last-name", last)
+
+        d3.selectAll("div").call(name, "John", "Snow")
+
+        print(page)
         # select("body").append("svg").attr("width", 960).attr("height", 500).append("g").attr("transform", "translate(20,20)").append("rect").attr("width", 920).attr("height", 460)
 
 
@@ -874,11 +908,624 @@ class TestCase(unittest.TestCase):
 
         # selectAll("p").attr("class", "graf").style("color", "red")
 
+        # pass
+        print(d3.namespace("svg:text"))  # {"space": "http://www.w3.org/2000/svg", "local": "text"}
+
+        test = d3.local()
+        print(test)
+
+
+    def test_select3(self):
+
+        # selection.select(…) returns a selection"
+        d = html(head(domonic.domonic.load("<h1>hello</h1>")))
+        assert type(select(d).select("h1")) == Selection
+
+        # selection.select(string) selects the first descendant that matches the selector string for each selected element
+        d = html(head(domonic.domonic.load("<h1><span id='one'></span><span id='two'></span></h1><h1><span id='three'></span><span id='four'></span></h1>")))
+        one = d.querySelector("#one")
+        three = d.querySelector("#three")
+        # assertSelection(select(d).selectAll("h1").select("span"), {"groups": [[one, three]], "parents": [d]})
+        s = select(d).selectAll("h1").select("span")
+        print(s)
+        print(*s)
+        print(s._groups)
+        print(s._parents)
+        return
+
+        # selection.select(function) selects the return value of the given function for each selected element
+        d = html(head(domonic.domonic.load("<span id='one'></span>")))
+        one = d.querySelector("#one")
+        # assertSelection(select(d).select(function() { return one; }), {"groups": [[one]], "parents": [None]})
+
+        # selection.select(function) passes the selector function data, index and group", 
+        # "<parent id='one'><child id='three'></child><child id='four'></child></parent><parent id='two'><child id='five'></child></parent>", () => {
+        # one = d.querySelector("#one")
+        # two = d.querySelector("#two")
+        # three = d.querySelector("#three")
+        # four = d.querySelector("#four")
+        # five = d.querySelector("#five")
+        # results = []
+        # selectAll([one, two])
+        #     .datum(function(d, i) { return "parent-" + i; })
+        #     .selectAll("child")
+        #     .data(function(d, i) { return [0, 1].map(function(j) { return "child-" + i + "-" + j; }); })
+        #     .select(function(d, i, nodes) { results.push([this, d, i, nodes]); });
+
+        # assert.deepStrictEqual(results, [
+        #     [three, "child-0-0", 0, [three, four]],
+        #     [four, "child-0-1", 1, [three, four]],
+        #     [five, "child-1-0", 0, [five,, ]]
+
+        # selection.select(…) propagates data if defined on the originating element
+        # <parent><child>hello</child></parent>", () => {
+        # parent = d.querySelector("parent");
+        # child = d.querySelector("child");
+        # parent.__data__ = 0; // still counts as data even though falsey
+        # child.__data__ = 42;
+        # select(parent).select("child");
+        # assert.strictEqual(child.__data__, 0);
+
+        # selection.select(…) will not propagate data if not defined on the originating element
+        # <parent><child>hello</child></parent>", () => {
+        # parent = d.querySelector("parent");
+        # child = d.querySelector("child");
+        # child.__data__ = 42;
+        # select(parent).select("child");
+        # assert.strictEqual(child.__data__, 42);
+
+        # selection.select(…) propagates parents from the originating selection
+        # <parent><child>1</child></parent><parent><child>2</child></parent>", () => {
+        # parents = select(d).selectAll("parent");
+        # childs = parents.select("child");
+        # assertSelection(parents, {groups: [d.querySelectorAll("parent")], parents: [d]});
+        # assertSelection(childs, {groups: [d.querySelectorAll("child")], parents: [d]});
+        # assert(parents.parents === childs.parents); # Not copied!
+
+        # selection.select(…) can select elements when the originating selection is nested
+        # <parent id='one'><child><span id='three'></span></child></parent><parent id='two'><child><span id='four'></span></child></parent>", () => {
+        # one = d.querySelector("#one")
+        # two = d.querySelector("#two")
+        # three = d.querySelector("#three")
+        # four = d.querySelector("#four")
+        # assertSelection(selectAll([one, two]).selectAll("child").select("span"), {groups: [[three], [four]], parents: [one, two]})
+
+        # selection.select(…) skips missing originating elements
+        d = html(head(domonic.domonic.load("<h1><span>hello</span></h1>")))
+        h1 = d.querySelector("h1")
+        span = d.querySelector("span")
+        # assertSelection(selectAll([None, h1]).select("span"), {"groups": [[None, span]], "parents": [None]})
+        # assertSelection(selectAll([None, h1]).select("span"), {"groups": [[None, span]], "parents": [None]})
+        # assertSelection(selectAll([undefined, h1]).select("span"), {"groups": [[None, span]], "parents": [None]})
+
+        # selection.select(…) skips missing originating elements when the originating selection is nested
+        # "<parent id='one'><child></child><child><span id='three'></span></child></parent><parent id='two'><child></child><child><span id='four'></span></child></parent>", () => {
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        three = d.querySelector("#three")
+        four = d.querySelector("#four")
+        # assertSelection(selectAll([one, two]).selectAll("child").select(function(d, i) { return i & 1 ? this : None; }).select("span"), {groups: [[, three], [, four]], parents: [one, two]})
+
+        # selection.selection() returns itself
+        # d = html(head(domonic.domonic.load("<h1>hello</h1>")))
+        # sel = select(d).select("h1")
+        # assert sel == sel.selection() # TODO - check back
+        # assert sel == sel.selection().selection()
+
+    @silence
+    def test_select_all(self):
+
+        # selection.selectAll(…) returns a selection
+        d = html(head(domonic.domonic.load("<h1>hello</h1>")))
+        assert type(select(d).selectAll("h1")) == Selection
+
+        # selection.selectAll(string) selects all descendants that match the selector string for each selected element
+        d = html(head(domonic.domonic.load("<h1 id='one'><span></span><span></span></h1><h1 id='two'><span></span><span></span></h1>")))
+        one = document.querySelector("#one")
+        two = document.querySelector("#two")
+        # assertSelection(selectAll([one, two]).selectAll("span"), {groups: [one.querySelectorAll("span"), two.querySelectorAll("span")], parents: [one, two]})
+
+        # selection.selectAll(function) selects the return values of the given function for each selected element
+        d = html(head(domonic.domonic.load("<span id='one'></span>")))
+        one = document.querySelector("#one")
+        # assertSelection(select(document).selectAll(function() { return [one]; }), {groups: [[one]], parents: [document]})
+
+        # selection.selectAll(function) passes the selector function data, index and group
+        # "<parent id='one'><child id='three'></child><child id='four'></child></parent><parent id='two'><child id='five'></child></parent>", () => {
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # three = document.querySelector("#three")
+        # four = document.querySelector("#four")
+        # five = document.querySelector("#five")
+        # results = []
+
+        # selectAll([one, two])
+        #     .datum(function(d, i) { return "parent-" + i; })
+        #     .selectAll("child")
+        #     .data(function(d, i) { return [0, 1].map(function(j) { return "child-" + i + "-" + j; }); })
+        #     .selectAll(function(d, i, nodes) { results.push([this, d, i, nodes]); });
+
+        # assert.deepStrictEqual(results, [
+        #     [three, "child-0-0", 0, [three, four]],
+        #     [four, "child-0-1", 1, [three, four]],
+        #     [five, "child-1-0", 0, [five,, ]]
+
+        # selection.selectAll(…) will not propagate data
+        # "<parent><child>hello</child></parent>", () => {
+        parent = document.querySelector("parent")
+        child = document.querySelector("child")
+        parent.__data__ = 42
+        select(parent).selectAll("child")
+        assert not ("__data__" in child)
+
+        # selection.selectAll(…) groups selected elements by their parent in the originating selection
+        # "<parent id='one'><child id='three'></child></parent><parent id='two'><child id='four'></child></parent>", () => {
+        one = document.querySelector("#one")
+        two = document.querySelector("#two")
+        three = document.querySelector("#three")
+        four = document.querySelector("#four")
+        # assertSelection(select(document).selectAll("parent").selectAll("child"), {groups: [[three], [four]], parents: [one, two]});
+        # assertSelection(select(document).selectAll("child"), {groups: [[three, four]], parents: [document]})
+
+        # selection.selectAll(…) can select elements when the originating selection is nested
+        #"<parent id='one'><child id='three'><span id='five'></span></child></parent><parent id='two'><child id='four'><span id='six'></span></child></parent>", () => {
+        one = document.querySelector("#one")
+        two = document.querySelector("#two")
+        three = document.querySelector("#three")
+        four = document.querySelector("#four")
+        five = document.querySelector("#five")
+        six = document.querySelector("#six")
+        # assertSelection(selectAll([one, two]).selectAll("child").selectAll("span"), {groups: [[five], [six]], parents: [three, four]});
+
+        # selection.selectAll(…) skips missing originating elements
+        d = html(head(domonic.domonic.load("<h1><span>hello</span></h1>")))
+        h1 = document.querySelector("h1")
+        span = document.querySelector("span")
+        # assertSelection(selectAll([, h1]).selectAll("span"), {groups: [[span]], parents: [h1]})
+        # assertSelection(selectAll([null, h1]).selectAll("span"), {groups: [[span]], parents: [h1]})
+        # assertSelection(selectAll([undefined, h1]).selectAll("span"), {groups: [[span]], parents: [h1]})
+
+        # selection.selectAll(…) skips missing originating elements when the originating selection is nested
+        # "<parent id='one'><child></child><child id='three'><span id='five'></span></child></parent><parent id='two'><child></child><child id='four'><span id='six'></span></child></parent>", () => {
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # three = document.querySelector("#three")
+        # four = document.querySelector("#four")
+        # five = document.querySelector("#five")
+        # six = document.querySelector("#six")
+        # assertSelection(selectAll([one, two]).selectAll("child").select(function(d, i) { return i & 1 ? this : null; }).selectAll("span"), {groups: [[five], [six]], parents: [three, four]});
+
+    @silence
+    def test_append(self):
+
+        from domonic.dom import document
+        # from domonic.dom import document  # remember to bring in document explicitly as it's a global
+        # print(document)
+        d = html(body("Hello"))
+        # print(document)
+        # import importlib
+        # importlib.reload(domonic.dom)
+        print('body', d.doctype)
+        print('bodyx', domonic.dom.document.doctype)
+        print('body', document.doctype)
+        from domonic.dom import document  # re-import to get the updated document
+        print('body', document.doctype)
+        assert type(select(document.body).append("h1")) == Selection
+
+        # selection.append(name) appends a new element of the specified name as the last child of each selected element
+        # "<div id='one'><span class='before'></span></div><div id='two'><span class='before'></span></div>"
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # s = selectAll([one, two]).append("span")
+        # three = one.querySelector("span:last-child")
+        # four = two.querySelector("span:last-child")
+        # assertSelection(s, {groups: [[three, four]]});
+
+        # selection.append(name) observes the specified namespace, if any", 
+        d = html(body(div(_id='one'), div(_id='two')))
+        print('should work?::', d.querySelector("#one"))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        # s = selectAll([one, two]).append("svg:g")
+        s = selectAll([one, two]).append("svg")
+        three = one.querySelector("svg")
+        four = two.querySelector("svg")
+        # print(three.namespaceURI)
+        # print(three)
+        # print(four)
+        assert three.namespaceURI == "http://www.w3.org/2000/svg"
+        assert four.namespaceURI == "http://www.w3.org/2000/svg"
+        # assertSelection(s, {groups: [[three, four]]})
+
+        # selection.append(name) uses createElement, not createElementNS, if the implied namespace is the same as the document
+        d = html(body(div(_id='one'), div(_id='two')))
+        _pass = 0
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        createElement = document.createElement
+
+        def ce(this, *args):
+            nonlocal _pass
+            _pass += 1
+            return createElement.apply(this, args)
+        d.createElement = ce
+
+        selection = selectAll([one, two]).append("P")
+        three = one.querySelector("p")
+        four = two.querySelector("p")
+        assert _pass == 2
+        # assertSelection(selection, {groups: [[three, four]]});
+
+        # selection.append(name) observes the implicit namespace, if any
+        d = html(body(div(_id='one'), div(_id='two')))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        selection = selectAll([one, two]).append("svg")
+        three = one.querySelector("svg")
+        four = two.querySelector("svg")
+        assert three.namespaceURI == "http://www.w3.org/2000/svg"
+        assert four.namespaceURI == "http://www.w3.org/2000/svg"
+        # assertSelection(selection, {groups: [[three, four]]});
+
+        # selection.append(name) observes the inherited namespace, if any
+        # d = html(body(div(_id='one'), div(_id='two')))
+        # one = d.querySelector("#one")
+        # two = d.querySelector("#two")
+        # selection = selectAll([one, two]).append("svg").append("g") # TODO - append ... not shiffting.
+        # three = one.querySelector("g")
+        # four = two.querySelector("g")
+        # assert three.namespaceURI == "http://www.w3.org/2000/svg"
+        # assert four.namespaceURI == "http://www.w3.org/2000/svg"
+        # assertSelection(selection, {groups: [[three, four]]})
+
+        # selection.append(name) observes a custom namespace, if any
+        d = html(body(div(_id='one'), div(_id='two')))
+        try:
+            namespaces['d3js'] = "https://d3js.org/2016/namespace"
+            one = d.querySelector("#one")
+            two = d.querySelector("#two")
+            selection = selectAll([one, two]).append("d3js")
+            three = one.querySelector("d3js")
+            four = two.querySelector("d3js")
+            assert three.namespaceURI == "https://d3js.org/2016/namespace"
+            assert four.namespaceURI == "https://d3js.org/2016/namespace"
+            # assertSelection(selection, {groups: [[three, four]]});
+        except Exception as e:
+            print(e)
+            del namespaces['d3js']
+
+        # selection.append(function) appends the returned element as the last child of each selected element
+        # <div id='one'><span class='before'></span></div><div id='two'><span class='before'></span></div>", () => {
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        selection = selectAll([one, two]).append(lambda: d.createElement("SPAN"))
+        three = one.querySelector("span:last-child")
+        four = two.querySelector("span:last-child")
+        # assertSelection(selection, {groups: [[three, four]]})
+
+        # selection.append(function) passes the creator function data, index and group
+        # <parent id='one'><child id='three'></child><child id='four'></child></parent><parent id='two'><child id='five'></child></parent>", () => {
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # three = document.querySelector("#three")
+        # four = document.querySelector("#four")
+        # five = document.querySelector("#five")
+        # results = []
+
+        # selectAll([one, two]).datum(lambda d, i: "parent-" + i).selectAll("child").data(lambda d, i : Array([0, 1]).map( lambda j: "child-" + i + "-" + j )).append(lambda d, i, nodes: results.append([this, d, i, nodes]); return document.createElement("SPAN"); });
+        # assert.deepStrictEqual(results, [
+        #     [three, "child-0-0", 0, [three, four]],
+        #     [four, "child-0-1", 1, [three, four]],
+        #     [five, "child-1-0", 0, [five,, ]]
+
+        # selection.append(…) propagates data if defined on the originating element"
+        # d = parent(child("hello"))
+        # parent = document.querySelector("parent")
+        # parent.__data__ = 0  # still counts as data even though falsey
+        # assert select(parent).append("child").datum() == 0
+
+        # selection.append(…) will not propagate data if not defined on the originating element
+        # <parent><child>hello</child></parent>", () => {
+        # parent = document.querySelector("parent")
+        # child = document.querySelector("child")
+        # child.__data__ = 42
+        # select(parent).append(function() { return child; })
+        # assert child.__data__, 42)
+
+        # selection.append(…) propagates parents from the originating selection", 
+        # "<parent></parent><parent></parent>", () => {
+        # parents = select(document).selectAll("parent");
+        # childs = parents.append("child");
+        # assertSelection(parents, {groups: [document.querySelectorAll("parent")], parents: [document]});
+        # assertSelection(childs, {groups: [document.querySelectorAll("child")], parents: [document]});
+        # assert parents.parents == childs.parents  # Not copied!
+
+
+        # selection.append(…) can select elements when the originating selection is nested
+        # "<parent id='one'><child></child></parent><parent id='two'><child></child></parent>", () => {
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # selection = selectAll([one, two]).selectAll("child").append("span")
+        # three = one.querySelector("span")
+        # four = two.querySelector("span")
+        # assertSelection(selection, {groups: [[three], [four]], parents: [one, two]});
+
+        # selection.append(…) skips missing originating elements
+        d = html(h1())
+        tag = document.querySelector("h1")
+        selection = selectAll([None, tag]).append("span")
+        span = tag.querySelector("span")
+        # assertSelection(selection, {groups: [[, span]]});
+
+    @silence
+    def test_attr(self):
+
+        # selection.attr(name) returns the value of the attribute with the specified name on the first selected element
+        # <h1 class='c1 c2'>hello</h1><h1 class='c3'></h1>", () => {
+        assert select(document).select("h1").attr("class") == "c1 c2"
+        assert selectAll([None, document]).select("h1").attr("class") == "c1 c2"
+
+        # selection.attr(name) coerces the specified name to a string
+        # <h1 class='c1 c2'>hello</h1><h1 class='c3'></h1>", () => {
+        # assert select(document).select("h1").attr({toString() { return "class"; }}) == "c1 c2"
+
+        # selection.attr(name) observes the namespace prefix, if any", () => {
+        # selection = select({
+        #     getAttribute(name) {
+        #     return name === "foo" ? "bar" : None
+        #     },
+        #     getAttributeNS(url, name) {
+        #     return url === "http://www.w3.org/2000/svg" and name === "foo" ? "svg:bar" : None
+        #     }
+        # assert selection.attr("foo") == "bar"
+        # assert selection.attr("svg:foo") == "svg:bar"
+
+        # selection.attr(name) observes a custom namespace prefix, if any", () => {
+        # selection = select({
+        #     getAttributeNS(url, name) {
+        #     return url === "https://d3js.org/2016/namespace" && name === "pie" ? "tasty" : None;
+        #     }
+        # });
+        # try {
+        #     namespaces.d3js = "https://d3js.org/2016/namespace"
+        #     assert selection.attr("d3js:pie") == "tasty"
+        # } finally {
+        #     del namespaces.d3js
+        # }
+
+        # selection.attr(name, value) observes the namespace prefix, if any", () => {
+        # let result;
+        # selection = select({
+        #     setAttribute(name, value) {
+        #     result = name === "foo" ? value : None;
+        #     },
+        #     setAttributeNS(url, name, value) {
+        #     result = url === "http://www.w3.org/2000/svg" && name === "foo" ? value : None;
+        #     }
+        # });
+        # assert (result = None, selection.attr("foo", "bar"), result), "bar");
+        # assert (result = None, selection.attr("svg:foo", "svg:bar"), result), "svg:bar");
+        # assert (result = None, selection.attr("foo", function() { return "bar"; }), result), "bar");
+        # assert (result = None, selection.attr("svg:foo", function() { return "svg:bar"; }), result), "svg:bar");
+
+        # selection.attr(name, None) observes the namespace prefix, if any", () => {
+        # let result;
+        # selection = select({
+        #     removeAttribute(name) {
+        #     result = name === "foo" ? "foo" : None;
+        #     },
+        #     removeAttributeNS(url, name) {
+        #     result = url === "http://www.w3.org/2000/svg" && name === "foo" ? "svg:foo" : None;
+        #     }
+        # });
+        # assert (result = None, selection.attr("foo", None), result), "foo")
+        # assert (result = None, selection.attr("svg:foo", None), result), "svg:foo")
+        # assert (result = None, selection.attr("foo", function() { return None; }), result), "foo")
+        # assert (result = None, selection.attr("svg:foo", function() { return None; }), result), "svg:foo")
+
+        # selection.attr(name, value) sets the value of the attribute with the specified name on the selected elements
+        # <h1 id='one' class='c1 c2'>hello</h1><h1 id='two' class='c3'></h1>", () => {
+        one = document.querySelector("#one")
+        two = document.querySelector("#two")
+        s = selectAll([one, two])
+        assert s.attr("foo", "bar") == s
+        assert one.getAttribute("foo") == "bar"
+        assert two.getAttribute("foo") == "bar"
+
+        # selection.attr(name, None) removes the attribute with the specified name on the selected elements
+        # "<h1 id='one' foo='bar' class='c1 c2'>hello</h1><h1 id='two' foo='bar' class='c3'></h1>", () => {
+        one = document.querySelector("#one")
+        two = document.querySelector("#two")
+        s = selectAll([one, two])
+        assert s.attr("foo", None) == s
+        assert one.hasAttribute("foo") == False
+        assert two.hasAttribute("foo") == False
+
+        # selection.attr(name, function) sets the value of the attribute with the specified name on the selected elements
+        # <h1 id='one' class='c1 c2'>hello</h1><h1 id='two' class='c3'></h1>", () => {
+        one = document.querySelector("#one")
+        two = document.querySelector("#two")
+        selection = selectAll([one, two])
+        assert selection.attr("foo", lambda d, i: "bar-" + i if i else None) == selection
+        assert one.hasAttribute("foo") == False
+        assert two.getAttribute("foo") == "bar-1"
+
+        # selection.attr(name, function) passes the value function data, index and group
+        # <parent id='one'><child id='three'></child><child id='four'></child></parent><parent id='two'><child id='five'></child></parent>", () => {
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # three = document.querySelector("#three")
+        # four = document.querySelector("#four")
+        # five = document.querySelector("#five")
+        # results = []
+
+        # selectAll([one, two])
+        #     .datum(function(d, i) { return "parent-" + i; })
+        #     .selectAll("child")
+        #     .data(function(d, i) { return [0, 1].map(function(j) { return "child-" + i + "-" + j; }); })
+        #     .attr("foo", function(d, i, nodes) { results.push([this, d, i, nodes]); });
+
+        # assert.deepStrictEqual(results, [
+        #     [three, "child-0-0", 0, [three, four]],
+        #     [four, "child-0-1", 1, [three, four]],
+        #     [five, "child-1-0", 0, [five,, ]]
+
+    @silence
+    def test_size(self):
+
+        # selection.size() returns the number of selected elements
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        assert selectAll([]).size() == 0
+        assert selectAll([one]).size() == 1
+        assert selectAll([one, two]).size() == 2
+
+        # selection.size() skips missing elements
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        assert selectAll([None, one, None, two]).size() == 2
+
+
+    def test_empty(self):
+        #  selection.empty() return false if the selection is not empty
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        assert select(d).empty() == False
+
+        # selection.empty() return true if the selection is empty
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        assert select(None).empty() == True
+        assert selectAll([]).empty() == True
+        assert selectAll([None, None]).empty() == True
+
+
+    def call(self):
+        # selection.call(function) calls the specified function, passing the selection", () => {
+        # result = None
+        # s = select(document)
+        # assert s.call( lambda s: result = s) == s
+        # assert result == s
+
+        # selection.call(function, arguments…) calls the specified function, passing the additional arguments", () => {
+        # result = []
+        # foo = {}
+        # bar = {}
+        # s = select(document)
+        # assert s.call((s, a, b) => { result.push(s, a, b); }, foo, bar) == s
+        # assert result == [s, foo, bar]
         pass
 
 
+    def test_call(self):
+        # selection.each(function) calls the specified function for each selected element in order
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        # result = []
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # selection = selectAll([one, two]).datum(function(d, i) { return "node-" + i; })
+        # assert selection.each(function(d, i, nodes) { result.push(this, d, i, nodes); }) == selection
+        # assert result == [one, "node-0", 0, [one, two], two, "node-1", 1, [one, two]]
+
+        # selection.each(function) skips missing elements
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        # result = []
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # selection = selectAll([, one,, two]).datum(function(d, i) { return "node-" + i; })
+        # assert selection.each(function(d, i, nodes) { result.push(this, d, i, nodes); }) == selection)
+        # assert result == [one, "node-1", 1, [, one,, two], two, "node-3", 3, [, one,, two]])
+        pass
+
+    def test_node(self):
+
+        # selection.node() returns the first element in a selection
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        assert selectAll([one, two]).node() == one
+
+        # selection.node() skips missing elements
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        assert selectAll([None, one, None, two]).node() == one
+
+        # selection.node() skips empty groups
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        # one = d.querySelector("#one")
+        # two = d.querySelector("#two")
+        # assert selectAll([one, two]).selectAll(function(d, i) { return i ? [this] : [] }).node() == two
+
+        # selection.node() returns None for an empty selection", () => {
+        assert select(None).node() == None
+        assert selectAll([]).node() == None
+        assert selectAll([None, None, None]).node() == None
 
 
+    def test_order(self):
+        # selection.order() moves selected elements so that they are before their next sibling
+        # d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        # one = d.querySelector("#one")
+        # two = d.querySelector("#two")
+        # selection = selectAll([two, one])
+        # assert selection.order() == selection  # infinite loop?
+        # assert one.nextSibling == None
+        # assert two.nextSibling == one
+
+        # selection.order() only orders within each group
+        # d = html(body(domonic.domonic.load("<h1><span id='one'></span></h1><h1><span id='two'></span></h1>")))
+        # one = d.querySelector("#one")
+        # two = d.querySelector("#two")
+        # selection = select(d).selectAll("h1").selectAll("span")
+        # assert selection.order() == selection
+        # assert one.nextSibling == None
+        # assert two.nextSibling == None
+        pass
+
+    @silence
+    def test_iterator(self):
+
+        # selection are iterable over the selected nodes
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        print( *selectAll([one, two]) )
+        assert [*selectAll([one, two])] == [one, two]
+
+        # selection iteration merges nodes from all groups into a single array
+        # <h1 id='one'></h1><h1 id='two'></h1>", () => {
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # assert [*selectAll([one, two]).selectAll(function() { return [this]; })] == [one, two]
+
+        # selection iteration skips missing elements
+        # <h1 id='one'></h1><h1 id='two'></h1>", () => {
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # assert [*selectAll([, one,, two])] == [one, two]
+
+    @silence
+    def test_nodes(self):
+        # selection.nodes() returns an array containing all selected nodes
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        print(d)
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        print( d3.selectAll([one, two]).nodes() )
+        assert d3.selectAll([one, two]).nodes() == [one, two]
+
+        # selection.nodes() merges nodes from all groups into a single array
+        # d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        # one = document.querySelector("#one")
+        # two = document.querySelector("#two")
+        # assert d3.selectAll([one, two]).selectAll(function() { return [this]; }).nodes() == [one, two]
+
+        # selection.nodes() skips missing elements
+        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        assert d3.selectAll([None, one, None, two]).nodes() == [one, two]
 
 
 if __name__ == '__main__':

@@ -79,6 +79,18 @@ def parse_args():
     # parser.add_argument('-s', '--server', help="runs python -m http.server", type=str)
     # parser.add_argument('-u', '--url', help="url to launch the server", type=str)
 
+    # parser.add_argument('-j', '--csv2json', help="converts a csv file to a json file", type=str)
+    # parser.add_argument('-c', '--json2csv', help="converts a json file to a csv file", type=str)
+    # parser.add_argument('-m', '--merge', help="merges two csv files", type=str)
+    # parser.add_argument('-d', '--diff', help="compares two csv files", type=str)
+    # parser.add_argument('-t', '--table', help="creates a table from a csv file", type=str)
+    # parser.add_argument('-r', '--replace', help="replaces a value in a csv file", type=str)
+
+    # parser.add_argument('-c', '--json2ini', help="converts a json file to an ini file", type=str)
+    # parser.add_argument('-i', '--ini2json', help="converts an ini file to a json file", type=str)
+    # parser.add_argument('-m', '--merge', help="merges two ini files", type=str)
+
+
     # -- ideas
     # -- change all file extensions. from, to
     # -- generate assets/app/license/readme/sitemap.

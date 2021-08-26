@@ -92,6 +92,28 @@ class Node(EventTarget):
         self.parentNode = None
         self.prefix = None  # 🗑️
         self._update_parents()
+
+        # attempt to set init namespaceURI based on the tag name
+        try:
+            n = self.rootNode
+            print(n)
+            if n.tagName == 'html':
+                self.namespaceURI = 'http://www.w3.org/1999/xhtml'
+            elif n.tagName == 'svg':
+                self.namespaceURI = 'http://www.w3.org/2000/svg'
+            elif n.tagName == 'xhtml':
+                self.namespaceURI = 'http://www.w3.org/1999/xhtml'
+            elif n.tagName == 'xml':
+                self.namespaceURI = 'http://www.w3.org/XML/1998/namespace'
+            elif n.tagName == 'xlink':
+                self.namespaceURI = 'http://www.w3.org/1999/xlink'
+            elif n.tagName == 'math':
+                self.namespaceURI = 'http://www.w3.org/1998/Math/MathML'
+
+        except Exception as e:
+            # print('nope!', e)
+            pass
+
         super().__init__(*args, **kwargs)
 
     def __setattr__(self, name, value):
@@ -1255,7 +1277,7 @@ class Element(Node):
 
     def setAttributeNS(self, namespaceURI, localName, value):
         """ Sets an attribute in the given namespace """
-        raise NotImplementedError
+        self.setAttribute(localName, value)
 
     def getAttributeNS(self, namespaceURI, localName):
         """ Returns the value of the specified attribute """
@@ -1343,9 +1365,17 @@ class Element(Node):
         return ''.join([each.__str__() for each in self.args])
 
     # Inserts an element adjacent to the current element
-    def insertAdjacentElement(self, position: str, element):
+    def insertAdjacentElement(self, position: str, element):  # TODO - test. these look wrong.
         """ Inserts an element adjacent to the current element """
-        raise NotImplementedError
+        position = position.upper()
+        if position == 'BEFOREBEGIN':
+            self.insertBefore(element, self.firstElementChild())
+        elif position == 'AFTERBEGIN':
+            self.insertBefore(element, self.firstElementChild())
+        elif position == 'AFTEREND':
+            self.insertAfter(element, self.firstElementChild())
+        elif position == 'BEFOREEND':
+            self.insertBefore(element, self.lastElementChild())        
 
     def insertAdjacentHTML(self, position: str, html: str):
         """ Inserts raw HTML adjacent to the current element """
@@ -1605,20 +1635,30 @@ class DOMImplementation(object):
         pass
 
     def createDocument(self, namespaceURI, qualifiedName, doctype):
-        # return Document()
-        # from domonic.html import html
-        # return html()
-        raise NotImplementedError
+        if namespaceURI is None:
+            namespaceURI = ''
+        if qualifiedName is None:
+            qualifiedName = ''
+        if doctype is None:
+            doctype = ''
+        d = Document()
+        d.createElementNS(namespaceURI, qualifiedName)
+        d.doctype = doctype
+        return d
 
-    def createDocumentType(self):
-        raise NotImplementedError
+    def createDocumentType(self, qualifiedName, publicId, systemId):
+        # d = DocumentType()
+        # d.name = qualifiedName
+        # d.publicId = publicId
+        # d.systemId = systemId
+        # return d
+        pass
 
     def createHTMLDocument(self, title=None):
         # return Document()
         raise NotImplementedError
 
-    def hasFeatures(self):
-        # return Document()
+    def hasFeatures(self, featureList):
         raise NotImplementedError
 
 
@@ -1636,6 +1676,7 @@ class Document(Element):
         self.body = ""  # ??
         super().__init__(*args, **kwargs)
         try:
+            # print('sup1')
             global document
             document = self
         except Exception as e:
@@ -1649,8 +1690,10 @@ class Document(Element):
         instance.baseURI = domonic.javascript.URL().href
 
         try:
+            # print('sup2')
             global document
             document = instance
+            # from domonic.dom import document
         except Exception as e:
             print('failed to set document', e)
 
@@ -1691,6 +1734,7 @@ class Document(Element):
     @property
     def body(self):
         """ returns the document's body (the <body> element) """
+        # print('Hi there!!')
         return self.querySelector('body')
 
     @body.setter
