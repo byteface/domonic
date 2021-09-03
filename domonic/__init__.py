@@ -961,3 +961,14 @@ class domonic:
         #     print('<<',len(page))
 
         return page
+
+    @staticmethod
+    def parseString(string):  #, parser=None):
+        """Parse a file into a DOM from a string."""
+        # if parser is None:
+        from domonic.parsers import expatbuilder
+        return expatbuilder.parseString(string)
+        # else:
+            # from xml.dom import pulldom
+            # return _do_pulldom_parse(pulldom.parseString, (string,),
+                                    # {'parser': parser})

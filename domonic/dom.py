@@ -88,7 +88,7 @@ class Node(EventTarget):
         self.namespaceURI = "http://www.w3.org/1999/xhtml"
         # self.nodePrincipal = None
         self.outerText = None
-        # self.ownerDocument = None
+        # self.ownerDocument# = None
         self.parentNode = None
         self.prefix = None  # 🗑️
         self._update_parents()
@@ -117,6 +117,7 @@ class Node(EventTarget):
         super().__init__(*args, **kwargs)
 
     def __setattr__(self, name, value):
+        # print(name, value)
         try:
             if name == "args":
                 super(Node, self).__setattr__(name, value)
@@ -133,6 +134,7 @@ class Node(EventTarget):
         so will have to call manually whenever self.args are ammended.
         '''
         try:
+            print(self.args)
             for el in self.args:
                 if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
                     el.parentNode = self
@@ -161,6 +163,9 @@ class Node(EventTarget):
         Returns:
             [Node]: [the topmost Node in the tree]
         """
+        if isinstance(self, Document):
+            return self
+
         node = self
         nxt = self.parentNode
         while nxt is not None:
@@ -202,7 +207,7 @@ class Node(EventTarget):
     @property
     def childNodes(self):
         """ Returns a collection of an element's child nodes (including text and comment nodes) """
-        return self.args
+        return list(self.args)
 
     @property
     def children(self):
@@ -534,6 +539,28 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
         and caret's character offset within that node.
         """
         raise NotImplementedError
+
+
+class DocumentType(Node):
+
+    def __init__(self, name, publicId, systemId):
+        self.name = name  # A DOMString, eg "html" for <!DOCTYPE HTML>.
+        self.publicId = publicId  # A DOMString, eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
+        self.systemId = systemId  # A DOMString, eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
+
+    def internalSubset(self):
+        ''' A DOMString of the internal subset, or None. Eg "<!ELEMENT foo (bar)>".'''
+        if self.systemId:
+            return self.systemId
+        else:
+            return None
+    
+    def notations(self):
+        """ A NamedNodeMap with notations declared in the DTD. """
+        raise NotImplementedError
+
+    def __str__(self):
+        return f"<!DOCTYPE {self.name} {self.publicId} {self.systemId}>"
 
 
 """
@@ -913,7 +940,7 @@ class Element(Node):
             self.className = self.className
             self.classList = self.classList
 
-        self.tagName
+        # self.tagName
         self.style = None  # Style(self)  # = #'test'#Style()
         self.shadowRoot = None
         self.dir = None
@@ -1139,7 +1166,7 @@ class Element(Node):
         # TODO - does this need a setter?
         try:
             # return self.kwargs
-            print("boooooooots::::", [Attr(key.lstrip('_'), value) for key, value in self.kwargs.items()])
+            # print("boooooooots::::", [Attr(key.lstrip('_'), value) for key, value in self.kwargs.items()])
             return [Attr(key.lstrip('_'), value) for key, value in self.kwargs.items()]
         except Exception as e:
             print('Error - no tag!', e)
@@ -1472,6 +1499,11 @@ class Element(Node):
         """ Returns the root element (document object) for an element """
         return self.rootNode
 
+    @ownerDocument.setter
+    def ownerDocument(self, newOwner ): #: Element):
+        # self.rootNode = newOwner # NOTE - you can't set rootNode it's property that calcs it
+        pass
+
     @property
     def parentElement(self):
         """ Returns the parent element node of an element """
@@ -1641,7 +1673,9 @@ class DOMImplementation(object):
             qualifiedName = ''
         if doctype is None:
             doctype = ''
-        d = Document()
+        # d = Document()
+        from domonic.html import html
+        d = html()
         d.createElementNS(namespaceURI, qualifiedName)
         d.doctype = doctype
         return d
@@ -1673,6 +1707,7 @@ class Document(Element):
         # self.documentElement = self
         # self.raw
         # self.stylesheets = StyleSheetList()
+        self.doctype = None
         self.body = ""  # ??
         super().__init__(*args, **kwargs)
         try:
@@ -1701,7 +1736,7 @@ class Document(Element):
 
     # TODO - still not great as it also returns 'links' when searching for 'li'
     # @property
-    def _get_tags(self, tag):
+    def _get_tags(self, tag): # TODO - still old
         ''' returns the tags you want '''
         reg = f"(<{tag}.*?>.+?</{tag}>)"
 
@@ -1722,7 +1757,7 @@ class Document(Element):
         '''Adopts a node from another document'''
         # return
 
-    def anchors(self):
+    def anchors(self): # TODO - still old
         ''' Returns a collection of all <a> elements in the document that have a name attribute'''
         tags = self._get_tags('a')
         return [x for x in tags if x.hasAttribute('name')]
@@ -1828,6 +1863,13 @@ class Document(Element):
     def doctype(self):
         ''' Returns the Document Type Declaration associated with the document'''
         return "<!DOCTYPE html>"
+        # return self.doctype = value
+
+    @doctype.setter
+    def doctype(self, value):
+        ''' Sets the Document Type Declaration associated with the document'''
+        self._doctype = value
+        return
 
     # def documentElement(self):
         # ''' Returns the Document Element of the document (the <html> element)'''
