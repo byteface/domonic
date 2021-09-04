@@ -18,10 +18,9 @@ from domonic import *
 class TestCase(unittest.TestCase):
     """ Tests for the dom package """
 
-    def test_dom_Node(self):
+    def test_Node(self):
 
         n = Node()
-        # print(n)
         self.assertIsInstance(n, Node)
         # n.assertEqual(str(sometag), '<div id="someid">asdfasdf<div></div><div>yo</div></div>')
         # n.baseURI = 'eventual.technology'
@@ -79,30 +78,32 @@ class TestCase(unittest.TestCase):
 
         a1.nodeValue = "something else"
         self.assertEqual(True, a1.nodeValue == "something else")
-        print(a1.nodeValue)
+        # print(a1.nodeValue)
 
         a1.textContent = "something new"
         self.assertEqual(True, a1.textContent == "something new")
-        print(a1.textContent)
+        # print(a1.textContent)
 
         myobj = domonic.domonify('div(_class="mytest")')
-        print('---')
-        print(type(myobj))
+        # print('---')
+        # print(type(myobj))
         myobj.style.float = "left"
-        print('---')
-        print(myobj)
+        # print('---')
+        # print(myobj)
         self.assertEqual(True, str(myobj) == '<div class="mytest" style="float:left;"></div>')
 
-        print("NOW>>>>")
+        # print("NOW>>>>")
         mylist = li() / 10
-        print(mylist)
+        assert str(mylist) == '<li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>'
+        
         myobj = domonic.load(mylist)
         print(myobj)
-
+        
         myorderedlist = ol()
         myorderedlist += str(li() / 10)
-        print(myorderedlist)
+        assert str(myorderedlist) == '<ol><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>'
 
+        # TODO - tests
         # compareDocumentPosition()
         # getRootNode()
         # isDefaultNamespace()
@@ -113,7 +114,7 @@ class TestCase(unittest.TestCase):
         # getUserData() 🗑️
         # setUserData() 🗑️
 
-    def test_dom_node(self):
+    def test_node(self):
         sometag = div("asdfasdf", div(), div("yo"), _id="test", _thingy="test22")
         somenewdiv = div('im new')
         sometag.appendChild(somenewdiv)
@@ -121,8 +122,8 @@ class TestCase(unittest.TestCase):
         assert str(somenewdiv.parentNode) == '<div id="test" thingy="test22">asdfasdf<div></div><div>yo</div><div>im new</div></div>'
         assert isinstance(somenewdiv.parentNode, div)
         assert somenewdiv.parentNode.id == "test"
-        print(somenewdiv.parentElement)
-        print(somenewdiv.previousSibling)
+        # print(somenewdiv.parentElement)
+        # print(somenewdiv.previousSibling)
         assert str(somenewdiv.previousSibling.nextSibling) == "<div>im new</div>"
 
         mylist = ul(li(1), li(2), li(3))
@@ -132,15 +133,22 @@ class TestCase(unittest.TestCase):
         print(*mylist)
 
         a1, b1, c1 = ul(li(1), li(2), li(3))
-        print(a1)
+        # print(a1)
+        assert str(a1) == '<li>1</li>'
 
         a1, b1, c1, d1, e1 = button() * 5
-        print(a1, b1, c1, d1, e1)
+        # print(a1, b1, c1, d1, e1)
+        assert str(a1) == '<button></button>'
+        assert str(b1) == '<button></button>'
+        assert str(c1) == '<button></button>'
+        assert str(d1) == '<button></button>'
+        assert str(e1) == '<button></button>'
 
         # print(mylist[1] != mylist[1])
         a1 = img()
         a1 >> {'_src': "http://www.someurl.com"}
-        print(a1)
+        # print(a1)
+        assert str(a1) == '<img src="http://www.someurl.com" />'
 
         a1 = button()
         a1 += "hi"
@@ -150,15 +158,15 @@ class TestCase(unittest.TestCase):
         assert str(a1) == "<button>hihowareyou</button>"
         a1 -= "hi"
         assert str(a1) == "<button>howareyou</button>"
+
         # print(div(_test="1", **{"_data-test": ""}))
 
-        print(sometag.id)
+        assert sometag.id == 'test'
         # print(sometag.style.color)  # TODO - get on style
-
-        print(sometag._thingy)
-        print(sometag.thingy)
+        assert sometag._thingy == 'test22'
+        assert sometag.thingy == 'test22'
+        
         # print(10/sometag)
-
         # print('>>>>', sometag.args[0])
         # print('>>>>',sometag)
         # print('>>>>', sometag.lastChild())
@@ -172,15 +180,14 @@ class TestCase(unittest.TestCase):
         # for r in gc.get_referents(sometag):
         #     pprint.pprint(r)
 
-    def test_dom_node_again(self):
+    def test_body(self):
         somebody = body("test", _class="why")  # .html("wn")
-        print(somebody)
-
+        assert str(somebody) == '<body class="why">test</body>'
+        # replacing content
         somebody = body("test", _class="why").html("nope")
-        print(somebody)
+        assert str(somebody) == '<body class="why">nope</body>'
 
     def test_dom(self):
-
         # test div html and innerhtml update content
         sometag = div("asdfasdf", div(), div("yo"), _id="someid")
         self.assertEqual(sometag.tagName, 'div')
@@ -200,42 +207,52 @@ class TestCase(unittest.TestCase):
         # print('THIS:',bodytag)
 
         # sometag.innerText()
-        print(sometag.getAttribute('_id'))
+        # print(sometag.getAttribute('_id'))
         self.assertEqual(sometag.getAttribute('_id'), 'someid')
-        print(sometag.getAttribute('id'))
-        self.assertEqual(sometag.getAttribute('_id'), 'someid')
+        # print(sometag.getAttribute('id'))
+        # self.assertEqual(sometag.getAttribute('_id'), 'someid')
 
         mydiv = div("I like cake", div(_class='myclass').html(div("1"), div("2"), div("3")))
-        print(mydiv)
+        # print(mydiv)
+        assert str(mydiv) == '<div>I like cake<div class="myclass"><div>1</div><div>2</div><div>3</div></div></div>'
 
-        # print(sometag.innerText())
+        print(sometag.innerText())
+        # return
         # print(sometag.nodeName)
         # assert(sometag.nodeName, 'DIV') # TODO - i checked one site in chrome, was upper case. not sure if a standard?
 
         print(sometag.setAttribute('id', 'newid'))
-        print(sometag)
+        assert sometag.getAttribute('id') == 'newid'
+        assert str(sometag) == '<div id="newid"></div>'
 
         print(sometag.lastChild)
         print(sometag.hasChildNodes)
         # print('>>',sometag.textContent()) # TODO - will have a think. either strip or render tagless somehow
 
         sometag.removeAttribute('id')
-        print(sometag)
+        assert str(sometag) == '<div></div>'
 
         sometag.appendChild(footer('test'))
-        print(sometag)
+        assert str(sometag) == '<div><footer>test</footer></div>'
 
-        print(sometag.children)
-        print(sometag.firstChild)
+        assert sometag.children[0].tagName == 'footer'
+        assert str(sometag.children[0]) == '<footer>test</footer>'
+        
+        # print(sometag.firstChild)
+        assert str(sometag.firstChild) == '<footer>test</footer>'
 
         htmltag = html()
-        print(htmltag)
+        assert htmltag.tagName == 'html'
+        assert str(htmltag) == '<html></html>'
         htmltag.write('sup!')
+        assert str(htmltag) == '<html>sup!</html>'
         htmltag.className = "my_cool_css"
-        print(htmltag)
-        print('-END-')
+        # print(htmltag)
+        assert str(htmltag) == '<html class="my_cool_css">sup!</html>'
+        # print(htmltag)
+        # print('-END-')
 
-    def test_dom_create(self):
+    def test_create(self):
         print(html().documentElement)
         print(html().URL)
         somebody = document.createElement('sometag')
@@ -247,7 +264,7 @@ class TestCase(unittest.TestCase):
         # somebody = document.createElement('sometag')
         # print(str(somebody()))
 
-    def test_dom_events(self):
+    def test_events(self):
         print(html().documentElement)
         print(html().URL)
         site = html()
@@ -273,7 +290,7 @@ class TestCase(unittest.TestCase):
         #   document.getElementById("demo").innerHTML = "Hello World";
         # });
 
-    def test_dom_contains(self):
+    def test_contains(self):
         site = html()
         somebody = document.createElement('div')
         site.appendChild(somebody)
@@ -289,7 +306,7 @@ class TestCase(unittest.TestCase):
         site.appendChild(another_div)
         print(site.contains(third_div))
 
-    def test_dom_getElementById(self):
+    def test_getElementById(self):
         dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _id="test")))))))))
         result = dom1.getElementById('test')
         print('--')
@@ -297,7 +314,7 @@ class TestCase(unittest.TestCase):
         print('--')
         pass
 
-    def test_dom_remove(self):
+    def test_remove(self):
         dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _id="test")))))))))
         result = dom1.getElementById('test')
         print("owner:", result.ownerDocument)
@@ -308,7 +325,7 @@ class TestCase(unittest.TestCase):
         print('--')
         pass
 
-    # def test_dom_getElementByClassName(self):
+    # def test_getElementByClassName(self):
     #     dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
     #     result = dom1.getElementByClassName('thing')
     #     print('--')
@@ -316,14 +333,14 @@ class TestCase(unittest.TestCase):
     #     print('--')
     #     pass
 
-    def test_dom_dir(self):
+    def test_dir(self):
         dom1 = div(div(), _dir="rtl")
         print('--')
         print(dom1.dir)
         print('--')
         pass
 
-    def test_dom_normalize(self):
+    def test_normalize(self):
         dom1 = html()
         wrapper = dom1.createElement("div")
         wrapper.appendChild(dom1.createTextNode("Part 1 "))
@@ -339,13 +356,13 @@ class TestCase(unittest.TestCase):
         print(wrapper.childNodes[0].textContent)  # "Part 1 Part 2 "
         pass
 
-    # def test_dom_Node():
+    # def test_Node():
         # TODO - tests all below
         # contains - probably need more recursive testing
         # replaceChild
         # anchors
 
-    def test_dom_querySelector(self):
+    def test_querySelector(self):
         dom1 = html(div(div(div(div(div(div(div(div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
 
         result = dom1.querySelector('#thing')
@@ -367,7 +384,7 @@ class TestCase(unittest.TestCase):
 
         pass
 
-    def test_dom_getElementsBySelector(self):
+    def test_getElementsBySelector(self):
 
         page = html(
             head(
@@ -616,7 +633,7 @@ class TestCase(unittest.TestCase):
         print('>>>>>>>>>')  # works
 
 
-    def test_dom_decorators(self):
+    def test_decorators(self):
         from domonic.decorators import el
 
         @el(html)
@@ -779,11 +796,6 @@ class TestCase(unittest.TestCase):
         # (For illustration purposes only. There are better ways of implementing
         # object equality in JavaScript.)
         # JSON.stringify(Sanitizer.getDefaultConfiguration()) == JSON.stringify(new Sanitizer().getConfiguration());  // true
-
-
-
-
-
 
 
 if __name__ == '__main__':

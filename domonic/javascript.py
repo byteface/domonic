@@ -1661,32 +1661,26 @@ class Window(object):
     """ window """
 
     localStorage = Storage()
+    location = 'eventual.technology'
 
     def __init__(self, *args, **kwargs):
         # self.console = dom.console
         # self.document = Document
         # self.location = ''#dom.location
-        self.location = None
+        # self.location = 'eventual.technology'
         # globals()?
         # dir()?
         # locals()?
-
-    @property
-    def location(self):
-        # print("@@@@@@@@@@@@@@@@@@@@@@")
-        return self.__location
-
-    @location.setter
-    def location(self, x):
-        # print("====================>>>>>>>", x)
-        # dom.location = x
-        # dom.location = dom.location(x)#Location(x)
-        # from .dom import Location
-        # print('test::::-------------------------------------------------------',Location)
-        # print("xxxxxxxx>>>>>>", dom.location)
-        # self.__location = dom.location
-        # import requests.
         pass
+
+    # @property
+    # def location(self):
+        # print("@@@@@@@@@@@@@@@@@@@@@@")
+        # return self._location
+
+    # @location.setter
+    # def location(self, url):
+        # self._location = url
 
     @staticmethod
     def alert(msg):

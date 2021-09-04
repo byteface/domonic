@@ -266,6 +266,14 @@ class tag(object):
 
         raise AttributeError
 
+    # def __pyml__(self):
+    #     """ [returns a representation of the object as a pyml string] """
+    #     params = ""
+    #     for key, value in self.kwargs.items():
+    #         params += f"{key}={value}, "
+    #     TODO - will need to loop args and call __pyml__ on each one
+    #     return f"{self.name}({args}, {params})"
+
     # def __repr__(self):
     #     return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
 

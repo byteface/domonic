@@ -1,3 +1,14 @@
+"""
+    domonic.components
+    ====================================
+
+    A bit of a dumping ground for components ideas.
+
+    Mainly used by the examples.
+
+"""
+
+
 import base64
 import json
 
@@ -578,3 +589,42 @@ class Webpage(object):  # TODO - shouldn't this extend html?
                 body(div(self.content, _class="domonic-container"))
             )
         )
+
+
+
+# quick templates
+
+webpage_tmpl = lambda content: f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="utf-8">
+    <title>webpage</title>
+    </head>
+    <body>
+    {content}
+    </body>
+    </html>
+    """
+
+# carousel_tmpl = lambda content: f"""
+#     <div class="carousel slide" data-ride="carousel">
+#         <div class="carousel-inner">
+#             {content}
+#         </div>
+#         <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+#             <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+#             <span class="sr-only">Previous</span>
+#         </a>
+#         <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+#             <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+#             <span class="sr-only">Next</span>
+#         </a>
+#     </div>
+#     """
+
+# item_tmpl = lambda content: f"""
+#     <div class="item">
+#         {content}
+#     </div>
+#     """

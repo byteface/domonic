@@ -49,16 +49,15 @@ class TestCase(unittest.TestCase):
         # t1 = domonic.parseString('<html></html>')        
         # print(t1)
         t1 = domonic.parseString('''<html><head><link rel="stylesheet" href="https://unpkg.com/marx-css/css/marx.min.css" /><script src="https://code.jquery.com/jquery-3.5.1.min.js"></script><script>
-# 	function add(){
-# 		$('#results').html( Number($('#a').val()) + Number($('#b').val()) )};
-# </script></head><body><article><div><label>Add numbers:</label><input id="a" /><span>+</span><input id="b" /><button id="calculate_button" onclick="add();">Calculate</button><div>Result:<div id="results"></div></div></div></article></body></html>''')
-#         print('RES:', t1)
+	function add(){
+		$('#results').html( Number($('#a').val()) + Number($('#b').val()) )};
+</script></head><body><article><div><label>Add numbers:</label><input id="a" /><span>+</span><input id="b" /><button id="calculate_button" onclick="add();">Calculate</button><div>Result:<div id="results"></div></div></div></article></body></html>''')
+        print('RES:', t1)
         print('RES:', type(t1))
         print('RES:', str(t1))
-
-
         print( t1.getElementById('a') )
 
+        # print(t1)
         return
 #         return
 

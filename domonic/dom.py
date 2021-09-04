@@ -96,7 +96,7 @@ class Node(EventTarget):
         # attempt to set init namespaceURI based on the tag name
         try:
             n = self.rootNode
-            print(n)
+            # print(n)
             if n.tagName == 'html':
                 self.namespaceURI = 'http://www.w3.org/1999/xhtml'
             elif n.tagName == 'svg':
@@ -134,7 +134,7 @@ class Node(EventTarget):
         so will have to call manually whenever self.args are ammended.
         '''
         try:
-            print(self.args)
+            # print(self.args)
             for el in self.args:
                 if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
                     el.parentNode = self
@@ -319,7 +319,7 @@ class Node(EventTarget):
 
         return None
 
-    def cloneNode(self, deep=True):
+    def cloneNode(self, deep: bool=True):
         """ Returns a copy. """
         import copy
         if deep:
@@ -1158,29 +1158,12 @@ class Element(Node):
 
     @property
     def attributes(self):
-
         """ Returns a List of an element's attributes """
-        # print('here it is!!!!')
-        # return self.__attributes__
-        # return self.attributes
-        # TODO - does this need a setter?
         try:
-            # return self.kwargs
-            # print("boooooooots::::", [Attr(key.lstrip('_'), value) for key, value in self.kwargs.items()])
             return [Attr(key.lstrip('_'), value) for key, value in self.kwargs.items()]
         except Exception as e:
             print('Error - no tag!', e)
             return []
-
-    # why bother the user can just access the kwargs directly?
-    # @property
-    # def attributes_(self):
-    #     """ Returns a regular dict of attributes """
-    #     try:
-    #         return self.kwargs
-    #     except Exception as e:
-    #         print('Error - no tag!', e)
-    #         return []
 
     @property
     def innerHTML(self):
@@ -1338,24 +1321,15 @@ class Element(Node):
             return ''
 
     def getBoundingClientRect(self):
-        '''Returns the size of an element and its position relative to the viewport'''
+        """ Returns the size of an element and its position relative to the viewport """
         raise NotImplementedError
 
-    def getElementsByClassName(self, className):
-        '''Returns a collection of all child elements with the specified class name'''
+    def getElementsByClassName(self, className: str):
+        """ Returns a collection of all child elements with the specified class name """
         return self.querySelectorAll('.' + className)
 
     def getElementsByTagName(self, tag: str) -> List:
         """ Returns a collection of all child elements with the specified tag name """
-        # reg = f"(<{tag}.*?>.+?</{tag}>)"
-
-        # closed_tags = ["base", "link", "meta", "hr", "br", "wbr", "img", "embed", "param", "source", "track",
-        #                "area", "col", "input", "keygen", "command"]
-        # if tag in closed_tags:
-        #     reg = f"(<{tag}.*?/>)"
-
-        # pattern = re.compile(reg)
-        # tags = re.findall(pattern, str(self))
         return self.querySelectorAll(tag)
 
     def hasAttribute(self, attribute: str) -> str:
@@ -1378,12 +1352,12 @@ class Element(Node):
 
     @property
     def id(self):
-        ''' Sets or returns the value of the id attribute of an element'''
+        """ Sets or returns the value of the id attribute of an element """
         return self.getAttribute('id')
 
     @id.setter
     def id(self, newid: str):
-        ''' Sets or returns the value of the id attribute of an element'''
+        """ Sets or returns the value of the id attribute of an element """
         self.setAttribute('id', newid)
 
     # Sets or returns the text content of a node and its descendants
@@ -1555,10 +1529,8 @@ class Element(Node):
     def removeAttribute(self, attribute: str):
         """ Removes a specified attribute from an element """
         try:
-
             if attribute[0:1] != '_':
                 attribute = '_' + attribute
-
             del self.kwargs[attribute]
         except Exception as e:
             print('failed to remove!', e)
@@ -1613,7 +1585,6 @@ class Element(Node):
 
     @property
     def style(self):
-        # print('style GETTER!')
         """ returns the value of the style attribute of an element """
         if self.__style is None:
             self.style = Style()
@@ -1711,7 +1682,6 @@ class Document(Element):
         self.body = ""  # ??
         super().__init__(*args, **kwargs)
         try:
-            # print('sup1')
             global document
             document = self
         except Exception as e:
@@ -1723,15 +1693,11 @@ class Document(Element):
         instance.documentElement = instance
         instance.URL = domonic.javascript.URL().href
         instance.baseURI = domonic.javascript.URL().href
-
         try:
-            # print('sup2')
             global document
             document = instance
-            # from domonic.dom import document
         except Exception as e:
             print('failed to set document', e)
-
         return instance
 
     # TODO - still not great as it also returns 'links' when searching for 'li'
@@ -1769,7 +1735,6 @@ class Document(Element):
     @property
     def body(self):
         """ returns the document's body (the <body> element) """
-        # print('Hi there!!')
         return self.querySelector('body')
 
     @body.setter
@@ -2038,8 +2003,8 @@ class Document(Element):
 
 class Location():
 
-    def __init__(self, *args, **kwargs):
-        pass
+    def __init__(self, url: str = None, *args, **kwargs):
+        self.href = url
 
     def __str__(self):
         return self.href

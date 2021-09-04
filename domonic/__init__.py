@@ -962,12 +962,28 @@ class domonic:
 
         return page
 
+
+    parseString_prev_error = None
     @staticmethod
     def parseString(string):  #, parser=None):
         """Parse a file into a DOM from a string."""
         # if parser is None:
-        from domonic.parsers import expatbuilder
-        return expatbuilder.parseString(string)
+        # import xml.parsers.expat.ExpatError as ExpatError        # parser = xml.parsers.expat.ParserCreate()
+        try:
+            from domonic.parsers import expatbuilder
+            return expatbuilder.parseString(string)
+        except Exception as e:
+            print(e)
+            dodgycharIndex = int(Utils.digits(str(e).split(',')[1]))
+            # string[int(dodgycharIndex)-1] = Utils.escape(string[int(dodgycharIndex)-1])
+            dodgyChar = string[int(dodgycharIndex) - 1]
+            string = Utils.replace_between(string, dodgyChar, '', dodgycharIndex-2, dodgycharIndex+2)
+            if domonic.parseString_prev_error != dodgycharIndex:
+                domonic.parseString_prev_error = dodgycharIndex
+                return domonic.parseString(string)
+            else:
+                print('failed to parse invalid xml. clean and trying again', e)
+
         # else:
             # from xml.dom import pulldom
             # return _do_pulldom_parse(pulldom.parseString, (string,),

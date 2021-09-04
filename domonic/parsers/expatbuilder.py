@@ -248,7 +248,8 @@ class ExpatBuilder:
         doctype = self.document.implementation.createDocumentType(
             doctypeName, publicId, systemId)
         doctype.ownerDocument = self.document
-        _append_child(self.document, doctype)
+        # _append_child(self.document, doctype)
+        self.self.document.appendChild(node)
         self.document.doctype = doctype
         if self._filter and self._filter.acceptNode(doctype) == FILTER_REJECT:
             self.document.doctype = None
@@ -273,7 +274,8 @@ class ExpatBuilder:
 
     def pi_handler(self, target, data):
         node = self.document.createProcessingInstruction(target, data)
-        _append_child(self.curNode, node)
+        # _append_child(self.curNode, node)
+        self.curNode.appendChild(node)
         if self._filter and self._filter.acceptNode(node) == FILTER_REJECT:
             self.curNode.removeChild(node)
 
@@ -295,7 +297,8 @@ class ExpatBuilder:
             node = minidom.Text()
             node.data = data
             node.ownerDocument = self.document
-        _append_child(self.curNode, node)
+        # _append_child(self.curNode, node)
+        self.curNode.appendChild(node)
 
     def character_data_handler(self, data):
         childNodes = self.curNode.childNodes
@@ -306,7 +309,8 @@ class ExpatBuilder:
         node = minidom.Text()
         node.data = node.data + data
         node.ownerDocument = self.document
-        _append_child(self.curNode, node)
+        # _append_child(self.curNode, node)
+        self.curNode.appendChild(node)
 
     def entity_decl_handler(self, entityName, is_parameter_entity, value,
                             base, systemId, publicId, notationName):
@@ -334,7 +338,8 @@ class ExpatBuilder:
 
     def comment_handler(self, data):
         node = self.document.createComment(data)
-        _append_child(self.curNode, node)
+        # _append_child(self.curNode, node)
+        self.curNode.appendChild(node)
         if self._filter and self._filter.acceptNode(node) == FILTER_REJECT:
             self.curNode.removeChild(node)
 
@@ -357,7 +362,8 @@ class ExpatBuilder:
 
     def start_element_handler(self, name, attributes):
         node = self.document.createElement(name)
-        _append_child(self.curNode, node)
+        # _append_child(self.curNode, node)
+        self.curNode.appendChild(node)
         self.curNode = node
 
         if attributes:
