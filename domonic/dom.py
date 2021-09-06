@@ -1818,8 +1818,7 @@ class Document(Element):
     @body.setter
     def body(self, content): # TODO - untested
         """ Sets the document's body (the <body> element) """
-        # remove an existing body
-        self.querySelector('body').removeFromParent()
+        # TODO - remove an existing body ?
         from domonic.html import body
         self.appendChild(body(content))
 
