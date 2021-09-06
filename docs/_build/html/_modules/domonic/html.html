@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.html &#8212; domonic 0.4.8 documentation</title>
+    <title>domonic.html &#8212; domonic 0.5.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -299,6 +299,14 @@
 
         <span class="k">raise</span> <span class="ne">AttributeError</span></div>
 
+    <span class="c1"># def __pyml__(self):</span>
+    <span class="c1">#     &quot;&quot;&quot; [returns a representation of the object as a pyml string] &quot;&quot;&quot;</span>
+    <span class="c1">#     params = &quot;&quot;</span>
+    <span class="c1">#     for key, value in self.kwargs.items():</span>
+    <span class="c1">#         params += f&quot;{key}={value}, &quot;</span>
+    <span class="c1">#     TODO - will need to loop args and call __pyml__ on each one</span>
+    <span class="c1">#     return f&quot;{self.name}({args}, {params})&quot;</span>
+
     <span class="c1"># def __repr__(self):</span>
     <span class="c1">#     return f&quot;&lt;{self.name}{self.__attributes__}&gt;{self.content}&lt;/{self.name}&gt;&quot;</span>
 
@@ -545,19 +553,22 @@
 
 <div class="viewcode-block" id="create_element"><a class="viewcode-back" href="../../packages/html.html#domonic.html.create_element">[docs]</a><span class="k">def</span> <span class="nf">create_element</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;custom_tag&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    If you must, a method for creating custom tags</span>
+<span class="sd">    A method for creating custom tags</span>
 <span class="sd">    tag name needs to be set due to custom tags with hyphens can&#39;t be classnames.</span>
 <span class="sd">    i.e. hypenated tags &lt;some-custom-tag&gt;&lt;/some-custom-tag&gt;</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="c1"># TODO - check for existing elements first and return if available</span>
-
+    <span class="c1"># import sys</span>
+    <span class="c1"># current_module = sys.modules[__name__]</span>
+    <span class="c1"># checks if already exists</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">html_tags</span><span class="p">:</span>
+        <span class="n">cl</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]()</span>
+    
+    <span class="c1"># print(&#39;creating custom element&#39;)</span>
     <span class="n">custom_tag</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;custom_tag&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
-    <span class="c1"># t = tag(*args, **kwargs)  #  TODO - this is not an element.</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="n">custom_tag</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-    <span class="k">return</span> <span class="n">t</span></div>
-    <span class="c1"># new_tag = type(&#39;custom_tag&#39;, (tag, Element), {&#39;name&#39;: name, &#39;__init__&#39;: tag_init})</span>
-    <span class="c1"># return new_tag</span>
+    <span class="n">new_tag</span> <span class="o">=</span> <span class="n">custom_tag</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">new_tag</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">return</span> <span class="n">new_tag</span></div>
 </pre></div>
 
           </div>

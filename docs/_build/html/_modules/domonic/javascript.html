@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.4.8 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.5.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -59,6 +59,23 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
+
+
+<div class="viewcode-block" id="function"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.function">[docs]</a><span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="n">python_str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;[evals a string i.e.</span>
+
+<span class="sd">    sup = function(&#39;&#39;&#39;print(hi)&#39;&#39;&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    sup()</span>
+
+<span class="sd">    ]</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        python_str ([str]): [some valid python code as a string]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">anon</span><span class="p">():</span>
+        <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">python_str</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">anon</span></div>
 
 
 <span class="c1"># TODO - list all javascript keywords to python keywords</span>
@@ -1661,6 +1678,10 @@
         <span class="sd">&quot;&quot;&quot; Adds that key to the storage, or update that key&#39;s value if it already exists &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">keyName</span><span class="p">]</span> <span class="o">=</span> <span class="n">keyValue</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_file</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">getItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyName</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the value of the specified key name Storage &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">keyName</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyName</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value of the key if it exists, otherwise returns None &quot;&quot;&quot;</span>
@@ -1672,37 +1693,26 @@
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">[</span><span class="n">keyName</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_file</span><span class="p">()</span>
 
+    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Removes all items from the storage &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="p">{}</span>
+
 
 <div class="viewcode-block" id="Window"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window">[docs]</a><span class="k">class</span> <span class="nc">Window</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; window &quot;&quot;&quot;</span>
 
     <span class="n">localStorage</span> <span class="o">=</span> <span class="n">Storage</span><span class="p">()</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;eventual.technology&#39;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># self.console = dom.console</span>
         <span class="c1"># self.document = Document</span>
-        <span class="c1"># self.location = &#39;&#39;#dom.location</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># globals()?</span>
         <span class="c1"># dir()?</span>
         <span class="c1"># locals()?</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># print(&quot;@@@@@@@@@@@@@@@@@@@@@@&quot;)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__location</span>
-
-    <span class="nd">@location</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="c1"># print(&quot;====================&gt;&gt;&gt;&gt;&gt;&gt;&gt;&quot;, x)</span>
-        <span class="c1"># dom.location = x</span>
-        <span class="c1"># dom.location = dom.location(x)#Location(x)</span>
-        <span class="c1"># from .dom import Location</span>
-        <span class="c1"># print(&#39;test::::-------------------------------------------------------&#39;,Location)</span>
-        <span class="c1"># print(&quot;xxxxxxxx&gt;&gt;&gt;&gt;&gt;&gt;&quot;, dom.location)</span>
-        <span class="c1"># self.__location = dom.location</span>
-        <span class="c1"># import requests.</span>
         <span class="k">pass</span>
+
+    <span class="c1"># TODO - tell users to use other window class if methods are called.</span>
 
 <div class="viewcode-block" id="Window.alert"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.alert">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">alert</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
@@ -1829,12 +1839,6 @@
 
     <span class="c1"># def fetch_aysnc( urls: list, options={}, type=&quot;async&quot; ):</span>
         <span class="c1"># TODO - a version using async/await</span>
-
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># @getter</span>
-    <span class="c1"># def navigator():</span>
-        <span class="sd">&quot;&quot;&quot; Returns the Navigator object for the window (See Navigator object) &quot;&quot;&quot;</span>
-        <span class="c1"># return</span>
 
 <div class="viewcode-block" id="Window.btoa"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Window.btoa">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">btoa</span><span class="p">(</span><span class="n">dataString</span><span class="p">):</span>
@@ -2320,42 +2324,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">callbackFn</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">thisArg</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="Navigator"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Navigator">[docs]</a><span class="k">class</span> <span class="nc">Navigator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; navigator &quot;&quot;&quot;</span>
-
-    <span class="c1"># Determines whether cookies are enabled in the browser</span>
-    <span class="n">cookieEnabled</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="c1"># Determines whether the browser is online</span>
-    <span class="n">onLine</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="c1"># Returns the name of the browser Navigator</span>
-    <span class="n">appName</span> <span class="o">=</span> <span class="s2">&quot;domonic&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># self.args = args</span>
-        <span class="c1"># self.kwargs = kwargs</span>
-        <span class="k">pass</span>
-
-    <span class="c1"># @property</span>
-    <span class="c1"># def appVersion():</span>
-        <span class="sd">&quot;&quot;&quot; Returns the version information of the browser &quot;&quot;&quot;</span>
-        <span class="c1"># from domonic import __version__</span>
-        <span class="c1"># return __version__</span>
-
-    <span class="c1"># @property</span>
-    <span class="c1"># def language():</span>
-        <span class="sd">&quot;&quot;&quot; Returns the language of the browser Navigator &quot;&quot;&quot;</span></div>
-        <span class="c1"># import locale</span>
-        <span class="c1"># return locale.getdefaultlocale()</span>
-
-    <span class="c1"># platform  Returns for which platform the browser is compiled  Navigator</span>
-    <span class="c1"># product   Returns the engine name of the browser  Navigator</span>
-    <span class="c1"># userAgent Returns the user-agent header sent by the browser to the server Navigator</span>
-    <span class="c1"># geolocation   Returns a Geolocation object that can be used to locate the user&#39;s position Navigator</span>
-    <span class="c1"># appCodeName   Returns the code name of the browser    Navigator</span>
 
 
 <div class="viewcode-block" id="Number"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Number">[docs]</a><span class="k">class</span> <span class="nc">Number</span><span class="p">(</span><span class="nb">float</span><span class="p">):</span>
@@ -3449,17 +3417,20 @@
 
 <div class="viewcode-block" id="Reflect.apply"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.apply">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">thisArgument</span><span class="p">,</span> <span class="n">argumentsList</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Calls a target function with arguments as specified by the argumentsList parameter. See also Function.prototype.apply(). &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Calls a target function with arguments as specified by the argumentsList parameter.</span>
+<span class="sd">        See also Function.prototype.apply(). &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Reflect.construct"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.construct">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">construct</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">argumentsList</span><span class="p">,</span> <span class="n">newTarget</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; The new operator as a function. Equivalent to calling new target(...argumentsList). Also provides the option to specify a different prototype. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; The new operator as a function. Equivalent to calling new target(...argumentsList).</span>
+<span class="sd">        Also provides the option to specify a different prototype. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Reflect.defineProperty"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.defineProperty">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">defineProperty</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">propertyKey</span><span class="p">,</span> <span class="n">attributes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Similar to Object.defineProperty(). Returns a Boolean that is true if the property was successfully defined. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Similar to Object.defineProperty(). </span>
+<span class="sd">        Returns a Boolean that is true if the property was successfully defined. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Reflect.deleteProperty"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.deleteProperty">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -3469,7 +3440,8 @@
 
 <div class="viewcode-block" id="Reflect.get"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.get">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">propertyKey</span><span class="p">,</span> <span class="n">receiver</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the value of the property. Works like getting a property from an object (target[propertyKey]) as a function. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns the value of the property.</span>
+<span class="sd">        Works like getting a property from an object (target[propertyKey]) as a function. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Reflect.getOwnPropertyDescriptor"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.getOwnPropertyDescriptor">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -3477,19 +3449,13 @@
         <span class="sd">&quot;&quot;&quot; Similar to Object.getOwnPropertyDescriptor(). Returns a property descriptor of the given property if it exists on the object,  undefined otherwise. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Reflect.getPrototypeOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.getPrototypeOf">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">getPrototypeOf</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Same as Object.getPrototypeOf(). &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+    <span class="n">getPrototypeOf</span> <span class="o">=</span> <span class="n">Object</span><span class="o">.</span><span class="n">getPrototypeOf</span>
+    <span class="c1"># isExtensible = Object.isExtensible</span>
 
 <div class="viewcode-block" id="Reflect.has"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.has">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">propertyKey</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a Boolean indicating whether the target has the property. Either as own or inherited. Works like the in operator as a function. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Reflect.isExtensible"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.isExtensible">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">isExtensible</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Same as Object.isExtensible(). Returns a Boolean that is true if the target is extensible. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns a Boolean indicating whether the target has the property. </span>
+<span class="sd">        Either as own or inherited. Works like the in operator as a function. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Reflect.preventExtensions"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.preventExtensions">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -3545,7 +3511,8 @@
 
     <span class="c1"># A method that matches against a string, also used to determine if an object may be used as a regular expression.</span>
     <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; A method that matches the symbol against a string, also used to determine if an object may be used as a regular expression. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; A method that matches the symbol against a string, </span>
+<span class="sd">        also used to determine if an object may be used as a regular expression. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="c1"># A method that returns an iterator, that yields matches of the regular expression against a string.</span>
@@ -3724,20 +3691,7 @@
 
 
 
-<span class="sd"># BELOW is legacy data from a dump of ALL dom/js methods. was looking for useful things to port back when this was the only class.</span>
-<span class="sd"># -- leave here for now - ill delete stuff later. it reminds me what i haven&#39;t covered</span>
-
-<span class="sd"># clear()   Clears the console  Console, Storage</span>
 <span class="sd"># debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements</span>
-<span class="sd"># elapsedTime   Returns the number of seconds a transition has been running</span>
-<span class="sd"># error()   Outputs an error message to the console Console</span>
-<span class="sd"># getItem() Returns the value of the specified key name Storage</span>
-<span class="sd"># getNamedItem()    Returns a specified attribute node from a NamedNodeMap  Attribute</span>
-<span class="sd"># item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection</span>
-<span class="sd"># namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection</span>
-<span class="sd"># removeNamedItem() Removes a specified attribute node  Attribute</span>
-<span class="sd"># setNamedItem()    Sets the specified attribute node (by name) Attribute</span>
-<span class="sd"># specified Returns true if the attribute has been specified, otherwise it returns false    Attribute</span>
 
 <span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
