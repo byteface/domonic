@@ -1,0 +1,227 @@
+CDN.py:    TODO - integrity/cross origin/module?
+JSON.py:        # TODO - reverse. table to json
+JSON.py:            # TODO - streamwrite to json file.
+__init__.py:        # TODO - param to eval
+__init__.py:            # TODO - strip any potentially bad/dangerous code before eval.
+__init__.py:                    # raise  # Exception("Recursion limit exceeded") # TODO - cant raise as called by self
+__init__.py:            # TODO -  if " does not match opening parenthesis '{' (<string>, line 9)
+__init__.py:            # TODO -  keyword argument repeated (<string>, line 617)
+__init__.py:            # TODO - invalid syntax (<string>, line 615)
+__init__.py:            if lastchar == "\n":  # TODO - if file doesn't have newlines already
+__init__.py:        # remove abnormal spacing between tag attributes (TODO- maybe 2 spaces is valid somewhere?)
+__init__.py:            index = index + increase_index  # TODO does this need to go back to zero.? is any of this code still relevant?
+__init__.py:        # TODO - diff between loaded and inline
+__init__.py:        # TODO - would have to replace all tags in js (same as content ) (or do opposite way round)
+__init__.py:                    if '-' not in key:  # TODO - may still have to do other ones as below?
+__init__.py:            if( line[len(line) - 1] in ["'", '"', ")", "$QUOTE$", "}", "e"]):  # TODO 'e' is the last letter of True. crap check
+__init__.py:                    if key.istitle():  # very weak check for normal text TODO. normal text with equals gets through.
+__init__.py:                line = parse_attributes(line)  # < TODO -  normal content with equals in is getting caught here
+__init__.py:                # TODO - should really be doing these much sooner no?
+__init__.py:                # TODO - breaking class in css content when they have attribute names .i.e. hidden. SORTDE> shoudl be fixed now
+__init__.py:                if '(' not in line and ')' not in line and line[0] != '"':  # TODO - not if it already has an equals
+__init__.py:                            if '"' in line[pos - 5:pos]:  # TODO - or if just the word True
+__init__.py:                # TODO - custom solo attributes
+__init__.py:            # TODO - some attribute content could have open curlies. need to replace all normal text chars
+__init__.py:            # TODO - problem with this method. is it takes literally forever. 
+cmd.py:        # TODO - call terminal equiv command if not on windows
+cmd.py:            # TODO - after doing all this. think i may have decided to go for 2 base commands instead
+cmd.py:# date = type('date', (Cmdcommand,), {'name': 'date'})  #: show/set date - TODO seemed to hang. needs a param
+cmd.py:# time = type('time', (Cmdcommand,), {'name': 'time'})  #: display/edit the system time - TODO seemed to hang
+cmd.py:ver = type('ver', (Cmdcommand,), {'name': 'ver'})  #: display operating system version - TODO seemed to hang
+cmd.py:# ping = type('ping', (Cmdcommand,), {'name': 'ping', 'wait': True, 'iterable': True})  # < TODO - need to stream feedback
+cmd.py:# tree = type('tree', (Cmdcommand,), {'name': 'tree'})  #: display folder structure graphically - TODO - return not utf-8
+components.py:    # TODO - collect other or all Window data and pass to a window object
+components.py:            # ?? TODO - no deltaX? - myabe stripped by stringify? was on wrong target
+components.py:        # TODO - no jquery. detect targets and use # addEventListener
+components.py:class Modal(object):  # TODO - shouldn't this extend dom?
+components.py:class Webpage(object):  # TODO - shouldn't this extend html?
+constants/color.py:        #  TODO - pass tuples or
+constants/color.py:        # TODO - if type is vec4 / if hash / if word
+constants/keyboard.py:    # TODO - do the modifiers
+d3/queue.py:    # TODO - completely untested
+d3/tile.py:    # TODO - completely untested
+d3/timer.py:    # TODO - completely untested
+d3/format.py:# https://github.com/d3/d3-format/tree/main/locale - TODO - finish all 
+d3/selection.py:                    node.__data__ = None  # TODO - only do this if not there
+d3/selection.py:        # TODO - rewrite this as python
+d3/selection.py:    # import matcher from "../matcher.js"; # TODO - might not be in yet
+d3/selection.py:        # TODO - rewrite this as python
+d3/selection.py:    # def data: selection_data, # TODO -------------------------------------- this is a big one
+d3/selection.py:        # TODO - rewrite this as python
+d3/selection.py:        # TODO - rewrite this as python
+d3/selection.py:    # def selection: selection_selection, # ---?? TODO - is this right?
+d3/selection.py:        # TODO - rewrite this as python
+d3/selection.py:            # TODO - rewrite this as python
+d3/selection.py:        # TODO - rewrite this as python
+d3/selection.py:    # TODO write this commented out javascript as python instead
+d3/selection.py:        # TODO write this commented out javascript as python instead
+d3/selection.py:        # TODO write this commented out javascript as python instead
+d3/selection.py:    #TODO write this commented out javascript as python instead
+d3/selection.py:        # TODO write this commented out javascript as python instead
+d3/selection.py:        # TODO - write this as python
+d3/selection.py:        # TODO - write this as python
+d3/selection.py:        # TODO - write this as python
+d3/selection.py:        # TODO - write this as python
+d3/selection.py:        # TODO - write this as python
+dQuery.py:    def before(self, content):  # TODO - test
+dQuery.py:    def bind(self, event, handler):  # TODO - untested
+dQuery.py:    def blur(self, handler):  # TODO - untested
+dQuery.py:    def change(self, handler):  # TODO - untested... from description sound like would be something like this?
+dQuery.py:    def children(self, selector=None):  # TODO - test
+dQuery.py:        # TODO - untested
+dQuery.py:        # TODO - test
+dQuery.py:    def index(self):  # TODO - test
+dQuery.py:    def insertAfter(self, target):  # TODO - test
+dQuery.py:    def insertBefore(self, target):  # TODO - test
+dQuery.py:    def map(self, func):  # TODO - test
+dQuery.py:    def next(self, selector):  # TODO - test
+dQuery.py:    def parent(self, selector):  # TODO - test
+dQuery.py:    def prependTo(self, target):  # TODO - test 
+dQuery.py:    def pushStack(self, stack):  # TODO - test
+dQuery.py:    def remove(self, items):  # TODO - test
+dQuery.py:    def removeAttr(self, attr):  # TODO - test
+dQuery.py:    def removeProp(self, prop):  # TODO -
+dQuery.py:    def replaceWith(self, replacement):  # TODO - test
+dQuery.py:    def siblings(self, selector):  # TODO - untested
+dQuery.py:    def slice(self, start, end):  # TODO - test
+dQuery.py:    def toggle(self):  # TODO - test
+dQuery.py:        # TODO - untested / not working
+dQuery.py:    def trigger(self, eventName, eventArg=None):  # TODO - test
+dQuery.py:# class Callbacks():  # TODO - untested. copilot wrote it
+dQuery.py:#         # TODO - test
+dQuery.py:    def escapeSelector(selector):  # TODO - untested
+dQuery.py:    @staticmethod  # TODO - test
+dQuery.py:    @staticmethod  # TODO - test
+dQuery.py:    def unique(arr):  # TODO - test
+dQuery.py:    def uniqueSort(arr):  # TODO - test
+decorators.py:        # - TODO - get element by name required on html class
+decorators.py:# def evt(event, *args, **kwargs):  #TODO
+dom.py:    # TODO - event: str, function, useCapture: bool
+dom.py:        event.target = self  # TODO/NOTE - is this correct? - cant think where else would set it
+dom.py:        ''' private. - TODO < check these docstrings don't export in docs
+dom.py:            return self.args[0]  # TODO - check if this means includes content
+dom.py:                pass  # TODO - dont iterate strings
+dom.py:    # TODO - seems awash with deprecated / borrowed / overriden methods need to go through see what's actually needed
+dom.py:class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the args/kwargs
+dom.py:    # TODO - not tested
+dom.py:        # TODO - i think i need to build a hash map of IDs to positions on the tree
+dom.py:            pass  # TODO - dont iterate strings
+dom.py:        # TODO - i think i need to build a hash map of IDs to positions on the tree
+dom.py:            pass  # TODO - dont iterate strings
+dom.py:        # print(self.document) # TODO - buggin?
+dom.py:    #     while (el != None and el.nodeType == 1):  # TODO - nodeType
+dom.py:            # TODO - needs to work in conjuctions with _matchElement so querySelector works a bit better and dQuery picks it up
+dom.py:            # TODO - will need the parser to work for this to work properly. for now shove all on first content node
+dom.py:            # TODO - parse
+dom.py:            # TODO - will need the parser to work for this to work properly
+dom.py:        # TODO - don't if its cancelled
+dom.py:    def setAttributeNodeNS(self, attr):  # TODO - test
+dom.py:    def getAttributeNodeNS(self, attr):  # TODO - test
+dom.py:            return f"{attribute}={self.kwargs[attribute]}"  # TODO - Attr
+dom.py:    def insertAdjacentElement(self, position: str, element):  # TODO - test. these look wrong.
+dom.py:    # TODO - still not great as it also returns 'links' when searching for 'li'
+dom.py:    def _get_tags(self, tag): # TODO - still old
+dom.py:    def anchors(self): # TODO - still old
+dom.py:    def body(self, content): # TODO - untested
+dom.py:        # TODO - remove an existing body ?
+dom.py:                    # TODO - i think i need to build a hash map of IDs to positions on the tree
+dom.py:                pass  # TODO - dont iterate strings
+dom.py:    def normalizeDocument(self):  # TODO - test
+dom.py:    @title.setter # TODO - test
+dom.py:        # TODO - if different download?
+dom.py:class MutationObserver(): # TODO - test
+dom.py:        # TODO "allowCustomElements": # "allowElements": [], # "blockElements": [], # "dropElements": [],  # "allowAttributes": [],
+dom.py:        # TODO "dropAttributes": # "allowCustomElements": # "allowComments": # "allowElements" # allowAttributes
+events.py:# TODO - bring EventTarget here and get rid of this one?
+events.py:    # TODO - event: str, function, useCapture: bool
+events.py:        event.target = self  # TODO/NOTE - is this correct? - cant think where else would set it
+events.py:        # TODO - parse from_json - so can relay
+events.py:        super().__init__(_type)  # TODO -
+game/__init__.py:        #  (https://6b.eleuther.ai/) TODO - test
+geom/__init__.py:# __all__ # TODO - i think this is i need to use
+Binary file geom/__pycache__/__init__.cpython-38.pyc matches
+Binary file geom/__pycache__/vec2.cpython-39.pyc matches
+geom/vec2.py:    # TODO - tests for all these new functions. sadly the ai didn't generate those.
+html.py:    # TODO - slots?.
+html.py:    def content(self):  # TODO - test
+html.py:    #     TODO - will need to loop args and call __pyml__ on each one
+html.py:    # TODO - fix BUG. this stops having no href on a tags
+html.py:    # TODO - fix BUG. this stops having no href on a tags
+html.py:main = type('command', (tag, Element), {'name': 'main', '__init__': tag_init})  # TODO - y was this missing?
+javascript.py:# TODO - list all javascript keywords to python keywords
+javascript.py:# globalThis # TODO - do i need to use inpect? or is globals() ok?
+javascript.py:    #         obj.__define_property__(prop, desc)  # TODO - obviously that wont work
+javascript.py:        return obj.__dict__.keys()   # TODO - this is probably wrong
+javascript.py:        return obj.__dict__.values()  # TODO - this is probably wrong
+javascript.py:    # @property #TODO - static or prop?
+javascript.py:    # @property #TODO - static or prop?
+javascript.py:    @property #TODO - static or prop?
+javascript.py:    @staticmethod #TODO - static or prop?
+javascript.py:        # TODO - parse to domonic.
+javascript.py:        #   self._data = domonic.loads(form) # TODO - parser wont be done enough yet
+javascript.py:    TODO - JSWorker - Node
+javascript.py:    # TODO - test
+javascript.py:    # TODO - test
+javascript.py:    # TODO - test
+javascript.py:    # TODO - test
+javascript.py:    # TODO - test
+javascript.py:    # TODO - test
+javascript.py:    # TODO - https://stackoverflow.com/questions/747641/what-is-the-difference-between-decodeuricomponent-and-decodeuri
+javascript.py:    def isFinite(x):  # TODO - test
+javascript.py:    def Boolean(x):  # TODO - test
+javascript.py:    def setTimeout(callback, t, *args, **kwargs):  # -> int: - TODO/FIX - for some reason types are breaking my linting on this project?
+javascript.py:        # TODO - do for a date object passed in. this only does today
+javascript.py:        # TODO - do for a date object passed in. this only does today
+javascript.py:        # TODO - whats difference between this and 'now()' ?
+javascript.py:        return self.date.now().utcoffset().total_seconds() / 60  # TODO - TEST
+javascript.py:        self.date = self.parse_date(str(date_string))  #  TODO - huh?
+javascript.py:        print('TODO: setMilliseconds')
+javascript.py:    # TODO - , seconds = None, milliseconds = None):
+javascript.py:        # return self.now() # TODO - is this right? - is this same as now()?
+javascript.py:        # print('TODO: setTime')
+javascript.py:        # TODO - there may not be a date object already?
+javascript.py:    # TODO - tell users to use other window class if methods are called.
+javascript.py:        # TODO - a version using async/await
+javascript.py:    def from_(obj):  # TODO - test
+javascript.py:    def of(*args):  # TODO - test
+javascript.py:        return str(self.args)  # TODO - check what js does
+javascript.py:    def flat(self, depth=1):  # TODO - test
+javascript.py:    def flatMap(self, fn):  # TODO - test
+javascript.py:    def fill(self):  # TODO - test
+javascript.py:        # TODO - get passed param names
+javascript.py:        TODO - will need to store dictionaries unlike a python set
+javascript.py:            if int(e) < 10 and int(e) > -10:  # TODO - not correct. lazy way to strip left 0s only
+javascript.py:        # re.sub(r"regepx", "old", "new") # TODO - js one also takes a regex
+javascript.py:    def __init__(self, url: str = "", *args, **kwargs):  # TODO - relative to
+javascript.py:    # TODO - check js vs tag. does js version remove query?. if so detect self.
+javascript.py:        # if self.ready : self.__update__() # TODO - this instead of silent err?
+javascript.py:        # TODO - escape
+javascript.py:        # TODO - dont think i can do this cant urls params have duplicate keys?
+javascript.py:        # TODO - ordereddict?
+javascript.py:# TODO - test
+lerpy/tween.py:        self._timeStart = get_timer()   # TODO!! ---
+lerpy/tween.py:        # TODO - pause should modify timer so it DOESNT jump frames. at mo does the opposite.
+parsers/expatbuilder.py:        # TODO rewrite this to use domonic instead of minidom
+parsers/__init__.py:    # remove abnormal spacing between tag attributes (TODO- maybe 2 spaces is valid somewhere?)
+parsers/__init__.py:        if lastchar == "\n":  # TODO - if file doesn't have newlines already
+parsers/__init__.py:# TODO - other methods I can add to this class
+parsers/__init__.py:''' TODO - check earlier version getter/setters for some string methods that may be useful here
+parsers/__init__.py:    print("TODO - setter method on body")
+style.py:        # TODO - just add normal float?
+style.py:        # TODO - consider camel case for hyphen params?
+style.py:        # TODO - not json serialisable due to the decorators.
+style.py:                    # TODO - replace if exists
+style.py:    @style_get_decorator  # TODO - pass array of valid words as params. so can raise value errors
+svg.py:# TODO --
+svg.py:# TODO - just use underscores for these tags?
+terminal.py:            # TODO - after doing all this. think i may have decided to go for 2 base commands instead
+terminal.py:ping = type('ping', (command,), {'name': 'ping', 'wait': True, 'iterable': True})  # < TODO - need to stream feedback
+terminal.py:pip = type('pip', (command,), {'name': 'pip'})  # TODO - change to 'python3 -m pip'? # TODO - both iterable and not
+terminal.py:# youtube-dl = type('youtube-dl', (command,), {'name': 'youtube-dl'}) # TODO - illegal chars
+terminal.py:wc = type('wc', (command,), {'name': 'wc'})  # < TODO - stream. plus figure out piping
+utils.py:        ''' TODO - remove in 0.3 as we have color class. '''
+window.py:# TODO - test
+window.py:        # TODO - load the content of the location using requests
+window.py:        # content = domonic.parsers.remove_html_tag_by_name(content, 'head') # TODO - buggy.removed start of docs too?
+window.py:        # TODO - don't use parseString as it is not a HTML parser its XML parser. atm I'm just using for testing
+x3d.py:# TODO - go through examples to find which are usually lower. i.e before they allowed mised cases
