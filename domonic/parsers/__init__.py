@@ -312,7 +312,7 @@ def dent(pyml, use_tabs=False):
     return dented
 
 
-def add_cdata_tags_to_every_node(content: str):
+def add_cdata_tags_to_every_node(content: str): # TODO - just have a CDATASection class?
     """[puts a CDATA tag on every node in the document] """
     content = content.replace('<', '<![CDATA[')
     content = content.replace('>', ']]>')

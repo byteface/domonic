@@ -2405,46 +2405,46 @@ class Text(CharacterData):
 #         return self
 
 
-from domonic.javascript import Object
-MutationObserverInit = Object()
-MutationObserverInit.subtree = False
-MutationObserverInit.childList = False
-MutationObserverInit.attributes = False
-MutationObserverInit.attributeFilter = False
-MutationObserverInit.attributeOldValue = False
-MutationObserverInit.characterData = False
-MutationObserverInit.characterDataOldValue = False
+# from domonic.javascript import Object
+# MutationObserverInit = Object()
+# MutationObserverInit.subtree = False
+# MutationObserverInit.childList = False
+# MutationObserverInit.attributes = False
+# MutationObserverInit.attributeFilter = False
+# MutationObserverInit.attributeOldValue = False
+# MutationObserverInit.characterData = False
+# MutationObserverInit.characterDataOldValue = False
 
-class MutationObserver(): # TODO - test
-    """ The MutationObserver interface provides the ability to watch for changes being made to the DOM tree. """
+# class MutationObserver(): # TODO - test
+#     """ The MutationObserver interface provides the ability to watch for changes being made to the DOM tree. """
 
-    def __init__(self, callback, opts=MutationObserverInit):
-        self.callback = callback
-        self.mutations = []
-        self.observer = None
-        self.is_connected = False
+#     def __init__(self, callback, opts=MutationObserverInit):
+#         self.callback = callback
+#         self.mutations = []
+#         self.observer = None
+#         self.is_connected = False
 
-    def disconnect(self):
-        """ Stops the MutationObserver instance from receiving further notifications until 
-        and unless observe() is called again. """
-        self.is_connected = False
-        self.observer = None
-        self.mutations = []
-        self.callback = None
-        return self
+#     def disconnect(self):
+#         """ Stops the MutationObserver instance from receiving further notifications until 
+#         and unless observe() is called again. """
+#         self.is_connected = False
+#         self.observer = None
+#         self.mutations = []
+#         self.callback = None
+#         return self
 
-    def observe(self, target, options):
-        """ Configures the MutationObserver to begin receiving notifications through 
-        its callback function when DOM changes matching the given options occur. """
-        if self.is_connected:
-            self.disconnect()
-        self.observer = target.ownerDocument.createNodeObserver(self.mutations.append, True)
-        self.is_connected = True
+#     def observe(self, target, options):
+#         """ Configures the MutationObserver to begin receiving notifications through 
+#         its callback function when DOM changes matching the given options occur. """
+#         if self.is_connected:
+#             self.disconnect()
+#         self.observer = target.ownerDocument.createNodeObserver(self.mutations.append, True)
+#         self.is_connected = True
 
-    def takeRecords(self):
-        """ Removes all pending notifications from the MutationObserver's notification queue 
-        and returns them in a new Array of MutationRecord objects. """
-        return []
+#     def takeRecords(self):
+#         """ Removes all pending notifications from the MutationObserver's notification queue 
+#         and returns them in a new Array of MutationRecord objects. """
+#         return []
 
 
 # ResizeObserver
