@@ -20,12 +20,12 @@ class EventTarget:
 
     # TODO - event: str, function, useCapture: bool
     # def addEventListener(self, event: str, function, useCapture: bool) -> None:
-    def addEventListener(self, _type, callback, *args, **kwargs):
+    def addEventListener(self, _type: str, callback, *args, **kwargs):
         if _type not in self.listeners:
             self.listeners[_type] = []
         self.listeners[_type].append(callback)
 
-    def removeEventListener(self, _type, callback):
+    def removeEventListener(self, _type: str, callback):
         if _type not in self.listeners:
             return
 
@@ -52,6 +52,60 @@ class EventTarget:
                 thing()  # try calling without params, user may not create param
 
         return not event.defaultPrevented
+
+
+# class EventSource(EventTarget):
+#     """ Baseclass for Node """
+
+#     def __init__(self, *args, **kwargs):
+#         self._readyState = "2"
+#         self._url = ""
+#         self._withCredentials = False
+#         super(EventSource, self).__init__(*args, **kwargs)
+
+#     @property
+#     def readyState(self):
+#         """ A number representing the state of the connection.
+#         Possible values are CONNECTING (0), OPEN (1), or CLOSED (2). """
+#         return self._readyState
+    
+#     @property
+#     def url(self):
+#         """ A DOMString representing the URL of the source. """
+#         return self._url
+
+#     @property
+#     def withCredentials(self):
+#         """ A boolean value indicating whether the EventSource object was instantiated with cross-origin (CORS) credentials
+#         set (true), or not (false, the default). """
+#         return self._withCredentials
+
+#     def close(self):
+#         """ Closes the connection to the EventSource. """
+#         self._readyState = "0"
+    
+#     def onreadystatechange(self, event):
+#         """ Called when the state of the connection changes. """
+#         if event.target.readyState == "0":
+#             self._readyState = "0"
+#         elif event.target.readyState == "1":
+#             self._readyState = "1"
+#         elif event.target.readyState == "2":
+#             self._readyState = "2"
+#         else:
+#             self._readyState = "2"
+    
+#     def onmessage(self, event):
+#         """ Called when a message is received. """
+#         pass
+    
+#     def onerror(self, event):
+#         """ Called when an error occurs. """
+#         pass
+
+#     def onopen(self, event):
+#         """ Called when the connection is established. """
+#         pass
 
 
 class Node(EventTarget):
@@ -418,26 +472,6 @@ class Node(EventTarget):
     # setUserData() 🗑️
 
 
-class TextNode(Node):
-    """ not tested """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    @property
-    def textContent(self):
-        """ Sets or returns the textual content of a node and its descendants """
-        # return f" {' '*len(self.name)}{' '*len(self.attributes)} {self.content}  {' '*len(self.name)} "
-        return self.nodeValue
-
-    @textContent.setter
-    def textContent(self, content):
-        """ Sets or returns the textual content of a node and its descendants """
-        # if type(content) is not str:
-        # raise ValueError()
-        self.nodeValue = content
-
-
 class ParentNode(object):
     """ not tested yet """
 
@@ -496,12 +530,23 @@ class ChildNode(Node):
         return self
 
 
-class Attr(object):
+class Attr(Node):
+
+    # https://developer.mozilla.org/en-US/docs/Web/API/Attr
+    # TODO - seems awash with deprecated / borrowed / overriden methods need to go through see what's actually needed
 
     def __init__(self, name, value="", *args, **kwargs):
         self.name = name
         self.value = value
-        # self.specified
+        self.specified = False
+
+    # @property
+    # def specified(self):
+    #     return self.__specified
+    
+    # @specified.setter
+    # def specified(self, value):
+    #     self.__specified = value
 
     @property
     def isId(self):
@@ -509,6 +554,29 @@ class Attr(object):
             return True
         else:
             return False
+
+    def getNamedItem(self, name):
+        """ Returns a specified attribute node from a NamedNodeMap """
+        for item in self.parentNode.attributes:
+            if item.name == name:
+                return item
+        return None
+
+    def removeNamedItem(self, name):
+        """ Removes a specified attribute node """
+        for item in self.parentNode.attributes:
+            if item.name == name:
+                self.parentNode.removeAttribute(item)
+                return True
+        return False
+    
+    def setNamedItem(self, name, value):
+        """ Sets the specified attribute node (by name) """
+        for item in self.parentNode.attributes:
+            if item.name == name:
+                item.value = value
+                return True
+        return False
 
 
 class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the args/kwargs
@@ -1274,16 +1342,21 @@ class Element(Node):
             return None
 
     def focus(self):
-        """ Gives focus to an element """
+        """ Sets focus on an element """
         raise NotImplementedError
 
-    def setAttributeNodeNS(self, attr):
+    def setAttributeNodeNS(self, attr):  # TODO - test
         """ Sets the attribute node of an element """
-        raise NotImplementedError
+        a = Attr(attr.name.lstrip('_'), attr.value)
+        self.setAttributeNode(a)
+        return self
 
-    def getAttributeNodeNS(self, attr):
+    def getAttributeNodeNS(self, attr):  # TODO - test
         """ Sets the attribute node of an element """
-        raise NotImplementedError
+        a = self.getAttribute(attr)
+        if a is None:
+            return None
+        return Attr(attr, a)
 
     def setAttributeNS(self, namespaceURI, localName, value):
         """ Sets an attribute in the given namespace """
@@ -1295,7 +1368,11 @@ class Element(Node):
 
     def removeAttributeNS(self, namespaceURI, localName):
         """ Removes an attribute from an element """
-        raise NotImplementedError
+        if localName in self.attributes:
+            self.removeAttribute(localName)
+        # else:
+        #     raise AttributeError
+        return self
 
 
     def getAttribute(self, attribute: str) -> str:
@@ -1432,11 +1509,22 @@ class Element(Node):
                         return self.parentNode.args[count + 1]
         return None
 
+    @property
+    def previousElementSibling(self):
+        """ returns the Element immediately prior to the specified one in its parent's children list, 
+        or None if the specified element is the first one in the list. """
+        if self.parentNode is not None:
+            for count, el in enumerate(self.parentNode.args):
+                if el is self and count > 0:
+                    if type(self.parentNode.args[count - 1]) is not str:
+                        return self.parentNode.args[count - 1]
+        return None
+
     def normalize(self):
         '''Joins adjacent text nodes and removes empty text nodes in an element'''
         content = []
         for s in self.args:
-            if type(s) == TextNode:
+            if type(s) == Text:
                 content.append(s.textContent)
                 continue
             if type(s) != str:
@@ -1445,7 +1533,7 @@ class Element(Node):
             content.append(s)
 
         self.args = content
-        self.args = [TextNode(' '.join([str(s) for s in self.args]))]
+        self.args = [Text(' '.join([str(s) for s in self.args]))]
         return self.args
 
     def offsetHeight(self):
@@ -1490,16 +1578,6 @@ class Element(Node):
             for count, el in enumerate(self.parentNode.args):
                 if el is self and count > 1:
                     return self.parentNode.args[count - 1]
-        return None
-
-    @property
-    def previousElementSibling(self):
-        """ Returns the previous element at the same node tree level """
-        if self.parentNode is not None:
-            for count, el in enumerate(self.parentNode.args):
-                if el is self and count > 1:
-                    if type(self.parentNode.args[count - 1]) is not str:
-                        return self.parentNode.args[count - 1]
         return None
 
     def querySelector(self, query):
@@ -1738,16 +1816,12 @@ class Document(Element):
         return self.querySelector('body')
 
     @body.setter
-    def body(self, content):
+    def body(self, content): # TODO - untested
         """ Sets the document's body (the <body> element) """
-        # self.querySelector('body')
-        # tag = "body"
-        # reg = f"<{tag}.*?>(.+?)</{tag}>"
-        # pattern = re.compile(reg)
-        # tags = re.findall(pattern,html)
-        # return tags[0]
-        print("TODO - setter method on body")
-        return
+        # remove an existing body
+        self.querySelector('body').removeFromParent()
+        from domonic.html import body
+        self.appendChild(body(content))
 
     # def close():
         """ Closes the output stream previously opened with document.open() """
@@ -1784,13 +1858,10 @@ class Document(Element):
         return DocumentFragment(*args)
 
     @staticmethod
-    def createElement(_type):
-        """ Creates an Element node -
-        WARNING THIS WILL NOT CREATE A 'DOMONIC ELEMENT' (yet), so it wont have features """
-        # TODO - self closing tags - need a 'tag' factory. need the tags in .html package to register with it.
-        from domonic.html import tag, tag_init
-        el = type(_type, (tag, Element), {'name': _type, '__init__': tag_init})
-        return el()
+    def createElement(_type:str):
+        """ Creates an Element node """
+        from domonic.html import create_element
+        return create_element(_type)
 
     @staticmethod
     def createElementNS(namespaceURI, qualifiedName, options=None):
@@ -1813,11 +1884,18 @@ class Document(Element):
 
     @staticmethod
     def createTextNode(text):
-        '''Creates a Text node'''
-        return TextNode(text)
+        """[Creates a Text node with the specified text.
+
+        Args:
+            text ([str]): [the text to be inserted]
+
+        Returns:
+            [type]: [a new Text node]
+        """
+        return Text(text)
 
     # def defaultView(self):
-        ''' Returns the window object associated with a document, or null if none is available.'''
+        # """ Returns the window object associated with a document, or null if none is available. """
         # return
 
     # def designMode(self):
@@ -1939,12 +2017,20 @@ class Document(Element):
         # return
 
     def links(self):
-        ''' Returns a collection of all <a> and <area> elements in the document that have a href attribute'''
+        """ Returns a collection of all <a> and <area> elements in the document that have a href attribute """
         return self.querySelectorAll('a')
 
-    def normalizeDocument(self):
-        '''Removes empty Text nodes, and joins adjacent nodes'''
-        raise NotImplementedError
+    def normalizeDocument(self):  # TODO - test
+        """ Removes empty Text nodes, and joins adjacent nodes """
+        for each in self.childNodes:
+            if each.nodeType == Node.TEXT_NODE:
+                if each.nodeValue.strip() == '':
+                    each.parentNode.removeChild(each)
+                else:
+                    each.normalize()
+            else:
+                each.normalize()
+        return
 
     # def open(self):
         # '''Opens an HTML output stream to collect output from document.write()'''
@@ -1973,16 +2059,22 @@ class Document(Element):
 
     @property
     def title(self):
-        ''' Sets or returns the title of the document'''
-        try:
-            tag = "title"
-            reg = f"(<{tag}.*?>.+?</{tag}>)"
-            pattern = re.compile(reg)
-            tags = re.findall(pattern, str(self))
-            return tags[0]
-        except Exception as e:
-            print('document has no title', e)
-            return ''
+        """[gets the title of the document]
+
+        Returns:
+            [str]: The title of the document
+        """
+        # return self.title
+        return self.querySelector('title')
+
+    @title.setter # TODO - test
+    def title(self, value):
+        """ [sets the title of the document]
+        Args:
+            value (str): The title of the document
+        """
+        self.title = value
+        return
 
     # def URL(self):
     #     ''' Returns the full URL of the HTML document'''
@@ -2191,6 +2283,267 @@ class DocumentFragment(Node):
         return ''.join([str(a) for a in self.args])
 
 
+class CharacterData(Node):
+    """
+    The CharacterData abstract interface represents a Node object that contains characters. 
+    This is an abstract interface, meaning there aren't any objects of type CharacterData: 
+    it is implemented by other interfaces like Text, Comment, or ProcessingInstruction, which aren't abstract.
+    """
+
+    nextElementSibling = Element.nextElementSibling
+    previousElementSibling = Element.previousElementSibling
+
+    remove = ChildNode.remove
+    replaceWith = ChildNode.replaceWith
+    before = ChildNode.before
+    after = ChildNode.after
+
+    def appendData(self, data):
+        """ Appends the given DOMString to the CharacterData.data string; when this method returns, 
+        data contains the concatenated DOMString. """
+        self.args[0] += data
+        return self.args[0]
+
+    def deleteData(self, offset: int, count: int):
+        """ Removes the specified amount of characters, starting at the specified offset, 
+        from the CharacterData.data string; when this method returns, data contains the shortened DOMString. """
+        self.args[0] = self.args[0][:offset] + self.args[0][offset + count:]
+        return self.args[0]
+
+    def insertData(self, offset: int, data):
+        """ Inserts the specified characters, at the specified offset, in the CharacterData.data string;
+        when this method returns, data contains the modified DOMString. """
+        self.args[0] = self.args[0][:offset] + data + self.args[0][offset:]
+        return self.args[0]
+
+    def replaceData(self, offset: int, count: int, data):
+        """ Replaces the specified amount of characters, starting at the specified offset, with the specified DOMString;
+        when this method returns, data contains the modified DOMString. """
+        self.args[0] = self.args[0][:offset] + data + self.args[0][offset + count:]
+        return self.args[0]
+
+    # def replaceWith(self, newChildren):
+    #     """ Replaces the characters in the children list of its parent with a set of Node or DOMString objects. """
+    #     self.replaceChildren(newChildren) # parentNode?
+        
+    def substringData(self, offset: int, length: int):
+        """ Returns a DOMString containing the part of CharacterData.data of the specified length and 
+        starting at the specified offset. """
+        self.args[0] = self.args[0][offset:offset + length]
+        return self.args[0]
+
+
+class Text(CharacterData):
+    """ Text Node """
+
+    @property
+    def data(self):
+        return self.args[0]
+
+    @data.setter
+    def data(self, data):
+        self.args = (data,)
+        return self.args[0]
+
+    @property
+    def textContent(self):
+        """ Sets or returns the textual content of a node and its descendants """
+        # return f" {' '*len(self.name)}{' '*len(self.attributes)} {self.content}  {' '*len(self.name)} "
+        return self.nodeValue
+
+    @textContent.setter
+    def textContent(self, content):
+        """ Sets or returns the textual content of a node and its descendants """
+        # if type(content) is not str:
+        # raise ValueError()
+        self.nodeValue = content# + 'TEST'
+
+    def __str__(self):
+        return str(self.textContent)
+
+    # def __repr__(self):
+        # return str(self.textContent)
+
+
+# class HTMLCollection(Node):
+
+#     def __init__(self, *args):
+#         self.args = args
+#         self.length = len(self.args)
+
+#     def __len__(self):
+#         return self.length
+    
+#     def __getitem__(self, index):
+#         return self.args[index]
+
+#     def item(self, index):
+#         return self.args[index]
+
+# item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection
+# namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection
+
+#     def __iter__(self):
+#         return iter(self.args)
+    
+#     def __next__(self):
+#         return next(self.args)
+    
+#     def __str__(self):
+#         return str(self.args)
+    
+#     def __repr__(self):
+#         return str(self.args)
+    
+#     def __add__(self, other):
+#         return self.args + other.args
+    
+#     def __radd__(self, other):
+#         return other.args + self.args
+    
+#     def __iadd__(self, other):
+#         self.args += other.args
+#         return self
+
+
+from domonic.javascript import Object
+MutationObserverInit = Object()
+MutationObserverInit.subtree = False
+MutationObserverInit.childList = False
+MutationObserverInit.attributes = False
+MutationObserverInit.attributeFilter = False
+MutationObserverInit.attributeOldValue = False
+MutationObserverInit.characterData = False
+MutationObserverInit.characterDataOldValue = False
+
+class MutationObserver(): # TODO - test
+    """ The MutationObserver interface provides the ability to watch for changes being made to the DOM tree. """
+
+    def __init__(self, callback, opts=MutationObserverInit):
+        self.callback = callback
+        self.mutations = []
+        self.observer = None
+        self.is_connected = False
+
+    def disconnect(self):
+        """ Stops the MutationObserver instance from receiving further notifications until 
+        and unless observe() is called again. """
+        self.is_connected = False
+        self.observer = None
+        self.mutations = []
+        self.callback = None
+        return self
+
+    def observe(self, target, options):
+        """ Configures the MutationObserver to begin receiving notifications through 
+        its callback function when DOM changes matching the given options occur. """
+        if self.is_connected:
+            self.disconnect()
+        self.observer = target.ownerDocument.createNodeObserver(self.mutations.append, True)
+        self.is_connected = True
+
+    def takeRecords(self):
+        """ Removes all pending notifications from the MutationObserver's notification queue 
+        and returns them in a new Array of MutationRecord objects. """
+        return []
+
+
+# ResizeObserver
+# IntersectionObserver
+# PerformanceObserver
+
+# class NodeFilter():
+#     def __init__(self):
+#         self.filter = None
+    # def acceptNode(self):
+    #     """ Returns true if the node is to be accepted """
+    #     return True
+
+# class TreeWalker():
+#     """ The TreeWalker object represents the nodes of a document subtree and a position within them. """
+
+#     def __init__(self, node):
+#         """ A TreeWalker can be created using the Document.createTreeWalker() method. """
+#         self.root = node
+#         self.currentNode = node
+#         self.last = None
+#         self.parent = None
+#         self.previous = None
+#         self.children = []
+#         self.childIndex = 0
+#         # self.length = 0
+#         """ Is a boolean value indicating, when discarding an entity reference its whole sub-tree must be discarded at the same time. """
+#         self.expandEntityReferences: bool = False
+
+#     @property
+#     def root(self):
+#         """ Returns a Node representing the root node as specified when the TreeWalker was created. """
+#         return self.root
+
+#     def whatToShow(self, options):
+#         """ Returns an unsigned long being a bitmask made of constants describing the types of Node that must be presented.
+#         Non-matching nodes are skipped, but their children may be included, if relevant. The possible values are: """
+#         return options
+
+#     def filter(self, options):
+#         """ Returns a NodeFilter object that can be used to filter the nodes that the TreeWalker visits. """
+#         return options
+
+#     @property
+#     def currentNode(self):
+#         """ Is the Node on which the TreeWalker is currently pointing at. """
+#         return self.currentNode
+        
+#     def parentNode(self):
+#         """ Moves the current Node to the first visible ancestor node in the document order, 
+#         and returns the found node. It also moves the current node to this one. If no such node exists,
+#         or if it is before that the root node defined at the object construction,
+#         returns null and the current node is not changed. """
+#         raise NotImplementedError()
+
+#     def firstChild(self):
+#         """ Moves the current Node to the first visible child of the current node, and returns the found child.
+#         It also moves the current node to this child. If no such child exists,
+#         returns null and the current node is not changed. """
+#         raise NotImplementedError()
+
+#     def lastChild(self):
+#         """ Moves the current Node to the last visible child of the current node, and returns the found child.
+#         It also moves the current node to this child. If no such child exists, null is returned and the current node is not changed. """
+#         raise NotImplementedError()
+
+#     def previousSibling(self):
+#         """ Moves the current Node to its previous sibling, if any, and returns the found sibling.
+#         If there is no such node, return null and the current node is not changed.
+#         """
+#         raise NotImplementedError()
+
+#     def nextSibling(self):
+#         """ Moves the current Node to its next sibling, if any, and returns the found sibling.
+#         If there is no such node, null is returned and the current node is not changed. """
+#         raise NotImplementedError()
+
+#     def previousNode(self):
+#         """ Moves the current Node to the previous visible node in the document order,
+#         and returns the found node. It also moves the current node to this one. If no such node exists, or if it is before that the root node defined at the object construction,
+#         returns null and the current node is not changed. """
+#         raise NotImplementedError()
+        
+#     def nextNode(self):
+#         """ Moves the current Node to the next visible node in the document order, and returns the found node.
+#         It also moves the current node to this one.
+#         If no such node exists, returns null and the current node is not changed.
+#         """
+#         raise NotImplementedError()
+
+# TextDecoder
+# TextEncoder
+# TextDecoderStream
+# TextEncoderStream
+
+# XMLHttpRequest
+
+
 class Sanitizer():
 
     def __init__(self, rules=None, *args, **kwargs):
@@ -2352,38 +2705,9 @@ document = Document
 
 
 '''
-class dom(object):  # don't think this class is need now as the package is the 'dom'
-    console = type('console', (console,), {'name': 'console'})
-    location = type('location', (location,), {'name': 'location'})
-    document = type('document', (document,), {'name': 'document'})
-
-    @property
-    def console(self):
-        return self._console
-
-    def __init__(self, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
-
-        # self.console = dom.console
-
-        # self.location = type('location', (location,), {'name':'location'})
-        self.console = type('console', (dom.console,), {'name': 'console'})
-        # self.doc = type('document', (DOM,), {'name':'document'})
-
-        # self.attr = type('attribute', (DOM,), {'name':'attribute'})
-        # self.el = type('element', (DOM,), {'name':'element'})
-        # self.events = type('events', (DOM,), {'name':'events'})
-        # self.event.Objects
-        # self.geo = type('geo', (DOM,), {'name':'geo'})
-        # self.history = type('history', (DOM,), {'name':'history'})
-        # self.HTMLCollection
-        # self.location = type('location', (DOM,), {'name':'location'})
-        # self.navigator = type('navigator', (DOM,), {'name':'navigator'})
-        # self.screen = type('screen', (DOM,), {'name':'screen'})
-        # self.style = type('style', (DOM,), {'name':'style'})
-        # self.window = type('window', (DOM,), {'name':'window'})
-        # self.webstorage = type('webstorage', (DOM,), {'name':'webstorage'})
-
-        pass
+# self.geo = type('geo', (DOM,), {'name':'geo'})
+# self.history = type('history', (DOM,), {'name':'history'})
+# self.navigator = type('navigator', (DOM,), {'name':'navigator'})
+# self.screen = type('screen', (DOM,), {'name':'screen'})
+# self.webstorage = type('webstorage', (DOM,), {'name':'webstorage'})
 '''

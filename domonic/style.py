@@ -13,11 +13,12 @@ class StyleSheet():
 
     def __init__(self):
         self.disabled = True  # a boolean value representing whether the current stylesheet has been applied or not
+        self.href = None
 
     @property
     def href(self):
         """ Returns a DOMString representing the location of the stylesheet."""
-        raise NotImplementedError
+        return self.href
 
     @property
     def media(self):

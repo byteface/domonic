@@ -71,6 +71,26 @@ It's also called iffe. (so you can know when ur just passing nothing)
         return True
 
 
+
+check
+--------------------------------
+
+logs the entry and exit of a function and is useful for debugging. i.e.
+
+.. code-block :: bash
+
+    @check
+    def somefunc():
+        return True
+
+    somefunc()
+
+    # would output this to the console
+    # Entering somefunc
+    # Exited somefunc
+
+
+
 .. autoclass:: domonic.decorators
     :members:
     :noindex:

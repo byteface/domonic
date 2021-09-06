@@ -524,24 +524,14 @@ def create_element(name='custom_tag', *args, **kwargs):
     tag name needs to be set due to custom tags with hyphens can't be classnames.
     i.e. hypenated tags <some-custom-tag></some-custom-tag>
     '''
-    # TODO - check for existing elements in this module first otherwise create them
-    import sys
-    current_module = sys.modules[__name__]
-
-    # if getattr(current_module, '__module__', None) == module.__name__:
+    # import sys
+    # current_module = sys.modules[__name__]
+    # checks if already exists
     if name in html_tags:
-        # print('name::????????', name)
-        # print(globals())
         cl = globals()[name]
-        # print('me::',cl())
-        # print('you::', html())
-
-        # print(globals()[name])
-        print( str(globals()[name]()))
         return globals()[name]()
     
     # print('creating custom element')
-
     custom_tag = type('custom_tag', (tag, Element), {'name': name, '__init__': tag_init})
     new_tag = custom_tag(*args, **kwargs)
     new_tag.name = name

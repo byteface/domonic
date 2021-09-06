@@ -116,10 +116,10 @@ def silence(*args, **kwargs):
 
 
 def check(f):
-    """ logs entry and exit of a function """
-    def new_f():
+    """ Prints entry and exit of a function to the console """
+    def new_f(*args, **kwargs):
         print("Entering", f.__name__)
-        f()
+        f(*args, **kwargs)
         print("Exited", f.__name__)
     return new_f
 # @check()

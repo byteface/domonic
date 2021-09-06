@@ -110,9 +110,7 @@ hkern = type('hkern', (tag, Element), {'name': 'hkern', '__init__': svg_init})
 vkern = type('vkern', (tag, Element), {'name': 'vkern', '__init__': svg_init})
 animateColor = type('animateColor', (tag, Element), {'name': 'animateColor', '__init__': svg_init})
 
-
 # TODO --
-
 # _filter # builtin
 # _set # builtin
 
@@ -122,8 +120,7 @@ animateColor = type('animateColor', (tag, Element), {'name': 'animateColor', '__
 # meshpatch 🗑️?
 # meshrow 🗑️?
 
-#  - dashed... may need custom tag after all to handle the dash for full coverage
-# TODO - test create dashed tags
+# TODO - just use underscores for these tags?
 # missing-glyph
 # color-profile
 # font-face

@@ -8,13 +8,16 @@
 
         2. the domonic window (this one) - a window connected to other things i.e. dom
 
+    You can extend or import either for your own purposes.
+
 """
 from domonic import domonic
 from domonic.javascript import Window
 from domonic.dom import *
 from domonic.dom import document, Location
 
-# TODO - play with this
+
+# TODO - test
 class CustomElementRegistry():
     """ The CustomElementRegistry interface provides methods for registering custom elements and querying registered elements. 
     To get an instance of it, use the window.customElements property. """
@@ -65,6 +68,66 @@ class CustomElementRegistry():
         pass
 
 
+class Navigator(object):
+    """ Navigator """
+
+    # Determines whether cookies are enabled in the browser
+    cookieEnabled = False
+
+    # Determines whether the browser is online
+    onLine = False
+
+    # Returns the name of the browser Navigator
+    appName = "domonic"
+
+    def __init__(self, *args, **kwargs):
+        # self.args = args
+        # self.kwargs = kwargs
+        pass
+
+    # @property
+    # def appVersion():
+        """ Returns the version information of the browser """
+        # from domonic import __version__
+        # return __version__
+
+    # @property
+    # def language():
+        """ Returns the language of the browser Navigator """
+        # import locale
+        # return locale.getdefaultlocale()
+
+    @property
+    def platform(self):
+        """ Returns the platform """
+        if 'darwin' in sys.platform:
+            return 'mac'
+        elif 'linux' in sys.platform:
+            return 'linux'
+        elif 'win32' in sys.platform:
+            return 'windows'
+        else:
+            return 'unknown'
+
+    @property
+    def product(self):
+        """ Returns the product name """
+        return self.appName
+    
+    # @property
+    # def location(self):
+        # """ Returns the location of the browser Navigator """
+        # return Location(self.window.location.href)
+
+    @property
+    def userAgent(self):
+        """ Returns the user-agent header sent by the browser to the server Navigator """
+        raise NotImplementedError
+    
+    # geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
+    # appCodeName   Returns the code name of the browser    Navigator
+
+
 class Window(Window):
 
     def __init__(self):
@@ -85,6 +148,7 @@ class Window(Window):
 
     @location.setter
     def location(self, value):
+        # NOTE - not documented. still unverified
         # self._location = value
         # TODO - load the content of the location using requests
         if value is None:
@@ -115,9 +179,10 @@ class Window(Window):
         
         print(content)
         # return
+        # clean the html before parsing
 
-        self.document = domonic.domonic.parseString(content)
-        
+        # TODO - don't use parseString as it is not a HTML parser its XML parser. atm I'm just using for testing
+        self.document = domonic.domonic.parseString(content)        
         self._location = Location(value)
 
 
@@ -132,7 +197,6 @@ window = Window()
 # close()   Closes the output stream previously opened with document.open() Document, Window
 # confirm() Displays a dialog box with a message and an OK and a Cancel button  Window
 # defaultStatus Sets or returns the default text in the statusbar of a window   Window
-# defaultView   Returns the window object associated with a document, or null if none is available. Document
 # document  Returns the Document object for the window (See Document object)    Window
 # focus()   Gives focus to an element   Element, Window
 # frameElement  Returns the <iframe> element in which the current window is inserted    Window

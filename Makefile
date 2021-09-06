@@ -45,6 +45,9 @@ test_html:
 test_dom:
 	python3 -m unittest tests.test_dom
 
+test_svg:
+	python3 -m unittest tests.test_svg
+
 
 # release
 build:

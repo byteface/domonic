@@ -159,25 +159,6 @@ from domonic.dom import document
 print(document)
 
 ```
-The last 'html()' created will always be the 'document'. You can set it manually but it needs to be a Document instance. Before a 'html' class is created it is just an empty document so that static methods can be available.
-
-Remember python globals are only to that module (unlike other langs). so you will have to import document explicitly when you need it (per method call after setting it). i.e
-
-```python
-
-print(document)
-d = html(body("Hello"))
-print(document)  # no change
-print('body1', d.doctype)
-print('body2', domonic.dom.document.doctype)
-print('body3', document.doctype)
-from domonic.dom import document  # re-import to get the updated document
-print('body4', document.doctype)
-```
-
-notice how before it was imported it was still just a class not an instance.
-
-So in most cases just use your own root node and not document as it will be the only one that will be updated unless you import after any html node creation. the global is for when you need to access the document from a different module(file)
 
 ### javascript
 

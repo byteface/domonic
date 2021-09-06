@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "0.4.8"
+__version__ = "0.5.0"
 __license__ = 'MIT'
 __author__ = "@byteface"
 
@@ -966,13 +966,15 @@ class domonic:
     parseString_prev_error = None
     @staticmethod
     def parseString(string):  #, parser=None):
-        """Parse a file into a DOM from a string."""
+        """ Parse a file into a DOM from a string. """
         # if parser is None:
         # import xml.parsers.expat.ExpatError as ExpatError        # parser = xml.parsers.expat.ParserCreate()
         try:
             from domonic.parsers import expatbuilder
             return expatbuilder.parseString(string)
         except Exception as e:
+            # TODO - problem with this method. is it takes literally forever. 
+            # as it removes 1 char then reparses entire doc. even on small pages this is a problem.
             print(e)
             dodgycharIndex = int(Utils.digits(str(e).split(',')[1]))
             # string[int(dodgycharIndex)-1] = Utils.escape(string[int(dodgycharIndex)-1])
@@ -982,7 +984,7 @@ class domonic:
                 domonic.parseString_prev_error = dodgycharIndex
                 return domonic.parseString(string)
             else:
-                print('failed to parse invalid xml. clean and trying again', e)
+                print('failed to parse invalid xml. clean and try again', e)
 
         # else:
             # from xml.dom import pulldom

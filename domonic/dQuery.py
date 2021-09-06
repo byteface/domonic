@@ -1601,19 +1601,27 @@ class º(dQuery_el):
             raise TypeError(obj)
 
     @staticmethod
-    def parseHTML():
+    def parseHTML(string):
         """ Parses a string into an array of DOM nodes. """
-        raise NotImplementedError
+        # from bs4 import BeautifulSoup
+        # return BeautifulSoup(string, 'html.parser')
+        # return BeautifulSoup(string, 'html5lib')
+        # return BeautifulSoup(string, 'lxml')
+        # return domonic.domonic.parseString(string, 'domonic')
+        # return domonic.domonic.parseString(string, 'expat')
+        return domonic.domonic.parseString(string)
+
 
     @staticmethod
-    def parseJSON():
+    def parseJSON(string: str):
         """ Takes a well-formed JSON string and returns the resulting JavaScript value. """
         raise NotImplementedError
 
     @staticmethod
-    def parseXML():
-        """ Parses a string into an XML document. """
-        raise NotImplementedError
+    def parseXML(string: str):
+        """ Parses an XMLstring into a pyml """
+        from domonic.domonic import parseString
+        return parseString(string)
 
     @staticmethod
     def post(url, data, success):
@@ -1629,7 +1637,7 @@ class º(dQuery_el):
         raise NotImplementedError
 
     @staticmethod
-    def queue():
+    def queue(func):
         """ Show or manipulate the queue of functions to be executed on the matched element. """
         raise NotImplementedError
 

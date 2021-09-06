@@ -1645,6 +1645,10 @@ class Storage():
         """ Adds that key to the storage, or update that key's value if it already exists """
         self.storage[keyName] = keyValue
         self._update_file()
+    
+    def getItem(self, keyName):
+        """ Returns the value of the specified key name Storage """
+        return self.storage.get(keyName, None)
 
     def key(self, keyName):
         """ Returns the value of the key if it exists, otherwise returns None """
@@ -1656,6 +1660,10 @@ class Storage():
             del self.storage[keyName]
             self._update_file()
 
+    def clear(self):
+        """ Removes all items from the storage """
+        self.storage = {}
+
 
 class Window(object):
     """ window """
@@ -1666,21 +1674,12 @@ class Window(object):
     def __init__(self, *args, **kwargs):
         # self.console = dom.console
         # self.document = Document
-        # self.location = ''#dom.location
-        # self.location = 'eventual.technology'
         # globals()?
         # dir()?
         # locals()?
         pass
 
-    # @property
-    # def location(self):
-        # print("@@@@@@@@@@@@@@@@@@@@@@")
-        # return self._location
-
-    # @location.setter
-    # def location(self, url):
-        # self._location = url
+    # TODO - tell users to use other window class if methods are called.
 
     @staticmethod
     def alert(msg):
@@ -1807,12 +1806,6 @@ class Window(object):
 
     # def fetch_aysnc( urls: list, options={}, type="async" ):
         # TODO - a version using async/await
-
-    # @staticmethod
-    # @getter
-    # def navigator():
-        """ Returns the Navigator object for the window (See Navigator object) """
-        # return
 
     @staticmethod
     def btoa(dataString):
@@ -2298,42 +2291,6 @@ class Set():
         """
         for i in self.args:
             callbackFn(i, thisArg)
-
-
-class Navigator(object):
-    """ navigator """
-
-    # Determines whether cookies are enabled in the browser
-    cookieEnabled = False
-
-    # Determines whether the browser is online
-    onLine = False
-
-    # Returns the name of the browser Navigator
-    appName = "domonic"
-
-    def __init__(self, *args, **kwargs):
-        # self.args = args
-        # self.kwargs = kwargs
-        pass
-
-    # @property
-    # def appVersion():
-        """ Returns the version information of the browser """
-        # from domonic import __version__
-        # return __version__
-
-    # @property
-    # def language():
-        """ Returns the language of the browser Navigator """
-        # import locale
-        # return locale.getdefaultlocale()
-
-    # platform  Returns for which platform the browser is compiled  Navigator
-    # product   Returns the engine name of the browser  Navigator
-    # userAgent Returns the user-agent header sent by the browser to the server Navigator
-    # geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
-    # appCodeName   Returns the code name of the browser    Navigator
 
 
 class Number(float):
@@ -3427,17 +3384,20 @@ class Reflect():
 
     @staticmethod
     def apply(target, thisArgument, argumentsList):
-        """ Calls a target function with arguments as specified by the argumentsList parameter. See also Function.prototype.apply(). """
+        """ Calls a target function with arguments as specified by the argumentsList parameter.
+        See also Function.prototype.apply(). """
         raise NotImplementedError
 
     @staticmethod
     def construct(target, argumentsList, newTarget):
-        """ The new operator as a function. Equivalent to calling new target(...argumentsList). Also provides the option to specify a different prototype. """
+        """ The new operator as a function. Equivalent to calling new target(...argumentsList).
+        Also provides the option to specify a different prototype. """
         raise NotImplementedError
 
     @staticmethod
     def defineProperty(target, propertyKey, attributes):
-        """ Similar to Object.defineProperty(). Returns a Boolean that is true if the property was successfully defined. """
+        """ Similar to Object.defineProperty(). 
+        Returns a Boolean that is true if the property was successfully defined. """
         raise NotImplementedError
 
     @staticmethod
@@ -3447,7 +3407,8 @@ class Reflect():
 
     @staticmethod
     def get(target, propertyKey, receiver):
-        """ Returns the value of the property. Works like getting a property from an object (target[propertyKey]) as a function. """
+        """ Returns the value of the property.
+        Works like getting a property from an object (target[propertyKey]) as a function. """
         raise NotImplementedError
 
     @staticmethod
@@ -3455,19 +3416,13 @@ class Reflect():
         """ Similar to Object.getOwnPropertyDescriptor(). Returns a property descriptor of the given property if it exists on the object,  undefined otherwise. """
         raise NotImplementedError
 
-    @staticmethod
-    def getPrototypeOf(target):
-        """ Same as Object.getPrototypeOf(). """
-        raise NotImplementedError
+    getPrototypeOf = Object.getPrototypeOf
+    # isExtensible = Object.isExtensible
 
     @staticmethod
     def has(target, propertyKey):
-        """ Returns a Boolean indicating whether the target has the property. Either as own or inherited. Works like the in operator as a function. """
-        raise NotImplementedError
-
-    @staticmethod
-    def isExtensible(target):
-        """ Same as Object.isExtensible(). Returns a Boolean that is true if the target is extensible. """
+        """ Returns a Boolean indicating whether the target has the property. 
+        Either as own or inherited. Works like the in operator as a function. """
         raise NotImplementedError
 
     @staticmethod
@@ -3523,7 +3478,8 @@ class Symbol():
 
     # A method that matches against a string, also used to determine if an object may be used as a regular expression.
     def match(self, item):
-        """ A method that matches the symbol against a string, also used to determine if an object may be used as a regular expression. """
+        """ A method that matches the symbol against a string, 
+        also used to determine if an object may be used as a regular expression. """
         raise NotImplementedError
 
     # A method that returns an iterator, that yields matches of the regular expression against a string.
@@ -3702,19 +3658,6 @@ class Atomics():
 
 
 
-# BELOW is legacy data from a dump of ALL dom/js methods. was looking for useful things to port back when this was the only class.
-# -- leave here for now - ill delete stuff later. it reminds me what i haven't covered
-
-# clear()   Clears the console  Console, Storage
 # debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements
-# elapsedTime   Returns the number of seconds a transition has been running
-# error()   Outputs an error message to the console Console
-# getItem() Returns the value of the specified key name Storage
-# getNamedItem()    Returns a specified attribute node from a NamedNodeMap  Attribute
-# item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection
-# namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection
-# removeNamedItem() Removes a specified attribute node  Attribute
-# setNamedItem()    Sets the specified attribute node (by name) Attribute
-# specified Returns true if the attribute has been specified, otherwise it returns false    Attribute
 
 '''

@@ -28,7 +28,7 @@ class Color():
         # rgba = '#'+secrets.token_hex(4)
 
     @staticmethod
-    def hex2rgb(h):
+    def hex2rgb(h: str):
         """[hex2rgb]
 
         Args:

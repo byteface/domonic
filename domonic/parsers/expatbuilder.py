@@ -1,14 +1,13 @@
-# shamelessly steal the expatbuilder built into python used by mindom and try get it to return domonic instead
+# steal and mod the expatbuilder built into python used by mindom and try get it to return domonic instead
 
-"""Facility to use the Expat parser to load a minidom instance
-from a string or file.
+"""Facility to use the Expat parser to load a domonic instance from a string or file.
 This avoids all the overhead of SAX and pulldom to gain performance.
 """
 
 # Warning! 
 #
 # This module is tightly bound to the implementation details of the
-# minidom DOM and can't be used with other DOM implementations.  This
+# domonic DOM and can't be used with other DOM implementations.  This
 # is due, in part, to a lack of appropriate methods in the DOM (there is
 # no way to create Entity and Notation nodes via the DOM Level 2
 # interface), and for performance.  The latter is the cause of some fairly
@@ -34,8 +33,11 @@ from xml.parsers import expat
 from xml.dom.minidom import _append_child, _set_attribute_node
 from xml.dom.NodeFilter import NodeFilter
 
-from domonic.dom import Element, Node, DocumentFragment, Document, DOMImplementation
+from domonic.dom import Element, Node, DocumentFragment, Document, DOMImplementation, Text
 from domonic.html import *
+
+from domonic.decorators import check
+
 
 TEXT_NODE = Node.TEXT_NODE
 CDATA_SECTION_NODE = Node.CDATA_SECTION_NODE
@@ -229,7 +231,7 @@ class ExpatBuilder:
         except ParseEscape:
             pass
         doc = self.document
-        print( 'WHATS UP DOC>>>>>>>>>>>>>>>>>>>>>>', doc, type(doc) )
+        # print( 'WHATS UP DOC>>>>>>>>>>>>>>>>>>>>>>', doc, type(doc) )
         self.reset()
         self._parser = None
         return doc
@@ -243,13 +245,19 @@ class ExpatBuilder:
             # print(subset)
             # self.document.doctype.internalSubset = subset
 
+    # @check
     def start_doctype_decl_handler(self, doctypeName, systemId, publicId,
                                    has_internal_subset):
         doctype = self.document.implementation.createDocumentType(
             doctypeName, publicId, systemId)
         doctype.ownerDocument = self.document
         # _append_child(self.document, doctype)
-        self.self.document.appendChild(node)
+        # print(">>.", node, type(node))
+        # if isinstance(node, Document):
+        #     self.document = node
+        #     return
+        # else:
+        self.document.appendChild(node)
         self.document.doctype = doctype
         if self._filter and self._filter.acceptNode(doctype) == FILTER_REJECT:
             self.document.doctype = None
@@ -279,6 +287,7 @@ class ExpatBuilder:
         if self._filter and self._filter.acceptNode(node) == FILTER_REJECT:
             self.curNode.removeChild(node)
 
+    # @check
     def character_data_handler_cdata(self, data):
         childNodes = self.curNode.childNodes
         if self._cdata:
@@ -294,24 +303,26 @@ class ExpatBuilder:
             node.data = value
             return
         else:
-            node = minidom.Text()
+            node = Text()
             node.data = data
             node.ownerDocument = self.document
         # _append_child(self.curNode, node)
         self.curNode.appendChild(node)
 
+    # @check
     def character_data_handler(self, data):
         childNodes = self.curNode.childNodes
         if childNodes and childNodes[-1].nodeType == TEXT_NODE:
             node = childNodes[-1]
             node.data = node.data + data
             return
-        node = minidom.Text()
+        node = Text()
         node.data = node.data + data
         node.ownerDocument = self.document
         # _append_child(self.curNode, node)
         self.curNode.appendChild(node)
 
+    # @check
     def entity_decl_handler(self, entityName, is_parameter_entity, value,
                             base, systemId, publicId, notationName):
         if is_parameter_entity:
@@ -324,6 +335,7 @@ class ExpatBuilder:
         if value is not None:
             # internal entity
             # node *should* be readonly, but we'll cheat
+            # print('^^^^^^^&&&&^^^^^^^^^')
             child = self.document.createTextNode(value)
             node.childNodes.append(child)
         self.document.doctype.entities._seq.append(node)
@@ -360,6 +372,7 @@ class ExpatBuilder:
         self.getParser().StartElementHandler = self.start_element_handler
         self.start_element_handler(name, attributes)
 
+    # @check
     def start_element_handler(self, name, attributes):
         node = self.document.createElement(name)
         # _append_child(self.curNode, node)
@@ -611,6 +624,7 @@ class FragmentBuilder(ExpatBuilder):
     fragment.
     """
 
+    # @check
     def __init__(self, context, options=None):
         if context.nodeType == DOCUMENT_NODE:
             self.originalDocument = context
@@ -695,6 +709,7 @@ class FragmentBuilder(ExpatBuilder):
     def _getNSattrs(self):
         return ""
 
+    # @check
     def external_entity_ref_handler(self, context, base, systemId, publicId):
         if systemId == _FRAGMENT_BUILDER_INTERNAL_SYSTEM_ID:
             # this entref is the one that we made to put the subtree
@@ -743,6 +758,7 @@ class Namespaces:
         """Push this namespace declaration on our storage."""
         self._ns_ordered_prefixes.append((prefix, uri))
 
+    # @check
     def start_element_handler(self, name, attributes):
         if ' ' in name:
             uri, localname, prefix, qname = _parse_ns_name(self, name)
@@ -756,13 +772,19 @@ class Namespaces:
         from domonic.html import create_element
         # node = Element(qname, uri, prefix, localname)
         node = create_element(qname, uri, prefix, localname)
-        print( "NODE", node )
+        # print( "NODE", node )
         node.namespaceURI = uri
         node.prefix = prefix
         node.ownerDocument = self.document
         # print("THIS::::",self.curNode, node)
         # _append_child(self.curNode, node)
-        self.curNode.appendChild(node)
+        if isinstance(self.curNode, Document) and isinstance(node, Document):
+            # print("this is the thing **** ****************************")
+            self.curNode = node
+            self.document = node
+            # return
+        else:
+            self.curNode.appendChild(node)
         self.curNode = node
 
         if self._ns_ordered_prefixes:

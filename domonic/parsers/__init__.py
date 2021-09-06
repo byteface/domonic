@@ -6,6 +6,8 @@
 
     These methods operate strings not on pyml objects. For dom manipulation use the dom.
 
+    WARNING> dont use this class. still in development/idea phase. Teasing util methods out from the in-place parser 
+
 """
 
 import re
@@ -237,8 +239,6 @@ def replace_newlines(html: str):
 #     page = page.replace('<br>\n', '\n')
 
 
-
-
 def clean_junk(page):
     """[clears any typically invalid runs of chars that may exist in pyml.
         to be used at the end of all cleaning functions before an evaluation.
@@ -336,44 +336,24 @@ def add_xml_declaration_to_document(content: str):
 # - add_xml_declaration_to_document
 # - add_cdata_tags_to_every_node
 # - remove_cdata_tags_from_every_node
-# - add_newlines
 # - remove_newlines
 # - add_paragraphs
-# - remove_paragraphs
-# - clean_junk
 # - indent
-# - indent_all
 # - create_html_from_markdown
 # - create_html_from_xml
-# - dent
-# - find_all_nodes_with_tag
 # - get_xpath_of_node
 
 
-a = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <meta charset="utf-8">
-    <title>Title</title>
-    </head>
-    <body>
-    <h1>Title</h1>
-    </body>
-    </html>
-    """
-
-b = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-    <meta charset="utf-8">
-    <title>Title</title>
-    </head>
-    <body>
-    <h1>Title</h1>
-    </body>
-    </html>
-    """
-
-
+''' TODO - check earlier version getter/setters for some string methods that may be useful here
+@body.setter
+def body(self, content):
+    """ Sets the document's body (the <body> element) """
+    # self.querySelector('body')
+    # tag = "body"
+    # reg = f"<{tag}.*?>(.+?)</{tag}>"
+    # pattern = re.compile(reg)
+    # tags = re.findall(pattern,html)
+    # return tags[0]
+    print("TODO - setter method on body")
+    return
+'''
