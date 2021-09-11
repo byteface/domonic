@@ -48,8 +48,8 @@ class Websocket(object):
         elif event_string == 'mousedown' or event_string == 'mouseup' or event_string == "mousemove":
             evt = MouseEvent(event_string)
             evt.initMouseEvent(_type=event_string, screenX=dom_event['screenX'], screenY=dom_event['screenY'],
-                            clientX=dom_event['clientX'], clientY=dom_event['clientY'],
-                            ctrlKey=dom_event['ctrlKey'], altKey=dom_event['altKey'], shiftKey=dom_event['shiftKey'])
+                               clientX=dom_event['clientX'], clientY=dom_event['clientY'],
+                               ctrlKey=dom_event['ctrlKey'], altKey=dom_event['altKey'], shiftKey=dom_event['shiftKey'])
 
         elif event_string in ["drag", "dragend", "dragenter", "dragexit", "dragleave", "dragover", "dragstart", "drop"]:
             evt = DragEvent(event_string)
@@ -82,12 +82,12 @@ class Websocket(object):
         return evt
 
     def __init__(self, reference='socket', address='ws://0.0.0.0:5555', target="body",
-                    mouse_events=True, keyboard_events=True,
-                    ui_events=False, focus_events=False, touch_events=False, wheel_events=False,
-                    animation_events=False, clipboard_events=False, error_events=False, submit_events=False,
-                    pointer_events=False, before_unload_events=False, SVG_events=False, timer_events=False,
-                    drag_events=False, hashchange_events=False, input_events=False, page_transition_events=False,
-                    popstate_events=False, storage_events=False, transition_events=False, progress_events=False):
+                 mouse_events=True, keyboard_events=True,
+                 ui_events=False, focus_events=False, touch_events=False, wheel_events=False,
+                 animation_events=False, clipboard_events=False, error_events=False, submit_events=False,
+                 pointer_events=False, before_unload_events=False, SVG_events=False, timer_events=False,
+                 drag_events=False, hashchange_events=False, input_events=False, page_transition_events=False,
+                 popstate_events=False, storage_events=False, transition_events=False, progress_events=False):
 
         self.reference = reference
         self.address = address
@@ -409,8 +409,7 @@ class Sound(object):
         return str(
             div(
                 audio(source(_src=self.filename, _type="audio/mp3"), _id="sfx", _autoplay="true"),
-                script(
-                """
+                script("""
                 function play_sound( filename ) {
                 let sound = document.getElementById("sfx");
                 sound.currentTime = 0;
@@ -590,9 +589,8 @@ class Webpage(object):  # TODO - shouldn't this extend html?
             )
         )
 
-
-
 # quick templates
+
 
 webpage_tmpl = lambda content: f"""
     <!DOCTYPE html>

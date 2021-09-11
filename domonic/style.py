@@ -101,14 +101,15 @@ class CSSRule():
     @property
     def cssText(self):
         """ Represents the textual representation of the rule, e.g. "h1,h2 { font-size: 16pt }" or "@import 'url'".
-        To access or modify parts of the rule (e.g. the value of "font-size" in the example) 
+        To access or modify parts of the rule (e.g. the value of "font-size" in the example)
         use the properties on the specialized interface for the rule's type.
         """
         pass
 
     @property
     def parentRule(self):
-        """ Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an @media block, the parent rule would be that CSSMediaRule. """
+        """ Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an @media block,
+        the parent rule would be that CSSMediaRule. """
         raise NotImplementedError
 
     def parentStyleSheet(self):
@@ -144,7 +145,8 @@ class CSSStyleSheet(StyleSheet):
 
     @property
     def cssRules():  # -> 'CSSStyleRuleList':
-        """ Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects that comprise the stylesheet. """
+        """ Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects
+        that comprise the stylesheet. """
         # return CSSStyleRuleList()
         raise NotImplementedError
 
@@ -159,11 +161,13 @@ class CSSStyleSheet(StyleSheet):
         raise NotImplementedError
 
     def insertRule(self):
-        """ Inserts a new rule at the specified position in the stylesheet, given the textual representation of the rule."""
+        """ Inserts a new rule at the specified position in the stylesheet,
+            given the textual representation of the rule."""
         raise NotImplementedError
 
     def replace(self):
-        """ Asynchronously replaces the content of the stylesheet and returns a Promise that resolves with the updated CSSStyleSheet."""
+        """ Asynchronously replaces the content of the stylesheet and returns
+        a Promise that resolves with the updated CSSStyleSheet."""
         raise NotImplementedError
 
     def replaceSync(self):
@@ -185,7 +189,8 @@ class CSSStyleSheet(StyleSheet):
         raise NotImplementedError
 
     def removeRule(self):
-        """ Functionally identical to deleteRule(); removes the rule at the specified index from the stylesheet's rule list. """
+        """ Functionally identical to deleteRule();
+        removes the rule at the specified index from the stylesheet's rule list. """
         raise NotImplementedError
 
 
@@ -2726,7 +2731,7 @@ class CSSStyleDeclaration(Style):
     def cssText(self):
         """ Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
         Setting this attribute changes the inline style.
-        If you want a text representation of a computed declaration block, 
+        If you want a text representation of a computed declaration block,
         you can get it with JSON.stringify()."""
         raise NotImplementedError
 

@@ -1851,8 +1851,7 @@
     <span class="nd">@body</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span> <span class="c1"># TODO - untested</span>
         <span class="sd">&quot;&quot;&quot; Sets the document&#39;s body (the &lt;body&gt; element) &quot;&quot;&quot;</span>
-        <span class="c1"># remove an existing body</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">querySelector</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">removeFromParent</span><span class="p">()</span>
+        <span class="c1"># TODO - remove an existing body ?</span>
         <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="n">body</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">body</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
 
@@ -2265,7 +2264,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Timer &#39;</span> <span class="o">+</span> <span class="n">label</span> <span class="o">+</span> <span class="s1">&#39; does not exist&#39;</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">assert_</span><span class="p">(</span><span class="n">assertion</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">assert_</span><span class="p">(</span><span class="n">assertion</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[return an error message if the assertion is false. If the assertion is true, nothing happens.]</span>
 
 <span class="sd">        Args:</span>
@@ -2439,46 +2438,46 @@
 <span class="c1">#         return self</span>
 
 
-<span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">Object</span>
-<span class="n">MutationObserverInit</span> <span class="o">=</span> <span class="n">Object</span><span class="p">()</span>
-<span class="n">MutationObserverInit</span><span class="o">.</span><span class="n">subtree</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">MutationObserverInit</span><span class="o">.</span><span class="n">childList</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">MutationObserverInit</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">MutationObserverInit</span><span class="o">.</span><span class="n">attributeFilter</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">MutationObserverInit</span><span class="o">.</span><span class="n">attributeOldValue</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">MutationObserverInit</span><span class="o">.</span><span class="n">characterData</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">MutationObserverInit</span><span class="o">.</span><span class="n">characterDataOldValue</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># from domonic.javascript import Object</span>
+<span class="c1"># MutationObserverInit = Object()</span>
+<span class="c1"># MutationObserverInit.subtree = False</span>
+<span class="c1"># MutationObserverInit.childList = False</span>
+<span class="c1"># MutationObserverInit.attributes = False</span>
+<span class="c1"># MutationObserverInit.attributeFilter = False</span>
+<span class="c1"># MutationObserverInit.attributeOldValue = False</span>
+<span class="c1"># MutationObserverInit.characterData = False</span>
+<span class="c1"># MutationObserverInit.characterDataOldValue = False</span>
 
-<div class="viewcode-block" id="MutationObserver"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.MutationObserver">[docs]</a><span class="k">class</span> <span class="nc">MutationObserver</span><span class="p">():</span> <span class="c1"># TODO - test</span>
-    <span class="sd">&quot;&quot;&quot; The MutationObserver interface provides the ability to watch for changes being made to the DOM tree. &quot;&quot;&quot;</span>
+<span class="c1"># class MutationObserver(): # TODO - test</span>
+<span class="c1">#     &quot;&quot;&quot; The MutationObserver interface provides the ability to watch for changes being made to the DOM tree. &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="n">MutationObserverInit</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mutations</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">observer</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1">#     def __init__(self, callback, opts=MutationObserverInit):</span>
+<span class="c1">#         self.callback = callback</span>
+<span class="c1">#         self.mutations = []</span>
+<span class="c1">#         self.observer = None</span>
+<span class="c1">#         self.is_connected = False</span>
 
-<div class="viewcode-block" id="MutationObserver.disconnect"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.MutationObserver.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Stops the MutationObserver instance from receiving further notifications until </span>
-<span class="sd">        and unless observe() is called again. &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">observer</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mutations</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+<span class="c1">#     def disconnect(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Stops the MutationObserver instance from receiving further notifications until </span>
+<span class="c1">#         and unless observe() is called again. &quot;&quot;&quot;</span>
+<span class="c1">#         self.is_connected = False</span>
+<span class="c1">#         self.observer = None</span>
+<span class="c1">#         self.mutations = []</span>
+<span class="c1">#         self.callback = None</span>
+<span class="c1">#         return self</span>
 
-<div class="viewcode-block" id="MutationObserver.observe"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.MutationObserver.observe">[docs]</a>    <span class="k">def</span> <span class="nf">observe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Configures the MutationObserver to begin receiving notifications through </span>
-<span class="sd">        its callback function when DOM changes matching the given options occur. &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">observer</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">ownerDocument</span><span class="o">.</span><span class="n">createNodeObserver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mutations</span><span class="o">.</span><span class="n">append</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_connected</span> <span class="o">=</span> <span class="kc">True</span></div>
+<span class="c1">#     def observe(self, target, options):</span>
+<span class="c1">#         &quot;&quot;&quot; Configures the MutationObserver to begin receiving notifications through </span>
+<span class="c1">#         its callback function when DOM changes matching the given options occur. &quot;&quot;&quot;</span>
+<span class="c1">#         if self.is_connected:</span>
+<span class="c1">#             self.disconnect()</span>
+<span class="c1">#         self.observer = target.ownerDocument.createNodeObserver(self.mutations.append, True)</span>
+<span class="c1">#         self.is_connected = True</span>
 
-<div class="viewcode-block" id="MutationObserver.takeRecords"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.MutationObserver.takeRecords">[docs]</a>    <span class="k">def</span> <span class="nf">takeRecords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Removes all pending notifications from the MutationObserver&#39;s notification queue </span>
-<span class="sd">        and returns them in a new Array of MutationRecord objects. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[]</span></div></div>
+<span class="c1">#     def takeRecords(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Removes all pending notifications from the MutationObserver&#39;s notification queue </span>
+<span class="c1">#         and returns them in a new Array of MutationRecord objects. &quot;&quot;&quot;</span>
+<span class="c1">#         return []</span>
 
 
 <span class="c1"># ResizeObserver</span>

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Domonic: dQuery &#8212; domonic 0.5.0 documentation</title>
+    <title>Domonic: dQuery &#8212; domonic 0.5.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -98,7 +98,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">addBack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.addBack"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">addBack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.addBack"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Add the previous set of elements on the stack to the current set, optionally filtered by a selector.</p>
 </dd></dl>
 
@@ -116,37 +116,37 @@
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ajaxComplete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxComplete"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Register a handler to be called when Ajax requests complete. This is an AjaxEvent.</p>
+<span class="sig-name descname"><span class="pre">ajaxComplete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxComplete"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Register a handler to be called when Ajax requests complete. This is an Ajax Event</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ajaxError</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxError"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Register a handler to be called when Ajax requests complete with an error. This is an Ajax Event.</p>
+<span class="sig-name descname"><span class="pre">ajaxError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxError"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Register a handler to be called when Ajax requests complete with an error. This is an Ajax Event</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ajaxSend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxSend"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Attach a function to be executed before an Ajax request is sent. This is an Ajax Event.</p>
+<span class="sig-name descname"><span class="pre">ajaxSend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxSend"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Register a handler to be called when Ajax requests complete successfully. This is an Ajax Event</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ajaxStart</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxStart"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Register a handler to be called when the first Ajax request begins. This is an Ajax Event.</p>
+<span class="sig-name descname"><span class="pre">ajaxStart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxStart"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Register a handler to be called when the first Ajax request begins. This is an Ajax Event</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ajaxStop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxStop"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Register a handler to be called when all Ajax requests have completed. This is an Ajax Event.</p>
+<span class="sig-name descname"><span class="pre">ajaxStop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxStop"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Register a handler to be called when all Ajax requests have completed. This is an Ajax Event</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ajaxSuccess</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxSuccess"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">ajaxSuccess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ajaxSuccess"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Attach a function to be executed whenever an Ajax request completes successfully. This is an Ajax Event.</p>
 </dd></dl>
 
@@ -219,7 +219,7 @@ or set one or more attributes for every matched element.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">click</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.click"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">click</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.click"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bind an event handler to the “click” JavaScript event, or trigger that event on an element.</p>
 </dd></dl>
 
@@ -238,7 +238,7 @@ and traversing up through its ancestors in the DOM tree.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">contents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.contents"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">contents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.contents"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Get the children of each element in the set of matched elements, including text and comment nodes.</p>
 </dd></dl>
 
@@ -257,33 +257,33 @@ then context will likely be the document.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">css</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.css"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">css</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.css"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Get the value of a computed style property for the first element in the set of matched elements
 or set one or more CSS properties for every matched element.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.data"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.data"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Store arbitrary data associated with the matched elements or return the value at the named data store
 for the first element in the set of matched elements.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">dblclick</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.dblclick"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">dblclick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.dblclick"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bind an event handler to the “dblclick” JavaScript event, or trigger that event on an element.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">delay</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.delay"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.delay"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Set a timer to delay execution of subsequent items in the queue.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">delegate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.delegate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">delegate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.delegate"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Attach a handler to one or more events for all elements that match the selector, now or in the future,
 based on a specific set of root elements.</p>
 </dd></dl>
@@ -333,7 +333,7 @@ set of matched elements to its previous state.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.error"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bind an event handler to the “error” JavaScript event.</p>
 </dd></dl>
 
@@ -369,13 +369,13 @@ set of matched elements to its previous state.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Reduce the set of matched elements to those that match the selector or pass the function’s test.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.find"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Get the descendants of each element in the current set of matched elements, filtered by a selector,
 dQuery object, or element.</p>
 </dd></dl>
@@ -413,7 +413,7 @@ for the matched elements.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">has</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.has"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">has</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.has"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Reduce the set of matched elements to those that have a descendant
 that matches the selector or DOM element.</p>
 </dd></dl>
@@ -611,7 +611,7 @@ DOM node, or dQuery object passed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">offset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coordinates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Get the current coordinates of the first element, or set the coordinates of every element,
 in the set of matched elements, relative to the document.</p>
 </dd></dl>
@@ -659,14 +659,14 @@ optionally filtered by a selector.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">parents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.parents"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">parents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.parents"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Get the ancestors of each element in the current set of matched elements,
 optionally filtered by a selector.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">parentsUntil</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.parentsUntil"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">parentsUntil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.parentsUntil"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Get the ancestors of each element in the current set of matched elements,
 up to but not including the element matched by the selector, DOM node, or dQuery object.</p>
 </dd></dl>
@@ -693,21 +693,21 @@ in the set of matched elements.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">prev</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.prev"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">prev</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.prev"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Get the immediately preceding sibling of each element in the set of matched elements.
 If a selector is provided, it retrieves the previous sibling only if it matches that selector.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">prevAll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.prevAll"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">prevAll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.prevAll"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Get all preceding siblings of each element in the set of matched elements,
 optionally filtered by a selector.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">prevUntil</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.prevUntil"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">prevUntil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.prevUntil"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Get all preceding siblings of each element up to but not including the element matched by the selector,
 DOM node, or dQuery object.</p>
 </dd></dl>
@@ -740,7 +740,7 @@ for every matched element.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">ready</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Specify a function to execute when the DOM is fully loaded.</p>
 </dd></dl>
 
@@ -764,7 +764,7 @@ for every matched element.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">removeData</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.removeData"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">removeData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.removeData"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Remove a previously-stored piece of data.</p>
 </dd></dl>
 
@@ -776,7 +776,7 @@ for every matched element.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">replaceAll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.replaceAll"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">replaceAll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.replaceAll"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Replace each target element with the set of matched elements.</p>
 </dd></dl>
 
@@ -789,13 +789,13 @@ of elements that was removed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">resize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.resize"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.resize"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bind an event handler to the “resize” JavaScript event, or trigger that event on an element.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">scroll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.scroll"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">scroll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.scroll"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bind an event handler to the “scroll” JavaScript event, or trigger that event on an element.</p>
 </dd></dl>
 
@@ -815,7 +815,7 @@ or set the vertical position of the scroll bar for every matched element.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bind an event handler to the “select” JavaScript event, or trigger that event on an element.</p>
 </dd></dl>
 
@@ -965,13 +965,13 @@ or set the width of every matched element.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.wrap"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrappingElement</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.wrap"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Wrap an HTML structure around each element in the set of matched elements.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">wrapAll</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.wrapAll"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">wrapAll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrappingElement</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dQuery.html#dQuery_el.wrapAll"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Wrap an HTML structure around all elements in the set of matched elements.</p>
 </dd></dl>
 

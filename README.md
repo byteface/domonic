@@ -67,7 +67,7 @@ print(test)
 
 ### rendering
 
-you can just cast str() on any element to render it.
+you can cast str() on any element to render it.
 
 ```python
 el_string = str(div())
@@ -118,6 +118,8 @@ str(t)
 ```
 
 ### DOM
+
+DOM manipulation with python.
 
 #### createElement
 to create your own elements use the DOM API

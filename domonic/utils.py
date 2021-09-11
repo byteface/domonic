@@ -313,7 +313,7 @@ class Utils(object):
         return front + mid + end
 
     @staticmethod
-    def truncate(text='', length: int=0) -> str:
+    def truncate(text='', length: int = 0) -> str:
         """[truncates a string and appends 3 dots]
 
         Args:
@@ -327,7 +327,6 @@ class Utils(object):
             return text[0:length] + "..."
         else:
             return text + "..."
-
 
     @staticmethod
     def digits(text='') -> str:
@@ -369,7 +368,6 @@ class Utils(object):
         except requests.ConnectionError:
             # print("No internet connection available.")
             return False
-
 
     # def convert_file(filepath, filetype=None):
     #     """

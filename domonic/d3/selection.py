@@ -31,7 +31,7 @@ def namespace(name):
 def creatorInherit(name):
     def anon(this):
         # document = this.ownerDocument
-        from domonic.dom import document 
+        from domonic.dom import document
         # uri = this.namespaceURI
         uri = document.namespaceURI
         return document.createElement(name) if uri == xhtml and document.documentElement.namespaceURI == xhtml else document.createElementNS(uri, name)
@@ -305,7 +305,6 @@ class Selection():
         else:
             return self.selectAll(self.childrenFilter(match))
 
-
     # import selection_filter from "./filter.js";
     # def filter: selection_filter,
     # import {Selection} from "./index.js";
@@ -356,7 +355,6 @@ class Selection():
     def exit(self):
         return Selection(this._exit or self._groups.map(sparse), self._parents)
 
-
     # import selection_join from "./join.js";
     # def join: selection_join,
     def join(self, onenter, onupdate, onexit):
@@ -383,7 +381,7 @@ class Selection():
     # import selection_merge from "./merge.js";
     # def merge: selection_merge,
     # import {Selection} from "./index.js";
-    def merge(context):
+    def merge(self, context):
         selection = context.selection() if context.selection else context
 
         # TODO - rewrite this as python
@@ -497,7 +495,7 @@ class Selection():
             j += 1
         return Selection(sortgroups, self._parents, self.this).order()
 
-    def ascending(a, b):
+    def ascending(self, a, b):
         # return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN
         if a < b:
             return -1
@@ -702,11 +700,11 @@ class Selection():
 
         # print('hi!!!!!!!!')
         if value == None:  # ?? need to understand what below is doing
-            func = self._styleRemove#(name, value, priority)
+            func = self._styleRemove  # (name, value, priority)
         elif callable(value):
-            func = self._styleFunction#(name, value, priority)
+            func = self._styleFunction  # (name, value, priority)
         else:
-            func = self._styleConstant#(name, value, priority)
+            func = self._styleConstant  # (name, value, priority)
 
         p = "" if priority == None else priority
         return self.each(func(name, value, p))
@@ -878,14 +876,14 @@ class Selection():
             this.innerHTML = "" if v == None else v
         return anon
 
-    def html(value):
-    #TODO write this commented out javascript as python instead
-    # return arguments.length
-    #     ? this.each(value == null
-    #         ? htmlRemove : (typeof value === "function"
-    #         ? htmlFunction
-    #         : htmlConstant)(value))
-    #     : this.node().innerHTML;
+    def html(self, value):
+        #TODO write this commented out javascript as python instead
+        # return arguments.length
+        #     ? this.each(value == null
+        #         ? htmlRemove : (typeof value === "function"
+        #         ? htmlFunction
+        #         : htmlConstant)(value))
+        #     : this.node().innerHTML;
         if value == None:
             func = htmlRemove
         elif callable(value):
@@ -916,7 +914,7 @@ class Selection():
     # import creator from "../creator.js"; # already in?
     # import selector from "../selector.js"; # already in?
 
-    def constantNull():
+    def constantNull(self):
         return None
 
     def insert(self, name, before, *args):
@@ -1153,6 +1151,7 @@ def select(selector):
     else:
         return Selection([[selector]], root)
 
+
 def create(name):
     return select(creator(name).call(document.documentElement))
 
@@ -1162,13 +1161,15 @@ def create(name):
 # export {default as local} from "./local.js";
 nextId = 0
 
+
 def local():
     return Local
+
 
 class Local():
 
     def __init__(self):
-        self.nextId = 0#+= 1
+        self.nextId = 0  # += 1
         self._ = "@" + String(self.nextId).toString(36)
 
     def get(self, node):

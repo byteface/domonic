@@ -66,7 +66,10 @@ function project(){
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(add_help=False, prog="domonic", usage="%(prog)s [options]", description="Generate HTML with Python 3")
+    parser = argparse.ArgumentParser(add_help=False,
+                                     prog="domonic",
+                                     usage="%(prog)s [options]",
+                                     description="Generate HTML with Python 3")
     parser.add_argument('-a', '--assets', help="generate as assets directory with common files", action='store_true')
     parser.add_argument('-d', '--download', help="Attempts to to generate domonic template from a webpage", type=str)
     parser.add_argument('-h', '--help', action='store_true')  # launch the docs
@@ -89,7 +92,6 @@ def parse_args():
     # parser.add_argument('-c', '--json2ini', help="converts a json file to an ini file", type=str)
     # parser.add_argument('-i', '--ini2json', help="converts an ini file to a json file", type=str)
     # parser.add_argument('-m', '--merge', help="merges two ini files", type=str)
-
 
     # -- ideas
     # -- change all file extensions. from, to

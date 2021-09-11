@@ -886,7 +886,8 @@ class TestCase(unittest.TestCase):
         # with d():
         #     div()
         #     print('test')
-        print(d)
+        # print(d)
+        assert str(d) == '<html><head><p></p></head><div></div><body><p></p></body></html>'
 
 
     # def test_pyml(self):

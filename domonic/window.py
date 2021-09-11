@@ -11,15 +11,17 @@
     You can extend or import either for your own purposes.
 
 """
+import sys
+
 from domonic import domonic
 from domonic.javascript import Window
 from domonic.dom import *
 from domonic.dom import document, Location
 
 
-# TODO - test
+# TODO - test
 class CustomElementRegistry():
-    """ The CustomElementRegistry interface provides methods for registering custom elements and querying registered elements. 
+    """ The CustomElementRegistry interface provides methods for registering custom elements and querying registered elements.
     To get an instance of it, use the window.customElements property. """
 
     def __init__(self):
@@ -113,7 +115,7 @@ class Navigator(object):
     def product(self):
         """ Returns the product name """
         return self.appName
-    
+
     # @property
     # def location(self):
         # """ Returns the location of the browser Navigator """
@@ -123,7 +125,7 @@ class Navigator(object):
     def userAgent(self):
         """ Returns the user-agent header sent by the browser to the server Navigator """
         raise NotImplementedError
-    
+
     # geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
     # appCodeName   Returns the code name of the browser    Navigator
 
@@ -155,13 +157,13 @@ class Window(Window):
             return
         import requests
         r = requests.get(value)
-        content = r.text #.encode('utf-8')
+        content = r.text  # .encode('utf-8')
         # print(content)
         # content = content.replace('\n', '')
         # content = content.replace('\t', '')
         # content = content.replace(' ', '')
         # content = content.replace('\r', '')
-        
+
         from domonic.parsers import remove_tags, remove_doctype
         content = remove_tags(content, ['js', 'css', '#'])
         content = remove_doctype(content)
@@ -176,13 +178,13 @@ class Window(Window):
         content = domonic.parsers.remove_whitespace(content)
         content = domonic.parsers.remove_newlines(content)
         content = domonic.parsers.remove_tabs(content)
-        
+
         print(content)
         # return
         # clean the html before parsing
 
         # TODO - don't use parseString as it is not a HTML parser its XML parser. atm I'm just using for testing
-        self.document = domonic.domonic.parseString(content)        
+        self.document = domonic.domonic.parseString(content)
         self._location = Location(value)
 
 

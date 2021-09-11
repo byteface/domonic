@@ -97,7 +97,7 @@ class tag(object):
         "args",
         "kwargs",
         "__content",
-        "__attributes",
+        "____attributes__",  # ? seems to work. but not sure if its correct
     ]
 
     __context: list = None  # private. tags will append to last item in context on creation.
@@ -113,11 +113,10 @@ class tag(object):
             raise TemplateError(e)
         # except Exception as e:
             # print(e)
-            
+
         # if a context is open, add this tag to the context
         if tag.__context is not None:
-            tag.__context[len(tag.__context)-1] += self
-
+            tag.__context[len(tag.__context) - 1] += self
 
     @property
     def content(self):  # TODO - test
@@ -285,7 +284,6 @@ class tag(object):
 
         raise AttributeError
 
-
     def __pyml__(self):
         """ [returns a representation of the object as a pyml string] """
         from domonic.dom import Text
@@ -312,14 +310,14 @@ class tag(object):
     # def __setitem__(self,key,value):
         # self.args[key] = value
         # print(self.args[key])
-    
+
     def __enter__(self):
         if tag.__context is None:
             tag.__context = []
         tag.__context.append(self)
         return self
 
-    def __exit__(self ,type, value, traceback, *args, **kwargs):
+    def __exit__(self, type, value, traceback, *args, **kwargs):
         tag.__context.pop()
         if len(tag.__context) == 0:
             tag.__context = None
@@ -577,9 +575,9 @@ def create_element(name='custom_tag', *args, **kwargs):
     # current_module = sys.modules[__name__]
     # checks if already exists
     if name in html_tags:
-        cl = globals()[name]
+        # cl = globals()[name]
         return globals()[name]()
-    
+
     # print('creating custom element')
     custom_tag = type('custom_tag', (tag, Element), {'name': name, '__init__': tag_init})
     new_tag = custom_tag(*args, **kwargs)

@@ -181,7 +181,6 @@ class Elastic():
         else:
             s = p/(2*Math.PI) * Math.asin(c/a)
 
-
         if t < 1:
             t -= 1
             return -a/2 *Math.pow(2, 10*t) * Math.sin((t*d - s)*(2*Math.PI) / p) + b

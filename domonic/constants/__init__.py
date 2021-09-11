@@ -5,7 +5,7 @@
 """
 
 namespaces = {
-    'xml': 'http://www.w3.org/XML/1998/namespace', 
+    'xml': 'http://www.w3.org/XML/1998/namespace',
     'svg': 'http://www.w3.org/2000/svg',
     'xlink': 'http://www.w3.org/1999/xlink',
     'xmlns': 'http://www.w3.org/2000/xmlns/',
@@ -15,11 +15,11 @@ namespaces = {
     'xsd': 'http://www.w3.org/2001/XMLSchema',
     'xsi': 'http://www.w3.org/2001/XMLSchema-instance',
     'xhtml': 'http://www.w3.org/1999/xhtml',
-    'html': 'http://www.w3.org/1999/xhtml' 
+    'html': 'http://www.w3.org/1999/xhtml'
 }
 
 doctypes = {
-    'HTML5' : '<!DOCTYPE html>',
+    'HTML5': '<!DOCTYPE html>',
     # XHTML 1.1	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
     # XHTML 1.1 Strict	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     # XHTML 1.1 Transitional	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -27,11 +27,11 @@ doctypes = {
     # XHTML 1.0 Strict	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     # XHTML 1.0 Transitional	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     # XHTML_1_0_Frameset = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">'
-    'HTML4_01_Strict' : '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
-    'HTML4_01_Transitional' : '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
-    'HTML4_01_Frameset' : '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">',
-    'HTML3_2' : '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">',
-    'HTML2' : '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">'
+    'HTML4_01_Strict': '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
+    'HTML4_01_Transitional': '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
+    'HTML4_01_Frameset': '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">',
+    'HTML3_2': '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">',
+    'HTML2': '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">'
 }
 
 # graphics_extensions?
@@ -46,7 +46,7 @@ tag_states = {
         'active' : 'a:active',
         'focus' : 'a:focus',
         # 'not' : 'a:not',
-    }   
+    }
 }
 '''
 

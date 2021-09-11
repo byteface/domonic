@@ -364,7 +364,7 @@ class dQuery_el():
         """ Bind an event handler to the “contextmenu” JavaScript event, or trigger that event on an element."""
         raise NotImplementedError
 
-    def css(self, property, value=None): # TODO - untested
+    def css(self, property, value=None):  # TODO - untested
         """ Get the value of a computed style property for the first element in the set of matched elements
         or set one or more CSS properties for every matched element."""
         if not isinstance(self.elements, (list, tuple)):
@@ -439,7 +439,7 @@ class dQuery_el():
         """ Bind an event handler to the “error” JavaScript event."""
         raise NotImplementedError
 
-    def even(self): # TODO - untested
+    def even(self):  # TODO - untested
         """ Reduce the set of matched elements to the even ones in the set, numbered from zero."""
         if not isinstance(self.elements, (list, tuple)):
             self.elements = (self.elements,)
@@ -474,7 +474,7 @@ class dQuery_el():
         """ Get the descendants of each element in the current set of matched elements, filtered by a selector,
         dQuery object, or element."""
         # if isinstance(selector, str):
-            # return self.elements.find(selector)
+        # return self.elements.find(selector)
         raise NotImplementedError
 
     def finish(self):
@@ -755,7 +755,7 @@ class dQuery_el():
                 parents.append(p)
         return parents
 
-    def parents(self, selector): # TODO - untested
+    def parents(self, selector):  # TODO - untested
         """ Get the ancestors of each element in the current set of matched elements,
         optionally filtered by a selector."""
         if not isinstance(self.elements, (list, tuple)):
@@ -797,7 +797,7 @@ class dQuery_el():
             target.append(el)
         return self
 
-    def prev(self, selector):  # TODO - untested
+    def prev(self, selector):  # TODO - untested
         """ Get the immediately preceding sibling of each element in the set of matched elements.
         If a selector is provided, it retrieves the previous sibling only if it matches that selector."""
         # if not isinstance(self.elements, (list, tuple)):
@@ -812,7 +812,7 @@ class dQuery_el():
         # return prevs
         raise NotImplementedError
 
-    def prevAll(self, selector):  # TODO - untested
+    def prevAll(self, selector):  # TODO - untested
         """ Get all preceding siblings of each element in the set of matched elements,
         optionally filtered by a selector."""
         # if not isinstance(self.elements, (list, tuple)):
@@ -824,7 +824,7 @@ class dQuery_el():
         # return prevs
         raise NotImplementedError
 
-    def prevUntil(self, selector):  # TODO - untested
+    def prevUntil(self, selector):  # TODO - untested
         """ Get all preceding siblings of each element up to but not including the element matched by the selector,
         DOM node, or dQuery object."""
         # if not isinstance(self.elements, (list, tuple)):
@@ -835,7 +835,7 @@ class dQuery_el():
         #     prevs.append(prev)
         # return prevs
         raise NotImplementedError
-        
+
     def promise(self):
         """ Return a Promise object to observe when all actions of a certain type bound to the collection,
         queued or not, have finished."""
@@ -853,7 +853,7 @@ class dQuery_el():
         else:
             return self.elements[0].getAttribute(property)
 
-    def pushStack(self, stack):  # TODO - test
+    def pushStack(self, stack):  # TODO - test
         """ Add a collection of DOM elements onto the dQuery."""
         if not isinstance(self.elements, (list, tuple)):
             self.elements = (self.elements,)
@@ -915,7 +915,7 @@ class dQuery_el():
         """ Replace each target element with the set of matched elements."""
         raise NotImplementedError
 
-    def replaceWith(self, replacement):  # TODO - test
+    def replaceWith(self, replacement):  # TODO - test
         """ Replace each element in the set of matched elements with the provided new content and return the set
          of elements that was removed."""
         if not isinstance(self.elements, (list, tuple)):
@@ -1135,7 +1135,7 @@ class dQuery_el():
         or set the width of every matched element."""
         raise NotImplementedError
 
-    def wrap(self, wrappingElement): # TODO - untested
+    def wrap(self, wrappingElement):  # TODO - untested
         """ Wrap an HTML structure around each element in the set of matched elements."""
         if isinstance(wrappingElement, str):
             from domonic.html import create_element
@@ -1378,7 +1378,14 @@ class º(dQuery_el):
         return dproxy(args[0])
 
     @staticmethod
-    def ajax(url='/', type='GET', data=None, contentType=False, processData=False, cache=False, success=None, error=None):
+    def ajax(url='/',
+             type='GET',
+             data=None,
+             contentType=False,
+             processData=False,
+             cache=False,
+             success=None,
+             error=None):
         """ make an ajax request """
         try:
             # r = requests.get(url, timeout=3)
@@ -1681,7 +1688,6 @@ class º(dQuery_el):
         # return domonic.domonic.parseString(string, 'domonic')
         # return domonic.domonic.parseString(string, 'expat')
         return domonic.domonic.parseString(string)
-
 
     @staticmethod
     def parseJSON(string: str):

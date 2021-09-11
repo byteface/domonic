@@ -32,7 +32,6 @@ def function(python_str):
     """[evals a string i.e.
 
     sup = function('''print(hi)''')
-    
     sup()
 
     ]
@@ -54,7 +53,7 @@ undefined = None
 
 
 class Boolean():
-    """[Creates a Boolean Object. 
+    """[Creates a Boolean Object.
         Warning this is NOT a boolean type. for that use Global.Boolean()]
     ] """
     def __init__(self, value=False):
@@ -62,7 +61,6 @@ class Boolean():
 
 
 class Object(object):
-
 
     def __init__(self, obj=None, *args, **kwargs):
         """[Creates a Javascript-like Object in python]
@@ -235,7 +233,8 @@ class Object(object):
     # @staticmethod
     # def _is(value1, value2):
     #     """ Compares if two values are the same value.
-    #     Equates all NaN values (which differs from both Abstract Equality Comparison and Strict Equality Comparison)."""
+    #     Equates all NaN values (which differs from both Abstract Equality Comparison
+    #  and Strict Equality Comparison)."""
     #     pass
 
     @staticmethod
@@ -302,15 +301,15 @@ class Object(object):
     #         return False
     #     return False
 
-    @property #TODO - static or prop?
+    @property  # TODO - static or prop?
     def isFrozen(self, obj):
         """ Determines if an object was frozen. """
         return self.__isFrozen
 
-    @staticmethod #TODO - static or prop?
+    @staticmethod  # TODO - static or prop?
     def freeze(obj):
         """ Freezes an object. Other code cannot delete or change its properties. """
-        obj.__isFrozen = True    
+        obj.__isFrozen = True
 
     # def prototype(self, obj):
     #     """
@@ -483,7 +482,6 @@ class Object(object):
         """
         return self.__delitem__(name)
 
-
     # def __call__(self, *args, **kwargs):
     #     """ Calls the object. """
     #     return self.toString()
@@ -557,7 +555,7 @@ class Function(Object):
             # return self.func(thisArg, *args)
             # return self.func(this=thisArg, *args)
 
-        print('AAAARGGS!!', args)
+        # print('AAAARGGS!!', args)
 
         if thisArg is not None:
             try:
@@ -1026,7 +1024,7 @@ class Global(object):
     NaN = "NaN"
     Infinity = float("inf")
 
-    __timers= {}
+    __timers = {}
 
     # TODO - https://stackoverflow.com/questions/747641/what-is-the-difference-between-decodeuricomponent-and-decodeuri
 
@@ -1154,7 +1152,7 @@ class Global(object):
         raise NotImplementedError
 
     @staticmethod
-    def setTimeout(callback, t, *args, **kwargs):  # -> int: - TODO/FIX - for some reason types are breaking my linting on this project?
+    def setTimeout(callback, t, *args, **kwargs):
         """[sets a timer which executes a function or evaluates an expression after a specified delay]
 
         Args:
@@ -1645,7 +1643,7 @@ class Storage():
         """ Adds that key to the storage, or update that key's value if it already exists """
         self.storage[keyName] = keyValue
         self._update_file()
-    
+
     def getItem(self, keyName):
         """ Returns the value of the specified key name Storage """
         return self.storage.get(keyName, None)
@@ -1871,7 +1869,8 @@ class Array(object):
 
     @staticmethod
     def of(*args):  # TODO - test
-        """ Creates a new Array instance with a variable number of arguments, regardless of number or type of the arguments. """
+        """ Creates a new Array instance with a variable number of arguments,
+        regardless of number or type of the arguments. """
         return Array(args)
 
     def __init__(self, *args):
@@ -2273,7 +2272,8 @@ class Set():
     # Returns a new iterator object that yields the values for each element in the Set object in insertion order.
 
     def values(self):
-        """ Returns a new iterator object that yields the values for each element in the Set object in insertion order. """
+        """ Returns a new iterator object that yields the values for each element
+        in the Set object in insertion order. """
         return iter(self.args)
 
     # def keys(self):
@@ -2281,7 +2281,8 @@ class Set():
     #     return self.values()
 
     def entries(self):
-        """ Returns a new iterator object that contains an array of [value, value] for each element in the Set object, in insertion order. """
+        """ Returns a new iterator object that contains an array of [value, value] for each element in the Set object,
+        in insertion order. """
         return iter([[i, self.args[i]] for i in self.args])
         # This is similar to the Map object, so that each entry's key is the same as its value for a Set.
 
@@ -2494,7 +2495,8 @@ class Number(float):
         """[returns a string representing the specified Number object.]
 
         Args:
-            base (int): [An integer in the range 2 through 36 specifying the base to use for representing numeric values.]
+            base (int): [An integer in the range 2 through 36
+                specifying the base to use for representing numeric values.]
 
         Returns:
             [str]: [a string representing the specified Number object]
@@ -2912,7 +2914,7 @@ class RegExp():
 
     @property
     def global_(self):
-        """[Whether to test the regular expression against all possible matches in a string, 
+        """[Whether to test the regular expression against all possible matches in a string,
         or only against the first.]
 
         Returns:
@@ -2922,7 +2924,7 @@ class RegExp():
 
     @global_.setter
     def global_(self, value: bool):
-        """[Whether to test the regular expression against all possible matches in a string, 
+        """[Whether to test the regular expression against all possible matches in a string,
         or only against the first.]
         Args:
             value (bool): [True if global, False otherwise]
@@ -3017,7 +3019,7 @@ class RegExp():
         return self.__str__()
 
     def __str__(self):
-        """" Returns a string representing the specified object. 
+        """" Returns a string representing the specified object.
         Overrides the Object.prototype.toString() method. """
         return self.expression
 
@@ -3396,7 +3398,7 @@ class Reflect():
 
     @staticmethod
     def defineProperty(target, propertyKey, attributes):
-        """ Similar to Object.defineProperty(). 
+        """ Similar to Object.defineProperty().
         Returns a Boolean that is true if the property was successfully defined. """
         raise NotImplementedError
 
@@ -3421,7 +3423,7 @@ class Reflect():
 
     @staticmethod
     def has(target, propertyKey):
-        """ Returns a Boolean indicating whether the target has the property. 
+        """ Returns a Boolean indicating whether the target has the property.
         Either as own or inherited. Works like the in operator as a function. """
         raise NotImplementedError
 
@@ -3478,7 +3480,7 @@ class Symbol():
 
     # A method that matches against a string, also used to determine if an object may be used as a regular expression.
     def match(self, item):
-        """ A method that matches the symbol against a string, 
+        """ A method that matches the symbol against a string,
         also used to determine if an object may be used as a regular expression. """
         raise NotImplementedError
 
@@ -3532,7 +3534,8 @@ class Symbol():
         raise NotImplementedError
 
     def toString(self):
-        """ Returns a string containing the description of the Symbol. Overrides the Object.prototype.toString() method. """
+        """ Returns a string containing the description of the Symbol.
+        Overrides the Object.prototype.toString() method. """
         raise NotImplementedError
 
     def valueOf(self):

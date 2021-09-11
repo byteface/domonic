@@ -186,9 +186,9 @@ class MouseEvent(Event):
         super().__init__(_type, *args, **kwargs)
 
     def initMouseEvent(self, _type=None, canBubble=True, cancelable=True, view=None,
-                        detail=None, screenX=0, screenY=0, clientX=0, clientY=0,
-                        ctrlKey=False, altKey=False, shiftKey=False, metaKey=False,
-                        button=None, relatedTarget=None, from_json={}, *args, **kwargs):
+                       detail=None, screenX=0, screenY=0, clientX=0, clientY=0,
+                       ctrlKey=False, altKey=False, shiftKey=False, metaKey=False,
+                       button=None, relatedTarget=None, from_json={}, *args, **kwargs):
         # print('initMouseEvent')
         self._type = _type
         self.canBubble = canBubble
@@ -277,7 +277,7 @@ class KeyboardEvent(Event):
         super().__init__(_type, *args, **kwargs)
 
     def initKeyboardEvent(self, typeArg, canBubbleArg, cancelableArg, viewArg, charArg, keyArg,
-                        locationArg, modifiersListArg, repeat):
+                          locationArg, modifiersListArg, repeat):
         self._type = typeArg
         self.canBubbleArg = canBubbleArg
         self.cancelableArg = cancelableArg

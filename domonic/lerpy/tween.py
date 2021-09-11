@@ -229,7 +229,6 @@ class Tween(EventDispatcher):
 
             self._timePrevious = timeCurrent
 
-
     # def _dispatchEvent(self, event):
     #     if event.type == TweenEvent.UPDATE_START:
     #         self._timeStart = get_timer()
