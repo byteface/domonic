@@ -93,7 +93,12 @@ class tag(object):
     The class from which all html tags extend.
     """
 
-    # TODO - slots?.
+    __slots__ = [
+        "args",
+        "kwargs",
+        "__content",
+        "__attributes",
+    ]
 
     __context: list = None  # private. tags will append to last item in context on creation.
 
