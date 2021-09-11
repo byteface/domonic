@@ -839,6 +839,78 @@ class TestCase(unittest.TestCase):
         # print( render(a(_name="test")) )
 
 
+    def test_with(self):
+
+        # d = 
+        # print(d.head)
+        # with html() as d:
+        #     print(d)
+        #     print(type(d))
+        #     d += div('test')
+        #     with div(_class="container"):
+        #         p('test2')
+        #         p('test')
+            # title("Hello World")
+            # doc += body(div('sup!'))
+            # with div(cls="container"):
+            #     with div(cls="row"):
+            #         with div(cls="col-md-12"):
+            #             with div(cls="panel panel-default"):
+            #                 with div(cls="panel-heading"):
+            #                     h1("Hello World")
+            #                 with div(cls="panel-body"):
+            #                     p("This is a paragraph")
+        # print(d)
+
+        print('------------')
+        d = html()
+
+        with d:
+            with head():
+                print('a!')
+                p()
+                print('b!')
+            print('c!')
+            div()
+            print('d!')
+            with body():
+                print('e!')
+                p()
+                print('f!')    
+
+            print('DONE!')
+            
+        # print(d)
+        # d()
+        # print(d())
+        # with d():
+        #     div()
+        #     print('test')
+        print(d)
+
+
+    # def test_pyml(self):
+        # root = html5_parser.parse(some_html, treebuilder='dom')
+        # render(root, 'test.pyml', 'pyml')
+
+
+    def test_with2(self):
+        d = html()
+        with d:
+            with head():
+                with title():
+                    text('Hello World')
+            with body():
+                with div(_class="container"):
+                    with div(_class="row"):
+                        with div(_class="col-md-12"):
+                            with div(_class="panel panel-default"):
+                                with div(_class="panel-heading"):
+                                    h1('Hello World')
+                                with div(_class="panel-body"):
+                                    p('This is a paragraph')
+
+        print(d)
 
 
 if __name__ == '__main__':

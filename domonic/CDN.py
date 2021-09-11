@@ -78,6 +78,7 @@ class CDN_JS(object):
     AFRAME_1_2 = "https://aframe.io/releases/1.2.0/aframe.min.js"
     BRYTHON_3_9_5 = "https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js"
     MATHML = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=MML_HTMLorMML"  # polyfill mathml
+
     # def find_on_cdn():
     # https://cdn.jsdelivr.net/npm/
     # https://cdnjs.cloudflare.com/ajax/libs/
@@ -100,6 +101,8 @@ class CDN_CSS(object):
     X3DOM = "https://www.x3dom.org/download/x3dom.css"
     FONTAWESOME_5_7_1 = "https://use.fontawesome.com/releases/v5.7.1/css/all.css"
     MDI_5_4_55 = "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"  # icons
+    TAILWIND_2_2_15 = "https://unpkg.com/tailwindcss@^2.2.15/dist/tailwind.min.css"
+
     # find_on_cdn():
     # https://unpkg.com/
     # https://cdnjs.cloudflare.com/ajax/libs/
@@ -108,6 +111,13 @@ class CDN_CSS(object):
 
 
 class CDN_FONT(object):
+    
     @staticmethod
     def google(family):
         return "http://fonts.googleapis.com/css?family=" + '+'.join(family)
+
+    # @staticmethod
+    # def font_awesome(version='5.7.1'):
+    #     return f"https://use.fontawesome.com/releases/v{version}/css/all.css"
+    
+    

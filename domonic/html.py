@@ -49,7 +49,7 @@ html_attributes = [
             ]
 
 
-def render(inp, outp=''):
+def render(inp, outp='', to=None):
     """render
 
     Renders the input to string or to a file.
@@ -57,10 +57,17 @@ def render(inp, outp=''):
     Args:
         inp (obj): A domonic tag. For example div()
         outp (str): An optional output filename
+        to (str): An optional output type. if 'pyml' is specified then pyml is returned instead of html.
 
     Returns:
         str: A HTML rendered string
     """
+    if to == 'pyml':
+        if outp != '':
+            with open(outp, "w+") as f:
+                f.write(inp.__pyml__())
+        return inp.__pyml__()
+    # else:
     if outp != '':
         with open(outp, "w+") as f:
             f.write(str(inp))
@@ -88,6 +95,8 @@ class tag(object):
 
     # TODO - slots?.
 
+    __context: list = None  # private. tags will append to last item in context on creation.
+
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
@@ -99,6 +108,11 @@ class tag(object):
             raise TemplateError(e)
         # except Exception as e:
             # print(e)
+            
+        # if a context is open, add this tag to the context
+        if tag.__context is not None:
+            tag.__context[len(tag.__context)-1] += self
+
 
     @property
     def content(self):  # TODO - test
@@ -266,13 +280,26 @@ class tag(object):
 
         raise AttributeError
 
-    # def __pyml__(self):
-    #     """ [returns a representation of the object as a pyml string] """
-    #     params = ""
-    #     for key, value in self.kwargs.items():
-    #         params += f"{key}={value}, "
-    #     TODO - will need to loop args and call __pyml__ on each one
-    #     return f"{self.name}({args}, {params})"
+
+    def __pyml__(self):
+        """ [returns a representation of the object as a pyml string] """
+        from domonic.dom import Text
+        params = ""
+        for key, value in self.kwargs.items():
+            params += f'{key}="{value}", '
+        # TODO - will need to loop args and call __pyml__ on each one
+        for arg in self.args:
+            try:
+                if isinstance(arg, Text):
+                    params += str(arg) + ", "
+                else:
+                    params += f"{arg.__pyml__()}, "
+            except Exception as e:
+                params += str(arg) + ", "
+        return f"{self.name}({params[:-2]})"
+        # return f"{self.name}({params})"
+        # return f"{self.name}({args}, {params})"
+        # return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
 
     # def __repr__(self):
     #     return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
@@ -280,10 +307,27 @@ class tag(object):
     # def __setitem__(self,key,value):
         # self.args[key] = value
         # print(self.args[key])
+    
+    def __enter__(self):
+        if tag.__context is None:
+            tag.__context = []
+        tag.__context.append(self)
+        return self
 
-    # def __enter__(self):
-    # def __exit__(self ,type, value, traceback):
-    # def __dir__/__getattr__/__getattribute)) - .... dot notation for attributes
+    def __exit__(self ,type, value, traceback, *args, **kwargs):
+        tag.__context.pop()
+        if len(tag.__context) == 0:
+            tag.__context = None
+        return self
+
+    # def __dir__(self):
+    #     return self.__dict__.keys()
+
+    # TODO - these are hard and wil need tests
+    # def __setattr__(self, attr, value):
+    # def __delattr__(self, attr):
+    # def __next__(self):
+    # def __iter__(self):
 
 
 class closed_tag(tag):

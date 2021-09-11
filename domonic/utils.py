@@ -16,13 +16,13 @@ class Utils(object):
     """ utils """
 
     @staticmethod
-    def case_camel(s: str):
+    def case_camel(s: str) -> str:
         """ case_camel('camel-case') > 'camelCase' """
         s = sub(r"(_|-)+", " ", s).title().replace(" ", "")
         return s[0].lower() + s[1:]
 
     @staticmethod
-    def case_snake(s: str):
+    def case_snake(s: str) -> str:
         """
         snake('camelCase') # 'camel_case'
         """
@@ -32,7 +32,7 @@ class Utils(object):
             s.replace('-', ' '))).split()).lower()
 
     @staticmethod
-    def case_kebab(s: str):
+    def case_kebab(s: str) -> str:
         """
         kebab('camelCase') # 'camel-case'
         """
@@ -42,52 +42,52 @@ class Utils(object):
             lambda mo: ' ' + mo.group(0).lower(), s)).split())
 
     @staticmethod
-    def squash(the_list: list):
+    def squash(the_list: list) -> list:
         """[turns a 2d array into a flat one]
 
         Args:
             the_list ([type]): [a 2d array]
 
         Returns:
-            [type]: [a flattened 1d array]
+            [list]: [a flattened 1d array]
         """
         return [inner for outer in the_list for inner in outer]
 
     @staticmethod
-    def chunk(list: list, size: int):
+    def chunk(list: list, size: int) -> list:
         """ chunk a list into batches """
         return [list[i:i + size] for i in range(0, len(list), size)]
 
     @staticmethod
-    def dictify(arr: str):
+    def dictify(arr: str) -> dict:
         """[turns a list into a dictionary where the list items are the keys]
 
         Args:
             arr ([type]): [list to change]
 
         Returns:
-            [type]: [a new dict where the list items are now the keys]
+            [dict]: [a new dict where the list items are now the keys]
         """
         return dict().fromkeys(arr, 0)
 
     @staticmethod
-    def is_empty(some_str):
+    def is_empty(some_str: str) -> bool:
         return (not some_str.strip())
 
     @staticmethod
-    def unique(some_arr):
+    def unique(some_arr: list) -> list:
         """[removes duplicates from a list]
 
         Args:
             some_arr ([type]): [list containing duplicates]
 
         Returns:
-            [type]: [a list containing no duplicates]
+            [list]: [a list containing no duplicates]
         """
         return list(set(some_arr))
 
     @staticmethod
-    def chunks(iterable, size, format=iter):
+    def chunks(iterable, size: int, format=iter):
         """ Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size """
         it = iter(iterable)
         while True:
@@ -97,7 +97,7 @@ class Utils(object):
     # ...         print chunk
 
     @staticmethod
-    def clean(lst):
+    def clean(lst: list) -> list:
         """[removes falsy values (False, None, 0 and “”) from a list ]
 
         Args:
@@ -109,7 +109,7 @@ class Utils(object):
         return list(filter(None, lst))
 
     @staticmethod
-    def get_vowels(string: str):
+    def get_vowels(string: str) -> list:
         """[get a list of vowels from the word]
 
         Args:
@@ -121,7 +121,7 @@ class Utils(object):
         return [each for each in string if each in 'aeiou']
 
     @staticmethod
-    def untitle(string: str):
+    def untitle(string: str) -> str:
         """[the opposite of title]
 
         Args:
@@ -133,12 +133,12 @@ class Utils(object):
         return string[:1].lower() + string[1:]
 
     @staticmethod
-    def merge_dictionaries(a, b):
+    def merge_dictionaries(a: dict, b: dict) -> dict:
         """[merges 2 dicts]
 
         Args:
-            a ([type]): [dict a]
-            b ([type]): [dict b]
+            a ([dict]): [dict a]
+            b ([dict]): [dict b]
 
         Returns:
             [dict]: [a new dict]
@@ -146,7 +146,7 @@ class Utils(object):
         return {**a, **b}
 
     @staticmethod
-    def to_dictionary(keys, values):
+    def to_dictionary(keys: list, values: list) -> dict:
         """[take a list of keys and values and returns a dict]
 
         Args:
@@ -159,19 +159,19 @@ class Utils(object):
         return dict(zip(keys, values))
 
     @staticmethod
-    def most_frequent(list):
-        return max(set(list), key=list.count)
+    def most_frequent(lst: list) -> list:
+        return max(set(lst), key=lst.count)
 
     @staticmethod
-    def anagram(first, second):
+    def is_anagram(first: str, second: str) -> bool:
         return Counter(first) == Counter(second)
 
     @staticmethod
-    def is_palindrome(word):
+    def is_palindrome(word: str) -> bool:
         return word == word[::-1]
 
     @staticmethod
-    def acronym(sentence: str):
+    def acronym(sentence: str) -> str:
         """[pass a sentence, returns the acronym]
 
         Args:
@@ -205,7 +205,7 @@ class Utils(object):
         return freq
 
     @staticmethod
-    def init_assets(dir: str = 'assets'):
+    def init_assets(dir: str = 'assets') -> None:
         """[creates an assets directory with nested js/css/img dirs]
 
         Args:
@@ -221,7 +221,7 @@ class Utils(object):
         return
 
     @staticmethod
-    def url2file(url: str):
+    def url2file(url: str) -> str:
         """[gen a safe filename from a url. by replacing '/' for '_' and ':' for '__' ]
 
         Args:
@@ -237,7 +237,7 @@ class Utils(object):
         return filename
 
     @staticmethod
-    def permutations(word: str):
+    def permutations(word: str) -> list:
         """[provides all the possible permutations of a given word]
 
         Args:
@@ -257,7 +257,7 @@ class Utils(object):
         return str('#%02X%02X%02X' % (r(), r(), r()))
 
     @staticmethod
-    def escape(s: str):
+    def escape(s: str) -> str:
         """[escape a string]
 
         Args:
@@ -276,7 +276,7 @@ class Utils(object):
         return "".join(chars.get(c, c) for c in s)
 
     @staticmethod
-    def unescape(s: str):
+    def unescape(s: str) -> str:
         """[unescape a string]
 
         Args:
@@ -313,7 +313,7 @@ class Utils(object):
         return front + mid + end
 
     @staticmethod
-    def truncate(text='', length=0):
+    def truncate(text='', length: int=0) -> str:
         """[truncates a string and appends 3 dots]
 
         Args:
@@ -330,7 +330,7 @@ class Utils(object):
 
 
     @staticmethod
-    def digits(text=''):
+    def digits(text='') -> str:
         """[takes a string of mix of digits and letters and returns a string of digits]
 
         Args:

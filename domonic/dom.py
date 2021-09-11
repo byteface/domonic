@@ -2231,7 +2231,7 @@ class Console(object):
             print('Timer ' + label + ' does not exist')
 
     @staticmethod
-    def assert_(assertion: bool, msg):
+    def assert_(assertion: bool, msg: str = None):
         """[return an error message if the assertion is false. If the assertion is true, nothing happens.]
 
         Args:
