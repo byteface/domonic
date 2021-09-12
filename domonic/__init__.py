@@ -10,6 +10,8 @@ __version__ = "0.5.1"
 __license__ = 'MIT'
 __author__ = "@byteface"
 
+__test__ = "test"
+
 '''
 __uri__ = "https://github.com/byteface/domonic"
 # https://domonic.readthedocs.io/
