@@ -24,7 +24,7 @@ function project(){
     mkdir archive
     touch app.py
     touch README.md
-    touch MakeFile
+    touch Makefile
 
     mkdir app
     touch app/__init__.py
