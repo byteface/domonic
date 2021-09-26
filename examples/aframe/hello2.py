@@ -4,7 +4,7 @@ sys.path.insert(0, '../..')
 from domonic.html import *
 from domonic.javascript import *
 from domonic.CDN import *
-from domonic.aframe import *
+from domonic.xml.aframe import *
 from domonic.constants.color import *
 
 _scripts = script("""

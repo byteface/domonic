@@ -11,7 +11,7 @@ from domonic import domonic
 
 from domonic.dom import *
 from domonic.html import *
-from domonic.x3d import *
+from domonic.xml.x3d import *
 from domonic.decorators import silence
 
 
@@ -78,6 +78,10 @@ class TestCase(unittest.TestCase):
 		)
 
     	render( str(x3dom_test) )#, "sphere_test.html" )
+
+
+	# def test_aframe(self):
+    # 		pass
 
 
 if __name__ == '__main__':

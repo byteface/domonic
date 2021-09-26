@@ -33,8 +33,9 @@ from xml.parsers import expat
 from xml.dom.minidom import _append_child, _set_attribute_node
 from xml.dom.NodeFilter import NodeFilter
 
-from domonic.dom import Element, Node, DocumentFragment, Document, DOMImplementation, Text
+from domonic.dom import Element, Node, DocumentFragment, Document, DOMImplementation, Text, Attr
 from domonic.html import *
+from domonic.xml.sitemap import sitemap, sitemapindex, urlset, url, loc, lastmod, changefreq, priority
 
 from domonic.decorators import check
 
@@ -290,9 +291,12 @@ class ExpatBuilder:
     # @check
     def character_data_handler_cdata(self, data):
         childNodes = self.curNode.childNodes
+
+        # print("HERE I AM::::::::::::::::::", self.curNode, type(self.curNode))
+        # print("HERE I AM::::::::::::::::::", childNodes)
+        # print("HERE I AM::::::::::::::::::", childNodes[-1], type(childNodes[-1]))
         if self._cdata:
-            if (  self._cdata_continue
-                  and childNodes[-1].nodeType == CDATA_SECTION_NODE):
+            if (self._cdata_continue and childNodes[-1].nodeType == CDATA_SECTION_NODE):
                 childNodes[-1].appendData(data)
                 return
             node = self.document.createCDATASection(data)
@@ -351,6 +355,11 @@ class ExpatBuilder:
     def comment_handler(self, data):
         node = self.document.createComment(data)
         # _append_child(self.curNode, node)
+        if self.curNode is None:
+            print('TODO - still need to ammend domonic to "have" a root not "be" the root. As not allows multiple nodes at root')
+            print('Dropping comment node')
+            return
+
         self.curNode.appendChild(node)
         if self._filter and self._filter.acceptNode(node) == FILTER_REJECT:
             self.curNode.removeChild(node)
@@ -386,7 +395,8 @@ class ExpatBuilder:
                 value = attributes[i+1]
                 a.value = value
                 a.ownerDocument = self.document
-                _set_attribute_node(node, a)
+                # _set_attribute_node(node, a)
+                node.setAttributeNode(a)
 
         if node is not self.document.documentElement:
             self._finish_start_element(node)
@@ -769,16 +779,19 @@ class Namespaces:
             prefix = EMPTY_PREFIX
         # node = minidom.Element(qname, uri, prefix, localname)
         # print(qname, uri, prefix, localname)
-        from domonic.html import create_element
+        from domonic.parsers import create_element
+        # from domonic.html import create_element
         # node = Element(qname, uri, prefix, localname)
         node = create_element(qname, uri, prefix, localname)
         # print( "NODE", node )
         node.namespaceURI = uri
         node.prefix = prefix
         node.ownerDocument = self.document
-        # print("THIS::::",self.curNode, node)
+        # print("THIS::::", self.curNode, node)
+        # print("THIS::::", type(self.curNode), type(node))
         # _append_child(self.curNode, node)
         if isinstance(self.curNode, Document) and isinstance(node, Document):
+            # NOTE - because the domonic Document is a tag. the first one needs to be the root
             # print("this is the thing **** ****************************")
             self.curNode = node
             self.document = node
@@ -789,15 +802,25 @@ class Namespaces:
 
         if self._ns_ordered_prefixes:
             for prefix, uri in self._ns_ordered_prefixes:
-                if prefix:
-                    a = minidom.Attr(_intern(self, 'xmlns:' + prefix),
-                                     XMLNS_NAMESPACE, prefix, "xmlns")
-                else:
-                    a = minidom.Attr("xmlns", XMLNS_NAMESPACE,
-                                     "xmlns", EMPTY_PREFIX)
-                a.value = uri
+                # if prefix:
+                #     a = minidom.Attr(_intern(self, 'xmlns:' + prefix),
+                #                      XMLNS_NAMESPACE, prefix, "xmlns"))
+                # else:
+                #     a = minidom.Attr("xmlns", XMLNS_NAMESPACE,
+                #                      "xmlns", EMPTY_PREFIX)
+                # print('YOUARE<<<<<', qname, uri)
+                a = Attr('xmlns', uri)
+                # a.namespaceURI = XMLNS_NAMESPACE
+                # a.localName = "xmlns"
+                # if prefix:
+                    # a.prefix = prefix
+                # a.ownerDocument = self.document
+
+                # a.value = uri
                 a.ownerDocument = self.document
-                _set_attribute_node(node, a)
+                # _set_attribute_node(node, a)
+                node.setAttributeNode(a)
+
             del self._ns_ordered_prefixes[:]
 
         # TODO rewrite this to use domonic instead of minidom

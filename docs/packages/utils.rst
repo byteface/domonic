@@ -1,7 +1,7 @@
 Domonic: utils
 =================
 
-The utils libray tries to be relevant to dom related things.
+The utils libray attempts to be relevant to dom related things.
 
 It's currently mostly string utils but there's some other bits and bobs in there.
 

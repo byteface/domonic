@@ -3610,11 +3610,13 @@ class Atomics():
         raise NotImplementedError
     @staticmethod
     def wait():
-        """ Verifies that the specified index of the array still contains a value and sleeps awaiting or times out. Returns either "ok", "not-equal", or "timed-out". If waiting is not allowed in the calling agent then it throws an Error exception. (Most browsers will not allow wait() on the browser's main thread.)"""
+        """ Verifies that the specified index of the array still contains a value and sleeps awaiting or times out.
+        Returns either "ok", "not-equal", or "timed-out". If waiting is not allowed in the calling agent then it throws an Error exception. (Most browsers will not allow wait() on the browser's main thread.)"""
         raise NotImplementedError
     @staticmethod
     def xor():
-        """ Computes a bitwise XOR on the value at the specified index of the array with the provided value. Returns the old value at that index."""
+        """ Computes a bitwise XOR on the value at the specified index of the array with the provided value.
+        Returns the old value at that index."""
         raise NotImplementedError
 
 '''
@@ -3655,9 +3657,11 @@ class Atomics():
     def positionError Returns:
     """ the reason of an error occurring when using the geolocating device  """
     def positionOptions   Describes:
-    """ an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition() and Geolocation.watchPosition() """
+    """ an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition()
+    and Geolocation.watchPosition() """
     def watchPosition():
-    """   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   """
+    """   Returns a watch ID value that then can be used to unregister the handler by passing it to the
+    Geolocation.clearWatch() method   """
 
 
 

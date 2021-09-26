@@ -3,7 +3,7 @@ sys.path.insert(0, '../..')
 
 import os
 from domonic.html import *
-from domonic.aframe import *
+from domonic.xml.aframe import *
 from domonic.CDN import *
 
 _scripts = script("""

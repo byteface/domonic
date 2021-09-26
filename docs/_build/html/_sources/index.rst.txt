@@ -48,8 +48,7 @@ HTML TEMPLATING
 
   from domonic.html import *
 
-    output = render( 
-        html(
+    mydom = html(
             head(
                 style(),
                 script(),
@@ -61,12 +60,19 @@ HTML TEMPLATING
                 h1("test", _class="test"),
             )
         )
-    )
+
+    render(mydom)
 
 .. code-block :: html
 
   <html><head><style></style><script></script></head><body><div>hello world</div><a href="http://www.somesite.com" style="font-size:10px;">this is a link</a><ol><li></li><li></li><li></li><li></li><li></li></ol><h1 class="test">test</h1></body></html>
 
+
+To pretty print a domonic dom you can now use a f-string. Which also adds the doctype .. i.e.
+
+.. code-block :: python
+    
+    print(f"{mydom}")
 
 
 install
@@ -107,7 +113,9 @@ Here you can find some instructions for getting the most out of Domonic.
    packages/dom
    packages/javascript
    packages/events
+   packages/sitemap
    packages/dQuery
+   packages/d3
    packages/JSON
    packages/constants
    packages/terminal
@@ -186,7 +194,6 @@ https://github.com/byteface/Blueberry/
 
 A cron viewer:
 https://github.com/byteface/ezcron/
-
 
 
 Disclaimer

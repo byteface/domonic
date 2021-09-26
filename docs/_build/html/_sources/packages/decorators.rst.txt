@@ -33,6 +33,19 @@ It returns the tag object by default.
 You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.
 
 
+silence
+--------------------------------
+
+Want that unit test to stfu?
+
+.. code-block :: bash
+
+    from domonic.decorators import silence
+
+    @silence
+    def test_that_wont_pass():
+        assert True == False
+
 
 called
 --------------------------------
@@ -69,7 +82,6 @@ It's also called iffe. (so you can know when ur just passing nothing)
     def sup():
         print("sup!")
         return True
-
 
 
 check

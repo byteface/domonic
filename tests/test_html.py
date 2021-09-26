@@ -911,7 +911,38 @@ class TestCase(unittest.TestCase):
                                 with div(_class="panel-body"):
                                     p('This is a paragraph')
 
-        print(d)
+        # print(d)
+        print(f"{d}")
+        # d()
+
+
+    def test_partial(self):
+
+        d = html()
+        with d:
+            with head():
+                with title():
+                    div(
+                    '''
+                    <form>
+                    <label for="fname">First name:</label><br>
+                    <input type="text" id="fname" name="fname" value="John"><br>
+                    <label for="lname">Last name:</label><br>
+                    <input type="text" id="lname" name="lname" value="Doe">
+                    </form>
+                    ''')
+            with body():
+                with div(_class="container"):
+                    with div(_class="row"):
+                        with div(_class="col-md-12"):
+                            with div(_class="panel panel-default"):
+                                with div(_class="panel-heading"):
+                                    h1('Hello World')
+                                with div(_class="panel-body"):
+                                    p('This is a paragraph')
+
+        print(f"{d}")
+
 
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.5.1 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.6.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -3643,11 +3643,13 @@
 <span class="sd">        raise NotImplementedError</span>
 <span class="sd">    @staticmethod</span>
 <span class="sd">    def wait():</span>
-<span class="sd">        &quot;&quot;&quot; Verifies that the specified index of the array still contains a value and sleeps awaiting or times out. Returns either &quot;ok&quot;, &quot;not-equal&quot;, or &quot;timed-out&quot;. If waiting is not allowed in the calling agent then it throws an Error exception. (Most browsers will not allow wait() on the browser&#39;s main thread.)&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot; Verifies that the specified index of the array still contains a value and sleeps awaiting or times out.</span>
+<span class="sd">        Returns either &quot;ok&quot;, &quot;not-equal&quot;, or &quot;timed-out&quot;. If waiting is not allowed in the calling agent then it throws an Error exception. (Most browsers will not allow wait() on the browser&#39;s main thread.)&quot;&quot;&quot;</span>
 <span class="sd">        raise NotImplementedError</span>
 <span class="sd">    @staticmethod</span>
 <span class="sd">    def xor():</span>
-<span class="sd">        &quot;&quot;&quot; Computes a bitwise XOR on the value at the specified index of the array with the provided value. Returns the old value at that index.&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot; Computes a bitwise XOR on the value at the specified index of the array with the provided value.</span>
+<span class="sd">        Returns the old value at that index.&quot;&quot;&quot;</span>
 <span class="sd">        raise NotImplementedError</span>
 
 <span class="sd">&#39;&#39;&#39;</span>
@@ -3688,9 +3690,11 @@
 <span class="sd">    def positionError Returns:</span>
 <span class="sd">    &quot;&quot;&quot; the reason of an error occurring when using the geolocating device  &quot;&quot;&quot;</span>
 <span class="sd">    def positionOptions   Describes:</span>
-<span class="sd">    &quot;&quot;&quot; an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition() and Geolocation.watchPosition() &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot; an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition()</span>
+<span class="sd">    and Geolocation.watchPosition() &quot;&quot;&quot;</span>
 <span class="sd">    def watchPosition():</span>
-<span class="sd">    &quot;&quot;&quot;   Returns a watch ID value that then can be used to unregister the handler by passing it to the Geolocation.clearWatch() method   &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;   Returns a watch ID value that then can be used to unregister the handler by passing it to the</span>
+<span class="sd">    Geolocation.clearWatch() method   &quot;&quot;&quot;</span>
 
 
 
@@ -3727,7 +3731,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/sitemap.html">Domonic: sitemap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/d3.html">Domonic: d3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>

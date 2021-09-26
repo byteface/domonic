@@ -11,7 +11,7 @@ import unittest
 
 from domonic import domonic
 
-from domonic.mathml import *
+from domonic.xml.mathml import *
 from domonic.decorators import silence
 
 

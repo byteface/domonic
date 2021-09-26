@@ -358,7 +358,8 @@ class dQuery_el():
     def context(self):
         """ The DOM node context originally passed to dQuery if none was passed
         then context will likely be the document. """
-        raise NotImplementedError
+        from domonic.dom import document
+        return document
 
     def contextmenu(self):
         """ Bind an event handler to the “contextmenu” JavaScript event, or trigger that event on an element."""
@@ -400,9 +401,19 @@ class dQuery_el():
         """ Execute the next function on the queue for the matched elements."""
         raise NotImplementedError
 
-    def detach(self):
+    def detach(self):  # TODO - test
         """ Remove the set of matched elements from the DOM."""
-        raise NotImplementedError
+        if not isinstance(self.elements, (list, tuple)):
+            self.elements = (self.elements,)
+
+        for el in self.elements:
+            p = el.parentNode
+            for i, n in enumerate(p.children):
+                if n == el:
+                    l = list(p.args)
+                    l.pop(i)
+                    p.args = tuple(l)
+        return self
 
     def die(self):
         """ Remove event handlers previously attached using .live from the elements."""
@@ -504,10 +515,15 @@ class dQuery_el():
     #     """ Retrieve the DOM elements matched by the dQuery object."""
     #     raise NotImplementedError
 
-    def has(self, selector):
+    def has(self, selector):  # TODO - test
         """ Reduce the set of matched elements to those that have a descendant
         that matches the selector or DOM element."""
-        raise NotImplementedError
+        if isinstance(selector, str):
+            return self.elements.has(selector)
+        elif callable(selector):
+            return [el for el in self.elements if selector(el)]
+        else:
+            raise TypeError("selector must be a string or a callable")
 
     def hasClass(self, classname):
         """ Determine whether any of the matched elements are assigned the given class."""
@@ -630,9 +646,23 @@ class dQuery_el():
         """ Attach an event handler for all elements which match the current selector, now and in the future."""
         raise NotImplementedError
 
-    def load(self):
+    def load(self, url, data=None, complete=None):  # TODO - test
         """ Load data from the server and place the returned HTML into the matched elements."""
-        raise NotImplementedError
+        if data is None:
+            data = {}
+        if complete is None:
+            complete = lambda x: x
+        for el in self.elements:
+            el.innerHTML = ""
+            el.innerHTML = "<div class='loading'></div>"
+            def load(el, url, data, complete):
+                def onload(response):
+                    el.innerHTML = ""
+                    el.innerHTML = response
+                    complete(response)
+                dQuery.ajax(url, data, onload)
+            load(el, url, data, complete)
+        return self
 
     def map(self, func):  # TODO - test
         """ Pass each element in the current matched set through a function,
@@ -1630,7 +1660,8 @@ class º(dQuery_el):
     @staticmethod
     def isXMLDoc(obj):
         """ Check to see if a DOM node is within an XML document (or is an XML document). """
-        raise NotImplementedError
+        obj = str(obj)
+        return obj.startswith('<') and obj.endswith('>')
 
     @staticmethod
     def makeArray(somelist):

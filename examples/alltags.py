@@ -167,6 +167,7 @@ print( "output._get_tags:", output._get_tags('style') )
 # print(output.content[1].content[2].attributes[0])
 
 print(render(output))
+print(f"{output}")
 
 # TODO - prettify by using newlines in returned content to save installing this?
 # from html5print import HTMLBeautifier

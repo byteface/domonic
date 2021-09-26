@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.style &#8212; domonic 0.5.1 documentation</title>
+    <title>domonic.style &#8212; domonic 0.6.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -39,8 +39,8 @@
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">Utils</span>
 
 
-<div class="viewcode-block" id="StyleSheet"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.StyleSheet">[docs]</a><span class="k">class</span> <span class="nc">StyleSheet</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot; An object implementing the StyleSheet interface represents a single style sheet.</span>
+<div class="viewcode-block" id="StyleSheet"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.StyleSheet">[docs]</a><span class="k">class</span> <span class="nc">StyleSheet</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;An object implementing the StyleSheet interface represents a single style sheet.</span>
 <span class="sd">    CSS style sheets will further implement the more specialized CSSStyleSheet interface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -50,38 +50,38 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">href</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a DOMString representing the location of the stylesheet.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns a DOMString representing the location of the stylesheet.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">href</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">media</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a MediaList representing the intended destination medium for style information. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns a MediaList representing the intended destination medium for style information.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ownerNode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a Node associating this style sheet with the current document. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns a Node associating this style sheet with the current document.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parentStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a StyleSheet including this one, if any; returns null if there aren&#39;t any. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns a StyleSheet including this one, if any; returns null if there aren&#39;t any.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a DOMString representing the advisory title of the current style sheet. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns a DOMString representing the advisory title of the current style sheet.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a DOMString representing the style sheet language for this style sheet. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns a DOMString representing the style sheet language for this style sheet.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="StyleSheetList"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.StyleSheetList">[docs]</a><span class="k">class</span> <span class="nc">StyleSheetList</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot; An instance of this object can be returned by Document.styleSheets.</span>
-<span class="sd">        it can be iterated over in a standard for loop over its indices, or converted to an Array.</span>
+<div class="viewcode-block" id="StyleSheetList"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.StyleSheetList">[docs]</a><span class="k">class</span> <span class="nc">StyleSheetList</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;An instance of this object can be returned by Document.styleSheets.</span>
+<span class="sd">    it can be iterated over in a standard for loop over its indices, or converted to an Array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -101,16 +101,16 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the number of CSSStyleSheet objects in the collection. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns the number of CSSStyleSheet objects in the collection.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">styleSheets</span><span class="p">)</span>
 
 <div class="viewcode-block" id="StyleSheetList.item"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.StyleSheetList.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">styleSheets</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="CSSRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRule">[docs]</a><span class="k">class</span> <span class="nc">CSSRule</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot; The CSSRule interface represents a single CSS rule.</span>
+<div class="viewcode-block" id="CSSRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRule">[docs]</a><span class="k">class</span> <span class="nc">CSSRule</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The CSSRule interface represents a single CSS rule.</span>
 <span class="sd">    There are several types of rules which inherit properties from CSSRule.</span>
 
 <span class="sd">    CSSStyleRule</span>
@@ -133,7 +133,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cssText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Represents the textual representation of the rule, e.g. &quot;h1,h2 { font-size: 16pt }&quot; or &quot;@import &#39;url&#39;&quot;.</span>
+        <span class="sd">&quot;&quot;&quot;Represents the textual representation of the rule, e.g. &quot;h1,h2 { font-size: 16pt }&quot; or &quot;@import &#39;url&#39;&quot;.</span>
 <span class="sd">        To access or modify parts of the rule (e.g. the value of &quot;font-size&quot; in the example)</span>
 <span class="sd">        use the properties on the specialized interface for the rule&#39;s type.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -141,21 +141,21 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parentRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an @media block,</span>
-<span class="sd">        the parent rule would be that CSSMediaRule. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an @media block,</span>
+<span class="sd">        the parent rule would be that CSSMediaRule.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="CSSRule.parentStyleSheet"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRule.parentStyleSheet">[docs]</a>    <span class="k">def</span> <span class="nf">parentStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the CSSStyleSheet object for the style sheet that contains this rule &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns the CSSStyleSheet object for the style sheet that contains this rule&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CSSRule.type"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRule.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns one of the Type constants to determine which type of rule is represented. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns one of the Type constants to determine which type of rule is represented.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="CSSRuleList"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRuleList">[docs]</a><span class="k">class</span> <span class="nc">CSSRuleList</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot; A CSSRuleList represents an ordered collection of read-only CSSRule objects.</span>
+<div class="viewcode-block" id="CSSRuleList"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRuleList">[docs]</a><span class="k">class</span> <span class="nc">CSSRuleList</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A CSSRuleList represents an ordered collection of read-only CSSRule objects.</span>
 <span class="sd">    While the CSSRuleList object is read-only, and cannot be directly modified,</span>
 <span class="sd">    it is considered a live object, as the content can change over time.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -165,647 +165,654 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="CSSRuleList.length"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRuleList.length">[docs]</a>    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an integer representing the number of CSSRule objects in the collection. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns an integer representing the number of CSSRule objects in the collection.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CSSRuleList.item"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSRuleList.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Gets a single CSSRule.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Gets a single CSSRule.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
 <div class="viewcode-block" id="CSSStyleSheet"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet">[docs]</a><span class="k">class</span> <span class="nc">CSSStyleSheet</span><span class="p">(</span><span class="n">StyleSheet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Creates a new CSSStyleSheet object. &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new CSSStyleSheet object.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cssRules</span><span class="p">():</span>  <span class="c1"># -&gt; &#39;CSSStyleRuleList&#39;:</span>
-        <span class="sd">&quot;&quot;&quot; Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects</span>
-<span class="sd">        that comprise the stylesheet. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects</span>
+<span class="sd">        that comprise the stylesheet.&quot;&quot;&quot;</span>
         <span class="c1"># return CSSStyleRuleList()</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ownerRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; If this stylesheet is imported into the document using an @import rule,</span>
-<span class="sd">        the ownerRule property returns the corresponding CSSImportRule; otherwise, this property&#39;s value is null. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;If this stylesheet is imported into the document using an @import rule,</span>
+<span class="sd">        the ownerRule property returns the corresponding CSSImportRule; otherwise, this property&#39;s value is null.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="CSSStyleSheet.deleteRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.deleteRule">[docs]</a>    <span class="k">def</span> <span class="nf">deleteRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Deletes the rule at the specified index into the stylesheet&#39;s rule list. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Deletes the rule at the specified index into the stylesheet&#39;s rule list.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CSSStyleSheet.insertRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.insertRule">[docs]</a>    <span class="k">def</span> <span class="nf">insertRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Inserts a new rule at the specified position in the stylesheet,</span>
-<span class="sd">            given the textual representation of the rule.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Inserts a new rule at the specified position in the stylesheet,</span>
+<span class="sd">        given the textual representation of the rule.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CSSStyleSheet.replace"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Asynchronously replaces the content of the stylesheet and returns</span>
+        <span class="sd">&quot;&quot;&quot;Asynchronously replaces the content of the stylesheet and returns</span>
 <span class="sd">        a Promise that resolves with the updated CSSStyleSheet.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CSSStyleSheet.replaceSync"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.replaceSync">[docs]</a>    <span class="k">def</span> <span class="nf">replaceSync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Synchronously replaces the content of the stylesheet.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Synchronously replaces the content of the stylesheet.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">rules</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot; The rules property is functionally identical to the standard cssRules property</span>
-<span class="sd">            it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.</span>
+        <span class="sd">&quot;&quot;&quot;The rules property is functionally identical to the standard cssRules property</span>
+<span class="sd">        it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="c1"># Legacy methods</span>
 <div class="viewcode-block" id="CSSStyleSheet.addRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.addRule">[docs]</a>    <span class="k">def</span> <span class="nf">addRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply to the matching elements.</span>
-<span class="sd">            This differs from insertRule(), which takes the textual representation of the entire rule as a single string.</span>
+        <span class="sd">&quot;&quot;&quot;Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply to the matching elements.</span>
+<span class="sd">        This differs from insertRule(), which takes the textual representation of the entire rule as a single string.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CSSStyleSheet.removeRule"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet.removeRule">[docs]</a>    <span class="k">def</span> <span class="nf">removeRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Functionally identical to deleteRule();</span>
-<span class="sd">        removes the rule at the specified index from the stylesheet&#39;s rule list. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Functionally identical to deleteRule();</span>
+<span class="sd">        removes the rule at the specified index from the stylesheet&#39;s rule list.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
 <div class="viewcode-block" id="Style"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.Style">[docs]</a><span class="k">class</span> <span class="nc">Style</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;[ js syntax styles ]</span>
-<span class="sd">        # TODO - just add normal float?</span>
-<span class="sd">        # TODO - consider camel case for hyphen params?</span>
-<span class="sd">        # TODO - not json serialisable due to the decorators.</span>
+<span class="sd">    # TODO - just add normal float?</span>
+<span class="sd">    # TODO - consider camel case for hyphen params?</span>
+<span class="sd">    # TODO - not json serialisable due to the decorators.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** MADE A STYLE11 ***&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** MADE A STYLE11 ***&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_members_checked</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_parent_node</span> <span class="o">=</span> <span class="n">parent_node</span>  <span class="c1"># so I can update a tags returned style attributes if a style gets set</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">alignContent</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the alignment between the lines inside a flexible container when the items do not use all available space&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alignContent</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the alignment between the lines inside a flexible container</span>
+<span class="sd">        when the items do not use all available space&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">alignItems</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the alignment for items inside a flexible container 3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alignItems</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the alignment for items inside a flexible container&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">alignSelf</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the alignment for selected items inside a flexible container    3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alignSelf</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the alignment for selected items inside a flexible container&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">animation</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
-        <span class="sd">&#39;&#39;&#39; shorthand property for all the animation properties below, except the animationPlayState property 3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">animation</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="sd">&quot;&quot;&quot; shorthand property for all the animation properties below, except the animationPlayState property&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">animationDelay</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns when the animation will start   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns when the animation will start&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">animationDirection</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether or not the animation should play in reverse on alternate cycles 3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">animationDirection</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether or not the animation should play in reverse on alternate cycles&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">animationDuration</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns how many seconds or milliseconds an animation takes to complete one cycle   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns how many seconds or milliseconds an animation takes to complete one cycle&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">animationFillMode</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns what values are applied by the animation outside the time it is executing   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns what values are applied by the animation outside the time it is executing&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">animationIterationCount</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the number of times an animation should be played   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the number of times an animation should be played&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">animationName</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns a name for the @keyframes animation 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns a name for the @keyframes animation&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">animationTimingFunction</span> <span class="o">=</span> <span class="s1">&#39;ease&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the speed curve of the animation    3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">animationTimingFunction</span> <span class="o">=</span> <span class="s2">&quot;ease&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the speed curve of the animation&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">animationPlayState</span> <span class="o">=</span> <span class="s1">&#39;running&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether the animation is running or paused  3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">animationPlayState</span> <span class="o">=</span> <span class="s2">&quot;running&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether the animation is running or paused &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns all the background properties in one declaration    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns all the background properties in one declaration&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">backgroundAttachment</span> <span class="o">=</span> <span class="s1">&#39;scroll&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether a background-image is fixed or scrolls with the page    1&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backgroundAttachment</span> <span class="o">=</span> <span class="s2">&quot;scroll&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether a background-image is fixed or scrolls with the page&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the background-color of an element  1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the background-color of an element &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">backgroundImage</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the background-image for an element 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the background-image for an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">backgroundPosition</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the starting position of a background-image 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the starting position of a background-image&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">backgroundRepeat</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns how to repeat (tile) a background-image 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns how to repeat (tile) a background-image&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">backgroundClip</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the painting area of the background 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the painting area of the background&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">backgroundOrigin</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the positioning area of the background images   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the positioning area of the background images&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">backgroundSize</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the size of the background image    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the size of the background image&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">backfaceVisibility</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether or not an element should be visible when not facing the screen  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether or not an element should be visible when not facing the screen &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">border</span> <span class="o">=</span> <span class="s1">&#39;medium none black&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns borderWidth, borderStyle, and borderColor in one declaration    1&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">border</span> <span class="o">=</span> <span class="s2">&quot;medium none black&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns borderWidth, borderStyle, and borderColor in one declaration&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">borderBottom</span> <span class="o">=</span> <span class="s1">&#39;medium none black&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns all the borderBottom properties in one declaration  1&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">borderBottom</span> <span class="o">=</span> <span class="s2">&quot;medium none black&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns all the borderBottom properties in one declaration &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderBottomColor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the color of the bottom border  1 &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the color of the bottom border  1 &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderBottomLeftRadius</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the shape of the border of the bottom-left corner   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the shape of the border of the bottom-left corner&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderBottomRightRadius</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the shape of the border of the bottom-right corner  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the shape of the border of the bottom-right corner &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderBottomStyle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the style of the bottom border  1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the style of the bottom border &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderBottomWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the width of the bottom border  1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the width of the bottom border &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderCollapse</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether the table border should be collapsed into a single border, or not   2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether the table border should be collapsed into a single border, or not&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderColor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the color of an element&#39;s border (can have up to four values)   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the color of an element&#39;s border (can have up to four values)&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderImage</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;horthand property for setting or returning all the borderImage properties    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;horthand property for setting or returning all the borderImage properties&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderImageOutset</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the amount by which the border image area extends beyond the border box 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the amount by which the border image area extends beyond the border box&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderImageRepeat</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether the image-border should be repeated, rounded or stretched   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether the image-border should be repeated, rounded or stretched&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderImageSlice</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the inward offsets of the image-border  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the inward offsets of the image-border &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderImageSource</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the image to be used as a border    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the image to be used as a border&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderImageWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the widths of the image-border  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the widths of the image-border &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderLeft</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns all the borderLeft properties in one declaration    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns all the borderLeft properties in one declaration&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderLeftColor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the color of the left border    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the color of the left border&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderLeftStyle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the style of the left border    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the style of the left border&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderLeftWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the width of the left border    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the width of the left border&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderRadius</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;A shorthand property for setting or returning all the four borderRadius properties  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;A shorthand property for setting or returning all the four borderRadius properties &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderRight</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns all the borderRight properties in one declaration   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns all the borderRight properties in one declaration&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderRightColor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the color of the right border   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the color of the right border&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderRightStyle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the style of the right border   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the style of the right border&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderRightWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the width of the right border   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the width of the right border&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderSpacing</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the space between cells in a table  2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the space between cells in a table &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderStyle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the style of an element&#39;s border (can have up to four values)   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the style of an element&#39;s border (can have up to four values)&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderTop</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns all the borderTop properties in one declaration 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns all the borderTop properties in one declaration&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderTopColor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the color of the top border 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the color of the top border&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderTopLeftRadius</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the shape of the border of the top-left corner  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the shape of the border of the top-left corner &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderTopRightRadius</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the shape of the border of the top-right corner 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the shape of the border of the top-right corner&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderTopStyle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the style of the top border 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the style of the top border&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderTopWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the width of the top border 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the width of the top border&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">borderWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the width of an element&#39;s border (can have up to four values)   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the width of an element&#39;s border (can have up to four values)&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the bottom position of a positioned element 2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the bottom position of a positioned element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">boxDecorationBreak</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the behaviour of the background and border of an element at page-break, or, for in-line elements, at line-break.    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the behaviour of the background and border of an element at page-break, or,</span>
+<span class="sd">        for in-line elements, at line-break.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">boxShadow</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;ttaches one or more drop-shadows to the box    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;ttaches one or more drop-shadows to the box&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">boxSizing</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;llows you to define certain elements to fit an area in a certain way   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;llows you to define certain elements to fit an area in a certain way&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">captionSide</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the position of the table caption   2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the position of the table caption&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">clear</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the position of the element relative to floating objects    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the position of the element relative to floating objects&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">clip</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns which part of a positioned element is visible   2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns which part of a positioned element is visible&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the color of the text   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the color of the text&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">columnCount</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the number of columns an element should be divided into 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the number of columns an element should be divided into&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">columnFill</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns how to fill columns 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns how to fill columns&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">columnGap</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the gap between the columns 3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columnGap</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the gap between the columns&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">columnRule</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;shorthand property for setting or returning all the columnRule properties 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;shorthand property for setting or returning all the columnRule properties&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">columnRuleColor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the color of the rule between columns   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the color of the rule between columns&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">columnRuleStyle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the style of the rule between columns   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the style of the rule between columns&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">columnRuleWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the width of the rule between columns   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the width of the rule between columns&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;horthand property for setting or returning columnWidth and columnCount   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;horthand property for setting or returning columnWidth and columnCount&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">columnSpan</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns how many columns an element should span across  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns how many columns an element should span across &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">columnWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the width of the columns    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the width of the columns&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;d with the :before and :after pseudo-elements, to insert generated content   2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;d with the :before and :after pseudo-elements, to insert generated content&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">counterIncrement</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Increments one or more counters 2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Increments one or more counters&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">counterReset</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Creates or resets one or more counters  2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Creates or resets one or more counters &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the type of cursor to display for the mouse pointer 2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the type of cursor to display for the mouse pointer&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the text direction  2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the text direction &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns an element&#39;s display type   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns an element&#39;s display type&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">emptyCells</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether to show the border and background of empty cells, or not    2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether to show the border and background of empty cells, or not &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">filter</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns image filters (visual effects, like blur and saturation)    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns image filters (visual effects, like blur and saturation)&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">flex</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the length of the item, relative to the rest    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the length of the item, relative to the rest&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">flexBasis</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the initial length of a flexible item   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the initial length of a flexible item&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">flexDirection</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the direction of the flexible items 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the direction of the flexible items&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">flexFlow</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;A shorthand property for the flexDirection and the flexWrap properties  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;A shorthand property for the flexDirection and the flexWrap properties &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">flexGrow</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns how much the item will grow relative to the rest    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns how much the item will grow relative to the rest&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">flexShrink</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns how the item will shrink relative to the rest   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns how the item will shrink relative to the rest&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">flexWrap</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether the flexible items should wrap or not   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether the flexible items should wrap or not&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">float</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># ADDED BY ME</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cssFloat</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the horizontal alignment of an element  1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the horizontal alignment of an element &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns fontStyle, fontVariant, fontWeight, fontSize, lineHeight, and fontFamily in one declaration 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns fontStyle, fontVariant, fontWeight, fontSize, lineHeight, and fontFamily</span>
+<span class="sd">        in one declaration&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fontFamily</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the font family for text    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the font family for text&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fontSize</span> <span class="o">=</span> <span class="s1">&#39;medium&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the font size of the text   1&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fontSize</span> <span class="o">=</span> <span class="s2">&quot;medium&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the font size of the text&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fontStyle</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether the style of the font is normal, italic or oblique  1&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fontStyle</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether the style of the font is normal, italic or oblique &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fontVariant</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether the font should be displayed in small capital letters   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether the font should be displayed in small capital letters&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fontWeight</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the boldness of the font    1&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fontWeight</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the boldness of the font&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fontSizeAdjust</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;eserves the readability of text when font fallback occurs 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;eserves the readability of text when font fallback occurs&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fontStretch</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;ects a normal, condensed, or expanded face from a font family    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;ects a normal, condensed, or expanded face from a font family&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">hangingPunctuation</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;ecifies whether a punctuation character may be placed outside the line box    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;ecifies whether a punctuation character may be placed outside the line box&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the height of an element    1&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the height of an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">hyphens</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets how to split words to improve the layout of paragraphs 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets how to split words to improve the layout of paragraphs&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">icon</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Provides the author the ability to style an element with an iconic equivalent   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Provides the author the ability to style an element with an iconic equivalent&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">imageOrientation</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Specifies a rotation in the right or clockwise direction that a user agent applies to an image  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Specifies a rotation in the right or clockwise direction that a user agent applies to an image &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">isolation</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;efines whether an element must create a new stacking content   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;efines whether an element must create a new stacking content&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">justifyContent</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the alignment between the items inside a flexible container when the items do not use all available space.  3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">justifyContent</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the alignment between the items inside a flexible container when the items</span>
+<span class="sd">        do not use all available space. &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the left position of a positioned element   2&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the left position of a positioned element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">letterSpacing</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the space between characters in a text  1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the space between characters in a text &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">lineHeight</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the distance between lines in a text    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the distance between lines in a text&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">listStyle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns listStyleImage, listStylePosition, and listStyleType in one declaration 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns listStyleImage, listStylePosition, and listStyleType in one declaration&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">listStyleImage</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns an image as the list-item marker    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns an image as the list-item marker&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">listStylePosition</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the position of the list-item marker    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the position of the list-item marker&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">listStyleType</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the list-item marker type   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the list-item marker type&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">margin</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the margins of an element (can have up to four values)  1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the margins of an element (can have up to four values) &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">marginBottom</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the bottom margin of an element 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the bottom margin of an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">marginLeft</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the left margin of an element   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the left margin of an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">marginRight</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the right margin of an element  1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the right margin of an element &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">marginTop</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the top margin of an element    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the top margin of an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">maxHeight</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the maximum height of an element    2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the maximum height of an element &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">maxWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the maximum width of an element 2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the maximum width of an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">minHeight</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the minimum height of an element    2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the minimum height of an element &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">minWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the minimum width of an element 2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the minimum width of an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">navDown</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns where to navigate when using the arrow-down navigation key  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns where to navigate when using the arrow-down navigation key &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">navIndex</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the tabbing order for an element    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the tabbing order for an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">navLeft</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns where to navigate when using the arrow-left navigation key  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns where to navigate when using the arrow-left navigation key &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">navRight</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns where to navigate when using the arrow-right navigation key 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns where to navigate when using the arrow-right navigation key&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">navUp</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns where to navigate when using the arrow-up navigation key    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns where to navigate when using the arrow-up navigation key&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">objectFit</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;pecifies how the contents of a replaced element should be fitted to the box established by its used height and width   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;pecifies how the contents of a replaced element should be fitted to the box</span>
+<span class="sd">        established by its used height and width&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">objectPosition</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;ecifies the alignment of the replaced element inside its box  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;ecifies the alignment of the replaced element inside its box &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">opacity</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the opacity level for an element    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the opacity level for an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the order of the flexible item, relative to the rest    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the order of the flexible item, relative to the rest&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">orphans</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the minimum number of lines for an element that must be left at the bottom of a page when a page break occurs inside an element 2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the minimum number of lines for an element that must be left at the bottom</span>
+<span class="sd">        of a page when a page break occurs inside an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">outline</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns all the outline properties in one declaration   2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns all the outline properties in one declaration&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">outlineColor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the color of the outline around a element   2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the color of the outline around a element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">outlineOffset</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;ffsets an outline, and draws it beyond the border edge 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;ffsets an outline, and draws it beyond the border edge&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">outlineStyle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the style of the outline around an element  2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the style of the outline around an element &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">outlineWidth</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the width of the outline around an element  2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the width of the outline around an element &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">overflow</span> <span class="o">=</span> <span class="s1">&#39;visible&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns what to do with content that renders outside the element box    2&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overflow</span> <span class="o">=</span> <span class="s2">&quot;visible&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns what to do with content that renders outside the element box &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">overflowX</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;pecifies what to do with the left/right edges of the content, if it overflows the element&#39;s content area   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;pecifies what to do with the left/right edges of the content, if it overflows the element&#39;s content area&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">overflowY</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;pecifies what to do with the top/bottom edges of the content, if it overflows the element&#39;s content area   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;pecifies what to do with the top/bottom edges of the content, if it overflows the element&#39;s content area&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the padding of an element (can have up to four values)  1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the padding of an element (can have up to four values) &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">paddingBottom</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the bottom padding of an element    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the bottom padding of an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">paddingLeft</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the left padding of an element  1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the left padding of an element &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">paddingRight</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the right padding of an element 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the right padding of an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">paddingTop</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the top padding of an element   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the top padding of an element&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pageBreakAfter</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the page-break behavior after an element    2&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pageBreakAfter</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the page-break behavior after an element &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pageBreakBefore</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the page-break behavior before an element   2&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pageBreakBefore</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the page-break behavior before an element&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pageBreakInside</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the page-break behavior inside an element   2&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pageBreakInside</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the page-break behavior inside an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">perspective</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the perspective on how 3D elements are viewed   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the perspective on how 3D elements are viewed&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">perspectiveOrigin</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the bottom position of 3D elements  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the bottom position of 3D elements &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the type of positioning method used for an element (static, relative, absolute or fixed)    2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the type of positioning method used for an element (static, relative, absolute or fixed) &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">quotes</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the type of quotation marks for embedded quotations 2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the type of quotation marks for embedded quotations&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">resize</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether or not an element is resizable by the user  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether or not an element is resizable by the user &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the right position of a positioned element  2&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the right position of a positioned element &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">tableLayout</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the way to lay out table cells, rows, and columns   2&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tableLayout</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the way to lay out table cells, rows, and columns&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">tabSize</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the length of the tab-character 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the length of the tab-character&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">textAlign</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the horizontal alignment of text    1&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textAlign</span> <span class="o">=</span> <span class="s2">&quot;left&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the horizontal alignment of text&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">textAlignLast</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns how the last line of a block or a line right before a forced line break is aligned when text-align is &quot;justify&quot; 3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textAlignLast</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns how the last line of a block or a line right before a forced line break</span>
+<span class="sd">        is aligned when text-align is justify&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">textDecoration</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the decoration of a text    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the decoration of a text&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">textDecorationColor</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the color of the text-decoration    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the color of the text-decoration&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">textDecorationLine</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the type of line in a text-decoration   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the type of line in a text-decoration&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">textDecorationStyle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the style of the line in a text decoration  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the style of the line in a text decoration &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">textIndent</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the indentation of the first line of text   1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the indentation of the first line of text&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">textJustify</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the justification method used when text-align is &quot;justify&quot;  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the justification method used when text-align is justify&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">textOverflow</span> <span class="o">=</span> <span class="s1">&#39;clip&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns what should happen when text overflows the containing element   3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textOverflow</span> <span class="o">=</span> <span class="s2">&quot;clip&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns what should happen when text overflows the containing element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">textShadow</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the shadow effect of a text 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the shadow effect of a text&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">textTransform</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the capitalization of a text    1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the capitalization of a text&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the top position of a positioned element    2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the top position of a positioned element &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;pplies a 2D or 3D transformation to an element 3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;pplies a 2D or 3D transformation to an element&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">transformOrigin</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the position of transformed elements    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the position of transformed elements&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">transformStyle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns how nested elements are rendered in 3D space    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns how nested elements are rendered in 3D space&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">transition</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;shorthand property for setting or returning the four transition properties    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;shorthand property for setting or returning the four transition properties&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">transitionProperty</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the CSS property that the transition effect is for  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the CSS property that the transition effect is for &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">transitionDuration</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns how many seconds or milliseconds a transition effect takes to complete  3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns how many seconds or milliseconds a transition effect takes to complete &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">transitionTimingFunction</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the speed curve of the transition effect    3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the speed curve of the transition effect&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">transitionDelay</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns when the transition effect will start   3&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns when the transition effect will start&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">unicodeBidi</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether the text should be overridden to support multiple languages in the same document    2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether the text should be overridden to support multiple languages in the same document &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">userSelect</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether the text of an element can be selected or not   2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether the text of an element can be selected or not&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">verticalAlign</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the vertical alignment of the content in an element 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the vertical alignment of the content in an element&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">visibility</span> <span class="o">=</span> <span class="s1">&#39;visible&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns whether an element should be visible 2&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visibility</span> <span class="o">=</span> <span class="s2">&quot;visible&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns whether an element should be visible&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">whiteSpace</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">whiteSpace</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
         <span class="sd">&quot;&quot;&quot; Sets or returns how to handle tabs, line breaks and whitespace in a text 1 &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the width of an element 1&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the width of an element&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">wordBreak</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns line breaking rules for non-CJK scripts 3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wordBreak</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns line breaking rules for non-CJK scripts&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">wordSpacing</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the spacing between words in a text 1&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the spacing between words in a text&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">wordWrap</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Allows long, unbreakable words to be broken and wrap to the next line   3&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wordWrap</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Allows long, unbreakable words to be broken and wrap to the next line&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">widows</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the minimum number of lines for an element that must be visible at the top of a page    2&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the minimum number of lines for an element that must be visible at the top of a page &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">zIndex</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
-        <span class="sd">&#39;&#39;&#39;Sets or returns the stack order of a positioned element 2&#39;&#39;&#39;</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">zIndex</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Sets or returns the stack order of a positioned element&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">style_set_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">style_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
             <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_members_checked</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -813,8 +820,8 @@
                 <span class="k">return</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">Utils</span><span class="o">.</span><span class="n">case_kebab</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">;&#39;</span>
-                <span class="n">styles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_node</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;style&#39;</span><span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Utils</span><span class="o">.</span><span class="n">case_kebab</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">;&quot;</span>
+                <span class="n">styles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent_node</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s2">&quot;style&quot;</span><span class="p">)</span>
                 <span class="c1"># print(&#39;sup:&#39;, styles)</span>
 
                 <span class="k">if</span> <span class="n">styles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -830,12 +837,14 @@
 
     <span class="k">def</span> <span class="nf">style_get_decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">style_wrapper</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
             <span class="k">return</span> <span class="n">value</span>
+
         <span class="k">return</span> <span class="n">style_wrapper</span>
 
     <span class="nd">@property</span>
@@ -845,7 +854,7 @@
 
     <span class="nd">@alignContent</span><span class="o">.</span><span class="n">setter</span>
     <span class="nd">@style_set_decorator</span>
-    <span class="k">def</span> <span class="nf">alignContent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;stretch&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">alignContent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__alignContent</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
@@ -2740,29 +2749,30 @@
 
     <span class="c1"># Modifies an existing CSS property or creates a new CSS property in the declaration block. &quot;&quot;&quot;</span>
     <span class="c1"># def setProperty(self, property, value):</span>
-        <span class="c1"># print(&#39;shut your fucking mouth!&#39;)</span>
-        <span class="c1"># self[property] = value</span>
+    <span class="c1"># print(&#39;shut your fucking mouth!&#39;)</span>
+    <span class="c1"># self[property] = value</span>
 
 
 <div class="viewcode-block" id="CSSStyleDeclaration"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration">[docs]</a><span class="k">class</span> <span class="nc">CSSStyleDeclaration</span><span class="p">(</span><span class="n">Style</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; The CSSStyleDeclaration interface represents an object that is a CSS declaration block,</span>
+    <span class="sd">&quot;&quot;&quot;The CSSStyleDeclaration interface represents an object that is a CSS declaration block,</span>
 <span class="sd">    and exposes style information and various style-related methods and properties.</span>
 
 <span class="sd">    A CSSStyleDeclaration object can be exposed using three different APIs:</span>
 
 <span class="sd">    Via HTMLElement.style, which deals with the inline styles of a single element (e.g., &lt;div style=&quot;...&quot;&gt;).</span>
-<span class="sd">    Via the CSSStyleSheet API. For example, document.styleSheets[0].cssRules[0].style returns a CSSStyleDeclaration object on the first CSS rule in the document&#39;s first stylesheet.</span>
+<span class="sd">    Via the CSSStyleSheet API. For example, document.styleSheets[0].cssRules[0].style</span>
+<span class="sd">    returns a CSSStyleDeclaration object on the first CSS rule in the document&#39;s first stylesheet.</span>
 <span class="sd">    Via Window.getComputedStyle(), which exposes the CSSStyleDeclaration object as a read-only interface.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parentNode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;*** MADE A STYLE ***&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** MADE A STYLE ***&quot;</span><span class="p">)</span>
         <span class="c1"># super(Style).__init__(*args, **kwargs)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parentNode</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cssText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.</span>
+        <span class="sd">&quot;&quot;&quot;Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.</span>
 <span class="sd">        Setting this attribute changes the inline style.</span>
 <span class="sd">        If you want a text representation of a computed declaration block,</span>
 <span class="sd">        you can get it with JSON.stringify().&quot;&quot;&quot;</span>
@@ -2770,12 +2780,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; The number of properties. See the item() method below.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;The number of properties. See the item() method below.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parentRule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; The containing CSSRule. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;The containing CSSRule.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="c1"># @property</span>
@@ -2784,32 +2794,33 @@
     <span class="c1">#     raise NotImplementedError</span>
 
 <div class="viewcode-block" id="CSSStyleDeclaration.getPropertyPriority"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration.getPropertyPriority">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyPriority</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the optional priority, &quot;important&quot;.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns the optional priority, &quot;important&quot;.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CSSStyleDeclaration.getPropertyValue"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration.getPropertyValue">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the property value given a property name. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Returns the property value given a property name.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CSSStyleDeclaration.item"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.</span>
-<span class="sd">            An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).</span>
-<span class="sd">            This is mostly useful for non-JavaScript DOM implementations.</span>
+        <span class="sd">&quot;&quot;&quot;Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.</span>
+<span class="sd">        An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).</span>
+<span class="sd">        This is mostly useful for non-JavaScript DOM implementations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="CSSStyleDeclaration.removeProperty"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration.removeProperty">[docs]</a>    <span class="k">def</span> <span class="nf">removeProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Removes a property from the CSS declaration block. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Removes a property from the CSS declaration block.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
     <span class="c1"># Modifies an existing CSS property or creates a new CSS property in the declaration block. &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">setProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;is this magic!&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;is this magic!&quot;</span><span class="p">)</span>
         <span class="c1"># self[property] = value</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CSSStyleDeclaration.getPropertyCSSValue"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleDeclaration.getPropertyCSSValue">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyCSSValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Only supported via getComputedStyle in Firefox. Returns the property value as a CSSPrimitiveValue or null for shorthand properties. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Only supported via getComputedStyle in Firefox. Returns the property value as a</span>
+<span class="sd">        CSSPrimitiveValue or null for shorthand properties.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 </pre></div>
 
@@ -2841,7 +2852,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/sitemap.html">Domonic: sitemap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/d3.html">Domonic: d3</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>

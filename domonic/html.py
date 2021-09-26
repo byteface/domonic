@@ -49,7 +49,7 @@ html_attributes = [
             ]
 
 
-def render(inp, outp='', to=None):
+def render(inp, outp='', to=None):  # doctype='html5')
     """render
 
     Renders the input to string or to a file.
@@ -332,6 +332,76 @@ class tag(object):
     # def __next__(self):
     # def __iter__(self):
 
+    def __format__(self, format_spec):
+        # return super().__format__(format_spec)
+        # get node depth by counting parents
+
+        # TODO - this is a hack to get the depth of the node
+        n = self
+        depth = 0
+        while n is not None:
+            # print(type(n), type(n.parentNode))
+            n = n.parentNode
+            depth += 1
+
+        depth -= 1
+
+        # print(f"depth: {depth}")
+        dent = '    ' * depth
+
+        # loop the children and call __format__ on each one
+        # content = ""
+        # for child in self.childNodes:
+        #     content += child.__format__(format_spec)
+
+        self._update_parents()
+
+        content = ''.join([each.__format__(format_spec) for each in self.args])
+
+        wrap = False
+        if len(self.args) == 1:
+            if not isinstance(self.args[0], Element):
+                wrap = True
+
+        dtype = ""
+        if isinstance(self, Document):
+            # dtype = "<!DOCTYPE html>"
+            dtype = self.doctype
+
+        size = len(str(content))
+        if size < 150 and wrap:
+            return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
+        else:
+            return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n{dent}</{self.name}>"
+
+    # def __call__(self, *args, **kwargs):
+    #     """
+    #     allows for calling the object as a function
+    #     """
+    #     print('calling a tag')
+    #     print(args)
+    #     print(kwargs)
+    #     print(self.name)
+    #     print(self.args)
+    #     print(self.kwargs)
+    #     print(self.__attributes__)
+    #     print(self.content)
+    #     print(self.parentNode)
+    #     print(self.childNodes)
+    #     print(self.previousSibling)
+    #     print(self.nextSibling)
+    #     print(self.ownerDocument)
+    #     print(self.nodeValue)
+    #     print(self.nodeName)
+    #     print(self.nodeType)
+
+    # def write(self, path):
+    #     """
+    #     writes the html to a file
+    #     """
+    #     with open(path, 'w') as f:
+    #         f.write(self.__format__(''))
+
 
 class closed_tag(tag):
     def __str__(self):
@@ -365,6 +435,7 @@ def Atag(self, *args, **kwargs):
     # print('Atag: ', args, kwargs)
     tag.__init__(self, *args, **kwargs)
     Element.__init__(self, *args, **kwargs)
+
     # TODO - fix BUG. this stops having no href on a tags
     if kwargs.get('_href', None) is not None:
         URL.__init__(self, url=kwargs['_href'])
@@ -530,6 +601,8 @@ picture = type('picture', (tag, Element), {'name': 'picture', '__init__': tag_in
 class doctype():
     """doctype
 
+    - this will be deprecated in the future to the one on the DOM
+
     Returns:
         str: <!DOCTYPE html>
     """
@@ -545,6 +618,8 @@ class doctype():
 
 class comment():
     """comment
+
+    - this will be deprecated in the future in favour of Comment on the DOM
 
     Args:
         content (str): Message to be rendered inside the comment tag
@@ -568,6 +643,7 @@ class comment():
 def create_element(name='custom_tag', *args, **kwargs):
     '''
     A method for creating custom tags
+
     tag name needs to be set due to custom tags with hyphens can't be classnames.
     i.e. hypenated tags <some-custom-tag></some-custom-tag>
     '''

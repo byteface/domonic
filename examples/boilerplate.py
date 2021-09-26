@@ -44,4 +44,9 @@ page = lambda content : html(_lang="en", _class="no-js", _dir="auto").html(
 
 content = div("Hello World!")
 
-render( page(content), "boilerplate.html" )
+# no pretty printing
+# render( page(content), "boilerplate.html" )
+
+# use f-string for pretty printing
+render( f"{page(content)}", "boilerplate.html" )
+

@@ -43,8 +43,11 @@ Domonic: autodocs
 .. automodule:: domonic.lerpy.easing
     :members:
 
-.. automodule:: domonic.x3d
+.. automodule:: domonic.xml.x3d
     :members:
 
 .. automodule:: domonic.geom
+    :members:
+
+.. automodule:: domonic.xml.sitemap
     :members:

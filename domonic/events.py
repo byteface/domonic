@@ -605,6 +605,57 @@ class GamePadEvent(Event):
         super().__init__(_type, *args, **kwargs)
 
 
+# class DeviceMotionEvent(Event):
+#     """ DeviceMotionEvent """
+#     def __init__(self, _type, *args, **kwargs):
+#         self.acceleration = None
+#         """ Returns the acceleration of the device """
+#         self.accelerationIncludingGravity = None
+#         """ Returns the acceleration of the device, including gravity """
+#         self.rotationRate = None
+#         """ Returns the rotation rate of the device """
+#         self.interval = None
+#         """ Returns the time interval between the previous and the current event """
+#         super().__init__(_type, *args, **kwargs)
+
+
+# class DeviceOrientationEvent(Event):
+#     """ DeviceOrientationEvent """
+#     def __init__(self, _type, *args, **kwargs):
+#         self.absolute = None
+#         """ Returns true if the orientation is absolute """
+#         self.alpha = None
+#         """ Returns the orientation of the device in degrees, relative to the Earth's coordinate system """
+#         self.beta = None
+#         """ Returns the orientation of the device in degrees, relative to the Earth's coordinate system """
+#         self.gamma = None
+#         """ Returns the orientation of the device in degrees, relative to the Earth's coordinate system """
+#         self.interval = None
+#         """ Returns the time interval between the previous and the current event """
+#         super().__init__(_type, *args, **kwargs)
+
+
+# class DeviceLightEvent(Event):
+#     """ DeviceLightEvent """
+#     def __init__(self, _type, *args, **kwargs):
+#         self.value = None
+#         """ Returns the value of the ambient light sensor """
+#         super().__init__(_type, *args, **kwargs)
+
+
+# class DeviceProximityEvent(Event):
+#     """ DeviceProximityEvent """
+#     def __init__(self, _type, *args, **kwargs):
+#         self.value = None
+#         """ Returns the value of the proximity sensor """
+#         self.min = None
+#         """ Returns the minimum value of the proximity sensor """
+#         self.max = None
+#         """ Returns the maximum value of the proximity sensor """
+#         super().__init__(_type, *args, **kwargs)
+
+
+
 class TweenEvent(Event):
     """ TweenEvent """
     START = "onStart"  #:

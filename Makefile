@@ -13,6 +13,7 @@ test:
 	python3 -m unittest tests.test_dQuery
 	python3 -m unittest tests.test_geom
 	python3 -m unittest tests.test_d3
+	python3 -m unittest tests.test_sitemap
 	python3 -m unittest tests.test_domonic
 
 testpc:
@@ -29,6 +30,7 @@ testpc:
 	python3 -m unittest tests.test_dQuery
 	python3 -m unittest tests.test_geom
 	python3 -m unittest tests.test_d3
+	python3 -m unittest tests.test_sitemap
 	python3 -m unittest tests.test_domonic
 
 

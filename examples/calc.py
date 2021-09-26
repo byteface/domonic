@@ -22,7 +22,9 @@ calc = article(
   )
 )
 
-render( html(head(classless_css, jquery, code), body(calc)), 'calc.html' )
+mycalc = html(head(classless_css, jquery, code), body(calc))
+
+render( f'{mycalc}' , 'calc.html' )
 
 try:
 	import os

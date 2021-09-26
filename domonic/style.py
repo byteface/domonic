@@ -6,8 +6,8 @@
 from .utils import Utils
 
 
-class StyleSheet():
-    """ An object implementing the StyleSheet interface represents a single style sheet.
+class StyleSheet:
+    """An object implementing the StyleSheet interface represents a single style sheet.
     CSS style sheets will further implement the more specialized CSSStyleSheet interface.
     """
 
@@ -17,38 +17,38 @@ class StyleSheet():
 
     @property
     def href(self):
-        """ Returns a DOMString representing the location of the stylesheet."""
+        """Returns a DOMString representing the location of the stylesheet."""
         return self.href
 
     @property
     def media(self):
-        """ Returns a MediaList representing the intended destination medium for style information. """
+        """Returns a MediaList representing the intended destination medium for style information."""
         raise NotImplementedError
 
     @property
     def ownerNode(self):
-        """ Returns a Node associating this style sheet with the current document. """
+        """Returns a Node associating this style sheet with the current document."""
         raise NotImplementedError
 
     @property
     def parentStyleSheet(self):
-        """ Returns a StyleSheet including this one, if any; returns null if there aren't any. """
+        """Returns a StyleSheet including this one, if any; returns null if there aren't any."""
         raise NotImplementedError
 
     @property
     def title(self):
-        """ Returns a DOMString representing the advisory title of the current style sheet. """
+        """Returns a DOMString representing the advisory title of the current style sheet."""
         raise NotImplementedError
 
     @property
     def type(self):
-        """ Returns a DOMString representing the style sheet language for this style sheet. """
+        """Returns a DOMString representing the style sheet language for this style sheet."""
         raise NotImplementedError
 
 
-class StyleSheetList():
-    """ An instance of this object can be returned by Document.styleSheets.
-        it can be iterated over in a standard for loop over its indices, or converted to an Array.
+class StyleSheetList:
+    """An instance of this object can be returned by Document.styleSheets.
+    it can be iterated over in a standard for loop over its indices, or converted to an Array.
     """
 
     def __init__(self):
@@ -68,16 +68,16 @@ class StyleSheetList():
 
     @property
     def length(self):
-        """ Returns the number of CSSStyleSheet objects in the collection. """
+        """Returns the number of CSSStyleSheet objects in the collection."""
         return len(self.styleSheets)
 
     def item(self, index):
-        """ Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index."""
+        """Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index."""
         return self.styleSheets[index]
 
 
-class CSSRule():
-    """ The CSSRule interface represents a single CSS rule.
+class CSSRule:
+    """The CSSRule interface represents a single CSS rule.
     There are several types of rules which inherit properties from CSSRule.
 
     CSSStyleRule
@@ -100,7 +100,7 @@ class CSSRule():
 
     @property
     def cssText(self):
-        """ Represents the textual representation of the rule, e.g. "h1,h2 { font-size: 16pt }" or "@import 'url'".
+        """Represents the textual representation of the rule, e.g. "h1,h2 { font-size: 16pt }" or "@import 'url'".
         To access or modify parts of the rule (e.g. the value of "font-size" in the example)
         use the properties on the specialized interface for the rule's type.
         """
@@ -108,21 +108,21 @@ class CSSRule():
 
     @property
     def parentRule(self):
-        """ Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an @media block,
-        the parent rule would be that CSSMediaRule. """
+        """Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an @media block,
+        the parent rule would be that CSSMediaRule."""
         raise NotImplementedError
 
     def parentStyleSheet(self):
-        """ Returns the CSSStyleSheet object for the style sheet that contains this rule """
+        """Returns the CSSStyleSheet object for the style sheet that contains this rule"""
         raise NotImplementedError
 
     def type(self):
-        """ Returns one of the Type constants to determine which type of rule is represented. """
+        """Returns one of the Type constants to determine which type of rule is represented."""
         raise NotImplementedError
 
 
-class CSSRuleList():
-    """ A CSSRuleList represents an ordered collection of read-only CSSRule objects.
+class CSSRuleList:
+    """A CSSRuleList represents an ordered collection of read-only CSSRule objects.
     While the CSSRuleList object is read-only, and cannot be directly modified,
     it is considered a live object, as the content can change over time.
     """
@@ -132,647 +132,654 @@ class CSSRuleList():
         raise NotImplementedError
 
     def length(self):
-        """ Returns an integer representing the number of CSSRule objects in the collection. """
+        """Returns an integer representing the number of CSSRule objects in the collection."""
         raise NotImplementedError
 
     def item(self):
-        """ Gets a single CSSRule."""
+        """Gets a single CSSRule."""
         raise NotImplementedError
 
 
 class CSSStyleSheet(StyleSheet):
-    """ Creates a new CSSStyleSheet object. """
+    """Creates a new CSSStyleSheet object."""
 
     @property
     def cssRules():  # -> 'CSSStyleRuleList':
-        """ Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects
-        that comprise the stylesheet. """
+        """Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects
+        that comprise the stylesheet."""
         # return CSSStyleRuleList()
         raise NotImplementedError
 
     @property
     def ownerRule(self):
-        """ If this stylesheet is imported into the document using an @import rule,
-        the ownerRule property returns the corresponding CSSImportRule; otherwise, this property's value is null. """
+        """If this stylesheet is imported into the document using an @import rule,
+        the ownerRule property returns the corresponding CSSImportRule; otherwise, this property's value is null."""
         raise NotImplementedError
 
     def deleteRule(self):
-        """ Deletes the rule at the specified index into the stylesheet's rule list. """
+        """Deletes the rule at the specified index into the stylesheet's rule list."""
         raise NotImplementedError
 
     def insertRule(self):
-        """ Inserts a new rule at the specified position in the stylesheet,
-            given the textual representation of the rule."""
+        """Inserts a new rule at the specified position in the stylesheet,
+        given the textual representation of the rule."""
         raise NotImplementedError
 
     def replace(self):
-        """ Asynchronously replaces the content of the stylesheet and returns
+        """Asynchronously replaces the content of the stylesheet and returns
         a Promise that resolves with the updated CSSStyleSheet."""
         raise NotImplementedError
 
     def replaceSync(self):
-        """ Synchronously replaces the content of the stylesheet."""
+        """Synchronously replaces the content of the stylesheet."""
         raise NotImplementedError
 
     @property
     def rules():
-        """ The rules property is functionally identical to the standard cssRules property
-            it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.
+        """The rules property is functionally identical to the standard cssRules property
+        it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.
         """
         raise NotImplementedError
 
     # Legacy methods
     def addRule(self):
-        """ Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply to the matching elements.
-            This differs from insertRule(), which takes the textual representation of the entire rule as a single string.
+        """Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply to the matching elements.
+        This differs from insertRule(), which takes the textual representation of the entire rule as a single string.
         """
         raise NotImplementedError
 
     def removeRule(self):
-        """ Functionally identical to deleteRule();
-        removes the rule at the specified index from the stylesheet's rule list. """
+        """Functionally identical to deleteRule();
+        removes the rule at the specified index from the stylesheet's rule list."""
         raise NotImplementedError
 
 
 class Style(object):
     """[ js syntax styles ]
-        # TODO - just add normal float?
-        # TODO - consider camel case for hyphen params?
-        # TODO - not json serialisable due to the decorators.
+    # TODO - just add normal float?
+    # TODO - consider camel case for hyphen params?
+    # TODO - not json serialisable due to the decorators.
     """
 
     def __init__(self, parent_node=None):
-        print('*** MADE A STYLE11 ***')
+        print("*** MADE A STYLE11 ***")
 
         self._members_checked = 0
 
         self._parent_node = parent_node  # so I can update a tags returned style attributes if a style gets set
 
-        self.alignContent = 'normal'
-        '''Sets or returns the alignment between the lines inside a flexible container when the items do not use all available space'''
+        self.alignContent = "normal"
+        """Sets or returns the alignment between the lines inside a flexible container
+        when the items do not use all available space"""
 
-        self.alignItems = 'normal'
-        '''Sets or returns the alignment for items inside a flexible container 3'''
+        self.alignItems = "normal"
+        """Sets or returns the alignment for items inside a flexible container"""
 
-        self.alignSelf = 'auto'
-        '''Sets or returns the alignment for selected items inside a flexible container    3'''
+        self.alignSelf = "auto"
+        """Sets or returns the alignment for selected items inside a flexible container"""
 
-        self.animation = 'normal'
-        ''' shorthand property for all the animation properties below, except the animationPlayState property 3'''
+        self.animation = "normal"
+        """ shorthand property for all the animation properties below, except the animationPlayState property"""
 
         self.animationDelay = 0
-        '''Sets or returns when the animation will start   3'''
+        """Sets or returns when the animation will start"""
 
-        self.animationDirection = 'normal'
-        '''Sets or returns whether or not the animation should play in reverse on alternate cycles 3'''
+        self.animationDirection = "normal"
+        """Sets or returns whether or not the animation should play in reverse on alternate cycles"""
 
         self.animationDuration = 0
-        '''Sets or returns how many seconds or milliseconds an animation takes to complete one cycle   3'''
+        """Sets or returns how many seconds or milliseconds an animation takes to complete one cycle"""
 
         self.animationFillMode = None
-        '''Sets or returns what values are applied by the animation outside the time it is executing   3'''
+        """Sets or returns what values are applied by the animation outside the time it is executing"""
 
         self.animationIterationCount = 1
-        '''Sets or returns the number of times an animation should be played   3'''
+        """Sets or returns the number of times an animation should be played"""
 
         self.animationName = None
-        '''Sets or returns a name for the @keyframes animation 3'''
+        """Sets or returns a name for the @keyframes animation"""
 
-        self.animationTimingFunction = 'ease'
-        '''Sets or returns the speed curve of the animation    3'''
+        self.animationTimingFunction = "ease"
+        """Sets or returns the speed curve of the animation"""
 
-        self.animationPlayState = 'running'
-        '''Sets or returns whether the animation is running or paused  3'''
+        self.animationPlayState = "running"
+        """Sets or returns whether the animation is running or paused """
 
         self.background = None
-        '''Sets or returns all the background properties in one declaration    1'''
+        """Sets or returns all the background properties in one declaration"""
 
-        self.backgroundAttachment = 'scroll'
-        '''Sets or returns whether a background-image is fixed or scrolls with the page    1'''
+        self.backgroundAttachment = "scroll"
+        """Sets or returns whether a background-image is fixed or scrolls with the page"""
 
         self.backgroundColor = None
-        '''Sets or returns the background-color of an element  1'''
+        """Sets or returns the background-color of an element """
 
         self.backgroundImage = None
-        '''Sets or returns the background-image for an element 1'''
+        """Sets or returns the background-image for an element"""
 
         self.backgroundPosition = None
-        '''Sets or returns the starting position of a background-image 1'''
+        """Sets or returns the starting position of a background-image"""
 
         self.backgroundRepeat = None
-        '''Sets or returns how to repeat (tile) a background-image 1'''
+        """Sets or returns how to repeat (tile) a background-image"""
 
         self.backgroundClip = None
-        '''Sets or returns the painting area of the background 3'''
+        """Sets or returns the painting area of the background"""
 
         self.backgroundOrigin = None
-        '''Sets or returns the positioning area of the background images   3'''
+        """Sets or returns the positioning area of the background images"""
 
         self.backgroundSize = None
-        '''Sets or returns the size of the background image    3'''
+        """Sets or returns the size of the background image"""
 
         self.backfaceVisibility = None
-        '''Sets or returns whether or not an element should be visible when not facing the screen  3'''
+        """Sets or returns whether or not an element should be visible when not facing the screen """
 
-        self.border = 'medium none black'
-        '''Sets or returns borderWidth, borderStyle, and borderColor in one declaration    1'''
+        self.border = "medium none black"
+        """Sets or returns borderWidth, borderStyle, and borderColor in one declaration"""
 
-        self.borderBottom = 'medium none black'
-        '''Sets or returns all the borderBottom properties in one declaration  1'''
+        self.borderBottom = "medium none black"
+        """Sets or returns all the borderBottom properties in one declaration """
 
         self.borderBottomColor = None
-        '''Sets or returns the color of the bottom border  1 '''
+        """Sets or returns the color of the bottom border  1 """
 
         self.borderBottomLeftRadius = 0
-        '''Sets or returns the shape of the border of the bottom-left corner   3'''
+        """Sets or returns the shape of the border of the bottom-left corner"""
 
         self.borderBottomRightRadius = 0
-        '''Sets or returns the shape of the border of the bottom-right corner  3'''
+        """Sets or returns the shape of the border of the bottom-right corner """
 
         self.borderBottomStyle = None
-        '''Sets or returns the style of the bottom border  1'''
+        """Sets or returns the style of the bottom border """
 
         self.borderBottomWidth = None
-        '''Sets or returns the width of the bottom border  1'''
+        """Sets or returns the width of the bottom border """
 
         self.borderCollapse = None
-        '''Sets or returns whether the table border should be collapsed into a single border, or not   2'''
+        """Sets or returns whether the table border should be collapsed into a single border, or not"""
 
         self.borderColor = None
-        '''Sets or returns the color of an element's border (can have up to four values)   1'''
+        """Sets or returns the color of an element's border (can have up to four values)"""
 
         self.borderImage = None
-        '''horthand property for setting or returning all the borderImage properties    3'''
+        """horthand property for setting or returning all the borderImage properties"""
 
         self.borderImageOutset = None
-        '''Sets or returns the amount by which the border image area extends beyond the border box 3'''
+        """Sets or returns the amount by which the border image area extends beyond the border box"""
 
         self.borderImageRepeat = None
-        '''Sets or returns whether the image-border should be repeated, rounded or stretched   3'''
+        """Sets or returns whether the image-border should be repeated, rounded or stretched"""
 
         self.borderImageSlice = None
-        '''Sets or returns the inward offsets of the image-border  3'''
+        """Sets or returns the inward offsets of the image-border """
 
         self.borderImageSource = None
-        '''Sets or returns the image to be used as a border    3'''
+        """Sets or returns the image to be used as a border"""
 
         self.borderImageWidth = None
-        '''Sets or returns the widths of the image-border  3'''
+        """Sets or returns the widths of the image-border """
 
         self.borderLeft = None
-        '''Sets or returns all the borderLeft properties in one declaration    1'''
+        """Sets or returns all the borderLeft properties in one declaration"""
 
         self.borderLeftColor = None
-        '''Sets or returns the color of the left border    1'''
+        """Sets or returns the color of the left border"""
 
         self.borderLeftStyle = None
-        '''Sets or returns the style of the left border    1'''
+        """Sets or returns the style of the left border"""
 
         self.borderLeftWidth = None
-        '''Sets or returns the width of the left border    1'''
+        """Sets or returns the width of the left border"""
 
         self.borderRadius = 0
-        '''A shorthand property for setting or returning all the four borderRadius properties  3'''
+        """A shorthand property for setting or returning all the four borderRadius properties """
 
         self.borderRight = None
-        '''Sets or returns all the borderRight properties in one declaration   1'''
+        """Sets or returns all the borderRight properties in one declaration"""
 
         self.borderRightColor = None
-        '''Sets or returns the color of the right border   1'''
+        """Sets or returns the color of the right border"""
 
         self.borderRightStyle = None
-        '''Sets or returns the style of the right border   1'''
+        """Sets or returns the style of the right border"""
 
         self.borderRightWidth = None
-        '''Sets or returns the width of the right border   1'''
+        """Sets or returns the width of the right border"""
 
         self.borderSpacing = None
-        '''Sets or returns the space between cells in a table  2'''
+        """Sets or returns the space between cells in a table """
 
         self.borderStyle = None
-        '''Sets or returns the style of an element's border (can have up to four values)   1'''
+        """Sets or returns the style of an element's border (can have up to four values)"""
 
         self.borderTop = None
-        '''Sets or returns all the borderTop properties in one declaration 1'''
+        """Sets or returns all the borderTop properties in one declaration"""
 
         self.borderTopColor = None
-        '''Sets or returns the color of the top border 1'''
+        """Sets or returns the color of the top border"""
 
         self.borderTopLeftRadius = 0
-        '''Sets or returns the shape of the border of the top-left corner  3'''
+        """Sets or returns the shape of the border of the top-left corner """
 
         self.borderTopRightRadius = 0
-        '''Sets or returns the shape of the border of the top-right corner 3'''
+        """Sets or returns the shape of the border of the top-right corner"""
 
         self.borderTopStyle = None
-        '''Sets or returns the style of the top border 1'''
+        """Sets or returns the style of the top border"""
 
         self.borderTopWidth = None
-        '''Sets or returns the width of the top border 1'''
+        """Sets or returns the width of the top border"""
 
         self.borderWidth = None
-        '''Sets or returns the width of an element's border (can have up to four values)   1'''
+        """Sets or returns the width of an element's border (can have up to four values)"""
 
         self.bottom = None
-        '''Sets or returns the bottom position of a positioned element 2'''
+        """Sets or returns the bottom position of a positioned element"""
 
         self.boxDecorationBreak = None
-        '''Sets or returns the behaviour of the background and border of an element at page-break, or, for in-line elements, at line-break.    3'''
+        """Sets or returns the behaviour of the background and border of an element at page-break, or,
+        for in-line elements, at line-break."""
 
         self.boxShadow = None
-        '''ttaches one or more drop-shadows to the box    3'''
+        """ttaches one or more drop-shadows to the box"""
 
         self.boxSizing = None
-        '''llows you to define certain elements to fit an area in a certain way   3'''
+        """llows you to define certain elements to fit an area in a certain way"""
 
         self.captionSide = None
-        '''Sets or returns the position of the table caption   2'''
+        """Sets or returns the position of the table caption"""
 
         self.clear = None
-        '''Sets or returns the position of the element relative to floating objects    1'''
+        """Sets or returns the position of the element relative to floating objects"""
 
         self.clip = None
-        '''Sets or returns which part of a positioned element is visible   2'''
+        """Sets or returns which part of a positioned element is visible"""
 
         self.color = None
-        '''Sets or returns the color of the text   1'''
+        """Sets or returns the color of the text"""
 
         self.columnCount = None
-        '''Sets or returns the number of columns an element should be divided into 3'''
+        """Sets or returns the number of columns an element should be divided into"""
 
         self.columnFill = None
-        '''Sets or returns how to fill columns 3'''
+        """Sets or returns how to fill columns"""
 
-        self.columnGap = 'normal'
-        '''Sets or returns the gap between the columns 3'''
+        self.columnGap = "normal"
+        """Sets or returns the gap between the columns"""
 
         self.columnRule = None
-        '''shorthand property for setting or returning all the columnRule properties 3'''
+        """shorthand property for setting or returning all the columnRule properties"""
 
         self.columnRuleColor = None
-        '''Sets or returns the color of the rule between columns   3'''
+        """Sets or returns the color of the rule between columns"""
 
         self.columnRuleStyle = None
-        '''Sets or returns the style of the rule between columns   3'''
+        """Sets or returns the style of the rule between columns"""
 
         self.columnRuleWidth = None
-        '''Sets or returns the width of the rule between columns   3'''
+        """Sets or returns the width of the rule between columns"""
 
         self.columns = None
-        '''horthand property for setting or returning columnWidth and columnCount   3'''
+        """horthand property for setting or returning columnWidth and columnCount"""
 
         self.columnSpan = None
-        '''Sets or returns how many columns an element should span across  3'''
+        """Sets or returns how many columns an element should span across """
 
         self.columnWidth = None
-        '''Sets or returns the width of the columns    3'''
+        """Sets or returns the width of the columns"""
 
         self.content = None
-        '''d with the :before and :after pseudo-elements, to insert generated content   2'''
+        """d with the :before and :after pseudo-elements, to insert generated content"""
 
         self.counterIncrement = None
-        '''Increments one or more counters 2'''
+        """Increments one or more counters"""
 
         self.counterReset = None
-        '''Creates or resets one or more counters  2'''
+        """Creates or resets one or more counters """
 
         self.cursor = None
-        '''Sets or returns the type of cursor to display for the mouse pointer 2'''
+        """Sets or returns the type of cursor to display for the mouse pointer"""
 
         self.direction = None
-        '''Sets or returns the text direction  2'''
+        """Sets or returns the text direction """
 
         self.display = None
-        '''Sets or returns an element's display type   1'''
+        """Sets or returns an element's display type"""
 
         self.emptyCells = None
-        '''Sets or returns whether to show the border and background of empty cells, or not    2'''
+        """Sets or returns whether to show the border and background of empty cells, or not """
 
         self.filter = None
-        '''Sets or returns image filters (visual effects, like blur and saturation)    3'''
+        """Sets or returns image filters (visual effects, like blur and saturation)"""
 
         self.flex = None
-        '''Sets or returns the length of the item, relative to the rest    3'''
+        """Sets or returns the length of the item, relative to the rest"""
 
         self.flexBasis = None
-        '''Sets or returns the initial length of a flexible item   3'''
+        """Sets or returns the initial length of a flexible item"""
 
         self.flexDirection = None
-        '''Sets or returns the direction of the flexible items 3'''
+        """Sets or returns the direction of the flexible items"""
 
         self.flexFlow = None
-        '''A shorthand property for the flexDirection and the flexWrap properties  3'''
+        """A shorthand property for the flexDirection and the flexWrap properties """
 
         self.flexGrow = None
-        '''Sets or returns how much the item will grow relative to the rest    3'''
+        """Sets or returns how much the item will grow relative to the rest"""
 
         self.flexShrink = None
-        '''Sets or returns how the item will shrink relative to the rest   3'''
+        """Sets or returns how the item will shrink relative to the rest"""
 
         self.flexWrap = None
-        '''Sets or returns whether the flexible items should wrap or not   3'''
+        """Sets or returns whether the flexible items should wrap or not"""
 
         self.float = None  # ADDED BY ME
 
         self.cssFloat = None
-        '''Sets or returns the horizontal alignment of an element  1'''
+        """Sets or returns the horizontal alignment of an element """
 
         self.font = None
-        '''Sets or returns fontStyle, fontVariant, fontWeight, fontSize, lineHeight, and fontFamily in one declaration 1'''
+        """Sets or returns fontStyle, fontVariant, fontWeight, fontSize, lineHeight, and fontFamily
+        in one declaration"""
 
         self.fontFamily = None
-        '''Sets or returns the font family for text    1'''
+        """Sets or returns the font family for text"""
 
-        self.fontSize = 'medium'
-        '''Sets or returns the font size of the text   1'''
+        self.fontSize = "medium"
+        """Sets or returns the font size of the text"""
 
-        self.fontStyle = 'normal'
-        '''Sets or returns whether the style of the font is normal, italic or oblique  1'''
+        self.fontStyle = "normal"
+        """Sets or returns whether the style of the font is normal, italic or oblique """
 
         self.fontVariant = None
-        '''Sets or returns whether the font should be displayed in small capital letters   1'''
+        """Sets or returns whether the font should be displayed in small capital letters"""
 
-        self.fontWeight = 'normal'
-        '''Sets or returns the boldness of the font    1'''
+        self.fontWeight = "normal"
+        """Sets or returns the boldness of the font"""
 
         self.fontSizeAdjust = None
-        '''eserves the readability of text when font fallback occurs 3'''
+        """eserves the readability of text when font fallback occurs"""
 
         self.fontStretch = None
-        '''ects a normal, condensed, or expanded face from a font family    3'''
+        """ects a normal, condensed, or expanded face from a font family"""
 
         self.hangingPunctuation = None
-        '''ecifies whether a punctuation character may be placed outside the line box    3'''
+        """ecifies whether a punctuation character may be placed outside the line box"""
 
-        self.height = 'auto'
-        '''Sets or returns the height of an element    1'''
+        self.height = "auto"
+        """Sets or returns the height of an element"""
 
         self.hyphens = None
-        '''Sets how to split words to improve the layout of paragraphs 3'''
+        """Sets how to split words to improve the layout of paragraphs"""
 
         self.icon = None
-        '''Provides the author the ability to style an element with an iconic equivalent   3'''
+        """Provides the author the ability to style an element with an iconic equivalent"""
 
         self.imageOrientation = None
-        '''Specifies a rotation in the right or clockwise direction that a user agent applies to an image  3'''
+        """Specifies a rotation in the right or clockwise direction that a user agent applies to an image """
 
         self.isolation = None
-        '''efines whether an element must create a new stacking content   3'''
+        """efines whether an element must create a new stacking content"""
 
-        self.justifyContent = 'normal'
-        '''Sets or returns the alignment between the items inside a flexible container when the items do not use all available space.  3'''
+        self.justifyContent = "normal"
+        """Sets or returns the alignment between the items inside a flexible container when the items
+        do not use all available space. """
 
-        self.left = 'auto'
-        '''Sets or returns the left position of a positioned element   2'''
+        self.left = "auto"
+        """Sets or returns the left position of a positioned element"""
 
         self.letterSpacing = None
-        '''Sets or returns the space between characters in a text  1'''
+        """Sets or returns the space between characters in a text """
 
         self.lineHeight = None
-        '''Sets or returns the distance between lines in a text    1'''
+        """Sets or returns the distance between lines in a text"""
 
         self.listStyle = None
-        '''Sets or returns listStyleImage, listStylePosition, and listStyleType in one declaration 1'''
+        """Sets or returns listStyleImage, listStylePosition, and listStyleType in one declaration"""
 
         self.listStyleImage = None
-        '''Sets or returns an image as the list-item marker    1'''
+        """Sets or returns an image as the list-item marker"""
 
         self.listStylePosition = None
-        '''Sets or returns the position of the list-item marker    1'''
+        """Sets or returns the position of the list-item marker"""
 
         self.listStyleType = None
-        '''Sets or returns the list-item marker type   1'''
+        """Sets or returns the list-item marker type"""
 
         self.margin = 0
-        '''Sets or returns the margins of an element (can have up to four values)  1'''
+        """Sets or returns the margins of an element (can have up to four values) """
 
         self.marginBottom = 0
-        '''Sets or returns the bottom margin of an element 1'''
+        """Sets or returns the bottom margin of an element"""
 
         self.marginLeft = 0
-        '''Sets or returns the left margin of an element   1'''
+        """Sets or returns the left margin of an element"""
 
         self.marginRight = 0
-        '''Sets or returns the right margin of an element  1'''
+        """Sets or returns the right margin of an element """
 
         self.marginTop = 0
-        '''Sets or returns the top margin of an element    1'''
+        """Sets or returns the top margin of an element"""
 
         self.maxHeight = None
-        '''Sets or returns the maximum height of an element    2'''
+        """Sets or returns the maximum height of an element """
 
         self.maxWidth = None
-        '''Sets or returns the maximum width of an element 2'''
+        """Sets or returns the maximum width of an element"""
 
         self.minHeight = None
-        '''Sets or returns the minimum height of an element    2'''
+        """Sets or returns the minimum height of an element """
 
         self.minWidth = None
-        '''Sets or returns the minimum width of an element 2'''
+        """Sets or returns the minimum width of an element"""
 
         self.navDown = None
-        '''Sets or returns where to navigate when using the arrow-down navigation key  3'''
+        """Sets or returns where to navigate when using the arrow-down navigation key """
 
         self.navIndex = None
-        '''Sets or returns the tabbing order for an element    3'''
+        """Sets or returns the tabbing order for an element"""
 
         self.navLeft = None
-        '''Sets or returns where to navigate when using the arrow-left navigation key  3'''
+        """Sets or returns where to navigate when using the arrow-left navigation key """
 
         self.navRight = None
-        '''Sets or returns where to navigate when using the arrow-right navigation key 3'''
+        """Sets or returns where to navigate when using the arrow-right navigation key"""
 
         self.navUp = None
-        '''Sets or returns where to navigate when using the arrow-up navigation key    3'''
+        """Sets or returns where to navigate when using the arrow-up navigation key"""
 
         self.objectFit = None
-        '''pecifies how the contents of a replaced element should be fitted to the box established by its used height and width   3'''
+        """pecifies how the contents of a replaced element should be fitted to the box
+        established by its used height and width"""
 
         self.objectPosition = None
-        '''ecifies the alignment of the replaced element inside its box  3'''
+        """ecifies the alignment of the replaced element inside its box """
 
         self.opacity = None
-        '''Sets or returns the opacity level for an element    3'''
+        """Sets or returns the opacity level for an element"""
 
         self.order = None
-        '''Sets or returns the order of the flexible item, relative to the rest    3'''
+        """Sets or returns the order of the flexible item, relative to the rest"""
 
         self.orphans = None
-        '''Sets or returns the minimum number of lines for an element that must be left at the bottom of a page when a page break occurs inside an element 2'''
+        """Sets or returns the minimum number of lines for an element that must be left at the bottom
+        of a page when a page break occurs inside an element"""
 
         self.outline = None
-        '''Sets or returns all the outline properties in one declaration   2'''
+        """Sets or returns all the outline properties in one declaration"""
 
         self.outlineColor = None
-        '''Sets or returns the color of the outline around a element   2'''
+        """Sets or returns the color of the outline around a element"""
 
         self.outlineOffset = None
-        '''ffsets an outline, and draws it beyond the border edge 3'''
+        """ffsets an outline, and draws it beyond the border edge"""
 
         self.outlineStyle = None
-        '''Sets or returns the style of the outline around an element  2'''
+        """Sets or returns the style of the outline around an element """
 
         self.outlineWidth = None
-        '''Sets or returns the width of the outline around an element  2'''
+        """Sets or returns the width of the outline around an element """
 
-        self.overflow = 'visible'
-        '''Sets or returns what to do with content that renders outside the element box    2'''
+        self.overflow = "visible"
+        """Sets or returns what to do with content that renders outside the element box """
 
         self.overflowX = None
-        '''pecifies what to do with the left/right edges of the content, if it overflows the element's content area   3'''
+        """pecifies what to do with the left/right edges of the content, if it overflows the element's content area"""
 
         self.overflowY = None
-        '''pecifies what to do with the top/bottom edges of the content, if it overflows the element's content area   3'''
+        """pecifies what to do with the top/bottom edges of the content, if it overflows the element's content area"""
 
         self.padding = 0
-        '''Sets or returns the padding of an element (can have up to four values)  1'''
+        """Sets or returns the padding of an element (can have up to four values) """
 
         self.paddingBottom = 0
-        '''Sets or returns the bottom padding of an element    1'''
+        """Sets or returns the bottom padding of an element"""
 
         self.paddingLeft = 0
-        '''Sets or returns the left padding of an element  1'''
+        """Sets or returns the left padding of an element """
 
         self.paddingRight = 0
-        '''Sets or returns the right padding of an element 1'''
+        """Sets or returns the right padding of an element"""
 
         self.paddingTop = 0
-        '''Sets or returns the top padding of an element   1'''
+        """Sets or returns the top padding of an element"""
 
-        self.pageBreakAfter = 'auto'
-        '''Sets or returns the page-break behavior after an element    2'''
+        self.pageBreakAfter = "auto"
+        """Sets or returns the page-break behavior after an element """
 
-        self.pageBreakBefore = 'auto'
-        '''Sets or returns the page-break behavior before an element   2'''
+        self.pageBreakBefore = "auto"
+        """Sets or returns the page-break behavior before an element"""
 
-        self.pageBreakInside = 'auto'
-        '''Sets or returns the page-break behavior inside an element   2'''
+        self.pageBreakInside = "auto"
+        """Sets or returns the page-break behavior inside an element"""
 
         self.perspective = None
-        '''Sets or returns the perspective on how 3D elements are viewed   3'''
+        """Sets or returns the perspective on how 3D elements are viewed"""
 
         self.perspectiveOrigin = None
-        '''Sets or returns the bottom position of 3D elements  3'''
+        """Sets or returns the bottom position of 3D elements """
 
         self.position = None
-        '''Sets or returns the type of positioning method used for an element (static, relative, absolute or fixed)    2'''
+        """Sets or returns the type of positioning method used for an element (static, relative, absolute or fixed) """
 
         self.quotes = None
-        '''Sets or returns the type of quotation marks for embedded quotations 2'''
+        """Sets or returns the type of quotation marks for embedded quotations"""
 
         self.resize = None
-        '''Sets or returns whether or not an element is resizable by the user  3'''
+        """Sets or returns whether or not an element is resizable by the user """
 
-        self.right = 'auto'
-        '''Sets or returns the right position of a positioned element  2'''
+        self.right = "auto"
+        """Sets or returns the right position of a positioned element """
 
-        self.tableLayout = 'auto'
-        '''Sets or returns the way to lay out table cells, rows, and columns   2'''
+        self.tableLayout = "auto"
+        """Sets or returns the way to lay out table cells, rows, and columns"""
 
         self.tabSize = None
-        '''Sets or returns the length of the tab-character 3'''
+        """Sets or returns the length of the tab-character"""
 
-        self.textAlign = 'left'
-        '''Sets or returns the horizontal alignment of text    1'''
+        self.textAlign = "left"
+        """Sets or returns the horizontal alignment of text"""
 
-        self.textAlignLast = 'auto'
-        '''Sets or returns how the last line of a block or a line right before a forced line break is aligned when text-align is "justify" 3'''
+        self.textAlignLast = "auto"
+        """Sets or returns how the last line of a block or a line right before a forced line break
+        is aligned when text-align is justify"""
 
         self.textDecoration = None
-        '''Sets or returns the decoration of a text    1'''
+        """Sets or returns the decoration of a text"""
 
         self.textDecorationColor = None
-        '''Sets or returns the color of the text-decoration    3'''
+        """Sets or returns the color of the text-decoration"""
 
         self.textDecorationLine = None
-        '''Sets or returns the type of line in a text-decoration   3'''
+        """Sets or returns the type of line in a text-decoration"""
 
         self.textDecorationStyle = None
-        '''Sets or returns the style of the line in a text decoration  3'''
+        """Sets or returns the style of the line in a text decoration """
 
         self.textIndent = None
-        '''Sets or returns the indentation of the first line of text   1'''
+        """Sets or returns the indentation of the first line of text"""
 
         self.textJustify = None
-        '''Sets or returns the justification method used when text-align is "justify"  3'''
+        """Sets or returns the justification method used when text-align is justify"""
 
-        self.textOverflow = 'clip'
-        '''Sets or returns what should happen when text overflows the containing element   3'''
+        self.textOverflow = "clip"
+        """Sets or returns what should happen when text overflows the containing element"""
 
         self.textShadow = None
-        '''Sets or returns the shadow effect of a text 3'''
+        """Sets or returns the shadow effect of a text"""
 
         self.textTransform = None
-        '''Sets or returns the capitalization of a text    1'''
+        """Sets or returns the capitalization of a text"""
 
         self.top = None
-        '''Sets or returns the top position of a positioned element    2'''
+        """Sets or returns the top position of a positioned element """
 
         self.transform = None
-        '''pplies a 2D or 3D transformation to an element 3'''
+        """pplies a 2D or 3D transformation to an element"""
 
         self.transformOrigin = None
-        '''Sets or returns the position of transformed elements    3'''
+        """Sets or returns the position of transformed elements"""
 
         self.transformStyle = None
-        '''Sets or returns how nested elements are rendered in 3D space    3'''
+        """Sets or returns how nested elements are rendered in 3D space"""
 
         self.transition = None
-        '''shorthand property for setting or returning the four transition properties    3'''
+        """shorthand property for setting or returning the four transition properties"""
 
         self.transitionProperty = None
-        '''Sets or returns the CSS property that the transition effect is for  3'''
+        """Sets or returns the CSS property that the transition effect is for """
 
         self.transitionDuration = 0
-        '''Sets or returns how many seconds or milliseconds a transition effect takes to complete  3'''
+        """Sets or returns how many seconds or milliseconds a transition effect takes to complete """
 
         self.transitionTimingFunction = None
-        '''Sets or returns the speed curve of the transition effect    3'''
+        """Sets or returns the speed curve of the transition effect"""
 
         self.transitionDelay = 0
-        '''Sets or returns when the transition effect will start   3'''
+        """Sets or returns when the transition effect will start"""
 
         self.unicodeBidi = None
-        '''Sets or returns whether the text should be overridden to support multiple languages in the same document    2'''
+        """Sets or returns whether the text should be overridden to support multiple languages in the same document """
 
         self.userSelect = None
-        '''Sets or returns whether the text of an element can be selected or not   2'''
+        """Sets or returns whether the text of an element can be selected or not"""
 
         self.verticalAlign = None
-        '''Sets or returns the vertical alignment of the content in an element 1'''
+        """Sets or returns the vertical alignment of the content in an element"""
 
-        self.visibility = 'visible'
-        '''Sets or returns whether an element should be visible 2'''
+        self.visibility = "visible"
+        """Sets or returns whether an element should be visible"""
 
-        self.whiteSpace = 'normal'
+        self.whiteSpace = "normal"
         """ Sets or returns how to handle tabs, line breaks and whitespace in a text 1 """
 
-        self.width = 'auto'
-        '''Sets or returns the width of an element 1'''
+        self.width = "auto"
+        """Sets or returns the width of an element"""
 
-        self.wordBreak = 'normal'
-        '''Sets or returns line breaking rules for non-CJK scripts 3'''
+        self.wordBreak = "normal"
+        """Sets or returns line breaking rules for non-CJK scripts"""
 
         self.wordSpacing = None
-        '''Sets or returns the spacing between words in a text 1'''
+        """Sets or returns the spacing between words in a text"""
 
-        self.wordWrap = 'normal'
-        '''Allows long, unbreakable words to be broken and wrap to the next line   3'''
+        self.wordWrap = "normal"
+        """Allows long, unbreakable words to be broken and wrap to the next line"""
 
         self.widows = None
-        '''Sets or returns the minimum number of lines for an element that must be visible at the top of a page    2'''
+        """Sets or returns the minimum number of lines for an element that must be visible at the top of a page """
 
-        self.zIndex = 'auto'
-        '''Sets or returns the stack order of a positioned element 2'''
-
+        self.zIndex = "auto"
+        """Sets or returns the stack order of a positioned element"""
 
     def style_set_decorator(func):
         from functools import wraps
+
         @wraps(func)
         def style_wrapper(self, *args, **kwargs):
             value = args[0]
             if value is None:
-                value = 'none'
+                value = "none"
             func(self, value, *args, **kwargs)
 
             self._members_checked += 1
@@ -780,8 +787,8 @@ class Style(object):
                 return
 
             if self._parent_node is not None:
-                s = f'{Utils.case_kebab(func.__name__)}:{value};'
-                styles = self._parent_node.getAttribute('style')
+                s = f"{Utils.case_kebab(func.__name__)}:{value};"
+                styles = self._parent_node.getAttribute("style")
                 # print('sup:', styles)
 
                 if styles is not None:
@@ -797,12 +804,14 @@ class Style(object):
 
     def style_get_decorator(func):
         from functools import wraps
+
         @wraps(func)
         def style_wrapper(value=None, *args, **kwargs):
             value = func(value, *args, **kwargs)
             if value is None:
-                value = 'none'
+                value = "none"
             return value
+
         return style_wrapper
 
     @property
@@ -812,7 +821,7 @@ class Style(object):
 
     @alignContent.setter
     @style_set_decorator
-    def alignContent(self, value='stretch', *args, **kwargs):
+    def alignContent(self, value="stretch", *args, **kwargs):
         self.__alignContent = value
 
     @property
@@ -2707,29 +2716,30 @@ class Style(object):
 
     # Modifies an existing CSS property or creates a new CSS property in the declaration block. """
     # def setProperty(self, property, value):
-        # print('shut your fucking mouth!')
-        # self[property] = value
+    # print('shut your fucking mouth!')
+    # self[property] = value
 
 
 class CSSStyleDeclaration(Style):
-    """ The CSSStyleDeclaration interface represents an object that is a CSS declaration block,
+    """The CSSStyleDeclaration interface represents an object that is a CSS declaration block,
     and exposes style information and various style-related methods and properties.
 
     A CSSStyleDeclaration object can be exposed using three different APIs:
 
     Via HTMLElement.style, which deals with the inline styles of a single element (e.g., <div style="...">).
-    Via the CSSStyleSheet API. For example, document.styleSheets[0].cssRules[0].style returns a CSSStyleDeclaration object on the first CSS rule in the document's first stylesheet.
+    Via the CSSStyleSheet API. For example, document.styleSheets[0].cssRules[0].style
+    returns a CSSStyleDeclaration object on the first CSS rule in the document's first stylesheet.
     Via Window.getComputedStyle(), which exposes the CSSStyleDeclaration object as a read-only interface.
     """
 
     def __init__(self, parentNode=None, *args, **kwargs):
-        print('*** MADE A STYLE ***')
+        print("*** MADE A STYLE ***")
         # super(Style).__init__(*args, **kwargs)
         super().__init__(parentNode, *args, **kwargs)
 
     @property
     def cssText(self):
-        """ Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
+        """Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
         Setting this attribute changes the inline style.
         If you want a text representation of a computed declaration block,
         you can get it with JSON.stringify()."""
@@ -2737,12 +2747,12 @@ class CSSStyleDeclaration(Style):
 
     @property
     def length(self):
-        """ The number of properties. See the item() method below."""
+        """The number of properties. See the item() method below."""
         raise NotImplementedError
 
     @property
     def parentRule(self):
-        """ The containing CSSRule. """
+        """The containing CSSRule."""
         raise NotImplementedError
 
     # @property
@@ -2751,30 +2761,31 @@ class CSSStyleDeclaration(Style):
     #     raise NotImplementedError
 
     def getPropertyPriority(self):
-        """ Returns the optional priority, "important"."""
+        """Returns the optional priority, "important"."""
         raise NotImplementedError
 
     def getPropertyValue(self):
-        """ Returns the property value given a property name. """
+        """Returns the property value given a property name."""
         raise NotImplementedError
 
     def item(self):
-        """ Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.
-            An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).
-            This is mostly useful for non-JavaScript DOM implementations.
+        """Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.
+        An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).
+        This is mostly useful for non-JavaScript DOM implementations.
         """
         raise NotImplementedError
 
     def removeProperty(self):
-        """ Removes a property from the CSS declaration block. """
+        """Removes a property from the CSS declaration block."""
         raise NotImplementedError
 
     # Modifies an existing CSS property or creates a new CSS property in the declaration block. """
     def setProperty(self, property, value, priority=None):
-        print('is this magic!')
+        print("is this magic!")
         # self[property] = value
         setattr(self, property, value)
 
     def getPropertyCSSValue(self):
-        """ Only supported via getComputedStyle in Firefox. Returns the property value as a CSSPrimitiveValue or null for shorthand properties. """
+        """ Only supported via getComputedStyle in Firefox. Returns the property value as a
+        CSSPrimitiveValue or null for shorthand properties."""
         raise NotImplementedError

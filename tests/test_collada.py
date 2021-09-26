@@ -9,7 +9,7 @@ import unittest
 
 from domonic import domonic
 
-from domonic.collada import *
+from domonic.xml.collada import *
 from domonic.decorators import silence
 
 

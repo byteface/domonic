@@ -192,6 +192,7 @@ class Node(EventTarget):
             for el in self.args:
                 if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
                     el.parentNode = self
+                    el._update_parents()
         except Exception as e:
             print('unable to update parent', e)
 
@@ -1374,14 +1375,11 @@ class Element(Node):
         #     raise AttributeError
         return self
 
-
     def getAttribute(self, attribute: str) -> str:
         """ Returns the specified attribute value of an element node """
         try:
-
             if attribute[0:1] != '_':
                 attribute = '_' + attribute
-
             return self.kwargs[attribute]
         except Exception as e:
             # print('failed to get attribute')
@@ -1402,12 +1400,22 @@ class Element(Node):
         raise NotImplementedError
 
     def getElementsByClassName(self, className: str):
-        """ Returns a collection of all child elements with the specified class name """
+        """[Returns a collection of all child elements with the specified class name]
+
+        Args:
+            className (str): [a DOMString representing the class name to match]
+
+        Returns:
+            [type]: [a NodeList of all child elements with the specified class name]
+        """
         return self.querySelectorAll('.' + className)
 
-    def getElementsByTagName(self, tag: str) -> List:
+    def getElementsByTagName(self, tagName: str) -> List:
         """ Returns a collection of all child elements with the specified tag name """
-        return self.querySelectorAll(tag)
+        # tagName = tagName.lower()
+        # if tag == '*':
+        #     return self.children
+        return self.querySelectorAll(tagName)
 
     def hasAttribute(self, attribute: str) -> str:
         """ Returns true if an element has the specified attribute, otherwise false """
@@ -1457,16 +1465,31 @@ class Element(Node):
 
     def insertAdjacentHTML(self, position: str, html: str):
         """ Inserts raw HTML adjacent to the current element """
-        raise NotImplementedError
+        # if position == 'beforebegin':
+        #     self.insertAdjacentElement('beforebegin', html)
+        # elif position == 'afterbegin':
+        #     self.insertAdjacentElement('afterbegin', html)
+        # elif position == 'beforeend':
+        #     self.insertAdjacentElement('beforeend', html)
+        # elif position == 'afterend':
+        #     self.insertAdjacentElement('afterend', html)
+        pass
 
     def insertAdjacentText(self, position: str, text: str):
         """ Inserts text adjacent to the current element """
-        raise NotImplementedError
+        # if position == 'beforebegin':
+        #     self.insertAdjacentElement('beforebegin', text)
+        # elif position == 'afterbegin':
+        #     self.insertAdjacentElement('afterbegin', text)
+        # elif position == 'beforeend':
+        #     self.insertAdjacentElement('beforeend', text)
+        # elif position == 'afterend':
+        #     self.insertAdjacentElement('afterend', text)
+        pass
 
     def isContentEditable(self):
         ''' Returns true if the content of an element is editable, otherwise false'''
         raise NotImplementedError
-
 
     # def isDefaultNamespace(self, namespaceURI: str):
     #     """ Returns true if the specified namespace is the default namespace """
@@ -1480,7 +1503,11 @@ class Element(Node):
         return self.getAttribute('lang')
 
     def lastElementChild(self):
-        ''' Returns the last child element of an element'''
+        """[Returns the last child element of an element]
+
+        Returns:
+            [type]: [the last child element of an element]
+        """
         try:
             return self.args[len(self.args) - 1]
         except Exception:
@@ -1562,7 +1589,7 @@ class Element(Node):
         return self.rootNode
 
     @ownerDocument.setter
-    def ownerDocument(self, newOwner ): #: Element):
+    def ownerDocument(self, newOwner): #: Element):
         # self.rootNode = newOwner # NOTE - you can't set rootNode it's property that calcs it
         pass
 
@@ -1580,15 +1607,29 @@ class Element(Node):
                     return self.parentNode.args[count - 1]
         return None
 
-    def querySelector(self, query):
-        '''Returns the first child element that matches a specified CSS selector(s) of an element'''
+    def querySelector(self, query: str):
+        """[Returns the first child element that matches a specified CSS selector(s) of an element]
+
+        Args:
+            query (str): [a CSS selector string]
+
+        Returns:
+            [type]: [an Element object]
+        """
         try:
             return self.querySelectorAll(query)[0]
         except Exception as e:
             return None
 
-    def querySelectorAll(self, query):
-        """ Returns all child elements that matches a specified CSS selector(s) of an element """
+    def querySelectorAll(self, query: str):
+        """[Returns all child elements that matches a specified CSS selector(s) of an element]
+
+        Args:
+            query (str): [a CSS selector string]
+
+        Returns:
+            [type]: [a list of Element objects]
+        """
         elements = []
 
         def anon(el):
@@ -1651,14 +1692,17 @@ class Element(Node):
         try:
             if attribute[0:1] != '_':
                 attribute = '_' + attribute
-
             self.kwargs[attribute] = value
         except Exception as e:
             # print('failed to set attribute', e)
             return None
 
     def setAttributeNode(self, attr):
-        """ Sets or changes the specified attribute node """
+        """[Sets or changes the specified attribute node]
+
+        Args:
+            attr ([type]): [an Attr object]
+        """
         self.setAttribute(attr.name, attr.value)
 
     @property
@@ -1701,7 +1745,11 @@ class Element(Node):
 
     @title.setter
     def title(self, newtitle: str):
-        """ Sets or returns the value of the title attribute of an element """
+        """[Sets or returns the value of the title attribute of an element]
+
+        Args:
+            newtitle (str): [the new title value]
+        """
         self.setAttribute('title', newtitle)
 
     def toString(self):
@@ -1716,6 +1764,9 @@ class DOMImplementation(object):
         pass
 
     def createDocument(self, namespaceURI, qualifiedName, doctype):
+
+        print('createDocument called::', namespaceURI, qualifiedName, doctype)
+
         if namespaceURI is None:
             namespaceURI = ''
         if qualifiedName is None:
@@ -1738,11 +1789,220 @@ class DOMImplementation(object):
         pass
 
     def createHTMLDocument(self, title=None):
-        # return Document()
-        raise NotImplementedError
+        # d = Document()
+        # d.createElement('html')
+        # d.createElement('head')
+        # d.createElement('body')
+        # d.title = title
+        # return d
+        pass
 
     def hasFeatures(self, featureList):
-        raise NotImplementedError
+        # return True
+        pass
+
+
+class ProcessingInstruction(Node):
+
+    def __init__(self, target, data):
+        self.target = target
+        self.data = data
+
+    def toString(self):
+        return f'<?{self.target} {self.data}?>'
+
+    def __str__(self):
+        return f'<?{self.target} {self.data}?>'
+
+
+class Comment(Node):
+
+    def __init__(self, data):
+        self.data = data
+
+    def toString(self):
+        return f'<!--{self.data}-->'
+
+    def __str__(self):
+        return f'<!--{self.data}-->'
+
+
+class CDATASection(Node):
+
+    def __init__(self, data):
+        self.data = data
+
+    def toString(self):
+        return f'<![CDATA[{self.data}]]>'
+
+    def __str__(self):
+        return f'<![CDATA[{self.data}]]>'
+
+
+# class Range(object):
+
+#     def __init__(self):
+#         self.startContainer = None
+#         self.startOffset = None
+#         self.endContainer = None
+#         self.endOffset = None
+#         self.collapsed = None
+#         self.commonAncestorContainer = None
+                  
+#     def setStart(self, node, offset):
+#         self.startContainer = node
+#         self.startOffset = offset
+#         self.collapsed = False
+#         self.commonAncestorContainer = node
+
+#     def setEnd(self, node, offset):
+#         self.endContainer = node
+#         self.endOffset = offset
+#         self.collapsed = False
+#         self.commonAncestorContainer = node
+
+#     def setStartBefore(self, node):
+#         self.setStart(node.parentNode, node.index)
+
+#     def setStartAfter(self, node):
+#         self.setStart(node.parentNode, node.index + 1)
+
+#     def setEndBefore(self, node):
+#         self.setEnd(node.parentNode, node.index)
+
+#     def setEndAfter(self, node):
+#         self.setEnd(node.parentNode, node.index + 1)
+
+#     def collapse(self, toStart):
+#         if toStart:
+#             self.endContainer = self.startContainer
+#             self.endOffset = self.startOffset
+#         else:
+#             self.startContainer = self.endContainer
+#             self.startOffset = self.endOffset
+#         self.collapsed = True
+
+#     def selectNode(self, node):
+#         self.setStartBefore(node)
+#         self.setEndAfter(node)
+
+#     def selectNodeContents(self, node):
+#         self.setStart(node, 0)
+#         self.setEnd(node, len(node.childNodes))
+
+#     def compareBoundaryPoints(self, how, sourceRange):
+#         if how == 0:
+#             return self.startContainer == sourceRange.startContainer and self.startOffset == sourceRange.startOffset
+#         elif how == 2:
+#             return self.endContainer == sourceRange.endContainer and self.endOffset == sourceRange.endOffset
+#         else:
+#             raise NotImplementedError
+    
+#     def deleteContents(self):
+#         raise NotImplementedError
+
+#     def extractContents(self):
+#         raise NotImplementedError
+
+#     def cloneContents(self):
+#         raise NotImplementedError
+
+#     def insertNode(self, node):
+#         raise NotImplementedError
+
+#     def surroundContents(self, newParent):
+#         raise NotImplementedError
+
+#     def cloneRange(self):
+#         raise NotImplementedError
+
+#     def detach(self):
+#         raise NotImplementedError
+
+#     def createContextualFragment(self, fragment):
+#         raise NotImplementedError
+
+#     def toString(self):
+#         raise NotImplementedError
+
+
+# TODO - might try something like this. test if it works
+# from typing import NewType
+
+# i.e. UserId = NewType('UserId', int)
+# HTMLAnchorElement = NewType('HTMLAnchorElement', Element)
+# HTMLAreaElement
+# HTMLAudioElement
+# HTMLBRElement
+# HTMLBaseElement
+# HTMLBaseFontElement
+# HTMLBodyElement
+# HTMLButtonElement
+# HTMLCanvasElement
+# HTMLContentElement
+# HTMLDListElement
+# HTMLDataElement
+# HTMLDataListElement
+# HTMLDialogElement
+# HTMLDivElement
+# HTMLDocument
+# HTMLElement
+# HTMLEmbedElement
+# HTMLFieldSetElement
+# HTMLFormControlsCollection
+# HTMLFormElement
+# HTMLFrameSetElement
+# HTMLHRElement
+# HTMLHeadElement
+# HTMLHeadingElement
+# HTMLIFrameElement
+# HTMLImageElement
+# HTMLInputElement
+# HTMLIsIndexElement
+# HTMLKeygenElement
+# HTMLLIElement
+# HTMLLabelElement
+# HTMLLegendElement
+# HTMLLinkElement
+# HTMLMapElement
+# HTMLMediaElement
+# HTMLMetaElement
+# HTMLMeterElement
+# HTMLModElement
+# HTMLOListElement
+# HTMLObjectElement
+# HTMLOptGroupElement
+# HTMLOptionElement
+# HTMLOptionsCollection
+# HTMLOutputElement
+# HTMLParagraphElement
+# HTMLParamElement
+# HTMLPictureElement
+# HTMLPreElement
+# HTMLProgressElement
+# HTMLQuoteElement
+# HTMLScriptElement
+# HTMLSelectElement
+# HTMLShadowElement
+# HTMLSourceElement
+# HTMLSpanElement
+# HTMLStyleElement
+# HTMLTableCaptionElement
+# HTMLTableCellElement
+# HTMLTableColElement
+# HTMLTableDataCellElement
+# HTMLTableElement
+# HTMLTableHeaderCellElement
+# HTMLTableRowElement
+# HTMLTableSectionElement
+# HTMLTemplateElement
+# HTMLTextAreaElement
+# HTMLTimeElement
+# HTMLTitleElement
+# HTMLTrackElement
+# HTMLUListElement
+# HTMLUnknownElement
+# HTMLVideoElement
 
 
 class Document(Element):
@@ -1797,9 +2057,12 @@ class Document(Element):
         ''' Returns the currently focused element in the document'''
         # return
 
-    # def adoptNode():
-        '''Adopts a node from another document'''
-        # return
+    # def adoptNode(self, node):
+    #     """ Adopts a node from another document """
+    #     if node.ownerDocument is not None:
+    #         node.ownerDocument.removeChild(node)
+    #     node.ownerDocument = self
+    #     return node
 
     def anchors(self): # TODO - still old
         ''' Returns a collection of all <a> elements in the document that have a name attribute'''
@@ -1807,8 +2070,8 @@ class Document(Element):
         return [x for x in tags if x.hasAttribute('name')]
 
     def applets(self):
-        ''' Returns a collection of all <applet> elements in the document'''
-        return
+        """ Returns a collection of all <applet> elements in the document """
+        return self.querySelectorAll('applet')
 
     @property
     def body(self):
@@ -1816,7 +2079,7 @@ class Document(Element):
         return self.querySelector('body')
 
     @body.setter
-    def body(self, content): # TODO - untested
+    def body(self, content):  #  TODO - untested
         """ Sets the document's body (the <body> element) """
         # TODO - remove an existing body ?
         from domonic.html import body
@@ -1848,8 +2111,9 @@ class Document(Element):
     @staticmethod
     def createComment(message):
         """ Creates a Comment node with the specified text """
-        from domonic.html import comment
-        return comment(message)
+        # from domonic.html import comment
+        # return comment(message)
+        return Comment(message)
 
     @staticmethod
     def createDocumentFragment(*args):
@@ -1857,7 +2121,7 @@ class Document(Element):
         return DocumentFragment(*args)
 
     @staticmethod
-    def createElement(_type:str):
+    def createElement(_type: str):
         """ Creates an Element node """
         from domonic.html import create_element
         return create_element(_type)
@@ -1872,7 +2136,15 @@ class Document(Element):
 
     @staticmethod
     def createEvent(event_type=None):
-        '''Creates a new event'''
+        """[Creates a new event]
+
+        Args:
+            event_type ([type], optional): [description]. Defaults to None.
+
+        Returns:
+            [type]: [a new event]
+        """
+
         if event_type == "MouseEvent":
             return MouseEvent()
         elif event_type == "KeyboardEvent":
@@ -1892,6 +2164,43 @@ class Document(Element):
             [type]: [a new Text node]
         """
         return Text(text)
+
+    # @staticmethod
+    # def createTreeWalker(root, whatToShow=None, filter=None):
+    #     """Creates a TreeWalker that can be used to traverse the document tree or subtree under root.
+    #     """
+    #     return TreeWalker(root, whatToShow, filter)
+
+    @staticmethod
+    def createProcessingInstruction(target, data):
+        """ Creates a ProcessingInstruction node with the specified target and data """
+        return ProcessingInstruction(target, data)
+
+    @staticmethod
+    def createCDATASection(data):
+        """ Creates a CDATASection node with the specified data """
+        return CDATASection(data)
+
+    # @staticmethod
+    # def createAttributeNS(namespaceURI, qualifiedName):
+    #     """ Creates an Attr node with the specified namespace URI and qualified name """
+    #     return Attr(qualifiedName)
+
+    # @staticmethod
+    # def createNodeIterator(root, whatToShow=None, filter=None):
+    #     """Creates a NodeIterator that can be used to traverse the document tree or subtree under root.
+    #     """
+    #     return NodeIterator(root, whatToShow, filter)
+
+    # @staticmethod
+    # def createRange():
+    #     """ Creates a Range """
+    #     return Range()
+
+    # @staticmethod
+    # def createNSResolver(nodeResolver):
+    #     """ Creates a NodeResolver """
+    #     return NodeResolver(nodeResolver)
 
     # def defaultView(self):
         # """ Returns the window object associated with a document, or null if none is available. """
@@ -1931,7 +2240,11 @@ class Document(Element):
 
     @property
     def embeds(self):
-        ''' Returns a collection of all <embed> elements the document'''
+        """[Returns a collection of all <embed> elements the document]
+
+        Returns:
+            [type]: [a collection of all <embed> elements the document]
+        """
         return self.querySelectorAll('embed')
 
     # def execCommand(self):
@@ -1952,7 +2265,14 @@ class Document(Element):
         return False
 
     def getElementById(self, _id):
-        '''Returns the element that has the ID attribute with the specified value'''
+        """[Returns the element that has the ID attribute with the specified value]
+
+        Args:
+            _id ([str]): [the value of the ID attribute]
+
+        Returns:
+            [type]: [the element that has the ID attribute with the specified value]
+        """
         for each in self.childNodes:
             if each.getAttribute('id') == _id:
                 return each
@@ -1970,8 +2290,15 @@ class Document(Element):
 
         return False
 
-    def getElementsByName(self, name):
-        '''Returns a NodeList containing all elements with a specified name'''
+    def getElementsByName(self, name: str):
+        """[Returns a NodeList containing all elements with a specified name]
+
+        Args:
+            name (str): [the name to search for]
+
+        Returns:
+            [type]: [the matching elements]
+        """
         for each in self.childNodes:
             if each.getAttribute('name') == name:
                 return each
@@ -2003,13 +2330,28 @@ class Document(Element):
         """ Returns the DOMImplementation object that handles this document """
         return DOMImplementation()
 
-    # def importNode():
-        # '''Imports a node from another document'''
-        # return
+    def importNode(self, node, deep=False):
+        """ Imports a node from another document to this document. """
+        if isinstance(node, Element):
+            node = node.copy()
+            node.ownerDocument = self
+            return node
+        elif isinstance(node, Comment):
+            return Comment(node.data)
+        elif isinstance(node, Text):
+            return Text(node.data)
+        elif isinstance(node, ProcessingInstruction):
+            return ProcessingInstruction(node.target, node.data)
+        elif isinstance(node, DocumentFragment):
+            return DocumentFragment()
+        elif isinstance(node, Attr):
+            return Attr(node.name, node.value)
+        else:
+            raise Exception("Unsupported node type")
 
-    # def inputEncoding():
-        # ''' Returns the encoding, character set, used for the document'''
-        # return
+    # def inputEncoding(self):
+    #     """ Returns the encoding used to access the document's resources."""
+    #     return
 
     # def lastModified():
         # ''' Returns the date and time the document was last modified'''
@@ -2044,17 +2386,26 @@ class Document(Element):
         # return
 
     def renameNode(self, node, namespaceURI, nodename):
-        '''Renames the specified node'''
-        raise NotImplementedError
+        """ Renames the specified node, and returns the renamed node. """
+        if node.nodeType == Node.ELEMENT_NODE:
+            node.nodeName = nodename
+            node.namespaceURI = namespaceURI
+            return node
+        else:
+            return False
 
     @property
     def scripts(self):
-        ''' Returns a collection of <script> elements in the document'''
+        """[Returns a collection of <script> elements in the document]
+
+        Returns:
+            [type]: [a collection of <script> elements in the document]
+        """
         return self.querySelectorAll('script')
 
-    # def strictErrorChecking():
-        ''' Sets or returns whether error-checking is enforced or not'''
-        # return
+    def strictErrorChecking():
+        ''' Returns a Boolean value indicating whether to stop on the first error'''
+        return False
 
     @property
     def title(self):
@@ -2066,7 +2417,7 @@ class Document(Element):
         # return self.title
         return self.querySelector('title')
 
-    @title.setter # TODO - test
+    @title.setter  # TODO - test
     def title(self, value):
         """ [sets the title of the document]
         Args:
@@ -2112,7 +2463,7 @@ class Location():
         raise NotImplementedError
 
     def assign(self, url: str = "") -> None:
-        """Loads a new document """
+        """ Loads a new document """
         # TODO - if different download?
         # dom.baseURI = url
         pass
@@ -2153,7 +2504,6 @@ class Console(object):
         # print(args)
         print(msg + argstring)
         return msg + argstring
-
 
     __count_var = 0
 
@@ -2362,7 +2712,6 @@ class Text(CharacterData):
 
     # def __repr__(self):
         # return str(self.textContent)
-
 
 # class HTMLCollection(Node):
 

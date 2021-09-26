@@ -7,7 +7,7 @@ sys.path.insert(0, '../..')
 
 from domonic.javascript import *
 from domonic.html import *
-from domonic.particles import *
+from domonic.geom.particles import *
 
 # run this first. python3 atoms3d.py
 # then open and look at atoms3d.html while the socket is running

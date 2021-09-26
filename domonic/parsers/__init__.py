@@ -12,8 +12,28 @@
 
 import re
 
+from domonic.html import *
+from domonic.xml.sitemap import *
 
-def remove_tags(html_str:str, tags):
+def create_element(name='custom_tag', *args, **kwargs):
+    '''
+    NOTE - USED BY THE HACKED EXPAT PARSER TO GET VALID DOCUMENT NODES FROM ANY KNOWN SET
+    '''
+    from domonic.html import html_tags
+    if name in html_tags:
+        return globals()[name]()
+    from domonic.xml.sitemap import sitemap_tags
+    if name in sitemap_tags:
+        return globals()[name]()
+
+    from domonic.html import tag, Element, tag_init
+    custom_tag = type('custom_tag', (tag, Element), {'name': name, '__init__': tag_init})
+    new_tag = custom_tag(*args, **kwargs)
+    new_tag.name = name
+    return new_tag
+
+
+def remove_tags(html_str: str, tags):
     """
     removes a list of tags and their content from the html
     """
@@ -83,7 +103,7 @@ def remove_doctype(html: str):
     # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'))
     # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'))
 
-def remove_xml_header(html:str):
+def remove_xml_header(html: str):
     """
     remove the xml header from the html
     """
@@ -289,7 +309,7 @@ def clean_junk(page):
 # @staticmethod
 def dent(pyml, use_tabs=False):
     """ [
-        proper dentage
+        proper dentage for pyml
     ]
     """
     tabs_or_spaces = "    "

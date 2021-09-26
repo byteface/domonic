@@ -307,9 +307,45 @@ unpack children...
         print(a1, b1, c1, d1, e1)
 
 
-Fugly
+
+f-strings
 ----------------
-for now use your own methods to prettify. the example uses a library that leverages beautifulsoup. i.e.
+
+To pretty print a domonic dom you can use a f-string...
+
+.. code-block :: python
+    
+    print(f"{mydom}")
+
+.. code-block :: html
+
+    <!DOCTYPE html>
+    <html>
+        <body>
+            <h1>Hello, World!</h1>
+        </body>
+    </html>
+
+which basically calls the format dunder on the tag. (if look at the code)
+
+This is useful as it means use different ways to get output from domonic.
+
+.. code-block :: python
+    
+    print(f"{mydom}")
+    
+    print(f"{mydom!s}")
+    
+    print(f"{mydom!r}")
+    
+    print(f"{mydom!a}")
+    
+    print(str(mydom))
+
+    print(mydom.__format__(''))
+
+
+If the built in formatter is not up to your needs. You can also use other libraries that leverage beautifulsoup i.e.
 
 .. code-block :: python
 
@@ -318,9 +354,9 @@ for now use your own methods to prettify. the example uses a library that levera
 	print(HTMLBeautifier.beautify(output, 4))
 
 
-Some primitive formatting is coming shortly
+For outputting pyml to a string there is a method in production called __pyml__() which may become repr. (but i'd been saving repr for logging)
 
-You can also use this vscode plugin on .pyml and it does a nice job.
+You can also use this vscode plugin on .pyml and it does a nice job. (inpsiration for the 'dentage' method)
 
 https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dictionary
 
@@ -361,6 +397,19 @@ this example loads a template and passing params for rendering
 
 
 * warning loads also is very basic and can only convert simple html as the parser is still in development
+
+
+
+parsing
+--------------------------------
+
+You can hook domonic to the super fast html5 c++ parser. As mentioned in this ticket
+
+https://github.com/byteface/domonic/issues/28
+
+you just have to use my fork instead.
+
+https://github.com/byteface/html5-parser/commit/fa83bf1a5e225f6934a1ad38d092fc6baf3c4934
 
 
 

@@ -11,7 +11,7 @@ See below...
 
 .. code-block :: python
 
-	from domonic.x3d import *
+	from domonic.xml.x3d import *
 
 	x3d(_width='500px', _height='400px').append(
 		scene(
@@ -41,7 +41,7 @@ aframe is a simliar library and its tags can be used if you import the js
 .. code-block :: python
 
 	from domonic.html import *
-	from domonic.aframe import *
+	from domonic.xml.aframe import *
 	from domonic.CDN import *
 
 	_scene = scene(
@@ -62,9 +62,11 @@ aframe is a simliar library and its tags can be used if you import the js
 
 
 
-
-
-.. automodule:: domonic.x3d
+.. automodule:: domonic.xml.x3d
     :members:
     :noindex:
 
+
+.. automodule:: domonic.xml.aframe
+    :members:
+    :noindex:

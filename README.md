@@ -44,6 +44,21 @@ print(html(body(h1('Hello, World!'))))
 <html><body><h1>Hello, World!</h1></body></html>
 ```
 
+or to format it and insert the doctype use an f-string:
+
+```python
+mydom = html(body(h1('Hello, World!')))
+print(f"{mydom}")
+```
+```html
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>Hello, World!</h1>
+    </body>
+</html>
+```
+
 ### install
 ```bash
 python3 -m pip install domonic
@@ -67,7 +82,7 @@ print(test)
 
 ### rendering
 
-you can cast str() on any element to render it.
+you can cast str() on any element to render it without formatting.
 
 ```python
 el_string = str(div())
@@ -77,10 +92,10 @@ print(el_string)
 there's also a render method that takes 2 parameters, some domonic and an optional output file.
 ```python
 page = div(span('Hello World'))
-render(page, 'index.html')
+render(f"{page}", 'index.html')  # notice use of f-string to pretty print the html
 ```
 
-So you can build your own static site generator using python simply by serialising a dataset into pyml.
+Now try building your own static site generator!
 
 ### decorators
 
@@ -103,6 +118,7 @@ assert str(test()) == '<html><body><div>hi!</div></body></html>'
 ```
 
 It returns the tag object by default. You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.
+
 
 ### data-tags
 python doesn't allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags
@@ -366,11 +382,11 @@ twn.start()
 
 ### aframe / x3d
 
-to use 3d tags can be used if you import the js
+3d tags can be used if you import the js
 
 ```python
 from domonic.html import *
-from domonic.aframe import *
+from domonic.xml.aframe import *
 from domonic.CDN import *
 
 _scene = scene(
@@ -566,6 +582,10 @@ https://github.com/byteface/ezcron/
 A basic game:
 https://github.com/byteface/bombdisposer/
 
+
+checkout the docs for examples on how to easily make sitemaps with python. 
+or for example how to use domonic with flask, django, sanic and other server frameworks.
+
 docs:
 https://domonic.readthedocs.io/
 
@@ -574,9 +594,9 @@ There's also several useage examples in the repo so pull and have a look.
 
 
 ### Join-In
-Feel free to contribute if you find it useful.
+Feel free to contribute if you find it useful. (I'd be grateful for help on all fronts)
 
-Email me, message me directly if you like or create a discussion on here.
+Email me, message me directly if you like or create a discussion on here. Or join the discord.
 
 If there are any methods you want that are missing or not complete yet or you think you can help make it better just update the code and send a pull request.
 
