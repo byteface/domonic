@@ -382,15 +382,13 @@ https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dicti
 loading .pyml templates
 --------------------------------
 
-.. tabs ::
-    
-   .. code-tab:: py
+.. code-tab:: python
 
-        div("Hello World")
+    div("Hello World")
 
-   .. code-tab:: html
+.. code-tab:: html
 
-        <div>Hello tabs</div>
+    <div>Hello tabs</div>
 
 
 'loads' imports a pyml file and turns it into a program

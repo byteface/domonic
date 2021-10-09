@@ -36,7 +36,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
-    "sphinx_tabs.tabs",
+    # "sphinx_tabs.tabs",
     # "sphinx_github_changelog",  # TODO - requires API key and env var.
 ]
 
