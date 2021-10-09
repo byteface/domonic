@@ -95,10 +95,10 @@ class TestCase(unittest.TestCase):
         # print("NOW>>>>")
         mylist = li() / 10
         assert str(mylist) == '<li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>'
-        
+
         myobj = domonic.load(mylist)
         print(myobj)
-        
+
         myorderedlist = ol()
         myorderedlist += str(li() / 10)
         assert str(myorderedlist) == '<ol><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>'
@@ -165,7 +165,7 @@ class TestCase(unittest.TestCase):
         # print(sometag.style.color)  # TODO - get on style
         assert sometag._thingy == 'test22'
         assert sometag.thingy == 'test22'
-        
+
         # print(10/sometag)
         # print('>>>>', sometag.args[0])
         # print('>>>>',sometag)
@@ -237,7 +237,7 @@ class TestCase(unittest.TestCase):
 
         assert sometag.children[0].tagName == 'footer'
         assert str(sometag.children[0]) == '<footer>test</footer>'
-        
+
         # print(sometag.firstChild)
         assert str(sometag.firstChild) == '<footer>test</footer>'
 
@@ -245,7 +245,7 @@ class TestCase(unittest.TestCase):
         assert htmltag.tagName == 'html'
         assert str(htmltag) == '<html></html>'
         htmltag.write('sup!')
-        print("?????",htmltag)
+        # print("?????", htmltag)
         assert str(htmltag) == '<html>sup!</html>'
         htmltag.className = "my_cool_css"
         # print(htmltag)
@@ -580,26 +580,26 @@ class TestCase(unittest.TestCase):
         #  circular reerence if i use it in query selector for tags.
 
         # if True:
-            # return
+        # return
 
         # render( page, 'index.html' )
 
         links = page.getElementsBySelector("a[rel=nofollow]", page)
         for linky in links:
             print(linky.getAttribute("href"))
-        print('>>>>>>>>>') # works
+        print('>>>>>>>>>')  # works
 
         result = page.getElementsBySelector("li[class='nav-item']", page)
         print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>') # works
+        print('>>>>>>>>>')  # works
 
         result = page.getElementsBySelector("h4[class='font-weight-bold text-uppercase']", page)
         print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>') # fails
+        print('>>>>>>>>>')  # fails
 
         result = page.getElementsBySelector("li.nav-item", page)
         print(result)
@@ -611,7 +611,7 @@ class TestCase(unittest.TestCase):
         print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>') # works
+        print('>>>>>>>>>')  # works
 
         result = page.getElementsBySelector("p.text-gray", page)
         print(result)
@@ -632,7 +632,6 @@ class TestCase(unittest.TestCase):
             print(r)
 
         print('>>>>>>>>>')  # works
-
 
     def test_decorators(self):
         from domonic.decorators import el
@@ -670,7 +669,6 @@ class TestCase(unittest.TestCase):
             return 'hi!'
         print(test())
         print('decorators work4!')
-
 
     def test_domonic_window_console_log(self):
         # note originally dom had everything from document
@@ -771,7 +769,6 @@ class TestCase(unittest.TestCase):
         # comment = to_node("Hello  World!")
         # Sanitizer().sanitize(comment)  # "Hello  World!"
         # Sanitizer({'allowComments': True}).sanitize(comment)  # Same as comment.
-
 
         # Does the default config allow script elements?
         # Sanitizer.getDefaultConfiguration().allowElements.includes("script")  # false

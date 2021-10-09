@@ -10,8 +10,8 @@ import json
 # import requests
 # from mock import patch
 
-from domonic.html import *
-from domonic.JSON import *
+# from domonic.html import *
+from domonic.JSON import JSON, return_json
 
 
 class TestCase(unittest.TestCase):

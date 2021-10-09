@@ -1129,7 +1129,6 @@ class Selection():
         func = dispatchFunction if callable(params) else dispatchConstant
         return this.each(func(type, params))
 
-
     # import selection_iterator from "./iterator.js";
     # #   [Symbol.iterator]: selection_iterator
 

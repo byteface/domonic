@@ -22,7 +22,7 @@ copyright = '2021, byteface'
 author = 'byteface'
 
 # The full version, including alpha/beta/rc tags
-release = domonic.__version__ #'0.2.17'
+release = domonic.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -67,7 +67,6 @@ html_theme_options = {
     "github_type": 'star',
     "show_related": False,
     "note_bg": "#FFF59C",
-    'sticky_navigation': True,
 }
 
 # If true, SmartyPants will be used to convert quotes and dashes to
@@ -76,8 +75,8 @@ html_use_smartypants = False
 
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
-    'index':    ['sidebarintro.html', 'globaltoc.html', 'relations.html', 'sourcelink.html', 'localtoc2.html', 'searchbox.html'],
-    '**':       ['sidebarintro.html', 'globaltoc.html', 'relations.html', 'sourcelink.html', 'localtoc2.html', 'searchbox.html']
+    'index': ['sidebarintro.html', 'globaltoc.html', 'relations.html', 'sourcelink.html', 'localtoc2.html', 'searchbox.html'],
+    '**': ['sidebarintro.html', 'globaltoc.html', 'relations.html', 'sourcelink.html', 'localtoc2.html', 'searchbox.html']
 }
 
 # makes nice colors on the syntax highlighting

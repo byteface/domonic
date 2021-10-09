@@ -11,7 +11,7 @@ import unittest
 from domonic import domonic
 
 from domonic.svg import *
-from domonic.decorators import silence
+# from domonic.decorators import silence
 
 
 class TestCase(unittest.TestCase):
@@ -28,7 +28,7 @@ class TestCase(unittest.TestCase):
 
     def test_domonic_cirlce(self):
         test = svg(
-            circle(_cx="50", _cy="50", _r="40", _stroke="green", **{"_stroke-width":"4"}, _fill="yellow"),
+            circle(_cx="50", _cy="50", _r="40", _stroke="green", **{"_stroke-width": "4"}, _fill="yellow"),
             _width="100", _height="100",
         )
         # print(test)

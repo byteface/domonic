@@ -42,11 +42,10 @@ class TestCase(unittest.TestCase):
         t1 = domonic.evaluate('<html></html>')
         print(t1)
 
-
     def test_hacked_expat_parser(self):
         # test the  hacked version of the xpat parser
         print("test!>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        # t1 = domonic.parseString('<html></html>')        
+        # t1 = domonic.parseString('<html></html>')
         # print(t1)
         t1 = domonic.parseString('''<html><head><link rel="stylesheet" href="https://unpkg.com/marx-css/css/marx.min.css" /><script src="https://code.jquery.com/jquery-3.5.1.min.js"></script><script>
 	function add(){
@@ -55,7 +54,7 @@ class TestCase(unittest.TestCase):
         print('RES:', t1)
         print('RES:', type(t1))
         print('RES:', str(t1))
-        print( t1.getElementById('a') )
+        print(t1.getElementById('a'))
 
         # print(t1)
         return

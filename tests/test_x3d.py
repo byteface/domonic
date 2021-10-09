@@ -21,7 +21,7 @@ class TestCase(unittest.TestCase):
     def test_domonic_x3dom(self):
     	x3dom_test = html(
 			head(
-			    meta(**{"_http-equiv":"X-UA-Compatible"}, _content="IE=edge"),
+			    meta(**{"_http-equiv": "X-UA-Compatible"}, _content="IE=edge"),
 			    title("My first X3DOM page"),
 			    script(_type='text/javascript', _src='https://www.x3dom.org/download/x3dom.js'),
 			    script(

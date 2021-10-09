@@ -7,10 +7,10 @@ import unittest
 # import requests
 # from mock import patch
 
-from domonic import domonic
+# from domonic import domonic
 
 from domonic.xml.collada import *
-from domonic.decorators import silence
+# from domonic.decorators import silence
 
 
 class TestCase(unittest.TestCase):

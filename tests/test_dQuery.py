@@ -59,7 +59,7 @@ class TestCase(unittest.TestCase):
         a.addClass('one').addClass('two').addClass('three')
         assert str(a) == '<div id="test2" class="one one two three"></div><div id="test3" class="one one two three"></div>'
         # for el in a.elements:
-            # print(el.getAttribute("class"))
+        # print(el.getAttribute("class"))
 
     def test_after(self):
         # TODO - sort the parser... positional error on this as not multiline
@@ -590,15 +590,15 @@ class TestCase(unittest.TestCase):
         # º.each()
         # º.error()
         # º.escapeSelector()
-        
-        obj1 = {'a':1,'b':2}
-        obj2 = {'c':1,'b':5}
-        print(º.extend(obj1,obj2))
 
-        test = lambda x:x
+        obj1 = {'a': 1, 'b': 2}
+        obj2 = {'c': 1, 'b': 5}
+        print(º.extend(obj1, obj2))
+
+        test = lambda x: x
         test2 = 1
-        print("well?:",º.isFunction(test))
-        print("well?:",º.isFunction(test2))
+        print("well?:", º.isFunction(test))
+        print("well?:", º.isFunction(test2))
 
         # º.get()
         # º.getJSON()

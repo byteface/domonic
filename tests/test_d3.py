@@ -101,7 +101,6 @@ class TestCase(unittest.TestCase):
         # print(str(format("d")))
         assert str(format("d")) + "" == " >-d"
 
-
         # invalid format: foo/);
         with self.assertRaises(Exception):
             format('foo')

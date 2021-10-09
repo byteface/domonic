@@ -7,8 +7,8 @@ import unittest
 # import requests
 # from mock import patch
 
-from domonic import domonic
-from domonic.geom import *
+# from domonic import domonic
+from domonic.geom import vec2, vec3, Shape, Rect, Line, Circle
 from domonic.constants.color import Color
 
 
@@ -54,13 +54,13 @@ class TestCase(unittest.TestCase):
     def test_rect(self):
         r = Rect(0, 0, 10, 10)
         print(r)
-        print(r*10)
-        print(r/10)
+        print(r * 10)
+        print(r / 10)
 
         a = Rect(0, 0, 10, 10)
         b = Rect(0, 0, 20, 20)
         c = Rect(0, 0, 30, 30)
-        print( a+b+c )
+        print(a + b + c)
 
     # @silence
     def test_line(self):
@@ -71,7 +71,7 @@ class TestCase(unittest.TestCase):
     def test_circle(self):
         c = Circle(0, 0, 10)
         print(c)
-        print(c*4)
+        print(c * 4)
 
     # @silence
     # def test_plotter(self):

@@ -9,10 +9,10 @@ import unittest
 # import requests
 # from mock import patch
 
-from domonic import domonic
+# from domonic import domonic
 
 from domonic.xml.mathml import *
-from domonic.decorators import silence
+# from domonic.decorators import silence
 
 
 class TestCase(unittest.TestCase):
@@ -62,6 +62,7 @@ class TestCase(unittest.TestCase):
         )
 
         print(somemath)
+
 
 if __name__ == '__main__':
     unittest.main()

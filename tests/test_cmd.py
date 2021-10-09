@@ -5,8 +5,8 @@
 
 import unittest
 
-from domonic.cmd import *
-from domonic.decorators import silence
+from domonic.cmd import dir
+# from domonic.decorators import silence
 
 
 class TestCase(unittest.TestCase):

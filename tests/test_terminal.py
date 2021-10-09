@@ -33,15 +33,15 @@ class TestCase(unittest.TestCase):
         self.assertTrue('domonic' in thedir)
 
     def test_bash_cd(self):
-        pass # TODO - need to change github action
-        #print(cd('../'))  # < CD does not run on terminal
-        #thedir_aftercd = pwd()
-        #print(thedir_aftercd)
-        #self.assertTrue('domonic' not in thedir_aftercd)
-        #print(cd('domonic'))
-        #thedir_aftercd = pwd()
-        #print(thedir_aftercd)
-        #self.assertTrue('domonic' in thedir_aftercd)
+        pass  # TODO - need to change github action
+        # print(cd('../'))  # < CD does not run on terminal
+        # thedir_aftercd = pwd()
+        # print(thedir_aftercd)
+        # self.assertTrue('domonic' not in thedir_aftercd)
+        # print(cd('domonic'))
+        # thedir_aftercd = pwd()
+        # print(thedir_aftercd)
+        # self.assertTrue('domonic' in thedir_aftercd)
 
     def test_bash_mkdir(self):
         try:
@@ -78,15 +78,15 @@ class TestCase(unittest.TestCase):
         # print(cowsay('moo'))
         print(date())
         print(cal())
-         # failing on github actions
+        # failing on github actions
         # for i, l in enumerate(cat('LICENSE.txt')):
-            # print(i, l)
+        # print(i, l)
 
     def test_bash_history(self):
-        pass # failing on github actions
+        pass  # failing on github actions
         # print(history())
         # for i, thing in enumerate(history(), 1):
-            # print(i, thing)
+        # print(i, thing)
 
     @silence
     def test_bash(self):

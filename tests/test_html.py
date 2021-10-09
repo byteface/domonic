@@ -38,7 +38,7 @@ class TestCase(unittest.TestCase):
 
     # @silence
     def test_domonic_parse(self):
-        page = domonic.parse("<html><body>'some content'</body></html>") # TODO - single comma
+        page = domonic.parse("<html><body>'some content'</body></html>")  # TODO - single comma
         page = domonic.parse("<html><body></body></html>")
         print(page)
 

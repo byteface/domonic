@@ -26,6 +26,8 @@ from multiprocessing.pool import ThreadPool as Pool
 import re
 import json
 import os
+import array
+import struct
 
 
 def function(python_str):
@@ -55,7 +57,7 @@ undefined = None
 class Boolean():
     """[Creates a Boolean Object.
         Warning this is NOT a boolean type. for that use Global.Boolean()]
-    ] """
+    """
     def __init__(self, value=False):
         self.value = Global.Boolean(value)
 
@@ -1970,7 +1972,7 @@ class Array(object):
         return str(self.args)  # TODO - check what js does
 
     def toSource(self):
-        """ 
+        """
         Returns the source array.
         """
         return list(self.args)
@@ -2169,7 +2171,7 @@ class Array(object):
         return self.args
 
     def reduce(self, callback, initialValue=None):
-        """ Reduces the array to a single value (going left-to-right) 
+        """ Reduces the array to a single value (going left-to-right)
             callback recieve theses parameters: previousValue, currentValue, currentIndex, array
         """
         arguments = self.args
@@ -2192,7 +2194,7 @@ class Array(object):
         return initialValue
 
     def reduceRight(self, callback, initialValue=None):
-        """ Reduces the array to a single value (going right-to-left) 
+        """ Reduces the array to a single value (going right-to-left)
             callback recieve theses parameters: previousValue, currentValue, currentIndex, array
         """
         arguments = self.args
@@ -3445,25 +3447,13 @@ class URLSearchParams:
         return urllib.parse.urlencode(self.params, doseq=True)
 
 
-import array
-import struct
-
-# import binascii
-# import codecs
-# import collections
-# import copy
-# import functools
-# import itertools
-
 def ToInt32(v):
     return v >> 0
 
-# def zero_fill_right_shift(val, n):
-#     return (val >> n) if val >= 0 else ((val + 0x100000000) >> n)
 
 def ToUint32(v):
-    # return v >>> 0
     return (v >> 0) if v >= 0 else ((v + 0x100000000) >> 0)
+
 
 class ArrayBuffer:
 
@@ -3515,7 +3505,7 @@ class TypedArray:
     BYTES_PER_ELEMENT = 1
 
     def __init__(self, *args):
-        """[ creates a new Int8Array 
+        """[ creates a new Int8Array
             can take the following forms:
                 Int8Array()
                 Int8Array(length)
@@ -3580,7 +3570,6 @@ class TypedArray:
             else:
                 self.length = ToUint32(args[2])
                 self.byteLength = self.length * self.BYTES_PER_ELEMENT
-            
             if ((self.byteOffset + self.byteLength) > self.buffer.byteLength):
                 # raise RangeError("byteOffset and length reference an area beyond the end of the buffer");
                 raise Exception("byteOffset and length reference an area beyond the end of the buffer")
@@ -3689,7 +3678,7 @@ class TypedArray:
         o = self.byteOffset + index * self.BYTES_PER_ELEMENT
         for i in range(0, self.BYTES_PER_ELEMENT):
             b.append(self.buffer[o])
-            o += 1        
+            o += 1
         return self._unpack(b)
 
     # // NONSTANDARD: convenience alias for getter: type get(unsigned long index);
@@ -3814,231 +3803,233 @@ def as_signed(value, bits):
     mask = (1 << s) - 1
     return (value & mask) - (value & (mask << s))
 
+
 def as_unsigned(value, bits):
     s = 32 - bits
     mask = (1 << s) - 1
     return value & mask
 
-def packI8(self, n):
-    return [n & 0xff]
-    # return struct.pack('B', n)
 
-def unpackI8(self, b):
-    return as_signed(b[0], 8)
-    # return struct.unpack('B', b)[0]
+class __byteutils__():
 
-def packU8(self, n):
-    return [n & 0xff]
-    # return struct.pack('B', n)
-
-def unpackU8(self, bytes):
-    return as_unsigned(bytes[0], 8)
-    # return struct.unpack('B', bytes)[0]
-
-def packU8Clamped(self, n):
-    n = Math.round(Number(n))
-    # return [n < 0 ? 0 : n > 0xff ? 0xff : n & 0xff]
-    if (n < 0):
-        return [0]
-    elif (n > 0xff):
-        return [0xff]
-    else:
+    def packI8(self, n):
         return [n & 0xff]
-    # return struct.pack('B', n)
+        # return struct.pack('B', n)
 
+    def unpackI8(self, b):
+        return as_signed(b[0], 8)
+        # return struct.unpack('B', b)[0]
 
-def packI16(self, n):
-    return [(n >> 8) & 0xff, n & 0xff]
-    # return struct.pack('>H', n)
+    def packU8(self, n):
+        return [n & 0xff]
+        # return struct.pack('B', n)
 
-def unpackI16(self, bytes):
-    return as_signed(bytes[0] << 8 | bytes[1], 16)
-    # return struct.unpack('>H', bytes)[0]
+    def unpackU8(self, bytes):
+        return as_unsigned(bytes[0], 8)
+        # return struct.unpack('B', bytes)[0]
 
-def packU16(self, n):
-    return [(n >> 8) & 0xff, n & 0xff]
-    # return struct.pack('>H', n)
-
-def unpackU16(self, bytes):
-    return as_unsigned(bytes[0] << 8 | bytes[1], 16)
-    # return struct.unpack('>H', bytes)[0]
-
-def packI32(self, n):
-    return [(n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]
-    # return struct.pack('>I', n)
-
-def unpackI32(self, bytes):
-    return as_signed(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32)
-    # return struct.unpack('>I', bytes)[0]
-
-def packU32(self, n):
-    return [(n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]
-    # return struct.pack('>I', n)
-
-def unpackU32(self, bytes):
-    return as_unsigned(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32)
-    # return struct.unpack('>I', bytes)[0]
-
-def packIEEE754(v, ebits, fbits):
-
-    bias = (1 << (ebits - 1)) - 1
-
-    def roundToEven(n):
-        w = Math.floor(n)
-        f = n - w
-        if (f < 0.5):
-            return w
-        if (f > 0.5):
-            return w + 1
-        # return w % 2 ? w + 1 : w
-        return w if (w % 2) else w + 1
-
-    # Compute sign, exponent, fraction
-    if (v != v):
-        # NaN
-        # http://dev.w3.org/2006/webapi/WebIDL/#es-type-mapping
-        e = (1 << ebits) - 1
-        f = pow(2, fbits - 1)
-        s = 0
-    elif (v == Global.Infinity or v == -Global.Infinity):
-        e = (1 << ebits) - 1
-        f = 0
-        # s = (v < 0) ? 1 : 0
-        s = 1 if (v < 0) else 0
-    elif (v == 0):
-        e = 0 
-        f = 0
-        s = 1 if (1 / v == -Global.Infinity) else 0
-    else:
-        s = v < 0
-        v = abs(v)
-
-        if (v >= pow(2, 1 - bias)):
-
-            e = min(Math.floor(Math.log(v) / Math.LN2), 1023)
-            f = roundToEven(v / pow(2, e) * pow(2, fbits))
-
-            if (f / pow(2, fbits) >= 2):
-                e = e + 1
-                f = 1
-            if (e > bias):
-                # Overflow
-                e = (1 << ebits) - 1
-                f = 0
-            else:
-                # Normalized
-                e = e + bias
-                f = f - pow(2, fbits)
+    def packU8Clamped(self, n):
+        n = Math.round(Number(n))
+        # return [n < 0 ? 0 : n > 0xff ? 0xff : n & 0xff]
+        if (n < 0):
+            return [0]
+        elif (n > 0xff):
+            return [0xff]
         else:
-            # Denormalized
+            return [n & 0xff]
+        # return struct.pack('B', n)
+
+    def packI16(self, n):
+        return [(n >> 8) & 0xff, n & 0xff]
+        # return struct.pack('>H', n)
+
+    def unpackI16(self, bytes):
+        return as_signed(bytes[0] << 8 | bytes[1], 16)
+        # return struct.unpack('>H', bytes)[0]
+
+    def packU16(self, n):
+        return [(n >> 8) & 0xff, n & 0xff]
+        # return struct.pack('>H', n)
+
+    def unpackU16(self, bytes):
+        return as_unsigned(bytes[0] << 8 | bytes[1], 16)
+        # return struct.unpack('>H', bytes)[0]
+
+    def packI32(self, n):
+        return [(n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]
+        # return struct.pack('>I', n)
+
+    def unpackI32(self, bytes):
+        return as_signed(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32)
+        # return struct.unpack('>I', bytes)[0]
+
+    def packU32(self, n):
+        return [(n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]
+        # return struct.pack('>I', n)
+
+    def unpackU32(self, bytes):
+        return as_unsigned(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32)
+        # return struct.unpack('>I', bytes)[0]
+
+    def packIEEE754(self, v, ebits, fbits):
+
+        bias = (1 << (ebits - 1)) - 1
+
+        def roundToEven(n):
+            w = Math.floor(n)
+            f = n - w
+            if (f < 0.5):
+                return w
+            if (f > 0.5):
+                return w + 1
+            # return w % 2 ? w + 1 : w
+            return w if (w % 2) else w + 1
+
+        # Compute sign, exponent, fraction
+        if (v != v):
+            # NaN
+            # http://dev.w3.org/2006/webapi/WebIDL/#es-type-mapping
+            e = (1 << ebits) - 1
+            f = pow(2, fbits - 1)
+            s = 0
+        elif (v == Global.Infinity or v == -Global.Infinity):
+            e = (1 << ebits) - 1
+            f = 0
+            # s = (v < 0) ? 1 : 0
+            s = 1 if (v < 0) else 0
+        elif (v == 0):
             e = 0
-            f = roundToEven(v / pow(2, 1 - bias - fbits))
-    
-    # Pack sign, exponent, fraction
-    bits = []
-    for i in range(fbits):
-        bits.append(f % 2)
-        f = Math.floor(f / 2)
-    for i in range(ebits):
-        bits.append(e % 2)
-        e = Math.floor(e / 2)
-    bits.append(s)
-    bits.reverse()
-    mystr = bits.join('')
-
-    # Bits to bytes
-    b = []
-    while (mystr.length):
-        b.push(parseInt(mystr.substring(0, 8), 2))
-        mystr = mystr.substring(8)
-    return b
-
-def unpackIEEE754(bytes, ebits, fbits):
-
-    # Bytes to bits
-    bits = []
-    for i in range(len(bytes)):
-        b = bytes[i]
-        for j in range(8):
-            bits.append(1 if b % 2 else 0)
-            b = b >> 1
-
-    bits.reverse()
-    mystr = bits.join('')
-
-    # Unpack sign, exponent, fraction
-    bias = (1 << (ebits - 1)) - 1
-    # s = parseInt(str.substring(0, 1), 2) ? -1 : 1
-    s = -1 if (mystr[0] == '1') else 1
-
-    e = parseInt(mystr.substring(1, 1 + ebits), 2)
-    f = parseInt(mystr.substring(1 + ebits), 2)
-
-    # // Produce number
-    if (e == (1 << ebits) - 1):
-        # return f !== 0 ? NaN : s * Infinity
-        if (f != 0):
-            return Global.NaN
+            f = 0
+            s = 1 if (1 / v == -Global.Infinity) else 0
         else:
-            return s * Global.InfInfinity
-    elif (e > 0):
-        # Normalized
-        return s * pow(2, e - bias) * (1 + f / pow(2, fbits))
-    elif (f != 0):
-        # Denormalized
-        return s * pow(2, -(bias - 1)) * (f / pow(2, fbits))
-    else:
-        return -0 if s < 0 else 0
+            s = v < 0
+            v = abs(v)
+
+            if (v >= pow(2, 1 - bias)):
+
+                e = min(Math.floor(Math.log(v) / Math.LN2), 1023)
+                f = roundToEven(v / pow(2, e) * pow(2, fbits))
+
+                if (f / pow(2, fbits) >= 2):
+                    e = e + 1
+                    f = 1
+                if (e > bias):
+                    # Overflow
+                    e = (1 << ebits) - 1
+                    f = 0
+                else:
+                    # Normalized
+                    e = e + bias
+                    f = f - pow(2, fbits)
+            else:
+                # Denormalized
+                e = 0
+                f = roundToEven(v / pow(2, 1 - bias - fbits))
+
+        # Pack sign, exponent, fraction
+        bits = []
+        for i in range(fbits):
+            bits.append(f % 2)
+            f = Math.floor(f / 2)
+        for i in range(ebits):
+            bits.append(e % 2)
+            e = Math.floor(e / 2)
+        bits.append(s)
+        bits.reverse()
+        mystr = bits.join('')
+
+        # Bits to bytes
+        b = []
+        while (mystr.length):
+            b.push(parseInt(mystr.substring(0, 8), 2))
+            mystr = mystr.substring(8)
+        return b
+
+    def unpackIEEE754(self, bytes, ebits, fbits):
+
+        # Bytes to bits
+        bits = []
+        for i in range(len(bytes)):
+            b = bytes[i]
+            for j in range(8):
+                bits.append(1 if b % 2 else 0)
+                b = b >> 1
+
+        bits.reverse()
+        mystr = bits.join('')
+
+        # Unpack sign, exponent, fraction
+        bias = (1 << (ebits - 1)) - 1
+        # s = parseInt(str.substring(0, 1), 2) ? -1 : 1
+        s = -1 if (mystr[0] == '1') else 1
+
+        e = parseInt(mystr.substring(1, 1 + ebits), 2)
+        f = parseInt(mystr.substring(1 + ebits), 2)
+
+        # // Produce number
+        if (e == (1 << ebits) - 1):
+            # return f !== 0 ? NaN : s * Infinity
+            if (f != 0):
+                return Global.NaN
+            else:
+                return s * Global.InfInfinity
+        elif (e > 0):
+            # Normalized
+            return s * pow(2, e - bias) * (1 + f / pow(2, fbits))
+        elif (f != 0):
+            # Denormalized
+            return s * pow(2, -(bias - 1)) * (f / pow(2, fbits))
+        else:
+            return -0 if s < 0 else 0
+
+    def unpackF64(self, b):
+        return self.unpackIEEE754(b, 11, 52)
+        # return struct.unpack('>d', b)[0]
+
+    def packF64(self, v):
+        return self.packIEEE754(v, 11, 52)
+        # return struct.pack('>d', v)
+
+    def unpackF32(self, b):
+        return self.unpackIEEE754(b, 8, 23)
+        # return struct.unpack('>f', b)[0]
+
+    def packF32(self, v):
+        return self.packIEEE754(v, 8, 23)
+        # return struct.pack('>f', v)
 
 
-def unpackF64(self, b):
-    return unpackIEEE754(b, 11, 52)
-    # return struct.unpack('>d', b)[0]
-
-def packF64(self, v):
-    return packIEEE754(v, 11, 52)
-    # return struct.pack('>d', v)
-
-def unpackF32(self, b):
-    return unpackIEEE754(b, 8, 23)
-    # return struct.unpack('>f', b)[0]
-
-def packF32(self, v):
-    return packIEEE754(v, 8, 23)
-    # return struct.pack('>f', v)
-
-
-Int8Array = type('Int8Array', (TypedArray,), {'name': 'Int8Array', '_pack': packI8, '_unpack': unpackI8})
+Int8Array = type('Int8Array', (TypedArray,), {'name': 'Int8Array', '_pack': __byteutils__.packI8, '_unpack': __byteutils__.unpackI8})
 Int8Array.BYTES_PER_ELEMENT = 1
 
-Uint8Array = type('Uint8Array', (TypedArray,), {'name': 'Uint8Array', '_pack': packU8, '_unpack': unpackU8})
+Uint8Array = type('Uint8Array', (TypedArray,), {'name': 'Uint8Array', '_pack': __byteutils__.packU8, '_unpack': __byteutils__.unpackU8})
 Uint8Array.BYTES_PER_ELEMENT = 1
 
-Uint8ClampedArray = type('Uint8ClampedArray', (TypedArray,), {'name': 'Uint8ClampedArray', '_pack': packU8Clamped, '_unpack': unpackU8})
+Uint8ClampedArray = type('Uint8ClampedArray', (TypedArray,), {'name': 'Uint8ClampedArray', '_pack': __byteutils__.packU8Clamped, '_unpack': __byteutils__.unpackU8})
 Uint8ClampedArray.BYTES_PER_ELEMENT = 1
 
-Int16Array = type('Int16Array', (TypedArray,), {'name': 'Int16Array', '_pack': packI16, '_unpack': unpackI16})
+Int16Array = type('Int16Array', (TypedArray,), {'name': 'Int16Array', '_pack': __byteutils__.packI16, '_unpack': __byteutils__.unpackI16})
 Int16Array.BYTES_PER_ELEMENT = 2
 
-Uint16Array = type('Uint16Array', (TypedArray,), {'name': 'Uint16Array', '_pack': packU16, '_unpack': unpackU16})
+Uint16Array = type('Uint16Array', (TypedArray,), {'name': 'Uint16Array', '_pack': __byteutils__.packU16, '_unpack': __byteutils__.unpackU16})
 Uint16Array.BYTES_PER_ELEMENT = 2
 
-Int32Array = type('Int32Array', (TypedArray,), {'name': 'Int32Array', '_pack': packI32, '_unpack': unpackI32})
+Int32Array = type('Int32Array', (TypedArray,), {'name': 'Int32Array', '_pack': __byteutils__.packI32, '_unpack': __byteutils__.unpackI32})
 Int32Array.BYTES_PER_ELEMENT = 4
 
-Uint32Array = type('Uint32Array', (TypedArray,), {'name': 'Uint32Array', '_pack': packU32, '_unpack': unpackU32})
+Uint32Array = type('Uint32Array', (TypedArray,), {'name': 'Uint32Array', '_pack': __byteutils__.packU32, '_unpack': __byteutils__.unpackU32})
 Uint32Array.BYTES_PER_ELEMENT = 4
 
-Float32Array = type('Float32Array', (TypedArray,), {'name': 'Float32Array', '_pack': packF32, '_unpack': unpackF32})
+Float32Array = type('Float32Array', (TypedArray,), {'name': 'Float32Array', '_pack': __byteutils__.packF32, '_unpack': __byteutils__.unpackF32})
 Float32Array.BYTES_PER_ELEMENT = 4
 
-Float64Array = type('Float64Array', (TypedArray,), {'name': 'Float64Array', '_pack': packF64, '_unpack': unpackF64})
+Float64Array = type('Float64Array', (TypedArray,), {'name': 'Float64Array', '_pack': __byteutils__.packF64, '_unpack': __byteutils__.unpackF64})
 Float64Array.BYTES_PER_ELEMENT = 8
 
-# BigInt64Array = type('BigInt64Array', (TypedArray,), {'name': 'BigInt64Array', '_pack': packI64, '_unpack': unpackI64})
+# BigInt64Array = type('BigInt64Array', (TypedArray,), {'name': 'BigInt64Array', '_pack': __byteutils__.packI64, '_unpack': __byteutils__.unpackI64})
 # BigInt64Array.BYTES_PER_ELEMENT = 8
 
-# BigUint64Array = type('BigUint64Array', (TypedArray,), {'name': 'BigUint64Array', '_pack': packU64, '_unpack': unpackU64})
+# BigUint64Array = type('BigUint64Array', (TypedArray,), {'name': 'BigUint64Array', '_pack': __byteutils__.packU64, '_unpack': __byteutils__.unpackU64})
 # BigUint64Array.BYTES_PER_ELEMENT = 8
 
 

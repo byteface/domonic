@@ -68,7 +68,7 @@ class EventTarget:
 #         """ A number representing the state of the connection.
 #         Possible values are CONNECTING (0), OPEN (1), or CLOSED (2). """
 #         return self._readyState
-    
+
 #     @property
 #     def url(self):
 #         """ A DOMString representing the URL of the source. """
@@ -76,14 +76,15 @@ class EventTarget:
 
 #     @property
 #     def withCredentials(self):
-#         """ A boolean value indicating whether the EventSource object was instantiated with cross-origin (CORS) credentials
+#         """ A boolean value indicating whether the EventSource object was
+#           instantiated with cross-origin (CORS) credentials
 #         set (true), or not (false, the default). """
 #         return self._withCredentials
 
 #     def close(self):
 #         """ Closes the connection to the EventSource. """
 #         self._readyState = "0"
-    
+
 #     def onreadystatechange(self, event):
 #         """ Called when the state of the connection changes. """
 #         if event.target.readyState == "0":
@@ -94,11 +95,11 @@ class EventTarget:
 #             self._readyState = "2"
 #         else:
 #             self._readyState = "2"
-    
+
 #     def onmessage(self, event):
 #         """ Called when a message is received. """
 #         pass
-    
+
 #     def onerror(self, event):
 #         """ Called when an error occurs. """
 #         pass
@@ -374,7 +375,7 @@ class Node(EventTarget):
 
         return None
 
-    def cloneNode(self, deep: bool=True):
+    def cloneNode(self, deep: bool = True):
         """ Returns a copy. """
         import copy
         if deep:
@@ -436,9 +437,12 @@ class Node(EventTarget):
         else:
             return False
 
-    def lookupNamespaceURI(self, ns):
-        """ Returns the namespace URI for a given prefix """
-        # namespaces = {'xml': 'http://www.w3.org/XML/1998/namespace', 'svg': 'http://www.w3.org/2000/svg', 'xlink': 'http://www.w3.org/1999/xlink', 'xmlns': 'http://www.w3.org/2000/xmlns/', 'xm': 'http://www.w3.org/2001/xml-events', 'xh': 'http://www.w3.org/1999/xhtml'}
+    def lookupNamespaceURI(self, ns: str):
+        """ Returns the namespace URI for a given prefix
+
+        :param ns: prefix - i.e 'xml', 'xlink', 'svg', etc
+
+        """
         from domonic.constants import namespaces
         if ns in namespaces:
             return namespaces[ns]
@@ -544,7 +548,7 @@ class Attr(Node):
     # @property
     # def specified(self):
     #     return self.__specified
-    
+
     # @specified.setter
     # def specified(self, value):
     #     self.__specified = value
@@ -570,7 +574,7 @@ class Attr(Node):
                 self.parentNode.removeAttribute(item)
                 return True
         return False
-    
+
     def setNamedItem(self, name, value):
         """ Sets the specified attribute node (by name) """
         for item in self.parentNode.attributes:
@@ -623,7 +627,7 @@ class DocumentType(Node):
             return self.systemId
         else:
             return None
-    
+
     def notations(self):
         """ A NamedNodeMap with notations declared in the DTD. """
         raise NotImplementedError
@@ -976,7 +980,8 @@ class NodeList(list):
         return iter(self)
 
     def forEach(self, func):
-        """ Executes a provided function once per NodeList element, passing the element as an argument to the function. """
+        """ Executes a provided function once per NodeList element,
+        passing the element as an argument to the function. """
         for e in self:
             func(e)
 
@@ -986,7 +991,8 @@ class NodeList(list):
         return iter(range(len(self)))
 
     def values(self):
-        """ Returns an iterator allowing code to go through all values (nodes) of the key/value pairs contained in the collection."""
+        """ Returns an iterator allowing code to go through all values (nodes) of the key/value pairs
+        contained in the collection."""
         return iter(self)
 
 
@@ -1461,7 +1467,7 @@ class Element(Node):
         elif position == 'AFTEREND':
             self.insertAfter(element, self.firstElementChild())
         elif position == 'BEFOREEND':
-            self.insertBefore(element, self.lastElementChild())        
+            self.insertBefore(element, self.lastElementChild())
 
     def insertAdjacentHTML(self, position: str, html: str):
         """ Inserts raw HTML adjacent to the current element """
@@ -1538,7 +1544,7 @@ class Element(Node):
 
     @property
     def previousElementSibling(self):
-        """ returns the Element immediately prior to the specified one in its parent's children list, 
+        """ returns the Element immediately prior to the specified one in its parent's children list,
         or None if the specified element is the first one in the list. """
         if self.parentNode is not None:
             for count, el in enumerate(self.parentNode.args):
@@ -1589,7 +1595,7 @@ class Element(Node):
         return self.rootNode
 
     @ownerDocument.setter
-    def ownerDocument(self, newOwner): #: Element):
+    def ownerDocument(self, newOwner):  #: Element):
         # self.rootNode = newOwner # NOTE - you can't set rootNode it's property that calcs it
         pass
 
@@ -1848,7 +1854,7 @@ class CDATASection(Node):
 #         self.endOffset = None
 #         self.collapsed = None
 #         self.commonAncestorContainer = None
-                  
+
 #     def setStart(self, node, offset):
 #         self.startContainer = node
 #         self.startOffset = offset
@@ -1897,7 +1903,7 @@ class CDATASection(Node):
 #             return self.endContainer == sourceRange.endContainer and self.endOffset == sourceRange.endOffset
 #         else:
 #             raise NotImplementedError
-    
+
 #     def deleteContents(self):
 #         raise NotImplementedError
 
@@ -2040,7 +2046,7 @@ class Document(Element):
 
     # TODO - still not great as it also returns 'links' when searching for 'li'
     # @property
-    def _get_tags(self, tag): # TODO - still old
+    def _get_tags(self, tag):  # TODO - still old
         ''' returns the tags you want '''
         reg = f"(<{tag}.*?>.+?</{tag}>)"
 
@@ -2064,7 +2070,7 @@ class Document(Element):
     #     node.ownerDocument = self
     #     return node
 
-    def anchors(self): # TODO - still old
+    def anchors(self):  # TODO - still old
         ''' Returns a collection of all <a> elements in the document that have a name attribute'''
         tags = self._get_tags('a')
         return [x for x in tags if x.hasAttribute('name')]
@@ -2430,7 +2436,7 @@ class Document(Element):
     #     ''' Returns the full URL of the HTML document'''
     #     pass
 
-    def write(self, html: str = ""):  #-> None: # TODO - untested
+    def write(self, html: str = ""):  # -> None: # TODO - untested
         """[writes HTML text to a document
 
         Args:
@@ -2439,7 +2445,7 @@ class Document(Element):
         content = DocumentFragment(html)
         self.__init__(content)
 
-    def writeln(self, html: str = ""):  #-> None: # TODO - untested
+    def writeln(self, html: str = ""):  # -> None: # TODO - untested
         """[writes HTML text to a document, followed by a line break]
 
         Args:
@@ -2639,8 +2645,8 @@ class DocumentFragment(Node):
 
 class CharacterData(Node):
     """
-    The CharacterData abstract interface represents a Node object that contains characters. 
-    This is an abstract interface, meaning there aren't any objects of type CharacterData: 
+    The CharacterData abstract interface represents a Node object that contains characters.
+    This is an abstract interface, meaning there aren't any objects of type CharacterData:
     it is implemented by other interfaces like Text, Comment, or ProcessingInstruction, which aren't abstract.
     """
 
@@ -2653,13 +2659,13 @@ class CharacterData(Node):
     after = ChildNode.after
 
     def appendData(self, data):
-        """ Appends the given DOMString to the CharacterData.data string; when this method returns, 
+        """ Appends the given DOMString to the CharacterData.data string; when this method returns,
         data contains the concatenated DOMString. """
         self.args[0] += data
         return self.args[0]
 
     def deleteData(self, offset: int, count: int):
-        """ Removes the specified amount of characters, starting at the specified offset, 
+        """ Removes the specified amount of characters, starting at the specified offset,
         from the CharacterData.data string; when this method returns, data contains the shortened DOMString. """
         self.args[0] = self.args[0][:offset] + self.args[0][offset + count:]
         return self.args[0]
@@ -2679,9 +2685,9 @@ class CharacterData(Node):
     # def replaceWith(self, newChildren):
     #     """ Replaces the characters in the children list of its parent with a set of Node or DOMString objects. """
     #     self.replaceChildren(newChildren) # parentNode?
-        
+
     def substringData(self, offset: int, length: int):
-        """ Returns a DOMString containing the part of CharacterData.data of the specified length and 
+        """ Returns a DOMString containing the part of CharacterData.data of the specified length and
         starting at the specified offset. """
         self.args[0] = self.args[0][offset:offset + length]
         return self.args[0]
@@ -2710,7 +2716,7 @@ class Text(CharacterData):
         """ Sets or returns the textual content of a node and its descendants """
         # if type(content) is not str:
         # raise ValueError()
-        self.nodeValue = content# + 'TEST'
+        self.nodeValue = content  # + 'TEST'
 
     def __str__(self):
         return str(self.textContent)
@@ -2726,7 +2732,7 @@ class Text(CharacterData):
 
 #     def __len__(self):
 #         return self.length
-    
+
 #     def __getitem__(self, index):
 #         return self.args[index]
 
@@ -2738,22 +2744,22 @@ class Text(CharacterData):
 
 #     def __iter__(self):
 #         return iter(self.args)
-    
+
 #     def __next__(self):
 #         return next(self.args)
-    
+
 #     def __str__(self):
 #         return str(self.args)
-    
+
 #     def __repr__(self):
 #         return str(self.args)
-    
+
 #     def __add__(self, other):
 #         return self.args + other.args
-    
+
 #     def __radd__(self, other):
 #         return other.args + self.args
-    
+
 #     def __iadd__(self, other):
 #         self.args += other.args
 #         return self
@@ -2779,7 +2785,7 @@ class Text(CharacterData):
 #         self.is_connected = False
 
 #     def disconnect(self):
-#         """ Stops the MutationObserver instance from receiving further notifications until 
+#         """ Stops the MutationObserver instance from receiving further notifications until
 #         and unless observe() is called again. """
 #         self.is_connected = False
 #         self.observer = None
@@ -2788,7 +2794,7 @@ class Text(CharacterData):
 #         return self
 
 #     def observe(self, target, options):
-#         """ Configures the MutationObserver to begin receiving notifications through 
+#         """ Configures the MutationObserver to begin receiving notifications through
 #         its callback function when DOM changes matching the given options occur. """
 #         if self.is_connected:
 #             self.disconnect()
@@ -2796,7 +2802,7 @@ class Text(CharacterData):
 #         self.is_connected = True
 
 #     def takeRecords(self):
-#         """ Removes all pending notifications from the MutationObserver's notification queue 
+#         """ Removes all pending notifications from the MutationObserver's notification queue
 #         and returns them in a new Array of MutationRecord objects. """
 #         return []
 
@@ -2846,9 +2852,9 @@ class Text(CharacterData):
 #     def currentNode(self):
 #         """ Is the Node on which the TreeWalker is currently pointing at. """
 #         return self.currentNode
-        
+
 #     def parentNode(self):
-#         """ Moves the current Node to the first visible ancestor node in the document order, 
+#         """ Moves the current Node to the first visible ancestor node in the document order,
 #         and returns the found node. It also moves the current node to this one. If no such node exists,
 #         or if it is before that the root node defined at the object construction,
 #         returns null and the current node is not changed. """
@@ -2881,7 +2887,7 @@ class Text(CharacterData):
 #         and returns the found node. It also moves the current node to this one. If no such node exists, or if it is before that the root node defined at the object construction,
 #         returns null and the current node is not changed. """
 #         raise NotImplementedError()
-        
+
 #     def nextNode(self):
 #         """ Moves the current Node to the next visible node in the document order, and returns the found node.
 #         It also moves the current node to this one.
@@ -2909,8 +2915,6 @@ class Text(CharacterData):
 #         self.ontimeout = ontimeout
 #         self.response = None
 #         self.status = None
-
-
 
 
 class Sanitizer():
@@ -3018,7 +3022,7 @@ class Sanitizer():
             el = frag.getElementsByTagName(t)
             el.parentNode.removeChild(el)
 
-        for t in self.config["dropAttributes"]: 
+        for t in self.config["dropAttributes"]:
             for e in self.config["allowElements"]:
                 els = frag.getElementsByTagName(e)
                 if els != False and len(els) > 0:

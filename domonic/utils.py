@@ -475,7 +475,6 @@ class Utils(object):
             n //= b
         return digits[::-1]
 
-
     # @staticmethod
     # def is_nix():
     #     """[check if the system is a nix based system]
