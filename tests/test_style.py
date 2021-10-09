@@ -41,5 +41,26 @@ class TestCase(unittest.TestCase):
         # print(sometag)
 
 
+    # create some failing tests
+
+    # def test_css_style_declaration(self):
+        # styleObj = document.styleSheets[0].cssRules[0].style
+        # print(styleObj.cssText)
+
+    # def test_css_style_rules(self):
+        # myRules = document.styleSheets[0].cssRules # Returns a CSSRuleList
+        # print(myRules)
+
+        # myRules = document.styleSheets[0].cssRules
+        # print(myRules[0]); # a CSSStyleRule representing the h1.
+
+    #def test_css_styledpropertymap(self):
+        # pass
+
+
+
+
+
+
 if __name__ == '__main__':
     unittest.main()

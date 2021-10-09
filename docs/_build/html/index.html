@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Domonic: &#8212; domonic 0.6.0 documentation</title>
+    <title>Domonic: &#8212; domonic 0.6.1 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/tabs.css" />
@@ -48,46 +48,36 @@
 <a class="reference external image-reference" href="https://pypi.org/project/domonic/"><img alt="Wheel Support Badge" src="https://img.shields.io/pypi/wheel/domonic.svg" /></a>
 <p><strong>Domonic</strong> Not only a Python library for generating HTML</p>
 <hr class="docutils" />
-<p><strong>Domonic contains several main packages:</strong></p>
-<p>(but by no means are any of them complete)</p>
+<p><strong>Domonic contains several evolving packages:</strong></p>
 <ul class="simple">
 <li><p>html : Generate html with python 3 😎</p></li>
 <li><p>dom : DOM API in python 3 😲</p></li>
 <li><p>javascript : js API in python 3 😳</p></li>
 <li><p>terminal || cmd : call terminal commands with python3 😱 (<em>see at the end</em>)</p></li>
 <li><p>JSON : utils for loading / decorating / transformin</p></li>
-<li><p>SVG : Generate svg using python (untested</p></li>
+<li><p>SVG : Generate svg using python</p></li>
 <li><p>aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder</p></li>
 <li><p>dQuery - Utils for querying domonic. (alt + 0 for the º symbol)</p></li>
 <li><p>geom - vec2, vec3 with _dunders_ as well as shape classes</p></li>
 </ul>
+<p>Take a look at the source code and contribute!</p>
 <div class="section" id="html-templating">
 <h2>HTML TEMPLATING<a class="headerlink" href="#html-templating" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
 
-  <span class="n">mydom</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span>
-          <span class="n">head</span><span class="p">(</span>
-              <span class="n">style</span><span class="p">(),</span>
-              <span class="n">script</span><span class="p">(),</span>
-          <span class="p">),</span>
-          <span class="n">body</span><span class="p">(</span>
-              <span class="n">div</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">),</span>
-              <span class="n">a</span><span class="p">(</span><span class="s2">&quot;this is a link&quot;</span><span class="p">,</span> <span class="n">_href</span><span class="o">=</span><span class="s2">&quot;http://www.somesite.com&quot;</span><span class="p">,</span> <span class="n">_style</span><span class="o">=</span><span class="s2">&quot;font-size:10px;&quot;</span><span class="p">),</span>
-              <span class="n">ol</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">li</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])),</span>
-              <span class="n">h1</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">_class</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">),</span>
-          <span class="p">)</span>
-      <span class="p">)</span>
-
-  <span class="n">render</span><span class="p">(</span><span class="n">mydom</span><span class="p">)</span>
+<span class="n">mydom</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span><span class="n">body</span><span class="p">(</span><span class="n">h1</span><span class="p">(</span><span class="s1">&#39;Hello, World!&#39;</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mydom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;&lt;</span><span class="nt">head</span><span class="p">&gt;&lt;</span><span class="nt">style</span><span class="p">&gt;&lt;/</span><span class="nt">style</span><span class="p">&gt;&lt;</span><span class="nt">script</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;&lt;/</span><span class="nt">head</span><span class="p">&gt;&lt;</span><span class="nt">body</span><span class="p">&gt;&lt;</span><span class="nt">div</span><span class="p">&gt;</span>hello world<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://www.somesite.com&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;font-size:10px;&quot;</span><span class="p">&gt;</span>this is a link<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;</span><span class="nt">ol</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ol</span><span class="p">&gt;&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">&gt;</span>test<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;/</span><span class="nt">body</span><span class="p">&gt;&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello, World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-<p>To pretty print a domonic dom you can now use a f-string. Which also adds the doctype .. i.e.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mydom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>To pretty print use an f-string. Which also adds the doctype.</p>
 </div>
 <div class="section" id="install">
 <h2>install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
@@ -96,14 +86,6 @@
 </div>
 <p>or if you had it before upgrade:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">domonic</span> <span class="o">--</span><span class="n">upgrade</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="usage">
-<h2>usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>print(html(body(h1(&#39;Hello, World!&#39;))))
-
-&lt;html&gt;&lt;body&gt;&lt;h1&gt;Hello, World!&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;
 </pre></div>
 </div>
 </div>
@@ -381,7 +363,6 @@
 <li><a class="reference internal" href="#generate-html-with-python-3">Generate HTML with Python 3</a><ul>
 <li><a class="reference internal" href="#html-templating">HTML TEMPLATING</a></li>
 <li><a class="reference internal" href="#install">install</a></li>
-<li><a class="reference internal" href="#usage">usage</a></li>
 <li><a class="reference internal" href="#the-user-guide">The User Guide</a></li>
 <li><a class="reference internal" href="#cli">CLI</a></li>
 <li><a class="reference internal" href="#join-in">Join-In</a></li>

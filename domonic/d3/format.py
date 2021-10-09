@@ -10,7 +10,7 @@ from domonic.javascript import Math, Array, Number, String, Global, RegExp
 def formatDecimal(x, ignore=None):
     x = Math.round(x)
     if Math.abs(x) >= 1e21:
-        return x.toLocaleString("en").replace(r'/,/g', "")
+        return x.toLocaleString("en").replace(r"/,/g", "")
     else:
         return Number(x).toString(10)
 
@@ -38,8 +38,10 @@ def formatDecimalParts(x, p=None):
     # The string returned by toExponential either has the form \d\.\d+e[-+]\d+
     # (e.g., 1.2e+3) or the form \de[-+]\d+ (e.g., 1e+3).
     return [
-        coefficient[0] + String(coefficient).slice(2) if len(coefficient) > 1 else coefficient,
-        String(x).slice(i + 1)  # .lstrip('+')
+        coefficient[0] + String(coefficient).slice(2)
+        if len(coefficient) > 1
+        else coefficient,
+        String(x).slice(i + 1),  # .lstrip('+')
     ]
 
 
@@ -57,13 +59,13 @@ def formatPrefixAuto(x, p):
     # print("formatPrefixAuto22",x,p)
 
     coefficient = d[0]
-    if d[1] == '':
+    if d[1] == "":
         d[1] = 0
 
     exponent = int(d[1])
 
     global prefixExponent
-    prefixExponent = (Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3)
+    prefixExponent = Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3
 
     i = exponent - prefixExponent + 1
     n = len(coefficient)
@@ -75,9 +77,15 @@ def formatPrefixAuto(x, p):
             return coefficient + "0".join(Array(i - n + 1))
         else:
             if i > 0:
-                return String(coefficient).slice(0, i) + "." + String(coefficient).slice(i)
+                return (
+                    String(coefficient).slice(0, i) + "." + String(coefficient).slice(i)
+                )
             else:
-                return "0." + str("0".join(Array(1 - i))) + formatDecimalParts(x, Math.max(0, p + i - 1))[0]
+                return (
+                    "0."
+                    + str("0".join(Array(1 - i)))
+                    + formatDecimalParts(x, Math.max(0, p + i - 1))[0]
+                )
 
 
 def formatRounded(x, p):
@@ -86,7 +94,7 @@ def formatRounded(x, p):
         return str(x)
     coefficient = d[0]
 
-    if d[1] == '':
+    if d[1] == "":
         d[1] = 0
 
     exponent = int(d[1])
@@ -95,26 +103,30 @@ def formatRounded(x, p):
         return "0." + Array(-exponent).join("0") + coefficient
     else:
         if len(coefficient) > (exponent + 1):
-            return String(coefficient).slice(0, exponent + 1) + "." + String(coefficient).slice(exponent + 1)
+            return (
+                String(coefficient).slice(0, exponent + 1)
+                + "."
+                + String(coefficient).slice(exponent + 1)
+            )
         else:
             return coefficient + "0".join(Array(exponent - len(coefficient) + 2))
 
 
 formatTypes = {
-            "%": lambda x, p: Number(x * 100).toFixed(p),
-            "b": lambda x, ignore = None: Number(Math.round(x)).toString(2),
-            "c": lambda x, ignore = None: str(x),
-            "d": formatDecimal,
-            "e": lambda x, p: Number(x).toExponential(p),
-            "f": lambda x, p: Number(x).toFixed(p),
-            "g": lambda x, p: Number(x).toPrecision(p),
-            "o": lambda x, ignore: Number(Math.round(x)).toString(8),
-            "p": lambda x, p: formatRounded(x * 100, p),
-            "r": formatRounded,
-            "s": formatPrefixAuto,
-            "X": lambda x, ignore = None: Number(Math.round(x)).toString(16).toUpperCase(),
-            "x": lambda x, ignore = None: Number(Math.round(x)).toString(16)
-        }
+    "%": lambda x, p: Number(x * 100).toFixed(p),
+    "b": lambda x, ignore=None: Number(Math.round(x)).toString(2),
+    "c": lambda x, ignore=None: str(x),
+    "d": formatDecimal,
+    "e": lambda x, p: Number(x).toExponential(p),
+    "f": lambda x, p: Number(x).toFixed(p),
+    "g": lambda x, p: Number(x).toPrecision(p),
+    "o": lambda x, ignore: Number(Math.round(x)).toString(8),
+    "p": lambda x, p: formatRounded(x * 100, p),
+    "r": formatRounded,
+    "s": formatPrefixAuto,
+    "X": lambda x, ignore=None: Number(Math.round(x)).toString(16).toUpperCase(),
+    "x": lambda x, ignore=None: Number(Math.round(x)).toString(16),
+}
 
 
 def exponent(x):
@@ -139,7 +151,7 @@ def formatGroup(grouping, thousands):
             i -= g
             t.append(String(value).substring(a, i + g))
 
-            length += (g + 1)
+            length += g + 1
             if length > width:
                 break
 
@@ -153,11 +165,12 @@ def formatGroup(grouping, thousands):
 
 def formatNumerals(numerals):
     def func(value):
-        return value.replace(r'[0-9]g', lambda i: numerals[i])
+        return value.replace(r"[0-9]g", lambda i: numerals[i])
+
     return func
 
 
-re = r'^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$'
+re = r"^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$"
 
 
 def formatSpecifier(specifier):
@@ -165,36 +178,75 @@ def formatSpecifier(specifier):
     if not match:
         raise Exception("invalid format: " + specifier)
 
-    return FormatSpecifier({
-                'fill': match[0], 'align': match[1],
-                'sign': match[2], 'symbol': match[3],
-                'zero': match[4], 'width': match[5],
-                'comma': match[6], 'precision': match[7] and String(match[7]).slice(1),
-                'trim': match[8], 'type': match[9]
-                })
+    return FormatSpecifier(
+        {
+            "fill": match[0],
+            "align": match[1],
+            "sign": match[2],
+            "symbol": match[3],
+            "zero": match[4],
+            "width": match[5],
+            "comma": match[6],
+            "precision": match[7] and String(match[7]).slice(1),
+            "trim": match[8],
+            "type": match[9],
+        }
+    )
 
 
-class FormatSpecifier():
-
+class FormatSpecifier:
     def __init__(self, specifier):
-        self.fill = " " if specifier.get('fill', None) == None else str(specifier.get('fill'))
-        self.align = ">" if specifier.get('align', None) == None else str(specifier.get('align'))
-        self.sign = "-" if specifier.get('sign', None) == None else str(specifier.get('sign'))
-        self.symbol = "" if specifier.get('symbol', None) == None else str(specifier.get('symbol'))
-        self.zero = bool(specifier.get('zero', False))
-        self.width = None if specifier.get('width', None) == None else specifier.get('width')
-        self.comma = bool(specifier.get('comma', None))
-        self.precision = None if specifier.get('precision', None) == None else specifier.get('precision')
-        self.trim = bool(specifier.get('trim', None))
-        self.type = "" if specifier.get('type', None) == None else str(specifier.get('type'))
+        self.fill = (
+            " " if specifier.get("fill", None) == None else str(specifier.get("fill"))
+        )
+        self.align = (
+            ">" if specifier.get("align", None) == None else str(specifier.get("align"))
+        )
+        self.sign = (
+            "-" if specifier.get("sign", None) == None else str(specifier.get("sign"))
+        )
+        self.symbol = (
+            ""
+            if specifier.get("symbol", None) == None
+            else str(specifier.get("symbol"))
+        )
+        self.zero = bool(specifier.get("zero", False))
+        self.width = (
+            None if specifier.get("width", None) == None else specifier.get("width")
+        )
+        self.comma = bool(specifier.get("comma", None))
+        self.precision = (
+            None
+            if specifier.get("precision", None) == None
+            else specifier.get("precision")
+        )
+        self.trim = bool(specifier.get("trim", None))
+        self.type = (
+            "" if specifier.get("type", None) == None else str(specifier.get("type"))
+        )
 
     def toString(self):
-        z = ("0" if self.zero else "")
+        z = "0" if self.zero else ""
         w = "" if self.width == None else Math.max(1, int(self.width) | 0)
         c = "," if self.comma else ""
-        p = "" if self.precision == None else "." + str(Math.max(0, int(self.precision) | 0))
+        p = (
+            ""
+            if self.precision == None
+            else "." + str(Math.max(0, int(self.precision) | 0))
+        )
         t = "~" if self.trim else ""
-        return self.fill + self.align + self.sign + self.symbol + str(z) + str(w) + str(c) + str(p) + str(t) + self.type
+        return (
+            self.fill
+            + self.align
+            + self.sign
+            + self.symbol
+            + str(z)
+            + str(w)
+            + str(c)
+            + str(p)
+            + str(t)
+            + self.type
+        )
 
     def __str__(self):
         return self.toString()
@@ -213,7 +265,7 @@ def formatTrim(s):
     i0 = -1
     i1 = None
 
-#   for (var n = s.length, i = 1, i0 = -1, i1; i < n; ++i) {
+    #   for (var n = s.length, i = 1, i0 = -1, i1; i < n; ++i) {
     for i in range(1, n):
         if s[i] == ".":
             i0 = i1 = i
@@ -224,7 +276,7 @@ def formatTrim(s):
         # else:
         if not s[i]:
             break  # out
-        if (i0 > 0):
+        if i0 > 0:
             i0 = 0
 
     return String(s).slice(0, i0) + String(s).slice(i1 + 1) if i0 > 0 else s
@@ -235,10 +287,28 @@ def identity(x):
 
 
 map = Array.map
-prefixes = ["y", "z", "a", "f", "p", "n", "µ", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"]
+prefixes = [
+    "y",
+    "z",
+    "a",
+    "f",
+    "p",
+    "n",
+    "µ",
+    "m",
+    "",
+    "k",
+    "M",
+    "G",
+    "T",
+    "P",
+    "E",
+    "Z",
+    "Y",
+]
 
 
-class NewFormatProxy():
+class NewFormatProxy:
     def __init__(self, nf, specifier):
         self.func = nf
         self.specifier = specifier
@@ -250,18 +320,38 @@ class NewFormatProxy():
         return str(self.specifier)
 
 
-class formatLocale():
-
+class formatLocale:
     def __init__(self, locale):
 
-        self.group = locale.get('grouping', None) == None or identity if locale.get('thousands', None) == None else formatGroup([Global.Number(g) for g in locale['grouping']], str(locale.get('thousands')))
-        self.currencyPrefix = "" if locale.get('currency', None) == None else str(locale.get('currency')[0])
-        self.currencySuffix = "" if locale.get('currency') == None else str(locale.get('currency')[1])
-        self.decimal = "." if locale.get('decimal', None) == None else str(locale.get('decimal'))
-        self.numerals = identity if locale.get('numerals', None) == None else formatNumerals([str(n) for n in locale['numerals']])
-        self.percent = "%" if locale.get('percent', None) == None else str(locale['percent'])
-        self.minus = "−" if locale.get('minus', None) == None else str(locale['minus'])
-        self.nan = "NaN" if locale.get('nan', None) == None else str(locale['nan'])
+        self.group = (
+            locale.get("grouping", None) == None or identity
+            if locale.get("thousands", None) == None
+            else formatGroup(
+                [Global.Number(g) for g in locale["grouping"]],
+                str(locale.get("thousands")),
+            )
+        )
+        self.currencyPrefix = (
+            ""
+            if locale.get("currency", None) == None
+            else str(locale.get("currency")[0])
+        )
+        self.currencySuffix = (
+            "" if locale.get("currency") == None else str(locale.get("currency")[1])
+        )
+        self.decimal = (
+            "." if locale.get("decimal", None) == None else str(locale.get("decimal"))
+        )
+        self.numerals = (
+            identity
+            if locale.get("numerals", None) == None
+            else formatNumerals([str(n) for n in locale["numerals"]])
+        )
+        self.percent = (
+            "%" if locale.get("percent", None) == None else str(locale["percent"])
+        )
+        self.minus = "−" if locale.get("minus", None) == None else str(locale["minus"])
+        self.nan = "NaN" if locale.get("nan", None) == None else str(locale["nan"])
 
     def newFormat(self, specifier):
         specifier = formatSpecifier(specifier)
@@ -289,7 +379,7 @@ class formatLocale():
                 type = "g"
 
         # If zero fill is specified, padding goes after sign and before digits.
-        if (zero or (fill == "0" and align == "=")):
+        if zero or (fill == "0" and align == "="):
             zero = True
             fill = "0"
             align = "="
@@ -300,7 +390,7 @@ class formatLocale():
         if symbol == "$":
             prefix = self.currencyPrefix
         else:
-            if (symbol == "#" and RegExp(r'[boxX]').test(type)):
+            if symbol == "#" and RegExp(r"[boxX]").test(type):
                 prefix = "0" + String(type).toLowerCase()
             else:
                 prefix = ""
@@ -309,13 +399,13 @@ class formatLocale():
         if symbol == "$":
             suffix = self.currencySuffix
         else:
-            suffix = self.percent if RegExp(r'[%p]').test(type) else ""
+            suffix = self.percent if RegExp(r"[%p]").test(type) else ""
 
         # What format function should we use?
         # Is this an integer type?
         # Can this type generate exponential notation?
         formatType = formatTypes[type]
-        maybeSuffix = RegExp(r'[defgprs%]').test(type)
+        maybeSuffix = RegExp(r"[defgprs%]").test(type)
 
         # Set the default precision if not specified,
         # or clamp the specified precision to the supported range.
@@ -325,17 +415,20 @@ class formatLocale():
             precision = 6
             # precision = 0
         else:
-            precision = Math.max(1, Math.min(21, precision)) if RegExp(r'[gprs]').test(type) else Math.max(0, Math.min(20, precision))
-
+            precision = (
+                Math.max(1, Math.min(21, precision))
+                if RegExp(r"[gprs]").test(type)
+                else Math.max(0, Math.min(20, precision))
+            )
 
         def format(value):
             valuePrefix = prefix
             valueSuffix = suffix
-            i = None
-            n = None
-            c = None
+            # i = None
+            # n = None
+            # c = None
 
-            if (type == "c"):
+            if type == "c":
                 valueSuffix = formatType(value) + valueSuffix
                 value = ""
             else:
@@ -350,18 +443,29 @@ class formatLocale():
                     valueNegative = False
 
                 # Perform the initial formatting.
-                value = self.nan if Global.isNaN(value) else formatType(Math.abs(value), precision)
+                value = (
+                    self.nan
+                    if Global.isNaN(value)
+                    else formatType(Math.abs(value), precision)
+                )
 
                 # Trim insignificant zeros.
                 if trim:
                     value = formatTrim(value)
 
-                # If a negative value rounds to zero after formatting, and no explicit positive sign is requested, hide the sign.
-                if (valueNegative and value == 0 and sign != "+"):
+                # If a negative value rounds to zero after formatting,
+                # and no explicit positive sign is requested, hide the sign.
+                if valueNegative and value == 0 and sign != "+":
                     valueNegative = False
 
                 # Compute the prefix and suffix.
-                valuePrefix = ((sign if sign == "(" else self.minus) if valueNegative else "" if (sign == "-" or sign == "(") else sign) + valuePrefix
+                valuePrefix = (
+                    (sign if sign == "(" else self.minus)
+                    if valueNegative
+                    else ""
+                    if (sign == "-" or sign == "(")
+                    else sign
+                ) + valuePrefix
 
                 global prefixExponent
                 p1 = prefixes[int(8 + prefixExponent / 3)] if type == "s" else ""
@@ -377,7 +481,11 @@ class formatLocale():
                     while i < n:
                         c = String(value).charCodeAt(i)
                         if 48 > c or c > 57:
-                            suff = self.decimal + String(value).slice(i + 1) if c == 46 else String(value).slice(i)
+                            suff = (
+                                self.decimal + String(value).slice(i + 1)
+                                if c == 46
+                                else String(value).slice(i)
+                            )
                             valueSuffix = suff + valueSuffix
                             value = String(value).slice(0, i)
                             break
@@ -394,11 +502,16 @@ class formatLocale():
             if width == "" or width == None:
                 width = 0
             width = int(width)
-            padding = fill.join(Array(width - length + 1)) if length < int(width) else ""
+            padding = (
+                fill.join(Array(width - length + 1)) if length < int(width) else ""
+            )
 
             # If the fill character is "0", grouping is applied after padding.
             if comma and zero:
-                value = self.group(padding + str(value), width - len(valueSuffix) if len(padding) else Global.Infinity)
+                value = self.group(
+                    padding + str(value),
+                    width - len(valueSuffix) if len(padding) else Global.Infinity,
+                )
                 padding = ""
 
             # Reconstruct the final output based on the desired alignment.
@@ -408,7 +521,13 @@ class formatLocale():
                 value = valuePrefix + padding + str(value) + valueSuffix
             elif align == "^":
                 length = len(padding) >> 1
-                value = String(padding).slice(0, length) + valuePrefix + value + valueSuffix + String(padding).slice(length)
+                value = (
+                    String(padding).slice(0, length)
+                    + valuePrefix
+                    + value
+                    + valueSuffix
+                    + String(padding).slice(length)
+                )
             else:
                 value = padding + valuePrefix + str(value) + valueSuffix
 
@@ -444,10 +563,10 @@ def defaultLocale(definition):
     return locale
 
 
-defaultLocale({'thousands': ",", "grouping": [3], "currency": ["$", ""]})
+defaultLocale({"thousands": ",", "grouping": [3], "currency": ["$", ""]})
 
 
-# https://github.com/d3/d3-format/tree/main/locale - TODO - finish all 
+# https://github.com/d3/d3-format/tree/main/locale - TODO - finish all
 def set_locale(code):
     """[sets the locale of the formatting engine]
 
@@ -458,31 +577,154 @@ def set_locale(code):
         [type]: [a new format obj]
     """
     loc = {
-        "en-GB": {"decimal": ".", "thousands": ",", "grouping": [3], "currency": ["£", ""]},
-        "en-IN": {"decimal": ".", "thousands": ",", "grouping": [3, 2, 2, 2, 2, 2, 2, 2, 2, 2], "currency": ["₹", ""]},
-        "en-US": {"decimal": ".", "thousands": ",", "grouping": [3], "currency": ["$", ""]},
-        "uk-UA": {"decimal": ",", "thousands": "\u00a0", "grouping": [3], "currency": ["", "\u00a0₴."]},
-        "zh-CN": {"decimal": ".", "thousands": ",", "grouping": [3], "currency": ["¥", ""]},
-        "sv-SE": {"decimal": ",", "thousands": "\u00a0", "grouping": [3], "currency": ["", " kr"]},
-        "sl-SI": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["", "\u00a0€"]},
-        "ru-RU": {"decimal": ",", "thousands": "\u00a0", "grouping": [3], "currency": ["", "\u00a0руб."]},
-        "pt-PT": {"decimal": ",","thousands": "\u00a0","grouping": [3], "currency": ["", "\u00a0€"]},
-        "pt-BR": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["R$", ""]},
-        "pl-PL": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["", "zł"]},
-        "nl-NL": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["€\u00a0", ""]},
-        "mk-MK.": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["", "\u00a0ден."]},
-        "ko-KR": {"decimal": ".", "thousands": ",", "grouping": [3], "currency": ["₩", ""]},
-        "ja-JP": {"decimal": ".", "thousands": ",", "grouping": [3], "currency": ["", "円"]},
-        "it-IT": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["€", ""]},
-        "hu-HU.": {"decimal": ",", "thousands": "\u00a0", "grouping": [3], "currency": ["", "\u00a0Ft"]},
-        "he-IL": {"decimal": ".", "thousands": ",", "grouping": [3], "currency": ["₪", ""]},
-        "fr-FR": {"decimal": ",", "thousands": "\u00a0", "grouping": [3], "currency": ["", "\u00a0€"], "percent": "\u202f%"},
-        "es-ES": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["", "\u00a0€"]},
-        "de-DE": {"decimal": ",", "thousands": ".", "grouping": [3], "currency": ["", "\u00a0€"]},
-        "ar-YE": {"decimal": "\u066b", "thousands": "\u066c", "grouping": [3], "currency": ["", " \u0631\u002e\u0649\u002e"], "numerals": ["\u0660", "\u0661", "\u0662", "\u0663", "\u0664", "\u0665", "\u0666", "\u0667", "\u0668", "\u0669"]}
-
+        "en-GB": {
+            "decimal": ".",
+            "thousands": ",",
+            "grouping": [3],
+            "currency": ["£", ""],
+        },
+        "en-IN": {
+            "decimal": ".",
+            "thousands": ",",
+            "grouping": [3, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+            "currency": ["₹", ""],
+        },
+        "en-US": {
+            "decimal": ".",
+            "thousands": ",",
+            "grouping": [3],
+            "currency": ["$", ""],
+        },
+        "uk-UA": {
+            "decimal": ",",
+            "thousands": "\u00a0",
+            "grouping": [3],
+            "currency": ["", "\u00a0₴."],
+        },
+        "zh-CN": {
+            "decimal": ".",
+            "thousands": ",",
+            "grouping": [3],
+            "currency": ["¥", ""],
+        },
+        "sv-SE": {
+            "decimal": ",",
+            "thousands": "\u00a0",
+            "grouping": [3],
+            "currency": ["", " kr"],
+        },
+        "sl-SI": {
+            "decimal": ",",
+            "thousands": ".",
+            "grouping": [3],
+            "currency": ["", "\u00a0€"],
+        },
+        "ru-RU": {
+            "decimal": ",",
+            "thousands": "\u00a0",
+            "grouping": [3],
+            "currency": ["", "\u00a0руб."],
+        },
+        "pt-PT": {
+            "decimal": ",",
+            "thousands": "\u00a0",
+            "grouping": [3],
+            "currency": ["", "\u00a0€"],
+        },
+        "pt-BR": {
+            "decimal": ",",
+            "thousands": ".",
+            "grouping": [3],
+            "currency": ["R$", ""],
+        },
+        "pl-PL": {
+            "decimal": ",",
+            "thousands": ".",
+            "grouping": [3],
+            "currency": ["", "zł"],
+        },
+        "nl-NL": {
+            "decimal": ",",
+            "thousands": ".",
+            "grouping": [3],
+            "currency": ["€\u00a0", ""],
+        },
+        "mk-MK.": {
+            "decimal": ",",
+            "thousands": ".",
+            "grouping": [3],
+            "currency": ["", "\u00a0ден."],
+        },
+        "ko-KR": {
+            "decimal": ".",
+            "thousands": ",",
+            "grouping": [3],
+            "currency": ["₩", ""],
+        },
+        "ja-JP": {
+            "decimal": ".",
+            "thousands": ",",
+            "grouping": [3],
+            "currency": ["", "円"],
+        },
+        "it-IT": {
+            "decimal": ",",
+            "thousands": ".",
+            "grouping": [3],
+            "currency": ["€", ""],
+        },
+        "hu-HU.": {
+            "decimal": ",",
+            "thousands": "\u00a0",
+            "grouping": [3],
+            "currency": ["", "\u00a0Ft"],
+        },
+        "he-IL": {
+            "decimal": ".",
+            "thousands": ",",
+            "grouping": [3],
+            "currency": ["₪", ""],
+        },
+        "fr-FR": {
+            "decimal": ",",
+            "thousands": "\u00a0",
+            "grouping": [3],
+            "currency": ["", "\u00a0€"],
+            "percent": "\u202f%",
+        },
+        "es-ES": {
+            "decimal": ",",
+            "thousands": ".",
+            "grouping": [3],
+            "currency": ["", "\u00a0€"],
+        },
+        "de-DE": {
+            "decimal": ",",
+            "thousands": ".",
+            "grouping": [3],
+            "currency": ["", "\u00a0€"],
+        },
+        "ar-YE": {
+            "decimal": "\u066b",
+            "thousands": "\u066c",
+            "grouping": [3],
+            "currency": ["", " \u0631\u002e\u0649\u002e"],
+            "numerals": [
+                "\u0660",
+                "\u0661",
+                "\u0662",
+                "\u0663",
+                "\u0664",
+                "\u0665",
+                "\u0666",
+                "\u0667",
+                "\u0668",
+                "\u0669",
+            ],
+        },
     }[code]
     return formatLocale(loc)
+
 
 # formatDefaultLocale
 # format

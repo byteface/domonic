@@ -1770,9 +1770,6 @@ class DOMImplementation(object):
         pass
 
     def createDocument(self, namespaceURI, qualifiedName, doctype):
-
-        print('createDocument called::', namespaceURI, qualifiedName, doctype)
-
         if namespaceURI is None:
             namespaceURI = ''
         if qualifiedName is None:
@@ -2455,6 +2452,7 @@ class Document(Element):
 
 
 class Location():
+    # TODO - move this to the window class and remove all domonic.javascript refs in this file
 
     def __init__(self, url: str = None, *args, **kwargs):
         self.href = url
@@ -2467,11 +2465,13 @@ class Location():
 
     def origin(self):
         """ Returns the protocol, hostname and port number of a URL """
-        raise NotImplementedError
+        from domonic.javscript import URL
+        return URL(self.href).origin
 
     def search(self):
         """ Sets or returns the querystring part of a URL """
-        raise NotImplementedError
+        from domonic.javscript import URL
+        return URL(self.href).search
 
     def assign(self, url: str = "") -> None:
         """ Loads a new document """

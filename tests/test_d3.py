@@ -61,7 +61,7 @@ class TestCase(unittest.TestCase):
         for i in range(10):
             print(0.1 * i)
 
-        f = format(".1f")  
+        f = format(".1f")
         for i in range(10):
             # print(i)
             print(f(0.1 * i))
@@ -662,7 +662,7 @@ class TestCase(unittest.TestCase):
         # somebody = document.createElement('sometag')
         # print(str(somebody))
 
-        # d3.select("body") 
+        # d3.select("body")
         page = html(body())
         # print( select("body") )
         # select("body").append("svg")
@@ -937,7 +937,7 @@ class TestCase(unittest.TestCase):
         one = d.querySelector("#one")
         # assertSelection(select(d).select(function() { return one; }), {"groups": [[one]], "parents": [None]})
 
-        # selection.select(function) passes the selector function data, index and group", 
+        # selection.select(function) passes the selector function data, index and group",
         # "<parent id='one'><child id='three'></child><child id='four'></child></parent><parent id='two'><child id='five'></child></parent>", () => {
         # one = d.querySelector("#one")
         # two = d.querySelector("#two")

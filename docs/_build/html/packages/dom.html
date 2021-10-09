@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dom &#8212; domonic 0.6.0 documentation</title>
+    <title>dom &#8212; domonic 0.6.1 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -1220,8 +1220,13 @@ or None if the specified element is the first one in the list.</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname"><span class="pre">lookupNamespaceURI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.lookupNamespaceURI"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<code class="sig-name descname"><span class="pre">lookupNamespaceURI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ns</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.lookupNamespaceURI"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns the namespace URI for a given prefix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ns</strong> – prefix - i.e ‘xml’, ‘xlink’, ‘svg’, etc</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1296,7 +1301,8 @@ or the current node if it’s the topmost node in the tree]</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname"><span class="pre">forEach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.forEach"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Executes a provided function once per NodeList element, passing the element as an argument to the function.</p>
+<dd><p>Executes a provided function once per NodeList element,
+passing the element as an argument to the function.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1315,7 +1321,8 @@ or the current node if it’s the topmost node in the tree]</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname"><span class="pre">values</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns an iterator allowing code to go through all values (nodes) of the key/value pairs contained in the collection.</p>
+<dd><p>Returns an iterator allowing code to go through all values (nodes) of the key/value pairs
+contained in the collection.</p>
 </dd></dl>
 
 </dd></dl>

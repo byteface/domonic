@@ -6,9 +6,6 @@
     use for prototyping. wget anything in later and create your own local references once ur happy
 
     TODO - integrity/cross origin/module?
-
-    WARNING/NOTE - dont use. this isn't released or documented. just ideas atm...
-
 """
 
 # class CDN_TEXT(object):
@@ -78,8 +75,8 @@ class CDN_JS(object):
     AFRAME_1_2 = "https://aframe.io/releases/1.2.0/aframe.min.js"
     BRYTHON_3_9_5 = "https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js"
     MATHML = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=MML_HTMLorMML"  # polyfill mathml
-    HTMX = "https://unpkg.com/htmx.org@1.5.0"  # polyfill mathml
-    
+    HTMX = "https://unpkg.com/htmx.org@1.5.0"
+
     # def find_on_cdn():
     # https://cdn.jsdelivr.net/npm/
     # https://cdnjs.cloudflare.com/ajax/libs/

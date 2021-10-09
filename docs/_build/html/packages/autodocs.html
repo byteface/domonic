@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🤖 autodocs &#8212; domonic 0.6.0 documentation</title>
+    <title>🤖 autodocs &#8212; domonic 0.6.1 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
@@ -1805,8 +1805,13 @@ or None if the specified element is the first one in the list.</p>
 
 <dl class="py method">
 <dt id="domonic.dom.Node.lookupNamespaceURI">
-<code class="sig-name descname"><span class="pre">lookupNamespaceURI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.lookupNamespaceURI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Node.lookupNamespaceURI" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">lookupNamespaceURI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ns</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Node.lookupNamespaceURI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.Node.lookupNamespaceURI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the namespace URI for a given prefix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ns</strong> – prefix - i.e ‘xml’, ‘xlink’, ‘svg’, etc</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1881,7 +1886,8 @@ or the current node if it’s the topmost node in the tree]</p>
 <dl class="py method">
 <dt id="domonic.dom.NodeList.forEach">
 <code class="sig-name descname"><span class="pre">forEach</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.forEach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.NodeList.forEach" title="Permalink to this definition">¶</a></dt>
-<dd><p>Executes a provided function once per NodeList element, passing the element as an argument to the function.</p>
+<dd><p>Executes a provided function once per NodeList element,
+passing the element as an argument to the function.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1900,7 +1906,8 @@ or the current node if it’s the topmost node in the tree]</p>
 <dl class="py method">
 <dt id="domonic.dom.NodeList.values">
 <code class="sig-name descname"><span class="pre">values</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NodeList.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.NodeList.values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an iterator allowing code to go through all values (nodes) of the key/value pairs contained in the collection.</p>
+<dd><p>Returns an iterator allowing code to go through all values (nodes) of the key/value pairs
+contained in the collection.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2308,11 +2315,8 @@ callback recieve theses parameters: previousValue, currentValue, currentIndex, a
 <dl class="py class">
 <dt id="domonic.javascript.Boolean">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></code><code class="sig-name descname"><span class="pre">Boolean</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Boolean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Boolean" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>[Creates a Boolean Object.</dt><dd><p>Warning this is NOT a boolean type. for that use Global.Boolean()]</p>
-</dd>
-</dl>
-<p>]</p>
+<dd><p>[Creates a Boolean Object.
+Warning this is NOT a boolean type. for that use Global.Boolean()]</p>
 </dd></dl>
 
 <dl class="py class">
@@ -5022,7 +5026,6 @@ sup()</p>
 <p>Refs to some useful .js and .css libs.</p>
 <p>use for prototyping. wget anything in later and create your own local references once ur happy</p>
 <p>TODO - integrity/cross origin/module?</p>
-<p>WARNING/NOTE - dont use. this isn’t released or documented. just ideas atm…</p>
 <dl class="py class">
 <dt id="domonic.CDN.CDN_CSS">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.CDN.</span></code><code class="sig-name descname"><span class="pre">CDN_CSS</span></code><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_CSS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.CDN.CDN_CSS" title="Permalink to this definition">¶</a></dt>

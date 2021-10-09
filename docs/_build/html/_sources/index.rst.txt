@@ -36,54 +36,42 @@ Generate HTML with Python 3
 
 -------------------
 
-**Domonic contains several main packages:**
-
-(but by no means are any of them complete)
-
+**Domonic contains several evolving packages:**
 
 - html : Generate html with python 3 😎
 - dom : DOM API in python 3 😲
 - javascript : js API in python 3 😳
 - terminal || cmd : call terminal commands with python3 😱 (*see at the end*)
 - JSON : utils for loading / decorating / transformin
-- SVG : Generate svg using python (untested
+- SVG : Generate svg using python
 - aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder
 - dQuery - Utils for querying domonic. (alt + 0 for the º symbol)
 - geom - vec2, vec3 with _dunders_ as well as shape classes
 
+Take a look at the source code and contribute!
+
 
 HTML TEMPLATING
-----------------
+---------------
 
 .. code-block :: python
 
   from domonic.html import *
 
-    mydom = html(
-            head(
-                style(),
-                script(),
-            ),
-            body(
-                div("hello world"),
-                a("this is a link", _href="http://www.somesite.com", _style="font-size:10px;"),
-                ol(''.join([f'{li()}' for thing in range(5)])),
-                h1("test", _class="test"),
-            )
-        )
-
-    render(mydom)
+  mydom = html(body(h1('Hello, World!')))
+  print(f"{mydom}")
 
 .. code-block :: html
 
-  <html><head><style></style><script></script></head><body><div>hello world</div><a href="http://www.somesite.com" style="font-size:10px;">this is a link</a><ol><li></li><li></li><li></li><li></li><li></li></ol><h1 class="test">test</h1></body></html>
+  <!DOCTYPE html>
+  <html>
+      <body>
+          <h1>Hello, World!</h1>
+      </body>
+  </html>
 
 
-To pretty print a domonic dom you can now use a f-string. Which also adds the doctype .. i.e.
-
-.. code-block :: python
-    
-    print(f"{mydom}")
+To pretty print use an f-string. Which also adds the doctype.
 
 
 install
@@ -98,17 +86,6 @@ or if you had it before upgrade:
 .. code-block :: python
 
   python3 -m pip install domonic --upgrade
-
-
-usage
-----------------
-
-::
-
-  print(html(body(h1('Hello, World!'))))
-
-  <html><body><h1>Hello, World!</h1></body></html>
-
 
 
 The User Guide
