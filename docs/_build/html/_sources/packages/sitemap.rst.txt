@@ -1,4 +1,4 @@
-Domonic: sitemap
+sitemap
 =================
 
 domonic can help create a sitemap or sitemapindex for your website.
@@ -7,7 +7,8 @@ A sitemap contains a list of urls for your website. Whereas a sitemap index cont
 
 You can see below How to make sitemaps with python and domonic.
 
-### creating a sitemapindex
+creating a sitemapindex
+--------------------------------
 
 A sitemap index contains a list of sitemaps. A minimal one might look something like this:
 
@@ -37,7 +38,8 @@ With domonic we can create one in a number ways depending on our needs.
 	render(f"{doc}", 'sitemap.xml')
 
 
-### create a sitemap
+Create a sitemap
+--------------------------------
 
 A sitemap contains a list of urls for your website and is limited to 50,000 urls.
 
@@ -61,7 +63,7 @@ With domonic we can create one in a number ways depending on our needs.
 
 	from domonic.xml.sitemap import sitemapindex, sitemap, url, loc, lastmod, changefreq, priority
 
-	doc = sitemap(
+	doc = urlset(
 		url(
 			loc('https://xyz.net')
 			lastmod('2021-07-08T13:12:16+00:00')  # pass a date as string. if no data is passed the current date is used
@@ -74,7 +76,8 @@ With domonic we can create one in a number ways depending on our needs.
 	render(f"{doc}", 'sitemap1.xml')
 
 
-### utils
+utils
+----------------
 
 domonic also has some utils for quickly creating sitemaps with default values.
 
@@ -100,7 +103,8 @@ Here's some more examples.
 	print(sm)
 
 
-## formatting
+formatting
+----------------
 
 You can format with following normal python methods which are regonised by domonic:
 
@@ -111,6 +115,16 @@ You can format with following normal python methods which are regonised by domon
 	print(f"{sm!r}") # r show the ojbect as a repr
 	# print(f"{sm!a}")
 	
+
+
+more
+----------------
+
+For more infor on sitemaps see...
+
+https://www.sitemaps.org/protocol.html
+
+
 
 .. automodule:: domonic.xml.sitemap
     :members:

@@ -1,4 +1,4 @@
-Domonic: tween
+tween
 =================
 
 For tweening there's now a port of the penner equations and function to use them.

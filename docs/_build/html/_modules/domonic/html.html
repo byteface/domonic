@@ -6,12 +6,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>domonic.html &#8212; domonic 0.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/tabs.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -108,7 +110,14 @@
 
 
 <div class="viewcode-block" id="TemplateError"><a class="viewcode-back" href="../../packages/html.html#domonic.html.TemplateError">[docs]</a><span class="k">class</span> <span class="nc">TemplateError</span><span class="p">(</span><span class="ne">IndexError</span><span class="p">):</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Templating error: &quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[raised when a template error occurs]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            error ([type]): [the error]</span>
+<span class="sd">            message (str, optional): [description]. Defaults to &quot;Templating error: &quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">error</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hint</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
@@ -380,7 +389,8 @@
         <span class="n">depth</span> <span class="o">-=</span> <span class="mi">1</span>
 
         <span class="c1"># print(f&quot;depth: {depth}&quot;)</span>
-        <span class="n">dent</span> <span class="o">=</span> <span class="s1">&#39;    &#39;</span> <span class="o">*</span> <span class="n">depth</span>
+        <span class="c1"># dent = &#39;    &#39; * depth</span>
+        <span class="n">dent</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="n">depth</span>
 
         <span class="c1"># loop the children and call __format__ on each one</span>
         <span class="c1"># content = &quot;&quot;</span>
@@ -427,13 +437,6 @@
     <span class="c1">#     print(self.nodeValue)</span>
     <span class="c1">#     print(self.nodeName)</span>
     <span class="c1">#     print(self.nodeType)</span>
-
-    <span class="c1"># def write(self, path):</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     writes the html to a file</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     with open(path, &#39;w&#39;) as f:</span>
-    <span class="c1">#         f.write(self.__format__(&#39;&#39;))</span>
 
 
 <div class="viewcode-block" id="closed_tag"><a class="viewcode-back" href="../../packages/html.html#domonic.html.closed_tag">[docs]</a><span class="k">class</span> <span class="nc">closed_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">):</span>
@@ -520,6 +523,16 @@
 
 
 <span class="n">label</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
+<span class="n">label</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">                .. highlight:: python</span>
+<span class="s1">                .. code-block:: python</span>
+
+<span class="s1">                    # used to label form elements. i.e.</span>
+<span class="s1">                    label(_for=None, _text=None, **kwargs)</span>
+<span class="s1">                    # &lt;label for=&quot;&quot;&gt;&lt;/label&gt;</span>
+<span class="s1">                &#39;&#39;&#39;</span>
+
+
 <span class="n">submit</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">title</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">noscript</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;noscript&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;noscript&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
@@ -631,46 +644,51 @@
 <span class="n">picture</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;picture&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;picture&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 
 
-<div class="viewcode-block" id="doctype"><a class="viewcode-back" href="../../packages/html.html#domonic.html.doctype">[docs]</a><span class="k">class</span> <span class="nc">doctype</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;doctype</span>
+<span class="c1"># class doctype():</span>
+<span class="c1">#     &quot;&quot;&quot;doctype</span>
 
-<span class="sd">    - this will be deprecated in the future to the one on the DOM</span>
+<span class="c1">#     - this will be deprecated in the future to the one on the DOM</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        str: &lt;!DOCTYPE html&gt;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span>
+<span class="c1">#     Returns:</span>
+<span class="c1">#         str: &lt;!DOCTYPE html&gt;</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     def __str__(self):</span>
+<span class="c1">#         return &quot;&lt;!DOCTYPE html&gt;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;&lt;!DOCTYPE html&gt;&quot;</span>
+<span class="c1">#     def __repr__(self):</span>
+<span class="c1">#         return &quot;&lt;!DOCTYPE html&gt;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+<span class="c1">#     def __call__(self, *args, **kwargs):</span>
+<span class="c1">#         return self.__str__()</span>
 
+<span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="n">DocumentType</span>
+<span class="n">doctype</span> <span class="o">=</span> <span class="n">DocumentType</span>
 
-<div class="viewcode-block" id="comment"><a class="viewcode-back" href="../../packages/html.html#domonic.html.comment">[docs]</a><span class="k">class</span> <span class="nc">comment</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;comment</span>
+<span class="c1"># class comment():</span>
+<span class="c1">#     &quot;&quot;&quot;comment</span>
 
-<span class="sd">    - this will be deprecated in the future in favour of Comment on the DOM</span>
+<span class="c1">#     - this will be deprecated in the future in favour of Comment on the DOM</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        content (str): Message to be rendered inside the comment tag</span>
+<span class="c1">#     Args:</span>
+<span class="c1">#         content (str): Message to be rendered inside the comment tag</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        str: &quot;&lt;!-- {self.content} --&gt;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">content</span>
+<span class="c1">#     Returns:</span>
+<span class="c1">#         str: &quot;&lt;!-- {self.content} --&gt;</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     def __init__(self, content=&quot;&quot;):</span>
+<span class="c1">#         self.content = content</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;!-- </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2"> --&gt;&quot;</span>
+<span class="c1">#     def __str__(self):</span>
+<span class="c1">#         return f&quot;&lt;!-- {self.content} --&gt;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;!-- </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2"> --&gt;&quot;</span>
+<span class="c1">#     def __repr__(self):</span>
+<span class="c1">#         return f&quot;&lt;!-- {self.content} --&gt;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
+<span class="c1">#     def __call__(self, *args, **kwargs):</span>
+<span class="c1">#         return self.__str__()</span>
+
+<span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="n">Comment</span>
+<span class="n">comment</span> <span class="o">=</span> <span class="n">Comment</span>
 
 
 <div class="viewcode-block" id="create_element"><a class="viewcode-back" href="../../packages/html.html#domonic.html.create_element">[docs]</a><span class="k">def</span> <span class="nf">create_element</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;custom_tag&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -699,47 +717,43 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">domonic</a></h1>
-
-
-
-
-
-
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="/">domonic</a></h1>
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=byteface&repo=domonic&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
 </p>
 
-
-
-
-
-<h3>Navigation</h3>
+<h3>Links</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/sitemap.html">Domonic: sitemap</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/d3.html">Domonic: d3</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">Domonic: decorators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">Domonic: utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">Domonic: servers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
 </ul>
-
+<h3><a href="../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">🤖 autodocs</a></li>
+</ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -753,20 +767,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>

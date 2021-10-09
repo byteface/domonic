@@ -1,4 +1,4 @@
-Domonic: utils
+utils
 =================
 
 The utils libray attempts to be relevant to dom related things.

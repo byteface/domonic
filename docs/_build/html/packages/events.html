@@ -4,19 +4,19 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Domonic: events &#8212; domonic 0.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>events &#8212; domonic 0.6.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Domonic: sitemap" href="sitemap.html" />
-    <link rel="prev" title="Domonic: Javascript" href="javascript.html" />
+    <link rel="next" title="sitemap" href="sitemap.html" />
+    <link rel="prev" title="javascript" href="javascript.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -33,8 +33,8 @@
 
           <div class="body" role="main">
             
-  <section id="domonic-events">
-<h1>Domonic: events<a class="headerlink" href="#domonic-events" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="events">
+<h1>events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h1>
 <p>There’s an Event Dispatcher i.e</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.events</span> <span class="kn">import</span> <span class="o">*</span>
 
@@ -63,760 +63,760 @@
 <ul class="simple">
 <li><p>above example needs a MouseEvent relaying or dispatching from somewhere. i.e. examples/events</p></li>
 </ul>
-<section id="id1">
-<h2>domonic.events<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="domonic-events">
+<h2>domonic.events<a class="headerlink" href="#domonic-events" title="Permalink to this headline">¶</a></h2>
 <p>dom events</p>
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">AnimationEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#AnimationEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">AnimationEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#AnimationEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ANIMATIONEND</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'animationend'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">ANIMATIONEND</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'animationend'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ANIMATIONITERATION</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'animationiteration'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">ANIMATIONITERATION</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'animationiteration'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ANIMATIONSTART</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'animationstart'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">ANIMATIONSTART</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'animationstart'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">animationName</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">animationName</span></code></dt>
 <dd><p>Returns the name of the animation</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">elapsedTime</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">elapsedTime</span></code></dt>
 <dd><p>Returns the number of seconds an animation has been running</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">pseudoElement</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">pseudoElement</span></code></dt>
 <dd><p>Returns the name of the pseudo-element of the animation</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">BeforeUnloadEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#BeforeUnloadEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">BeforeUnloadEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#BeforeUnloadEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">BEFOREUNLOAD</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'beforeunload'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">BEFOREUNLOAD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'beforeunload'</span></em></dt>
 <dd><p>BeforeUnloadEvent</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">ClipboardEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ClipboardEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">ClipboardEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ClipboardEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">COPY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'copy'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">COPY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'copy'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">CUT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'cut'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">CUT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'cut'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">PASTE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'paste'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">PASTE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'paste'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">clipboardData</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">clipboardData</span></code></dt>
 <dd><p>Returns an object containing the data affected by the clipboard operation</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">CompositionEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#CompositionEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">CompositionEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#CompositionEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">data</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">data</span></code></dt>
 <dd><p>Returns the characters generated by the input method that raised the event</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">CustomEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#CustomEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">CustomEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#CustomEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">DragEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#DragEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">DragEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#DragEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">DRAG</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'drag'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">DRAG</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'drag'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">DROP</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'drop'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">DROP</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'drop'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">END</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'dragend'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">END</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'dragend'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ENTER</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'dragenter'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">ENTER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'dragenter'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">EXIT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'dragexit'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">EXIT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'dragexit'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">LEAVE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'dragleave'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">LEAVE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'dragleave'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">OVER</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'dragover'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">OVER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'dragover'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">START</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'dragstart'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">START</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'dragstart'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">dataTransfer</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">dataTransfer</span></code></dt>
 <dd><p>Returns the data that is dragged/dropped</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">ErrorEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ErrorEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">ErrorEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ErrorEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'error'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">ERROR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'error'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">Event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#Event"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">Event</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#Event"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>event</p>
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ABORT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'abort'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">ABORT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'abort'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">AFTERPRINT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'afterprint'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">AFTERPRINT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'afterprint'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">BEFOREPRINT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'beforeprint'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">BEFOREPRINT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'beforeprint'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">BEFOREUNLOAD</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'beforeunload'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">BEFOREUNLOAD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'beforeunload'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">CANPLAY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'canplay'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">CANPLAY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'canplay'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">CANPLAYTHROUGH</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'canplaythrough'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">CANPLAYTHROUGH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'canplaythrough'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">CHANGE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'change'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">CHANGE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'change'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">DURATIONCHANGE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'durationchange'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">DURATIONCHANGE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'durationchange'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">EMPTIED</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'emptied'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">EMPTIED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'emptied'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ENDED</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'ended'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">ENDED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'ended'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'error'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">ERROR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'error'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">FULLSCREENCHANGE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'fullscreenchange'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">FULLSCREENCHANGE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'fullscreenchange'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">FULLSCREENERROR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'fullscreenerror'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">FULLSCREENERROR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'fullscreenerror'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">INPUT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'input'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">INPUT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'input'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">INVALID</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'invalid'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">INVALID</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'invalid'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">LOAD</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'load'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">LOAD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'load'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">LOADEDDATA</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'loadeddata'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">LOADEDDATA</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'loadeddata'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">LOADEDMETADATA</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'loadedmetadata'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">LOADEDMETADATA</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'loadedmetadata'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">MESSAGE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'message'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">MESSAGE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'message'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">OFFLINE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'offline'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">OFFLINE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'offline'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">ONLINE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'online'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">ONLINE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'online'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">OPEN</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'open'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">OPEN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'open'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">PAUSE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'pause'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">PAUSE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'pause'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">PLAY</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'play'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">PLAY</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'play'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">PLAYING</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'playing'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">PLAYING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'playing'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">PROGRESS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'progress'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">PROGRESS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'progress'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">RATECHANGE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'ratechange'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">RATECHANGE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'ratechange'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">RESET</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'reset'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">RESET</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'reset'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">RESIZE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'resize'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">RESIZE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'resize'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">SCROLL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'scroll'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">SCROLL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'scroll'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">SEARCH</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'search'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">SEARCH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'search'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">SEEKED</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'seeked'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">SEEKED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'seeked'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">SEEKING</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'seeking'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">SEEKING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'seeking'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">SELECT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'select'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">SELECT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'select'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">SHOW</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'show'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">SHOW</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'show'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">STALLED</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'stalled'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">STALLED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'stalled'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">SUBMIT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'submit'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">SUBMIT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'submit'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">SUSPEND</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'suspend'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">SUSPEND</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'suspend'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">TOGGLE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'toggle'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">TOGGLE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'toggle'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">UNLOAD</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'unload'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">UNLOAD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'unload'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">VOLUMECHANGE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'volumechange'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">VOLUMECHANGE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'volumechange'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">WAITING</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'waiting'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">WAITING</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'waiting'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">stopPropagation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#Event.stopPropagation"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">stopPropagation</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#Event.stopPropagation"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[prevents further propagation of the current event in the capturing and bubbling phases]</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">EventDispatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#EventDispatcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">EventDispatcher</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#EventDispatcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>EventDispatcher is a class you can extend to give your obj event dispatching abilities</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">FocusEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FocusEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">FocusEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FocusEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">BLUR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'blur'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">BLUR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'blur'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">FOCUS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'focus'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">FOCUS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'focus'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">FOCUSIN</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'focusin'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">FOCUSIN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'focusin'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">FOCUSOUT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'focusout'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">FOCUSOUT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'focusout'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">GamePadEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#GamePadEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">GamePadEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#GamePadEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">START</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'gamepadconnected'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">START</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'gamepadconnected'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">STOP</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'gamepaddisconnected'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">STOP</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'gamepaddisconnected'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">HashChangeEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#HashChangeEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">HashChangeEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#HashChangeEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">CHANGE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'hashchange'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">CHANGE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'hashchange'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">InputEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#InputEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">InputEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#InputEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">data</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">data</span></code></dt>
 <dd><p>Returns the inserted characters</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">KeyboardEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#KeyboardEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">KeyboardEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#KeyboardEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>keyboard events</p>
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">KEYDOWN</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'keydown'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">KEYDOWN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'keydown'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">KEYPRESS</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'keypress'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">KEYPRESS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'keypress'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">KEYUP</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'keyup'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">KEYUP</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'keyup'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">MouseEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#MouseEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">MouseEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#MouseEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>mouse events</p>
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">CLICK</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'click'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">CLICK</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'click'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">CONTEXTMENU</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'contextmenu'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">CONTEXTMENU</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'contextmenu'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">DBLCLICK</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'dblclick'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">DBLCLICK</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'dblclick'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">MOUSEDOWN</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'mousedown'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">MOUSEDOWN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'mousedown'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">MOUSEENTER</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'mouseenter'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">MOUSEENTER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'mouseenter'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">MOUSELEAVE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'mouseleave'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">MOUSELEAVE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'mouseleave'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">MOUSEMOVE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'mousemove'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">MOUSEMOVE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'mousemove'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">MOUSEOUT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'mouseout'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">MOUSEOUT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'mouseout'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">MOUSEOVER</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'mouseover'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">MOUSEOVER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'mouseover'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">MOUSEUP</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'mouseup'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">MOUSEUP</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'mouseup'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">PageTransitionEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PageTransitionEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">PageTransitionEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PageTransitionEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">PAGEHIDE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'pagehide'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">PAGEHIDE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'pagehide'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">PAGESHOW</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'pageshow'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">PAGESHOW</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'pageshow'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">persisted</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">persisted</span></code></dt>
 <dd><p>Returns whether the webpage was cached by the browser</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">PointerEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PointerEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">PointerEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PointerEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">POINTER</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'pointer'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">POINTER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'pointer'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">PopStateEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PopStateEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">PopStateEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PopStateEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">state</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">state</span></code></dt>
 <dd><p>Returns an object containing a copy of the history entries</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">ProgressEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ProgressEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">ProgressEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ProgressEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">LOADSTART</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'loadstart'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">LOADSTART</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'loadstart'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">SVGEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SVGEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">SVGEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SVGEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">StorageEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#StorageEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">StorageEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#StorageEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">key</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">key</span></code></dt>
 <dd><p>Returns the key of the changed storage item</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">newValue</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">newValue</span></code></dt>
 <dd><p>Returns the new value of the changed storage item</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">oldValue</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">oldValue</span></code></dt>
 <dd><p>Returns the old value of the changed storage item</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">storageArea</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">storageArea</span></code></dt>
 <dd><p>Returns an object representing the affected storage object</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">url</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">url</span></code></dt>
 <dd><p>Returns the URL of the changed item’s document</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">SubmitEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SubmitEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">SubmitEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SubmitEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">SUBMIT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'submit'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">SUBMIT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'submit'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">TimerEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TimerEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">TimerEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TimerEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">TIMER</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'timer'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">TIMER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'timer'</span></em></dt>
 <dd><p>TimerEvent</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">TouchEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TouchEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">TouchEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TouchEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">TOUCHCANCEL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'touchcancel'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">TOUCHCANCEL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'touchcancel'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">TOUCHEND</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'touchend'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">TOUCHEND</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'touchend'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">TOUCHMOVE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'touchmove'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">TOUCHMOVE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'touchmove'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">TOUCHSTART</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'touchstart'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">TOUCHSTART</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'touchstart'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">TransitionEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TransitionEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">TransitionEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TransitionEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">TRANSITIONEND</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'transitionend'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">TRANSITIONEND</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'transitionend'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">elapsedTime</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">elapsedTime</span></code></dt>
 <dd><p>Returns the number of seconds a transition has been running</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">propertyName</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">propertyName</span></code></dt>
 <dd><p>Returns the name of the transition</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">pseudoElement</span></span></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">pseudoElement</span></code></dt>
 <dd><p>Returns the name of the pseudo-element of the transition</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">TweenEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bubbles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancelable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TweenEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">TweenEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bubbles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancelable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TweenEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">COMPLETE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'onComplete'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">COMPLETE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'onComplete'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">PAUSE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'onPause'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">PAUSE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'onPause'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">RESET</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'onReset'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">RESET</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'onReset'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">START</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'onStart'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">START</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'onStart'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">STOP</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'onStop'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">STOP</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'onStop'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">TIMER</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'onTimer'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">TIMER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'onTimer'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">UNPAUSE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'onUnPause'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">UNPAUSE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'onUnPause'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">UPDATE_END</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'onUpdateEnd'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">UPDATE_END</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'onUpdateEnd'</span></em></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">UPDATE_START</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'onUpdateStart'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">UPDATE_START</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'onUpdateStart'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">UIEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#UIEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">UIEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#UIEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.events.</span></span><span class="sig-name descname"><span class="pre">WheelEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#WheelEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">WheelEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#WheelEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">WHEEL</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'wheel'</span></em></dt>
+<dt>
+<code class="sig-name descname"><span class="pre">WHEEL</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'wheel'</span></em></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -824,77 +824,79 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">domonic</a></h1>
-
-
-
-
-
-
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="/">domonic</a></h1>
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=byteface&repo=domonic&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
 </p>
 
-
-
-
-
-<h3>Navigation</h3>
+<h3>Links</h3>
+<ul>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
+</ul>
+<h3><a href="../index.html">Table of Contents</a></h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: events</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">domonic.events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">javascript</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">events</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#domonic-events">domonic.events</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="sitemap.html">Domonic: sitemap</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="d3.html">Domonic: d3</a></li>
-<li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
-<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="geom.html">Domonic: geom</a></li>
-<li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="decorators.html">Domonic: decorators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="components.html">Domonic: templates and components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">Domonic: utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="servers.html">Domonic: servers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">🤖 autodocs</a></li>
 </ul>
-
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="javascript.html" title="previous chapter">Domonic: Javascript</a></li>
-      <li>Next: <a href="sitemap.html" title="next chapter">Domonic: sitemap</a></li>
+      <li>Previous: <a href="javascript.html" title="previous chapter">javascript</a></li>
+      <li>Next: <a href="sitemap.html" title="next chapter">sitemap</a></li>
   </ul></li>
 </ul>
 </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/packages/events.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+  <ul>
+<li><a class="reference internal" href="#">events</a><ul>
+<li><a class="reference internal" href="#domonic-events">domonic.events</a></li>
+</ul>
+</li>
+</ul>
+
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>

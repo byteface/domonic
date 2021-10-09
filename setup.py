@@ -47,7 +47,7 @@ setup(
       'Topic :: Text Processing :: Markup :: HTML',
   ],
   install_requires=[
-          'requests==2.26.0', 'python-dateutil==2.8.2', 'urllib3==1.26.6'
+        'requests==2.26.0', 'python-dateutil==2.8.2', 'urllib3==1.26.7'
   ],
   packages=find_packages(),
   include_package_data=True,

@@ -1,4 +1,4 @@
-Domonic: DOM
+dom
 ============
 
 The DOM is gradually evolving...

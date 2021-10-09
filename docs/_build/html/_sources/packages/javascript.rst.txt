@@ -1,4 +1,4 @@
-Domonic: Javascript
+javascript
 ===================
 
 There's a javascript package that mimics the js API.

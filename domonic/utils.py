@@ -474,3 +474,49 @@ class Utils(object):
             digits.append(int(n % b))
             n //= b
         return digits[::-1]
+
+
+    # @staticmethod
+    # def is_nix():
+    #     """[check if the system is a nix based system]
+
+    #     Returns:
+    #         [bool]: [description]
+    #     """
+    #     return os.name == "posix"
+
+    # @staticmethod
+    # def is_mac():
+    #     """[check if the system is a mac]
+
+    #     Returns:
+    #         [bool]: [description]
+    #     """
+    #     return sys.platform == "darwin"
+
+    # @staticmethod
+    # def is_windows():
+    #     """[check if the system is a windows]
+
+    #     Returns:
+    #         [bool]: [description]
+    #     """
+    #     return os.name == "nt"
+
+    # @staticmethod
+    # def is_linux():
+    #     """[check if the system is a linux]
+
+    #     Returns:
+    #         [bool]: [description]
+    #     """
+    #     return sys.platform.startswith('linux')
+
+    # @staticmethod
+    # def is_unix():
+    #     """[check if the system is a unix]
+
+    #     Returns:
+    #         [bool]: [description]
+    #     """
+    #     return os.name == "posix"

@@ -1,4 +1,4 @@
-Domonic: templates and components
+Templates and Components
 ======================================
 
 With all these pieces you can now build templates or components...

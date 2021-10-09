@@ -1,14 +1,16 @@
-Domonic: Generate HTML with Python 3
-====================================
+Domonic:
+========
+
+.. image:: _static/domonic.jpg
+  :width: 696
+  :alt: domonic
+
+Generate HTML with Python 3
+===========================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 -------------------
 
@@ -20,6 +22,15 @@ Domonic: Generate HTML with Python 3
 
 .. image:: https://travis-ci.com/byteface/domonic.svg?branch=master
     :target: https://travis-ci.com/byteface/domonic.svg?branch=master
+    
+.. image:: https://img.shields.io/pypi/l/domonic.svg
+    :target: https://pypi.org/project/domonic/
+    :alt: License Badge
+
+.. image:: https://img.shields.io/pypi/wheel/domonic.svg
+    :target: https://pypi.org/project/domonic/
+    :alt: Wheel Support Badge
+
 
 **Domonic** Not only a Python library for generating HTML
 
@@ -201,3 +212,10 @@ Disclaimer
 There's several more widely supported libraries doing HTML generation, DOM reading/manipulation, terminal wrappers etc. Maybe use one of those for production due to strictness and support.
 
 This is becoming more of a fast prototyping library.
+
+
+----------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

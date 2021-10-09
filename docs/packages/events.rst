@@ -1,4 +1,4 @@
-Domonic: events
+events
 =================
 
 There's an Event Dispatcher i.e

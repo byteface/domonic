@@ -245,6 +245,7 @@ class TestCase(unittest.TestCase):
         assert htmltag.tagName == 'html'
         assert str(htmltag) == '<html></html>'
         htmltag.write('sup!')
+        print("?????",htmltag)
         assert str(htmltag) == '<html>sup!</html>'
         htmltag.className = "my_cool_css"
         # print(htmltag)

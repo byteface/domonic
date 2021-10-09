@@ -1,4 +1,4 @@
-Domonic: servers
+🚀 servers
 =================
 
 Generating static html files with domonic is fun.

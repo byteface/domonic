@@ -35,7 +35,9 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
-    "sphinx.ext.napoleon"
+    "sphinx.ext.napoleon",
+    "sphinx_tabs.tabs",
+    # "sphinx_github_changelog",  # TODO - requires API key and env var.
 ]
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
@@ -65,6 +67,7 @@ html_theme_options = {
     "github_type": 'star',
     "show_related": False,
     "note_bg": "#FFF59C",
+    'sticky_navigation': True,
 }
 
 # If true, SmartyPants will be used to convert quotes and dashes to
@@ -72,22 +75,19 @@ html_theme_options = {
 html_use_smartypants = False
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {
-#    "index": ["sidebarintro.html", "sourcelink.html", "searchbox.html", "hacks.html"],
-#    "**": [
-#        "sidebarlogo.html",
-#        "localtoc.html",
-#        "relations.html",
-#        "sourcelink.html",
-#        "searchbox.html",
-#        "hacks.html",
-#    ],
-#}
+html_sidebars = {
+    'index':    ['sidebarintro.html', 'globaltoc.html', 'relations.html', 'sourcelink.html', 'localtoc2.html', 'searchbox.html'],
+    '**':       ['sidebarintro.html', 'globaltoc.html', 'relations.html', 'sourcelink.html', 'localtoc2.html', 'searchbox.html']
+}
+
+# makes nice colors on the syntax highlighting
+pygments_style = 'sphinx'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
 
 master_doc = 'index'
 

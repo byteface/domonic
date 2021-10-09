@@ -1,4 +1,4 @@
-Domonic: d3
+d3
 =================
 
 *WARNING: this package is still in dev. expect bugs*

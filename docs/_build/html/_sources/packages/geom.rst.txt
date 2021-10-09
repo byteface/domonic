@@ -1,4 +1,4 @@
-Domonic: geom
+geom
 =================
 
 I've been using .ai to casually create a geom package.

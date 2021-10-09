@@ -1213,11 +1213,34 @@ performance = Performance()
 class Date(Object):
     """ javascript date """
 
-    def __init__(self, date: str = None, formatter='python'):
+    def __init__(self, date=None, formatter='python'):
+
+        self.formatter = formatter
+
+        if isinstance(date, int):
+            self.date = datetime.datetime.fromtimestamp(date)
+            return
+        # elif isinstance(date, str):
+        #     if formatter == 'python':
+        #         self.date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+        #     elif formatter == 'javascript':
+        #         self.date = datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+        #     else:
+        #         raise ValueError('Invalid formatter')
         if date is None:
             self.date = datetime.datetime.now()
         else:
             self.date = self.parse_date(date)
+
+    def __str__(self):
+        return self.toString()
+
+    def toString(self):
+        """ Returns a string representation of the date """
+        if self.formatter == 'python':
+            return self.date.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            return self.date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')  #js
 
     def parse_date(self, date_string):
         self.date = parse(date_string)
@@ -1892,6 +1915,14 @@ class Array(object):
     def __getitem__(self, index):
         return self.args[index]
 
+    def __getattribute__(self, name):
+        try:
+            return super().__getattribute__(name)
+        except AttributeError:
+            # if its a list method get it from args
+            if name in dir(list):
+                return getattr(self.args, name)
+
     def __setitem__(self, index, value):
         self.args[index] = value
 
@@ -1908,8 +1939,11 @@ class Array(object):
         return len(self.args)
 
     def __eq__(self, other):
-        return isinstance(other, Array) and \
-            self.args == other.args
+        if isinstance(other, Array):
+            return self.args == other.args
+        if isinstance(other, list):
+            return self.args == other
+        return False
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -1934,6 +1968,12 @@ class Array(object):
     def toString(self):
         ''' Converts an array to a string, and returns the result '''
         return str(self.args)  # TODO - check what js does
+
+    def toSource(self):
+        """ 
+        Returns the source array.
+        """
+        return list(self.args)
 
     @property
     def length(self):
@@ -1967,14 +2007,26 @@ class Array(object):
         """
         return Array(fn(i) for i in self.args)
 
-    def fill(self):  # TODO - test
-        """ Fill the elements in an array with a static value """
-        for i in range(len(self.args)):
-            self.args[i] = 0
+    def fill(self, value=None, start=None, end=None):
+        """[Fills elements of an array from a start index to an end index with a static value]
+        """
+        if start is None:
+            start = 0
+        if end is None:
+            end = len(self.args)
+        for i in range(start, end):
+            self.args[i] = value
         return self.args
 
-    def includes(self, value):
-        """ Check if an array contains the specified element """
+    def includes(self, value):  # -> bool:
+        """[Check if an array contains the specified item
+
+        Args:
+            value ([any]): [any value]
+
+        Returns:
+            [bool]: [a boolean]
+        """
         if value in self.args:
             return True
         else:
@@ -2102,28 +2154,65 @@ class Array(object):
 
     def sort(self, func=None):  # , *args, **kwargs):
         """ Sorts the elements of an array """
+
         if func is not None:
             return self.args.sort(key=func(*self.args))
-        return sorted(self.args)
 
-    def reduce(self, func, value=None):
-        """ Reduce the values of an array to a single value (going left-to-right) """
-        try:
-            return func(self.args[0], *self.args)
-        except IndexError:
-            return -1
+        def comp(o):
+            return str(o)
 
-    def reduceRight(self, func, value=None):
-        """ Reduce the values of an array to a single value (going right-to-left) """
-        #  written by .ai (https://6b.eleuther.ai/)
-        #  Takes an array and reduces it based on a function in reverse order
-        try:
-            if value is None:
-                return func(value, *self.args)
+        # manually sort lexicographically
+        for i in range(len(self.args)):
+            for j in range(i + 1, len(self.args)):
+                if comp(self.args[i]) > comp(self.args[j]):
+                    self.args[i], self.args[j] = self.args[j], self.args[i]
+        return self.args
+
+    def reduce(self, callback, initialValue=None):
+        """ Reduces the array to a single value (going left-to-right) 
+            callback recieve theses parameters: previousValue, currentValue, currentIndex, array
+        """
+        arguments = self.args
+        if initialValue is None:
+            initialValue = arguments[0]
+            arguments = arguments[1:]
+
+        for i, value in enumerate(arguments):
+            import inspect
+            if len(inspect.signature(callback).parameters) == 4:
+                initialValue = callback(initialValue, value, i, arguments)
+            elif len(inspect.signature(callback).parameters) == 3:
+                initialValue = callback(initialValue, value, i)
+            elif len(inspect.signature(callback).parameters) == 2:
+                initialValue = callback(initialValue, value)
+            elif len(inspect.signature(callback).parameters) == 1:
+                initialValue = callback(initialValue)
             else:
-                return func(self.args[0], value, *self.args[1:])
-        except IndexError:
-            return -1
+                raise Exception("Callback does not have the correct number of parameters")
+        return initialValue
+
+    def reduceRight(self, callback, initialValue=None):
+        """ Reduces the array to a single value (going right-to-left) 
+            callback recieve theses parameters: previousValue, currentValue, currentIndex, array
+        """
+        arguments = self.args
+        if initialValue is None:
+            initialValue = arguments[-1]
+            arguments = arguments[:-1]
+
+        for i, value in enumerate(reversed(arguments)):
+            import inspect
+            if len(inspect.signature(callback).parameters) == 4:
+                initialValue = callback(initialValue, value, i, arguments)
+            elif len(inspect.signature(callback).parameters) == 3:
+                initialValue = callback(initialValue, value, i)
+            elif len(inspect.signature(callback).parameters) == 2:
+                initialValue = callback(initialValue, value)
+            elif len(inspect.signature(callback).parameters) == 1:
+                initialValue = callback(initialValue)
+            else:
+                raise Exception("Callback does not have the correct number of parameters")
+        return initialValue
 
     def filter(self, func):
         """
@@ -2565,6 +2654,13 @@ class String(object):
 
     def __str__(self):
         return self.x
+
+    def __eq__(self, other):
+        if isinstance(other, str):
+            return self.x == other
+        if isinstance(other, String):
+            return self.x == other.x
+        return False
 
     # def __repr__(self):
     #     return self.x
@@ -3349,6 +3445,603 @@ class URLSearchParams:
         return urllib.parse.urlencode(self.params, doseq=True)
 
 
+import array
+import struct
+
+# import binascii
+# import codecs
+# import collections
+# import copy
+# import functools
+# import itertools
+
+def ToInt32(v):
+    return v >> 0
+
+# def zero_fill_right_shift(val, n):
+#     return (val >> n) if val >= 0 else ((val + 0x100000000) >> n)
+
+def ToUint32(v):
+    # return v >>> 0
+    return (v >> 0) if v >= 0 else ((v + 0x100000000) >> 0)
+
+class ArrayBuffer:
+
+    def __init__(self, length):
+        # self.length = length
+        self.buffer = array.array('B', [0] * length)
+        # self.byteLength = length
+        self.isView = False
+
+    @property
+    def byteLength(self):
+        return self.buffer.buffer_info()[1]
+
+    def __getitem__(self, index):
+        return self.buffer[index]
+
+    def __setitem__(self, index, value):
+        self.buffer[index] = value
+
+    def __getattr__(self, name):
+        # return getattr(self.buffer, name)
+        # try on self if not get from buffer
+        return getattr(self.buffer, name)
+
+    def __len__(self):
+        # return self.length
+        return len(self.buffer)
+
+    @property
+    def length(self):
+        # return self.__length
+        return len(self.buffer)
+
+    # @length.setter
+
+    def __str__(self):
+        return str(self.buffer)
+
+    def __repr__(self):
+        return repr(self.buffer)
+
+    def slice(self, start, end):
+        return self.buffer[start:end]
+
+
+class TypedArray:
+# class Int8Array:
+
+    BYTES_PER_ELEMENT = 1
+
+    def __init__(self, *args):
+        """[ creates a new Int8Array 
+            can take the following forms:
+                Int8Array()
+                Int8Array(length)
+                Int8Array(typedArray)
+                Int8Array(object)
+                Int8Array(buffer)
+                Int8Array(buffer, byteOffset)
+                Int8Array(buffer, byteOffset, length)
+        ]
+        """
+        self.name = "Int8Array"
+        self.byteOffset = 0
+        # self.BYTES_PER_ELEMENT = Int8Array.BYTES_PER_ELEMENT
+
+        if len(args) == 0:
+            self.buffer = array.array('B', [0] * 0)
+            self.length = 0
+            self.byteLength = self.length * self.BYTES_PER_ELEMENT
+            self.isView = False
+            return
+
+        arg = args[0]
+
+        # print(arg)
+        # print(type(arg))
+        if isinstance(arg, (Int8Array, ArrayBuffer)):
+            # self.buffer = arg.buffer
+            # self.byteLength = arg.byteLength
+            # self.length = arg.length
+            # self.isView = arg.isView
+
+            self.buffer = arg
+
+            if len(args) > 1:
+                self.byteOffset = args[1]
+            else:
+                self.byteOffset = 0
+            self.byteOffset = ToUint32(self.byteOffset)
+            # if (this.byteOffset > this.buffer.byteLength) {
+            # throw new RangeError("byteOffset out of range");
+            # }
+            if self.byteOffset > self.buffer.byteLength:
+                # raise RangeError("byteOffset out of range")
+                raise Exception("byteOffset out of range")
+
+            # if (this.byteOffset % this.BYTES_PER_ELEMENT) {
+            # // The given byteOffset must be a multiple of the element size of the specific type, otherwise an exception is raised.
+            # throw new RangeError("ArrayBuffer length minus the byteOffset is not a multiple of the element size.");
+            # }
+            if self.byteOffset % self.BYTES_PER_ELEMENT:
+                # raise RangeError("ArrayBuffer length minus the byteOffset is not a multiple of the element size.")
+                raise Exception("ArrayBuffer length minus the byteOffset is not a multiple of the element size.")
+
+            if (len(args) < 3):
+                self.byteLength = self.buffer.byteLength - self.byteOffset
+
+                if (self.byteLength % self.BYTES_PER_ELEMENT):
+                    # raise RangeError("length of buffer minus byteOffset not a multiple of the element size");
+                    raise Exception("length of buffer minus byteOffset not a multiple of the element size")
+
+                self.length = self.byteLength / self.BYTES_PER_ELEMENT
+            else:
+                self.length = ToUint32(args[2])
+                self.byteLength = self.length * self.BYTES_PER_ELEMENT
+            
+            if ((self.byteOffset + self.byteLength) > self.buffer.byteLength):
+                # raise RangeError("byteOffset and length reference an area beyond the end of the buffer");
+                raise Exception("byteOffset and length reference an area beyond the end of the buffer")
+
+            return
+        # elif isinstance(arg, array.array):
+        #     print('c!!!!')
+        #     self.buffer = arg
+        #     self.byteLength = len(arg)
+        #     self.length = len(arg)
+        #     self.isView = False
+        #     if len(args) == 2:
+        #         self.byteOffset = args[1]
+        #     if len(args) == 3:
+        #         self.byteOffset = args[1]
+        #         self.length = args[2]
+        #     return
+        elif isinstance(arg, dict):
+            self.buffer = array.array('B', [0] * 0)
+            self.byteLength = 0
+            # self.length = 0
+            self.isView = False
+            self.set(arg)
+            return
+        elif isinstance(arg, int):
+            # self.buffer = array.array('B', [0] * arg)
+            print('a!')
+            # self.buffer = ArrayBuffer(arg)
+            # self.byteLength = arg
+            # self.length = arg
+            # self.isView = False
+
+            # // Constructor(unsigned long length)
+            self.length = ToInt32(args[0])
+            if (self.length < 0):
+                raise Exception('ArrayBufferView size is not a small enough positive integer')
+
+            self.byteLength = self.length * self.BYTES_PER_ELEMENT
+            self.buffer = ArrayBuffer(self.byteLength)
+            self.byteOffset = 0
+
+            return
+        elif isinstance(arg, list):
+
+            # print('bb!', arg)
+            # self.buffer = array.array('B', arg)
+            # self.byteLength = len(arg)
+            # self.length = len(arg)
+            # self.isView = False
+
+            # // Constructor(sequence<type> array)
+            sequence = arg
+
+            self.length = ToUint32(len(sequence))
+            self.byteLength = self.length * self.BYTES_PER_ELEMENT
+            self.buffer = ArrayBuffer(self.byteLength)
+            self.byteOffset = 0
+
+            for i in range(self.length):
+                s = sequence[i]
+                self.__setitem__(i, Number(s))
+
+            return
+        else:
+            raise TypeError("Invalid argument type")
+
+    # @property
+    # def length(self):
+    #     return self.buffer.buffer_info()[1]
+
+    # @length.setter
+    # def length(self, value):
+    #     self.buffer.length = value
+
+    @property  # TODO - test try this for sneaky way of binding to exsiting array methods?
+    def args(self):
+        return self.buffer
+
+    @staticmethod
+    def of(*args):
+        # Creates a new Int8Array with a variable number of arguments
+        return Int8Array(args)
+
+    @staticmethod
+    def from_(thing):
+        # Creates a new Int8Array from an array-like or iterable object
+        return Int8Array(thing)
+
+    # def __getitem__(self, index):
+    #     return self.buffer[index]
+
+    # def __setitem__(self, index, value):
+    #     self.buffer[index] = value
+
+    # // getter type (unsigned long index);
+    def __getitem__(self, index):
+        if index is None:
+            raise SyntaxError("Not enough arguments")
+
+        index = ToUint32(index)
+        if (index >= self.length):
+            return undefined
+
+        b = []
+        i = 0
+        o = self.byteOffset + index * self.BYTES_PER_ELEMENT
+        for i in range(0, self.BYTES_PER_ELEMENT):
+            b.append(self.buffer[o])
+            o += 1        
+        return self._unpack(b)
+
+    # // NONSTANDARD: convenience alias for getter: type get(unsigned long index);
+    get = __getitem__
+
+    # // setter void (unsigned long index, type value);
+    def __setitem__(self, index, value):
+        # print('set', index, value)
+        if (index is None and value is None):
+            raise SyntaxError("Not enough arguments")
+
+        index = ToUint32(index)
+        if (index >= self.length):
+            return undefined
+
+        b = self._pack(value)
+        # print(b)
+        # print(  self._pack(10) )
+        # print(  self._pack(20) )
+        # print(  self._pack(30) )
+        i = 0
+        o = self.byteOffset + index * self.BYTES_PER_ELEMENT
+        for i in range(0, self.BYTES_PER_ELEMENT):
+            self.buffer[o] = b[i]
+
+    # // void set(TypedArray array, optional unsigned long offset);
+    # // void set(sequence<type> array, optional unsigned long offset);
+    def set(self, index, value):
+        if (index is None):
+            raise SyntaxError("Not enough arguments")
+
+        # arr = None
+        # sequence = None
+        # offset = None
+        # nlen = None
+        # i = None
+        # s = None
+        # d = None
+        # byteOffset = None
+        # byteLength = None
+        # tmp = None
+
+        if (type(index, object) and index == self):
+        #     // void set(TypedArray arr, optional unsigned long offset)
+            arr = index
+            offset = ToUint32(value)
+
+            if (offset + arr.length > self.length):
+                # raise RangeError("Offset plus length of array is out of range")
+                raise Exception("Offset plus length of array is out of range")
+
+            byteOffset = self.byteOffset + offset * self.BYTES_PER_ELEMENT
+            byteLength = arr.length * self.BYTES_PER_ELEMENT
+
+            if (arr.buffer == self.buffer):
+                tmp = []
+                s = arr.byteOffset
+                for i in range(0, byteLength):
+                    tmp[i] = arr.buffer[s]
+                    s += 1
+                d = byteOffset
+                for i in range(0, byteLength):
+                    self.buffer[d] = tmp[i]
+                    d += 1
+            else:
+                s = arr.byteOffset
+                d = byteOffset
+                for i in range(0, byteLength):
+                    self.buffer[d] = arr.buffer[s]
+                    s += 1
+                    d += 1
+        elif (type(index, object) and index != self):
+        #     // void set(sequence<type> arr, optional unsigned long offset);
+            sequence = index
+            nlen = ToUint32(sequence.length)
+            offset = ToUint32(value)
+
+            if (offset + nlen > self.length):
+            #   raise RangeError("Offset plus length of arr is out of range")
+                raise Exception("Offset plus length of arr is out of range")
+
+            for i in range(0, len):
+                s = sequence[i]
+                self._setter(offset + i, Number(s))
+        else:
+            raise TypeError("Unexpected argument type(s)")
+
+    # // TypedArray subarray(long begin, optional long end);
+
+    def subarray(self, start, end):
+
+        def clamp(v, min, max):
+            m1 = max if v > max else v
+            return min if v < min else m1
+
+        if start is None:
+            start = 0
+        if end is None:
+            end = self.length
+
+        start = ToInt32(start)
+        end = ToInt32(end)
+
+        if (start < 0):
+            start = self.length + start
+        if (end < 0):
+            end = self.length + end
+
+        start = clamp(start, 0, self.length)
+        end = clamp(end, 0, self.length)
+
+        nlen = end - start
+        if (nlen < 0):
+            nlen = 0
+
+        return self.__init__(self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, nlen)
+
+
+def as_signed(value, bits):
+    """ Converts an unsigned integer to a signed integer. """
+    s = 32 - bits
+    mask = (1 << s) - 1
+    return (value & mask) - (value & (mask << s))
+
+def as_unsigned(value, bits):
+    s = 32 - bits
+    mask = (1 << s) - 1
+    return value & mask
+
+def packI8(self, n):
+    return [n & 0xff]
+    # return struct.pack('B', n)
+
+def unpackI8(self, b):
+    return as_signed(b[0], 8)
+    # return struct.unpack('B', b)[0]
+
+def packU8(self, n):
+    return [n & 0xff]
+    # return struct.pack('B', n)
+
+def unpackU8(self, bytes):
+    return as_unsigned(bytes[0], 8)
+    # return struct.unpack('B', bytes)[0]
+
+def packU8Clamped(self, n):
+    n = Math.round(Number(n))
+    # return [n < 0 ? 0 : n > 0xff ? 0xff : n & 0xff]
+    if (n < 0):
+        return [0]
+    elif (n > 0xff):
+        return [0xff]
+    else:
+        return [n & 0xff]
+    # return struct.pack('B', n)
+
+
+def packI16(self, n):
+    return [(n >> 8) & 0xff, n & 0xff]
+    # return struct.pack('>H', n)
+
+def unpackI16(self, bytes):
+    return as_signed(bytes[0] << 8 | bytes[1], 16)
+    # return struct.unpack('>H', bytes)[0]
+
+def packU16(self, n):
+    return [(n >> 8) & 0xff, n & 0xff]
+    # return struct.pack('>H', n)
+
+def unpackU16(self, bytes):
+    return as_unsigned(bytes[0] << 8 | bytes[1], 16)
+    # return struct.unpack('>H', bytes)[0]
+
+def packI32(self, n):
+    return [(n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]
+    # return struct.pack('>I', n)
+
+def unpackI32(self, bytes):
+    return as_signed(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32)
+    # return struct.unpack('>I', bytes)[0]
+
+def packU32(self, n):
+    return [(n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]
+    # return struct.pack('>I', n)
+
+def unpackU32(self, bytes):
+    return as_unsigned(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32)
+    # return struct.unpack('>I', bytes)[0]
+
+def packIEEE754(v, ebits, fbits):
+
+    bias = (1 << (ebits - 1)) - 1
+
+    def roundToEven(n):
+        w = Math.floor(n)
+        f = n - w
+        if (f < 0.5):
+            return w
+        if (f > 0.5):
+            return w + 1
+        # return w % 2 ? w + 1 : w
+        return w if (w % 2) else w + 1
+
+    # Compute sign, exponent, fraction
+    if (v != v):
+        # NaN
+        # http://dev.w3.org/2006/webapi/WebIDL/#es-type-mapping
+        e = (1 << ebits) - 1
+        f = pow(2, fbits - 1)
+        s = 0
+    elif (v == Global.Infinity or v == -Global.Infinity):
+        e = (1 << ebits) - 1
+        f = 0
+        # s = (v < 0) ? 1 : 0
+        s = 1 if (v < 0) else 0
+    elif (v == 0):
+        e = 0 
+        f = 0
+        s = 1 if (1 / v == -Global.Infinity) else 0
+    else:
+        s = v < 0
+        v = abs(v)
+
+        if (v >= pow(2, 1 - bias)):
+
+            e = min(Math.floor(Math.log(v) / Math.LN2), 1023)
+            f = roundToEven(v / pow(2, e) * pow(2, fbits))
+
+            if (f / pow(2, fbits) >= 2):
+                e = e + 1
+                f = 1
+            if (e > bias):
+                # Overflow
+                e = (1 << ebits) - 1
+                f = 0
+            else:
+                # Normalized
+                e = e + bias
+                f = f - pow(2, fbits)
+        else:
+            # Denormalized
+            e = 0
+            f = roundToEven(v / pow(2, 1 - bias - fbits))
+    
+    # Pack sign, exponent, fraction
+    bits = []
+    for i in range(fbits):
+        bits.append(f % 2)
+        f = Math.floor(f / 2)
+    for i in range(ebits):
+        bits.append(e % 2)
+        e = Math.floor(e / 2)
+    bits.append(s)
+    bits.reverse()
+    mystr = bits.join('')
+
+    # Bits to bytes
+    b = []
+    while (mystr.length):
+        b.push(parseInt(mystr.substring(0, 8), 2))
+        mystr = mystr.substring(8)
+    return b
+
+def unpackIEEE754(bytes, ebits, fbits):
+
+    # Bytes to bits
+    bits = []
+    for i in range(len(bytes)):
+        b = bytes[i]
+        for j in range(8):
+            bits.append(1 if b % 2 else 0)
+            b = b >> 1
+
+    bits.reverse()
+    mystr = bits.join('')
+
+    # Unpack sign, exponent, fraction
+    bias = (1 << (ebits - 1)) - 1
+    # s = parseInt(str.substring(0, 1), 2) ? -1 : 1
+    s = -1 if (mystr[0] == '1') else 1
+
+    e = parseInt(mystr.substring(1, 1 + ebits), 2)
+    f = parseInt(mystr.substring(1 + ebits), 2)
+
+    # // Produce number
+    if (e == (1 << ebits) - 1):
+        # return f !== 0 ? NaN : s * Infinity
+        if (f != 0):
+            return Global.NaN
+        else:
+            return s * Global.InfInfinity
+    elif (e > 0):
+        # Normalized
+        return s * pow(2, e - bias) * (1 + f / pow(2, fbits))
+    elif (f != 0):
+        # Denormalized
+        return s * pow(2, -(bias - 1)) * (f / pow(2, fbits))
+    else:
+        return -0 if s < 0 else 0
+
+
+def unpackF64(self, b):
+    return unpackIEEE754(b, 11, 52)
+    # return struct.unpack('>d', b)[0]
+
+def packF64(self, v):
+    return packIEEE754(v, 11, 52)
+    # return struct.pack('>d', v)
+
+def unpackF32(self, b):
+    return unpackIEEE754(b, 8, 23)
+    # return struct.unpack('>f', b)[0]
+
+def packF32(self, v):
+    return packIEEE754(v, 8, 23)
+    # return struct.pack('>f', v)
+
+
+Int8Array = type('Int8Array', (TypedArray,), {'name': 'Int8Array', '_pack': packI8, '_unpack': unpackI8})
+Int8Array.BYTES_PER_ELEMENT = 1
+
+Uint8Array = type('Uint8Array', (TypedArray,), {'name': 'Uint8Array', '_pack': packU8, '_unpack': unpackU8})
+Uint8Array.BYTES_PER_ELEMENT = 1
+
+Uint8ClampedArray = type('Uint8ClampedArray', (TypedArray,), {'name': 'Uint8ClampedArray', '_pack': packU8Clamped, '_unpack': unpackU8})
+Uint8ClampedArray.BYTES_PER_ELEMENT = 1
+
+Int16Array = type('Int16Array', (TypedArray,), {'name': 'Int16Array', '_pack': packI16, '_unpack': unpackI16})
+Int16Array.BYTES_PER_ELEMENT = 2
+
+Uint16Array = type('Uint16Array', (TypedArray,), {'name': 'Uint16Array', '_pack': packU16, '_unpack': unpackU16})
+Uint16Array.BYTES_PER_ELEMENT = 2
+
+Int32Array = type('Int32Array', (TypedArray,), {'name': 'Int32Array', '_pack': packI32, '_unpack': unpackI32})
+Int32Array.BYTES_PER_ELEMENT = 4
+
+Uint32Array = type('Uint32Array', (TypedArray,), {'name': 'Uint32Array', '_pack': packU32, '_unpack': unpackU32})
+Uint32Array.BYTES_PER_ELEMENT = 4
+
+Float32Array = type('Float32Array', (TypedArray,), {'name': 'Float32Array', '_pack': packF32, '_unpack': unpackF32})
+Float32Array.BYTES_PER_ELEMENT = 4
+
+Float64Array = type('Float64Array', (TypedArray,), {'name': 'Float64Array', '_pack': packF64, '_unpack': unpackF64})
+Float64Array.BYTES_PER_ELEMENT = 8
+
+# BigInt64Array = type('BigInt64Array', (TypedArray,), {'name': 'BigInt64Array', '_pack': packI64, '_unpack': unpackI64})
+# BigInt64Array.BYTES_PER_ELEMENT = 8
+
+# BigUint64Array = type('BigUint64Array', (TypedArray,), {'name': 'BigUint64Array', '_pack': packU64, '_unpack': unpackU64})
+# BigUint64Array.BYTES_PER_ELEMENT = 8
+
+
 # TODO - test
 class Error(Exception):
     ''' Raise Errors '''
@@ -3388,7 +4081,7 @@ class Reflect():
     def apply(target, thisArgument, argumentsList):
         """ Calls a target function with arguments as specified by the argumentsList parameter.
         See also Function.prototype.apply(). """
-        raise NotImplementedError
+        return target(*argumentsList)
 
     @staticmethod
     def construct(target, argumentsList, newTarget):

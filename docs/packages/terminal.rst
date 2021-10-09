@@ -1,4 +1,4 @@
-Domonic: terminal
+terminal
 =================
 
 There is a command line package that can call bash/unix/posix and other apps on the command line.

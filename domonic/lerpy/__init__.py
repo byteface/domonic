@@ -4,7 +4,6 @@ import time
 
 _start = time.time()
 
-
 def get_timer():
     end = time.time()
     return end - _start

@@ -1,4 +1,4 @@
-Domonic: dQuery
+dQuery
 =================
 
 dQuery is for querying and manipulating your server-side dom.

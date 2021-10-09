@@ -4,19 +4,19 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Domonic: templates and components &#8212; domonic 0.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Templates and Components &#8212; domonic 0.6.0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Domonic: utils" href="utils.html" />
-    <link rel="prev" title="Domonic: decorators" href="decorators.html" />
+    <link rel="next" title="utils" href="utils.html" />
+    <link rel="prev" title="decorators" href="decorators.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -33,10 +33,10 @@
 
           <div class="body" role="main">
             
-  <section id="domonic-templates-and-components">
-<h1>Domonic: templates and components<a class="headerlink" href="#domonic-templates-and-components" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="templates-and-components">
+<h1>Templates and Components<a class="headerlink" href="#templates-and-components" title="Permalink to this headline">¶</a></h1>
 <p>With all these pieces you can now build templates or components…</p>
-<section id="templates">
+<div class="section" id="templates">
 <h2>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h2>
 <p><strong>Some notes on templates</strong></p>
 <p>domonic mixed with lambdas can create templates without needing to make a class…</p>
@@ -135,8 +135,8 @@
     <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">html</span><span class="p">(</span> <span class="n">render</span><span class="p">(</span> <span class="n">Webpage</span><span class="p">(</span><span class="n">page</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="important-notes-on-templating">
+</div>
+<div class="section" id="important-notes-on-templating">
 <h2>Important notes on templating<a class="headerlink" href="#important-notes-on-templating" title="Permalink to this headline">¶</a></h2>
 <p>while you can create a div with content like :</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">div</span><span class="p">(</span><span class="s2">&quot;some content&quot;</span><span class="p">)</span>
@@ -157,8 +157,8 @@
 </div>
 <p>This is NOT like jQuery html func that returns just the inner content. use innerHTML for that.</p>
 <p>It is used specifically for rendering.</p>
-</section>
-<section id="common-errors">
+</div>
+<div class="section" id="common-errors">
 <h2>Common Errors<a class="headerlink" href="#common-errors" title="Permalink to this headline">¶</a></h2>
 <p>When you first start templating this way you can make a lot of common mistakes. Usually missing underscores or commas between attributes.</p>
 <p>Refer back to this page for a few days until you get used to it.</p>
@@ -183,8 +183,8 @@
 </ul>
 </dd>
 </dl>
-</section>
-<section id="components">
+</div>
+<div class="section" id="components">
 <h2>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
 <p><strong>Some notes on components</strong></p>
 <p>A component ‘might’ look something like this…</p>
@@ -241,16 +241,16 @@ app/components/my_component.py</p>
 <p>There is a built in components package but its use is discouraged as they may change or be buggy and untested.</p>
 <p>You should use domonic to make your own components.</p>
 <p>Some that may kick around a while due to being used in examples are listed here…</p>
-</section>
-<section id="spritecss">
+</div>
+<div class="section" id="spritecss">
 <h2>SpriteCSS<a class="headerlink" href="#spritecss" title="Permalink to this headline">¶</a></h2>
 <p>For a working example see… /examples/ken/sf2.py</p>
 <p>pass a UID. w, h, path, duration, steps, looping, y_offset</p>
 <div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">animated_monster</span> <span class="o">=</span> <span class="nx">SpriteCSS</span><span class="p">(</span><span class="s1">&#39;ken&#39;</span><span class="p">,</span> <span class="mf">70</span><span class="p">,</span> <span class="mf">80</span><span class="p">,</span> <span class="s1">&#39;assets/spritesheets/ken.png&#39;</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">4</span><span class="p">,</span> <span class="nx">True</span><span class="p">,</span> <span class="mf">80</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
           </div>
@@ -258,42 +258,39 @@ app/components/my_component.py</p>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">domonic</a></h1>
-
-
-
-
-
-
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="/">domonic</a></h1>
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=byteface&repo=domonic&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
 </p>
 
-
-
-
-
-<h3>Navigation</h3>
+<h3>Links</h3>
+<ul>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
+</ul>
+<h3><a href="../index.html">Table of Contents</a></h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="html.html">Domonic: HTML</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dom.html">Domonic: DOM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="javascript.html">Domonic: Javascript</a></li>
-<li class="toctree-l1"><a class="reference internal" href="events.html">Domonic: events</a></li>
-<li class="toctree-l1"><a class="reference internal" href="sitemap.html">Domonic: sitemap</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="d3.html">Domonic: d3</a></li>
-<li class="toctree-l1"><a class="reference internal" href="JSON.html">Domonic: JSON</a></li>
-<li class="toctree-l1"><a class="reference internal" href="constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="terminal.html">Domonic: terminal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="geom.html">Domonic: geom</a></li>
-<li class="toctree-l1"><a class="reference internal" href="x3d.html">Domonic: x3d</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CDN.html">Domonic: CDN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="decorators.html">Domonic: decorators</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Domonic: templates and components</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators.html">decorators</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Templates and Components</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#templates">Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#important-notes-on-templating">Important notes on templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#common-errors">Common Errors</a></li>
@@ -301,38 +298,47 @@ app/components/my_component.py</p>
 <li class="toctree-l2"><a class="reference internal" href="#spritecss">SpriteCSS</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">Domonic: utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="servers.html">Domonic: servers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="autodocs.html">Domonic: autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">🤖 autodocs</a></li>
 </ul>
-
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="decorators.html" title="previous chapter">Domonic: decorators</a></li>
-      <li>Next: <a href="utils.html" title="next chapter">Domonic: utils</a></li>
+      <li>Previous: <a href="decorators.html" title="previous chapter">decorators</a></li>
+      <li>Next: <a href="utils.html" title="next chapter">utils</a></li>
   </ul></li>
 </ul>
 </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/packages/components.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+  <ul>
+<li><a class="reference internal" href="#">Templates and Components</a><ul>
+<li><a class="reference internal" href="#templates">Templates</a></li>
+<li><a class="reference internal" href="#important-notes-on-templating">Important notes on templating</a></li>
+<li><a class="reference internal" href="#common-errors">Common Errors</a></li>
+<li><a class="reference internal" href="#components">Components</a></li>
+<li><a class="reference internal" href="#spritecss">SpriteCSS</a></li>
+</ul>
+</li>
+</ul>
+
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>

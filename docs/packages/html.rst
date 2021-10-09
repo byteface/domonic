@@ -1,5 +1,22 @@
-Domonic: HTML
+html
 =============
+
+with domonic you can create beautiful, clean <html> straight out of the box.
+
+.. code-block :: python
+    
+    mydom = html(body(h1('Hello, World!')))
+    print(f"{mydom}")
+
+
+.. code-block :: html
+
+    <!DOCTYPE html>
+    <html>
+        <body>
+            <h1>Hello, World!</h1>
+        </body>
+    </html>
 
 
 rendering
@@ -364,6 +381,17 @@ https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dicti
 
 loading .pyml templates
 --------------------------------
+
+.. tabs ::
+    
+   .. code-tab:: py
+
+        div("Hello World")
+
+   .. code-tab:: html
+
+        <div>Hello tabs</div>
+
 
 'loads' imports a pyml file and turns it into a program
 

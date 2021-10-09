@@ -1,4 +1,4 @@
-Domonic: autodocs
+🤖 autodocs
 =================
 
 .. automodule:: domonic

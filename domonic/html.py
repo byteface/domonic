@@ -75,7 +75,14 @@ def render(inp, outp='', to=None):  # doctype='html5')
 
 
 class TemplateError(IndexError):
+
     def __init__(self, error, message="Templating error: "):
+        """[raised when a template error occurs]
+
+        Args:
+            error ([type]): [the error]
+            message (str, optional): [description]. Defaults to "Templating error: ".
+        """
         self.error = error
         self.hint = ""
         print(self.error)
@@ -347,7 +354,8 @@ class tag(object):
         depth -= 1
 
         # print(f"depth: {depth}")
-        dent = '    ' * depth
+        # dent = '    ' * depth
+        dent = '\t' * depth
 
         # loop the children and call __format__ on each one
         # content = ""
@@ -394,13 +402,6 @@ class tag(object):
     #     print(self.nodeValue)
     #     print(self.nodeName)
     #     print(self.nodeType)
-
-    # def write(self, path):
-    #     """
-    #     writes the html to a file
-    #     """
-    #     with open(path, 'w') as f:
-    #         f.write(self.__format__(''))
 
 
 class closed_tag(tag):
@@ -487,6 +488,16 @@ class form(tag, Element):
 
 
 label = type('label', (tag, Element), {'name': 'label', '__init__': tag_init})
+label.__doc__ = '''
+                .. highlight:: python
+                .. code-block:: python
+
+                    # used to label form elements. i.e.
+                    label(_for=None, _text=None, **kwargs)
+                    # <label for=""></label>
+                '''
+
+
 submit = type('submit', (tag, Element), {'name': 'submit', '__init__': tag_init})
 title = type('title', (tag, Element), {'name': 'title', '__init__': tag_init})
 noscript = type('noscript', (tag, Element), {'name': 'noscript', '__init__': tag_init})
@@ -598,46 +609,51 @@ template = type('template', (tag, Element), {'name': 'template', '__init__': tag
 picture = type('picture', (tag, Element), {'name': 'picture', '__init__': tag_init})
 
 
-class doctype():
-    """doctype
+# class doctype():
+#     """doctype
 
-    - this will be deprecated in the future to the one on the DOM
+#     - this will be deprecated in the future to the one on the DOM
 
-    Returns:
-        str: <!DOCTYPE html>
-    """
-    def __str__(self):
-        return "<!DOCTYPE html>"
+#     Returns:
+#         str: <!DOCTYPE html>
+#     """
+#     def __str__(self):
+#         return "<!DOCTYPE html>"
 
-    def __repr__(self):
-        return "<!DOCTYPE html>"
+#     def __repr__(self):
+#         return "<!DOCTYPE html>"
 
-    def __call__(self, *args, **kwargs):
-        return self.__str__()
+#     def __call__(self, *args, **kwargs):
+#         return self.__str__()
 
+from domonic.dom import DocumentType
+doctype = DocumentType
 
-class comment():
-    """comment
+# class comment():
+#     """comment
 
-    - this will be deprecated in the future in favour of Comment on the DOM
+#     - this will be deprecated in the future in favour of Comment on the DOM
 
-    Args:
-        content (str): Message to be rendered inside the comment tag
+#     Args:
+#         content (str): Message to be rendered inside the comment tag
 
-    Returns:
-        str: "<!-- {self.content} -->
-    """
-    def __init__(self, content=""):
-        self.content = content
+#     Returns:
+#         str: "<!-- {self.content} -->
+#     """
+#     def __init__(self, content=""):
+#         self.content = content
 
-    def __str__(self):
-        return f"<!-- {self.content} -->"
+#     def __str__(self):
+#         return f"<!-- {self.content} -->"
 
-    def __repr__(self):
-        return f"<!-- {self.content} -->"
+#     def __repr__(self):
+#         return f"<!-- {self.content} -->"
 
-    def __call__(self, *args, **kwargs):
-        return self.__str__()
+#     def __call__(self, *args, **kwargs):
+#         return self.__str__()
+
+from domonic.dom import Comment
+comment = Comment
 
 
 def create_element(name='custom_tag', *args, **kwargs):

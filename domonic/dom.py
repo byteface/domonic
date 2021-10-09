@@ -2430,17 +2430,22 @@ class Document(Element):
     #     ''' Returns the full URL of the HTML document'''
     #     pass
 
-    def write(self, html: str = "") -> None:
-        '''Writes HTML expressions or JavaScript code to a document'''
-        # doc = html
-        from .html import tag
-        tag.__init__(self, html)
-        # super(tag).__init__(html)
+    def write(self, html: str = ""):  #-> None: # TODO - untested
+        """[writes HTML text to a document
 
-    def writeln(self, html: str = "") -> None:
-        '''Same as write(), but adds a newline character after each statement'''
-        # doc = html
-        pass
+        Args:
+            html (str, optional): [the content to write to the document]
+        """
+        content = DocumentFragment(html)
+        self.__init__(content)
+
+    def writeln(self, html: str = ""):  #-> None: # TODO - untested
+        """[writes HTML text to a document, followed by a line break]
+
+        Args:
+            html (str, optional): [the content to write to the document]
+        """
+        self.write(html + '\n')
 
 
 class Location():
@@ -2890,6 +2895,22 @@ class Text(CharacterData):
 # TextEncoderStream
 
 # XMLHttpRequest
+
+# class XMLHttpRequest():
+
+#     def __init__(self, url=None, responseType=None, withCredentials=False, timeout=0, onload=None, onerror=None, onprogress=None, ontimeout=None):
+#         self.url = url
+#         self.responseType = responseType
+#         self.withCredentials = withCredentials
+#         self.timeout = timeout
+#         self.onload = onload
+#         self.onerror = onerror
+#         self.onprogress = onprogress
+#         self.ontimeout = ontimeout
+#         self.response = None
+#         self.status = None
+
+
 
 
 class Sanitizer():

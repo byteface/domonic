@@ -1,4 +1,4 @@
-Domonic: decorators
+decorators
 ======================
 
 Everyone loves python decorators

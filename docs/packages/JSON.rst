@@ -1,4 +1,4 @@
-Domonic: JSON
+JSON
 =============
 
 decorate any function that returns python objects to return json instead

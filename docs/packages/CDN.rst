@@ -1,4 +1,4 @@
-Domonic: CDN
+CDN
 =============
 
 To quickly use and reference external assets when prototyping use the CDN package.

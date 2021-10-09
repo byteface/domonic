@@ -1,4 +1,4 @@
-Domonic: constants
+constants
 ==================
 
 domonic.constants contains references to make your life a little easier.

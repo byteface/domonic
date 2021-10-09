@@ -1,4 +1,4 @@
-Domonic: x3d
+x3d
 =================
 
 If using x3d you must use 'append' rather than 'html' when adding children 'inline' when templating.

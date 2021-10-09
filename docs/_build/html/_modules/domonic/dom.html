@@ -6,12 +6,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>domonic.dom &#8212; domonic 0.6.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/tabs.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -2463,17 +2465,22 @@
     <span class="c1">#     &#39;&#39;&#39; Returns the full URL of the HTML document&#39;&#39;&#39;</span>
     <span class="c1">#     pass</span>
 
-<div class="viewcode-block" id="Document.write"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Writes HTML expressions or JavaScript code to a document&#39;&#39;&#39;</span>
-        <span class="c1"># doc = html</span>
-        <span class="kn">from</span> <span class="nn">.html</span> <span class="kn">import</span> <span class="n">tag</span>
-        <span class="n">tag</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span></div>
-        <span class="c1"># super(tag).__init__(html)</span>
+<div class="viewcode-block" id="Document.write"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>  <span class="c1">#-&gt; None: # TODO - untested</span>
+        <span class="sd">&quot;&quot;&quot;[writes HTML text to a document</span>
 
-<div class="viewcode-block" id="Document.writeln"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.writeln">[docs]</a>    <span class="k">def</span> <span class="nf">writeln</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Same as write(), but adds a newline character after each statement&#39;&#39;&#39;</span>
-        <span class="c1"># doc = html</span>
-        <span class="k">pass</span></div></div>
+<span class="sd">        Args:</span>
+<span class="sd">            html (str, optional): [the content to write to the document]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">DocumentFragment</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">content</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Document.writeln"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.writeln">[docs]</a>    <span class="k">def</span> <span class="nf">writeln</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>  <span class="c1">#-&gt; None: # TODO - untested</span>
+        <span class="sd">&quot;&quot;&quot;[writes HTML text to a document, followed by a line break]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            html (str, optional): [the content to write to the document]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">Location</span><span class="p">():</span>
@@ -2924,6 +2931,22 @@
 
 <span class="c1"># XMLHttpRequest</span>
 
+<span class="c1"># class XMLHttpRequest():</span>
+
+<span class="c1">#     def __init__(self, url=None, responseType=None, withCredentials=False, timeout=0, onload=None, onerror=None, onprogress=None, ontimeout=None):</span>
+<span class="c1">#         self.url = url</span>
+<span class="c1">#         self.responseType = responseType</span>
+<span class="c1">#         self.withCredentials = withCredentials</span>
+<span class="c1">#         self.timeout = timeout</span>
+<span class="c1">#         self.onload = onload</span>
+<span class="c1">#         self.onerror = onerror</span>
+<span class="c1">#         self.onprogress = onprogress</span>
+<span class="c1">#         self.ontimeout = ontimeout</span>
+<span class="c1">#         self.response = None</span>
+<span class="c1">#         self.status = None</span>
+
+
+
 
 <span class="k">class</span> <span class="nc">Sanitizer</span><span class="p">():</span>
 
@@ -3099,47 +3122,43 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">domonic</a></h1>
-
-
-
-
-
-
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="/">domonic</a></h1>
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=byteface&repo=domonic&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
 </p>
 
-
-
-
-
-<h3>Navigation</h3>
+<h3>Links</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/sitemap.html">Domonic: sitemap</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/d3.html">Domonic: d3</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">Domonic: decorators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">Domonic: utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">Domonic: servers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
 </ul>
-
+<h3><a href="../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">🤖 autodocs</a></li>
+</ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -3153,20 +3172,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>

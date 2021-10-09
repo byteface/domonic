@@ -78,6 +78,9 @@ def parse_args():
 
     parser.add_argument('-i', '--install', action='store_true')  # add 'projects' to the .bashprofile or .bashrc
 
+    # parser.add_argument('-p', '--pyml2html', help="converts a .pyml template file to html", type=str)
+    # parser.add_argument('-g', '--html2pyml', help="converts a .html file to a .pyml template", type=str)
+
     # parser.add_argument('-w', '--website', action='store_true')  # launch the docs
     # parser.add_argument('-s', '--server', help="runs python -m http.server", type=str)
     # parser.add_argument('-u', '--url', help="url to launch the server", type=str)

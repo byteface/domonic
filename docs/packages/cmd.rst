@@ -1,4 +1,4 @@
-Domonic: cmd
+cmd
 =================
 
 There is a cmd package for calling windows commands within python3
