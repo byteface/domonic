@@ -153,7 +153,7 @@ class tag(object):
             # print(e)
 
     def __str__(self):
-        return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
+        return self.content and f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>" or f"<{self.name}{self.__attributes__}/>"
 
     def __mul__(self, other):
         """
