@@ -1822,6 +1822,7 @@ class Comment(Node):
 
     def __init__(self, data):
         self.data = data
+        super().__init__()
 
     def toString(self):
         return f'<!--{self.data}-->'

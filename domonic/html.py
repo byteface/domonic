@@ -5,8 +5,7 @@
 """
 import copy
 from domonic.javascript import URL
-from domonic.dom import Element, Document
-
+from domonic.dom import Element, Document, DocumentType, Comment
 
 html_tags = [
             "figcaption", "blockquote", "textarea", "progress", "optgroup", "noscript", "fieldset", "datalist",
@@ -41,9 +40,10 @@ html_attributes = [
             "onwaiting", "onwheel", "open", "optimum", "pattern", "placeholder", "poster", "preload", "readonly",
             "rel", "required", "reversed", "rows", "rowspan", "sandbox", "scope", "selected", "shape", "size", "sizes",
             "span", "spellcheck", "src", "srcdoc", "srclang", "srcset", "start", "step", "style", "tabindex", "target",
-            "title", "translate", "type", "usemap", "value", "width", "wrap", "property", "integrity", "crossorigin", "nonce",
-            "autocapitalize", "enterkeyhint", "inputmode", "is", "itemid", "itemprop", "itemref", "itemscope", "itemtype", "part",
-            "slot", "spellcheck", "alink", "nowrap", "vlink", "vspace", "language", "clear", "hspace", "xmlns", "about", "allowtransparency",
+            "title", "translate", "type", "usemap", "value", "width", "wrap", "property", "integrity", "crossorigin",
+            "nonce", "autocapitalize", "enterkeyhint", "inputmode", "is", "itemid", "itemprop", "itemref", "itemscope",
+            "itemtype", "part", "slot", "spellcheck", "alink", "nowrap", "vlink", "vspace", "language", "clear",
+            "hspace", "xmlns", "about", "allowtransparency",
             "datatype", "inlist", "prefix", "resource", "rev", "typeof", "vocab",  # rdfa
             "playsinline", "autopictureinpicture", "buffered", "controlslist", "disableremoteplayback"  # video
             ]
@@ -125,7 +125,6 @@ class tag(object):
         if tag.__context is not None:
             tag.__context[len(tag.__context) - 1] += self
 
-
     @property
     def content(self):  # TODO - test
         return ''.join([each.__str__() for each in self.args])
@@ -137,8 +136,16 @@ class tag(object):
 
     @property
     def __attributes__(self):
+        def format_attr(key, value):
+            key = key.split('_', 1)[1]
+            # lets us have boolean attributes  # TODO - should be optional by a global config
+            if key in ['async', 'checked', 'autofocus', 'disabled', 'formnovalidate', 'hidden', 'multiple',
+                       'novalidate', 'readonly', 'required', 'selected']:
+                if value == '' or value == key or value == True:
+                    return ''' %s''' % key
+            return ''' %s="%s"''' % (key, value)
         try:
-            return ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
+            return ''.join([format_attr(key, value) for key, value in self.kwargs.items()])
         except IndexError as e:
             raise TemplateError(e)
         # except Exception as e:
@@ -154,7 +161,7 @@ class tag(object):
             # print(e)
 
     def __str__(self):
-        return self.content and f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>" or f"<{self.name}{self.__attributes__}/>"
+        return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
 
     def __mul__(self, other):
         """
@@ -463,19 +470,14 @@ a = type('a', (tag, Element, URL), {'name': 'a', '__init__': Atag, '__update__':
 ul = type('ul', (tag, Element), {'name': 'ul', '__init__': tag_init})
 ol = type('ol', (tag, Element), {'name': 'ol', '__init__': tag_init})
 li = type('li', (tag, Element), {'name': 'li', '__init__': tag_init})
-hr = type('hr', (tag, Element), {'name': 'hr', '__init__': tag_init})
 div = type('div', (tag, Element), {'name': 'div', '__init__': tag_init})
-span = type('span', (tag, Element), {'name': 'span', '__init__': tag_init})
 strong = type('strong', (tag, Element), {'name': 'strong', '__init__': tag_init})
 blockquote = type('blockquote', (tag, Element), {'name': 'blockquote', '__init__': tag_init})
 table = type('table', (tag, Element), {'name': 'table', '__init__': tag_init})
 tr = type('tr', (tag, Element), {'name': 'tr', '__init__': tag_init})
 td = type('td', (tag, Element), {'name': 'td', '__init__': tag_init})
-title = type('title', (tag, Element), {'name': 'title', '__init__': tag_init})
-# meta = type('meta', (tag, Element), {'name': 'meta', '__init__': tag_init})
-
-
 # form = type('form', (tag, Element), {'name': 'form', '__init__': tag_init})
+
 
 class form(tag, Element):
     def __init__(self, *args, **kwargs):
@@ -493,15 +495,14 @@ class form(tag, Element):
 
 
 label = type('label', (tag, Element), {'name': 'label', '__init__': tag_init})
-label.__doc__ = '''
-                .. highlight:: python
-                .. code-block:: python
+# label.__doc__ = '''
+#                 .. highlight:: python
+#                 .. code-block:: python
 
-                    # used to label form elements. i.e.
-                    label(_for=None, _text=None, **kwargs)
-                    # <label for=""></label>
-                '''
-
+#                     # used to label form elements. i.e.
+#                     label(_for=None, _text=None, **kwargs)
+#                     # <label for=""></label>
+#                 '''
 
 submit = type('submit', (tag, Element), {'name': 'submit', '__init__': tag_init})
 title = type('title', (tag, Element), {'name': 'title', '__init__': tag_init})
@@ -614,50 +615,8 @@ template = type('template', (tag, Element), {'name': 'template', '__init__': tag
 picture = type('picture', (tag, Element), {'name': 'picture', '__init__': tag_init})
 
 
-# class doctype():
-#     """doctype
-
-#     - this will be deprecated in the future to the one on the DOM
-
-#     Returns:
-#         str: <!DOCTYPE html>
-#     """
-#     def __str__(self):
-#         return "<!DOCTYPE html>"
-
-#     def __repr__(self):
-#         return "<!DOCTYPE html>"
-
-#     def __call__(self, *args, **kwargs):
-#         return self.__str__()
-
-from domonic.dom import DocumentType
+# legacy.
 doctype = DocumentType
-
-# class comment():
-#     """comment
-
-#     - this will be deprecated in the future in favour of Comment on the DOM
-
-#     Args:
-#         content (str): Message to be rendered inside the comment tag
-
-#     Returns:
-#         str: "<!-- {self.content} -->
-#     """
-#     def __init__(self, content=""):
-#         self.content = content
-
-#     def __str__(self):
-#         return f"<!-- {self.content} -->"
-
-#     def __repr__(self):
-#         return f"<!-- {self.content} -->"
-
-#     def __call__(self, *args, **kwargs):
-#         return self.__str__()
-
-from domonic.dom import Comment
 comment = Comment
 
 

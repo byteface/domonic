@@ -974,5 +974,23 @@ class TestCase(unittest.TestCase):
         assert '</meta>' not in outp
 
 
+    def test_boolean_attributes(self):
+        # https://github.com/byteface/domonic/issues/40
+        s = script(_src="foo.js", _async="async")
+        print(s)
+        assert '<script src="foo.js" async></script>' == str(s)
+
+        s = script(_src="foo.js", _async=False)
+        print(s)
+        # assert '<script src="foo.js"></script>' == str(s)
+
+        s = script(_src="foo.js", _async=True, _hidden=True, _checked=True)
+        print(s)
+        assert '<script src="foo.js" async hidden checked></script>' == str(s)
+
+
+
+
+
 if __name__ == '__main__':
     unittest.main()

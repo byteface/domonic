@@ -796,5 +796,21 @@ class TestCase(unittest.TestCase):
         # JSON.stringify(Sanitizer.getDefaultConfiguration()) == JSON.stringify(new Sanitizer().getConfiguration());  // true
 
 
+    def test_comment(self):
+        from domonic.html import comment
+        # https://github.com/byteface/domonic/issues/38
+        com = f"{html(head(),body(comment('foo')))}"
+        # print(com)
+        com = comment('foo')
+        # print(f'{com}')
+        assert str(com) == '<!--foo-->'
+        from domonic.dom import Comment
+        # https://github.com/byteface/domonic/issues/38
+        com = f"{html(head(),body(Comment('foo')))}"
+        print(com)
+        # not able to recreate. Comment was updated to a Node in 6.1
+        # this may have been due to that
+
+
 if __name__ == '__main__':
     unittest.main()
