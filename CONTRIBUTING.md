@@ -90,8 +90,9 @@ domonic has benefitted also from bug fixes and features by other people.
 
 I'd like to thank here...
 
-William MacMillan - wmacmillan
-Jordan Cottle - Jordan-Cottle
-Alfas Esty - alfasst
+* William MacMillan - wmacmillan
+* Jordan Cottle - Jordan-Cottle
+* Alfas Esty - alfasst
+* Kristian Thy - kthy
 
 and of course dependabot[bot]
