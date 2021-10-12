@@ -125,6 +125,7 @@ class tag(object):
         if tag.__context is not None:
             tag.__context[len(tag.__context) - 1] += self
 
+
     @property
     def content(self):  # TODO - test
         return ''.join([each.__str__() for each in self.args])
@@ -376,6 +377,10 @@ class tag(object):
             # dtype = "<!DOCTYPE html>"
             dtype = self.doctype
 
+        # if self is a closed_tag, return the content
+        if isinstance(self, closed_tag):
+            return f"\n{dent}<{self.name}{self.__attributes__} />"
+
         size = len(str(content))
         if size < 150 and wrap:
             return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
@@ -467,7 +472,7 @@ table = type('table', (tag, Element), {'name': 'table', '__init__': tag_init})
 tr = type('tr', (tag, Element), {'name': 'tr', '__init__': tag_init})
 td = type('td', (tag, Element), {'name': 'td', '__init__': tag_init})
 title = type('title', (tag, Element), {'name': 'title', '__init__': tag_init})
-meta = type('meta', (tag, Element), {'name': 'meta', '__init__': tag_init})
+# meta = type('meta', (tag, Element), {'name': 'meta', '__init__': tag_init})
 
 
 # form = type('form', (tag, Element), {'name': 'form', '__init__': tag_init})

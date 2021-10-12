@@ -244,9 +244,9 @@ a-tags inherits from URL:
 from domonic.html import *
 
 atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
-print('href:',atag.href)
-print('protocol:',atag.protocol)
-print('port:',atag.port)
+print('href:', atag.href)
+print('protocol:', atag.protocol)
+print('port:', atag.port)
 
 atag.protocol = "http"
 atag.port = 8983

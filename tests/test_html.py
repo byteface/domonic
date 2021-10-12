@@ -944,6 +944,35 @@ class TestCase(unittest.TestCase):
         print(f"{d}")
 
 
+    def test_four_oh_four(self):
+        # https://github.com/byteface/domonic/issues/37
+        four_oh_four = html(
+            head(
+                meta(_charset="utf-8")
+            ),
+            body(
+                h1("Page Not Found"),
+                p("Sorry, but the page you were trying to view does not exist."),
+            ),
+            _lang="en"
+        )
+        outp = f"{four_oh_four}"
+        # previous incorrect output had a closing meta tag?!. due to no __format__ rule for closed_tags
+        '''
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="utf-8">
+                </meta>
+            </head>
+            <body>
+                <h1>Page Not Found</h1>
+                <p>Sorry, but the page you were trying to view does not exist.</p>
+            </body>
+        </html>
+        '''
+        assert '</meta>' not in outp
+
 
 if __name__ == '__main__':
     unittest.main()
