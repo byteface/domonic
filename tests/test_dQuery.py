@@ -497,7 +497,7 @@ class TestCase(unittest.TestCase):
         assert º('div').text() == ['hi', 'there']
         º('div').text('test')
         assert º('div').text() == ['test', 'test']
-        assert str(page) == '<html><form><select name="single"><option selected="True">a</option><option>b</option></select></form><div>test</div><div>test</div></html>'
+        assert str(page) == '<html><form><select name="single"><option selected="true">a</option><option>b</option></select></form><div>test</div><div>test</div></html>'
 
     def test_toArray(self):
         pass

@@ -23,7 +23,7 @@ class TestCase(unittest.TestCase):
 
     def test_html_attributes(self):
         assert str(div(_id='mydiv', _class='test', **{"_aria-label": True}, **{"_data-name": True}, _onclick="alert('hi');")) == \
-            '''<div id="mydiv" class="test" aria-label="True" data-name="True" onclick="alert('hi');"></div>'''
+            '''<div id="mydiv" class="test" aria-label="true" data-name="true" onclick="alert('hi');"></div>'''
 
         myel = div(_id='mydiv', _class='test', **{"_aria-label": True}, **{"_data-name": True}, _onclick="alert('hi');")
         assert myel.id == "mydiv"
@@ -980,16 +980,17 @@ class TestCase(unittest.TestCase):
         print(s)
         assert '<script src="foo.js" async></script>' == str(s)
 
-        s = script(_src="foo.js", _async=False)
+        s = script(_src="foo.js", _async='')
         print(s)
         # assert '<script src="foo.js"></script>' == str(s)
 
-        s = script(_src="foo.js", _async=True, _hidden=True, _checked=True)
+        s = script(_src="foo.js", _async='', _hidden='', _checked='')
         print(s)
         assert '<script src="foo.js" async hidden checked></script>' == str(s)
 
-
-
+        s = script(_src="foo.js", _async=True, _hidden=False, _checked=True)
+        print(s)
+        assert '<script src="foo.js" async="true" hidden="false" checked="true"></script>' == str(s)
 
 
 if __name__ == '__main__':

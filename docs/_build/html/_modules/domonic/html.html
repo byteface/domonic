@@ -5,15 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.html &#8212; domonic 0.6.0 documentation</title>
+    <title>domonic.html &#8212; domonic 0.6.2 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/tabs.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -40,8 +38,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">URL</span>
-<span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="n">Element</span><span class="p">,</span> <span class="n">Document</span>
-
+<span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="n">Element</span><span class="p">,</span> <span class="n">Document</span><span class="p">,</span> <span class="n">DocumentType</span><span class="p">,</span> <span class="n">Comment</span>
 
 <span class="n">html_tags</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;figcaption&quot;</span><span class="p">,</span> <span class="s2">&quot;blockquote&quot;</span><span class="p">,</span> <span class="s2">&quot;textarea&quot;</span><span class="p">,</span> <span class="s2">&quot;progress&quot;</span><span class="p">,</span> <span class="s2">&quot;optgroup&quot;</span><span class="p">,</span> <span class="s2">&quot;noscript&quot;</span><span class="p">,</span> <span class="s2">&quot;fieldset&quot;</span><span class="p">,</span> <span class="s2">&quot;datalist&quot;</span><span class="p">,</span>
@@ -76,9 +73,10 @@
             <span class="s2">&quot;onwaiting&quot;</span><span class="p">,</span> <span class="s2">&quot;onwheel&quot;</span><span class="p">,</span> <span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;optimum&quot;</span><span class="p">,</span> <span class="s2">&quot;pattern&quot;</span><span class="p">,</span> <span class="s2">&quot;placeholder&quot;</span><span class="p">,</span> <span class="s2">&quot;poster&quot;</span><span class="p">,</span> <span class="s2">&quot;preload&quot;</span><span class="p">,</span> <span class="s2">&quot;readonly&quot;</span><span class="p">,</span>
             <span class="s2">&quot;rel&quot;</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">,</span> <span class="s2">&quot;reversed&quot;</span><span class="p">,</span> <span class="s2">&quot;rows&quot;</span><span class="p">,</span> <span class="s2">&quot;rowspan&quot;</span><span class="p">,</span> <span class="s2">&quot;sandbox&quot;</span><span class="p">,</span> <span class="s2">&quot;scope&quot;</span><span class="p">,</span> <span class="s2">&quot;selected&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="s2">&quot;sizes&quot;</span><span class="p">,</span>
             <span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="s2">&quot;spellcheck&quot;</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;srcdoc&quot;</span><span class="p">,</span> <span class="s2">&quot;srclang&quot;</span><span class="p">,</span> <span class="s2">&quot;srcset&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="s2">&quot;tabindex&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;translate&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;usemap&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="s2">&quot;wrap&quot;</span><span class="p">,</span> <span class="s2">&quot;property&quot;</span><span class="p">,</span> <span class="s2">&quot;integrity&quot;</span><span class="p">,</span> <span class="s2">&quot;crossorigin&quot;</span><span class="p">,</span> <span class="s2">&quot;nonce&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;autocapitalize&quot;</span><span class="p">,</span> <span class="s2">&quot;enterkeyhint&quot;</span><span class="p">,</span> <span class="s2">&quot;inputmode&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="s2">&quot;itemid&quot;</span><span class="p">,</span> <span class="s2">&quot;itemprop&quot;</span><span class="p">,</span> <span class="s2">&quot;itemref&quot;</span><span class="p">,</span> <span class="s2">&quot;itemscope&quot;</span><span class="p">,</span> <span class="s2">&quot;itemtype&quot;</span><span class="p">,</span> <span class="s2">&quot;part&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;slot&quot;</span><span class="p">,</span> <span class="s2">&quot;spellcheck&quot;</span><span class="p">,</span> <span class="s2">&quot;alink&quot;</span><span class="p">,</span> <span class="s2">&quot;nowrap&quot;</span><span class="p">,</span> <span class="s2">&quot;vlink&quot;</span><span class="p">,</span> <span class="s2">&quot;vspace&quot;</span><span class="p">,</span> <span class="s2">&quot;language&quot;</span><span class="p">,</span> <span class="s2">&quot;clear&quot;</span><span class="p">,</span> <span class="s2">&quot;hspace&quot;</span><span class="p">,</span> <span class="s2">&quot;xmlns&quot;</span><span class="p">,</span> <span class="s2">&quot;about&quot;</span><span class="p">,</span> <span class="s2">&quot;allowtransparency&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;translate&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;usemap&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="s2">&quot;wrap&quot;</span><span class="p">,</span> <span class="s2">&quot;property&quot;</span><span class="p">,</span> <span class="s2">&quot;integrity&quot;</span><span class="p">,</span> <span class="s2">&quot;crossorigin&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nonce&quot;</span><span class="p">,</span> <span class="s2">&quot;autocapitalize&quot;</span><span class="p">,</span> <span class="s2">&quot;enterkeyhint&quot;</span><span class="p">,</span> <span class="s2">&quot;inputmode&quot;</span><span class="p">,</span> <span class="s2">&quot;is&quot;</span><span class="p">,</span> <span class="s2">&quot;itemid&quot;</span><span class="p">,</span> <span class="s2">&quot;itemprop&quot;</span><span class="p">,</span> <span class="s2">&quot;itemref&quot;</span><span class="p">,</span> <span class="s2">&quot;itemscope&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;itemtype&quot;</span><span class="p">,</span> <span class="s2">&quot;part&quot;</span><span class="p">,</span> <span class="s2">&quot;slot&quot;</span><span class="p">,</span> <span class="s2">&quot;spellcheck&quot;</span><span class="p">,</span> <span class="s2">&quot;alink&quot;</span><span class="p">,</span> <span class="s2">&quot;nowrap&quot;</span><span class="p">,</span> <span class="s2">&quot;vlink&quot;</span><span class="p">,</span> <span class="s2">&quot;vspace&quot;</span><span class="p">,</span> <span class="s2">&quot;language&quot;</span><span class="p">,</span> <span class="s2">&quot;clear&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;hspace&quot;</span><span class="p">,</span> <span class="s2">&quot;xmlns&quot;</span><span class="p">,</span> <span class="s2">&quot;about&quot;</span><span class="p">,</span> <span class="s2">&quot;allowtransparency&quot;</span><span class="p">,</span>
             <span class="s2">&quot;datatype&quot;</span><span class="p">,</span> <span class="s2">&quot;inlist&quot;</span><span class="p">,</span> <span class="s2">&quot;prefix&quot;</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">,</span> <span class="s2">&quot;rev&quot;</span><span class="p">,</span> <span class="s2">&quot;typeof&quot;</span><span class="p">,</span> <span class="s2">&quot;vocab&quot;</span><span class="p">,</span>  <span class="c1"># rdfa</span>
             <span class="s2">&quot;playsinline&quot;</span><span class="p">,</span> <span class="s2">&quot;autopictureinpicture&quot;</span><span class="p">,</span> <span class="s2">&quot;buffered&quot;</span><span class="p">,</span> <span class="s2">&quot;controlslist&quot;</span><span class="p">,</span> <span class="s2">&quot;disableremoteplayback&quot;</span>  <span class="c1"># video</span>
             <span class="p">]</span>
@@ -171,8 +169,20 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">__attributes__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">format_attr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;true&#39;</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;false&#39;</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># lets us have boolean attributes  # TODO - should be optional by a global config</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;async&#39;</span><span class="p">,</span> <span class="s1">&#39;checked&#39;</span><span class="p">,</span> <span class="s1">&#39;autofocus&#39;</span><span class="p">,</span> <span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="s1">&#39;formnovalidate&#39;</span><span class="p">,</span> <span class="s1">&#39;hidden&#39;</span><span class="p">,</span> <span class="s1">&#39;multiple&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;novalidate&#39;</span><span class="p">,</span> <span class="s1">&#39;readonly&#39;</span><span class="p">,</span> <span class="s1">&#39;required&#39;</span><span class="p">,</span> <span class="s1">&#39;selected&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="s1">&#39;&#39;&#39; </span><span class="si">%s</span><span class="s1">&#39;&#39;&#39;</span> <span class="o">%</span> <span class="n">key</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;&#39; </span><span class="si">%s</span><span class="s1">=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;&#39;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;&#39;&#39; </span><span class="si">%s</span><span class="s1">=&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;&#39;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">format_attr</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
         <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">TemplateError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="c1"># except Exception as e:</span>
@@ -411,6 +421,10 @@
             <span class="c1"># dtype = &quot;&lt;!DOCTYPE html&gt;&quot;</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doctype</span>
 
+        <span class="c1"># if self is a closed_tag, return the content</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">closed_tag</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">dent</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">__attributes__</span><span class="si">}</span><span class="s2"> /&gt;&quot;</span>
+
         <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">size</span> <span class="o">&lt;</span> <span class="mi">150</span> <span class="ow">and</span> <span class="n">wrap</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">dent</span><span class="si">}</span><span class="s2">&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">__attributes__</span><span class="si">}</span><span class="s2">&gt;</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s2">&lt;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
@@ -493,19 +507,14 @@
 <span class="n">ul</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;ul&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;ul&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">ol</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;ol&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;ol&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">li</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;li&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;li&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
-<span class="n">hr</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;hr&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;hr&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">div</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
-<span class="n">span</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;span&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;span&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">strong</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;strong&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;strong&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">blockquote</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;blockquote&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;blockquote&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">table</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;table&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">tr</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;tr&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">td</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;td&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
-<span class="n">title</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
-<span class="n">meta</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;meta&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;meta&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
-
-
 <span class="c1"># form = type(&#39;form&#39;, (tag, Element), {&#39;name&#39;: &#39;form&#39;, &#39;__init__&#39;: tag_init})</span>
+
 
 <div class="viewcode-block" id="form"><a class="viewcode-back" href="../../packages/html.html#domonic.html.form">[docs]</a><span class="k">class</span> <span class="nc">form</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -523,15 +532,14 @@
 
 
 <span class="n">label</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
-<span class="n">label</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
-<span class="s1">                .. highlight:: python</span>
-<span class="s1">                .. code-block:: python</span>
+<span class="c1"># label.__doc__ = &#39;&#39;&#39;</span>
+<span class="c1">#                 .. highlight:: python</span>
+<span class="c1">#                 .. code-block:: python</span>
 
-<span class="s1">                    # used to label form elements. i.e.</span>
-<span class="s1">                    label(_for=None, _text=None, **kwargs)</span>
-<span class="s1">                    # &lt;label for=&quot;&quot;&gt;&lt;/label&gt;</span>
-<span class="s1">                &#39;&#39;&#39;</span>
-
+<span class="c1">#                     # used to label form elements. i.e.</span>
+<span class="c1">#                     label(_for=None, _text=None, **kwargs)</span>
+<span class="c1">#                     # &lt;label for=&quot;&quot;&gt;&lt;/label&gt;</span>
+<span class="c1">#                 &#39;&#39;&#39;</span>
 
 <span class="n">submit</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;submit&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 <span class="n">title</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
@@ -644,50 +652,8 @@
 <span class="n">picture</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;picture&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">Element</span><span class="p">),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;picture&#39;</span><span class="p">,</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span> <span class="n">tag_init</span><span class="p">})</span>
 
 
-<span class="c1"># class doctype():</span>
-<span class="c1">#     &quot;&quot;&quot;doctype</span>
-
-<span class="c1">#     - this will be deprecated in the future to the one on the DOM</span>
-
-<span class="c1">#     Returns:</span>
-<span class="c1">#         str: &lt;!DOCTYPE html&gt;</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     def __str__(self):</span>
-<span class="c1">#         return &quot;&lt;!DOCTYPE html&gt;&quot;</span>
-
-<span class="c1">#     def __repr__(self):</span>
-<span class="c1">#         return &quot;&lt;!DOCTYPE html&gt;&quot;</span>
-
-<span class="c1">#     def __call__(self, *args, **kwargs):</span>
-<span class="c1">#         return self.__str__()</span>
-
-<span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="n">DocumentType</span>
+<span class="c1"># legacy.</span>
 <span class="n">doctype</span> <span class="o">=</span> <span class="n">DocumentType</span>
-
-<span class="c1"># class comment():</span>
-<span class="c1">#     &quot;&quot;&quot;comment</span>
-
-<span class="c1">#     - this will be deprecated in the future in favour of Comment on the DOM</span>
-
-<span class="c1">#     Args:</span>
-<span class="c1">#         content (str): Message to be rendered inside the comment tag</span>
-
-<span class="c1">#     Returns:</span>
-<span class="c1">#         str: &quot;&lt;!-- {self.content} --&gt;</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     def __init__(self, content=&quot;&quot;):</span>
-<span class="c1">#         self.content = content</span>
-
-<span class="c1">#     def __str__(self):</span>
-<span class="c1">#         return f&quot;&lt;!-- {self.content} --&gt;&quot;</span>
-
-<span class="c1">#     def __repr__(self):</span>
-<span class="c1">#         return f&quot;&lt;!-- {self.content} --&gt;&quot;</span>
-
-<span class="c1">#     def __call__(self, *args, **kwargs):</span>
-<span class="c1">#         return self.__str__()</span>
-
-<span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="n">Comment</span>
 <span class="n">comment</span> <span class="o">=</span> <span class="n">Comment</span>
 
 

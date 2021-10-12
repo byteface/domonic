@@ -137,11 +137,15 @@ class tag(object):
     @property
     def __attributes__(self):
         def format_attr(key, value):
+            if value is True:
+                value = 'true'
+            if value is False:
+                value = 'false'
             key = key.split('_', 1)[1]
             # lets us have boolean attributes  # TODO - should be optional by a global config
             if key in ['async', 'checked', 'autofocus', 'disabled', 'formnovalidate', 'hidden', 'multiple',
                        'novalidate', 'readonly', 'required', 'selected']:
-                if value == '' or value == key or value == True:
+                if value == '' or value == key:
                     return ''' %s''' % key
             return ''' %s="%s"''' % (key, value)
         try:
