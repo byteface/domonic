@@ -20,6 +20,6 @@ Styling gets passed to the style tag on render.
 CSSOM is also stubbed out. See the styles.py class. Feel free to make a PR
 
 
-.. automodule:: domonic.styles
+.. automodule:: domonic.style
     :members:
     :noindex:

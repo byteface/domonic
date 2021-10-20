@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.style &#8212; domonic 0.7.0 documentation</title>
+    <title>domonic.style &#8212; domonic 0.6.3 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -176,6 +176,10 @@
 <div class="viewcode-block" id="CSSStyleSheet"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.style.CSSStyleSheet">[docs]</a><span class="k">class</span> <span class="nc">CSSStyleSheet</span><span class="p">(</span><span class="n">StyleSheet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Creates a new CSSStyleSheet object.&quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="p">[]</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cssRules</span><span class="p">():</span>  <span class="c1"># -&gt; &#39;CSSStyleRuleList&#39;:</span>
         <span class="sd">&quot;&quot;&quot;Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects</span>
@@ -235,7 +239,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** MADE A STYLE11 ***&quot;</span><span class="p">)</span>
+        <span class="c1"># print(&quot;*** MADE A STYLE11 ***&quot;)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_members_checked</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -2863,8 +2867,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">decorators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Templates and Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/webapi.html">webapi</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">🚀 servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>

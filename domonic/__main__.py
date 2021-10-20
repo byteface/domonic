@@ -65,6 +65,7 @@ function project(){
 }
 
 '''
+# TODO - nautilus instead of open for linux
 
 # def install():
 # def clone_webpage(url):

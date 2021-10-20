@@ -3507,7 +3507,8 @@ class DOMQuad:
 
     @staticmethod
     def getBounds(quad):
-        return DOMRect(quad.p1.x, quad.p1.y, quad.p2.x - quad.p1.x, quad.p2.y - quad.p1.y)
+        # return DOMRect(quad.p1.x, quad.p1.y, quad.p2.x - quad.p1.x, quad.p2.y - quad.p1.y)
+        raise NotImplementedError
 
     @staticmethod
     def toJSON(quad):
@@ -3582,18 +3583,21 @@ class NodeIterator():
         return self._filter
 
     # def expandEntityReferences(self, expand):
-        # Is a boolean value indicating if, when discarding an EntityReference its whole sub-tree must be discarded at the same time.
+        # Is a boolean value indicating if,
+        # when discarding an EntityReference its whole sub-tree must be discarded at the same time.
 
     def referenceNode(self):
         """ Returns the Node that is being iterated over. """
         return self.node
 
     def pointerBeforeReferenceNode(self):
-        # Returns a boolean flag that indicates whether the NodeIterator is anchored before, the flag being true, or after, the flag being false, the anchor node.
+        # Returns a boolean flag that indicates whether the NodeIterator is anchored before,
+        # the flag being true, or after, the flag being false, the anchor node.
         return self.pointer < 0
 
     def detach(self):
-        # This operation is a no-op. It doesn't do anything. Previously it was telling the engine that the NodeIterator was no more used, but this is now useless.
+        # This operation is a no-op. It doesn't do anything.
+        # Previously it was telling the engine that the NodeIterator was no more used, but this is now useless.
         pass
 
     def previousNode(self):
@@ -3658,7 +3662,7 @@ def traverseChildren(tw, _type):
     # print('flaps', tw.currentNode.firstChild)
     # print('flaps2', )
     # print('tw.currentNode', tw.currentNode)
-    # print('MAKE THIS WORK ON NODE:', tw.currentNode[mapChild[_type]])
+    # print('MAKE THIS WORK ON NODE:', tw.currentNode[mapChild[_type]]) #done
 
     # node = str_to_TextNode(node)
 
@@ -3772,6 +3776,7 @@ class TreeWalker():
         self.whatToShow = whatToShow or 0
 
         self._filter = _filter
+
         def acceptNode(node):
             nonlocal _filter
             # result
@@ -3860,7 +3865,8 @@ class TreeWalker():
 
     def previousNode(self):
         """ Moves the current Node to the previous visible node in the document order,
-        and returns the found node. It also moves the current node to this one. If no such node exists, or if it is before that the root node defined at the object construction,
+        and returns the found node. It also moves the current node to this one.
+        If no such node exists, or if it is before that the root node defined at the object construction,
         returns null and the current node is not changed. """
         # return self.previous
         # raise NotImplementedError()
