@@ -312,10 +312,7 @@ class Window(Window):
         (https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm)
 
         Args:
-            message ([type]): [description]
-
-        Raises:
-            NotImplementedError: [description]
+            message ([type]): [the message to display in the dialog box]
         """
         raise NotImplementedError
 
@@ -351,12 +348,14 @@ class Window(Window):
         # from domonic.webapi.history import History
         # return History()
 
-    # Returns the height of the window's content area (viewport) including scrollbars Window
     def innerHeight(self):
+        """[Returns the height of the window's content area (viewport) including scrollbars]
+        """
         raise NotImplementedError
 
-    # Returns the width of a window's content area (viewport) including scrollbars  
     def innerWidth(self):
+        """[Returns the width of a window's content area (viewport) including scrollbars]
+        """
         raise NotImplementedError
 
     # Returns a MediaQueryList object representing the specified CSS media query string 
@@ -384,12 +383,13 @@ class Window(Window):
     def name(self):
         """ Returns the name of the window """
         raise NotImplementedError
-    
+
     @property
     def navigator(self):
         """ Returns the Navigator object for the window """
         return self._navigator
-
+    
+    '''
     # # The event occurs when the window's history changes  PopStateEvent?
     # def onpopstate(self):
     #     raise NotImplementedError
@@ -481,7 +481,7 @@ class Window(Window):
     # the topmost browser window
     def top(self):
         raise NotImplementedError
-
+    '''
 
 # global window
 window = Window()

@@ -17,7 +17,5 @@ from domonic.JSON import *
 
 #     def test_json(self):
 
-
-
 # if __name__ == '__main__':
 #     unittest.main()

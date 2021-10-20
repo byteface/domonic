@@ -325,7 +325,7 @@ class TestCase(unittest.TestCase):
         assert f(-0.429) == "−$0.43"
         assert f(-1) == "−$1.00"
         assert f(1e4) == "+$10,000.00"
-        print( f(1e4) )
+        print(f(1e4))
 
         assert format("10,.1f")(123456.49) == " 123,456.5"
         assert format("10,.2f")(1234567.449) == "1,234,567.45"
@@ -686,8 +686,8 @@ class TestCase(unittest.TestCase):
         # return
 
         print(select("svg").append("g"))
-        print("shoudlbe::",b)
-        print("shoudlbe::",*b)
+        print("shoudlbe::", b)
+        print("shoudlbe::", *b)
         print(str(page))
         # return
         # d3.select("body")
@@ -700,10 +700,7 @@ class TestCase(unittest.TestCase):
         #     .attr("width", 920)
         #     .attr("height", 460);
 
-
-        # 
         # #.append("svg").attr("width", 960).attr("height", 500).append("g").attr("transform", "translate(20,20)").append("rect").attr("width", 920).attr("height", 460)
-
 
         page = html(
             head(

@@ -923,7 +923,6 @@ class TestCase(unittest.TestCase):
         window.alert(len(walker.currentNode.childNodes))  # //alerts 7 (includes text nodes)
         window.alert(len(walker.currentNode.getElementsByTagName("*")))  # //alerts 3
 
-
         # test 3
         doc = html(
             div(_id="main").html(

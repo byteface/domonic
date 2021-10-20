@@ -143,6 +143,10 @@ class CSSRuleList:
 class CSSStyleSheet(StyleSheet):
     """Creates a new CSSStyleSheet object."""
 
+    def __init__(self):
+        super().__init__()
+        self.rules = []
+
     @property
     def cssRules():  # -> 'CSSStyleRuleList':
         """Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects
@@ -202,7 +206,7 @@ class Style(object):
     """
 
     def __init__(self, parent_node=None):
-        print("*** MADE A STYLE11 ***")
+        # print("*** MADE A STYLE11 ***")
 
         self._members_checked = 0
 
