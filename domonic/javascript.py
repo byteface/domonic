@@ -679,59 +679,60 @@ class Map(object):
         return str([(x, self._dict[x]) for x in self._order])
 
 
-class FormData(object):
-    """[utils for a form]
+# TODO - moved to webapi.xhr . might import here for convenience?
+# class FormData(object):
+#     """[utils for a form]
 
-    Args:
-        object ([str]): [takes a string or pyml object and returns a FormData]
-    """
+#     Args:
+#         object ([str]): [takes a string or pyml object and returns a FormData]
+#     """
 
-    def __init__(self, form):
-        """ creates a new FormData object. """
-        # TODO - parse to domonic.
-        # if isinstance(form, str):
-        #   self._data = domonic.loads(form) # TODO - parser wont be done enough yet
-        # if isinstance(form, Node):
-        #   self._data = form
-        raise NotImplementedError
+#     def __init__(self, form):
+#         """ creates a new FormData object. """
+#         # TODO - parse to domonic.
+#         # if isinstance(form, str):
+#         #   self._data = domonic.loads(form) # TODO - parser wont be done enough yet
+#         # if isinstance(form, Node):
+#         #   self._data = form
+#         raise NotImplementedError
 
-    def append(self, name, value, filename):
-        """ Appends a new value onto an existing key inside a FormData object,
-        or adds the key if it does not already exist. """
-        raise NotImplementedError
+#     def append(self, name, value, filename):
+#         """ Appends a new value onto an existing key inside a FormData object,
+#         or adds the key if it does not already exist. """
+#         raise NotImplementedError
 
-    def delete(self, name):
-        """ Deletes a key/value pair from a FormData object. """
-        raise NotImplementedError
+#     def delete(self, name):
+#         """ Deletes a key/value pair from a FormData object. """
+#         raise NotImplementedError
 
-    def entries(self):
-        """ Returns an iterator allowing to go through all key/value pairs contained in this object. """
-        raise NotImplementedError
+#     def entries(self):
+#         """ Returns an iterator allowing to go through all key/value pairs contained in this object. """
+#         raise NotImplementedError
 
-    def get(self, name):
-        """ Returns the first value associated with a given key from within a FormData object. """
-        raise NotImplementedError
+#     def get(self, name):
+#         """ Returns the first value associated with a given key from within a FormData object. """
+#         raise NotImplementedError
 
-    def getAll(self, name):
-        """ Returns an array of all the values associated with a given key from within a FormData """
-        raise NotImplementedError
+#     def getAll(self, name):
+#         """ Returns an array of all the values associated with a given key from within a FormData """
+#         raise NotImplementedError
 
-    def has(self, name):
-        """ Returns a boolean stating whether a FormData object contains a certain key."""
-        raise NotImplementedError
+#     def has(self, name):
+#         """ Returns a boolean stating whether a FormData object contains a certain key."""
+#         raise NotImplementedError
 
-    def keys(self):
-        """ Returns an iterator allowing to go through all keys of the key/value pairs contained in this object."""
-        raise NotImplementedError
+#     def keys(self):
+#         """ Returns an iterator allowing to go through all keys of the key/value pairs contained in this object."""
+#         raise NotImplementedError
 
-    def set(self, name, value, filename):
-        """ Sets a new value for an existing key inside a FormData object,
-        or adds the key/value if it does not already exist."""
-        raise NotImplementedError
+#     def set(self, name, value, filename):
+#         """ Sets a new value for an existing key inside a FormData object,
+#         or adds the key/value if it does not already exist."""
+#         raise NotImplementedError
 
-    def values(self):
-        """ Returns an iterator allowing to go through all values  contained in this object."""
-        raise NotImplementedError
+#     def values(self):
+#         """ Returns an iterator allowing to go through all values  contained in this object."""
+#         raise NotImplementedError
 
 
 class Worker(object):
@@ -2872,15 +2873,39 @@ class String(object):
             return -1
 
     def codePointAt(self, index: int):
-        """ Returns the Unicode code point at the specified index """
+        """[Returns the Unicode code point at the specified index (position)]
+
+        Args:
+            index (int): [index position]
+
+        Returns:
+            [type]: [the Unicode code point at the specified index (position)]
+        """
         return ord(self.x[index])
 
     def padEnd(self, length: int, padChar: str = " "):
-        """ Pads the end of a string with a specified character """
+        """[Pads the end of a string with a specified character
+        (repeated, if needed) to create a new string.]
+
+        Args:
+            length (int): [the length of the resulting string]
+            padChar (str, optional): [the character to use for padding. Defaults to " "].
+
+        Returns:
+            [str]: [the padded string]
+        """
         return str(self.x + padChar * (length - len(self.x)))
 
     def padStart(self, length: int, padChar: str = " "):
-        """ Pads the start of a string with a specified character """
+        """[Pads the start of a string with a specified character]
+
+        Args:
+            length (int): [the length of the resulting string]
+            padChar (str, optional): [the character to use for padding. Defaults to " "].
+
+        Returns:
+            [str]: [the padded string]
+        """
         return padChar * (length - len(self.x)) + self.x
 
     def localeCompare(self, comparisonString: str, locale: str = None, *args):
@@ -2892,12 +2917,26 @@ class String(object):
         # pass
         raise NotImplementedError
 
-    def trimStart(self, length: int):
-        """ Removes whitespace from the start of a string """
+    def trimStart(self, length: int):  # TODO - huh?. length 
+        """[Removes whitespace from the beginning of a string.]
+
+        Args:
+            length (int): [the length of the resulting string]
+
+        Returns:
+            [str]: [the trimmed string]
+        """
         return self.x.lstrip()
 
-    def trimEnd(self, length: int):
-        """ Removes whitespace from the end of a string """
+    def trimEnd(self, length: int):  # TODO - huh?. length 
+        """[Removes whitespace from the end of a string]
+
+        Args:
+            length (int): [the length of the resulting string]
+
+        Returns:
+            [type]: [the trimmed string]
+        """
         return self.x.rstrip()
 
     def includes(self, searchValue: str, position: int = 0):
@@ -2955,6 +2994,163 @@ class String(object):
         return self.x.rindex(searchValue, fromIndex)
 
     # def test(self, pattern: str):? was this on string?
+
+    # TODO - test all these
+    def anchor(self, name: str):
+        # from domonic.html import a
+        # return a(str(self), _name=name)  #TODO - no href bug
+        return '<a name="{}">{}</a>'.format(name, self.x)
+
+    def big(self):
+        """[wraps the string in big tags]
+
+        Returns:
+            [str]: [the string in big tags]
+        """
+        return "<big>" + self.x + "</big>"
+
+    def blink(self):
+        """[wraps the string in blink tags]
+
+        Returns:
+            [str]: [the string in blink tags]
+        """
+        return "<blink>" + self.x + "</blink>"
+
+    def bold(self):
+        """[wraps the string in bold tags]
+
+        Returns:
+            [str]: [the string in bold tags]
+        """
+        return "<b>" + self.x + "</b>"
+
+    def fixed(self):
+        """[wraps the string in fixed tags]
+
+        Returns:
+            [str]: [the string in fixed tags]
+        """
+        return "<tt>" + self.x + "</tt>"
+
+    def fontcolor(self, color: str):
+        """[wraps the string in font tags with a specified color]
+
+        Args:
+            color (str): [the color to use]
+        
+        Returns:
+            [str]: [the string in font tags]
+        """
+        return "<font color=" + color + ">" + self.x + "</font>"
+
+    def fontsize(self, size: str):
+        """[wraps the string in font tags with a specified size]
+
+        Args:
+            size (str): [the size to use]
+        
+        Returns:
+            [str]: [the string in font tags]
+        """
+        return "<font size=" + size + ">" + self.x + "</font>"
+
+    def italics(self):
+        """[wraps the string in italics tags]
+
+        Returns:
+            [str]: [the string in italics tags]
+        """
+        return "<i>" + self.x + "</i>"
+
+    def link(self, url: str):
+        """[wraps the string in a link tag]
+
+        Args:
+            url (str): [the url to use]
+        
+        Returns:
+            [str]: [the string in a link tag]
+        """
+        return "<a href=" + url + ">" + self.x + "</a>"
+
+    def small(self):
+        """[wraps the string in small tags]
+
+        Returns:
+            [str]: [the string in small tags]
+        """
+        return "<small>" + self.x + "</small>"
+
+    def strike(self):
+        """[wraps the string in strike tags]
+
+        Returns:
+            [str]: [the string in strike tags]
+        """
+        return "<strike>" + self.x + "</strike>"
+
+    def sub(self):
+        """[wraps the string in sub tags]
+
+        Returns:
+            [str]: [the string in sub tags]
+        """
+        return "<sub>" + self.x + "</sub>"
+
+    def sup(self):
+        """[wraps the string in sup tags]
+
+        Returns:
+            [str]: [the string in sup tags]
+        """
+        return "<sup>" + self.x + "</sup>"
+
+    def div(self, *args, **kwargs):
+        """[wraps the string in a div tag]
+
+        Returns:
+            [str]: [the string in a div tag]
+        """
+        from domonic.html import div
+        return div(self.x, *args, **kwargs)
+
+    def webpage(self):
+        """[wraps the string in a webpage]
+
+        Returns:
+            [str]: [the string as a webpage]
+        """
+        from domonic.html import html, body, head, title, script, style, meta, link, a, h1
+        content = html(
+            head(
+                title(self.x),
+                script(""),
+                style(""),
+                meta(_charset="utf-8"),
+                link(_rel="stylesheet", _href=""),
+            ),
+            body(
+                h1(self.x),
+            ),
+        )
+        return str(content)
+
+    def __call__(self, tag :str, **kwargs):
+        """ 
+        lets you transform a string into a dom element
+        with the string as the content.
+
+        also accepts a list of kwargs to pass as attributes
+
+        i.e
+        >>> test = String("time to take a mo")
+        >>> test('div', _style="font-color:red;")
+        >>> str(test('div', _style="font-color:red;"))
+
+        """
+        from domonic.dom import Document
+        return Document.createElement(tag, self.x, **kwargs)
 
 
 class RegExp():
@@ -3497,6 +3693,52 @@ class ArrayBuffer:
 
     def slice(self, start, end):
         return self.buffer[start:end]
+
+
+class DataView(ArrayBuffer):
+#?? is this right. don't look lt
+        def __init__(self, buffer, byteOffset=0, byteLength=None):
+            super().__init__(byteLength)
+            self.isView = True
+            self.buffer = buffer
+            self.byteOffset = byteOffset
+            self.byteLength = byteLength
+
+        def getUint8(self, index):
+            return self.buffer.getUint8(self.byteOffset + index)
+
+        def getInt8(self, index):
+            return self.buffer.getInt8(self.byteOffset + index)
+
+        def getUint16(self, index, littleEndian=False):
+            return self.buffer.getUint16(self.byteOffset + index, littleEndian)
+
+        def getInt16(self, index, littleEndian=False):
+            return self.buffer.getInt16(self.byteOffset + index, littleEndian)
+
+        def getUint32(self, index, littleEndian=False):
+            return self.buffer.getUint32(self.byteOffset + index, littleEndian)
+
+        def getInt32(self, index, littleEndian=False):
+            return self.buffer.getInt32(self.byteOffset + index, littleEndian)
+
+        def getFloat32(self, index, littleEndian=False):
+            return self.buffer.getFloat32(self.byteOffset + index, littleEndian)
+
+        def getFloat64(self, index, littleEndian=False):
+            return self.buffer.getFloat64(self.byteOffset + index, littleEndian)
+
+        def setUint8(self, index, value):
+            self.buffer.setUint8(self.byteOffset + index, value)
+
+        def setInt8(self, index, value):
+            self.buffer.setInt8(self.byteOffset + index, value)
+
+        def setUint16(self, index, value, littleEndian=False):
+            self.buffer.setUint16(self.byteOffset + index, value, littleEndian)
+
+        def setInt16(self, index, value, littleEndian=False):
+            self.buffer.setInt16(self.byteOffset + index, value, littleEndian)
 
 
 class TypedArray:
@@ -4305,50 +4547,4 @@ class Atomics():
 
 '''
 
-
-'''
-
-# class ClipboardData():
-    # clipboardData Returns an object containing the data affected by the clipboard operation
-    # def __init__():
-        # pass
-
-# class History():
-    # def __init__():
-        # pass
-    # def back():
-    #     """ Loads the previous URL in the history list """
-    #     raise NotImplementedError
-    # def forward():
-    #     """ Loads the next URL in the history list """
-    #     raise NotImplementedError
-    # def go():
-    #     """ Loads a specific URL from the history list """
-    #     raise NotImplementedError
-
-
-# class Geolocation():
-    # def __init__():
-        # pass
-    def clearWatch():
-    """  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    """
-    def coordinates   Returns:
-    """ the position and altitude of the device on Earth    """
-    def getCurrentPosition():
-    """  Returns the current position of the device  """
-    def position  Returns:
-    """ the position of the concerned device at a given time    """
-    def positionError Returns:
-    """ the reason of an error occurring when using the geolocating device  """
-    def positionOptions   Describes:
-    """ an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition()
-    and Geolocation.watchPosition() """
-    def watchPosition():
-    """   Returns a watch ID value that then can be used to unregister the handler by passing it to the
-    Geolocation.clearWatch() method   """
-
-
-
 # debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements
-
-'''

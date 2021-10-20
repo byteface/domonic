@@ -3,6 +3,8 @@
     ====================================
     dom events
 
+    https://developer.mozilla.org/en-US/docs/Web/Events
+
 """
 
 # from typing import *
@@ -156,7 +158,27 @@ class Event(object):
         pass
 
 
-class MouseEvent(Event):
+class UIEvent(Event):
+    """ UIEvent """
+    def __init__(self, _type, *args, **kwargs):
+        self.detail = None
+        self.view = None
+        self.detail = None
+        self.layerX = None
+        self.layerY = None
+        self.which = None
+        self.sourceCapabilities = None
+        super().__init__(_type, *args, **kwargs)
+
+    def initUIEvent(self, _type, canBubble, cancelable, view, detail):
+        self._type = _type
+        self.canBubble = canBubble
+        self.cancelable = cancelable
+        self.view = view
+        self.detail = detail
+
+
+class MouseEvent(UIEvent):
     """ mouse events """
     CLICK = "click"  #:
     CONTEXTMENU = "contextmenu"  #:
@@ -255,11 +277,18 @@ class MouseEvent(Event):
     # relatedTarget Returns the element related to the element that triggered the mouse event   MouseEvent, FocusEvent
 
 
-class KeyboardEvent(Event):
+class KeyboardEvent(UIEvent):
     """ keyboard events """
     KEYDOWN = "keydown"  #:
     KEYPRESS = "keypress"  #:
     KEYUP = "keyup"  #:
+
+    DOM_KEY_LOCATION_LEFT = 0  #:
+    DOM_KEY_LOCATION_STANDARD = 1  #:
+    DOM_KEY_LOCATION_RIGHT = 2  #:
+    DOM_KEY_LOCATION_NUMPAD = 3  #:
+    DOM_KEY_LOCATION_MOBILE = 4  #:
+    DOM_KEY_LOCATION_JOYSTICK = 5  #:
 
     def __init__(self, _type, *args, **kwargs):
         # self.args = args
@@ -333,14 +362,6 @@ class KeyboardEvent(Event):
     # location  Returns the location of a key on the keyboard or device KeyboardEvent
 
 
-class UIEvent(Event):
-    """ UIEvent """
-    def __init__(self, _type, *args, **kwargs):
-        self.detail = None
-        self.view = None
-        super().__init__(_type, *args, **kwargs)
-
-
 class CompositionEvent(UIEvent):
     """ CompositionEvent """
 
@@ -354,7 +375,7 @@ class CompositionEvent(UIEvent):
         super().__init__(_type, *args, **kwargs)
 
 
-class FocusEvent(Event):
+class FocusEvent(UIEvent):
     """ FocusEvent """
     BLUR = "blur"  #:
     FOCUS = "focus"  #:
@@ -366,7 +387,7 @@ class FocusEvent(Event):
         super().__init__(_type, *args, **kwargs)
 
 
-class TouchEvent(Event):
+class TouchEvent(UIEvent):
     """ TouchEvent """
     TOUCHCANCEL = "touchcancel"  #:
     TOUCHEND = "touchend"  #:
@@ -385,7 +406,7 @@ class TouchEvent(Event):
         super().__init__(_type, *args, **kwargs)
 
 
-class WheelEvent(Event):
+class WheelEvent(UIEvent):
     """ WheelEvent """
     MOUSEWHEEL = "mousewheel"  # DEPRECATED - USE WHEEL  #:
     WHEEL = "wheel"  #:
@@ -512,20 +533,22 @@ class HashChangeEvent(Event):
         super().__init__(_type, *args, **kwargs)
 
 
-class InputEvent(Event):
+class InputEvent(UIEvent):
     """ InputEvent """
     def __init__(self, _type, *args, **kwargs):
         self.data = None
         """ Returns the inserted characters """
         self.dataTransfer
         """ Returns an object containing information about the inserted/deleted data """
-        self.getTargetRanges
-        """ Returns an array containing target ranges that will be affected by the insertion/deletion """
         self.inputType
         """ Returns the type of the change (i.e "inserting" or "deleting") """
         self.isComposing
         """ Returns whether the state of the event is composing or not """
         super().__init__(_type, *args, **kwargs)
+
+    def getTargetRanges(self):
+        """ Returns an array containing target ranges that will be affected by the insertion/deletion """
+        pass
 
 
 class PageTransitionEvent(Event):
@@ -541,6 +564,8 @@ class PageTransitionEvent(Event):
 
 class PopStateEvent(Event):
     """ PopStateEvent """
+    POPSTATE = "popstate"  #:
+    # ONPOPSTATE = "onpopstate"  #:??
     def __init__(self, _type, *args, **kwargs):
         self.state = None
         """ Returns an object containing a copy of the history entries """
@@ -549,6 +574,7 @@ class PopStateEvent(Event):
 
 class StorageEvent(Event):
     """ StorageEvent """
+    STORAGE = "storage"  #:
     def __init__(self, _type, *args, **kwargs):
         self.key = None
         """ Returns the key of the changed storage item """
@@ -605,6 +631,62 @@ class GamePadEvent(Event):
         super().__init__(_type, *args, **kwargs)
 
 
+# TODO - tests and service worker API
+class FetchEvent(Event):
+    """ FetchEvent """
+    def __init__(self, _type, *args, **kwargs):
+        self.clientId = None
+        """ Returns the client ID of the fetch request """
+        self.request = None
+        """ Returns the request object """
+        self.isReload = None
+        """ Returns whether the request is a reload or not """
+        super().__init__(_type, *args, **kwargs)
+
+    @property
+    def isReload(self):
+        return self.request.url == self.request.referrer
+
+    @property
+    def replacesClientId(self):
+        return self.clientId != self.request.clientId
+
+    @property
+    def resultingClientId(self):
+        return self.clientId if self.replacesClientId else self.request.clientId
+
+    def respondWith(self, response):
+        """ Returns a promise that resolves to the response object """
+        pass
+
+    def waitUntil(self, promise):
+        """ Returns a promise that resolves when the response is available """
+        pass
+
+
+class ExtendableEvent(Event):
+    """ ExtendableEvent """
+    def __init__(self, _type, *args, **kwargs):
+        self.extendable = None
+        """ Returns whether the event is extendable or not """
+        self.timeStamp = None
+        """ Returns the time stamp of the event """
+        # self.waitUntil(promise)
+        """ Returns a promise that resolves when the event is handled """
+        super().__init__(_type, *args, **kwargs)
+
+
+class SyncEvent(ExtendableEvent):
+    """ SyncEvent """
+    def __init__(self, _type, *args, **kwargs):
+        self.tag = None
+        """ Returns the tag of the sync event """
+        self.lastChance = None
+        """ Returns whether the sync event is the last chance or not """
+        super().__init__(_type, *args, **kwargs)
+
+# class InstallEvent()
+
 # class DeviceMotionEvent(Event):
 #     """ DeviceMotionEvent """
 #     def __init__(self, _type, *args, **kwargs):
@@ -655,7 +737,6 @@ class GamePadEvent(Event):
 #         super().__init__(_type, *args, **kwargs)
 
 
-
 class TweenEvent(Event):
     """ TweenEvent """
     START = "onStart"  #:
@@ -682,6 +763,23 @@ class TweenEvent(Event):
         # super.__init__(self, type, bubbles, cancelable)
         super().__init__(_type)  # TODO -
         self.source = source
+
+
+class PromiseRejectionEvent(Event):  # TODO - put in the js class?
+
+    # constants
+    UNHANDLED = "unhandledrejection"  #:
+    HANDLED = "rejectionhandled"  #:
+
+    """ PromiseRejectionEvent """
+    def __init__(self, _type, *args, **kwargs):
+        self.promise = None
+        """ Returns the promise that was rejected """
+        self.reason = None
+        """ Returns the reason of the rejection """
+        self.isRejected = None
+        """ Returns whether the promise was rejected or not """
+        super().__init__(_type, *args, **kwargs)
 
 
 class GlobalEventHandler:  # (EventDispatcher):
@@ -1031,3 +1129,84 @@ class GlobalEventHandler:  # (EventDispatcher):
     def ontransitionend(self, event):
         print(event)
         raise NotImplementedError
+
+# TODO - put in the window module?
+class WindowEventHandler:  # (EventHandler):
+    def __init__(self, window):
+        super().__init__()
+        self.window = window
+
+    def onabort(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def onafterprint(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def onbeforeprint(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def onbeforeunload(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def onblur(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def oncanplay(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def oncanplaythrough(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def onchange(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def onclick(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def oncontextmenu(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def oncopy(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def oncuechange(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def oncut(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def ondblclick(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def ondrag(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def ondragend(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def ondragenter(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def ondragleave(self, event):
+        print(event)
+        raise NotImplementedError
+
+    def ondragover(self, event):
+        print(event)

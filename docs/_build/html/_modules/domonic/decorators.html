@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.decorators &#8212; domonic 0.5.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <title>domonic.decorators &#8212; domonic 0.6.3 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
@@ -140,6 +140,29 @@
 <span class="c1"># @accepts(int)</span>
 
 
+<span class="c1"># CACHED = {}</span>
+<span class="c1"># def memoize(f):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     @memoize</span>
+<span class="c1">#     def fib(n):</span>
+<span class="c1">#         if n in (0, 1):</span>
+<span class="c1">#             return n</span>
+<span class="c1">#         return fib(n - 1) + fib(n - 2)</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     @functools.wraps(f)</span>
+<span class="c1">#     def new_f(*args):</span>
+<span class="c1">#         if args in CACHED:</span>
+<span class="c1">#             return CACHED[args]</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             result = f(*args)</span>
+<span class="c1">#             CACHED[args] = result</span>
+<span class="c1">#             return result</span>
+<span class="c1">#     return new_f</span>
+
+
+<span class="c1"># def requires_websocket(f): # decorate all functions that require websockets to warn user</span>
+
+
 <div class="viewcode-block" id="silence"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.silence">[docs]</a><span class="k">def</span> <span class="nf">silence</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; stop a function from doing anything &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">dont_do_it</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
@@ -182,19 +205,16 @@
 
 
 <div class="viewcode-block" id="deprecated"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.utils.deprecated">[docs]</a><span class="k">def</span> <span class="nf">deprecated</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This is a decorator which can be used to mark functions</span>
-<span class="sd">    as deprecated. It will result in a warning being emitted</span>
-<span class="sd">    when the function is used.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    marks a function as deprecated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">new_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;always&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>  <span class="c1"># turn off filter</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Call to deprecated function </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
-                      <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-                      <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>  <span class="c1"># reset filter</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;always&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Call to deprecated function </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">new_func</span></div>
-<span class="c1"># considered this a few times</span>
 
 
 <span class="c1"># def evt(event, *args, **kwargs):  #TODO</span>
@@ -244,45 +264,43 @@
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">domonic</a></h1>
-
-
-
-
-
-
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="https://domonic.readthedocs.io/">domonic</a></h1>
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=byteface&repo=domonic&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
 </p>
 
-
-
-
-
-<h3>Navigation</h3>
+<h3>Links</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">Domonic: HTML</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">Domonic: DOM</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">Domonic: Javascript</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">Domonic: events</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">Domonic: dQuery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">Domonic: JSON</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">Domonic: constants</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">Domonic: terminal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">Domonic: cmd</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">Domonic: tween</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">Domonic: geom</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">Domonic: x3d</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">Domonic: CDN</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">Domonic: decorators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Domonic: templates and components</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">Domonic: utils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">Domonic: servers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">Domonic: autodocs</a></li>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
 </ul>
-
+<h3><a href="../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">🤖 autodocs</a></li>
+</ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -296,20 +314,12 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
 <script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>

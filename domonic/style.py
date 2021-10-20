@@ -2733,7 +2733,7 @@ class CSSStyleDeclaration(Style):
     """
 
     def __init__(self, parentNode=None, *args, **kwargs):
-        print("*** MADE A STYLE ***")
+        # print("*** MADE A STYLE ***")
         # super(Style).__init__(*args, **kwargs)
         super().__init__(parentNode, *args, **kwargs)
 

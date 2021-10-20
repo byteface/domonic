@@ -7,16 +7,17 @@ from domonic.geom import vec3, vec4
 
 
 class Color():
-    """
-        a class for all possible colors
-    """
+    """ Color Functions """
+
+    # BLACK = Color(0, 0, 0)
+    # WHITE = Color(255, 255, 255)
 
     @staticmethod
     def random_hex():
-        """[random_hex]
+        """[returns a random hex color i.e. #000000]
 
         Returns:
-            [str]: [random hex color]
+            [str]: [random hex color i.e. #000000]
         """
         import random
 
@@ -29,13 +30,13 @@ class Color():
 
     @staticmethod
     def hex2rgb(h: str):
-        """[hex2rgb]
+        """[takes a hex color in the form of #RRGGBB and returns the rgb values as a tuple i.e (r, g, b)]
 
         Args:
-            h ([str]): [hex string]
+            h ([str]): [hex string i.e #ffffff]
 
         Returns:
-            [tuple]: [rgb tuple]
+            [tuple]: [rgb tuple i.e. (255, 255, 255)]
         """
         if h[0] == '#':
             h = h.lstrip('#')
@@ -82,8 +83,8 @@ class Color():
     #     return h, s, l
 
     @staticmethod
-    def rgb2hex(a, b, c):
-        """[rgb2hex]
+    def rgb2hex(r, g, b):
+        """[ takes 3 rgb values and returns a hex string i.e. #000000]
 
         Args:
             a ([type]): [r]
@@ -91,24 +92,37 @@ class Color():
             c ([type]): [b]
 
         Returns:
-            [str]: [retuns a hex string]
+            [str]: [retuns a hex string i.e #ffffff]
         """
         #  TODO - pass tuples or
         # if isinstance(a, (int, float)):
         # elif isinstance(a, (tuple, list)):
-        return '#%02x%02x%02x' % (a, b, c)
+        return '#%02x%02x%02x' % (r, g, b)
 
+    # deprecated
     @staticmethod
     def fromRGBA(r, g, b, a):
+        """[creates a Color from rgba values]
+
+        Args:
+            r ([type]): [description]
+            g ([type]): [description]
+            b ([type]): [description]
+            a ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         return Color(r, g, b, a)
 
     # @staticmethod
     # def fromHsl(h, s, l):
     #     return Color(h, s, l)
 
+    # deprecated
     @staticmethod
     def fromHex(hex):
-        """ create a color from a hex string """
+        """ create a Color from a hex string i.e. #ffffff """
         return Color(hex)
 
     def __init__(self, *args, **kwargs):
@@ -161,6 +175,9 @@ class Color():
     def __str__(self):
         return Color.rgb2hex(self.r, self.g, self.b)
 
+    # def __repr__(self):
+    #     return str(self)
+
     def toHsv(self):
         """ get the hsv for the color """
         return (self.hue, self.saturation, self.brightness)
@@ -175,8 +192,33 @@ class Color():
     def toRGBA(self):
         return (self.r, self.g, self.b, self.a)
 
-    def convert(self, to):
-        """ convert the color to another color """
+    def toSVG(self, shape="circle", size=10):
+        """ returns the color as an svg string
+        Args:
+            shape ([str]): [can be circle or square]
+            size ([int]): [size in pixels]
+        """
+        if shape == "circle":
+            return '<circle cx="0" cy="0" r="%d" fill="%s" />' % (size, self.toHex())
+        if shape == "square":
+            return '<rect x="0" y="0" width="%d" height="%d" fill="%s" />' % (size, size, self.toHex())
+
+    # def toIMG(self, size=10):
+    #     """ returns the color as an svg string
+    #     Args:
+    #         shape ([str]): [can be circle or square]
+    #         size ([int]): [size in pixels]
+    #     """
+    #     import PIL.Image as Image
+    #     img = Image.new('RGB', (size, size), self.toHex())
+    #     return img
+
+    def convert(self, to: str):
+        """ convert the color to a different color space
+
+        Args:
+            to ([str]): [can be one of the following: 'rgb', 'hsl', 'hsv', 'hex']
+        """
         if to == 'rgb':
             return self.toRGB()
         if to == 'hsl':

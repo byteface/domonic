@@ -31,7 +31,7 @@ https://domonic.readthedocs.io/
 
 or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
 
-(small footprint. under 250kb compressed with only a few common lightweight dependencies)
+(small footprint. with only a few common lightweight dependencies)
 
 
 ## HTML Templating with Python 3
@@ -238,7 +238,20 @@ timeoutID = setTimeout(hi, 1000)
 
 ```
 
-a-tags inherits from URL:
+call ```()``` on a stringvar to transform it into a Node
+
+```python
+    >>> from domonic.javascript import String
+
+	>>> test = String("Hi there!")
+	>>> test('div', _style="font-color:red;")
+	>>> str(test('div', _style="font-color:red;"))
+```
+
+passing it the tag and attributes...
+
+
+a-tags inherit URL:
 
 ```python
 from domonic.html import *

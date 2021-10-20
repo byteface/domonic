@@ -10,6 +10,7 @@ import re
 from domonic.style import CSSStyleDeclaration as Style
 import domonic.javascript
 from domonic.events import *
+from domonic.geom import vec3
 
 
 class EventTarget:
@@ -182,6 +183,49 @@ class Node(EventTarget):
             print(e)
         super(Node, self).__setattr__(name, value)
 
+    # def __getattr__(self, name):
+    #     # print(name)
+    #     try:
+    #         if name == "args":
+    #             return super(Node, self).__getattr__(name)
+    #     except Exception as e:
+    #         print(e)
+    #     return super(Node, self).__getattr__(name)
+
+    # def __getattribute__(self, name):
+        # print('how are you doing today', name)
+        # try:
+        #     if name == "args":
+        #         return super(Node, self).__getattribute__(name)
+        # except Exception as e:
+        #     print(e)
+        # check if its a property on the class
+        # if name in self.__dict__:
+            # return super(Node, self).__getattribute__(name)
+        # return super(Node, self).__getattribute__(name)
+        # return self.__dict__[item]
+
+# def __getattr__(self, attrName):
+        # if name not in self.__dict__:
+        #     value = self.fetchAttr(name)    # computes the value
+        #     self.__dict__[name] = value
+        # return self.__dict__[name]
+
+    # TODO - html.tag class currently has the required method as its called there.
+    # def __getitem__(self, item):
+    #     print('GET ITEM CALLED')
+    #     if isinstance(item, int):
+    #         return self.childNodes[item]
+    #     if isinstance(item, str):
+    #         # call props on self
+    #         print('sup!')
+    #         try:
+    #             return self.__dict__[item]
+    #         except Exception as e:
+    #             print(e)
+    #             # return None
+    #     return super(Node, self).__getitem__(item)
+
     def _update_parents(self):
         ''' private. - TODO < check these docstrings don't export in docs
         loops all children and sets self as parent.
@@ -235,27 +279,6 @@ class Node(EventTarget):
         # return item  # causes max recursion when called chained
 
     @property
-    def hasChildNodes(self):
-        """ Returns true if an element has any child nodes, otherwise false """
-        return len(self.args) > 0
-
-    @property
-    def lastChild(self):
-        """ Returns the last child node of an element """
-        try:
-            return self.args[len(self.args) - 1]
-        except Exception:
-            return None
-
-    @property
-    def firstChild(self):
-        """ Returns the first child node of an element """
-        try:
-            return self.args[0]  # TODO - check if this means includes content
-        except Exception:
-            return None
-
-    @property
     def childElementCount(self):
         """ Returns the number of child elements an element has """
         return len(self.args)
@@ -275,10 +298,25 @@ class Node(EventTarget):
         return newlist
 
     @property
-    def nodeType(self):
-        """ Returns the node type of a node """
-        return self.ELEMENT_NODE
-        # return 1
+    def firstChild(self):
+        """ Returns the first child node of an element """
+        try:
+            return self.args[0]  # TODO - check if this means includes content
+        except Exception:
+            return None
+
+    @property
+    def hasChildNodes(self):
+        """ Returns true if an element has any child nodes, otherwise false """
+        return len(self.args) > 0
+
+    @property
+    def lastChild(self):
+        """ Returns the last child node of an element """
+        try:
+            return self.args[len(self.args) - 1]
+        except Exception:
+            return None
 
     @property
     def localName(self):
@@ -291,6 +329,11 @@ class Node(EventTarget):
     def nodeName(self):
         """ Returns the name of a node """
         return self.tagName.upper()
+
+    @property
+    def nodeType(self):
+        """ Returns the node type of a node """
+        return self.ELEMENT_NODE
 
     @property
     def nodeValue(self):
@@ -360,20 +403,35 @@ class Node(EventTarget):
         return None
 
     def replaceChild(self, newChild, oldChild):
-        """ Replaces a child node within the given (parent) node. """
+        """[Replaces a child node within the given (parent) node.]
+
+        Args:
+            newChild ([type]): [a Node object]
+            oldChild ([type]): [a Node object]
+
+        Returns:
+            [type]: [the old child node]
+        """
         for count, each in enumerate(self.args):
             if each == oldChild:
-                n = oldChild
-                self.removeChild(newChild)  # doc remove child?
-                self.args.remove(oldChild)
-                self.args.insert(count, newChild)
-                return n
+                replace_args = list(self.args)
+                replace_args[count] = newChild
+                self.args = tuple(replace_args)
+                return oldChild
+        return oldChild
+        # for count, each in enumerate(self.args):
+        #     if each == oldChild:
+        #         n = oldChild
+        #         self.removeChild(newChild)  # doc remove child?
+        #         list(self.args).remove(oldChild)
+        #         list(self.args).insert(count, newChild)
+        #         return n
 
-            r = each.replaceChild(newChild, oldChild)
-            if r:
-                return r
+        #     r = each.replaceChild(newChild, oldChild)
+        #     if r:
+        #         return r
 
-        return None
+        # return None
 
     def cloneNode(self, deep: bool = True):
         """ Returns a copy. """
@@ -410,25 +468,33 @@ class Node(EventTarget):
                 return self.parentNode.compareDocumentPosition(otherElement.parentNode)
         return 0
 
-    def getPreviousSibling(self):
-        """ Returns the previous sibling of an element. """
+    @property
+    def nextSibling(self):
+        """[returns the next sibling of the current node.]
+        """
         if self.parentNode is None:
             return None
         else:
-            for each in self.parentNode.childNodes:
-                if each == self:
-                    return each.getPreviousSibling()
-            return None
+            for node, count in enumerate(self.parentNode.args):
+                if node == self:
+                    if count == len(self.parentNode.args) - 1:
+                        return None
+                    else:
+                        return self.parentNode.args[count + 1]
 
-    def getNextSibling(self):
-        """ Returns the next sibling of an element. """
+    @property
+    def previousSibling(self):
+        """[returns the previous sibling of the current node.]
+        """
         if self.parentNode is None:
             return None
         else:
-            for each in self.parentNode.childNodes:
-                if each == self:
-                    return each.getNextSibling()
-            return None
+            for node, count in enumerate(self.parentNode.args):
+                if node == self:
+                    if count == 0:
+                        return None
+                    else:
+                        return self.parentNode.args[count - 1]
 
     def isDefaultNamespace(self, ns):
         """ Checks if a namespace is the default namespace """
@@ -459,6 +525,31 @@ class Node(EventTarget):
     def normalize(self):
         """ Normalize a node's value """
         return None
+
+    @property
+    def textContent(self):
+        """ Returns the text content of a node and its descendants """
+        # TODO - test- also check difference to nodeValue
+        # nodevalue is lvl 1 spec. textcontent is lvl 3 spec.
+        outp = ""
+        for each in self.args:
+            if type(each) is str:
+                outp = outp + each
+            else:
+                val = each.textContent
+                if val is not None:
+                    outp = outp + val
+                else:
+                    return None
+        if outp == '':
+            outp = None
+        return outp
+
+    @textContent.setter
+    def textContent(self, content):
+        """ Sets the text content of a node and its descendants """
+        self.args = (content,)
+        return content
 
     # def isSupported(self, feature, version):
     #     """ Checks if a feature is supported """
@@ -584,6 +675,168 @@ class Attr(Node):
         return False
 
 
+class NamedNodeMap(object):
+    """ TODO - not tested yet """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def getNamedItem(self, name):
+        """ Returns a specified attribute node from a NamedNodeMap """
+        for item in self.args:
+            if item.name == name:
+                return item
+        return None
+
+    def setNamedItem(self, name, value):
+        """ Sets the specified attribute node (by name) """
+        for item in self.args:
+            if item.name == name:
+                item.value = value
+                return True
+        return False
+
+    def removeNamedItem(self, name):
+        """ Removes a specified attribute node """
+        for item in self.args:
+            if item.name == name:
+                self.remove(item)
+                return True
+        return False
+
+    def item(self, index):
+        """ Returns the index'th item in the collection """
+        return self.args[index]
+
+    def getNameItemNS(self, namespaceURI, localName):
+        """ Returns a specified attribute node from a NamedNodeMap """
+        for item in self.args:
+            if item.namespaceURI == namespaceURI and item.localName == localName:
+                return item
+        return None
+
+    def setNamedItemNS(self, namespaceURI, localName, value):
+        """ Sets the specified attribute node (by name) """
+        for item in self.args:
+            if item.namespaceURI == namespaceURI and item.localName == localName:
+                item.value = value
+                return True
+        return False
+
+    def removeNamedItemNS(self, namespaceURI, localName):
+        """ Removes a specified attribute node """
+        for item in self.args:
+            if item.namespaceURI == namespaceURI and item.localName == localName:
+                self.remove(item)  # TODO - check this? where is remove?
+                return True
+        return False
+
+
+class DOMStringMap(object):
+    """
+    TODO - not tested yet
+    TODO - make this like a dict
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get(self, name):
+        """ Returns the value of the item with the specified name """
+        for item in self.args:
+            if item.name == name:
+                return item.value
+        return None
+
+    def set(self, name, value):
+        """ Sets the value of the item with the specified name """
+        for item in self.args:
+            if item.name == name:
+                item.value = value
+                return True
+        return False
+
+    def delete(self, name):
+        """ Deletes the item with the specified name """
+        for item in self.args:
+            if item.name == name:
+                self.remove(item)
+                return True
+        return False
+
+    # def has(self, name):
+    #     """ Returns true if the specified name exists """
+    #     for item in self.args:
+    #         if item.name == name:
+    #             return True
+    #     return False
+
+    # def clear(self):
+    #     """ Removes all items from the map """
+    #     self.args = []
+    #     return True
+
+    # def keys(self):
+    #     """ Returns an array of all the names in the map """
+    #     return [item.name for item in self.args]
+
+    # def values(self):
+    #     """ Returns an array of all the values in the map """
+    #     return [item.value for item in self.args]
+
+
+class DOMTokenList(object):
+    """ TODO - not tested yet """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def add(self, *args):
+        """ Adds the given tokens to the list """
+        for item in args:
+            if item not in self.args:
+                self.args.append(item)
+                return True
+        return False
+
+    def remove(self, *args):
+        """ Removes the given tokens from the list """
+        for item in args:
+            if item in self.args:
+                self.args.remove(item)
+                return True
+        return False
+
+    def toggle(self, token, force):
+        """ If force is not given, removes token from list if present,
+        otherwise adds token to list. If force is true, adds token to list,
+        and if force is false, removes token from list if present. """
+        if force is None:
+            if token in self.args:
+                self.args.remove(token)
+            else:
+                self.args.append(token)
+        elif force is True:
+            self.add(token)
+        elif force is False:
+            self.remove(token)
+        else:
+            raise TypeError("force must be a boolean")
+
+    def contains(self, token):
+        """ Returns true if the token is in the list, and false otherwise """
+        if token in self.args:
+            return True
+        return False
+
+    def item(self, index):
+        """ Returns the token at the specified index """
+        return self.args[index]
+
+    def toString(self):
+        """ Returns a string containing all tokens in the list, with spaces separating each token """
+        return " ".join(self.args)
+
+
 class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the args/kwargs
     """ property on element that has hidden DOM """
     def __init__(self, host, mode='open'):
@@ -616,7 +869,7 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
 
 class DocumentType(Node):
 
-    def __init__(self, name, publicId, systemId):
+    def __init__(self, name="html", publicId="", systemId=""):
         self.name = name  # A DOMString, eg "html" for <!DOCTYPE HTML>.
         self.publicId = publicId  # A DOMString, eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
         self.systemId = systemId  # A DOMString, eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
@@ -631,6 +884,10 @@ class DocumentType(Node):
     def notations(self):
         """ A NamedNodeMap with notations declared in the DTD. """
         raise NotImplementedError
+
+    @property
+    def nodeType(self):
+        return Node.DOCUMENT_TYPE_NODE
 
     def __str__(self):
         return f"<!DOCTYPE {self.name} {self.publicId} {self.systemId}>"
@@ -996,6 +1253,28 @@ class NodeList(list):
         return iter(self)
 
 
+class RadioNodeList(NodeList):
+    # TODO - not tested
+
+    def __init__(self, name):
+        self.name = name
+
+    def __iter__(self):
+        return iter(self.getElementsByName(self.name))
+
+    def __getitem__(self, index):
+        return self.getElementsByName(self.name)[index]
+
+    def __len__(self):
+        return len(self.getElementsByName(self.name))
+
+    @property
+    def value(self):
+        """ Returns the value of the first element in the collection,
+        or null if there are no elements in the collection. """
+        return self[0].value if len(self) > 0 else None
+
+
 class Element(Node):
     """ Baseclass for all html tags """
 
@@ -1099,13 +1378,13 @@ class Element(Node):
         return False
 
     # https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
-    # def closest(self, s: str):
-    #     el = self
-    #     while (el != None and el.nodeType == 1):  # TODO - nodeType
-    #         if (Element.matches(el, s)):
-    #             return el;
-    #         el = el.parentElement || el.parentNode
-    #     return None
+    def closest(self, s: str):
+        el = self
+        while el != None and el.nodeType == 1:  # TODO - nodeType
+            if Element.matches(el, s):
+                return el
+            el = el.parentElement or el.parentNode
+        return None
 
     # @staticmethod
     def getElementsBySelector(self, all_selectors, document):
@@ -1118,7 +1397,7 @@ class Element(Node):
             note - always needs a tag in the query
             i.e. ('a.classname') will work. but just ('.classname') wont
 
-            fixed and ported to py3 here. quite cool means other peoples code works on my dom :)
+            fixed and ported to py3 here. quite cool means other peoples code works on my dom
             # TODO - needs to work in conjuctions with _matchElement so querySelector works a bit better and dQuery picks it up
             # TOOD - *= node content
 
@@ -1170,8 +1449,11 @@ class Element(Node):
                 parts = str.split(element, '.')
                 tag = parts[0]
                 class_name = parts[1]
-                # print(context, tag)
+                # print(tag)
+                # print(class_name)
                 found = getElements(context, tag)
+                # found = document.getElementsByClassName(class_name)
+                # print(found)
                 context = []
                 for fnd in found:
                     if(fnd.getAttribute("class") and re.search(r'(^|\s)' + class_name + '(\s|$)', fnd.getAttribute("class"))):
@@ -1219,6 +1501,11 @@ class Element(Node):
 
         selected.extend(context)
         return selected
+
+    def append(self, *args):
+        """ Inserts a set of Node objects or DOMString objects after the last child of the Element. """
+        self.args += (args)
+        return self
 
     # elem.attachShadow({mode: open|closed})
     def attachShadow(self, obj):
@@ -1326,6 +1613,22 @@ class Element(Node):
     def contentEditable(self):
         """ Sets or returns whether the content of an element is editable or not """
         raise NotImplementedError
+
+    @property
+    def dataset(self):
+        """ Returns the value of the dataset attribute of an element """
+        # return self.getAttribute('data-*')  # TODO - copilot suggested a star. is that supposed to work?
+        # loop all attributes and return the ones that start with data-
+        # return {key: value for key, value in self.kwargs.items() if key.startswith('data-')}
+        from domonic.utils import Utils
+
+        dsmap = DOMStringMap()
+        for key, value in self.kwargs.items():
+            if key.startswith('data-'):
+                # remove data from the key and change case to lower
+                key = Utils.camel_case(key.replace('data-', ''))
+                dsmap[key] = value
+        return dsmap
 
     @property
     def dir(self):
@@ -1731,27 +2034,22 @@ class Element(Node):
     def tagName(self):
         return self.name
 
-    @property
-    def textContent(self):
-        """ Sets or returns the textual content of a node and its descendants """
-        # return f" {' '*len(self.name)}{' '*len(self.attributes)} {self.content}  {' '*len(self.name)} "
-        return self.nodeValue
+    # @property
+    # def textContent(self):
+    #     return self.nodeValue
 
-    @textContent.setter
-    def textContent(self, content):
-        """ Sets or returns the textual content of a node and its descendants """
-        # if type(content) is not str:
-        # raise ValueError()
-        self.nodeValue = content
+    # @textContent.setter
+    # def textContent(self, content):
+    #     self.nodeValue = content
 
     @property
     def title(self):
-        """ Sets or returns the value of the title attribute of an element """
+        """ returns the value of the title attribute of an element """
         return self.getAttribute('title')
 
     @title.setter
     def title(self, newtitle: str):
-        """[Sets or returns the value of the title attribute of an element]
+        """[Sets the value of the title attribute of an element]
 
         Args:
             newtitle (str): [the new title value]
@@ -1814,6 +2112,10 @@ class ProcessingInstruction(Node):
     def toString(self):
         return f'<?{self.target} {self.data}?>'
 
+    @property
+    def nodeType(self):
+        return Node.PROCESSING_INSTRUCTION_NODE
+
     def __str__(self):
         return f'<?{self.target} {self.data}?>'
 
@@ -1827,6 +2129,10 @@ class Comment(Node):
     def toString(self):
         return f'<!--{self.data}-->'
 
+    @property
+    def nodeType(self):
+        return Node.COMMENT_NODE
+
     def __str__(self):
         return f'<!--{self.data}-->'
 
@@ -1839,95 +2145,219 @@ class CDATASection(Node):
     def toString(self):
         return f'<![CDATA[{self.data}]]>'
 
+    @property
+    def nodeType(self):
+        return Node.CDATA_SECTION_NODE
+
     def __str__(self):
         return f'<![CDATA[{self.data}]]>'
 
 
-# class Range(object):
+class AbastractRange(object):
 
-#     def __init__(self):
-#         self.startContainer = None
-#         self.startOffset = None
-#         self.endContainer = None
-#         self.endOffset = None
-#         self.collapsed = None
-#         self.commonAncestorContainer = None
+    def __init__(self):
+        raise NotImplementedError
 
-#     def setStart(self, node, offset):
-#         self.startContainer = node
-#         self.startOffset = offset
-#         self.collapsed = False
-#         self.commonAncestorContainer = node
+    def cloneContents(self):
+        raise NotImplementedError
 
-#     def setEnd(self, node, offset):
-#         self.endContainer = node
-#         self.endOffset = offset
-#         self.collapsed = False
-#         self.commonAncestorContainer = node
+    def cloneRange(self):
+        raise NotImplementedError
 
-#     def setStartBefore(self, node):
-#         self.setStart(node.parentNode, node.index)
+    def compareBoundaryPoints(self, how, sourceRange):
+        raise NotImplementedError
 
-#     def setStartAfter(self, node):
-#         self.setStart(node.parentNode, node.index + 1)
+    def createContextualFragment(self, data):
+        raise NotImplementedError
 
-#     def setEndBefore(self, node):
-#         self.setEnd(node.parentNode, node.index)
+    def deleteContents(self):
+        raise NotImplementedError
 
-#     def setEndAfter(self, node):
-#         self.setEnd(node.parentNode, node.index + 1)
+    def detach(self):
+        raise NotImplementedError
 
-#     def collapse(self, toStart):
-#         if toStart:
-#             self.endContainer = self.startContainer
-#             self.endOffset = self.startOffset
-#         else:
-#             self.startContainer = self.endContainer
-#             self.startOffset = self.endOffset
-#         self.collapsed = True
+    def expand(self, unit):
+        raise NotImplementedError
 
-#     def selectNode(self, node):
-#         self.setStartBefore(node)
-#         self.setEndAfter(node)
+    def extractContents(self):
+        raise NotImplementedError
 
-#     def selectNodeContents(self, node):
-#         self.setStart(node, 0)
-#         self.setEnd(node, len(node.childNodes))
+    def getBoundingClientRect(self):
+        raise NotImplementedError
 
-#     def compareBoundaryPoints(self, how, sourceRange):
-#         if how == 0:
-#             return self.startContainer == sourceRange.startContainer and self.startOffset == sourceRange.startOffset
-#         elif how == 2:
-#             return self.endContainer == sourceRange.endContainer and self.endOffset == sourceRange.endOffset
-#         else:
-#             raise NotImplementedError
+    def getClientRects(self):
+        raise NotImplementedError
 
-#     def deleteContents(self):
-#         raise NotImplementedError
+    def insertNode(self, newNode):
+        raise NotImplementedError
 
-#     def extractContents(self):
-#         raise NotImplementedError
+    def selectNode(self, refNode):
+        raise NotImplementedError
 
-#     def cloneContents(self):
-#         raise NotImplementedError
+    def selectNodeContents(self, refNode):
+        raise NotImplementedError
 
-#     def insertNode(self, node):
-#         raise NotImplementedError
+    def setEnd(self, refNode, offset):
+        raise NotImplementedError
 
-#     def surroundContents(self, newParent):
-#         raise NotImplementedError
+    def setEndAfter(self, refNode):
+        raise NotImplementedError
 
-#     def cloneRange(self):
-#         raise NotImplementedError
+    def setEndBefore(self, refNode):
+        raise NotImplementedError
 
-#     def detach(self):
-#         raise NotImplementedError
+    def setStart(self, refNode, offset):
+        raise NotImplementedError
 
-#     def createContextualFragment(self, fragment):
-#         raise NotImplementedError
+    def setStartAfter(self, refNode):
+        raise NotImplementedError
 
-#     def toString(self):
-#         raise NotImplementedError
+    def setStartBefore(self, refNode):
+        raise NotImplementedError
+
+    def surroundContents(self, newParent):
+        raise NotImplementedError
+
+    def toString(self):
+        raise NotImplementedError
+
+    def comparePoint(self, refNode, offset):
+        raise NotImplementedError
+
+    def deleteData(self, offset, count):
+        raise NotImplementedError
+
+    def extractData(self, offset, count):
+        raise NotImplementedError
+
+    def getData(self, offset, count):
+        raise NotImplementedError
+
+    def getEnd(self):
+        raise NotImplementedError
+
+    def getStart(self):
+        raise NotImplementedError
+
+    def replaceData(self, offset, count, data):
+        raise NotImplementedError
+
+    def setData(self, data):
+        raise NotImplementedError
+
+
+class Range(AbastractRange):
+    # TODO - untested
+
+    def __init__(self):
+        self.startContainer = None
+        self.startOffset = None
+        self.endContainer = None
+        self.endOffset = None
+        self.collapsed = None
+        self.commonAncestorContainer = None
+
+    def setStart(self, node, offset):
+        self.startContainer = node
+        self.startOffset = offset
+        self.collapsed = False
+        self.commonAncestorContainer = node
+
+    def setEnd(self, node, offset):
+        self.endContainer = node
+        self.endOffset = offset
+        self.collapsed = False
+        self.commonAncestorContainer = node
+
+    def setStartBefore(self, node):
+        self.setStart(node.parentNode, node.index)
+
+    def setStartAfter(self, node):
+        self.setStart(node.parentNode, node.index + 1)
+
+    def setEndBefore(self, node):
+        self.setEnd(node.parentNode, node.index)
+
+    def setEndAfter(self, node):
+        self.setEnd(node.parentNode, node.index + 1)
+
+    def collapse(self, toStart):
+        if toStart:
+            self.endContainer = self.startContainer
+            self.endOffset = self.startOffset
+        else:
+            self.startContainer = self.endContainer
+            self.startOffset = self.endOffset
+        self.collapsed = True
+
+    def selectNode(self, node):
+        self.setStartBefore(node)
+        self.setEndAfter(node)
+
+    def selectNodeContents(self, node):
+        self.setStart(node, 0)
+        self.setEnd(node, len(node.childNodes))
+
+    def compareBoundaryPoints(self, how, sourceRange):
+        if how == 0:
+            return self.startContainer == sourceRange.startContainer and self.startOffset == sourceRange.startOffset
+        elif how == 2:
+            return self.endContainer == sourceRange.endContainer and self.endOffset == sourceRange.endOffset
+        else:
+            raise NotImplementedError
+
+    def deleteContents(self):
+        raise NotImplementedError
+
+    def extractContents(self):
+        raise NotImplementedError
+
+    def cloneContents(self):
+        raise NotImplementedError
+
+    def insertNode(self, node):
+        raise NotImplementedError
+
+    def surroundContents(self, newParent):
+        raise NotImplementedError
+
+    def cloneRange(self):
+        raise NotImplementedError
+
+    def detach(self):
+        raise NotImplementedError
+
+    def createContextualFragment(self, fragment):
+        raise NotImplementedError
+
+    def toString(self):
+        raise NotImplementedError
+
+
+class StaticRange(AbastractRange):
+
+    def __init__(self, startContainer, startOffset, endContainer, endOffset):
+        self.startContainer = startContainer
+        self.startOffset = startOffset
+        self.endContainer = endContainer
+        self.endOffset = endOffset
+        self.collapsed = False
+        self.commonAncestorContainer = None
+
+    # def toRange(self):
+    #     return self
+
+
+class TimeRanges(object):
+
+    def __init__(self):
+        self.length = 0
+
+    def start(self, index):
+        raise NotImplementedError
+
+    def end(self, index):
+        raise NotImplementedError
 
 
 # TODO - might try something like this. test if it works
@@ -2125,10 +2555,10 @@ class Document(Element):
         return DocumentFragment(*args)
 
     @staticmethod
-    def createElement(_type: str):
+    def createElement(_type: str, *args, **kwargs):
         """ Creates an Element node """
         from domonic.html import create_element
-        return create_element(_type)
+        return create_element(_type, *args, **kwargs)
 
     @staticmethod
     def createElementNS(namespaceURI, qualifiedName, options=None):
@@ -2148,7 +2578,6 @@ class Document(Element):
         Returns:
             [type]: [a new event]
         """
-
         if event_type == "MouseEvent":
             return MouseEvent()
         elif event_type == "KeyboardEvent":
@@ -2169,11 +2598,20 @@ class Document(Element):
         """
         return Text(text)
 
-    # @staticmethod
-    # def createTreeWalker(root, whatToShow=None, filter=None):
-    #     """Creates a TreeWalker that can be used to traverse the document tree or subtree under root.
-    #     """
-    #     return TreeWalker(root, whatToShow, filter)
+    @staticmethod
+    def createTreeWalker(root, whatToShow=None, filter=None, entityReferenceExpansion=None):
+        """[creates a TreeWalker object]
+
+        Args:
+            root ([type]): [the root node at which to begin traversal]
+            whatToShow ([type], optional): [what types of nodes to show]. Defaults to None.
+            filter ([type], optional): [a NodeFilter or a function to be called for each node]. Defaults to None.
+
+        Returns:
+            [type]: [a new TreeWalker object]
+        """
+        whatToShow = NodeFilter.SHOW_ALL if whatToShow == None else whatToShow
+        return TreeWalker(root, whatToShow, filter, entityReferenceExpansion)
 
     @staticmethod
     def createProcessingInstruction(target, data):
@@ -2190,16 +2628,23 @@ class Document(Element):
     #     """ Creates an Attr node with the specified namespace URI and qualified name """
     #     return Attr(qualifiedName)
 
-    # @staticmethod
-    # def createNodeIterator(root, whatToShow=None, filter=None):
-    #     """Creates a NodeIterator that can be used to traverse the document tree or subtree under root.
-    #     """
-    #     return NodeIterator(root, whatToShow, filter)
+    @staticmethod
+    def createRange():
+        """ Creates a Range """
+        return Range()
+
+    @staticmethod
+    def createNodeIterator(root, whatToShow=None, filter=None):
+        """Creates a NodeIterator that can be used to traverse the document tree or subtree under root.
+        """
+        whatToShow = NodeFilter.SHOW_ALL if whatToShow == None else whatToShow
+        return NodeIterator(root, whatToShow, filter)
 
     # @staticmethod
-    # def createRange():
-    #     """ Creates a Range """
-    #     return Range()
+    # def caretRangeFromPoint(x, y):
+        # """ Returns the Range object that is the caret selection at the given coordinates. """
+        # return Range()
+        # raise NotImplementedError
 
     # @staticmethod
     # def createNSResolver(nodeResolver):
@@ -2365,6 +2810,10 @@ class Document(Element):
         """ Returns a collection of all <a> and <area> elements in the document that have a href attribute """
         return self.querySelectorAll('a')
 
+    @property
+    def nodeType(self):
+        return Node.DOCUMENT_NODE
+
     def normalizeDocument(self):  # TODO - test
         """ Removes empty Text nodes, and joins adjacent nodes """
         for each in self.childNodes:
@@ -2390,7 +2839,16 @@ class Document(Element):
         # return
 
     def renameNode(self, node, namespaceURI, nodename):
-        """ Renames the specified node, and returns the renamed node. """
+        """[Renames the specified node, and returns the renamed node.]
+
+        Args:
+            node ([type]): [the node to rename]
+            namespaceURI ([type]): [a namespace URI]
+            nodename ([type]): [a node name]
+
+        Returns:
+            [type]: [description]
+        """
         if node.nodeType == Node.ELEMENT_NODE:
             node.nodeName = nodename
             node.namespaceURI = namespaceURI
@@ -2407,7 +2865,7 @@ class Document(Element):
         """
         return self.querySelectorAll('script')
 
-    def strictErrorChecking():
+    def strictErrorChecking(self):
         ''' Returns a Boolean value indicating whether to stop on the first error'''
         return False
 
@@ -2464,14 +2922,15 @@ class Location():
     # def __repr__(self):
     #     return self.uri
 
-    def origin(self):
+    def origin(self):  # TODO - test
         """ Returns the protocol, hostname and port number of a URL """
-        from domonic.javscript import URL
+        # from domonic.javascript import URL
+        from domonic.webapi.url import URL
         return URL(self.href).origin
 
-    def search(self):
+    def search(self):  # TODO - test
         """ Sets or returns the querystring part of a URL """
-        from domonic.javscript import URL
+        from domonic.webapi.url import URL
         return URL(self.href).search
 
     def assign(self, url: str = "") -> None:
@@ -2491,7 +2950,7 @@ class Location():
 
 location = Location
 
-
+# TODO - switch to importing the webapi.console module
 class Console(object):
 
     @staticmethod
@@ -2504,6 +2963,7 @@ class Console(object):
             msg (str): msg to log
             substitute : replaces %s or %d with this
         """
+        msg = str(msg)
         argstring = str(*args)
         if substitute is not None:
             if '%d' not in msg and '%s' not in msg:
@@ -2640,6 +3100,10 @@ class DocumentFragment(Node):
         """ Replaces the childNodes of the DocumentFragment object. """
         self.content.replaceChild(newChildren)
 
+    @property
+    def nodeType(self):
+        return Node.DOCUMENT_FRAGMENT_NODE
+
     def __str__(self):
         return ''.join([str(a) for a in self.args])
 
@@ -2698,6 +3162,23 @@ class Text(CharacterData):
     """ Text Node """
 
     @property
+    def wholeText(self):
+        """ Returns a DOMString containing all the text content of the node and its descendants. """
+        return self.args[0]
+
+    def splitText(self, offset: int):
+        """ Splits the Text node into two Text nodes at the specified offset, keeping both in the tree as siblings.
+        The first node is returned, while the second node is discarded and exists outside the tree. """
+        text = self.args[0][:offset]
+        self.args[0] = self.args[0][offset:]
+        return text
+
+    @property
+    def assignedSlot(self):
+        """ Returns the slot whose assignedNodes contains this node. """
+        return self.parentNode.assignedSlot
+
+    @property
     def data(self):
         return self.args[0]
 
@@ -2707,17 +3188,24 @@ class Text(CharacterData):
         return self.args[0]
 
     @property
-    def textContent(self):
-        """ Sets or returns the textual content of a node and its descendants """
-        # return f" {' '*len(self.name)}{' '*len(self.attributes)} {self.content}  {' '*len(self.name)} "
-        return self.nodeValue
+    def nodeType(self):
+        return Node.TEXT_NODE
 
-    @textContent.setter
-    def textContent(self, content):
-        """ Sets or returns the textual content of a node and its descendants """
-        # if type(content) is not str:
-        # raise ValueError()
-        self.nodeValue = content  # + 'TEST'
+    @property  # TODO - is this correct?
+    def firstChild(self):
+        return None  # ?
+
+    # @property
+    # def firstChild(self):
+    #     return self.args[0]
+
+    # @property
+    # def textContent(self):
+    #     return self.nodeValue
+
+    # @textContent.setter
+    # def textContent(self, content):
+    #     self.nodeValue = content
 
     def __str__(self):
         return str(self.textContent)
@@ -2766,6 +3254,7 @@ class Text(CharacterData):
 #         return self
 
 
+# TODO - is there a webapi module for this now?
 # from domonic.javascript import Object
 # MutationObserverInit = Object()
 # MutationObserverInit.subtree = False
@@ -2812,111 +3301,675 @@ class Text(CharacterData):
 # IntersectionObserver
 # PerformanceObserver
 
-# class NodeFilter():
-#     def __init__(self):
-#         self.filter = None
-    # def acceptNode(self):
-    #     """ Returns true if the node is to be accepted """
-    #     return True
 
-# class TreeWalker():
-#     """ The TreeWalker object represents the nodes of a document subtree and a position within them. """
+class DOMException(Exception):
+    """ The DOMException interface represents an anormal event related to the DOM. """
 
-#     def __init__(self, node):
-#         """ A TreeWalker can be created using the Document.createTreeWalker() method. """
-#         self.root = node
-#         self.currentNode = node
-#         self.last = None
-#         self.parent = None
-#         self.previous = None
-#         self.children = []
-#         self.childIndex = 0
-#         # self.length = 0
-#         """ Is a boolean value indicating, when discarding an entity reference its whole sub-tree must be discarded at the same time. """
-#         self.expandEntityReferences: bool = False
+    INDEX_SIZE_ERR = 1
+    DOMSTRING_SIZE_ERR = 2
+    HIERARCHY_REQUEST_ERR = 3
+    WRONG_DOCUMENT_ERR = 4
+    INVALID_CHARACTER_ERR = 5
+    NO_DATA_ALLOWED_ERR = 6
+    NO_MODIFICATION_ALLOWED_ERR = 7
+    NOT_FOUND_ERR = 8
+    NOT_SUPPORTED_ERR = 9
+    INUSE_ATTRIBUTE_ERR = 10
+    INVALID_STATE_ERR = 11
+    SYNTAX_ERR = 12
+    INVALID_MODIFICATION_ERR = 13
+    NAMESPACE_ERR = 14
+    INVALID_ACCESS_ERR = 15
+    VALIDATION_ERR = 16
+    TYPE_MISMATCH_ERR = 17
+    SECURITY_ERR = 18
+    NETWORK_ERR = 19
+    ABORT_ERR = 20
+    URL_MISMATCH_ERR = 21
+    QUOTA_EXCEEDED_ERR = 22
+    TIMEOUT_ERR = 23
+    INVALID_NODE_TYPE_ERR = 24
+    DATA_CLONE_ERR = 25
 
-#     @property
-#     def root(self):
-#         """ Returns a Node representing the root node as specified when the TreeWalker was created. """
-#         return self.root
+    def __init__(self, code, message):
+        self.code = code
+        self.message = message
 
-#     def whatToShow(self, options):
-#         """ Returns an unsigned long being a bitmask made of constants describing the types of Node that must be presented.
-#         Non-matching nodes are skipped, but their children may be included, if relevant. The possible values are: """
-#         return options
+    def __str__(self):
+        return self.message
 
-#     def filter(self, options):
-#         """ Returns a NodeFilter object that can be used to filter the nodes that the TreeWalker visits. """
-#         return options
+    def __repr__(self):
+        return self.message
 
-#     @property
-#     def currentNode(self):
-#         """ Is the Node on which the TreeWalker is currently pointing at. """
-#         return self.currentNode
 
-#     def parentNode(self):
-#         """ Moves the current Node to the first visible ancestor node in the document order,
-#         and returns the found node. It also moves the current node to this one. If no such node exists,
-#         or if it is before that the root node defined at the object construction,
-#         returns null and the current node is not changed. """
-#         raise NotImplementedError()
+class DOMTimeStamp(int):
+    """ The DOMTimeStamp interface represents a numeric value which represents the
+    number of milliseconds since the epoch. """
 
-#     def firstChild(self):
-#         """ Moves the current Node to the first visible child of the current node, and returns the found child.
-#         It also moves the current node to this child. If no such child exists,
-#         returns null and the current node is not changed. """
-#         raise NotImplementedError()
+    def __init__(self, value):
+        self.value = value
 
-#     def lastChild(self):
-#         """ Moves the current Node to the last visible child of the current node, and returns the found child.
-#         It also moves the current node to this child. If no such child exists, null is returned and the current node is not changed. """
-#         raise NotImplementedError()
+    def __str__(self):
+        return str(self.value)
 
-#     def previousSibling(self):
-#         """ Moves the current Node to its previous sibling, if any, and returns the found sibling.
-#         If there is no such node, return null and the current node is not changed.
-#         """
-#         raise NotImplementedError()
+    def __repr__(self):
+        return str(self.value)
 
-#     def nextSibling(self):
-#         """ Moves the current Node to its next sibling, if any, and returns the found sibling.
-#         If there is no such node, null is returned and the current node is not changed. """
-#         raise NotImplementedError()
 
-#     def previousNode(self):
-#         """ Moves the current Node to the previous visible node in the document order,
-#         and returns the found node. It also moves the current node to this one. If no such node exists, or if it is before that the root node defined at the object construction,
-#         returns null and the current node is not changed. """
-#         raise NotImplementedError()
+class DOMPoint(vec3):
+    """ The DOMPoint interface represents a point specified by x and y coordinates. """
 
-#     def nextNode(self):
-#         """ Moves the current Node to the next visible node in the document order, and returns the found node.
-#         It also moves the current node to this one.
-#         If no such node exists, returns null and the current node is not changed.
-#         """
-#         raise NotImplementedError()
+    @staticmethod
+    def fromPoint(point):
+        return DOMPoint(point.x, point.y, point.z, point.w)
 
-# TextDecoder
-# TextEncoder
-# TextDecoderStream
-# TextEncoderStream
+    def __init__(self, x, y, z=0, w=1):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.w = w
+        super().__init__(x, y, z, w)
 
-# XMLHttpRequest
+    def __str__(self):
+        return '({}, {}, {}, {})'.format(self.x, self.y, self.z, self.w)
 
-# class XMLHttpRequest():
+    def __repr__(self):
+        return '({}, {}, {}, {})'.format(self.x, self.y, self.z, self.w)
 
-#     def __init__(self, url=None, responseType=None, withCredentials=False, timeout=0, onload=None, onerror=None, onprogress=None, ontimeout=None):
-#         self.url = url
-#         self.responseType = responseType
-#         self.withCredentials = withCredentials
-#         self.timeout = timeout
-#         self.onload = onload
-#         self.onerror = onerror
-#         self.onprogress = onprogress
-#         self.ontimeout = ontimeout
-#         self.response = None
-#         self.status = None
 
+class DOMPointReadOnly(DOMPoint):
+    """ The DOMPointReadOnly interface represents a point specified by x and y coordinates. """
+
+    @staticmethod
+    def fromPoint(point):
+        return DOMPointReadOnly(point.x, point.y, point.z, point.w)
+
+    def __init__(self, x, y, z=0, w=1):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.w = w
+        super().__init__(x, y, z, w)
+
+    def __str__(self):
+        return '({}, {}, {}, {})'.format(self.x, self.y, self.z, self.w)
+
+    def __repr__(self):
+        return '({}, {}, {}, {})'.format(self.x, self.y, self.z, self.w)
+
+'''
+class DOMMatrix(mat4):
+    """ The DOMMatrix interface represents a transformation matrix
+
+    TODO - https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix
+
+    """
+
+    @staticmethod
+    def fromFloat64Array(array):
+        return DOMMatrix(
+            array[0],
+            array[1],
+            array[2],
+            array[3],
+            array[4],
+            array[5],
+            array[6],
+            array[7],
+            array[8],
+            array[9],
+            array[10],
+            array[11],
+            array[12],
+            array[13],
+            array[14],
+            array[15]
+        )
+
+    @staticmethod
+    def fromFloat32Array(array):
+        return DOMMatrix(
+            array[0],
+            array[1],
+            array[2],
+            array[3],
+            array[4],
+            array[5],
+            array[6],
+            array[7],
+            array[8],
+            array[9],
+            array[10],
+            array[11],
+            array[12],
+            array[13],
+            array[14],
+            array[15]
+        )
+
+    @staticmethod
+    def fromMatrix(matrix):
+        return DOMMatrix(matrix.m00, matrix.m01, matrix.m02, matrix.m03,
+                         matrix.m10, matrix.m11, matrix.m12, matrix.m13,
+                         matrix.m20, matrix.m21, matrix.m22, matrix.m23,
+                         matrix.m30, matrix.m31, matrix.m32, matrix.m33)
+
+    def __init__(self, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33):
+        self.m00 = m00
+        self.m01 = m01
+        self.m02 = m02
+        self.m03 = m03
+        self.m10 = m10
+        self.m11 = m11
+        self.m12 = m12
+        self.m13 = m13
+        self.m20 = m20
+        self.m21 = m21
+        self.m22 = m22
+        self.m23 = m23
+        self.m30 = m30
+        self.m31 = m31
+        self.m32 = m32
+        self.m33 = m33
+        super().__init__(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
+
+    def __str__(self):
+        return '({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})'.format(
+            self.m00, self.m01, self.m02, self.m03, self.m10, self.m11, self.m12, self.m13,
+            self.m20, self.m21, self.m22, self.m23, self.m30, self.m31, self.m32, self.m33
+        )
+
+    # def invertSelf(self):
+    #     self.invert()
+    #     return self
+
+    # def multiplySelf(self, other):
+    #     self.multiply(other)
+    #     return self
+
+    # def translateSelf(self, tx, ty, tz):
+    #     self.translate(tx, ty, tz)
+    #     return self
+'''
+
+
+class DOMQuad:
+    """ The DOMQuad interface represents a quadrilateral on the plane with its
+    four corners represented as Cartesian coordinates. """
+
+    @staticmethod
+    def fromRect(rect):
+        return DOMQuad(rect.x, rect.y, rect.width, rect.height)
+
+    @staticmethod
+    def fromQuad(quad):
+        return DOMQuad(quad.p1.x, quad.p1.y, quad.p2.x, quad.p2.y, quad.p3.x, quad.p3.y, quad.p4.x, quad.p4.y)
+
+    @staticmethod
+    def getBounds(quad):
+        return DOMRect(quad.p1.x, quad.p1.y, quad.p2.x - quad.p1.x, quad.p2.y - quad.p1.y)
+
+    @staticmethod
+    def toJSON(quad):
+        return {
+            'p1': {'x': quad.p1.x, 'y': quad.p1.y},
+            'p2': {'x': quad.p2.x, 'y': quad.p2.y},
+            'p3': {'x': quad.p3.x, 'y': quad.p3.y},
+            'p4': {'x': quad.p4.x, 'y': quad.p4.y}
+        }
+
+    def __init__(self, p1, p2, p3, p4):
+        self.p1 = p1
+        self.p2 = p2
+        self.p3 = p3
+        self.p4 = p4
+
+    def __str__(self):
+        return '({}, {}, {}, {})'.format(self.p1, self.p2, self.p3, self.p4)
+
+
+class NodeFilter():
+
+    SHOW_ALL = 0xFFFFFFFF
+    SHOW_ELEMENT = 0x00000001
+    SHOW_ATTRIBUTE = 0x00000002
+    SHOW_TEXT = 0x00000004
+    SHOW_CDATA_SECTION = 0x00000008
+    SHOW_ENTITY_REFERENCE = 0x00000010
+    SHOW_ENTITY = 0x00000020
+    SHOW_PROCESSING_INSTRUCTION = 0x00000040
+    SHOW_COMMENT = 0x00000080
+    SHOW_DOCUMENT = 0x00000100
+    SHOW_DOCUMENT_TYPE = 0x00000200
+    SHOW_DOCUMENT_FRAGMENT = 0x00000400
+    SHOW_NOTATION = 0x00000800
+
+    FILTER_ACCEPT = 1
+    FILTER_REJECT = 2
+    FILTER_SKIP = 3
+
+    # def acceptNode(node):
+    # return NodeFilter.FILTER_ACCEPT
+    # return node
+
+    # def acceptNode(node):
+    # result
+    # if active:
+    #     raise Exception('DOMException: INVALID_STATE_ERR')
+
+    # active = True
+    # result = filter(node)
+    # active = False
+
+    # return result
+
+
+class NodeIterator():
+    """[NodeIterator is an iterator object that iterates over the descendants of a node, in tree order.]
+    """
+
+    def __init__(self, root, whatToShow=NodeFilter.SHOW_ALL, filter=None, entityReferenceExpansion=False):
+        self.root = root
+        self.whatToShow = whatToShow
+        self._filter = filter
+        self.entityReferenceExpansion = entityReferenceExpansion
+        self.node = root
+        self.pointer = 0
+        self.stack = []
+
+    @property
+    def filter(self):
+        return self._filter
+
+    # def expandEntityReferences(self, expand):
+        # Is a boolean value indicating if, when discarding an EntityReference its whole sub-tree must be discarded at the same time.
+
+    def referenceNode(self):
+        """ Returns the Node that is being iterated over. """
+        return self.node
+
+    def pointerBeforeReferenceNode(self):
+        # Returns a boolean flag that indicates whether the NodeIterator is anchored before, the flag being true, or after, the flag being false, the anchor node.
+        return self.pointer < 0
+
+    def detach(self):
+        # This operation is a no-op. It doesn't do anything. Previously it was telling the engine that the NodeIterator was no more used, but this is now useless.
+        pass
+
+    def previousNode(self):
+        """ Returns the previous Node in the document, or null if there are none. """
+        if self.pointer < 0:
+            return None
+        if self.pointer == 0:
+            return self.root
+        if self.pointer == 1:
+            return self.stack[0]
+        return self.stack[self.pointer - 1]
+
+    def nextNode(self):
+        """ Returns the next Node in the document, or null if there are none. """
+        raise NotImplementedError()
+
+
+mapChild = {
+    "first": 'firstChild',
+    "last": 'lastChild',
+    "next": 'firstChild',
+    "previous": 'lastChild'
+}
+
+mapSibling = {
+    "next": 'nextSibling',
+    "previous": 'previousSibling'
+}
+
+# toString = mapChild.toString
+
+# def _is(x, _type):
+#     print('!!!!!!!!!!!!!!!!!!! comparing', x, _type)
+#     return mapChild[x].toLowerCase() == '[object ' + _type.toLowerCase() + ']'
+
+
+def nodeFilter(tw, node):
+    # Maps nodeType to whatToShow
+    # print(node, type(node))
+    # if isinstance(node, (str)): #, Text)):
+        # node = Text(node)
+        # return NodeFilter.FILTER_SKIP
+        # return NodeFilter.FILTER_REJECT
+    if not (((1 << (node.nodeType - 1)) & tw.whatToShow)):
+        return NodeFilter.FILTER_SKIP
+    if tw._filter == None:
+        return NodeFilter.FILTER_ACCEPT
+    return tw._filter.acceptNode(node)
+
+
+def str_to_TextNode(content_str):
+    if isinstance(content_str, str):
+        return Text(content_str)
+    return content_str
+
+
+def traverseChildren(tw, _type):
+    # var child, node, parent, result, sibling
+    # print('sup', _type)
+    # print('mapChild[_type]', mapChild[_type])
+    node = getattr(tw.currentNode, mapChild[_type])  # TODO - allow dict access to node props?.... tw.currentNode[mapChild[_type]]
+    # print('flaps', tw.currentNode.firstChild)
+    # print('flaps2', )
+    # print('tw.currentNode', tw.currentNode)
+    # print('MAKE THIS WORK ON NODE:', tw.currentNode[mapChild[_type]])
+
+    # node = str_to_TextNode(node)
+
+    while node != None:
+        # node = str_to_TextNode(node)
+        result = nodeFilter(tw, node)
+        if result == NodeFilter.FILTER_ACCEPT:
+            tw.currentNode = node
+            return node
+        if result == NodeFilter.FILTER_SKIP:
+            child = getattr(node, mapChild[_type])
+            if child != None:
+                node = child
+                continue
+        while node != None:
+            sibling = getattr(node, mapChild[_type])
+            if sibling != None:
+                node = sibling
+                break
+            parent = node.parentNode
+            if parent == None or parent == tw.root or parent == tw.currentNode:
+                return None
+            else:
+                node = parent
+    return None
+
+
+def traverseSiblings(tw, type):
+    # node, result, sibling
+    node = tw.currentNode
+    if (node == tw.root):
+        return None
+    while True:
+        sibling = getattr(node, mapSibling[type])
+        while sibling != None:
+            node = sibling
+            result = nodeFilter(tw, node)
+            if (result == NodeFilter.FILTER_ACCEPT):
+                tw.currentNode = node
+                return node
+            sibling = getattr(node, mapChild[type])
+            if result == NodeFilter.FILTER_REJECT:
+                sibling = getattr(node, mapSibling[type])
+        node = node.parentNode
+        if node == None or node == tw.root:
+            return None
+        if nodeFilter(tw, node) == NodeFilter.FILTER_ACCEPT:
+            return None
+
+
+def nextSkippingChildren(node, stayWithin):
+
+    # if isinstance(node, str):
+        # node = Text(node)
+        # return None
+    # TODO - casting is not enough. as the Text node does not know its siblings
+    # print( "nsc", node, "??", stayWithin )
+    # print( "AND:", node.nextSibling )
+
+    if node == stayWithin:
+        print('a')
+        return None
+    if node.nextSibling != None:
+        print('b')
+        return node.nextSibling
+
+    while node.parentNode != None:
+        print('c')
+        node = node.parentNode
+        if node == stayWithin:
+            print('d')
+            return None
+        if node.nextSibling != None:
+            print('e')
+            return node.nextSibling
+    return None
+
+
+# https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
+class TreeWalker():
+    """ The TreeWalker object represents the nodes of a document subtree and a position within them. """
+
+    def _upgrade_dom(self):
+        """[
+            Our dom has some strings that are not Text Nodes
+            so we have to upgrade them to Node objects. As we can't know siblings otherwise
+            # TODO - consider upgrading as they are created.
+        ]
+        """
+        def upgrade(el):
+            if isinstance(el, (Text, str)):
+                return
+            for child in el:
+                if isinstance(child, str):
+                    # print('doin one')
+                    newchild = Text(child)
+                    el.replaceChild(newchild, child)
+                    newchild.parentNode = el
+
+        self._root._iterate(self._root, upgrade)
+
+    def __init__(self, node, whatToShow=NodeFilter.SHOW_ALL, _filter=None, expandEntityReferences=False):
+        self._root = node
+        self._upgrade_dom()
+        # print("test", type(self._root[0][0]))
+
+        self.currentNode = node
+        # TODO - convert whatToShow to a number?
+        self.whatToShow = whatToShow
+        # self.whatToShow = self.whatToShow & 0xFFFFFFFF
+        self.whatToShow = whatToShow or 0
+
+        self._filter = _filter
+        def acceptNode(node):
+            nonlocal _filter
+            # result
+            # if active:
+            #     raise Exception('DOMException: INVALID_STATE_ERR')
+
+            # active = True
+            result = _filter(node)
+            # active = False
+            return result
+
+        if self._filter is not None:
+            NodeFilter.acceptNode = acceptNode
+
+        self.last = None
+        self.parent = None
+        self.previous = None
+        self.children = []
+        self.childIndex = 0
+
+        self.tree = None
+
+        """ Is a boolean value indicating,
+            when discarding an entity reference its whole sub-tree must be discarded at the same time. """
+        self.expandEntityReferences = expandEntityReferences
+
+    @property
+    def root(self):
+        """ Returns a Node representing the root node as specified when the TreeWalker was created. """
+        return self._root
+
+    def whatToShow(self, options):
+        """ Returns an unsigned long being a bitmask made of constants describing the types of Node that must be presented.
+        Non-matching nodes are skipped, but their children may be included, if relevant. The possible values are: """
+        return options
+
+    # def filter(self, options):
+    #     """ Returns a NodeFilter object that can be used to filter the nodes that the TreeWalker visits. """
+    #     return options
+
+    # @property
+    # def currentNode(self):
+    #     """ Is the Node on which the TreeWalker is currently pointing at. """
+    #     return self.currentNode
+
+    def parentNode(self):
+        """ Moves the current Node to the first visible ancestor node in the document order,
+        and returns the found node. It also moves the current node to this one. If no such node exists,
+        or if it is before that the root node defined at the object construction,
+        returns null and the current node is not changed. """
+        # return self.currentNode.parentNode
+        node = self.currentNode
+        while node != None and node != self.root:
+            node = node.parentNode
+            if node != None and nodeFilter(self, node) == NodeFilter.FILTER_ACCEPT:
+                self.currentNode = node
+                return node
+            return None
+
+    def firstChild(self):
+        """ Moves the current Node to the first visible child of the current node, and returns the found child.
+        It also moves the current node to this child. If no such child exists,
+        returns null and the current node is not changed. """
+        # return self.currentNode.firstChild
+        return traverseChildren(self, 'first')
+
+    def lastChild(self):
+        """ Moves the current Node to the last visible child of the current node, and returns the found child.
+        It also moves the current node to this child.
+        If no such child exists, null is returned and the current node is not changed. """
+        # return self.currentNode.lastChild
+        return traverseChildren(self, 'last')
+
+    def previousSibling(self):
+        """ Moves the current Node to its previous sibling, if any, and returns the found sibling.
+        If there is no such node, return null and the current node is not changed.
+        """
+        # return self.previous
+        return traverseSiblings(self, 'previous')
+
+    def nextSibling(self):
+        """ Moves the current Node to its next sibling, if any, and returns the found sibling.
+        If there is no such node, null is returned and the current node is not changed. """
+        # return self.currentNode.nextSibling
+        return traverseSiblings(self, 'next')
+
+    def previousNode(self):
+        """ Moves the current Node to the previous visible node in the document order,
+        and returns the found node. It also moves the current node to this one. If no such node exists, or if it is before that the root node defined at the object construction,
+        returns null and the current node is not changed. """
+        # return self.previous
+        # raise NotImplementedError()
+        # var node, result, sibling
+        node = self.currentNode
+        while (node != self.root):
+            sibling = node.previousSibling
+            while sibling != None:
+                node = sibling
+                result = nodeFilter(self, node)
+                while result != NodeFilter.FILTER_REJECT and node.lastChild != None:
+                    node = node.lastChild
+                    result = nodeFilter(self, node)
+                if result == NodeFilter.FILTER_ACCEPT:
+                    self.currentNode = node
+                    return node
+            if node == self.root or node.parentNode == None:
+                return None
+            node = node.parentNode
+            if nodeFilter(self, node) == NodeFilter.FILTER_ACCEPT:
+                self.currentNode = node
+                return node
+        return None
+
+    def nextNode(self):
+        """ Moves the current Node to the next visible node in the document order, and returns the found node.
+        It also moves the current node to this one.
+        If no such node exists, returns None and the current node is not changed.
+        can be used in a while loop to iterate over all the nodes in the document order.
+        """
+        # var node, result, following;
+        node = self.currentNode
+
+        if isinstance(node, str):
+            node = Text(node)
+            # return node
+
+        result = NodeFilter.FILTER_ACCEPT
+        while True:
+            # print('rrr:::', result, node)
+            if isinstance(node, str):
+                Text(node)
+                # continue
+
+            while result != NodeFilter.FILTER_REJECT and node.firstChild != None:
+                # print('rrr222:::', result, node)
+                node = node.firstChild
+                if isinstance(node, str):
+                    node = Text(node)
+                    # result = NodeFilter.FILTER_REJECT
+                    # continue
+                    # break
+                    # return None
+
+                result = nodeFilter(self, node)
+                if result == NodeFilter.FILTER_ACCEPT:
+                    self.currentNode = node
+                    return node
+            following = nextSkippingChildren(node, self.root)
+            if following != None:
+                node = following
+            else:
+                # print('NONE')
+                return None
+            result = nodeFilter(self, node)
+            if result == NodeFilter.FILTER_ACCEPT:
+                self.currentNode = node
+                return node
+
+
+# TODO - create fetch package and move the js fetch stuff to it?
+# fetch api
+
+#AbortController
+#AbortSignal
+#Cache
+#CacheStorage
+# ContentIndex
+# ContactPicker
+#Client - serviceworker api
+#CredentialsContainer - new login api
+# DOMMatrix #https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix
+# DOMParser
+# IndexedDB API
+#ImageBitmap
+#ImageBitmapRenderingContext
+#ImageData
+#KeyPair
+#KeyPairGenerator
+#KeyPairGeneratorResult
+#KeyType
+#MutationObserver
+#MutationRecord
+#OverconstrainedError
+#QueueingStrategy
+#ReadableStream
+#SCTP
+#SourceBuffer
+#SourceBufferAppendMode
+#SourceBufferAppendWindowEnd
+#TimeRanges - media
+#TrackEvent - media
+# ValidityState
+# Web Share API
+#WebGL
+
+
+# XMLSerializer = xml.dom.minidom.XMLSerializer?
+# XMLSerializer.serializeToString(rootNode)
 
 class Sanitizer():
 
@@ -3079,9 +4132,5 @@ document = Document
 
 
 '''
-# self.geo = type('geo', (DOM,), {'name':'geo'})
-# self.history = type('history', (DOM,), {'name':'history'})
-# self.navigator = type('navigator', (DOM,), {'name':'navigator'})
 # self.screen = type('screen', (DOM,), {'name':'screen'})
-# self.webstorage = type('webstorage', (DOM,), {'name':'webstorage'})
 '''

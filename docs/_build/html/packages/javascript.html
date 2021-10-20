@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>javascript &#8212; domonic 0.6.2 documentation</title>
+    <title>javascript &#8212; domonic 0.6.3 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -178,6 +178,23 @@
 <span class="n">mystr</span><span class="o">.</span><span class="n">includes</span><span class="p">(</span><span class="s1">&#39;Some&#39;</span><span class="p">)</span> <span class="c1"># True</span>
 </pre></div>
 </div>
+<p>Plus some obsolete friends to do fancy tricks with!!… i.e</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="s2">&quot;Hello Wolrd!&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">blink</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">sub</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">sup</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">div</span><span class="p">()</span> <span class="c1"># ?? hang on?</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">webpage</span><span class="p">()</span> <span class="c1"># ??? err... wait what!!!</span>
+</pre></div>
+</div>
+<p>You can actually transform a type String into any tag.</p>
+<p>Simply call <code class="docutils literal notranslate"><span class="pre">`()`</span></code> on a stringvar to transform it into a Node</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span> <span class="o">=</span> <span class="n">String</span><span class="p">(</span><span class="s2">&quot;time to take a mo&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">_style</span><span class="o">=</span><span class="s2">&quot;font-color:red;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">test</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">_style</span><span class="o">=</span><span class="s2">&quot;font-color:red;&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>passing it the tag and attributes…</p>
 </div>
 <div class="section" id="object-methods">
 <h2>Object methods<a class="headerlink" href="#object-methods" title="Permalink to this headline">¶</a></h2>
@@ -261,6 +278,25 @@
 </pre></div>
 </div>
 <p>All fetch methods use requests and will pass all the kwargs along should you need to modify</p>
+</div>
+<div class="section" id="keywords">
+<h2>keywords<a class="headerlink" href="#keywords" title="Permalink to this headline">¶</a></h2>
+<p>If you <code class="docutils literal notranslate"><span class="pre">`import</span> <span class="pre">*`</span></code> you will get the js keywords… i.e.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">true</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">false</span><span class="p">)</span> <span class="c1"># False</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">undefined</span><span class="p">)</span> <span class="c1"># None</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">null</span><span class="p">)</span> <span class="c1"># None</span>
+</pre></div>
+</div>
+<p>As well as a function which evaluates python strings…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sup</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;print(&quot;hi&quot;)&#39;&#39;&#39;</span><span class="p">)</span>
+<span class="n">sup</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="typed-arrays">
+<h2>Typed arrays<a class="headerlink" href="#typed-arrays" title="Permalink to this headline">¶</a></h2>
+<p>js style typed arrays are even available</p>
 </div>
 <div class="section" id="styling">
 <h2>Styling<a class="headerlink" href="#styling" title="Permalink to this headline">¶</a></h2>
@@ -915,73 +951,6 @@ Warning this is NOT a boolean type. for that use Global.Boolean()]</p>
 
 <dl class="py class">
 <dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></code><code class="sig-name descname"><span class="pre">FormData</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">form</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>[utils for a form]</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>object</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [takes a string or pyml object and returns a FormData]</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">append</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Appends a new value onto an existing key inside a FormData object,
-or adds the key if it does not already exist.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">delete</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Deletes a key/value pair from a FormData object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">entries</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.entries"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns an iterator allowing to go through all key/value pairs contained in this object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns the first value associated with a given key from within a FormData object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">getAll</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.getAll"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns an array of all the values associated with a given key from within a FormData</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">has</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.has"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns a boolean stating whether a FormData object contains a certain key.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">keys</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns an iterator allowing to go through all keys of the key/value pairs contained in this object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Sets a new value for an existing key inside a FormData object,
-or adds the key/value if it does not already exist.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">values</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#FormData.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns an iterator allowing to go through all values  contained in this object.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></code><code class="sig-name descname"><span class="pre">Function</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Function"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>a Function object</p>
 <dl class="py method">
@@ -1495,6 +1464,48 @@ Either as own or inherited. Works like the in operator as a function.</p>
 <dd><p>javascript String methods</p>
 <dl class="py method">
 <dt>
+<code class="sig-name descname"><span class="pre">big</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.big"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in big tags]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string in big tags]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">blink</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.blink"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in blink tags]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string in blink tags]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">bold</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.bold"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in bold tags]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string in bold tags]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname"><span class="pre">charAt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.charAt"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[Returns the character at the specified index (position)]</p>
 <dl class="field-list simple">
@@ -1519,7 +1530,18 @@ Either as own or inherited. Works like the in operator as a function.</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname"><span class="pre">codePointAt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.codePointAt"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns the Unicode code point at the specified index</p>
+<dd><p>[Returns the Unicode code point at the specified index (position)]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – [index position]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[the Unicode code point at the specified index (position)]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)">type</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1549,8 +1571,70 @@ only replaces first one.</p>
 
 <dl class="py method">
 <dt>
+<code class="sig-name descname"><span class="pre">div</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.div"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in a div tag]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string in a div tag]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname"><span class="pre">endsWith</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.endsWith"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Checks whether a string ends with specified string/characters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">fixed</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fixed"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in fixed tags]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string in fixed tags]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">fontcolor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fontcolor"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in font tags with a specified color]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>color</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – [the color to use]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[the string in font tags]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">fontsize</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.fontsize"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in font tags with a specified size]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – [the size to use]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[the string in font tags]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1608,9 +1692,40 @@ starting the search at fromIndex ]</p>
 
 <dl class="py method">
 <dt>
+<code class="sig-name descname"><span class="pre">italics</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.italics"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in italics tags]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string in italics tags]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname"><span class="pre">lastIndexOf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchValue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromIndex</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.lastIndexOf"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>returns the last index within the calling String object of the first occurrence of the specified value,
 starting the search at fromIndex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">link</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.link"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in a link tag]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – [the url to use]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[the string in a link tag]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1639,13 +1754,42 @@ only replaces first one.</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname"><span class="pre">padEnd</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">padChar</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.padEnd"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Pads the end of a string with a specified character</p>
+<dd><p>[Pads the end of a string with a specified character
+(repeated, if needed) to create a new string.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – [the length of the resulting string]</p></li>
+<li><p><strong>padChar</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – [the character to use for padding. Defaults to ” “].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[the padded string]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt>
 <code class="sig-name descname"><span class="pre">padStart</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">padChar</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.padStart"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Pads the start of a string with a specified character</p>
+<dd><p>[Pads the start of a string with a specified character]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – [the length of the resulting string]</p></li>
+<li><p><strong>padChar</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – [the character to use for padding. Defaults to ” “].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[the padded string]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1715,6 +1859,20 @@ starting at the specified position.
 
 <dl class="py method">
 <dt>
+<code class="sig-name descname"><span class="pre">small</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.small"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in small tags]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string in small tags]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname"><span class="pre">split</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[can split a string based on a regex]</p>
 <dl class="field-list simple">
@@ -1738,6 +1896,34 @@ starting at the specified position.
 
 <dl class="py method">
 <dt>
+<code class="sig-name descname"><span class="pre">strike</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.strike"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in strike tags]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string in strike tags]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">sub</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.sub"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in sub tags]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string in sub tags]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname"><span class="pre">substr</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.substr"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Extracts the characters from a string, beginning at a specified start position,
 and through the specified number of character</p>
@@ -1747,6 +1933,20 @@ and through the specified number of character</p>
 <dt>
 <code class="sig-name descname"><span class="pre">substring</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.substring"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Extracts the characters from a string, between two specified indices</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">sup</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.sup"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in sup tags]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string in sup tags]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1794,13 +1994,49 @@ and through the specified number of character</p>
 <dl class="py method">
 <dt>
 <code class="sig-name descname"><span class="pre">trimEnd</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.trimEnd"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Removes whitespace from the end of a string</p>
+<dd><p>[Removes whitespace from the end of a string]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – [the length of the resulting string]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[the trimmed string]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)">type</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt>
 <code class="sig-name descname"><span class="pre">trimStart</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.trimStart"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Removes whitespace from the start of a string</p>
+<dd><p>[Removes whitespace from the beginning of a string.]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – [the length of the resulting string]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[the trimmed string]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">webpage</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.webpage"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[wraps the string in a webpage]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[the string as a webpage]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -2125,6 +2361,8 @@ sup()</p>
 <li class="toctree-l2"><a class="reference internal" href="#object-methods">Object methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#setinterval">setInterval</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#fetch">fetch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#keywords">keywords</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#typed-arrays">Typed arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#styling">Styling</a></li>
 </ul>
 </li>
@@ -2169,6 +2407,8 @@ sup()</p>
 <li><a class="reference internal" href="#object-methods">Object methods</a></li>
 <li><a class="reference internal" href="#setinterval">setInterval</a></li>
 <li><a class="reference internal" href="#fetch">fetch</a></li>
+<li><a class="reference internal" href="#keywords">keywords</a></li>
+<li><a class="reference internal" href="#typed-arrays">Typed arrays</a></li>
 <li><a class="reference internal" href="#styling">Styling</a><ul>
 <li><a class="reference internal" href="#domonic-javascript">domonic.javascript</a></li>
 </ul>

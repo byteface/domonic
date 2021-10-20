@@ -18,6 +18,7 @@ from domonic.javascript import Window
 from domonic.dom import *
 from domonic.dom import document, Location
 
+from domonic.webapi import Storage
 
 # TODO - test
 class CustomElementRegistry():
@@ -70,6 +71,14 @@ class CustomElementRegistry():
         pass
 
 
+from domonic.webapi.netinfo import NetworkInformation
+from domonic.webapi.credentials import CredentialsContainer
+from domonic.webapi.geo import Geolocation
+
+# from domonic.webapi.mediacapabilities import MediaCapabilities
+# from domonic.webapi.mediasession import MediaSession
+
+
 class Navigator(object):
     """ Navigator """
 
@@ -77,15 +86,34 @@ class Navigator(object):
     cookieEnabled = False
 
     # Determines whether the browser is online
-    onLine = False
+    # onLine = False
+    @property
+    def onLine(self):
+        raise NotImplementedError
 
     # Returns the name of the browser Navigator
     appName = "domonic"
 
     def __init__(self, *args, **kwargs):
-        # self.args = args
-        # self.kwargs = kwargs
-        pass
+        self.connection = NetworkInformation()
+        self.credentials = CredentialsContainer()
+        self.geolocation = Geolocation()
+        self.hid = None
+        self.keyboard = None
+        self.locks = None
+        self.mediaCapabilities = None
+        self.mediaSession = None
+        self.mediaDevices = None
+        self.presentation = None
+        self.serial = None
+        self.serviceWorker = None
+        self.storage = None
+        self.vendor = None
+        self.webdriver = None
+        self.xr = None
+        self.buildID = None
+        self.contacts = None
+
 
     # @property
     # def appVersion():
@@ -98,6 +126,8 @@ class Navigator(object):
         """ Returns the language of the browser Navigator """
         # import locale
         # return locale.getdefaultlocale()
+
+    # def languages
 
     @property
     def platform(self):
@@ -116,18 +146,79 @@ class Navigator(object):
         """ Returns the product name """
         return self.appName
 
-    # @property
-    # def location(self):
-        # """ Returns the location of the browser Navigator """
-        # return Location(self.window.location.href)
-
     @property
     def userAgent(self):
         """ Returns the user-agent header sent by the browser to the server Navigator """
         raise NotImplementedError
 
-    # geolocation   Returns a Geolocation object that can be used to locate the user's position Navigator
-    # appCodeName   Returns the code name of the browser    Navigator
+    @property
+    def deviceMemory(self):
+        """ Returns the amount of memory available on the device """
+        return 1
+
+    @property
+    def doNotTrack(self):
+        """ Returns the value of the doNotTrack attribute of the Navigator object """
+        # return False
+        return 'lol'
+
+    @property
+    def hardwareConcurrency(self):
+        """ Returns the number of logical processors available to the browser Navigator """
+        return 1
+
+    @property
+    def maxTouchPoints(self):
+        """ Returns the maximum number of touch points Navigator """
+        return 1
+
+    @saticmethod
+    def registerProtocolHandler(scheme, url, title):
+        """ Registers a new protocol handler Navigator """
+        raise NotImplementedError
+
+    @staticmethod
+    def requestMediaKeySystemAccess(keySystem, supportedConfigurations):
+        """ Requests a new MediaKeySystemAccess object Navigator """
+        raise NotImplementedError
+
+    def canShare(self):
+        """ Returns whether the browser Navigator can share files """
+        return False
+
+    def clearAppBadge(self):
+        """ Clears the app badge Navigator """
+        raise NotImplementedError
+
+    def getBattery(self):
+        """ Returns the battery information Navigator """
+        raise NotImplementedError
+
+    @property
+    def javaEnabled(self):
+        """ Returns whether the browser Navigator supports Java """
+        return False
+
+    def vibrate(self, pattern):
+        """ Vibrates the device Navigator """
+        raise NotImplementedError
+
+    # deprecated
+    # Navigator.securitypolicy
+    # Navigator.standalone
+    # Navigator.wakeLock
+    # Navigator.appCodeName
+    # Navigator.appName
+    # Navigator.appVersion
+    # Navigator.activeVRDisplays
+    # Navigator.battery
+    # Navigator.mimeTypes
+    # Navigator.oscpu
+    # Navigator.platform
+    # Navigator.plugins
+    # Navigator.product
+    # Navigator.productSub
+    # Navigator.vendorSub
 
 
 class Window(Window):
@@ -136,8 +227,23 @@ class Window(Window):
         self.customElements = CustomElementRegistry()
         # from domonic.dom import document
         # self.document = document
+
+        self._localStorage = Storage()  # TODO - should persist across sessions
+        self._sessionStorage = Storage()  # TODO - should reset on page refresh
+        self._navigator = Navigator()
+
         self._location = Location('eventual.technology')
         super(Window, Window).__init__(self)
+
+    @property
+    def localStorage(self):
+        """ Returns the local storage object """
+        return self._localStorage
+
+    @property
+    def sessionStorage(self):
+        """ Returns the session storage object """
+        return self._sessionStorage
 
     @staticmethod
     def document(self):
@@ -147,6 +253,7 @@ class Window(Window):
     @property
     def location(self):
         return self._location
+        # return Location(self.window.location.href)
 
     @location.setter
     def location(self, value):
@@ -187,54 +294,194 @@ class Window(Window):
         self.document = domonic.domonic.parseString(content)
         self._location = Location(value)
 
+    # WINDOW
+    # """ Removes focus from an element """
+    def blur(self):
+        raise NotImplementedError
+
+    # Returns a Boolean value indicating whether a window has been closed or not
+    def closed(self):
+        raise NotImplementedError
+
+    # Closes the output stream previously opened with document.open()
+    def close(self):
+        raise NotImplementedError
+
+    def confirm(self, message):
+        """[Displays a dialog box with a message and an OK and a Cancel button.]
+        (https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm)
+
+        Args:
+            message ([type]): [description]
+
+        Raises:
+            NotImplementedError: [description]
+        """
+        raise NotImplementedError
+
+    @property
+    def defaultStatus(self):
+        """ Returns the default status message of the window """
+        raise NotImplementedError
+
+    @defaultStatus.setter
+    def defaultStatus(self, value=None):
+        """ Sets the default text in the statusbar of a window """
+        raise NotImplementedError
+
+    def focus(self):
+        """ Gives focus to an element """
+        raise NotImplementedError
+
+    # Returns the <iframe> element in which the current window is inserted  
+    def frameElement(self):
+        raise NotImplementedError
+
+    # Gets the current computed CSS styles applied to an element
+    def getComputedStyle(self, el, pseudo=None):
+        raise NotImplementedError
+
+    # Returns a Selection object representing the range of text selected by the user
+    def getSelection(self):
+        raise NotImplementedError
+
+    def history(self):
+        """ Returns the History object for the window """
+        raise NotImplementedError
+        # from domonic.webapi.history import History
+        # return History()
+
+    # Returns the height of the window's content area (viewport) including scrollbars Window
+    def innerHeight(self):
+        raise NotImplementedError
+
+    # Returns the width of a window's content area (viewport) including scrollbars  
+    def innerWidth(self):
+        raise NotImplementedError
+
+    # Returns a MediaQueryList object representing the specified CSS media query string 
+    def matchMedia(self, media_query_list):
+        raise NotImplementedError
+
+    def moveBy(self, x: int, y: int):
+        """[Moves a window relative to its current position]
+
+        Args:
+            x ([int]): [the horizontal offset]
+            y ([int]): [the vertical offset]
+        """
+        raise NotImplementedError
+
+    def moveTo(self, x: int, y: int):
+        """[Moves a window to the specified position]
+
+        Args:
+            x (int): [the position on the x-axis]
+            y (int): [the position on the y-axis]
+        """
+        raise NotImplementedError
+
+    def name(self):
+        """ Returns the name of the window """
+        raise NotImplementedError
+    
+    @property
+    def navigator(self):
+        """ Returns the Navigator object for the window """
+        return self._navigator
+
+    # # The event occurs when the window's history changes  PopStateEvent?
+    # def onpopstate(self):
+    #     raise NotImplementedError
+
+    # Opens an HTML output stream to collect output from document.write() Document, Window
+    def open(self):
+        raise NotImplementedError
+
+    # Returns a reference to the window that created the window 
+    def opener(self):
+        raise NotImplementedError
+
+    # Returns the height of the browser window, including toolbars/scrollbars Window
+    def outerHeight(self):
+        raise NotImplementedError
+
+    # Returns the width of the browser window, including toolbars/scrollbars
+    def outerWidth(self):
+        raise NotImplementedError
+
+    # Returns the pixels the current document has been scrolled (horizontally) from the upper left corner of the window 
+    def pageXOffset(self):
+        raise NotImplementedError
+
+    # Returns the pixels the current document has been scrolled (vertically) from the upper left corner of the window Window
+    def pageYOffset(self):
+        raise NotImplementedError
+
+    # Returns the parent window of the current window Window
+    def parent(self):
+        raise NotImplementedError
+
+    # Prints the content of the current window  
+    def _print(self):
+        raise NotImplementedError
+
+    # Resizes the window by the specified pixels
+    def resizeBy(self):
+        raise NotImplementedError
+
+    # Resizes the window to the specified width and height  
+    def resizeTo(self):
+        raise NotImplementedError
+
+    # Returns the Screen object for the window (See Screen object)  
+    def screen(self):
+        raise NotImplementedError
+
+    # Returns the horizontal coordinate of the window relative to the screen
+    def screenLeft(self):
+        raise NotImplementedError
+
+    # Returns the vertical coordinate of the window relative to the screen  
+    def screenTop(self):
+        raise NotImplementedError
+
+    # Deprecated. This method has been replaced by the scrollTo() method. Window
+    def scroll(self):
+        raise NotImplementedError
+
+    # Scrolls the document by the specified number of pixels
+    def scrollBy(self):
+        raise NotImplementedError
+
+    # Scrolls the specified element into the visible area of the browser window   Element
+    def scrollIntoView(self):
+        raise NotImplementedError
+
+    # Scrolls the document to the specified coordinates  < TODO - this will be fun
+    def scrollTo(self):
+        raise NotImplementedError
+
+    # An alias of pageXOffset Window
+    def scrollX(self):
+        raise NotImplementedError
+
+    # An alias of pageYOffset Window
+    def scrollY(self):
+        raise NotImplementedError
+
+    # Stops the window from loading 
+    def stop(self):
+        raise NotImplementedError
+
+    # Sets or returns the text in the statusbar of a window 
+    def status(self):
+        raise NotImplementedError
+
+    # the topmost browser window
+    def top(self):
+        raise NotImplementedError
+
 
 # global window
 window = Window()
-
-
-# WINDOW
-# localStorage  Allows to save key/value pairs in a web browser. Stores the data with no expiration date    Window
-# blur()    Removes focus from an element   Element, Window
-# closed    Returns a Boolean value indicating whether a window has been closed or not  Window
-# close()   Closes the output stream previously opened with document.open() Document, Window
-# confirm() Displays a dialog box with a message and an OK and a Cancel button  Window
-# defaultStatus Sets or returns the default text in the statusbar of a window   Window
-# document  Returns the Document object for the window (See Document object)    Window
-# focus()   Gives focus to an element   Element, Window
-# frameElement  Returns the <iframe> element in which the current window is inserted    Window
-# getComputedStyle()    Gets the current computed CSS styles applied to an element  Window
-# getSelection()    Returns a Selection object representing the range of text selected by the user  Window
-# history   Returns the History object for the window (See History object)  Window
-# innerHeight   Returns the height of the window's content area (viewport) including scrollbars Window
-# innerWidth    Returns the width of a window's content area (viewport) including scrollbars    Window
-# location  Returns the Location object for the window (See Location object)    Window
-# matchMedia()  Returns a MediaQueryList object representing the specified CSS media query string   Window
-# moveBy()  Moves a window relative to its current position Window
-# moveTo()  Moves a window to the specified position    Window
-# name  Sets or returns an error name   Error, Attribute, Window
-# navigator Returns the Navigator object for the window (See Navigator object)  Window
-# onpopstate    The event occurs when the window's history changes  PopStateEvent
-# open()    Opens an HTML output stream to collect output from document.write() Document, Window
-# opener    Returns a reference to the window that created the window   Window
-# outerHeight   Returns the height of the browser window, including toolbars/scrollbars Window
-# outerWidth    Returns the width of the browser window, including toolbars/scrollbars  Window
-# pageXOffset   Returns the pixels the current document has been scrolled (horizontally) from the upper left corner of the window   Window
-# pageYOffset   Returns the pixels the current document has been scrolled (vertically) from the upper left corner of the window Window
-# parent    Returns the parent window of the current window Window
-# _print()   Prints the content of the current window    Window
-# resizeBy()    Resizes the window by the specified pixels  Window
-# resizeTo()    Resizes the window to the specified width and height    Window
-# screen    Returns the Screen object for the window (See Screen object)    Window
-# screenLeft    Returns the horizontal coordinate of the window relative to the screen  Window
-# screenTop Returns the vertical coordinate of the window relative to the screen    Window
-# scroll()  Deprecated. This method has been replaced by the scrollTo() method. Window
-# scrollBy()    Scrolls the document by the specified number of pixels  Window
-# scrollIntoView()  Scrolls the specified element into the visible area of the browser window   Element
-# scrollTo()    Scrolls the document to the specified coordinates   Window
-# scrollX   An alias of pageXOffset Window
-# scrollY   An alias of pageYOffset Window
-# sessionStorage    Allows to save key/value pairs in a web browser. Stores the data for one session    Window
-# stop()    Stops the window from loading   Window
-# status    Sets or returns the text in the statusbar of a window   Window
-# top   Returns the topmost browser window  Window
-# view  Returns a reference to the Window object where the event occurred   UiEvent

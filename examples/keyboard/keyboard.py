@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '../..')
+
 from domonic.html import *
 from domonic.CDN import CDN_CSS
 
@@ -32,7 +35,5 @@ for rows in keyboard:
 
 # render webpage
 css = link(_rel="stylesheet", _href=CDN_CSS.MARX)
-render( html(
-        head(css),
-        body(kb, _style="background-color:#d1d5db;") ),
-    "keyboard.html" )
+content = html(head(css), body(kb, _style="background-color:#d1d5db;"))
+render(f"{content}", "keyboard.html")

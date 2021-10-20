@@ -115,9 +115,11 @@ Here you can find some instructions for getting the most out of Domonic.
    packages/decorators
    packages/components
    packages/utils
+   packages/webapi
+   packages/style
    packages/servers
    packages/autodocs
-
+   contribute
 
 CLI
 ----------------

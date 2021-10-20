@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>events &#8212; domonic 0.6.2 documentation</title>
+    <title>events &#8212; domonic 0.6.3 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -65,6 +65,7 @@
 <div class="section" id="domonic-events">
 <h2>domonic.events<a class="headerlink" href="#domonic-events" title="Permalink to this headline">¶</a></h2>
 <p>dom events</p>
+<p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/Events">https://developer.mozilla.org/en-US/docs/Web/Events</a></p>
 <dl class="py class">
 <dt>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">AnimationEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#AnimationEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -447,6 +448,58 @@
 
 <dl class="py class">
 <dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">ExtendableEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ExtendableEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">extendable</span></code></dt>
+<dd><p>Returns whether the event is extendable or not</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">timeStamp</span></code></dt>
+<dd><p>Returns the time stamp of the event</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">FetchEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FetchEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">clientId</span></code></dt>
+<dd><p>Returns the client ID of the fetch request</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">isReload</span></code></dt>
+<dd><p>Returns whether the request is a reload or not</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">request</span></code></dt>
+<dd><p>Returns the request object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">respondWith</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FetchEvent.respondWith"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns a promise that resolves to the response object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">waitUntil</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">promise</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FetchEvent.waitUntil"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns a promise that resolves when the response is available</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">FocusEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FocusEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
 <dt>
@@ -504,12 +557,48 @@
 <dd><p>Returns the inserted characters</p>
 </dd></dl>
 
+<dl class="py method">
+<dt>
+<code class="sig-name descname"><span class="pre">getTargetRanges</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#InputEvent.getTargetRanges"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns an array containing target ranges that will be affected by the insertion/deletion</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">KeyboardEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#KeyboardEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>keyboard events</p>
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">DOM_KEY_LOCATION_JOYSTICK</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">DOM_KEY_LOCATION_LEFT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">DOM_KEY_LOCATION_MOBILE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">DOM_KEY_LOCATION_NUMPAD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">DOM_KEY_LOCATION_RIGHT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">DOM_KEY_LOCATION_STANDARD</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt>
 <code class="sig-name descname"><span class="pre">KEYDOWN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'keydown'</span></em></dt>
@@ -619,6 +708,11 @@
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">PopStateEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PopStateEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
 <dt>
+<code class="sig-name descname"><span class="pre">POPSTATE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'popstate'</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt>
 <code class="sig-name descname"><span class="pre">state</span></code></dt>
 <dd><p>Returns an object containing a copy of the history entries</p>
 </dd></dl>
@@ -637,6 +731,40 @@
 
 <dl class="py class">
 <dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">PromiseRejectionEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PromiseRejectionEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">HANDLED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'rejectionhandled'</span></em></dt>
+<dd><p>PromiseRejectionEvent</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">UNHANDLED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'unhandledrejection'</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">isRejected</span></code></dt>
+<dd><p>Returns whether the promise was rejected or not</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">promise</span></code></dt>
+<dd><p>Returns the promise that was rejected</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">reason</span></code></dt>
+<dd><p>Returns the reason of the rejection</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">SVGEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SVGEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd></dd></dl>
 
@@ -644,6 +772,11 @@
 <dt>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">StorageEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#StorageEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">STORAGE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'storage'</span></em></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt>
 <code class="sig-name descname"><span class="pre">key</span></code></dt>
 <dd><p>Returns the key of the changed storage item</p>
@@ -682,6 +815,23 @@
 <dt>
 <code class="sig-name descname"><span class="pre">SUBMIT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'submit'</span></em></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.events.</span></code><code class="sig-name descname"><span class="pre">SyncEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SyncEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">lastChance</span></code></dt>
+<dd><p>Returns whether the sync event is the last chance or not</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname"><span class="pre">tag</span></code></dt>
+<dd><p>Returns the tag of the sync event</p>
+</dd></dl>
 
 </dd></dl>
 

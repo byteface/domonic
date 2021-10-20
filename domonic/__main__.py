@@ -23,14 +23,30 @@ function project(){
 
     mkdir archive
     touch app.py
-    touch README.md
+    echo "from domonic.html import *" >> app.py
+
     touch Makefile
+
+    touch README.md
+    echo "# $PROJECT_NAME" >> README.md
+    echo "## Description" >> README.md
+    echo "## Installation" >> README.md
+    echo "## Usage" >> README.md
+    echo "## Tests" >> README.md
+    echo "## License" >> README.md
 
     mkdir app
     touch app/__init__.py
+    echo '__version__ = "0.0.1"' >> app/__init__.py
 
     git init
     touch .gitignore
+    echo "*.pyc" >> .gitignore
+    echo "*.pyo" >> .gitignore
+    echo "*.swp" >> .gitignore
+    echo "*.swo" >> .gitignore
+    echo "*.DS_Store" >> .gitignore
+    echo "__pycache__/" >> .gitignore
 
     touch static/js/master.js
     touch static/css/styles.css

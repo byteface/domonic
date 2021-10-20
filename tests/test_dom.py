@@ -47,6 +47,31 @@ class TestCase(unittest.TestCase):
         self.assertEqual(None, n.localName)  # obsolete if not a tag or attribute should return none
         self.assertEqual(2, len(n.children))
         self.assertEqual(None, n.nodeValue)
+
+        # test all props on Node
+        # self.assertEqual(None, n.baseURI)
+        # self.assertEqual(None, n.baseURIObject)
+        # self.assertEqual(None, n.childNodes)
+        # self.assertEqual(None, n.firstChild)
+        # self.assertEqual(None, n.isConnected)
+        # self.assertEqual(None, n.isDefaultNamespace)
+        # self.assertEqual(None, n.isEqualNode)
+        # self.assertEqual(None, n.isSameNode)
+        # self.assertEqual(None, n.isSupported)
+        # self.assertEqual(None, n.lastChild)
+        # self.assertEqual(None, n.localName)
+        # self.assertEqual(None, n.namespaceURI)
+        # self.assertEqual(None, n.nextSibling)
+        # self.assertEqual(None, n.nodeName)
+        # self.assertEqual(None, n.nodeType)
+        # self.assertEqual(None, n.nodeValue)
+        # self.assertEqual(None, n.ownerDocument)
+        # self.assertEqual(None, n.parentElement)
+        # self.assertEqual(None, n.parentNode)
+        # self.assertEqual(None, n.prefix)
+        # self.assertEqual(None, n.previousSibling)
+        # self.assertEqual(None, n.textContent)
+
         # print(n.nodeType())
         d = div("test")
         # print(type(d))
@@ -368,24 +393,53 @@ class TestCase(unittest.TestCase):
 
         result = dom1.querySelector('#thing')
         # print('--')
-        print("RESULT>>>>>", result)
+        # print("RESULT>>>>>", result)
         # print('--')
+        assert result.id == 'thing'
 
         result = dom1.querySelector('span')
         # print('--')
-        print("RESULT>>>>>", result)
+        # print("RESULT>>>>>", result)
+        assert result.id == 'fun'
 
         result = dom1.querySelector('.test')
         # print('--')
-        print("RESULT>>>>>", result)
+        # print("RESULT>>>>>", result)
+        assert result.className == 'test this thing'
 
         result = dom1.getElementsByClassName('this')
         # print('--')
-        print("RESULT>>>>>", result)
+        # print("RESULT>>>>>", result)
+        assert len(result) == 1
+        assert result[0].className == 'test this thing'
 
         pass
 
     def test_getElementsBySelector(self):
+
+        dom1 = html(div(div(div(div(div(div(div(div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
+
+        result = dom1.getElementsBySelector('#thing', dom1)[0]
+        print("RESULT>>>>>", result)
+        print('--')
+        assert result.id == 'thing'
+
+        result = dom1.getElementsBySelector('span', dom1)[0]
+        print('--')
+        print("RESULT>>>>>", result)
+        assert result.id == 'fun'
+
+        result = dom1.getElementsBySelector('.test', dom1)#[0]
+        print('--')
+        print("RESULT>>>>>", result)
+        return
+        assert result.className == 'test this thing'
+
+        result = dom1.getElementsBySelector('.this', dom1)[0]
+        # print('--')
+        # print("RESULT>>>>>", result)
+        assert len(result) == 1
+        assert result[0].className == 'test this thing'
 
         page = html(
             head(
@@ -556,12 +610,17 @@ class TestCase(unittest.TestCase):
         # print(str(page.getElementsBySelector("a", page)))
 
         # print(º('#team'))
-        # print('xxxxxxxxxxxxxxxxxxxxxxxx')
-        # print(str(page.getElementsBySelector("#team", page)[0]))
+        print('xxxxxxxxxxxxxxxxxxxxxxxx')
+        node = str(page.getElementsBySelector("#team", page)[0])
+        assert node.startswith('<section id="team"')
 
-        # print(º('#team'))
-        # print('xxxxxxxxxxxxxxxxxxxxxxxx')
-        # print(str(page.getElementsBySelector("#team", page)[0]))
+
+
+
+
+
+
+
 
         # print(º('a[rel=nofollow]'))
         # print(str(page.getElementsBySelector("a[rel=nofollow]", page)[0]))
@@ -811,6 +870,101 @@ class TestCase(unittest.TestCase):
         # not able to recreate. Comment was updated to a Node in 6.1
         # this may have been due to that
 
+
+    def test_treewalker(self):
+
+        from domonic.dom import Comment
+        from domonic.dom import TreeWalker
+
+        doc = html(
+            div(_id="contentarea").html(
+            p("Some ", span("text")),
+            b("Bold text")
+        )
+        )
+
+        rootnode = doc.getElementById("contentarea")
+        # print(rootnode)
+        walker = doc.createTreeWalker(rootnode, NodeFilter.SHOW_ELEMENT, None, False)
+
+        print(walker.currentNode)
+        print(walker.firstChild())
+
+        # //Alert the starting node Tree Walker currently points to (root node)
+        window.alert(walker.currentNode.tagName)  # alerts DIV (with id=contentarea)
+        # assert walker.currentNode.tagName == 'DIV'
+
+        # Step through and alert all child nodes
+        # for n in walker.nextNode():
+        while walker.nextNode():
+            print('+++', walker.nextNode())
+            window.alert(walker.currentNode)  # //alerts P, SPAN, and B.
+
+        return
+
+        # //Go back to the first child node of the collection and alert it
+        walker.currentNode = rootnode  # //reset TreeWalker pointer to point to root node
+        print(walker.currentNode)
+        print(walker.firstChild())
+        window.alert(walker.firstChild().tagName)  # //alerts P
+
+        # test 2
+        doc = html(
+            ul(_id="mylist").html(
+                    li("List 1"),
+                    li("List 2"),
+                    li("List 3")
+                )
+            )
+
+        rootnode = doc.getElementById("mylist")
+        walker = doc.createTreeWalker(rootnode, NodeFilter.SHOW_ELEMENT, None, False)
+
+        window.alert(len(walker.currentNode.childNodes))  # //alerts 7 (includes text nodes)
+        window.alert(len(walker.currentNode.getElementsByTagName("*")))  # //alerts 3
+
+
+        # test 3
+        doc = html(
+            div(_id="main").html(
+            p("This is a ", span("paragraph")),
+            b("Bold text")
+        )
+        )
+        mainDiv = doc.getElementById("main")
+        walker = doc.createTreeWalker(mainDiv, NodeFilter.SHOW_ELEMENT, None, False)
+        console.log(walker)
+
+        treeWalker = document.createTreeWalker(
+            mainDiv,
+            NodeFilter.SHOW_TEXT,
+            lambda node: NodeFilter.FILTER_ACCEPT if (String(node.nodeValue).trim() != "") else NodeFilter.FILTER_REJECT,
+            False
+            )
+
+        # //Alert the starting node Tree Walker currently points to (root node)
+        # //displays DIV (with id=main)
+        console.log(walker.currentNode.tagName)
+
+        # //Step through and alert all child nodes
+        while (walker.nextNode()):
+            # //displays P, SPAN, and B.
+            console.log(walker.currentNode.tagName)
+
+        # //Go back to the first child node of the collection and display it
+        # //to do that, we must reset TreeWalker pointer to point to main DIV
+        walker.currentNode = mainDiv
+        # //displays P
+        console.log(walker.firstChild().tagName)
+
+        # //reset TreeWalker pointer to point to main DIV
+        walker.currentNode = mainDiv
+
+        # test 4
+        # https://gist.github.com/bennadel/10545473
+
+        # test 5
+        # https://paul.kinlan.me/dom-treewalker/
 
 if __name__ == '__main__':
     unittest.main()

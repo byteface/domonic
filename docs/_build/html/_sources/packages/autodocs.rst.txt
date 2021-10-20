@@ -51,3 +51,6 @@
 
 .. automodule:: domonic.xml.sitemap
     :members:
+
+.. automodule:: domonic.webapi.url
+    :members:

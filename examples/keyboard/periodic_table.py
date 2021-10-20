@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '../..')
+
 from domonic.html import *
 from domonic.CDN import CDN_CSS
 
@@ -17,7 +20,7 @@ table = [
 ]
 
 # create a template
-key_tmpl = lambda key: div( _style=f"display:inline;margin:{MARGIN}px;").html(
+key_tmpl = lambda key: div(_style=f"display:inline;margin:{MARGIN}px;").html(
     button(key, _style="background-color:white;color:black;width:50px;")
 )
 
@@ -31,7 +34,5 @@ for rows in table:
 
 # render webpage
 css = link(_rel="stylesheet", _href=CDN_CSS.MARX)
-render( html(
-        head(css),
-        body(kb, _style="background-color:#d1d5db;") ),
-    "table.html" )
+content = html(head(css), body(kb, _style="background-color:#d1d5db;"))
+render(f"{content}", "table.html")

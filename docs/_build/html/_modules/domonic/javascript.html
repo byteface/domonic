@@ -5,15 +5,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.6.1 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.7.0 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/tabs.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
@@ -714,59 +712,60 @@
         <span class="k">return</span> <span class="nb">str</span><span class="p">([(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="FormData"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData">[docs]</a><span class="k">class</span> <span class="nc">FormData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;[utils for a form]</span>
+<span class="c1"># TODO - moved to webapi.xhr . might import here for convenience?</span>
+<span class="c1"># class FormData(object):</span>
+<span class="c1">#     &quot;&quot;&quot;[utils for a form]</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        object ([str]): [takes a string or pyml object and returns a FormData]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="c1">#     Args:</span>
+<span class="c1">#         object ([str]): [takes a string or pyml object and returns a FormData]</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">form</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; creates a new FormData object. &quot;&quot;&quot;</span>
-        <span class="c1"># TODO - parse to domonic.</span>
-        <span class="c1"># if isinstance(form, str):</span>
-        <span class="c1">#   self._data = domonic.loads(form) # TODO - parser wont be done enough yet</span>
-        <span class="c1"># if isinstance(form, Node):</span>
-        <span class="c1">#   self._data = form</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+<span class="c1">#     def __init__(self, form):</span>
+<span class="c1">#         &quot;&quot;&quot; creates a new FormData object. &quot;&quot;&quot;</span>
+<span class="c1">#         # TODO - parse to domonic.</span>
+<span class="c1">#         # if isinstance(form, str):</span>
+<span class="c1">#         #   self._data = domonic.loads(form) # TODO - parser wont be done enough yet</span>
+<span class="c1">#         # if isinstance(form, Node):</span>
+<span class="c1">#         #   self._data = form</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<div class="viewcode-block" id="FormData.append"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Appends a new value onto an existing key inside a FormData object,</span>
-<span class="sd">        or adds the key if it does not already exist. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<span class="c1">#     def append(self, name, value, filename):</span>
+<span class="c1">#         &quot;&quot;&quot; Appends a new value onto an existing key inside a FormData object,</span>
+<span class="c1">#         or adds the key if it does not already exist. &quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<div class="viewcode-block" id="FormData.delete"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Deletes a key/value pair from a FormData object. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<span class="c1">#     def delete(self, name):</span>
+<span class="c1">#         &quot;&quot;&quot; Deletes a key/value pair from a FormData object. &quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<div class="viewcode-block" id="FormData.entries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.entries">[docs]</a>    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing to go through all key/value pairs contained in this object. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<span class="c1">#     def entries(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns an iterator allowing to go through all key/value pairs contained in this object. &quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<div class="viewcode-block" id="FormData.get"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the first value associated with a given key from within a FormData object. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<span class="c1">#     def get(self, name):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns the first value associated with a given key from within a FormData object. &quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<div class="viewcode-block" id="FormData.getAll"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.getAll">[docs]</a>    <span class="k">def</span> <span class="nf">getAll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an array of all the values associated with a given key from within a FormData &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<span class="c1">#     def getAll(self, name):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns an array of all the values associated with a given key from within a FormData &quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<div class="viewcode-block" id="FormData.has"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a boolean stating whether a FormData object contains a certain key.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<span class="c1">#     def has(self, name):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns a boolean stating whether a FormData object contains a certain key.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<div class="viewcode-block" id="FormData.keys"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing to go through all keys of the key/value pairs contained in this object.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<span class="c1">#     def keys(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns an iterator allowing to go through all keys of the key/value pairs contained in this object.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<div class="viewcode-block" id="FormData.set"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Sets a new value for an existing key inside a FormData object,</span>
-<span class="sd">        or adds the key/value if it does not already exist.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+<span class="c1">#     def set(self, name, value, filename):</span>
+<span class="c1">#         &quot;&quot;&quot; Sets a new value for an existing key inside a FormData object,</span>
+<span class="c1">#         or adds the key/value if it does not already exist.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
-<div class="viewcode-block" id="FormData.values"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.FormData.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing to go through all values  contained in this object.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+<span class="c1">#     def values(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns an iterator allowing to go through all values  contained in this object.&quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError</span>
 
 
 <div class="viewcode-block" id="Worker"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Worker">[docs]</a><span class="k">class</span> <span class="nc">Worker</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -2907,15 +2906,39 @@
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
 <div class="viewcode-block" id="String.codePointAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.codePointAt">[docs]</a>    <span class="k">def</span> <span class="nf">codePointAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the Unicode code point at the specified index &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;[Returns the Unicode code point at the specified index (position)]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            index (int): [index position]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [the Unicode code point at the specified index (position)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="String.padEnd"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.padEnd">[docs]</a>    <span class="k">def</span> <span class="nf">padEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">padChar</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Pads the end of a string with a specified character &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;[Pads the end of a string with a specified character</span>
+<span class="sd">        (repeated, if needed) to create a new string.]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            length (int): [the length of the resulting string]</span>
+<span class="sd">            padChar (str, optional): [the character to use for padding. Defaults to &quot; &quot;].</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the padded string]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">padChar</span> <span class="o">*</span> <span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)))</span></div>
 
 <div class="viewcode-block" id="String.padStart"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.padStart">[docs]</a>    <span class="k">def</span> <span class="nf">padStart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">padChar</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Pads the start of a string with a specified character &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;[Pads the start of a string with a specified character]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            length (int): [the length of the resulting string]</span>
+<span class="sd">            padChar (str, optional): [the character to use for padding. Defaults to &quot; &quot;].</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the padded string]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">padChar</span> <span class="o">*</span> <span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">))</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span></div>
 
 <div class="viewcode-block" id="String.localeCompare"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.localeCompare">[docs]</a>    <span class="k">def</span> <span class="nf">localeCompare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comparisonString</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">locale</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -2927,12 +2950,26 @@
         <span class="c1"># pass</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="String.trimStart"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trimStart">[docs]</a>    <span class="k">def</span> <span class="nf">trimStart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Removes whitespace from the start of a string &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="String.trimStart"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trimStart">[docs]</a>    <span class="k">def</span> <span class="nf">trimStart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># TODO - huh?. length </span>
+        <span class="sd">&quot;&quot;&quot;[Removes whitespace from the beginning of a string.]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            length (int): [the length of the resulting string]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the trimmed string]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.trimEnd"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trimEnd">[docs]</a>    <span class="k">def</span> <span class="nf">trimEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Removes whitespace from the end of a string &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="String.trimEnd"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trimEnd">[docs]</a>    <span class="k">def</span> <span class="nf">trimEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># TODO - huh?. length </span>
+        <span class="sd">&quot;&quot;&quot;[Removes whitespace from the end of a string]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            length (int): [the length of the resulting string]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [the trimmed string]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="String.includes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.includes">[docs]</a>    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchValue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
@@ -2987,9 +3024,166 @@
 <span class="sd">        returns the last index within the calling String object of the first occurrence of the specified value,</span>
 <span class="sd">        starting the search at fromIndex</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">rindex</span><span class="p">(</span><span class="n">searchValue</span><span class="p">,</span> <span class="n">fromIndex</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">rindex</span><span class="p">(</span><span class="n">searchValue</span><span class="p">,</span> <span class="n">fromIndex</span><span class="p">)</span></div>
 
     <span class="c1"># def test(self, pattern: str):? was this on string?</span>
+
+    <span class="c1"># TODO - test all these</span>
+    <span class="k">def</span> <span class="nf">anchor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># from domonic.html import a</span>
+        <span class="c1"># return a(str(self), _name=name)  #TODO - no href bug</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;a name=&quot;</span><span class="si">{}</span><span class="s1">&quot;&gt;</span><span class="si">{}</span><span class="s1">&lt;/a&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+
+<div class="viewcode-block" id="String.big"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.big">[docs]</a>    <span class="k">def</span> <span class="nf">big</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in big tags]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in big tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;big&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/big&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.blink"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.blink">[docs]</a>    <span class="k">def</span> <span class="nf">blink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in blink tags]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in blink tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;blink&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/blink&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.bold"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.bold">[docs]</a>    <span class="k">def</span> <span class="nf">bold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in bold tags]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in bold tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;b&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/b&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.fixed"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.fixed">[docs]</a>    <span class="k">def</span> <span class="nf">fixed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in fixed tags]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in fixed tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;tt&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/tt&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.fontcolor"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.fontcolor">[docs]</a>    <span class="k">def</span> <span class="nf">fontcolor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in font tags with a specified color]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            color (str): [the color to use]</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in font tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;font color=&quot;</span> <span class="o">+</span> <span class="n">color</span> <span class="o">+</span> <span class="s2">&quot;&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/font&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.fontsize"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.fontsize">[docs]</a>    <span class="k">def</span> <span class="nf">fontsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in font tags with a specified size]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            size (str): [the size to use]</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in font tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;font size=&quot;</span> <span class="o">+</span> <span class="n">size</span> <span class="o">+</span> <span class="s2">&quot;&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/font&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.italics"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.italics">[docs]</a>    <span class="k">def</span> <span class="nf">italics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in italics tags]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in italics tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;i&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/i&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.link"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.link">[docs]</a>    <span class="k">def</span> <span class="nf">link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in a link tag]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url (str): [the url to use]</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in a link tag]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;a href=&quot;</span> <span class="o">+</span> <span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/a&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.small"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.small">[docs]</a>    <span class="k">def</span> <span class="nf">small</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in small tags]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in small tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;small&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/small&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.strike"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.strike">[docs]</a>    <span class="k">def</span> <span class="nf">strike</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in strike tags]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in strike tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;strike&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/strike&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.sub"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.sub">[docs]</a>    <span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in sub tags]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in sub tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;sub&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/sub&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.sup"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.sup">[docs]</a>    <span class="k">def</span> <span class="nf">sup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in sup tags]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in sup tags]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;sup&gt;&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="s2">&quot;&lt;/sup&gt;&quot;</span></div>
+
+<div class="viewcode-block" id="String.div"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.div">[docs]</a>    <span class="k">def</span> <span class="nf">div</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in a div tag]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string in a div tag]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="n">div</span>
+        <span class="k">return</span> <span class="n">div</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="String.webpage"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.webpage">[docs]</a>    <span class="k">def</span> <span class="nf">webpage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[wraps the string in a webpage]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [the string as a webpage]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="n">html</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">script</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">h1</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span>
+            <span class="n">head</span><span class="p">(</span>
+                <span class="n">title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span>
+                <span class="n">script</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="n">style</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="n">meta</span><span class="p">(</span><span class="n">_charset</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
+                <span class="n">link</span><span class="p">(</span><span class="n">_rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span> <span class="n">_href</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="p">),</span>
+            <span class="n">body</span><span class="p">(</span>
+                <span class="n">h1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span> <span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        lets you transform a string into a dom element</span>
+<span class="sd">        with the string as the content.</span>
+
+<span class="sd">        also accepts a list of kwargs to pass as attributes</span>
+
+<span class="sd">        i.e</span>
+<span class="sd">        &gt;&gt;&gt; test = String(&quot;time to take a mo&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; test(&#39;div&#39;, _style=&quot;font-color:red;&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; str(test(&#39;div&#39;, _style=&quot;font-color:red;&quot;))</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="n">Document</span>
+        <span class="k">return</span> <span class="n">Document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">RegExp</span><span class="p">():</span>
@@ -3532,6 +3726,52 @@
 
     <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">DataView</span><span class="p">(</span><span class="n">ArrayBuffer</span><span class="p">):</span>
+<span class="c1">#?? is this right. don&#39;t look lt</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">byteOffset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">byteLength</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">byteLength</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">isView</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">buffer</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">=</span> <span class="n">byteOffset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">byteLength</span> <span class="o">=</span> <span class="n">byteLength</span>
+
+        <span class="k">def</span> <span class="nf">getUint8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getUint8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">getInt8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getInt8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">getUint16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getUint16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">getInt16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getInt16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">getUint32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getUint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">getInt32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getInt32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">getFloat32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getFloat32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">getFloat64</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getFloat64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">setUint8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setUint8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">setInt8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setInt8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">setUint16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setUint16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">setInt16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setInt16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">TypedArray</span><span class="p">:</span>
@@ -4340,53 +4580,7 @@
 
 <span class="sd">&#39;&#39;&#39;</span>
 
-
-<span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd"># class ClipboardData():</span>
-<span class="sd">    # clipboardData Returns an object containing the data affected by the clipboard operation</span>
-<span class="sd">    # def __init__():</span>
-<span class="sd">        # pass</span>
-
-<span class="sd"># class History():</span>
-<span class="sd">    # def __init__():</span>
-<span class="sd">        # pass</span>
-<span class="sd">    # def back():</span>
-<span class="sd">    #     &quot;&quot;&quot; Loads the previous URL in the history list &quot;&quot;&quot;</span>
-<span class="sd">    #     raise NotImplementedError</span>
-<span class="sd">    # def forward():</span>
-<span class="sd">    #     &quot;&quot;&quot; Loads the next URL in the history list &quot;&quot;&quot;</span>
-<span class="sd">    #     raise NotImplementedError</span>
-<span class="sd">    # def go():</span>
-<span class="sd">    #     &quot;&quot;&quot; Loads a specific URL from the history list &quot;&quot;&quot;</span>
-<span class="sd">    #     raise NotImplementedError</span>
-
-
-<span class="sd"># class Geolocation():</span>
-<span class="sd">    # def __init__():</span>
-<span class="sd">        # pass</span>
-<span class="sd">    def clearWatch():</span>
-<span class="sd">    &quot;&quot;&quot;  Unregister location/error monitoring handlers previously installed using Geolocation.watchPosition()    &quot;&quot;&quot;</span>
-<span class="sd">    def coordinates   Returns:</span>
-<span class="sd">    &quot;&quot;&quot; the position and altitude of the device on Earth    &quot;&quot;&quot;</span>
-<span class="sd">    def getCurrentPosition():</span>
-<span class="sd">    &quot;&quot;&quot;  Returns the current position of the device  &quot;&quot;&quot;</span>
-<span class="sd">    def position  Returns:</span>
-<span class="sd">    &quot;&quot;&quot; the position of the concerned device at a given time    &quot;&quot;&quot;</span>
-<span class="sd">    def positionError Returns:</span>
-<span class="sd">    &quot;&quot;&quot; the reason of an error occurring when using the geolocating device  &quot;&quot;&quot;</span>
-<span class="sd">    def positionOptions   Describes:</span>
-<span class="sd">    &quot;&quot;&quot; an object containing option properties to pass as a parameter of Geolocation.getCurrentPosition()</span>
-<span class="sd">    and Geolocation.watchPosition() &quot;&quot;&quot;</span>
-<span class="sd">    def watchPosition():</span>
-<span class="sd">    &quot;&quot;&quot;   Returns a watch ID value that then can be used to unregister the handler by passing it to the</span>
-<span class="sd">    Geolocation.clearWatch() method   &quot;&quot;&quot;</span>
-
-
-
-<span class="sd"># debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements</span>
-
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="c1"># debugger  Stops the execution of JavaScript, and calls (if available) the debugging function  Statements</span>
 </pre></div>
 
           </div>

@@ -34,32 +34,61 @@ doctypes = {
     "HTML2": '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">',
 }
 
-# graphics_extensions?
-# favicons?
+# file_extensions = {
+#     "html": "text/html",
+#     "htm": "text/html",
+#     "xhtml": "application/xhtml+xml",
+#     "xml": "application/xml",
+#     "svg": "image/svg+xml",
+#     "css": "text/css",
+#     "js": "application/javascript",
+#     "json": "application/json",
+#     "txt": "text/plain",
+#     "pdf": "application/pdf",
+#     "png": "image/png",
+#     "jpg": "image/jpeg",
+#     "jpeg": "image/jpeg",
+#     "gif": "image/gif",
+#     "ico": "image/x-icon",
+#     "tiff": "image/tiff",
+#     "tif": "image/tiff",
+#     "bmp": "image/bmp",
+#     "mp3": "audio/mpeg",
+#     "mp4": "video/mp4",
+#     "mpeg": "video/mpeg",
+#     "mpg": "video/mpeg",
+#     "mov": "video/quicktime",
+#     "qt": "video/quicktime",
+#     "avi": "video/x-msvideo",
+#     "wmv": "video/x-ms-wmv",
+#     "flv": "video/x-flv",
+#     "swf": "application/x-shockwave-flash",
+#     "zip": "application/zip",
+#     "gz": "application/x-gzip",
+#     "bz2": "application/x-bzip2",
+#     "rar": "application/x-rar-compressed",
+#     "tar": "application/x-tar",
+#     "7z": "application/x-7z-compressed",
+#     "exe": "application/x-msdownload",
+#     "msi": "application/x-msdownload",
+#     "cab": "application/vnd.ms-cab-compressed",
+#     "doc": "application/msword",
+#     "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+#     "xls": "application/vnd.ms-excel",
+#     "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+#     "ppt": "application/vnd.ms-powerpoint",
+#     "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+# }
 
-"""
-tag_states = {
-    'a' : {
-        'hover' : 'a:hover',
-        'visited' : 'a:visited',
-        'link' : 'a:link',
-        'active' : 'a:active',
-        'focus' : 'a:focus',
-        # 'not' : 'a:not',
-    }
-}
-"""
-
-# gravitational_constant = 6.67384e-11
-# planck_constant = 6.62606957e-34
-# speed_of_light = 299792458
-# electron_charge = 1.602176565e-19
-# electron_mass = 9.10938291e-31
-# proton_mass = 1.672621777e-27
-# neutron_mass = 1.674927351e-27
-# atomic_mass_unit = 1.660539040e-24
-# avogadro_constant = 6.02214129e23
-# boltzmann_constant = 1.3806488e-23
-# gas_constant = 8.3144621
-
-# i love #copilot
+# """
+# tag_states = {
+#     'a' : {
+#         'hover' : 'a:hover',
+#         'visited' : 'a:visited',
+#         'link' : 'a:link',
+#         'active' : 'a:active',
+#         'focus' : 'a:focus',
+#         # 'not' : 'a:not',
+#     }
+# }
+# """

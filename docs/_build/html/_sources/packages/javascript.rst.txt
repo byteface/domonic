@@ -159,6 +159,31 @@ A whole bunch of familiar string methods for you to enjoy...
 	mystr.includes('Some') # True
 
 
+Plus some obsolete friends to do fancy tricks with!!... i.e
+
+.. code-block :: python
+
+	>>> test = String("Hello Wolrd!")
+	>>> test.blink()
+	>>> test.sub()
+	>>> test.sup()
+	>>> test.div() # ?? hang on?
+	>>> test.webpage() # ??? err... wait what!!!
+
+
+You can actually transform a type String into any tag.
+
+Simply call ```()``` on a stringvar to transform it into a Node
+
+.. code-block :: python
+
+	>>> test = String("time to take a mo")
+	>>> test('div', _style="font-color:red;")
+	>>> str(test('div', _style="font-color:red;"))
+
+passing it the tag and attributes...
+
+
 Object methods
 ----------------
 
@@ -257,6 +282,34 @@ There's a fetch implementation that uses promises. With additional mulithreaded 
 All fetch methods use requests and will pass all the kwargs along should you need to modify
 
 
+keywords
+----------------
+
+If you ```import *``` you will get the js keywords... i.e.
+
+.. code-block :: python
+
+	print(true)  # True
+	print(false) # False
+	print(undefined) # None
+	print(null) # None
+
+
+As well as a function which evaluates python strings...
+
+.. code-block :: python
+
+	sup = function('''print("hi")''')
+	sup()
+
+
+Typed arrays
+----------------
+
+js style typed arrays are even available
+
+
+
 Styling
 ----------------
 
@@ -269,7 +322,6 @@ Styling gets passed to the style tag on render.
 	mytag.style.fontSize = "12px"
 	print(mytag)
 	# <div id="test" style="background-color:black;font-size:12px;">hi</div>
-
 
 
 Many other undocumented features. Take a look at the code.

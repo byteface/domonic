@@ -5,7 +5,7 @@
 """
 import copy
 from domonic.javascript import URL
-from domonic.dom import Element, Document, DocumentType, Comment
+from domonic.dom import Node, Element, Document, DocumentType, Comment, Text
 
 html_tags = [
             "figcaption", "blockquote", "textarea", "progress", "optgroup", "noscript", "fieldset", "datalist",
@@ -20,6 +20,7 @@ html_tags = [
             "sub", "pre", "nav", "map", "main", "kbd", "ins", "img", "div", "dfn", "del", "col", "bdo", "bdi",
             "ul", "tr", "th", "td", "rt", "rp", "ol", "li", "hr", "hr", "h6", "h5", "h4", "h3", "h2", "h1",
             "em", "dt", "dl", "dd", "br", "u", "s", "q", "p", "i", "b", "a"]
+            # big, small, blink, bold, strong, em, i, u, s, strike, tt, code, kbd, samp, var,
 
 html_attributes = [
             "accept", "accesskey", "action", "align", "alt", "async", "autocomplete", "autofocus",
@@ -113,6 +114,15 @@ class tag(object):
         self.args = args
         self.kwargs = kwargs
         # self.name = 'tag'  # not set which means extended tags that don't use create_element will break
+
+        # TODO - this may break a lot of existing implementations.
+        # convert any strings to Text nodes
+        # for i, arg in enumerate(self.args):
+        #     if isinstance(arg, (str, int)):
+        #         self.args = list(self.args)
+        #         self.args[i] = Text(str(arg))
+        #         self.args = tuple(self.args)
+
         try:
             self.content = ''.join([each.__str__() for each in args])
             self.__attributes__ = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in kwargs.items()])
@@ -239,7 +249,7 @@ class tag(object):
         self.args = tuple(replace_args)
         return self
 
-    def __getitem__(self, index):
+    def __getitem__(self, index):  # TODO - move dunders to Node?
         # print('getting an item::', index, type(index))
         if isinstance(index, int):
             return self.args[index]
@@ -248,6 +258,18 @@ class tag(object):
         #         return self.kwargs[index]
         #     else:
         #         return getattr(self, index)
+        # super(Node, self).__getitem__(index)
+
+        if isinstance(index, str):
+            # call props on self
+            # print('erk!')
+            try:
+                # return Node.__dict__[index]
+                return getattr(self, index)
+            except Exception as e:
+                print(e)
+                # return None
+        # return super(Node, self).__getitem__(index)
 
     def __rshift__(self, item):
         try:
@@ -593,9 +615,7 @@ col = type('col', (closed_tag, Element), {'name': 'col', '__init__': tag_init})
 input = type('input', (closed_tag, Element), {'name': 'input', '__init__': tag_init})
 keygen = type('keygen', (closed_tag, Element), {'name': 'keygen', '__init__': tag_init})
 command = type('command', (closed_tag, Element), {'name': 'command', '__init__': tag_init})
-
-main = type('command', (tag, Element), {'name': 'main', '__init__': tag_init})  # TODO - y was this missing?
-
+main = type('command', (tag, Element), {'name': 'main', '__init__': tag_init})
 
 # obsolete
 applet = type('applet', (tag, Element), {'name': 'applet', '__init__': tag_init})
@@ -636,7 +656,7 @@ def create_element(name='custom_tag', *args, **kwargs):
     # checks if already exists
     if name in html_tags:
         # cl = globals()[name]
-        return globals()[name]()
+        return globals()[name](*args, **kwargs)
 
     # print('creating custom element')
     custom_tag = type('custom_tag', (tag, Element), {'name': name, '__init__': tag_init})

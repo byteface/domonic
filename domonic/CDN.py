@@ -112,7 +112,7 @@ class CDN_FONT(object):
 
     @staticmethod
     def google(family):
-        return "http://fonts.googleapis.com/css?family=" + '+'.join(family)
+        return "https://fonts.googleapis.com/css?family=" + '+'.join(family)
 
     # @staticmethod
     # def font_awesome(version='5.7.1'):

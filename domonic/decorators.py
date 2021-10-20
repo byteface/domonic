@@ -107,6 +107,29 @@ def accepts(*types):
 # @accepts(int)
 
 
+# CACHED = {}
+# def memoize(f):
+#     """
+#     @memoize
+#     def fib(n):
+#         if n in (0, 1):
+#             return n
+#         return fib(n - 1) + fib(n - 2)
+#     """
+#     @functools.wraps(f)
+#     def new_f(*args):
+#         if args in CACHED:
+#             return CACHED[args]
+#         else:
+#             result = f(*args)
+#             CACHED[args] = result
+#             return result
+#     return new_f
+
+
+# def requires_websocket(f): # decorate all functions that require websockets to warn user
+
+
 def silence(*args, **kwargs):
     """ stop a function from doing anything """
     def dont_do_it(f):
@@ -149,19 +172,16 @@ def instead(f, somethingelse):
 
 
 def deprecated(func):
-    """This is a decorator which can be used to mark functions
-    as deprecated. It will result in a warning being emitted
-    when the function is used."""
+    """
+    marks a function as deprecated.
+    """
     @functools.wraps(func)
     def new_func(*args, **kwargs):
-        warnings.simplefilter('always', DeprecationWarning)  # turn off filter
-        warnings.warn("Call to deprecated function {}.".format(func.__name__),
-                      category=DeprecationWarning,
-                      stacklevel=2)
-        warnings.simplefilter('default', DeprecationWarning)  # reset filter
+        warnings.simplefilter('always', DeprecationWarning)
+        warnings.warn("Call to deprecated function {}.".format(func.__name__), category=DeprecationWarning, stacklevel=2)
+        warnings.simplefilter('default', DeprecationWarning)
         return func(*args, **kwargs)
     return new_func
-# considered this a few times
 
 
 # def evt(event, *args, **kwargs):  #TODO
