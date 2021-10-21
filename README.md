@@ -82,7 +82,7 @@ print(test)
 
 ### rendering
 
-you can cast str() on any element to render it without formatting.
+cast str() on any element to render it without formatting.
 
 ```python
 el_string = str(div())
@@ -99,7 +99,7 @@ Now try building your own static site generator!
 
 ### decorators
 
-You can use decorators to wrap elements around function results
+use decorators to wrap elements around function results
 
 ```python
 from domonic.decorators import el
@@ -197,7 +197,7 @@ print(url.host)
 print(url.pathname)
 print(url.hash)
 
-# you can use Global class to import all the js methods from the global namespace i.e
+# Use Global class to import all the js methods from the global namespace i.e
 # from domonic.javascript import Global
 # Global.decodeURIComponent(...
 # Global.encodeComponent(...
@@ -207,7 +207,7 @@ print(url.hash)
 # etc..
 ```
 
-You can use setInterval and clearInterval with params
+Use setInterval and clearInterval with params
 
 ```python
 
@@ -266,7 +266,7 @@ atag.port = 8983
 print(atag)
 ```
 
-For writing and using regular javascript you can load from a source...
+For writing and using regular javascript, load from a src...
 
 ```python
 script(_src="/docs/5.0/dist/js/bootstrap.bundle.min.js", _integrity="sha384-1234", _crossorigin="anonymous"),
@@ -381,7 +381,7 @@ All tags extend 'Node' and 'tag'. So will have DOM and magic methods available t
 
 ### Tweening
 
-You can tween values with the tween library:
+Tween values with the tween library:
 
 ```python
 from domonic.lerpy.easing import *
@@ -563,7 +563,7 @@ TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
 
 
 ### CLI
-There's a few args you can pass to domonic on the command line to help you out.
+Use the command line interface to help you out.
 
 To launch the docs for a quick reference to the APIs use:
 
@@ -581,7 +581,7 @@ python3 -m domonic -d http://eventual.technology
 
 ```
 
-Then you can edit/tweak it to get what you need and build new components quicker.
+Then edit/tweak it to get what you need and build new components quicker.
 
 
 ### EXAMPLE PROJECTS
