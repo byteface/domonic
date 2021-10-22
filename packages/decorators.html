@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>decorators &#8212; domonic 0.6.3 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Templates and Components" href="components.html" />
+    <link rel="prev" title="CDN" href="CDN.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="decorators">
+<h1>decorators<a class="headerlink" href="#decorators" title="Permalink to this headline">¶</a></h1>
+<p>Everyone loves python decorators</p>
+<p>We have a few in domonic to make life more fun!</p>
+<div class="section" id="el">
+<h2>el<a class="headerlink" href="#el" title="Permalink to this headline">¶</a></h2>
+<p>You can use the el decorator to wrap elements around function results.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>from domonic.decorators import el
+
+@el<span class="o">(</span>html, True<span class="o">)</span>
+@el<span class="o">(</span>body<span class="o">)</span>
+@el<span class="o">(</span>div<span class="o">)</span>
+def test<span class="o">()</span>:
+    <span class="k">return</span> <span class="s1">&#39;hi!&#39;</span>
+
+print<span class="o">(</span>test<span class="o">())</span>
+<span class="c1"># &lt;html&gt;&lt;body&gt;&lt;div&gt;hi!&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</span>
+
+<span class="c1"># returns pyml objects so call str to render</span>
+assert str<span class="o">(</span>test<span class="o">())</span> <span class="o">==</span> <span class="s1">&#39;&lt;html&gt;&lt;body&gt;&lt;div&gt;hi!&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;&#39;</span>
+</pre></div>
+</div>
+<p>It returns the tag object by default.</p>
+<p>You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.</p>
+</div>
+<div class="section" id="silence">
+<h2>silence<a class="headerlink" href="#silence" title="Permalink to this headline">¶</a></h2>
+<p>Want that unit test to stfu?</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>from domonic.decorators import silence
+
+@silence
+def test_that_wont_pass<span class="o">()</span>:
+    assert <span class="nv">True</span> <span class="o">==</span> False
+</pre></div>
+</div>
+</div>
+<div class="section" id="called">
+<h2>called<a class="headerlink" href="#called" title="Permalink to this headline">¶</a></h2>
+<p>Python’s lambda restrictions may force you to create anonymous success methods above calling functions.</p>
+<p>domonic uses a unique type of decorator to call anonymouse methods immediately after calling the passed method.</p>
+<p>To use it, pass 2 functions, something to call BEFORE hand, and an error method</p>
+<p>Then your decorated anonymous function will recieve the data of the first function you passed in as a parameter.</p>
+<p>Let me show you…</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>from domonic.decorators import called
+
+@called<span class="o">(</span>
+    lambda: º.ajax<span class="o">(</span><span class="s1">&#39;https://www.google.com&#39;</span><span class="o">)</span>,
+    lambda err: print<span class="o">(</span><span class="s1">&#39;error:&#39;</span>, err<span class="o">))</span>
+def success<span class="o">(</span><span class="nv">data</span><span class="o">=</span>None<span class="o">)</span>:
+    print<span class="o">(</span><span class="s2">&quot;Sweet as a Nut!&quot;</span><span class="o">)</span>
+    print<span class="o">(</span>data.text<span class="o">)</span>
+</pre></div>
+</div>
+<p>It’s meant for anonymous functions and calls immediately. So don’t go using it on class methods.</p>
+<p>It’s also called iffe. (so you can know when ur just passing nothing)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>@iife<span class="o">()</span>
+def sup<span class="o">()</span>:
+    print<span class="o">(</span><span class="s2">&quot;sup!&quot;</span><span class="o">)</span>
+    <span class="k">return</span> True
+</pre></div>
+</div>
+</div>
+<div class="section" id="check">
+<h2>check<a class="headerlink" href="#check" title="Permalink to this headline">¶</a></h2>
+<p>logs the entry and exit of a function and is useful for debugging. i.e.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>@check
+def somefunc<span class="o">()</span>:
+    <span class="k">return</span> True
+
+somefunc<span class="o">()</span>
+
+<span class="c1"># would output this to the console</span>
+<span class="c1"># Entering somefunc</span>
+<span class="c1"># Exited somefunc</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt>
+<code class="sig-prename descclassname">domonic.</code><code class="sig-name descname">decorators</code></dt>
+<dd><p>alias of <a class="reference internal" href="autodocs.html#module-domonic.decorators" title="domonic.decorators"><code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.decorators</span></code></a></p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="https://domonic.readthedocs.io/">domonic</a></h1>
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
+</p>
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
+</ul>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CDN.html">CDN</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">decorators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#el">el</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#silence">silence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#called">called</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#check">check</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webapi.html">webapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="style.html">styles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="CDN.html" title="previous chapter">CDN</a></li>
+      <li>Next: <a href="components.html" title="next chapter">Templates and Components</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/packages/decorators.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+  <ul>
+<li><a class="reference internal" href="#">decorators</a><ul>
+<li><a class="reference internal" href="#el">el</a></li>
+<li><a class="reference internal" href="#silence">silence</a></li>
+<li><a class="reference internal" href="#called">called</a></li>
+<li><a class="reference internal" href="#check">check</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+      |
+      <a href="../_sources/packages/decorators.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,1561 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>styles &#8212; domonic 0.6.3 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="🚀 servers" href="servers.html" />
+    <link rel="prev" title="webapi" href="webapi.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="styles">
+<h1>styles<a class="headerlink" href="#styles" title="Permalink to this headline">¶</a></h1>
+<p>domonic supports the style attribute.</p>
+<div class="section" id="styling-elements">
+<h2>Styling Elements<a class="headerlink" href="#styling-elements" title="Permalink to this headline">¶</a></h2>
+<p>Styling gets passed to the style tag on render.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mytag</span> <span class="o">=</span> <span class="n">div</span><span class="p">(</span><span class="s2">&quot;hi&quot;</span><span class="p">,</span> <span class="n">_id</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="n">mytag</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="s2">&quot;black&quot;</span>
+<span class="n">mytag</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">fontSize</span> <span class="o">=</span> <span class="s2">&quot;12px&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mytag</span><span class="p">)</span>
+<span class="c1"># &lt;div id=&quot;test&quot; style=&quot;background-color:black;font-size:12px;&quot;&gt;hi&lt;/div&gt;</span>
+</pre></div>
+</div>
+<p>CSSOM is also stubbed out. See the styles.py class. Feel free to make a PR</p>
+<div class="section" id="domonic-style">
+<h3>domonic.style<a class="headerlink" href="#domonic-style" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.style.</code><code class="sig-name descname">CSSRule</code><a class="reference internal" href="../_modules/domonic/style.html#CSSRule"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>The CSSRule interface represents a single CSS rule.
+There are several types of rules which inherit properties from CSSRule.</p>
+<p>CSSStyleRule
+CSSImportRule
+CSSMediaRule
+CSSFontFaceRule
+CSSPageRule
+CSSNamespaceRule
+CSSKeyframesRule
+CSSKeyframeRule
+CSSCounterStyleRule
+CSSDocumentRule
+CSSSupportsRule
+CSSFontFeatureValuesRule
+CSSViewportRule</p>
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">cssText</code></dt>
+<dd><p>16pt }” or “&#64;import ‘url’”.
+To access or modify parts of the rule (e.g. the value of “font-size” in the example)
+use the properties on the specialized interface for the rule’s type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Represents the textual representation of the rule, e.g. “h1,h2 { font-size</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">parentRule</code></dt>
+<dd><p>Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an &#64;media block,
+the parent rule would be that CSSMediaRule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">parentStyleSheet</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSRule.parentStyleSheet"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the CSSStyleSheet object for the style sheet that contains this rule</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSRule.type"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns one of the Type constants to determine which type of rule is represented.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.style.</code><code class="sig-name descname">CSSRuleList</code><a class="reference internal" href="../_modules/domonic/style.html#CSSRuleList"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>A CSSRuleList represents an ordered collection of read-only CSSRule objects.
+While the CSSRuleList object is read-only, and cannot be directly modified,
+it is considered a live object, as the content can change over time.</p>
+<dl class="method">
+<dt>
+<code class="sig-name descname">item</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSRuleList.item"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Gets a single CSSRule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">length</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSRuleList.length"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an integer representing the number of CSSRule objects in the collection.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.style.</code><code class="sig-name descname">CSSStyleDeclaration</code><span class="sig-paren">(</span><em class="sig-param">parentNode=None</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>The CSSStyleDeclaration interface represents an object that is a CSS declaration block,
+and exposes style information and various style-related methods and properties.</p>
+<p>A CSSStyleDeclaration object can be exposed using three different APIs:</p>
+<p>Via HTMLElement.style, which deals with the inline styles of a single element (e.g., &lt;div style=”…”&gt;).
+Via the CSSStyleSheet API. For example, document.styleSheets[0].cssRules[0].style
+returns a CSSStyleDeclaration object on the first CSS rule in the document’s first stylesheet.
+Via Window.getComputedStyle(), which exposes the CSSStyleDeclaration object as a read-only interface.</p>
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">cssText</code></dt>
+<dd><p>Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
+Setting this attribute changes the inline style.
+If you want a text representation of a computed declaration block,
+you can get it with JSON.stringify().</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">getPropertyCSSValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration.getPropertyCSSValue"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Only supported via getComputedStyle in Firefox. Returns the property value as a
+CSSPrimitiveValue or null for shorthand properties.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">getPropertyPriority</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration.getPropertyPriority"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the optional priority, “important”.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">getPropertyValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration.getPropertyValue"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the property value given a property name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">item</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration.item"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.
+An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).
+This is mostly useful for non-JavaScript DOM implementations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">length</code></dt>
+<dd><p>The number of properties. See the item() method below.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">parentRule</code></dt>
+<dd><p>The containing CSSRule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">removeProperty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleDeclaration.removeProperty"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Removes a property from the CSS declaration block.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.style.</code><code class="sig-name descname">CSSStyleSheet</code><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Creates a new CSSStyleSheet object.</p>
+<dl class="method">
+<dt>
+<code class="sig-name descname">addRule</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.addRule"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply to the matching elements.
+This differs from insertRule(), which takes the textual representation of the entire rule as a single string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">cssRules</code></dt>
+<dd><p>Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects
+that comprise the stylesheet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">deleteRule</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.deleteRule"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Deletes the rule at the specified index into the stylesheet’s rule list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">insertRule</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.insertRule"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Inserts a new rule at the specified position in the stylesheet,
+given the textual representation of the rule.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">ownerRule</code></dt>
+<dd><p>If this stylesheet is imported into the document using an &#64;import rule,
+the ownerRule property returns the corresponding CSSImportRule; otherwise, this property’s value is null.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">removeRule</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.removeRule"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Functionally identical to deleteRule();
+removes the rule at the specified index from the stylesheet’s rule list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">replace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.replace"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Asynchronously replaces the content of the stylesheet and returns
+a Promise that resolves with the updated CSSStyleSheet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">replaceSync</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.replaceSync"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Synchronously replaces the content of the stylesheet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">rules</code></dt>
+<dd><p>The rules property is functionally identical to the standard cssRules property
+it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.style.</code><code class="sig-name descname">Style</code><span class="sig-paren">(</span><em class="sig-param">parent_node=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#Style"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[ js syntax styles ]
+# TODO - just add normal float?
+# TODO - consider camel case for hyphen params?
+# TODO - not json serialisable due to the decorators.</p>
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">alignContent</code></dt>
+<dd><p>Sets or returns the alignment between the lines inside a flexible container
+when the items do not use all available space</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">alignItems</code></dt>
+<dd><p>Sets or returns the alignment for items inside a flexible container</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">alignSelf</code></dt>
+<dd><p>Sets or returns the alignment for selected items inside a flexible container</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">animation</code></dt>
+<dd><p>shorthand property for all the animation properties below, except the animationPlayState property</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">animationDelay</code></dt>
+<dd><p>Sets or returns when the animation will start</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">animationDirection</code></dt>
+<dd><p>Sets or returns whether or not the animation should play in reverse on alternate cycles</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">animationDuration</code></dt>
+<dd><p>Sets or returns how many seconds or milliseconds an animation takes to complete one cycle</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">animationFillMode</code></dt>
+<dd><p>Sets or returns what values are applied by the animation outside the time it is executing</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">animationIterationCount</code></dt>
+<dd><p>Sets or returns the number of times an animation should be played</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">animationName</code></dt>
+<dd><p>Sets or returns a name for the &#64;keyframes animation</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">animationPlayState</code></dt>
+<dd><p>Sets or returns whether the animation is running or paused</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">animationTimingFunction</code></dt>
+<dd><p>Sets or returns the speed curve of the animation</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">backfaceVisibility</code></dt>
+<dd><p>Sets or returns whether or not an element should be visible when not facing the screen</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">background</code></dt>
+<dd><p>Sets or returns all the background properties in one declaration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">backgroundAttachment</code></dt>
+<dd><p>Sets or returns whether a background-image is fixed or scrolls with the page</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">backgroundClip</code></dt>
+<dd><p>Sets or returns the painting area of the background</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">backgroundColor</code></dt>
+<dd><p>Sets or returns the background-color of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">backgroundImage</code></dt>
+<dd><p>Sets or returns the background-image for an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">backgroundOrigin</code></dt>
+<dd><p>Sets or returns the positioning area of the background images</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">backgroundPosition</code></dt>
+<dd><p>Sets or returns the starting position of a background-image</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">backgroundRepeat</code></dt>
+<dd><p>Sets or returns how to repeat (tile) a background-image</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">backgroundSize</code></dt>
+<dd><p>Sets or returns the size of the background image</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">border</code></dt>
+<dd><p>Sets or returns borderWidth, borderStyle, and borderColor in one declaration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderBottom</code></dt>
+<dd><p>Sets or returns all the borderBottom properties in one declaration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderBottomColor</code></dt>
+<dd><p>Sets or returns the color of the bottom border  1</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderBottomLeftRadius</code></dt>
+<dd><p>Sets or returns the shape of the border of the bottom-left corner</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderBottomRightRadius</code></dt>
+<dd><p>Sets or returns the shape of the border of the bottom-right corner</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderBottomStyle</code></dt>
+<dd><p>Sets or returns the style of the bottom border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderBottomWidth</code></dt>
+<dd><p>Sets or returns the width of the bottom border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderCollapse</code></dt>
+<dd><p>Sets or returns whether the table border should be collapsed into a single border, or not</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderColor</code></dt>
+<dd><p>Sets or returns the color of an element’s border (can have up to four values)</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderImage</code></dt>
+<dd><p>horthand property for setting or returning all the borderImage properties</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderImageOutset</code></dt>
+<dd><p>Sets or returns the amount by which the border image area extends beyond the border box</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderImageRepeat</code></dt>
+<dd><p>Sets or returns whether the image-border should be repeated, rounded or stretched</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderImageSlice</code></dt>
+<dd><p>Sets or returns the inward offsets of the image-border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderImageSource</code></dt>
+<dd><p>Sets or returns the image to be used as a border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderImageWidth</code></dt>
+<dd><p>Sets or returns the widths of the image-border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderLeft</code></dt>
+<dd><p>Sets or returns all the borderLeft properties in one declaration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderLeftColor</code></dt>
+<dd><p>Sets or returns the color of the left border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderLeftStyle</code></dt>
+<dd><p>Sets or returns the style of the left border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderLeftWidth</code></dt>
+<dd><p>Sets or returns the width of the left border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderRadius</code></dt>
+<dd><p>A shorthand property for setting or returning all the four borderRadius properties</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderRight</code></dt>
+<dd><p>Sets or returns all the borderRight properties in one declaration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderRightColor</code></dt>
+<dd><p>Sets or returns the color of the right border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderRightStyle</code></dt>
+<dd><p>Sets or returns the style of the right border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderRightWidth</code></dt>
+<dd><p>Sets or returns the width of the right border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderSpacing</code></dt>
+<dd><p>Sets or returns the space between cells in a table</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderStyle</code></dt>
+<dd><p>Sets or returns the style of an element’s border (can have up to four values)</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderTop</code></dt>
+<dd><p>Sets or returns all the borderTop properties in one declaration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderTopColor</code></dt>
+<dd><p>Sets or returns the color of the top border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderTopLeftRadius</code></dt>
+<dd><p>Sets or returns the shape of the border of the top-left corner</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderTopRightRadius</code></dt>
+<dd><p>Sets or returns the shape of the border of the top-right corner</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderTopStyle</code></dt>
+<dd><p>Sets or returns the style of the top border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderTopWidth</code></dt>
+<dd><p>Sets or returns the width of the top border</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">borderWidth</code></dt>
+<dd><p>Sets or returns the width of an element’s border (can have up to four values)</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">bottom</code></dt>
+<dd><p>Sets or returns the bottom position of a positioned element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">boxDecorationBreak</code></dt>
+<dd><p>Sets or returns the behaviour of the background and border of an element at page-break, or,
+for in-line elements, at line-break.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">boxShadow</code></dt>
+<dd><p>ttaches one or more drop-shadows to the box</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">boxSizing</code></dt>
+<dd><p>llows you to define certain elements to fit an area in a certain way</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">captionSide</code></dt>
+<dd><p>Sets or returns the position of the table caption</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">clear</code></dt>
+<dd><p>Sets or returns the position of the element relative to floating objects</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">clip</code></dt>
+<dd><p>Sets or returns which part of a positioned element is visible</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">color</code></dt>
+<dd><p>Sets or returns the color of the text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">columnCount</code></dt>
+<dd><p>Sets or returns the number of columns an element should be divided into</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">columnFill</code></dt>
+<dd><p>Sets or returns how to fill columns</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">columnGap</code></dt>
+<dd><p>Sets or returns the gap between the columns</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">columnRule</code></dt>
+<dd><p>shorthand property for setting or returning all the columnRule properties</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">columnRuleColor</code></dt>
+<dd><p>Sets or returns the color of the rule between columns</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">columnRuleStyle</code></dt>
+<dd><p>Sets or returns the style of the rule between columns</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">columnRuleWidth</code></dt>
+<dd><p>Sets or returns the width of the rule between columns</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">columnSpan</code></dt>
+<dd><p>Sets or returns how many columns an element should span across</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">columnWidth</code></dt>
+<dd><p>Sets or returns the width of the columns</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">columns</code></dt>
+<dd><p>horthand property for setting or returning columnWidth and columnCount</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">content</code></dt>
+<dd><p>after pseudo-elements, to insert generated content</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>d with the</p>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p>before and</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">counterIncrement</code></dt>
+<dd><p>Increments one or more counters</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">counterReset</code></dt>
+<dd><p>Creates or resets one or more counters</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">cssFloat</code></dt>
+<dd><p>Sets or returns the horizontal alignment of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">cursor</code></dt>
+<dd><p>Sets or returns the type of cursor to display for the mouse pointer</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">direction</code></dt>
+<dd><p>Sets or returns the text direction</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">display</code></dt>
+<dd><p>Sets or returns an element’s display type</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">emptyCells</code></dt>
+<dd><p>Sets or returns whether to show the border and background of empty cells, or not</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">filter</code></dt>
+<dd><p>Sets or returns image filters (visual effects, like blur and saturation)</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">flex</code></dt>
+<dd><p>Sets or returns the length of the item, relative to the rest</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">flexBasis</code></dt>
+<dd><p>Sets or returns the initial length of a flexible item</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">flexDirection</code></dt>
+<dd><p>Sets or returns the direction of the flexible items</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">flexFlow</code></dt>
+<dd><p>A shorthand property for the flexDirection and the flexWrap properties</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">flexGrow</code></dt>
+<dd><p>Sets or returns how much the item will grow relative to the rest</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">flexShrink</code></dt>
+<dd><p>Sets or returns how the item will shrink relative to the rest</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">flexWrap</code></dt>
+<dd><p>Sets or returns whether the flexible items should wrap or not</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">font</code></dt>
+<dd><p>Sets or returns fontStyle, fontVariant, fontWeight, fontSize, lineHeight, and fontFamily
+in one declaration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">fontFamily</code></dt>
+<dd><p>Sets or returns the font family for text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">fontSize</code></dt>
+<dd><p>Sets or returns the font size of the text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">fontSizeAdjust</code></dt>
+<dd><p>eserves the readability of text when font fallback occurs</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">fontStretch</code></dt>
+<dd><p>ects a normal, condensed, or expanded face from a font family</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">fontStyle</code></dt>
+<dd><p>Sets or returns whether the style of the font is normal, italic or oblique</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">fontVariant</code></dt>
+<dd><p>Sets or returns whether the font should be displayed in small capital letters</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">fontWeight</code></dt>
+<dd><p>Sets or returns the boldness of the font</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">hangingPunctuation</code></dt>
+<dd><p>ecifies whether a punctuation character may be placed outside the line box</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">height</code></dt>
+<dd><p>Sets or returns the height of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">hyphens</code></dt>
+<dd><p>Sets how to split words to improve the layout of paragraphs</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">icon</code></dt>
+<dd><p>Provides the author the ability to style an element with an iconic equivalent</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">imageOrientation</code></dt>
+<dd><p>Specifies a rotation in the right or clockwise direction that a user agent applies to an image</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">isolation</code></dt>
+<dd><p>efines whether an element must create a new stacking content</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">justifyContent</code></dt>
+<dd><p>Sets or returns the alignment between the items inside a flexible container when the items
+do not use all available space.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">left</code></dt>
+<dd><p>Sets or returns the left position of a positioned element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">letterSpacing</code></dt>
+<dd><p>Sets or returns the space between characters in a text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">lineHeight</code></dt>
+<dd><p>Sets or returns the distance between lines in a text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">listStyle</code></dt>
+<dd><p>Sets or returns listStyleImage, listStylePosition, and listStyleType in one declaration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">listStyleImage</code></dt>
+<dd><p>Sets or returns an image as the list-item marker</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">listStylePosition</code></dt>
+<dd><p>Sets or returns the position of the list-item marker</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">listStyleType</code></dt>
+<dd><p>Sets or returns the list-item marker type</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">margin</code></dt>
+<dd><p>Sets or returns the margins of an element (can have up to four values)</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">marginBottom</code></dt>
+<dd><p>Sets or returns the bottom margin of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">marginLeft</code></dt>
+<dd><p>Sets or returns the left margin of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">marginRight</code></dt>
+<dd><p>Sets or returns the right margin of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">marginTop</code></dt>
+<dd><p>Sets or returns the top margin of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">maxHeight</code></dt>
+<dd><p>Sets or returns the maximum height of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">maxWidth</code></dt>
+<dd><p>Sets or returns the maximum width of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">minHeight</code></dt>
+<dd><p>Sets or returns the minimum height of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">minWidth</code></dt>
+<dd><p>Sets or returns the minimum width of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">navDown</code></dt>
+<dd><p>Sets or returns where to navigate when using the arrow-down navigation key</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">navIndex</code></dt>
+<dd><p>Sets or returns the tabbing order for an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">navLeft</code></dt>
+<dd><p>Sets or returns where to navigate when using the arrow-left navigation key</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">navRight</code></dt>
+<dd><p>Sets or returns where to navigate when using the arrow-right navigation key</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">navUp</code></dt>
+<dd><p>Sets or returns where to navigate when using the arrow-up navigation key</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">objectFit</code></dt>
+<dd><p>pecifies how the contents of a replaced element should be fitted to the box
+established by its used height and width</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">objectPosition</code></dt>
+<dd><p>ecifies the alignment of the replaced element inside its box</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">opacity</code></dt>
+<dd><p>Sets or returns the opacity level for an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">order</code></dt>
+<dd><p>Sets or returns the order of the flexible item, relative to the rest</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">orphans</code></dt>
+<dd><p>Sets or returns the minimum number of lines for an element that must be left at the bottom
+of a page when a page break occurs inside an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">outline</code></dt>
+<dd><p>Sets or returns all the outline properties in one declaration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">outlineColor</code></dt>
+<dd><p>Sets or returns the color of the outline around a element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">outlineOffset</code></dt>
+<dd><p>ffsets an outline, and draws it beyond the border edge</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">outlineStyle</code></dt>
+<dd><p>Sets or returns the style of the outline around an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">outlineWidth</code></dt>
+<dd><p>Sets or returns the width of the outline around an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">overflow</code></dt>
+<dd><p>Sets or returns what to do with content that renders outside the element box</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">overflowX</code></dt>
+<dd><p>pecifies what to do with the left/right edges of the content, if it overflows the element’s content area</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">overflowY</code></dt>
+<dd><p>pecifies what to do with the top/bottom edges of the content, if it overflows the element’s content area</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">padding</code></dt>
+<dd><p>Sets or returns the padding of an element (can have up to four values)</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">paddingBottom</code></dt>
+<dd><p>Sets or returns the bottom padding of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">paddingLeft</code></dt>
+<dd><p>Sets or returns the left padding of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">paddingRight</code></dt>
+<dd><p>Sets or returns the right padding of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">paddingTop</code></dt>
+<dd><p>Sets or returns the top padding of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">pageBreakAfter</code></dt>
+<dd><p>Sets or returns the page-break behavior after an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">pageBreakBefore</code></dt>
+<dd><p>Sets or returns the page-break behavior before an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">pageBreakInside</code></dt>
+<dd><p>Sets or returns the page-break behavior inside an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">perspective</code></dt>
+<dd><p>Sets or returns the perspective on how 3D elements are viewed</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">perspectiveOrigin</code></dt>
+<dd><p>Sets or returns the bottom position of 3D elements</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">position</code></dt>
+<dd><p>Sets or returns the type of positioning method used for an element (static, relative, absolute or fixed)</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">quotes</code></dt>
+<dd><p>Sets or returns the type of quotation marks for embedded quotations</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">resize</code></dt>
+<dd><p>Sets or returns whether or not an element is resizable by the user</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">right</code></dt>
+<dd><p>Sets or returns the right position of a positioned element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">tabSize</code></dt>
+<dd><p>Sets or returns the length of the tab-character</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">tableLayout</code></dt>
+<dd><p>Sets or returns the way to lay out table cells, rows, and columns</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textAlign</code></dt>
+<dd><p>Sets or returns the horizontal alignment of text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textAlignLast</code></dt>
+<dd><p>Sets or returns how the last line of a block or a line right before a forced line break
+is aligned when text-align is justify</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textDecoration</code></dt>
+<dd><p>Sets or returns the decoration of a text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textDecorationColor</code></dt>
+<dd><p>Sets or returns the color of the text-decoration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textDecorationLine</code></dt>
+<dd><p>Sets or returns the type of line in a text-decoration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textDecorationStyle</code></dt>
+<dd><p>Sets or returns the style of the line in a text decoration</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textIndent</code></dt>
+<dd><p>Sets or returns the indentation of the first line of text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textJustify</code></dt>
+<dd><p>Sets or returns the justification method used when text-align is justify</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textOverflow</code></dt>
+<dd><p>Sets or returns what should happen when text overflows the containing element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textShadow</code></dt>
+<dd><p>Sets or returns the shadow effect of a text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">textTransform</code></dt>
+<dd><p>Sets or returns the capitalization of a text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">top</code></dt>
+<dd><p>Sets or returns the top position of a positioned element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">transform</code></dt>
+<dd><p>pplies a 2D or 3D transformation to an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">transformOrigin</code></dt>
+<dd><p>Sets or returns the position of transformed elements</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">transformStyle</code></dt>
+<dd><p>Sets or returns how nested elements are rendered in 3D space</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">transition</code></dt>
+<dd><p>shorthand property for setting or returning the four transition properties</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">transitionDelay</code></dt>
+<dd><p>Sets or returns when the transition effect will start</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">transitionDuration</code></dt>
+<dd><p>Sets or returns how many seconds or milliseconds a transition effect takes to complete</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">transitionProperty</code></dt>
+<dd><p>Sets or returns the CSS property that the transition effect is for</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">transitionTimingFunction</code></dt>
+<dd><p>Sets or returns the speed curve of the transition effect</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">unicodeBidi</code></dt>
+<dd><p>Sets or returns whether the text should be overridden to support multiple languages in the same document</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">userSelect</code></dt>
+<dd><p>Sets or returns whether the text of an element can be selected or not</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">verticalAlign</code></dt>
+<dd><p>Sets or returns the vertical alignment of the content in an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">visibility</code></dt>
+<dd><p>Sets or returns whether an element should be visible</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">whiteSpace</code></dt>
+<dd><p>Sets or returns how to handle tabs, line breaks and whitespace in a text 1</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">widows</code></dt>
+<dd><p>Sets or returns the minimum number of lines for an element that must be visible at the top of a page</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">width</code></dt>
+<dd><p>Sets or returns the width of an element</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">wordBreak</code></dt>
+<dd><p>Sets or returns line breaking rules for non-CJK scripts</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">wordSpacing</code></dt>
+<dd><p>Sets or returns the spacing between words in a text</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">wordWrap</code></dt>
+<dd><p>Allows long, unbreakable words to be broken and wrap to the next line</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">zIndex</code></dt>
+<dd><p>Sets or returns the stack order of a positioned element</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.style.</code><code class="sig-name descname">StyleSheet</code><a class="reference internal" href="../_modules/domonic/style.html#StyleSheet"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>An object implementing the StyleSheet interface represents a single style sheet.
+CSS style sheets will further implement the more specialized CSSStyleSheet interface.</p>
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">href</code></dt>
+<dd><p>Returns a DOMString representing the location of the stylesheet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">media</code></dt>
+<dd><p>Returns a MediaList representing the intended destination medium for style information.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">ownerNode</code></dt>
+<dd><p>Returns a Node associating this style sheet with the current document.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">parentStyleSheet</code></dt>
+<dd><p>Returns a StyleSheet including this one, if any; returns null if there aren’t any.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">title</code></dt>
+<dd><p>Returns a DOMString representing the advisory title of the current style sheet.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">type</code></dt>
+<dd><p>Returns a DOMString representing the style sheet language for this style sheet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.style.</code><code class="sig-name descname">StyleSheetList</code><a class="reference internal" href="../_modules/domonic/style.html#StyleSheetList"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>An instance of this object can be returned by Document.styleSheets.
+it can be iterated over in a standard for loop over its indices, or converted to an Array.</p>
+<dl class="method">
+<dt>
+<code class="sig-name descname">item</code><span class="sig-paren">(</span><em class="sig-param">index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#StyleSheetList.item"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">length</code></dt>
+<dd><p>Returns the number of CSSStyleSheet objects in the collection.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="https://domonic.readthedocs.io/">domonic</a></h1>
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
+</p>
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
+</ul>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webapi.html">webapi</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">styles</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#styling-elements">Styling Elements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="webapi.html" title="previous chapter">webapi</a></li>
+      <li>Next: <a href="servers.html" title="next chapter">🚀 servers</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/packages/style.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+  <ul>
+<li><a class="reference internal" href="#">styles</a><ul>
+<li><a class="reference internal" href="#styling-elements">Styling Elements</a><ul>
+<li><a class="reference internal" href="#domonic-style">domonic.style</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+      |
+      <a href="../_sources/packages/style.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>webapi &#8212; domonic 0.6.3 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="styles" href="style.html" />
+    <link rel="prev" title="utils" href="utils.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="webapi">
+<h1>webapi<a class="headerlink" href="#webapi" title="Permalink to this headline">¶</a></h1>
+<p>The webapi is the latest package to be added to domonic.</p>
+<div class="section" id="console">
+<h2>console<a class="headerlink" href="#console" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.webabi.console</span> <span class="kn">import</span> <span class="n">console</span>
+<span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="encoding">
+<h2>encoding<a class="headerlink" href="#encoding" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.webabi.encoding</span> <span class="kn">import</span> <span class="n">TextEncoder</span><span class="p">,</span> <span class="n">TextDecoder</span>
+<span class="n">encoder</span> <span class="o">=</span> <span class="n">TextEncoder</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="fetch">
+<h2>fetch<a class="headerlink" href="#fetch" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.webabi.fetch</span> <span class="kn">import</span> <span class="n">fetch</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="url">
+<h2>URL<a class="headerlink" href="#url" title="Permalink to this headline">¶</a></h2>
+<p>url is a wrapper around the urlparse and urlencode functions in python.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.webabi.url</span> <span class="kn">import</span> <span class="n">URL</span>
+
+<span class="n">myurl</span> <span class="o">=</span> <span class="n">URL</span><span class="p">(</span><span class="s2">&quot;http://www.google.com/search?q=domonic&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myurl</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myurl</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myurl</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">q</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myurl</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>for more information see mdn docs…
+# TODO - link</p>
+<div class="section" id="domonic-webapi-console">
+<h3>domonic.webapi.console<a class="headerlink" href="#domonic-webapi-console" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Console_API">https://developer.mozilla.org/en-US/docs/Web/API/Console_API</a></p>
+</div>
+<div class="section" id="domonic-webapi-encoding">
+<h3>domonic.webapi.encoding<a class="headerlink" href="#domonic-webapi-encoding" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API">https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API</a></p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.webapi.encoding.</code><code class="sig-name descname">TextDecoderStream</code><span class="sig-paren">(</span><em class="sig-param">encoding='utf-8'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/encoding.html#TextDecoderStream"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.webapi.encoding.</code><code class="sig-name descname">TextEncoderStream</code><span class="sig-paren">(</span><em class="sig-param">encoding='utf-8'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/encoding.html#TextEncoderStream"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="domonic-webapi-fetch">
+<h3>domonic.webapi.fetch<a class="headerlink" href="#domonic-webapi-fetch" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API</a></p>
+</div>
+<div class="section" id="domonic-webapi-url">
+<h3>domonic.webapi.url<a class="headerlink" href="#domonic-webapi-url" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/URL">https://developer.mozilla.org/en-US/docs/Web/API/URL</a></p>
+<p># TODO - this will let us remove the javascript reference in the dom
+# TODO - move the unit tests for this class from javascript to webapi
+# TODO - untested</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.webapi.url.</code><code class="sig-name descname">URL</code><span class="sig-paren">(</span><em class="sig-param">url: str = ''</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URL"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>a-tag extends from URL</p>
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">hash</code></dt>
+<dd><p>” hash Sets or returns the anchor part (#) of a URL</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.webapi.url.</code><code class="sig-name descname">URLSearchParams</code><span class="sig-paren">(</span><em class="sig-param">paramString</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[utility methods to work with the query string of a URL]</p>
+<dl class="method">
+<dt>
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.append"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Appends a specified key/value pair as a new search parameter</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">delete</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.delete"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Deletes the given search parameter, and its associated value, from the list of all search parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.entries"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an iterator allowing iteration through all key/value pairs contained in this object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">forEach</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.forEach"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Allows iteration through all values contained in this object via a callback function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.get"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns the first value associated with the given search parameter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">getAll</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.getAll"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns all the values associated with a given search parameter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">has</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.has"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a Boolean indicating if such a given parameter exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.keys"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an iterator allowing iteration through all keys of the key/value pairs contained in this object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.set"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets the value associated with a given search parameter to the given value.
+If there are several values, the others are deleted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">sort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.sort"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sorts all key/value pairs, if any, by their keys.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">toString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.toString"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a string containing a query string suitable for use in a URL.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/webapi/url.html#URLSearchParams.values"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an iterator allowing iteration through all values of the key/value pairs contained in this object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="domonic-webapi-xmlhttprequest">
+<h3>domonic.webapi.XMLHttpRequest<a class="headerlink" href="#domonic-webapi-xmlhttprequest" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest">https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest</a></p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="https://domonic.readthedocs.io/">domonic</a></h1>
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
+</p>
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
+</ul>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">webapi</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#console">console</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#encoding">encoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fetch">fetch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#url">URL</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="style.html">styles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="utils.html" title="previous chapter">utils</a></li>
+      <li>Next: <a href="style.html" title="next chapter">styles</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/packages/webapi.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+  <ul>
+<li><a class="reference internal" href="#">webapi</a><ul>
+<li><a class="reference internal" href="#console">console</a></li>
+<li><a class="reference internal" href="#encoding">encoding</a></li>
+<li><a class="reference internal" href="#fetch">fetch</a></li>
+<li><a class="reference internal" href="#url">URL</a><ul>
+<li><a class="reference internal" href="#domonic-webapi-console">domonic.webapi.console</a></li>
+<li><a class="reference internal" href="#domonic-webapi-encoding">domonic.webapi.encoding</a></li>
+<li><a class="reference internal" href="#domonic-webapi-fetch">domonic.webapi.fetch</a></li>
+<li><a class="reference internal" href="#domonic-webapi-url">domonic.webapi.url</a></li>
+<li><a class="reference internal" href="#domonic-webapi-xmlhttprequest">domonic.webapi.XMLHttpRequest</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+      |
+      <a href="../_sources/packages/webapi.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

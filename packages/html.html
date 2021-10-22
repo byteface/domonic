@@ -1,0 +1,1113 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>html &#8212; domonic 0.6.3 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dom" href="dom.html" />
+    <link rel="prev" title="Domonic:" href="../index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="html">
+<h1>html<a class="headerlink" href="#html" title="Permalink to this headline">¶</a></h1>
+<p>with domonic you can create beautiful, clean &lt;html&gt; straight out of the box.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mydom</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span><span class="n">body</span><span class="p">(</span><span class="n">h1</span><span class="p">(</span><span class="s1">&#39;Hello, World!&#39;</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{mydom}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello, World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="rendering">
+<h2>rendering<a class="headerlink" href="#rendering" title="Permalink to this headline">¶</a></h2>
+<p>you can cast str() on any element to render it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">el_string</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">div</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">el_string</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>there’s also a render method that takes 2 parameters, some pyml and an optional output file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+    <span class="n">page</span> <span class="o">=</span> <span class="n">div</span><span class="p">(</span><span class="n">span</span><span class="p">(</span><span class="s1">&#39;Hello World&#39;</span><span class="p">))</span>
+    <span class="n">render</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="templating">
+<h2>templating<a class="headerlink" href="#templating" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+  <span class="n">output</span> <span class="o">=</span> <span class="n">render</span><span class="p">(</span>
+      <span class="n">html</span><span class="p">(</span>
+          <span class="n">head</span><span class="p">(</span>
+              <span class="n">style</span><span class="p">(),</span>
+              <span class="n">script</span><span class="p">(),</span>
+          <span class="p">),</span>
+          <span class="n">body</span><span class="p">(</span>
+              <span class="n">div</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">),</span>
+              <span class="n">a</span><span class="p">(</span><span class="s2">&quot;this is a link&quot;</span><span class="p">,</span> <span class="n">_href</span><span class="o">=</span><span class="s2">&quot;http://www.somesite.com&quot;</span><span class="p">,</span> <span class="n">_style</span><span class="o">=</span><span class="s2">&quot;font-size:10px;&quot;</span><span class="p">),</span>
+              <span class="n">ol</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;{li()}&#39;</span> <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])),</span>
+              <span class="n">h1</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="n">_class</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">),</span>
+          <span class="p">)</span>
+      <span class="p">)</span>
+  <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;&lt;</span><span class="nt">head</span><span class="p">&gt;&lt;</span><span class="nt">style</span><span class="p">&gt;&lt;/</span><span class="nt">style</span><span class="p">&gt;&lt;</span><span class="nt">script</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;&lt;/</span><span class="nt">head</span><span class="p">&gt;&lt;</span><span class="nt">body</span><span class="p">&gt;&lt;</span><span class="nt">div</span><span class="p">&gt;</span>hello world<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;http://www.somesite.com&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;font-size:10px;&quot;</span><span class="p">&gt;</span>this is a link<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;&lt;</span><span class="nt">ol</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ol</span><span class="p">&gt;&lt;</span><span class="nt">h1</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">&gt;</span>test<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;/</span><span class="nt">body</span><span class="p">&gt;&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Take a look in tests/test_html.py at the bootstrap5 alpha examples. All tests passed on several templates.</p>
+</div>
+<div class="section" id="usage">
+<h2>usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">html</span><span class="p">(</span><span class="n">body</span><span class="p">(</span><span class="n">h1</span><span class="p">(</span><span class="s1">&#39;Hello, World!&#39;</span><span class="p">))))</span>
+</pre></div>
+</div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;&lt;</span><span class="nt">body</span><span class="p">&gt;&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello, World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;/</span><span class="nt">body</span><span class="p">&gt;&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="attributes">
+<h2>attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
+<p>prepend attributes with an underscore ( avoids clashing with python keywords )</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">test</span> <span class="o">=</span> <span class="n">label</span><span class="p">(</span><span class="n">_class</span><span class="o">=</span><span class="s1">&#39;classname&#39;</span><span class="p">,</span> <span class="n">_for</span><span class="o">=</span><span class="s2">&quot;someinput&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">label</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;classname&quot;</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;someinput&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">label</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="lists">
+<h2>lists<a class="headerlink" href="#lists" title="Permalink to this headline">¶</a></h2>
+<p>just do list comprehension and join it to strip the square brackets</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ul</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;{li()}&#39;</span> <span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)])),</span>
+</pre></div>
+</div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">li</span><span class="p">&gt;&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="data-tags">
+<h2>data-tags<a class="headerlink" href="#data-tags" title="Permalink to this headline">¶</a></h2>
+<p>python doesn’t allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">div</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s2">&quot;_data-test&quot;</span><span class="p">:</span><span class="s2">&quot;test&quot;</span><span class="p">}</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>DONT FORGET TO PREPEND THE UNDERSCORE.</p>
+</div>
+<div class="section" id="script-tags">
+<h2>script tags<a class="headerlink" href="#script-tags" title="Permalink to this headline">¶</a></h2>
+<p>load from a source…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">script</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="s2">&quot;/docs/5.0/dist/js/bootstrap.bundle.min.js&quot;</span><span class="p">,</span> <span class="n">_integrity</span><span class="o">=</span><span class="s2">&quot;sha384-1234&quot;</span><span class="p">,</span> <span class="n">_crossorigin</span><span class="o">=</span><span class="s2">&quot;anonymous&quot;</span><span class="p">),</span>
+</pre></div>
+</div>
+<p>or do inline js…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">script</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">let itbe = &quot;&quot;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="style-tags">
+<h2>style tags<a class="headerlink" href="#style-tags" title="Permalink to this headline">¶</a></h2>
+<p>load from a source…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">link</span><span class="p">(</span><span class="n">_href</span><span class="o">=</span><span class="s2">&quot;/docs/5.0/dist/css/bootstrap.min.css&quot;</span><span class="p">,</span> <span class="n">_rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span> <span class="n">__integrity</span><span class="o">=</span><span class="s2">&quot;sha384-12345&quot;</span><span class="p">,</span> <span class="n">__crossorigin</span><span class="o">=</span><span class="s2">&quot;anonymous&quot;</span><span class="p">),</span>
+</pre></div>
+</div>
+<p>or do inline css…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">style</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">.bd-placeholder-img {</span>
+<span class="s2">    font-size: 1.125rem;</span>
+<span class="s2">    text-anchor: middle;</span>
+<span class="s2">    -webkit-user-select: none;</span>
+<span class="s2">    -moz-user-select: none;</span>
+<span class="s2">    -ms-user-select: none;</span>
+<span class="s2">    user-select: none;</span>
+<span class="s2">}</span>
+<span class="s2">@media (min-width: 768px) {</span>
+<span class="s2">.bd-placeholder-img-lg {</span>
+<span class="s2">    font-size: 3.5rem;</span>
+<span class="s2">}</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">),</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-elements">
+<h2>Create Elements<a class="headerlink" href="#create-elements" title="Permalink to this headline">¶</a></h2>
+<p>to create your own custom elements you can use create_element</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">create_element</span><span class="p">(</span><span class="s1">&#39;custom_el&#39;</span><span class="p">,</span> <span class="n">div</span><span class="p">(</span><span class="s1">&#39;some content&#39;</span><span class="p">),</span> <span class="n">_id</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or you could use the DOM API…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">site</span> <span class="o">=</span> <span class="n">html</span><span class="p">()</span>
+<span class="n">el</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;myelement&#39;</span><span class="p">)</span>
+<span class="n">site</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">el</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more info about the DOM API navigate to that section…</p>
+</div>
+<div class="section" id="decorators">
+<h2>Decorators<a class="headerlink" href="#decorators" title="Permalink to this headline">¶</a></h2>
+<p>You can use decorators to wrap elements around function results</p>
+</div>
+<div class="section" id="magic-methods">
+<h2>Magic methods<a class="headerlink" href="#magic-methods" title="Permalink to this headline">¶</a></h2>
+<p><strong>Multiply</strong></p>
+<p>You can quickly clone nodes with a multiplier which will return a list…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">mydivs</span> <span class="o">=</span> <span class="n">div</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+</pre></div>
+</div>
+<p>but you will have to render them yourself by interating and calling string…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">mydivs</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p><strong>Divide</strong></p>
+<p>A divisor also creates more but will instead call render and give a list of strings…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">div</span><span class="p">()</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>but this means they are now rendered and can’t be edited.</p>
+<p>Although you could convert them back by calling parser then domonify. i.e.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mylist</span> <span class="o">=</span> <span class="n">li</span><span class="p">()</span><span class="o">/</span><span class="mi">10</span>
+<span class="n">myobj</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">domonify</span><span class="p">(</span><span class="n">domonic</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">mylist</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myobj</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>OR</strong></p>
+<p>If other is anything, it is returned. Otherwise it returns self</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">div</span><span class="p">()</span> <span class="o">|</span> <span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">div</span><span class="p">()</span> <span class="o">|</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another way is to use ternary i.e.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mything</span> <span class="o">=</span> <span class="n">div</span><span class="p">()</span> <span class="k">if</span> <span class="kc">True</span> <span class="k">else</span> <span class="n">span</span><span class="p">(</span><span class="n">class</span><span class="o">-</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>In place add/minus</strong></p>
+<p>You can add to or remove from the children of a Node with the in-place operators…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">myorderedlist</span> <span class="o">=</span> <span class="n">ol</span><span class="p">()</span>
+<span class="n">myorderedlist</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">li</span><span class="p">()</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myorderedlist</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This also works for text nodes but be aware they will be irreversibly flattened if you render…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a1</span> <span class="o">=</span> <span class="n">button</span><span class="p">()</span>
+<span class="n">a1</span> <span class="o">+=</span> <span class="s2">&quot;hi&quot;</span>
+<span class="n">a1</span> <span class="o">+=</span> <span class="s2">&quot;how&quot;</span>
+<span class="n">a1</span> <span class="o">+=</span> <span class="s2">&quot;are&quot;</span>
+<span class="n">a1</span> <span class="o">+=</span> <span class="s2">&quot;you&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+<span class="n">a1</span> <span class="o">-=</span> <span class="s2">&quot;hi&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Pass a dictionary to the right shift operator to add/update an attribute…
+(don’t forget underscore or it will error)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">a1</span> <span class="o">=</span> <span class="n">img</span><span class="p">()</span>
+<span class="n">a1</span> <span class="o">&gt;&gt;</span> <span class="p">{</span><span class="s1">&#39;_src&#39;</span><span class="p">:</span> <span class="s2">&quot;http://www.someurl.com&quot;</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Access an elements children as if it were a list…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mylist</span> <span class="o">=</span> <span class="n">ul</span><span class="p">(</span><span class="n">li</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">li</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">li</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mylist</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>unpack children…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mylist</span> <span class="o">=</span> <span class="n">ul</span><span class="p">(</span><span class="n">li</span><span class="p">(),</span> <span class="n">li</span><span class="p">(),</span> <span class="n">li</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">mylist</span><span class="p">)</span>
+<span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">c1</span> <span class="o">=</span> <span class="n">ul</span><span class="p">(</span><span class="n">li</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">li</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">li</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+<span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">e1</span> <span class="o">=</span> <span class="n">button</span><span class="p">()</span> <span class="o">*</span> <span class="mi">5</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">e1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="f-strings">
+<h2>f-strings<a class="headerlink" href="#f-strings" title="Permalink to this headline">¶</a></h2>
+<p>To pretty print a domonic dom you can use a f-string…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{mydom}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello, World!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>which basically calls the format dunder on the tag. (if look at the code)</p>
+<p>This is useful as it means use different ways to get output from domonic.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{mydom}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{mydom!s}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{mydom!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{mydom!a}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mydom</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">mydom</span><span class="o">.</span><span class="fm">__format__</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>If the built in formatter is not up to your needs. You can also use other libraries that leverage beautifulsoup i.e.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="n">render</span><span class="p">(</span><span class="n">html</span><span class="p">(</span><span class="n">body</span><span class="p">(</span><span class="n">h1</span><span class="p">(</span><span class="s1">&#39;Hello, World!&#39;</span><span class="p">))))</span>
+<span class="kn">from</span> <span class="nn">html5print</span> <span class="kn">import</span> <span class="n">HTMLBeautifier</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">HTMLBeautifier</span><span class="o">.</span><span class="n">beautify</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>For outputting pyml to a string there is a method in production called __pyml__() which may become repr. (but i’d been saving repr for logging)</p>
+<p>You can also use this vscode plugin on .pyml and it does a nice job. (inpsiration for the ‘dentage’ method)</p>
+<p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dictionary">https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dictionary</a></p>
+</div>
+<div class="section" id="loading-pyml-templates">
+<h2>loading .pyml templates<a class="headerlink" href="#loading-pyml-templates" title="Permalink to this headline">¶</a></h2>
+<p>‘loads’ imports a pyml file and turns it into a program</p>
+<p>this example loads a template and passing params for rendering</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic</span> <span class="kn">import</span> <span class="n">loads</span>
+<span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># create some vars. you will see these referenced in the template file</span>
+<span class="n">brand</span> <span class="o">=</span> <span class="s2">&quot;MyBrand&quot;</span>
+<span class="n">links</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;one&#39;</span><span class="p">,</span> <span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="s1">&#39;three&#39;</span><span class="p">]</span>
+
+<span class="c1"># load a template and pass it some data</span>
+<span class="n">webpage</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="s1">&#39;templates/webpage.com.pyml&#39;</span><span class="p">,</span> <span class="n">links</span><span class="o">=</span><span class="n">links</span><span class="p">,</span> <span class="n">brand</span><span class="o">=</span><span class="n">brand</span><span class="p">)</span>
+
+<span class="n">render</span><span class="p">(</span><span class="n">webpage</span><span class="p">,</span> <span class="s1">&#39;webpage.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p># ‘load’ is different to ‘loads’, it takes html strings and converts to a program</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.dQuery</span> <span class="kn">import</span> <span class="n">º</span>
+
+<span class="n">webpage</span> <span class="o">=</span> <span class="n">domonic</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body id=&quot;test&quot;&gt;&lt;/body&gt;&lt;/html&gt;&#39;</span><span class="p">)</span>
+<span class="n">º</span><span class="p">(</span><span class="n">webpage</span><span class="p">)</span>
+<span class="n">º</span><span class="p">(</span><span class="s1">&#39;#test&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">div</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">))</span>
+<span class="n">render</span><span class="p">(</span><span class="n">webpage</span><span class="p">,</span> <span class="s1">&#39;webpage2.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>warning loads also is very basic and can only convert simple html as the parser is still in development</p></li>
+</ul>
+</div>
+<div class="section" id="parsing">
+<h2>parsing<a class="headerlink" href="#parsing" title="Permalink to this headline">¶</a></h2>
+<p>You can hook domonic to the super fast html5 c++ parser. As mentioned in this ticket</p>
+<p><a class="reference external" href="https://github.com/byteface/domonic/issues/28">https://github.com/byteface/domonic/issues/28</a></p>
+<p>you just have to use my fork instead.</p>
+<p><a class="reference external" href="https://github.com/byteface/html5-parser/commit/fa83bf1a5e225f6934a1ad38d092fc6baf3c4934">https://github.com/byteface/html5-parser/commit/fa83bf1a5e225f6934a1ad38d092fc6baf3c4934</a></p>
+<div class="section" id="domonic-html">
+<h3>domonic.html<a class="headerlink" href="#domonic-html" title="Permalink to this headline">¶</a></h3>
+<p>Generate HTML using python 3</p>
+<dl class="exception">
+<dt>
+<em class="property">exception </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">TemplateError</code><span class="sig-paren">(</span><em class="sig-param">error</em>, <em class="sig-param">message='Templating error: '</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/html.html#TemplateError"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">a</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">abbr</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">address</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">applet</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">area</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">article</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">aside</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">audio</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">b</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">base</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">basefont</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">bdi</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">bdo</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">blockquote</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">body</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">br</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">button</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">canvas</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">caption</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">center</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">cite</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">closed_tag</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/html.html#closed_tag"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">code</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">col</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">colgroup</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">command</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">create_element</code><span class="sig-paren">(</span><em class="sig-param">name='custom_tag'</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/html.html#create_element"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>A method for creating custom tags</p>
+<p>tag name needs to be set due to custom tags with hyphens can’t be classnames.
+i.e. hypenated tags &lt;some-custom-tag&gt;&lt;/some-custom-tag&gt;</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">datalist</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">dd</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">details</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">dfn</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">div</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">dl</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">dt</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">em</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">embed</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">fieldset</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">figcaption</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">figure</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">font</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">footer</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">form</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/html.html#form"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">h1</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">h2</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">h3</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">h4</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">h5</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">h6</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">head</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">header</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">hgroup</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">hr</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">html</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">i</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">iframe</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">img</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">input</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">ins</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">isindex</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">kbd</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">keygen</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">label</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">legend</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">li</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">link</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">listing</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">main</code></dt>
+<dd><p>alias of <a class="reference internal" href="autodocs.html#domonic.html.command" title="domonic.html.command"><code class="xref py py-class docutils literal notranslate"><span class="pre">domonic.html.command</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">mark</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">menu</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">meta</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">meter</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">nav</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">noscript</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">ol</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">optgroup</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">option</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">output</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">p</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">param</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">picture</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">plaintext</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">portal</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">pre</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">progress</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">q</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">render</code><span class="sig-paren">(</span><em class="sig-param">inp</em>, <em class="sig-param">outp=''</em>, <em class="sig-param">to=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/html.html#render"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Renders the input to string or to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inp</strong> (<em>obj</em>) – A domonic tag. For example div()</p></li>
+<li><p><strong>outp</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – An optional output filename</p></li>
+<li><p><strong>to</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – An optional output type. if ‘pyml’ is specified then pyml is returned instead of html.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A HTML rendered string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">rp</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">rt</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">ruby</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">s</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">samp</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">script</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">section</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">select</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">small</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">source</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">span</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">strike</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">strong</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">style</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">sub</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">submit</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">summary</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">sup</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">table</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">tag</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/html.html#tag"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>The class from which all html tags extend.</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">tbody</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">td</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">template</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">textarea</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">tfoot</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">th</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">thead</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">title</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">tr</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">track</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">u</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">ul</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">var</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">video</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">wbr</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.html.</code><code class="sig-name descname">xmp</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="https://domonic.readthedocs.io/">domonic</a></h1>
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
+</p>
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
+</ul>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">html</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rendering">rendering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#templating">templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#attributes">attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lists">lists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-tags">data-tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#script-tags">script tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#style-tags">style tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-elements">Create Elements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#decorators">Decorators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#magic-methods">Magic methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#f-strings">f-strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-pyml-templates">loading .pyml templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parsing">parsing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webapi.html">webapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="style.html">styles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Domonic:</a></li>
+      <li>Next: <a href="dom.html" title="next chapter">dom</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/packages/html.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+  <ul>
+<li><a class="reference internal" href="#">html</a><ul>
+<li><a class="reference internal" href="#rendering">rendering</a></li>
+<li><a class="reference internal" href="#templating">templating</a></li>
+<li><a class="reference internal" href="#usage">usage</a></li>
+<li><a class="reference internal" href="#attributes">attributes</a></li>
+<li><a class="reference internal" href="#lists">lists</a></li>
+<li><a class="reference internal" href="#data-tags">data-tags</a></li>
+<li><a class="reference internal" href="#script-tags">script tags</a></li>
+<li><a class="reference internal" href="#style-tags">style tags</a></li>
+<li><a class="reference internal" href="#create-elements">Create Elements</a></li>
+<li><a class="reference internal" href="#decorators">Decorators</a></li>
+<li><a class="reference internal" href="#magic-methods">Magic methods</a></li>
+<li><a class="reference internal" href="#f-strings">f-strings</a></li>
+<li><a class="reference internal" href="#loading-pyml-templates">loading .pyml templates</a></li>
+<li><a class="reference internal" href="#parsing">parsing</a><ul>
+<li><a class="reference internal" href="#domonic-html">domonic.html</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+      |
+      <a href="../_sources/packages/html.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

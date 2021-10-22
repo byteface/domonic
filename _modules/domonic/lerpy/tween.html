@@ -1,0 +1,373 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>domonic.lerpy.tween &#8212; domonic 0.6.3 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for domonic.lerpy.tween</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">domonic.javascript</span> <span class="kn">import</span> <span class="n">window</span>
+<span class="kn">from</span> <span class="nn">domonic.events</span> <span class="kn">import</span> <span class="n">EventDispatcher</span>
+<span class="kn">from</span> <span class="nn">domonic.events</span> <span class="kn">import</span> <span class="n">TweenEvent</span>
+<span class="kn">from</span> <span class="nn">domonic.lerpy</span> <span class="kn">import</span> <span class="n">get_timer</span>
+<span class="kn">from</span> <span class="nn">domonic.lerpy.easing</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="k">class</span> <span class="nc">TweenEquation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ease</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ease</span> <span class="o">=</span> <span class="n">ease</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra</span> <span class="o">=</span> <span class="n">extra</span>
+
+
+<span class="k">class</span> <span class="nc">TweenData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">equation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prop</span> <span class="o">=</span> <span class="n">prop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equation</span> <span class="o">=</span> <span class="n">equation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<div class="viewcode-block" id="Tween"><a class="viewcode-back" href="../../../packages/tween.html#domonic.lerpy.tween.Tween">[docs]</a><span class="k">class</span> <span class="nc">Tween</span><span class="p">(</span><span class="n">EventDispatcher</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Tween is a complex lerp but you don&#39;t have do the math cos robert penner did already.</span>
+<span class="sd">    Just pass an easing equation from the easing package</span>
+
+<span class="sd">    i.e</span>
+
+<span class="sd">    twn = Tween(someObj, { &#39;x&#39;:10, &#39;y&#39;:5, &#39;z&#39;:3}, 6, Linear.easeIn )</span>
+
+<span class="sd">    will tween the objects properties over the given time using Linear.easeIn</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">FPS</span> <span class="o">=</span> <span class="mi">60</span>
+
+    <span class="n">_tweening</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_paused</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_target</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_values</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_equations</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_duration</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_delay</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_position</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_loop</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_timeStart</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_timePaused</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_timePrevious</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">equations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equations</span> <span class="o">=</span> <span class="n">equations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="n">loop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intID</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tweening</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_foo</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">paused</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">100</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target</span>
+
+    <span class="nd">@target</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target</span> <span class="o">=</span> <span class="n">target</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">:</span>
+            <span class="n">v</span><span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">target</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="nd">@values</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">values</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TweenData</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">s</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">equations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_equations</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span>  <span class="c1"># /1000</span>
+
+    <span class="nd">@duration</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span> <span class="o">=</span> <span class="n">duration</span>  <span class="c1"># * 1000</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">equations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_equations</span>
+
+    <span class="nd">@equations</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">equations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">equations</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">equations</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_equations</span> <span class="o">=</span> <span class="n">equations</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">equations</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">equations</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span> <span class="k">else</span> <span class="p">[</span><span class="n">equations</span><span class="p">]</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">i</span>
+                <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">TweenEquation</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">TweenEquation</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">e</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">b</span><span class="p">})</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">equation</span> <span class="o">=</span> <span class="n">p</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">delay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delay</span>  <span class="c1"># / 1000</span>
+
+    <span class="nd">@delay</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">delay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delay</span> <span class="o">=</span> <span class="n">delay</span>  <span class="c1"># * 1000</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span>
+
+    <span class="nd">@loop</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loop</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set to True if you want it to loop &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span> <span class="o">=</span> <span class="n">loop</span>
+
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeStart</span> <span class="o">=</span> <span class="n">get_timer</span><span class="p">()</span>   <span class="c1"># TODO!! ---</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timePaused</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timePrevious</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeStart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">:</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">prop</span><span class="p">]</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">change</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">target</span> <span class="o">-</span> <span class="n">v</span><span class="o">.</span><span class="n">start</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tweening</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intID</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">setInterval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">,</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">Tween</span><span class="o">.</span><span class="n">FPS</span><span class="p">,</span> <span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">TIMER</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">START</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tweening</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">STOP</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+        <span class="c1"># NOTE</span>
+        <span class="c1"># window.clearInterval(self._intID )</span>
+        <span class="c1"># clearInt fails. because join won&#39;t allow as a &#39;return&#39; happens just after the stop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intID</span><span class="o">.</span><span class="n">stopped</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>  <span class="c1"># call stopped on the thread so program exits</span>
+
+<div class="viewcode-block" id="Tween.pause"><a class="viewcode-back" href="../../../packages/tween.html#domonic.lerpy.tween.Tween.pause">[docs]</a>    <span class="k">def</span> <span class="nf">pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Pauses the tween from changing the values  &quot;&quot;&quot;</span>
+        <span class="c1"># TODO - pause should modify timer so it DOESNT jump frames. at mo does the opposite.</span>
+        <span class="c1"># seems to not increment. then suddenly jumps to catch up with where it should be</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">PAUSE</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="k">else</span> <span class="n">TweenEvent</span><span class="o">.</span><span class="n">UNPAUSE</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Tween.unpause"><a class="viewcode-back" href="../../../packages/tween.html#domonic.lerpy.tween.Tween.unpause">[docs]</a>    <span class="k">def</span> <span class="nf">unpause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; unpauses the tween &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">UNPAUSE</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_target</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update</span><span class="p">(</span><span class="n">get_timer</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">RESET</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">timeCurrent</span> <span class="o">=</span> <span class="n">get_timer</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tweening</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">UPDATE_START</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+                <span class="n">time</span> <span class="o">=</span> <span class="n">timeCurrent</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timePaused</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeStart</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_duration</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delay</span><span class="p">)</span> <span class="o">*</span> <span class="n">time</span>
+
+                <span class="k">if</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delay</span><span class="p">:</span>
+                    <span class="k">return</span>
+                <span class="n">time</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delay</span>
+
+                <span class="k">if</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_target</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">target</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_timeStart</span> <span class="o">=</span> <span class="n">timeCurrent</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_timePaused</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_timePrevious</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeStart</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">UPDATE_END</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">COMPLETE</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+                    <span class="k">return</span>
+
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">:</span>
+                    <span class="n">e</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">equation</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">extra</span>
+                    <span class="n">a</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">a</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">b</span> <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_target</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">prop</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">ease</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">change</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="p">(</span><span class="n">TweenEvent</span><span class="o">.</span><span class="n">UPDATE_END</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_timePaused</span> <span class="o">+=</span> <span class="p">(</span><span class="n">timeCurrent</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timePrevious</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_timePrevious</span> <span class="o">=</span> <span class="n">timeCurrent</span></div>
+
+    <span class="c1"># def _dispatchEvent(self, event):</span>
+    <span class="c1">#     if event.type == TweenEvent.UPDATE_START:</span>
+    <span class="c1">#         self._timeStart = get_timer()</span>
+    <span class="c1">#         self._timePaused = 0</span>
+    <span class="c1">#         self._timePrevious = self._timeStart</span>
+    <span class="c1">#         self._position = 0</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.UPDATE_END:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.START:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.STOP:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.PAUSE:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.UNPAUSE:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.RESET:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.COMPLETE:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     elif event.type == TweenEvent.UPDATE:</span>
+    <span class="c1">#         self.dispatchEvent(event)</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         super(Tween, self)._dispatchEvent(event)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="https://domonic.readthedocs.io/">domonic</a></h1>
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
+</p>
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
+</ul>
+<h3><a href="../../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/webapi.html">webapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/style.html">styles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../packages/autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute.html">Contribute</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

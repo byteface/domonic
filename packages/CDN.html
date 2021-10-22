@@ -1,0 +1,744 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>CDN &#8212; domonic 0.6.3 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="decorators" href="decorators.html" />
+    <link rel="prev" title="x3d" href="x3d.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="cdn">
+<h1>CDN<a class="headerlink" href="#cdn" title="Permalink to this headline">¶</a></h1>
+<p>To quickly use and reference external assets when prototyping use the CDN package.</p>
+<p>Currently there are 3 types of CDN. .js, .css and .img</p>
+<p>Their features will be added here.</p>
+<p>To use features from CDN they must be imported.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.CDN</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>Or just class you need</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.CDN</span> <span class="kn">import</span> <span class="n">CDN_JS</span>
+</pre></div>
+</div>
+<div class="section" id="cdn-js">
+<h2>CDN_JS<a class="headerlink" href="#cdn-js" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">script</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="n">CDN_JS</span><span class="o">.</span><span class="n">JQUERY_3_5_1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>currently constants exist for:</p>
+<ul class="simple">
+<li><p>JQUERY_3_5_1</p></li>
+<li><p>JQUERY_UI</p></li>
+<li><p>UNDERSCORE</p></li>
+<li><p>BOOTSTRAP_4</p></li>
+<li><p>POPPER_1_16_1</p></li>
+<li><p>BOOTSTRAP_5_ALPHA</p></li>
+<li><p>D3_6_1_0</p></li>
+<li><p>MODERNIZER_2_8_3</p></li>
+<li><p>MOMENT_2_27_0</p></li>
+<li><p>PIXI_5_3_3</p></li>
+<li><p>SOCKET_1_4_5</p></li>
+</ul>
+</div>
+<div class="section" id="cdn-css">
+<h2>CDN_CSS<a class="headerlink" href="#cdn-css" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">classless_css</span> <span class="o">=</span> <span class="n">link</span><span class="p">(</span><span class="n">_rel</span><span class="o">=</span><span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span> <span class="n">_href</span><span class="o">=</span><span class="n">CDN_CSS</span><span class="o">.</span><span class="n">WATER_LATEST</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>currently constants exist for:</p>
+<ul class="simple">
+<li><p>BOOTSTRAP_5_ALPHA</p></li>
+<li><p>BOOTSTRAP_4</p></li>
+<li><p>MARX</p></li>
+<li><p>MVP</p></li>
+<li><p>WATER_LATEST</p></li>
+<li><p>BALLOON</p></li>
+<li><p>THREE_DOTS_0_2_0</p></li>
+<li><p>MILLIGRAM_1_3_0</p></li>
+<li><p>X3DOM</p></li>
+<li><p>FONTAWESOME_5_7_1</p></li>
+<li><p>MDI_5_4_55</p></li>
+</ul>
+</div>
+<div class="section" id="cdn-img">
+<h2>CDN_IMG<a class="headerlink" href="#cdn-img" title="Permalink to this headline">¶</a></h2>
+<p>CDN_IMG has a placeholder service.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># to change it. do this...</span>
+<span class="n">CDN_IMG</span><span class="o">.</span><span class="n">PLACEHOLDER_SERVICE</span> <span class="o">=</span> <span class="s2">&quot;placebear.com/g&quot;</span>
+
+<span class="n">img</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="n">CDN_IMG</span><span class="o">.</span><span class="n">PLACEHOLDER</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
+
+<span class="c1"># optional seperator if the site uses x instead of slash between dimensions</span>
+<span class="n">img</span><span class="p">(</span><span class="n">_src</span><span class="o">=</span><span class="n">CDN_IMG</span><span class="o">.</span><span class="n">PLACEHOLDER</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="s1">&#39;x&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p># there’s tons to pick from. (NOT ALL ARE HTTPS):</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://placehold.it/350x150">http://placehold.it/350x150</a></p></li>
+<li><p><a class="reference external" href="http://unsplash.it/200/300">http://unsplash.it/200/300</a></p></li>
+<li><p><a class="reference external" href="http://lorempixel.com/400/200">http://lorempixel.com/400/200</a></p></li>
+<li><p><a class="reference external" href="http://dummyimage.com/600x300/000/fff">http://dummyimage.com/600x300/000/fff</a></p></li>
+<li><p><a class="reference external" href="https://dummyimage.com/420x320/ff7f7f/333333.png&amp;text=Sample">https://dummyimage.com/420x320/ff7f7f/333333.png&amp;text=Sample</a></p></li>
+<li><p><a class="reference external" href="http://placekitten.com/200/300">http://placekitten.com/200/300</a></p></li>
+<li><p><a class="reference external" href="https://placeimg.com/640/480/any">https://placeimg.com/640/480/any</a></p></li>
+<li><p><a class="reference external" href="http://placebear.com/g/200/300">http://placebear.com/g/200/300</a></p></li>
+<li><p><a class="reference external" href="https://ipsumimage.appspot.com/140x100">https://ipsumimage.appspot.com/140x100</a>, ff7700</p></li>
+<li><p><a class="reference external" href="https://www.fillmurray.com/640/360">https://www.fillmurray.com/640/360</a></p></li>
+<li><p><a class="reference external" href="https://baconmockup.com/640/360">https://baconmockup.com/640/360</a></p></li>
+<li><p><a class="reference external" href="https://placebeard.it/640x360">https://placebeard.it/640x360</a></p></li>
+<li><p><a class="reference external" href="https://www.placecage.com/640/360">https://www.placecage.com/640/360</a></p></li>
+<li><p><a class="reference external" href="https://www.stevensegallery.com/640/360">https://www.stevensegallery.com/640/360</a></p></li>
+<li><p><a class="reference external" href="https://fakeimg.pl/640x360">https://fakeimg.pl/640x360</a></p></li>
+<li><p><a class="reference external" href="https://fakeimg.pl/420x320/ff0000,128/333333,255/?text=Sample&amp;font=lobster">https://fakeimg.pl/420x320/ff0000,128/333333,255/?text=Sample&amp;font=lobster</a></p></li>
+<li><p><a class="reference external" href="https://picsum.photos/640/360">https://picsum.photos/640/360</a></p></li>
+<li><p><a class="reference external" href="https://via.placeholder.com/420x320/ff7f7f/333333?text=Sample">https://via.placeholder.com/420x320/ff7f7f/333333?text=Sample</a></p></li>
+<li><p><a class="reference external" href="https://keywordimg.com/420x320/random">https://keywordimg.com/420x320/random</a></p></li>
+<li><p><a class="reference external" href="http://www.dummysrc.com/430x320.png/22c5fc/17202A">http://www.dummysrc.com/430x320.png/22c5fc/17202A</a></p></li>
+</ul>
+<div class="section" id="domonic-cdn">
+<h3>domonic.CDN<a class="headerlink" href="#domonic-cdn" title="Permalink to this headline">¶</a></h3>
+<p>Refs to some useful .js and .css libs.</p>
+<p>use for prototyping. wget anything in later and create your own local references once ur happy</p>
+<p>TODO - integrity/cross origin/module?</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.CDN.</code><code class="sig-name descname">CDN_CSS</code><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_CSS"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Preferably use version numbers if available. user LATEST if it always gets the latest</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.CDN.</code><code class="sig-name descname">CDN_IMG</code><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_IMG"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>CDN images</p>
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">PLACEHOLDER</code><span class="sig-paren">(</span><em class="sig-param">width=100</em>, <em class="sig-param">height=100</em>, <em class="sig-param">HTTP=''</em>, <em class="sig-param">seperator='/'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_IMG.PLACEHOLDER"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>to update do CDN_IMG.PLACEHOLDER_SERVICE = “placebear.com/g”
+usage : img(_src=CDN_IMG.PLACEHOLDER(300,100))
+default HTTP is none, to let the browser decide
+# use optional seperator if the site uses x instead of slash
+img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.CDN.</code><code class="sig-name descname">CDN_JS</code><a class="reference internal" href="../_modules/domonic/CDN.html#CDN_JS"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>You will need to append the lib version number if you add any libs here
+# obvious candidates… <a class="reference external" href="https://github.com/sorrycc/awesome-javascript">https://github.com/sorrycc/awesome-javascript</a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="domonic-utils">
+<h3>domonic.utils<a class="headerlink" href="#domonic-utils" title="Permalink to this headline">¶</a></h3>
+<p>snippets etc</p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.utils.</code><code class="sig-name descname">Utils</code><a class="reference internal" href="../_modules/domonic/utils.html#Utils"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>utils</p>
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">acronym</code><span class="sig-paren">(</span><em class="sig-param">sentence: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/domonic/utils.html#Utils.acronym"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[pass a sentence, returns the acronym]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sentence</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [typically 3 words]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a TLA (three letter acronym)]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">case_camel</code><span class="sig-paren">(</span><em class="sig-param">s: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_camel"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>case_camel(‘camel-case’) &gt; ‘camelCase’</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">case_kebab</code><span class="sig-paren">(</span><em class="sig-param">s: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_kebab"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>kebab(‘camelCase’) # ‘camel-case’</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">case_snake</code><span class="sig-paren">(</span><em class="sig-param">s: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/domonic/utils.html#Utils.case_snake"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>snake(‘camelCase’) # ‘camel_case’</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">chunk</code><span class="sig-paren">(</span><em class="sig-param">list: list</em>, <em class="sig-param">size: int</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/domonic/utils.html#Utils.chunk"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>chunk a list into batches</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">chunks</code><span class="sig-paren">(</span><em class="sig-param">iterable</em>, <em class="sig-param">size: int</em>, <em class="sig-param">format=&lt;built-in function iter&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.chunks"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">clean</code><span class="sig-paren">(</span><em class="sig-param">lst: list</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/domonic/utils.html#Utils.clean"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[removes falsy values (False, None, 0 and “”) from a list ]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lst</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [lst to operate on]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a new list with falsy values removed]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)">type</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">dictify</code><span class="sig-paren">(</span><em class="sig-param">arr: str</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../_modules/domonic/utils.html#Utils.dictify"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[turns a list into a dictionary where the list items are the keys]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arr</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [list to change]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a new dict where the list items are now the keys]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">digits</code><span class="sig-paren">(</span><em class="sig-param">text=''</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/domonic/utils.html#Utils.digits"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[takes a string of mix of digits and letters and returns a string of digits]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – [the text to change]. Defaults to ‘’.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a string of digits]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">escape</code><span class="sig-paren">(</span><em class="sig-param">s: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/domonic/utils.html#Utils.escape"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[escape a string]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [the string to escape]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">frequency</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.frequency"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[check the frequency of elements in the data]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [the data to check]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a dict of elements and their frequency]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">get_vowels</code><span class="sig-paren">(</span><em class="sig-param">string: str</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/domonic/utils.html#Utils.get_vowels"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[get a list of vowels from the word]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>string</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [the word to check]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a list of vowels]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">has_internet</code><span class="sig-paren">(</span><em class="sig-param">url='http://www.google.com/'</em>, <em class="sig-param">timeout=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.has_internet"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[check if you have internet connection]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – [the url to check]. Defaults to ‘<a class="reference external" href="http://www.google.com/">http://www.google.com/</a>’.</p></li>
+<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – [the timeout]. Defaults to 5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">init_assets</code><span class="sig-paren">(</span><em class="sig-param">dir: str = 'assets'</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/domonic/utils.html#Utils.init_assets"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[creates an assets directory with nested js/css/img dirs]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – [default directory name]. Defaults to ‘assets’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">merge_dictionaries</code><span class="sig-paren">(</span><em class="sig-param">a: dict</em>, <em class="sig-param">b: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../_modules/domonic/utils.html#Utils.merge_dictionaries"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[merges 2 dicts]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a><em>]</em>) – [dict a]</p></li>
+<li><p><strong>b</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><em>dict</em></a><em>]</em>) – [dict b]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a new dict]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">permutations</code><span class="sig-paren">(</span><em class="sig-param">word: str</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/domonic/utils.html#Utils.permutations"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[provides all the possible permutations of a given word]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>word</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [the word to get permutations for]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">random_color</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>staticmethod(function) -&gt; method</p>
+<p>Convert a function to be a static method.</p>
+<p>A static method does not receive an implicit first argument.
+To declare a static method, use this idiom:</p>
+<blockquote>
+<div><dl>
+<dt>class C:</dt><dd><p>&#64;staticmethod
+def f(arg1, arg2, …):</p>
+<blockquote>
+<div><p>…</p>
+</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
+<p>It can be called either on the class (e.g. C.f()) or on an instance
+(e.g. C().f()). Both the class and the instance are ignored, and
+neither is passed implicitly as the first argument to the method.</p>
+<p>Static methods in Python are similar to those found in Java or C++.
+For a more advanced concept, see the classmethod builtin.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">replace_between</code><span class="sig-paren">(</span><em class="sig-param">content: str</em>, <em class="sig-param">match: str</em>, <em class="sig-param">replacement: str</em>, <em class="sig-param">start: int = 0</em>, <em class="sig-param">end: int = 0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.replace_between"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[replace some text but only between certain indexes]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – [the content whos text you will be replacing]</p></li>
+<li><p><strong>match</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – [the string to find]</p></li>
+<li><p><strong>replacement</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – [the string to replace it with]</p></li>
+<li><p><strong>start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – [start index]. Defaults to 0.</p></li>
+<li><p><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – [end index]. Defaults to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">squash</code><span class="sig-paren">(</span><em class="sig-param">the_list: list</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/domonic/utils.html#Utils.squash"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[turns a 2d array into a flat one]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>the_list</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [a 2d array]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a flattened 1d array]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">to_dictionary</code><span class="sig-paren">(</span><em class="sig-param">keys: list</em>, <em class="sig-param">values: list</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="../_modules/domonic/utils.html#Utils.to_dictionary"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[take a list of keys and values and returns a dict]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [a list of keys]</p></li>
+<li><p><strong>values</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [a list of value]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a dictionary]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)">dict</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">truncate</code><span class="sig-paren">(</span><em class="sig-param">text=''</em>, <em class="sig-param">length: int = 0</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/domonic/utils.html#Utils.truncate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[truncates a string and appends 3 dots]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – [the text to truncate]. Defaults to ‘’.</p></li>
+<li><p><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – [the max length]. Defaults to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">unescape</code><span class="sig-paren">(</span><em class="sig-param">s: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/domonic/utils.html#Utils.unescape"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[unescape a string]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>s</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [the string to unescape]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">unique</code><span class="sig-paren">(</span><em class="sig-param">some_arr: list</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="../_modules/domonic/utils.html#Utils.unique"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[removes duplicates from a list]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>some_arr</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [list containing duplicates]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a list containing no duplicates]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">untitle</code><span class="sig-paren">(</span><em class="sig-param">string: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/domonic/utils.html#Utils.untitle"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[the opposite of title]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>str</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [the string to change]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a string with the first character set to lowercase]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)">type</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">static </em><code class="sig-name descname">url2file</code><span class="sig-paren">(</span><em class="sig-param">url: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="../_modules/domonic/utils.html#Utils.url2file"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[gen a safe filename from a url. by replacing ‘/’ for ‘_’ and ‘:’ for ‘__’ ]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [the url to turn into a filename]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="domonic-decorators">
+<h3>domonic.decorators<a class="headerlink" href="#domonic-decorators" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">called</code><span class="sig-paren">(</span><em class="sig-param">before=None</em>, <em class="sig-param">error=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#called"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[calls before() passing the response as args to the decorated function.
+optional error handler. run the decorated function immediately.</p>
+<p>WARNING: this is not for the regular decorating of a function
+its syntactical sugar for a callback i.e.</p>
+<dl class="simple">
+<dt>&#64;called(</dt><dd><p>lambda: º.ajax(‘<a class="reference external" href="https://www.google.com">https://www.google.com</a>’),
+lambda err: print(‘error:’, err))</p>
+</dd>
+<dt>def success(data=None):</dt><dd><p>print(“sweet!”)
+print(data)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#check"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Prints entry and exit of a function to the console</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">deprecated</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#deprecated"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>marks a function as deprecated.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">el</code><span class="sig-paren">(</span><em class="sig-param">element='div'</em>, <em class="sig-param">string=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#el"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[wraps the results of a function in an element]</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">iife</code><span class="sig-paren">(</span><em class="sig-param">before=None</em>, <em class="sig-param">error=None</em><span class="sig-paren">)</span></dt>
+<dd><p>[calls before() passing the response as args to the decorated function.
+optional error handler. run the decorated function immediately.</p>
+<p>WARNING: this is not for the regular decorating of a function
+its syntactical sugar for a callback i.e.</p>
+<dl class="simple">
+<dt>&#64;called(</dt><dd><p>lambda: º.ajax(‘<a class="reference external" href="https://www.google.com">https://www.google.com</a>’),
+lambda err: print(‘error:’, err))</p>
+</dd>
+<dt>def success(data=None):</dt><dd><p>print(“sweet!”)
+print(data)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">instead</code><span class="sig-paren">(</span><em class="sig-param">f</em>, <em class="sig-param">somethingelse</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#instead"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>what to return if it fails</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param">logger</em>, <em class="sig-param">level='info'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#log"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>&#64;log(logging.getLogger(‘main’), level=’warning’)</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<code class="sig-prename descclassname">domonic.decorators.</code><code class="sig-name descname">silence</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/decorators.html#silence"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>stop a function from doing anything</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="https://domonic.readthedocs.io/">domonic</a></h1>
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
+</p>
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
+</ul>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3d.html">x3d</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CDN</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#cdn-js">CDN_JS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cdn-css">CDN_CSS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cdn-img">CDN_IMG</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webapi.html">webapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="style.html">styles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="x3d.html" title="previous chapter">x3d</a></li>
+      <li>Next: <a href="decorators.html" title="next chapter">decorators</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/packages/CDN.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+  <ul>
+<li><a class="reference internal" href="#">CDN</a><ul>
+<li><a class="reference internal" href="#cdn-js">CDN_JS</a></li>
+<li><a class="reference internal" href="#cdn-css">CDN_CSS</a></li>
+<li><a class="reference internal" href="#cdn-img">CDN_IMG</a><ul>
+<li><a class="reference internal" href="#domonic-cdn">domonic.CDN</a></li>
+<li><a class="reference internal" href="#domonic-utils">domonic.utils</a></li>
+<li><a class="reference internal" href="#domonic-decorators">domonic.decorators</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+      |
+      <a href="../_sources/packages/CDN.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

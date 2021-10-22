@@ -1,0 +1,1072 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>events &#8212; domonic 0.6.3 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="sitemap" href="sitemap.html" />
+    <link rel="prev" title="javascript" href="javascript.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="events">
+<h1>events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h1>
+<p>There’s an Event Dispatcher i.e</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.events</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">SomeEventHandler</span><span class="p">(</span><span class="n">EventDispatcher</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;some_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_custom_event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_custom_event</span><span class="p">(</span><span class="n">evt</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;that just happened&#39;</span><span class="p">)</span>
+
+<span class="n">my_handler</span> <span class="o">=</span> <span class="n">SomeEventHandler</span><span class="p">()</span>
+<span class="n">my_handler</span><span class="o">.</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="s1">&#39;some_event&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you create a python virtual DOM with domonic you can listen for events like so…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_page_clicked</span><span class="p">(</span><span class="n">evt</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;the page was just clicked&#39;</span><span class="p">,</span> <span class="n">evt</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mouseX&#39;</span><span class="p">,</span> <span class="n">evt</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mouseY&#39;</span><span class="p">,</span> <span class="n">evt</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+
+<span class="n">page</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span> <span class="n">MouseEvent</span><span class="o">.</span><span class="n">CLICK</span><span class="p">,</span> <span class="n">on_page_clicked</span> <span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>above example needs a MouseEvent relaying or dispatching from somewhere. i.e. examples/events</p></li>
+</ul>
+<div class="section" id="domonic-events">
+<h2>domonic.events<a class="headerlink" href="#domonic-events" title="Permalink to this headline">¶</a></h2>
+<p>dom events</p>
+<p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/Events">https://developer.mozilla.org/en-US/docs/Web/Events</a></p>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">AnimationEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#AnimationEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">ANIMATIONEND</code><em class="property"> = 'animationend'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">ANIMATIONITERATION</code><em class="property"> = 'animationiteration'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">ANIMATIONSTART</code><em class="property"> = 'animationstart'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">animationName</code><em class="property"> = None</em></dt>
+<dd><p>Returns the name of the animation</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">elapsedTime</code><em class="property"> = None</em></dt>
+<dd><p>Returns the number of seconds an animation has been running</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">pseudoElement</code><em class="property"> = None</em></dt>
+<dd><p>Returns the name of the pseudo-element of the animation</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">BeforeUnloadEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#BeforeUnloadEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">BEFOREUNLOAD</code><em class="property"> = 'beforeunload'</em></dt>
+<dd><p>BeforeUnloadEvent</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">ClipboardEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ClipboardEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">COPY</code><em class="property"> = 'copy'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">CUT</code><em class="property"> = 'cut'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">PASTE</code><em class="property"> = 'paste'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">clipboardData</code><em class="property"> = None</em></dt>
+<dd><p>Returns an object containing the data affected by the clipboard operation</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">CompositionEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#CompositionEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">data</code><em class="property"> = None</em></dt>
+<dd><p>Returns the characters generated by the input method that raised the event</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">CustomEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#CustomEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">DragEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#DragEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">DRAG</code><em class="property"> = 'drag'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">DROP</code><em class="property"> = 'drop'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">END</code><em class="property"> = 'dragend'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">ENTER</code><em class="property"> = 'dragenter'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">EXIT</code><em class="property"> = 'dragexit'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">LEAVE</code><em class="property"> = 'dragleave'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">OVER</code><em class="property"> = 'dragover'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">START</code><em class="property"> = 'dragstart'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">dataTransfer</code><em class="property"> = None</em></dt>
+<dd><p>Returns the data that is dragged/dropped</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">ErrorEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ErrorEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">ERROR</code><em class="property"> = 'error'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">Event</code><span class="sig-paren">(</span><em class="sig-param">_type=None</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#Event"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>event</p>
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">ABORT</code><em class="property"> = 'abort'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">AFTERPRINT</code><em class="property"> = 'afterprint'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">BEFOREPRINT</code><em class="property"> = 'beforeprint'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">BEFOREUNLOAD</code><em class="property"> = 'beforeunload'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">CANPLAY</code><em class="property"> = 'canplay'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">CANPLAYTHROUGH</code><em class="property"> = 'canplaythrough'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">CHANGE</code><em class="property"> = 'change'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">DURATIONCHANGE</code><em class="property"> = 'durationchange'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">EMPTIED</code><em class="property"> = 'emptied'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">ENDED</code><em class="property"> = 'ended'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">ERROR</code><em class="property"> = 'error'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">FULLSCREENCHANGE</code><em class="property"> = 'fullscreenchange'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">FULLSCREENERROR</code><em class="property"> = 'fullscreenerror'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">INPUT</code><em class="property"> = 'input'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">INVALID</code><em class="property"> = 'invalid'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">LOAD</code><em class="property"> = 'load'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">LOADEDDATA</code><em class="property"> = 'loadeddata'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">LOADEDMETADATA</code><em class="property"> = 'loadedmetadata'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">MESSAGE</code><em class="property"> = 'message'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">OFFLINE</code><em class="property"> = 'offline'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">ONLINE</code><em class="property"> = 'online'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">OPEN</code><em class="property"> = 'open'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">PAUSE</code><em class="property"> = 'pause'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">PLAY</code><em class="property"> = 'play'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">PLAYING</code><em class="property"> = 'playing'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">PROGRESS</code><em class="property"> = 'progress'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">RATECHANGE</code><em class="property"> = 'ratechange'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">RESET</code><em class="property"> = 'reset'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">RESIZE</code><em class="property"> = 'resize'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">SCROLL</code><em class="property"> = 'scroll'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">SEARCH</code><em class="property"> = 'search'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">SEEKED</code><em class="property"> = 'seeked'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">SEEKING</code><em class="property"> = 'seeking'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">SELECT</code><em class="property"> = 'select'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">SHOW</code><em class="property"> = 'show'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">STALLED</code><em class="property"> = 'stalled'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">SUBMIT</code><em class="property"> = 'submit'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">SUSPEND</code><em class="property"> = 'suspend'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">TOGGLE</code><em class="property"> = 'toggle'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">UNLOAD</code><em class="property"> = 'unload'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">VOLUMECHANGE</code><em class="property"> = 'volumechange'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">WAITING</code><em class="property"> = 'waiting'</em></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">stopPropagation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#Event.stopPropagation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>[prevents further propagation of the current event in the capturing and bubbling phases]</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">EventDispatcher</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#EventDispatcher"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>EventDispatcher is a class you can extend to give your obj event dispatching abilities</p>
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">ExtendableEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ExtendableEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">extendable</code><em class="property"> = None</em></dt>
+<dd><p>Returns whether the event is extendable or not</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">timeStamp</code><em class="property"> = None</em></dt>
+<dd><p>Returns the time stamp of the event</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">FetchEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FetchEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">clientId</code><em class="property"> = None</em></dt>
+<dd><p>Returns the client ID of the fetch request</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">isReload</code></dt>
+<dd><p>Returns whether the request is a reload or not</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">request</code><em class="property"> = None</em></dt>
+<dd><p>Returns the request object</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">respondWith</code><span class="sig-paren">(</span><em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FetchEvent.respondWith"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a promise that resolves to the response object</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">waitUntil</code><span class="sig-paren">(</span><em class="sig-param">promise</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FetchEvent.waitUntil"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns a promise that resolves when the response is available</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">FocusEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#FocusEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">BLUR</code><em class="property"> = 'blur'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">FOCUS</code><em class="property"> = 'focus'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">FOCUSIN</code><em class="property"> = 'focusin'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">FOCUSOUT</code><em class="property"> = 'focusout'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">GamePadEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#GamePadEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">START</code><em class="property"> = 'gamepadconnected'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">STOP</code><em class="property"> = 'gamepaddisconnected'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">HashChangeEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#HashChangeEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">CHANGE</code><em class="property"> = 'hashchange'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">InputEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#InputEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">data</code><em class="property"> = None</em></dt>
+<dd><p>Returns the inserted characters</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">getTargetRanges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#InputEvent.getTargetRanges"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Returns an array containing target ranges that will be affected by the insertion/deletion</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">KeyboardEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#KeyboardEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>keyboard events</p>
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">DOM_KEY_LOCATION_JOYSTICK</code><em class="property"> = 5</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">DOM_KEY_LOCATION_LEFT</code><em class="property"> = 0</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">DOM_KEY_LOCATION_MOBILE</code><em class="property"> = 4</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">DOM_KEY_LOCATION_NUMPAD</code><em class="property"> = 3</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">DOM_KEY_LOCATION_RIGHT</code><em class="property"> = 2</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">DOM_KEY_LOCATION_STANDARD</code><em class="property"> = 1</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">KEYDOWN</code><em class="property"> = 'keydown'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">KEYPRESS</code><em class="property"> = 'keypress'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">KEYUP</code><em class="property"> = 'keyup'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">MouseEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#MouseEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>mouse events</p>
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">CLICK</code><em class="property"> = 'click'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">CONTEXTMENU</code><em class="property"> = 'contextmenu'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">DBLCLICK</code><em class="property"> = 'dblclick'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">MOUSEDOWN</code><em class="property"> = 'mousedown'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">MOUSEENTER</code><em class="property"> = 'mouseenter'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">MOUSELEAVE</code><em class="property"> = 'mouseleave'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">MOUSEMOVE</code><em class="property"> = 'mousemove'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">MOUSEOUT</code><em class="property"> = 'mouseout'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">MOUSEOVER</code><em class="property"> = 'mouseover'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">MOUSEUP</code><em class="property"> = 'mouseup'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">PageTransitionEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PageTransitionEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">PAGEHIDE</code><em class="property"> = 'pagehide'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">PAGESHOW</code><em class="property"> = 'pageshow'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">persisted</code><em class="property"> = None</em></dt>
+<dd><p>Returns whether the webpage was cached by the browser</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">PointerEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PointerEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">POINTER</code><em class="property"> = 'pointer'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">PopStateEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PopStateEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">POPSTATE</code><em class="property"> = 'popstate'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">state</code><em class="property"> = None</em></dt>
+<dd><p>Returns an object containing a copy of the history entries</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">ProgressEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#ProgressEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">LOADSTART</code><em class="property"> = 'loadstart'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">PromiseRejectionEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#PromiseRejectionEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">HANDLED</code><em class="property"> = 'rejectionhandled'</em></dt>
+<dd><p>PromiseRejectionEvent</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">UNHANDLED</code><em class="property"> = 'unhandledrejection'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">isRejected</code><em class="property"> = None</em></dt>
+<dd><p>Returns whether the promise was rejected or not</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">promise</code><em class="property"> = None</em></dt>
+<dd><p>Returns the promise that was rejected</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">reason</code><em class="property"> = None</em></dt>
+<dd><p>Returns the reason of the rejection</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">SVGEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SVGEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">StorageEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#StorageEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">STORAGE</code><em class="property"> = 'storage'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">key</code><em class="property"> = None</em></dt>
+<dd><p>Returns the key of the changed storage item</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">newValue</code><em class="property"> = None</em></dt>
+<dd><p>Returns the new value of the changed storage item</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">oldValue</code><em class="property"> = None</em></dt>
+<dd><p>Returns the old value of the changed storage item</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">storageArea</code><em class="property"> = None</em></dt>
+<dd><p>Returns an object representing the affected storage object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">url</code><em class="property"> = None</em></dt>
+<dd><p>Returns the URL of the changed item’s document</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">SubmitEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SubmitEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">SUBMIT</code><em class="property"> = 'submit'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">SyncEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#SyncEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">lastChance</code><em class="property"> = None</em></dt>
+<dd><p>Returns whether the sync event is the last chance or not</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">tag</code><em class="property"> = None</em></dt>
+<dd><p>Returns the tag of the sync event</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">TimerEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TimerEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">TIMER</code><em class="property"> = 'timer'</em></dt>
+<dd><p>TimerEvent</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">TouchEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TouchEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">TOUCHCANCEL</code><em class="property"> = 'touchcancel'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">TOUCHEND</code><em class="property"> = 'touchend'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">TOUCHMOVE</code><em class="property"> = 'touchmove'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">TOUCHSTART</code><em class="property"> = 'touchstart'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">TransitionEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TransitionEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">TRANSITIONEND</code><em class="property"> = 'transitionend'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">elapsedTime</code><em class="property"> = None</em></dt>
+<dd><p>Returns the number of seconds a transition has been running</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">propertyName</code><em class="property"> = None</em></dt>
+<dd><p>Returns the name of the transition</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">pseudoElement</code><em class="property"> = None</em></dt>
+<dd><p>Returns the name of the pseudo-element of the transition</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">TweenEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">source=None</em>, <em class="sig-param">bubbles=False</em>, <em class="sig-param">cancelable=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#TweenEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">COMPLETE</code><em class="property"> = 'onComplete'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">PAUSE</code><em class="property"> = 'onPause'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">RESET</code><em class="property"> = 'onReset'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">START</code><em class="property"> = 'onStart'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">STOP</code><em class="property"> = 'onStop'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">TIMER</code><em class="property"> = 'onTimer'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">UNPAUSE</code><em class="property"> = 'onUnPause'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">UPDATE_END</code><em class="property"> = 'onUpdateEnd'</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">UPDATE_START</code><em class="property"> = 'onUpdateStart'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">UIEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#UIEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">domonic.events.</code><code class="sig-name descname">WheelEvent</code><span class="sig-paren">(</span><em class="sig-param">_type</em>, <em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/events.html#WheelEvent"><span class="viewcode-link">[source]</span></a></dt>
+<dd><dl class="attribute">
+<dt>
+<code class="sig-name descname">WHEEL</code><em class="property"> = 'wheel'</em></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="https://domonic.readthedocs.io/">domonic</a></h1>
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
+</p>
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
+</ul>
+<h3><a href="../index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="javascript.html">javascript</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">events</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#domonic-events">domonic.events</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webapi.html">webapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="style.html">styles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Contribute</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="javascript.html" title="previous chapter">javascript</a></li>
+      <li>Next: <a href="sitemap.html" title="next chapter">sitemap</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/packages/events.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+  <ul>
+<li><a class="reference internal" href="#">events</a><ul>
+<li><a class="reference internal" href="#domonic-events">domonic.events</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+      |
+      <a href="../_sources/packages/events.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

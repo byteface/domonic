@@ -1,0 +1,73 @@
+d3
+=================
+
+*WARNING: this package is still in dev. expect bugs*
+
+d3 is another popular DOM manipulation library available in javascript. This is the python port of that.
+
+It has several utilities for working with the DOM.
+
+selection
+----------------
+
+d3's selection API is very powerful.
+
+.. code-block :: python
+
+	from domonic.dom import *
+	from domonic.html import *
+	from domonic.d3.selection import *
+
+	import domonic.d3 as d3
+
+
+format
+----------------
+
+d3's has a library for formatting numbers to avoid things like floating precision
+
+.. code-block :: python
+
+	from domonic.dom import *
+	from domonic.html import *
+	from domonic.d3.format import *
+	from domonic.d3.format import format
+
+
+dispatch
+----------------
+
+d3 has an event system
+
+.. code-block :: python
+
+	from domonic.dom import *
+	from domonic.html import *
+	from domonic.d3.dispatch import dispatch, Dispatch
+
+
+path
+----------------
+
+d3's path API converts SVG paths to a d3.path object which is compatible with canvas.
+
+.. code-block :: python
+
+	from domonic.svg import *
+	from domonic.d3.path import Path
+
+
+polygon
+----------------
+
+d3's has shape API
+
+.. code-block :: python
+
+	from domonic.d3.polygon import *
+
+
+.. automodule:: domonic.d3
+    :members:
+    :noindex:
+

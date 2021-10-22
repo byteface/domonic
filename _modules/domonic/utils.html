@@ -1,0 +1,638 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>domonic.utils &#8212; domonic 0.6.3 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for domonic.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    domonic.utils</span>
+<span class="sd">    ====================================</span>
+<span class="sd">    snippets etc</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">sub</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">islice</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+<span class="kn">from</span> <span class="nn">domonic.decorators</span> <span class="kn">import</span> <span class="n">deprecated</span>
+
+
+<div class="viewcode-block" id="Utils"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils">[docs]</a><span class="k">class</span> <span class="nc">Utils</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; utils &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Utils.case_camel"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.case_camel">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">case_camel</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; case_camel(&#39;camel-case&#39;) &gt; &#39;camelCase&#39; &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(_|-)+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
+
+<div class="viewcode-block" id="Utils.case_snake"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.case_snake">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">case_snake</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        snake(&#39;camelCase&#39;) # &#39;camel_case&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">sub</span><span class="p">(</span><span class="s1">&#39;([A-Z][a-z]+)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39; \1&#39;</span><span class="p">,</span>
+            <span class="n">sub</span><span class="p">(</span><span class="s1">&#39;([A-Z]+)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39; \1&#39;</span><span class="p">,</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">split</span><span class="p">())</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Utils.case_kebab"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.case_kebab">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">case_kebab</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        kebab(&#39;camelCase&#39;) # &#39;camel-case&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\s|_|-)+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
+            <span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+&quot;</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">mo</span><span class="p">:</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">mo</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">s</span><span class="p">))</span><span class="o">.</span><span class="n">split</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Utils.squash"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.squash">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">squash</span><span class="p">(</span><span class="n">the_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[turns a 2d array into a flat one]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            the_list ([type]): [a 2d array]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [list]: [a flattened 1d array]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">inner</span> <span class="k">for</span> <span class="n">outer</span> <span class="ow">in</span> <span class="n">the_list</span> <span class="k">for</span> <span class="n">inner</span> <span class="ow">in</span> <span class="n">outer</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Utils.chunk"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.chunk">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="nb">list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; chunk a list into batches &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">size</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">),</span> <span class="n">size</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="Utils.dictify"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.dictify">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">dictify</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[turns a list into a dictionary where the list items are the keys]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            arr ([type]): [list to change]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [dict]: [a new dict where the list items are now the keys]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="n">some_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="ow">not</span> <span class="n">some_str</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+<div class="viewcode-block" id="Utils.unique"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.unique">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="n">some_arr</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[removes duplicates from a list]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            some_arr ([type]): [list containing duplicates]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [list]: [a list containing no duplicates]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">some_arr</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Utils.chunks"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.chunks">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">chunks</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">iter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size &quot;&quot;&quot;</span>
+        <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="nb">format</span><span class="p">(</span><span class="n">chain</span><span class="p">((</span><span class="n">it</span><span class="o">.</span><span class="n">next</span><span class="p">(),),</span> <span class="n">islice</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span></div>
+    <span class="c1"># &gt;&gt;&gt; l = [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;, &quot;e&quot;, &quot;f&quot;, &quot;g&quot;]</span>
+    <span class="c1"># &gt;&gt;&gt; for chunk in chunks(l, 3, tuple):</span>
+    <span class="c1"># ...         print chunk</span>
+
+<div class="viewcode-block" id="Utils.clean"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.clean">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="n">lst</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[removes falsy values (False, None, 0 and “”) from a list ]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lst ([type]): [lst to operate on]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [a new list with falsy values removed]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">lst</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Utils.get_vowels"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.get_vowels">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_vowels</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[get a list of vowels from the word]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string ([str]): [the word to check]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [list]: [a list of vowels]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">each</span> <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">string</span> <span class="k">if</span> <span class="n">each</span> <span class="ow">in</span> <span class="s1">&#39;aeiou&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Utils.untitle"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.untitle">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">untitle</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[the opposite of title]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            str ([type]): [the string to change]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [a string with the first character set to lowercase]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">string</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">string</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span></div>
+
+<div class="viewcode-block" id="Utils.merge_dictionaries"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.merge_dictionaries">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">merge_dictionaries</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[merges 2 dicts]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            a ([dict]): [dict a]</span>
+<span class="sd">            b ([dict]): [dict b]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [dict]: [a new dict]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">a</span><span class="p">,</span> <span class="o">**</span><span class="n">b</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="Utils.to_dictionary"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.to_dictionary">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">to_dictionary</span><span class="p">(</span><span class="n">keys</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[take a list of keys and values and returns a dict]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            keys ([type]): [a list of keys]</span>
+<span class="sd">            values ([type]): [a list of value]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [dict]: [a dictionary]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">most_frequent</span><span class="p">(</span><span class="n">lst</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">lst</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">lst</span><span class="o">.</span><span class="n">count</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_anagram</span><span class="p">(</span><span class="n">first</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">second</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Counter</span><span class="p">(</span><span class="n">first</span><span class="p">)</span> <span class="o">==</span> <span class="n">Counter</span><span class="p">(</span><span class="n">second</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_palindrome</span><span class="p">(</span><span class="n">word</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">word</span> <span class="o">==</span> <span class="n">word</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Utils.acronym"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.acronym">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">acronym</span><span class="p">(</span><span class="n">sentence</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[pass a sentence, returns the acronym]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sentence ([str]): [typically 3 words]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [a TLA (three letter acronym)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">sentence</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">a</span></div>
+
+<div class="viewcode-block" id="Utils.frequency"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.frequency">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">frequency</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[check the frequency of elements in the data]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data ([type]): [the data to check]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [dict]: [a dict of elements and their frequency]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">freq</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">freq</span><span class="p">:</span>
+                <span class="n">freq</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">freq</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">freq</span></div>
+
+<div class="viewcode-block" id="Utils.init_assets"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.init_assets">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">init_assets</span><span class="p">(</span><span class="nb">dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;assets&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[creates an assets directory with nested js/css/img dirs]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dir (str, optional): [default directory name]. Defaults to &#39;assets&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">domonic.terminal</span> <span class="kn">import</span> <span class="n">mkdir</span><span class="p">,</span> <span class="n">touch</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{dir}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{dir}</span><span class="s2">/js&quot;</span><span class="p">)</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{dir}</span><span class="s2">/css&quot;</span><span class="p">)</span>
+        <span class="n">mkdir</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{dir}</span><span class="s2">/img&quot;</span><span class="p">)</span>
+        <span class="n">touch</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{dir}</span><span class="s2">/js/master.js&quot;</span><span class="p">)</span>
+        <span class="n">touch</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{dir}</span><span class="s2">/css/style.css&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Utils.url2file"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.url2file">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">url2file</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[gen a safe filename from a url. by replacing &#39;/&#39; for &#39;_&#39; and &#39;:&#39; for &#39;__&#39; ]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url ([str]): [the url to turn into a filename]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">urllib</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;__&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">))</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote_plus</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">filename</span></div>
+
+<div class="viewcode-block" id="Utils.permutations"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.permutations">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">permutations</span><span class="p">(</span><span class="n">word</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[provides all the possible permutations of a given word]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            word ([str]): [the word to get permutations for]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">permutations</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span> <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">permutations</span><span class="p">(</span><span class="n">word</span><span class="p">))]</span></div>
+
+    <span class="nd">@deprecated</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">random_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; TODO - remove in 0.3 as we have color class. &#39;&#39;&#39;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;#</span><span class="si">%02X%02X%02X</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="p">(),</span> <span class="n">r</span><span class="p">(),</span> <span class="n">r</span><span class="p">()))</span>
+
+<div class="viewcode-block" id="Utils.escape"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.escape">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">escape</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[escape a string]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            s ([str]): [the string to escape]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chars</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;&amp;&quot;</span><span class="p">:</span> <span class="s2">&quot;&amp;amp;&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;&quot;&#39;</span><span class="p">:</span> <span class="s2">&quot;&amp;quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;&amp;apos;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&gt;&quot;</span><span class="p">:</span> <span class="s2">&quot;&amp;gt;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;&lt;&quot;</span><span class="p">:</span> <span class="s2">&quot;&amp;lt;&quot;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chars</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Utils.unescape"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.unescape">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">unescape</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[unescape a string]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            s ([str]): [the string to unescape]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;quot;&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;apos;&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="Utils.replace_between"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.replace_between">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">replace_between</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">match</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replacement</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[replace some text but only between certain indexes]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content (str): [the content whos text you will be replacing]</span>
+<span class="sd">            match (str): [the string to find]</span>
+<span class="sd">            replacement (str): [the string to replace it with]</span>
+<span class="sd">            start (int, optional): [start index]. Defaults to 0.</span>
+<span class="sd">            end (int, optional): [end index]. Defaults to 0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">front</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">start</span><span class="p">]</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="n">end</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)]</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="n">mid</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">match</span><span class="p">,</span> <span class="n">replacement</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">front</span> <span class="o">+</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">end</span></div>
+
+<div class="viewcode-block" id="Utils.truncate"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.truncate">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[truncates a string and appends 3 dots]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str, optional): [the text to truncate]. Defaults to &#39;&#39;.</span>
+<span class="sd">            length (int, optional): [the max length]. Defaults to 0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">length</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">length</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">text</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span></div>
+
+<div class="viewcode-block" id="Utils.digits"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.digits">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">digits</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[takes a string of mix of digits and letters and returns a string of digits]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str, optional): [the text to change]. Defaults to &#39;&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [str]: [a string of digits]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">text</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">isdigit</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;text must be a string&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Utils.has_internet"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.has_internet">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">has_internet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;http://www.google.com/&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[check if you have internet connection]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            url (str, optional): [the url to check]. Defaults to &#39;http://www.google.com/&#39;.</span>
+<span class="sd">            timeout (int, optional): [the timeout]. Defaults to 5.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [bool]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">requests</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">:</span>
+            <span class="c1"># print(&quot;No internet connection available.&quot;)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="c1"># def convert_file(filepath, filetype=None):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#         convert a file to a different file type</span>
+    <span class="c1">#         mostly deals with config files</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#  files = [&#39;json&#39;, &#39;ini&#39;, &#39;xml&#39;, &#39;yaml&#39;, &#39;yml&#39;, &#39;toml&#39;, &#39;properties&#39;, &#39;conf&#39;, &#39;rc&#39;, &#39;sh&#39;, &#39;bash&#39;, &#39;bat&#39;, &#39;cmd&#39;, &#39;c&#39;, &#39;cpp&#39;, &#39;h&#39;, &#39;hpp&#39;, &#39;java&#39;, &#39;js&#39;, &#39;json&#39;, &#39;md&#39;, &#39;markdown&#39;, &#39;pl&#39;, &#39;py&#39;, &#39;rb&#39;, &#39;sh&#39;, &#39;sql&#39;, &#39;txt&#39;, &#39;xml&#39;, &#39;yaml&#39;, &#39;yml&#39;, &#39;toml&#39;]</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    @staticmethod</span>
+<span class="sd">    def yeahnah(x):</span>
+<span class="sd">        &quot;&quot;&quot; returns a boolean for any given user reply</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        reply = x.lower()</span>
+<span class="sd">        if reply.lower() in [&#39;yeah&#39;, &quot;y&quot;, &quot;yes&quot;, &quot;yup&quot;, &quot;si&quot;, &quot;yep&quot;, &quot;yeah&quot;, &quot;yep&quot;]:</span>
+<span class="sd">            return True</span>
+<span class="sd">        elif reply.lower() in [&#39;nah&#39;, &quot;no&quot;, &quot;nope&quot;, &quot;n&quot;]:</span>
+<span class="sd">            return False</span>
+<span class="sd">        else:</span>
+<span class="sd">            # return a probability between 0 and 1 for either yes or no based on which list has the most similar words to the input</span>
+<span class="sd">            # return max([float(reply.count(x)) / len(reply) for x in [&#39;yeah&#39;, &quot;y&quot;, &quot;yes&quot;, &quot;yup&quot;, &quot;si&quot;, &quot;yep&quot;, &quot;yeah&quot;, &quot;yep&quot;]]) &gt; max([float(reply.count(x)) / len(reply) for x in [&#39;nah&#39;, &quot;n&quot;, &quot;no&quot;, &quot;nope&quot;, &quot;nop&quot;, &quot;nope&quot;, &quot;n&quot;, &quot;nope&quot;]])</span>
+<span class="sd">            # return max([float(reply.count(x)) / len(reply) for x in [&#39;yeah&#39;, &quot;y&quot;, &quot;yes&quot;, &quot;yup&quot;, &quot;si&quot;, &quot;yep&quot;, &quot;yeah&quot;, &quot;yep&quot;]]) &gt; 0.5</span>
+<span class="sd">        else:</span>
+<span class="sd">            return None</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># def get_ip(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current ip]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current ip]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import socket</span>
+    <span class="c1">#     return socket.gethostbyname(socket.gethostname())</span>
+
+    <span class="c1"># def get_hostname(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current hostname]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current hostname]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import socket</span>
+    <span class="c1">#     return socket.gethostname()</span>
+
+    <span class="c1"># def get_mac(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current mac]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current mac]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import uuid</span>
+    <span class="c1">#     return uuid.UUID(int=uuid.getnode()).hex[-12:]</span>
+
+    <span class="c1"># def get_ip_mac(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current ip and mac]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current ip and mac]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return self.get_ip() + &quot;|&quot; + self.get_mac()</span>
+
+    <span class="c1"># def get_os(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current os]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current os]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import platform</span>
+    <span class="c1">#     return platform.system()</span>
+
+    <span class="c1"># def get_os_version(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current os version]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current os version]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import platform</span>
+    <span class="c1">#     return platform.release()</span>
+
+    <span class="c1"># def get_os_arch(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current os architecture]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current os architecture]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import platform</span>
+    <span class="c1">#     return platform.machine()</span>
+
+    <span class="c1"># def get_cpu(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;[get the current cpu]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [str]: [the current cpu]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     import platform</span>
+    <span class="c1">#     return platform.processor()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">numberToBase</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">digits</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">digits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">%</span> <span class="n">b</span><span class="p">))</span>
+            <span class="n">n</span> <span class="o">//=</span> <span class="n">b</span>
+        <span class="k">return</span> <span class="n">digits</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def is_nix():</span>
+    <span class="c1">#     &quot;&quot;&quot;[check if the system is a nix based system]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [bool]: [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return os.name == &quot;posix&quot;</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def is_mac():</span>
+    <span class="c1">#     &quot;&quot;&quot;[check if the system is a mac]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [bool]: [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return sys.platform == &quot;darwin&quot;</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def is_windows():</span>
+    <span class="c1">#     &quot;&quot;&quot;[check if the system is a windows]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [bool]: [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return os.name == &quot;nt&quot;</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def is_linux():</span>
+    <span class="c1">#     &quot;&quot;&quot;[check if the system is a linux]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [bool]: [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return sys.platform.startswith(&#39;linux&#39;)</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def is_unix():</span>
+    <span class="c1">#     &quot;&quot;&quot;[check if the system is a unix]</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         [bool]: [description]</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return os.name == &quot;posix&quot;</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><span style="font-size: 150px;">𖤐</span>
+<h1 class="logo"><a href="https://domonic.readthedocs.io/">domonic</a></h1>
+<p>
+  <iframe src="https://ghbtns.com/github-btn.html?user=byteface&amp;repo=domonic&amp;type=star&amp;count=true&amp;size=large&amp;v=2" allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+<p>
+  domonic is a library to generate HTML with python 3. There's an evolving DOM API, JavaScript API and many other cool features. Can be used as a fast prototyping tool.
+</p>
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://pypi.org/project/domonic/">PyPI Releases</a></li>
+  <li><a href="https://github.com/byteface/domonic/">Source Code</a></li>
+</ul>
+<h3><a href="../../index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/html.html">html</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dom.html">dom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/javascript.html">javascript</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/events.html">events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/sitemap.html">sitemap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/dQuery.html">dQuery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/d3.html">d3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/JSON.html">JSON</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/constants.html">constants</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/terminal.html">terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/cmd.html">cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/tween.html">tween</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/geom.html">geom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/x3d.html">x3d</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/CDN.html">CDN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Templates and Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/webapi.html">webapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/style.html">styles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">🚀 servers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, byteface.
+      
+    </div>
+
+    
+    <a href="https://github.com/byteface/domonic" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
