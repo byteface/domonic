@@ -10,9 +10,9 @@
 # from typing import *
 import time
 
-# TODO - bring EventTarget here and get rid of this one?
-class EventDispatcher(object):
-    """ EventDispatcher is a class you can extend to give your obj event dispatching abilities """
+
+class EventTarget(object):  # TODO - remove DOM.EventTarget. keep just this one
+    """ EventTarget is a class you can extend to give your obj event dispatching abilities """
 
     def __init__(self, *args, **kwargs):
         self.listeners = {}
@@ -55,6 +55,9 @@ class EventDispatcher(object):
                 thing()  # try calling without params, user may not create param
 
         return not event.defaultPrevented
+
+
+EventDispatcher = EventTarget  #: legacy alias
 
 
 class Event(object):
@@ -101,6 +104,13 @@ class Event(object):
     UNLOAD = "unload"  #:
     VOLUMECHANGE = "volumechange"  #:
     WAITING = "waiting"  #:
+
+    CAPTURING_PHASE = 1
+    AT_TARGET = 2
+    BUBBLING_PHASE = 3
+
+    def __str__(self):
+        return self.type + ":" + str(self.timeStamp)
 
     # Event("look", {"bubbles":true, "cancelable":false});
     def __init__(self, _type=None, *args, **kwargs):
@@ -266,7 +276,10 @@ class MouseEvent(UIEvent):
         return self._button
 
     # MOUSE_EVENT
-    # getModifierState()    Returns an array containing target ranges that will be affected by the insertion/deletion   MouseEvent
+    def getModifierState(self):
+        """Returns an array containing target ranges that will be affected by the insertion/deletion"""
+        pass
+
     # MovementX Returns the horizontal coordinate of the mouse pointer relative to the position of the last mousemove event MouseEvent
     # MovementY Returns the vertical coordinate of the mouse pointer relative to the position of the last mousemove event   MouseEvent
     # offsetX   Returns the horizontal coordinate of the mouse pointer relative to the position of the edge of the target element   MouseEvent
@@ -471,6 +484,14 @@ class SubmitEvent(Event):
 class PointerEvent(Event):
     """ PointerEvent """
     POINTER = "pointer"  #:
+    POINTERCANCEL = "pointercancel"  #:
+    POINTERDOWN = "pointerdown"  #:
+    POINTERENTER = "pointerenter"  #:
+    POINTERLEAVE = "pointerleave"  #:
+    POINTERMOVE = "pointermove"  #:
+    POINTEROUT = "pointerout"  #:
+    POINTEROVER = "pointerover"  #:
+    POINTERUP = "pointerup"  #:
 
     def __init__(self, _type, *args, **kwargs):
         self.pointerId = None
@@ -485,6 +506,20 @@ class PointerEvent(Event):
         self.isPrimary = None
         super().__init__(_type, *args, **kwargs)
 
+    def getCoalescedEvents(self):
+        pass
+
+    def getPredictedEvents(self):
+        pass
+
+    # def getCurrentPoint(self, element):
+    #     """ Returns the current coordinates of the specified element relative to the viewport. """
+    #     pass
+
+    # def getIntermediatePoints(self, element):
+    #     """ Returns the coordinates of all the intermediate points of the pointer along the path of the pointer. """
+    #     pass
+
 
 class BeforeUnloadEvent(Event):
     BEFOREUNLOAD = "beforeunload"  #:
@@ -495,15 +530,33 @@ class BeforeUnloadEvent(Event):
 
 class SVGEvent(Event):
     """ SVGEvent """
+    ABORT = "abort"  #:
+    LOAD = "load"  #:
+    LOADEDDATA = "loadeddata"  #:
+    LOADEDMETADATA = "loadedmetadata"  #:
+    LOADSTART = "loadstart"  #:
+    PROGRESS = "progress"  #:
+    SCROLL = "scroll"  #:
+    UNLOAD = "unload"  #:
+    ERROR = "error"  #:
+
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
+
+    # def initEvent(self, eventTypeArg, canBubbleArg, cancelableArg):
+    #     pass
 
 
 class TimerEvent(Event):
     TIMER = "timer"  #:
+    TIMER_COMPLETE = "timercomplete"  #:
     """ TimerEvent """
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
+
+    # def initTimerEvent(self, type, bubbles, cancelable, detail):
+    #     """ initTimerEvent() """
+    #     pass
 
 
 class DragEvent(Event):
@@ -535,6 +588,10 @@ class HashChangeEvent(Event):
 
 class InputEvent(UIEvent):
     """ InputEvent """
+    CHANGE = "change"  #:
+    SELECT = "select"  #:
+    INPUT = "input"  #:
+
     def __init__(self, _type, *args, **kwargs):
         self.data = None
         """ Returns the inserted characters """
@@ -566,6 +623,7 @@ class PopStateEvent(Event):
     """ PopStateEvent """
     POPSTATE = "popstate"  #:
     # ONPOPSTATE = "onpopstate"  #:??
+
     def __init__(self, _type, *args, **kwargs):
         self.state = None
         """ Returns an object containing a copy of the history entries """
@@ -575,6 +633,7 @@ class PopStateEvent(Event):
 class StorageEvent(Event):
     """ StorageEvent """
     STORAGE = "storage"  #:
+
     def __init__(self, _type, *args, **kwargs):
         self.key = None
         """ Returns the key of the changed storage item """
@@ -606,6 +665,13 @@ class TransitionEvent(Event):
 class ProgressEvent(Event):
     """ ProgressEvent """
     LOADSTART = "loadstart"  #:
+    PROGRESS = "progress"  #:
+    ABORT = "abort"  #:
+    ERROR = "error"  #:
+    LOAD = "load"  #:
+    LOADED = "loaded"  #:
+    LOADEND = "loadend"  #:
+    TIMEOUT = "timeout"  #:
 
     def __init__(self, _type, *args, **kwargs):
         super().__init__(_type, *args, **kwargs)
@@ -634,6 +700,8 @@ class GamePadEvent(Event):
 # TODO - tests and service worker API
 class FetchEvent(Event):
     """ FetchEvent """
+    FETCH = "fetch"  #:
+
     def __init__(self, _type, *args, **kwargs):
         self.clientId = None
         """ Returns the client ID of the fetch request """
@@ -666,6 +734,11 @@ class FetchEvent(Event):
 
 class ExtendableEvent(Event):
     """ ExtendableEvent """
+
+    # CAPTURING_PHASE = 1
+    # AT_TARGET = 2
+    # BUBBLING_PHASE = 3
+
     def __init__(self, _type, *args, **kwargs):
         self.extendable = None
         """ Returns whether the event is extendable or not """
@@ -678,6 +751,8 @@ class ExtendableEvent(Event):
 
 class SyncEvent(ExtendableEvent):
     """ SyncEvent """
+    SYNC = "sync"  #:
+
     def __init__(self, _type, *args, **kwargs):
         self.tag = None
         """ Returns the tag of the sync event """
@@ -1130,8 +1205,8 @@ class GlobalEventHandler:  # (EventDispatcher):
         print(event)
         raise NotImplementedError
 
-# TODO - put in the window module?
-class WindowEventHandler:  # (EventHandler):
+
+class WindowEventHandler:  # (EventHandler): # TODO - put in the window module?
     def __init__(self, window):
         super().__init__()
         self.window = window
@@ -1210,3 +1285,4 @@ class WindowEventHandler:  # (EventHandler):
 
     def ondragover(self, event):
         print(event)
+        raise NotImplementedError

@@ -14,7 +14,7 @@ from domonic.geom import vec3
 
 
 class EventTarget:
-    """ Baseclass for Node """
+    """ EventTarget interface """
 
     def __init__(self, *args, **kwargs):
         self.listeners = {}
@@ -851,11 +851,11 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
         """
         raise NotImplementedError
 
-    def elementFromPoint(self):
+    def elementFromPoint(self, x, y):
         """ Returns the topmost element at the specified coordinates. """
         raise NotImplementedError
 
-    def elementsFromPoint(self):
+    def elementsFromPoint(self, x, y):
         """ Returns an array of all elements at the specified coordinates. """
         raise NotImplementedError
 
@@ -1219,6 +1219,33 @@ def AriaMixin():  #???
     @ariaValueText.setter
     def ariaValueText(self, value: str):
         return self.getAttribute('aria-valueText')
+
+# class ElementInternals(object, AriaMixin):
+#     def __init__(self, element):
+#         self.element = element
+#         self.shadowRoot = None # Returns the ShadowRoot object associated with this element.
+#         self.form  # Returns the HTMLFormElement associated with this element.
+#         self.states  # Returns the CustomStateSet associated with this element.
+#         self.willValidate # A boolean value which returns true if the element is a submittable element that is a candidate for constraint validation.
+#         self.validity  # Returns a ValidityState object which represents the different validity states the element can be in, with respect to constraint validation.
+#         self.validationMessage  # A string containing the validation message of this element.
+#         self.labels  # Returns a NodeList of all of the label elements associated with this element.
+
+
+class CustomStateSet(object):
+
+    def __init__(self):
+        pass
+
+    def add(self, state):
+        pass
+
+    def clear(self):
+        pass
+
+    def delete(self, state):
+        pass
+
 """
 
 
@@ -1976,6 +2003,14 @@ class Element(Node):
         ''' Shows an element in fullscreen mode '''
         raise NotImplementedError
 
+    # def setPointerCapture(self):
+    #     ''' Sets the pointer capture to the specified element '''
+    #     raise NotImplementedError
+
+    # def releasePointerCapture(self):
+    #     ''' Releases the pointer capture from the specified element '''
+    #     raise NotImplementedError
+
     def scrollHeight(self):
         ''' Returns the entire height of an element, including padding '''
         raise NotImplementedError
@@ -2438,6 +2473,39 @@ class TimeRanges(object):
 # HTMLUnknownElement
 # HTMLVideoElement
 
+class XPathExpression(object):
+
+    def __init__(self, expression, nsResolver):
+        self.expression = expression
+        self.nsResolver = nsResolver
+
+    def evaluate(self, contextNode, type, inResult):
+        raise NotImplementedError
+
+# class XPathResult(object):
+
+#     def __init__(self, resultType, snapshotLength):
+#         self.resultType = resultType
+#         self.snapshotLength = snapshotLength
+
+#     def iter(self):
+#         raise NotImplementedError
+
+#     def snapshotItem(self, index):
+#         raise NotImplementedError
+
+
+class XPathEvaluator(object):
+
+    def createExpression(self, expression, nsResolver):
+        raise NotImplementedError
+
+    def createNSResolver(self, nodeResolver):
+        raise NotImplementedError
+
+    def evaluate(self, expression, contextNode, nsResolver, type, inResult):
+        raise NotImplementedError
+
 
 class Document(Element):
     """ the Document class is also the baseclass for the html tag """
@@ -2555,6 +2623,11 @@ class Document(Element):
         return DocumentFragment(*args)
 
     @staticmethod
+    def createExpression(xpath, nsResolver):
+        """ Creates an XPathExpression object for the given XPath string. """
+        return XPathExpression(xpath, nsResolver)
+
+    @staticmethod
     def createElement(_type: str, *args, **kwargs):
         """ Creates an Element node """
         from domonic.html import create_element
@@ -2617,6 +2690,21 @@ class Document(Element):
     def createProcessingInstruction(target, data):
         """ Creates a ProcessingInstruction node with the specified target and data """
         return ProcessingInstruction(target, data)
+
+    @staticmethod
+    def createEntityReference(name):
+        """ Creates an EntityReference node with the specified name """
+        return EntityReference(name)
+
+    @property
+    def xmlversion(self):
+        """ Returns the version of XML used for the document """
+        return "1.0"
+
+    # @property
+    # def currentScript(self):
+    #     """ Returns the currently executing script or null if none is executing """
+    #     return self.querySelector('script')
 
     @staticmethod
     def createCDATASection(data):
@@ -2686,6 +2774,14 @@ class Document(Element):
     # def domConfig(self):
         '''Obsolete. Returns the DOM configuration of the document'''
         # return
+
+    def elementFromPoint(self, x, y):
+        """ Returns the topmost element at the specified coordinates. """
+        raise NotImplementedError
+
+    def elementsFromPoint(self, x, y):
+        """ Returns an array of all elements at the specified coordinates. """
+        raise NotImplementedError
 
     @property
     def embeds(self):
@@ -2856,6 +2952,28 @@ class Document(Element):
         else:
             return False
 
+    # def requestStorageAccess(self, storage_access_callback):
+    #     """ Requests permission to access the user's storage area """
+    #     return False
+
+    # def hasStorageAccess(self):
+    #     """ Returns whether the user has granted permission to access the user's storage area """
+    #     return False
+
+    # @property
+    # def pictureInPictureElement(self):
+    #     """ Returns the element currently in Picture-in-Picture mode, if any. """
+    #     return None
+
+    # def exitPictureInPicture(self):
+    #     """ Exits Picture-in-Picture mode, if any. """
+    #     return False
+
+    @property
+    def pictureInPictureEnabled(self):
+        """ Returns whether Picture-in-Picture mode is enabled. """
+        return False
+
     @property
     def scripts(self):
         """[Returns a collection of <script> elements in the document]
@@ -2891,6 +3009,11 @@ class Document(Element):
     # def URL(self):
     #     ''' Returns the full URL of the HTML document'''
     #     pass
+
+    @property
+    def visibilityState(self):
+        """ Returns the visibility state of the document """
+        return 'visible'
 
     def write(self, html: str = ""):  # -> None: # TODO - untested
         """[writes HTML text to a document
@@ -2950,8 +3073,8 @@ class Location():
 
 location = Location
 
-# TODO - switch to importing the webapi.console module
-class Console(object):
+
+class Console(object):  # TODO - switch to importing the webapi.console module
 
     @staticmethod
     def log(msg: str, substitute=None, *args):
@@ -3158,6 +3281,66 @@ class CharacterData(Node):
         return self.args[0]
 
 
+class EntityReference(Node):
+    """
+    The EntityReference interface represents a reference to an entity, either parsed
+    or unparsed, in an Entity Node. Note that this is not a CharacterData node,
+    and does not have any child nodes.
+    """
+
+    def __init__(self, *args):
+        self.args = args
+
+    def __str__(self):
+        return ''.join([str(a) for a in self.args])
+
+    @staticmethod
+    def ordinal(entityName: str):
+        """ Returns the character corresponding to the given entity name. """
+        return ord(entityName)  # TODO - test. would this work?
+
+    @staticmethod
+    def fromOrdinal(ordinal: int):
+        """ Returns the entity name corresponding to the given character. """
+        return chr(ordinal)
+
+
+class Entity(Node):
+
+    def __init__(self, *args):
+        self.args = args
+
+    def __str__(self):
+        return ''.join([str(a) for a in self.args])
+
+    @staticmethod
+    def fromName(entityName: str):
+        """ Returns the entity name corresponding to the given character. """
+        return chr(ord(entityName))
+
+    @staticmethod
+    def fromChar(char: str):
+        """ Returns the character corresponding to the given entity name. """
+        return ord(char)
+
+
+# class Notation(Node):
+
+#     def __init__(self, *args):
+#         self.args = args
+
+#     def __str__(self):
+#         return ''.join([str(a) for a in self.args])
+
+#     def getPublicId(self):
+#         """ Returns the public identifier of the notation. """
+#         return self.args[0]
+
+#     def getSystemId(self):
+#         """ Returns the system identifier of the notation. """
+#         return self.args[1]
+
+
 class Text(CharacterData):
     """ Text Node """
 
@@ -3194,6 +3377,10 @@ class Text(CharacterData):
     @property  # TODO - is this correct?
     def firstChild(self):
         return None  # ?
+        # https://www.w3.org/TR/2000/CR-DOM-Level-2-20000510/core.html
+        # lvl 2 spec has nochildren on bunch of NodeTypes. might mean overrides required
+        #  to null certain behaviours. i.e. treewalker is having issues here.
+        # TODO - test what it does in the browser. then fix up all required nochildren nodes i.e. comment, doctype, etc.
 
     # @property
     # def firstChild(self):
@@ -3529,6 +3716,11 @@ class DOMQuad:
         return '({}, {}, {}, {})'.format(self.p1, self.p2, self.p3, self.p4)
 
 
+# NodeFilter
+# from xml.dom.NodeFilter import NodeFilter
+# https://bspaans.github.io/python-mingus/_modules/xml/dom/xmlbuilder.html
+# https://www.w3.org/TR/2003/WD-DOM-Level-3-LS-20030226/load-save.html
+# https://bspaans.github.io/python-mingus/_modules/xml/dom/xmlbuilder.html
 class NodeFilter():
 
     SHOW_ALL = 0xFFFFFFFF
@@ -3940,38 +4132,40 @@ class TreeWalker():
 # TODO - create fetch package and move the js fetch stuff to it?
 # fetch api
 
-#AbortController
-#AbortSignal
-#Cache
-#CacheStorage
+# AbortController
+# AbortSignal
+# Cache
+# CacheStorage
 # ContentIndex
 # ContactPicker
-#Client - serviceworker api
-#CredentialsContainer - new login api
+# Client - serviceworker api
+# CredentialsContainer - new login api
 # DOMMatrix #https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix
 # DOMParser
 # IndexedDB API
-#ImageBitmap
-#ImageBitmapRenderingContext
-#ImageData
-#KeyPair
-#KeyPairGenerator
-#KeyPairGeneratorResult
-#KeyType
-#MutationObserver
-#MutationRecord
-#OverconstrainedError
-#QueueingStrategy
-#ReadableStream
-#SCTP
-#SourceBuffer
-#SourceBufferAppendMode
-#SourceBufferAppendWindowEnd
-#TimeRanges - media
-#TrackEvent - media
+# ImageBitmap
+# ImageBitmapRenderingContext
+# ImageData
+# KeyPair
+# KeyPairGenerator
+# KeyPairGeneratorResult
+# KeyType
+# MutationObserver
+# MutationRecord
+# OverconstrainedError
+# QueueingStrategy
+# ReadableStream
+# SCTP
+# SourceBuffer
+# SourceBufferAppendMode
+# SourceBufferAppendWindowEnd
+# TimeRanges - media
+# TrackEvent - media
 # ValidityState
 # Web Share API
-#WebGL
+# WebGL
+# also
+# https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API
 
 
 # XMLSerializer = xml.dom.minidom.XMLSerializer?

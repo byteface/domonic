@@ -10,6 +10,7 @@ from domonic.javascript import String, Function
 from domonic.javascript import ArrayBuffer
 # from domonic.javascript import ArrayBufferView
 
+
 class TextDecoder:
     def __init__(self, encoding="utf-8"):
         self.encoding = encoding

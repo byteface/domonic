@@ -95,8 +95,26 @@ class CSSRule:
     CSSViewportRule
     """
 
+    UNKNOWN_RULE = 0
+    STYLE_RULE = 1
+    CHARSET_RULE = 2
+    IMPORT_RULE = 3
+    MEDIA_RULE = 4
+    FONT_FACE_RULE = 5
+    PAGE_RULE = 6
+    NAMESPACE_RULE = 7
+    KEYFRAMES_RULE = 8
+    KEYFRAME_RULE = 9
+    COUNTER_STYLE_RULE = 10
+    SUPPORTS_RULE = 11
+    FONT_FEATURE_VALUES_RULE = 12
+    VIEWPORT_RULE = 13
+    SUPPORTS_CONDITION_RULE = 14
+    DOCUMENT_RULE = 15
+
     def __init__(self):
-        pass
+        self.parentStyleSheet = None
+        self._type = None
 
     @property
     def cssText(self):
@@ -135,7 +153,7 @@ class CSSRuleList:
         """Returns an integer representing the number of CSSRule objects in the collection."""
         raise NotImplementedError
 
-    def item(self):
+    def item(self, index):
         """Gets a single CSSRule."""
         raise NotImplementedError
 
@@ -160,11 +178,11 @@ class CSSStyleSheet(StyleSheet):
         the ownerRule property returns the corresponding CSSImportRule; otherwise, this property's value is null."""
         raise NotImplementedError
 
-    def deleteRule(self):
+    def deleteRule(self, index):
         """Deletes the rule at the specified index into the stylesheet's rule list."""
         raise NotImplementedError
 
-    def insertRule(self):
+    def insertRule(self, rule, index):
         """Inserts a new rule at the specified position in the stylesheet,
         given the textual representation of the rule."""
         raise NotImplementedError
@@ -179,23 +197,28 @@ class CSSStyleSheet(StyleSheet):
         raise NotImplementedError
 
     @property
-    def rules():
+    def rules(self):
         """The rules property is functionally identical to the standard cssRules property
         it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.
         """
         raise NotImplementedError
 
     # Legacy methods
-    def addRule(self):
-        """Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply to the matching elements.
+    def addRule(self, selectorText, style, index):
+        """Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply
+        to the matching elements.
         This differs from insertRule(), which takes the textual representation of the entire rule as a single string.
         """
         raise NotImplementedError
 
-    def removeRule(self):
+    def removeRule(self, index):
         """Functionally identical to deleteRule();
         removes the rule at the specified index from the stylesheet's rule list."""
         raise NotImplementedError
+
+    def __str__(self):
+        # converts the rules to css code
+        return ''.join([str(rule) for rule in self.rules])
 
 
 class Style(object):

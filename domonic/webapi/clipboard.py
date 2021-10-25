@@ -4,7 +4,8 @@
 
 """
 
-# class ClipboardData():
-    # clipboardData Returns an object containing the data affected by the clipboard operation
-    # def __init__():
-        # pass
+
+class ClipboardData():
+
+    def __init__(self):
+        self.data = None

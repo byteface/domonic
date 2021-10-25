@@ -4,7 +4,7 @@
 This avoids all the overhead of SAX and pulldom to gain performance.
 """
 
-# Warning! 
+# Warning!
 #
 # This module is tightly bound to the implementation details of the
 # domonic DOM and can't be used with other DOM implementations.  This

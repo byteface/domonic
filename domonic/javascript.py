@@ -2917,7 +2917,7 @@ class String(object):
         # pass
         raise NotImplementedError
 
-    def trimStart(self, length: int):  # TODO - huh?. length 
+    def trimStart(self, length: int):  # TODO - huh?. length
         """[Removes whitespace from the beginning of a string.]
 
         Args:
@@ -2928,7 +2928,7 @@ class String(object):
         """
         return self.x.lstrip()
 
-    def trimEnd(self, length: int):  # TODO - huh?. length 
+    def trimEnd(self, length: int):  # TODO - huh?. length
         """[Removes whitespace from the end of a string]
 
         Args:
@@ -3038,7 +3038,7 @@ class String(object):
 
         Args:
             color (str): [the color to use]
-        
+
         Returns:
             [str]: [the string in font tags]
         """
@@ -3049,7 +3049,7 @@ class String(object):
 
         Args:
             size (str): [the size to use]
-        
+
         Returns:
             [str]: [the string in font tags]
         """
@@ -3068,7 +3068,7 @@ class String(object):
 
         Args:
             url (str): [the url to use]
-        
+
         Returns:
             [str]: [the string in a link tag]
         """
@@ -3136,8 +3136,8 @@ class String(object):
         )
         return str(content)
 
-    def __call__(self, tag :str, **kwargs):
-        """ 
+    def __call__(self, tag: str, **kwargs):
+        """
         lets you transform a string into a dom element
         with the string as the content.
 
@@ -3696,49 +3696,49 @@ class ArrayBuffer:
 
 
 class DataView(ArrayBuffer):
-#?? is this right. don't look lt
-        def __init__(self, buffer, byteOffset=0, byteLength=None):
-            super().__init__(byteLength)
-            self.isView = True
-            self.buffer = buffer
-            self.byteOffset = byteOffset
-            self.byteLength = byteLength
+    # ?? is this right. don't look lt
+    def __init__(self, buffer, byteOffset=0, byteLength=None):
+        super().__init__(byteLength)
+        self.isView = True
+        self.buffer = buffer
+        self.byteOffset = byteOffset
+        self.byteLength = byteLength
 
-        def getUint8(self, index):
-            return self.buffer.getUint8(self.byteOffset + index)
+    def getUint8(self, index):
+        return self.buffer.getUint8(self.byteOffset + index)
 
-        def getInt8(self, index):
-            return self.buffer.getInt8(self.byteOffset + index)
+    def getInt8(self, index):
+        return self.buffer.getInt8(self.byteOffset + index)
 
-        def getUint16(self, index, littleEndian=False):
-            return self.buffer.getUint16(self.byteOffset + index, littleEndian)
+    def getUint16(self, index, littleEndian=False):
+        return self.buffer.getUint16(self.byteOffset + index, littleEndian)
 
-        def getInt16(self, index, littleEndian=False):
-            return self.buffer.getInt16(self.byteOffset + index, littleEndian)
+    def getInt16(self, index, littleEndian=False):
+        return self.buffer.getInt16(self.byteOffset + index, littleEndian)
 
-        def getUint32(self, index, littleEndian=False):
-            return self.buffer.getUint32(self.byteOffset + index, littleEndian)
+    def getUint32(self, index, littleEndian=False):
+        return self.buffer.getUint32(self.byteOffset + index, littleEndian)
 
-        def getInt32(self, index, littleEndian=False):
-            return self.buffer.getInt32(self.byteOffset + index, littleEndian)
+    def getInt32(self, index, littleEndian=False):
+        return self.buffer.getInt32(self.byteOffset + index, littleEndian)
 
-        def getFloat32(self, index, littleEndian=False):
-            return self.buffer.getFloat32(self.byteOffset + index, littleEndian)
+    def getFloat32(self, index, littleEndian=False):
+        return self.buffer.getFloat32(self.byteOffset + index, littleEndian)
 
-        def getFloat64(self, index, littleEndian=False):
-            return self.buffer.getFloat64(self.byteOffset + index, littleEndian)
+    def getFloat64(self, index, littleEndian=False):
+        return self.buffer.getFloat64(self.byteOffset + index, littleEndian)
 
-        def setUint8(self, index, value):
-            self.buffer.setUint8(self.byteOffset + index, value)
+    def setUint8(self, index, value):
+        self.buffer.setUint8(self.byteOffset + index, value)
 
-        def setInt8(self, index, value):
-            self.buffer.setInt8(self.byteOffset + index, value)
+    def setInt8(self, index, value):
+        self.buffer.setInt8(self.byteOffset + index, value)
 
-        def setUint16(self, index, value, littleEndian=False):
-            self.buffer.setUint16(self.byteOffset + index, value, littleEndian)
+    def setUint16(self, index, value, littleEndian=False):
+        self.buffer.setUint16(self.byteOffset + index, value, littleEndian)
 
-        def setInt16(self, index, value, littleEndian=False):
-            self.buffer.setInt16(self.byteOffset + index, value, littleEndian)
+    def setInt16(self, index, value, littleEndian=False):
+        self.buffer.setInt16(self.byteOffset + index, value, littleEndian)
 
 
 class TypedArray:

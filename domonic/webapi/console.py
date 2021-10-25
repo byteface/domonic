@@ -4,8 +4,8 @@
     https://developer.mozilla.org/en-US/docs/Web/API/Console_API
 """
 
-# TODO - test - migrated here from the DOM
-class Console(object):
+
+class Console(object):  # TODO - test - migrated here from the DOM
 
     @staticmethod
     def log(msg: str, substitute=None, *args):
