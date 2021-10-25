@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>styles &#8212; domonic 0.6.3 documentation</title>
+    <title>styles &#8212; domonic 0.6.4 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -108,7 +108,7 @@ While the CSSRuleList object is read-only, and cannot be directly modified,
 it is considered a live object, as the content can change over time.</p>
 <dl class="py method">
 <dt>
-<code class="sig-name descname"><span class="pre">item</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSRuleList.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<code class="sig-name descname"><span class="pre">item</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSRuleList.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Gets a single CSSRule.</p>
 </dd></dl>
 
@@ -192,8 +192,9 @@ This is mostly useful for non-JavaScript DOM implementations.</p>
 <dd><p>Creates a new CSSStyleSheet object.</p>
 <dl class="py method">
 <dt>
-<code class="sig-name descname"><span class="pre">addRule</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.addRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply to the matching elements.
+<code class="sig-name descname"><span class="pre">addRule</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selectorText</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.addRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply
+to the matching elements.
 This differs from insertRule(), which takes the textual representation of the entire rule as a single string.</p>
 </dd></dl>
 
@@ -206,13 +207,13 @@ that comprise the stylesheet.</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname"><span class="pre">deleteRule</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.deleteRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<code class="sig-name descname"><span class="pre">deleteRule</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.deleteRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Deletes the rule at the specified index into the stylesheet’s rule list.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname"><span class="pre">insertRule</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.insertRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<code class="sig-name descname"><span class="pre">insertRule</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.insertRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Inserts a new rule at the specified position in the stylesheet,
 given the textual representation of the rule.</p>
 </dd></dl>
@@ -226,7 +227,7 @@ the ownerRule property returns the corresponding CSSImportRule; otherwise, this 
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname"><span class="pre">removeRule</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.removeRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<code class="sig-name descname"><span class="pre">removeRule</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/style.html#CSSStyleSheet.removeRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Functionally identical to deleteRule();
 removes the rule at the specified index from the stylesheet’s rule list.</p>
 </dd></dl>

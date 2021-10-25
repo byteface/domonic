@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.6.3 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.6.4 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -47,7 +47,7 @@
 
 
 <div class="viewcode-block" id="EventTarget"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.EventTarget">[docs]</a><span class="k">class</span> <span class="nc">EventTarget</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot; Baseclass for Node &quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot; EventTarget interface &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span> <span class="o">=</span> <span class="p">{}</span>
@@ -884,11 +884,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="ShadowRoot.elementFromPoint"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ShadowRoot.elementFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">elementFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ShadowRoot.elementFromPoint"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ShadowRoot.elementFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">elementFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the topmost element at the specified coordinates. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="ShadowRoot.elementsFromPoint"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ShadowRoot.elementsFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">elementsFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ShadowRoot.elementsFromPoint"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ShadowRoot.elementsFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">elementsFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns an array of all elements at the specified coordinates. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
@@ -1252,6 +1252,33 @@
 <span class="sd">    @ariaValueText.setter</span>
 <span class="sd">    def ariaValueText(self, value: str):</span>
 <span class="sd">        return self.getAttribute(&#39;aria-valueText&#39;)</span>
+
+<span class="sd"># class ElementInternals(object, AriaMixin):</span>
+<span class="sd">#     def __init__(self, element):</span>
+<span class="sd">#         self.element = element</span>
+<span class="sd">#         self.shadowRoot = None # Returns the ShadowRoot object associated with this element.</span>
+<span class="sd">#         self.form  # Returns the HTMLFormElement associated with this element.</span>
+<span class="sd">#         self.states  # Returns the CustomStateSet associated with this element.</span>
+<span class="sd">#         self.willValidate # A boolean value which returns true if the element is a submittable element that is a candidate for constraint validation.</span>
+<span class="sd">#         self.validity  # Returns a ValidityState object which represents the different validity states the element can be in, with respect to constraint validation.</span>
+<span class="sd">#         self.validationMessage  # A string containing the validation message of this element.</span>
+<span class="sd">#         self.labels  # Returns a NodeList of all of the label elements associated with this element.</span>
+
+
+<span class="sd">class CustomStateSet(object):</span>
+
+<span class="sd">    def __init__(self):</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    def add(self, state):</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    def clear(self):</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    def delete(self, state):</span>
+<span class="sd">        pass</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 
@@ -2009,6 +2036,14 @@
         <span class="sd">&#39;&#39;&#39; Shows an element in fullscreen mode &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
+    <span class="c1"># def setPointerCapture(self):</span>
+    <span class="c1">#     &#39;&#39;&#39; Sets the pointer capture to the specified element &#39;&#39;&#39;</span>
+    <span class="c1">#     raise NotImplementedError</span>
+
+    <span class="c1"># def releasePointerCapture(self):</span>
+    <span class="c1">#     &#39;&#39;&#39; Releases the pointer capture from the specified element &#39;&#39;&#39;</span>
+    <span class="c1">#     raise NotImplementedError</span>
+
 <div class="viewcode-block" id="Element.scrollHeight"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.scrollHeight">[docs]</a>    <span class="k">def</span> <span class="nf">scrollHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Returns the entire height of an element, including padding &#39;&#39;&#39;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
@@ -2471,6 +2506,39 @@
 <span class="c1"># HTMLUnknownElement</span>
 <span class="c1"># HTMLVideoElement</span>
 
+<span class="k">class</span> <span class="nc">XPathExpression</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">nsResolver</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">expression</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nsResolver</span> <span class="o">=</span> <span class="n">nsResolver</span>
+
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">contextNode</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">inResult</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<span class="c1"># class XPathResult(object):</span>
+
+<span class="c1">#     def __init__(self, resultType, snapshotLength):</span>
+<span class="c1">#         self.resultType = resultType</span>
+<span class="c1">#         self.snapshotLength = snapshotLength</span>
+
+<span class="c1">#     def iter(self):</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+<span class="c1">#     def snapshotItem(self, index):</span>
+<span class="c1">#         raise NotImplementedError</span>
+
+
+<span class="k">class</span> <span class="nc">XPathEvaluator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">createExpression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">nsResolver</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">createNSResolver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodeResolver</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">,</span> <span class="n">contextNode</span><span class="p">,</span> <span class="n">nsResolver</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">inResult</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
 
 <div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; the Document class is also the baseclass for the html tag &quot;&quot;&quot;</span>
@@ -2587,6 +2655,11 @@
         <span class="sd">&quot;&quot;&quot; Creates an empty DocumentFragment node if not content passed. I added args as optional to pass content &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">DocumentFragment</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="Document.createExpression"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.createExpression">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">createExpression</span><span class="p">(</span><span class="n">xpath</span><span class="p">,</span> <span class="n">nsResolver</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Creates an XPathExpression object for the given XPath string. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">XPathExpression</span><span class="p">(</span><span class="n">xpath</span><span class="p">,</span> <span class="n">nsResolver</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Document.createElement"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.createElement">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">createElement</span><span class="p">(</span><span class="n">_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Creates an Element node &quot;&quot;&quot;</span>
@@ -2650,6 +2723,21 @@
     <span class="k">def</span> <span class="nf">createProcessingInstruction</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Creates a ProcessingInstruction node with the specified target and data &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">ProcessingInstruction</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Document.createEntityReference"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.createEntityReference">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">createEntityReference</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Creates an EntityReference node with the specified name &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">EntityReference</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">xmlversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the version of XML used for the document &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;1.0&quot;</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def currentScript(self):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns the currently executing script or null if none is executing &quot;&quot;&quot;</span>
+    <span class="c1">#     return self.querySelector(&#39;script&#39;)</span>
 
 <div class="viewcode-block" id="Document.createCDATASection"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.createCDATASection">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">createCDATASection</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
@@ -2719,6 +2807,14 @@
     <span class="c1"># def domConfig(self):</span>
         <span class="sd">&#39;&#39;&#39;Obsolete. Returns the DOM configuration of the document&#39;&#39;&#39;</span></div>
         <span class="c1"># return</span>
+
+<div class="viewcode-block" id="Document.elementFromPoint"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.elementFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">elementFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the topmost element at the specified coordinates. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Document.elementsFromPoint"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.elementsFromPoint">[docs]</a>    <span class="k">def</span> <span class="nf">elementsFromPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns an array of all elements at the specified coordinates. &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">embeds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2889,6 +2985,28 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
+    <span class="c1"># def requestStorageAccess(self, storage_access_callback):</span>
+    <span class="c1">#     &quot;&quot;&quot; Requests permission to access the user&#39;s storage area &quot;&quot;&quot;</span>
+    <span class="c1">#     return False</span>
+
+    <span class="c1"># def hasStorageAccess(self):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns whether the user has granted permission to access the user&#39;s storage area &quot;&quot;&quot;</span>
+    <span class="c1">#     return False</span>
+
+    <span class="c1"># @property</span>
+    <span class="c1"># def pictureInPictureElement(self):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns the element currently in Picture-in-Picture mode, if any. &quot;&quot;&quot;</span>
+    <span class="c1">#     return None</span>
+
+    <span class="c1"># def exitPictureInPicture(self):</span>
+    <span class="c1">#     &quot;&quot;&quot; Exits Picture-in-Picture mode, if any. &quot;&quot;&quot;</span>
+    <span class="c1">#     return False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pictureInPictureEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns whether Picture-in-Picture mode is enabled. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">scripts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[Returns a collection of &lt;script&gt; elements in the document]</span>
@@ -2924,6 +3042,11 @@
     <span class="c1"># def URL(self):</span>
     <span class="c1">#     &#39;&#39;&#39; Returns the full URL of the HTML document&#39;&#39;&#39;</span>
     <span class="c1">#     pass</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">visibilityState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the visibility state of the document &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;visible&#39;</span>
 
 <div class="viewcode-block" id="Document.write"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Document.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>  <span class="c1"># -&gt; None: # TODO - untested</span>
         <span class="sd">&quot;&quot;&quot;[writes HTML text to a document</span>
@@ -2983,8 +3106,8 @@
 
 <span class="n">location</span> <span class="o">=</span> <span class="n">Location</span>
 
-<span class="c1"># TODO - switch to importing the webapi.console module</span>
-<span class="k">class</span> <span class="nc">Console</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<span class="k">class</span> <span class="nc">Console</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>  <span class="c1"># TODO - switch to importing the webapi.console module</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -3191,6 +3314,66 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div></div>
 
 
+<div class="viewcode-block" id="EntityReference"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.EntityReference">[docs]</a><span class="k">class</span> <span class="nc">EntityReference</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The EntityReference interface represents a reference to an entity, either parsed</span>
+<span class="sd">    or unparsed, in an Entity Node. Note that this is not a CharacterData node,</span>
+<span class="sd">    and does not have any child nodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">])</span>
+
+<div class="viewcode-block" id="EntityReference.ordinal"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.EntityReference.ordinal">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">ordinal</span><span class="p">(</span><span class="n">entityName</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the character corresponding to the given entity name. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="n">entityName</span><span class="p">)</span>  <span class="c1"># TODO - test. would this work?</span></div>
+
+<div class="viewcode-block" id="EntityReference.fromOrdinal"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.EntityReference.fromOrdinal">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">fromOrdinal</span><span class="p">(</span><span class="n">ordinal</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the entity name corresponding to the given character. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">chr</span><span class="p">(</span><span class="n">ordinal</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Entity"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Entity">[docs]</a><span class="k">class</span> <span class="nc">Entity</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Entity.fromName"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Entity.fromName">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">fromName</span><span class="p">(</span><span class="n">entityName</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the entity name corresponding to the given character. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">chr</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">entityName</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Entity.fromChar"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Entity.fromChar">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">fromChar</span><span class="p">(</span><span class="n">char</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the character corresponding to the given entity name. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="n">char</span><span class="p">)</span></div></div>
+
+
+<span class="c1"># class Notation(Node):</span>
+
+<span class="c1">#     def __init__(self, *args):</span>
+<span class="c1">#         self.args = args</span>
+
+<span class="c1">#     def __str__(self):</span>
+<span class="c1">#         return &#39;&#39;.join([str(a) for a in self.args])</span>
+
+<span class="c1">#     def getPublicId(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns the public identifier of the notation. &quot;&quot;&quot;</span>
+<span class="c1">#         return self.args[0]</span>
+
+<span class="c1">#     def getSystemId(self):</span>
+<span class="c1">#         &quot;&quot;&quot; Returns the system identifier of the notation. &quot;&quot;&quot;</span>
+<span class="c1">#         return self.args[1]</span>
+
+
 <div class="viewcode-block" id="Text"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Text">[docs]</a><span class="k">class</span> <span class="nc">Text</span><span class="p">(</span><span class="n">CharacterData</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Text Node &quot;&quot;&quot;</span>
 
@@ -3227,6 +3410,10 @@
     <span class="nd">@property</span>  <span class="c1"># TODO - is this correct?</span>
     <span class="k">def</span> <span class="nf">firstChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># ?</span>
+        <span class="c1"># https://www.w3.org/TR/2000/CR-DOM-Level-2-20000510/core.html</span>
+        <span class="c1"># lvl 2 spec has nochildren on bunch of NodeTypes. might mean overrides required</span>
+        <span class="c1">#  to null certain behaviours. i.e. treewalker is having issues here.</span>
+        <span class="c1"># TODO - test what it does in the browser. then fix up all required nochildren nodes i.e. comment, doctype, etc.</span>
 
     <span class="c1"># @property</span>
     <span class="c1"># def firstChild(self):</span>
@@ -3540,7 +3727,8 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">getBounds</span><span class="p">(</span><span class="n">quad</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">DOMRect</span><span class="p">(</span><span class="n">quad</span><span class="o">.</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">quad</span><span class="o">.</span><span class="n">p1</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">quad</span><span class="o">.</span><span class="n">p2</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">quad</span><span class="o">.</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">quad</span><span class="o">.</span><span class="n">p2</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">quad</span><span class="o">.</span><span class="n">p1</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+        <span class="c1"># return DOMRect(quad.p1.x, quad.p1.y, quad.p2.x - quad.p1.x, quad.p2.y - quad.p1.y)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">toJSON</span><span class="p">(</span><span class="n">quad</span><span class="p">):</span>
@@ -3561,6 +3749,11 @@
         <span class="k">return</span> <span class="s1">&#39;(</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p4</span><span class="p">)</span></div>
 
 
+<span class="c1"># NodeFilter</span>
+<span class="c1"># from xml.dom.NodeFilter import NodeFilter</span>
+<span class="c1"># https://bspaans.github.io/python-mingus/_modules/xml/dom/xmlbuilder.html</span>
+<span class="c1"># https://www.w3.org/TR/2003/WD-DOM-Level-3-LS-20030226/load-save.html</span>
+<span class="c1"># https://bspaans.github.io/python-mingus/_modules/xml/dom/xmlbuilder.html</span>
 <span class="k">class</span> <span class="nc">NodeFilter</span><span class="p">():</span>
 
     <span class="n">SHOW_ALL</span> <span class="o">=</span> <span class="mh">0xFFFFFFFF</span>
@@ -3615,18 +3808,21 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter</span>
 
     <span class="c1"># def expandEntityReferences(self, expand):</span>
-        <span class="c1"># Is a boolean value indicating if, when discarding an EntityReference its whole sub-tree must be discarded at the same time.</span>
+        <span class="c1"># Is a boolean value indicating if,</span>
+        <span class="c1"># when discarding an EntityReference its whole sub-tree must be discarded at the same time.</span>
 
 <div class="viewcode-block" id="NodeIterator.referenceNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeIterator.referenceNode">[docs]</a>    <span class="k">def</span> <span class="nf">referenceNode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the Node that is being iterated over. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span></div>
 
     <span class="k">def</span> <span class="nf">pointerBeforeReferenceNode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Returns a boolean flag that indicates whether the NodeIterator is anchored before, the flag being true, or after, the flag being false, the anchor node.</span>
+        <span class="c1"># Returns a boolean flag that indicates whether the NodeIterator is anchored before,</span>
+        <span class="c1"># the flag being true, or after, the flag being false, the anchor node.</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointer</span> <span class="o">&lt;</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># This operation is a no-op. It doesn&#39;t do anything. Previously it was telling the engine that the NodeIterator was no more used, but this is now useless.</span>
+        <span class="c1"># This operation is a no-op. It doesn&#39;t do anything.</span>
+        <span class="c1"># Previously it was telling the engine that the NodeIterator was no more used, but this is now useless.</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="NodeIterator.previousNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NodeIterator.previousNode">[docs]</a>    <span class="k">def</span> <span class="nf">previousNode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3691,7 +3887,7 @@
     <span class="c1"># print(&#39;flaps&#39;, tw.currentNode.firstChild)</span>
     <span class="c1"># print(&#39;flaps2&#39;, )</span>
     <span class="c1"># print(&#39;tw.currentNode&#39;, tw.currentNode)</span>
-    <span class="c1"># print(&#39;MAKE THIS WORK ON NODE:&#39;, tw.currentNode[mapChild[_type]])</span>
+    <span class="c1"># print(&#39;MAKE THIS WORK ON NODE:&#39;, tw.currentNode[mapChild[_type]]) #done</span>
 
     <span class="c1"># node = str_to_TextNode(node)</span>
 
@@ -3805,6 +4001,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">whatToShow</span> <span class="o">=</span> <span class="n">whatToShow</span> <span class="ow">or</span> <span class="mi">0</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_filter</span> <span class="o">=</span> <span class="n">_filter</span>
+
         <span class="k">def</span> <span class="nf">acceptNode</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
             <span class="k">nonlocal</span> <span class="n">_filter</span>
             <span class="c1"># result</span>
@@ -3893,7 +4090,8 @@
 
 <div class="viewcode-block" id="TreeWalker.previousNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.TreeWalker.previousNode">[docs]</a>    <span class="k">def</span> <span class="nf">previousNode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Moves the current Node to the previous visible node in the document order,</span>
-<span class="sd">        and returns the found node. It also moves the current node to this one. If no such node exists, or if it is before that the root node defined at the object construction,</span>
+<span class="sd">        and returns the found node. It also moves the current node to this one.</span>
+<span class="sd">        If no such node exists, or if it is before that the root node defined at the object construction,</span>
 <span class="sd">        returns null and the current node is not changed. &quot;&quot;&quot;</span>
         <span class="c1"># return self.previous</span>
         <span class="c1"># raise NotImplementedError()</span>
@@ -3967,38 +4165,40 @@
 <span class="c1"># TODO - create fetch package and move the js fetch stuff to it?</span>
 <span class="c1"># fetch api</span>
 
-<span class="c1">#AbortController</span>
-<span class="c1">#AbortSignal</span>
-<span class="c1">#Cache</span>
-<span class="c1">#CacheStorage</span>
+<span class="c1"># AbortController</span>
+<span class="c1"># AbortSignal</span>
+<span class="c1"># Cache</span>
+<span class="c1"># CacheStorage</span>
 <span class="c1"># ContentIndex</span>
 <span class="c1"># ContactPicker</span>
-<span class="c1">#Client - serviceworker api</span>
-<span class="c1">#CredentialsContainer - new login api</span>
+<span class="c1"># Client - serviceworker api</span>
+<span class="c1"># CredentialsContainer - new login api</span>
 <span class="c1"># DOMMatrix #https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix</span>
 <span class="c1"># DOMParser</span>
 <span class="c1"># IndexedDB API</span>
-<span class="c1">#ImageBitmap</span>
-<span class="c1">#ImageBitmapRenderingContext</span>
-<span class="c1">#ImageData</span>
-<span class="c1">#KeyPair</span>
-<span class="c1">#KeyPairGenerator</span>
-<span class="c1">#KeyPairGeneratorResult</span>
-<span class="c1">#KeyType</span>
-<span class="c1">#MutationObserver</span>
-<span class="c1">#MutationRecord</span>
-<span class="c1">#OverconstrainedError</span>
-<span class="c1">#QueueingStrategy</span>
-<span class="c1">#ReadableStream</span>
-<span class="c1">#SCTP</span>
-<span class="c1">#SourceBuffer</span>
-<span class="c1">#SourceBufferAppendMode</span>
-<span class="c1">#SourceBufferAppendWindowEnd</span>
-<span class="c1">#TimeRanges - media</span>
-<span class="c1">#TrackEvent - media</span>
+<span class="c1"># ImageBitmap</span>
+<span class="c1"># ImageBitmapRenderingContext</span>
+<span class="c1"># ImageData</span>
+<span class="c1"># KeyPair</span>
+<span class="c1"># KeyPairGenerator</span>
+<span class="c1"># KeyPairGeneratorResult</span>
+<span class="c1"># KeyType</span>
+<span class="c1"># MutationObserver</span>
+<span class="c1"># MutationRecord</span>
+<span class="c1"># OverconstrainedError</span>
+<span class="c1"># QueueingStrategy</span>
+<span class="c1"># ReadableStream</span>
+<span class="c1"># SCTP</span>
+<span class="c1"># SourceBuffer</span>
+<span class="c1"># SourceBufferAppendMode</span>
+<span class="c1"># SourceBufferAppendWindowEnd</span>
+<span class="c1"># TimeRanges - media</span>
+<span class="c1"># TrackEvent - media</span>
 <span class="c1"># ValidityState</span>
 <span class="c1"># Web Share API</span>
-<span class="c1">#WebGL</span>
+<span class="c1"># WebGL</span>
+<span class="c1"># also</span>
+<span class="c1"># https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API</span>
 
 
 <span class="c1"># XMLSerializer = xml.dom.minidom.XMLSerializer?</span>
@@ -4208,8 +4408,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">decorators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Templates and Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/webapi.html">webapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/style.html">styles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">🚀 servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>

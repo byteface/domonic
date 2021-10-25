@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.7.0 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.6.4 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -2950,7 +2950,7 @@
         <span class="c1"># pass</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="String.trimStart"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trimStart">[docs]</a>    <span class="k">def</span> <span class="nf">trimStart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># TODO - huh?. length </span>
+<div class="viewcode-block" id="String.trimStart"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trimStart">[docs]</a>    <span class="k">def</span> <span class="nf">trimStart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># TODO - huh?. length</span>
         <span class="sd">&quot;&quot;&quot;[Removes whitespace from the beginning of a string.]</span>
 
 <span class="sd">        Args:</span>
@@ -2961,7 +2961,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.trimEnd"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trimEnd">[docs]</a>    <span class="k">def</span> <span class="nf">trimEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># TODO - huh?. length </span>
+<div class="viewcode-block" id="String.trimEnd"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trimEnd">[docs]</a>    <span class="k">def</span> <span class="nf">trimEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># TODO - huh?. length</span>
         <span class="sd">&quot;&quot;&quot;[Removes whitespace from the end of a string]</span>
 
 <span class="sd">        Args:</span>
@@ -3071,7 +3071,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            color (str): [the color to use]</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            [str]: [the string in font tags]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3082,7 +3082,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            size (str): [the size to use]</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            [str]: [the string in font tags]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3101,7 +3101,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            url (str): [the url to use]</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            [str]: [the string in a link tag]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3169,8 +3169,8 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">content</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span> <span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; </span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        lets you transform a string into a dom element</span>
 <span class="sd">        with the string as the content.</span>
 
@@ -3729,49 +3729,49 @@
 
 
 <span class="k">class</span> <span class="nc">DataView</span><span class="p">(</span><span class="n">ArrayBuffer</span><span class="p">):</span>
-<span class="c1">#?? is this right. don&#39;t look lt</span>
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">byteOffset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">byteLength</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">byteLength</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">isView</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">buffer</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">=</span> <span class="n">byteOffset</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">byteLength</span> <span class="o">=</span> <span class="n">byteLength</span>
+    <span class="c1"># ?? is this right. don&#39;t look lt</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">byteOffset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">byteLength</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">byteLength</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isView</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">=</span> <span class="n">byteOffset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">byteLength</span> <span class="o">=</span> <span class="n">byteLength</span>
 
-        <span class="k">def</span> <span class="nf">getUint8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getUint8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">getUint8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getUint8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">getInt8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getInt8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">getInt8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getInt8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">getUint16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getUint16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">getUint16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getUint16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">getInt16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getInt16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">getInt16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getInt16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">getUint32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getUint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">getUint32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getUint32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">getInt32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getInt32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">getInt32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getInt32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">getFloat32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getFloat32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">getFloat32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getFloat32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">getFloat64</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getFloat64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">getFloat64</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">getFloat64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">setUint8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setUint8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">setUint8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setUint8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">setInt8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setInt8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">setInt8</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setInt8</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">setUint16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setUint16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">setUint16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setUint16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">setInt16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setInt16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">setInt16</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">setInt16</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">+</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">littleEndian</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">TypedArray</span><span class="p">:</span>
@@ -4622,8 +4622,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">decorators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Templates and Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/webapi.html">webapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/style.html">styles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">🚀 servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>

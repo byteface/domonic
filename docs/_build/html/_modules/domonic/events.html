@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.events &#8212; domonic 0.7.0 documentation</title>
+    <title>domonic.events &#8212; domonic 0.6.4 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -43,9 +43,9 @@
 <span class="c1"># from typing import *</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="c1"># TODO - bring EventTarget here and get rid of this one?</span>
-<div class="viewcode-block" id="EventDispatcher"><a class="viewcode-back" href="../../packages/events.html#domonic.events.EventDispatcher">[docs]</a><span class="k">class</span> <span class="nc">EventDispatcher</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; EventDispatcher is a class you can extend to give your obj event dispatching abilities &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EventTarget"><a class="viewcode-back" href="../../packages/events.html#domonic.events.EventTarget">[docs]</a><span class="k">class</span> <span class="nc">EventTarget</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>  <span class="c1"># TODO - remove DOM.EventTarget. keep just this one</span>
+    <span class="sd">&quot;&quot;&quot; EventTarget is a class you can extend to give your obj event dispatching abilities &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span> <span class="o">=</span> <span class="p">{}</span>
@@ -88,6 +88,9 @@
                 <span class="n">thing</span><span class="p">()</span>  <span class="c1"># try calling without params, user may not create param</span>
 
         <span class="k">return</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">defaultPrevented</span></div>
+
+
+<span class="n">EventDispatcher</span> <span class="o">=</span> <span class="n">EventTarget</span>  <span class="c1">#: legacy alias</span>
 
 
 <div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../packages/events.html#domonic.events.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -134,6 +137,13 @@
     <span class="n">UNLOAD</span> <span class="o">=</span> <span class="s2">&quot;unload&quot;</span>  <span class="c1">#:</span>
     <span class="n">VOLUMECHANGE</span> <span class="o">=</span> <span class="s2">&quot;volumechange&quot;</span>  <span class="c1">#:</span>
     <span class="n">WAITING</span> <span class="o">=</span> <span class="s2">&quot;waiting&quot;</span>  <span class="c1">#:</span>
+
+    <span class="n">CAPTURING_PHASE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">AT_TARGET</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">BUBBLING_PHASE</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeStamp</span><span class="p">)</span>
 
     <span class="c1"># Event(&quot;look&quot;, {&quot;bubbles&quot;:true, &quot;cancelable&quot;:false});</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -296,10 +306,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">which</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_button</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_button</span>
 
     <span class="c1"># MOUSE_EVENT</span>
-    <span class="c1"># getModifierState()    Returns an array containing target ranges that will be affected by the insertion/deletion   MouseEvent</span>
+<div class="viewcode-block" id="MouseEvent.getModifierState"><a class="viewcode-back" href="../../packages/events.html#domonic.events.MouseEvent.getModifierState">[docs]</a>    <span class="k">def</span> <span class="nf">getModifierState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns an array containing target ranges that will be affected by the insertion/deletion&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
     <span class="c1"># MovementX Returns the horizontal coordinate of the mouse pointer relative to the position of the last mousemove event MouseEvent</span>
     <span class="c1"># MovementY Returns the vertical coordinate of the mouse pointer relative to the position of the last mousemove event   MouseEvent</span>
     <span class="c1"># offsetX   Returns the horizontal coordinate of the mouse pointer relative to the position of the edge of the target element   MouseEvent</span>
@@ -504,6 +517,14 @@
 <div class="viewcode-block" id="PointerEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.PointerEvent">[docs]</a><span class="k">class</span> <span class="nc">PointerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; PointerEvent &quot;&quot;&quot;</span>
     <span class="n">POINTER</span> <span class="o">=</span> <span class="s2">&quot;pointer&quot;</span>  <span class="c1">#:</span>
+    <span class="n">POINTERCANCEL</span> <span class="o">=</span> <span class="s2">&quot;pointercancel&quot;</span>  <span class="c1">#:</span>
+    <span class="n">POINTERDOWN</span> <span class="o">=</span> <span class="s2">&quot;pointerdown&quot;</span>  <span class="c1">#:</span>
+    <span class="n">POINTERENTER</span> <span class="o">=</span> <span class="s2">&quot;pointerenter&quot;</span>  <span class="c1">#:</span>
+    <span class="n">POINTERLEAVE</span> <span class="o">=</span> <span class="s2">&quot;pointerleave&quot;</span>  <span class="c1">#:</span>
+    <span class="n">POINTERMOVE</span> <span class="o">=</span> <span class="s2">&quot;pointermove&quot;</span>  <span class="c1">#:</span>
+    <span class="n">POINTEROUT</span> <span class="o">=</span> <span class="s2">&quot;pointerout&quot;</span>  <span class="c1">#:</span>
+    <span class="n">POINTEROVER</span> <span class="o">=</span> <span class="s2">&quot;pointerover&quot;</span>  <span class="c1">#:</span>
+    <span class="n">POINTERUP</span> <span class="o">=</span> <span class="s2">&quot;pointerup&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pointerId</span> <span class="o">=</span> <span class="kc">None</span>
@@ -516,7 +537,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">twist</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pointerType</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">isPrimary</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getCoalescedEvents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">getPredictedEvents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+    <span class="c1"># def getCurrentPoint(self, element):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns the current coordinates of the specified element relative to the viewport. &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
+
+    <span class="c1"># def getIntermediatePoints(self, element):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns the coordinates of all the intermediate points of the pointer along the path of the pointer. &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
 
 
 <div class="viewcode-block" id="BeforeUnloadEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.BeforeUnloadEvent">[docs]</a><span class="k">class</span> <span class="nc">BeforeUnloadEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
@@ -528,15 +563,33 @@
 
 <div class="viewcode-block" id="SVGEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.SVGEvent">[docs]</a><span class="k">class</span> <span class="nc">SVGEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; SVGEvent &quot;&quot;&quot;</span>
+    <span class="n">ABORT</span> <span class="o">=</span> <span class="s2">&quot;abort&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LOAD</span> <span class="o">=</span> <span class="s2">&quot;load&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LOADEDDATA</span> <span class="o">=</span> <span class="s2">&quot;loadeddata&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LOADEDMETADATA</span> <span class="o">=</span> <span class="s2">&quot;loadedmetadata&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LOADSTART</span> <span class="o">=</span> <span class="s2">&quot;loadstart&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PROGRESS</span> <span class="o">=</span> <span class="s2">&quot;progress&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SCROLL</span> <span class="o">=</span> <span class="s2">&quot;scroll&quot;</span>  <span class="c1">#:</span>
+    <span class="n">UNLOAD</span> <span class="o">=</span> <span class="s2">&quot;unload&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>  <span class="c1">#:</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="c1"># def initEvent(self, eventTypeArg, canBubbleArg, cancelableArg):</span>
+    <span class="c1">#     pass</span>
 
 
 <div class="viewcode-block" id="TimerEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.TimerEvent">[docs]</a><span class="k">class</span> <span class="nc">TimerEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="n">TIMER</span> <span class="o">=</span> <span class="s2">&quot;timer&quot;</span>  <span class="c1">#:</span>
+    <span class="n">TIMER_COMPLETE</span> <span class="o">=</span> <span class="s2">&quot;timercomplete&quot;</span>  <span class="c1">#:</span>
     <span class="sd">&quot;&quot;&quot; TimerEvent &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="c1"># def initTimerEvent(self, type, bubbles, cancelable, detail):</span>
+    <span class="c1">#     &quot;&quot;&quot; initTimerEvent() &quot;&quot;&quot;</span>
+    <span class="c1">#     pass</span>
 
 
 <div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
@@ -568,6 +621,10 @@
 
 <div class="viewcode-block" id="InputEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.InputEvent">[docs]</a><span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; InputEvent &quot;&quot;&quot;</span>
+    <span class="n">CHANGE</span> <span class="o">=</span> <span class="s2">&quot;change&quot;</span>  <span class="c1">#:</span>
+    <span class="n">SELECT</span> <span class="o">=</span> <span class="s2">&quot;select&quot;</span>  <span class="c1">#:</span>
+    <span class="n">INPUT</span> <span class="o">=</span> <span class="s2">&quot;input&quot;</span>  <span class="c1">#:</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the inserted characters &quot;&quot;&quot;</span>
@@ -599,6 +656,7 @@
     <span class="sd">&quot;&quot;&quot; PopStateEvent &quot;&quot;&quot;</span>
     <span class="n">POPSTATE</span> <span class="o">=</span> <span class="s2">&quot;popstate&quot;</span>  <span class="c1">#:</span>
     <span class="c1"># ONPOPSTATE = &quot;onpopstate&quot;  #:??</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns an object containing a copy of the history entries &quot;&quot;&quot;</span>
@@ -608,6 +666,7 @@
 <div class="viewcode-block" id="StorageEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.StorageEvent">[docs]</a><span class="k">class</span> <span class="nc">StorageEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; StorageEvent &quot;&quot;&quot;</span>
     <span class="n">STORAGE</span> <span class="o">=</span> <span class="s2">&quot;storage&quot;</span>  <span class="c1">#:</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the key of the changed storage item &quot;&quot;&quot;</span>
@@ -639,6 +698,13 @@
 <div class="viewcode-block" id="ProgressEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.ProgressEvent">[docs]</a><span class="k">class</span> <span class="nc">ProgressEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ProgressEvent &quot;&quot;&quot;</span>
     <span class="n">LOADSTART</span> <span class="o">=</span> <span class="s2">&quot;loadstart&quot;</span>  <span class="c1">#:</span>
+    <span class="n">PROGRESS</span> <span class="o">=</span> <span class="s2">&quot;progress&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ABORT</span> <span class="o">=</span> <span class="s2">&quot;abort&quot;</span>  <span class="c1">#:</span>
+    <span class="n">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LOAD</span> <span class="o">=</span> <span class="s2">&quot;load&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LOADED</span> <span class="o">=</span> <span class="s2">&quot;loaded&quot;</span>  <span class="c1">#:</span>
+    <span class="n">LOADEND</span> <span class="o">=</span> <span class="s2">&quot;loadend&quot;</span>  <span class="c1">#:</span>
+    <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="s2">&quot;timeout&quot;</span>  <span class="c1">#:</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -667,6 +733,8 @@
 <span class="c1"># TODO - tests and service worker API</span>
 <div class="viewcode-block" id="FetchEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.FetchEvent">[docs]</a><span class="k">class</span> <span class="nc">FetchEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; FetchEvent &quot;&quot;&quot;</span>
+    <span class="n">FETCH</span> <span class="o">=</span> <span class="s2">&quot;fetch&quot;</span>  <span class="c1">#:</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clientId</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the client ID of the fetch request &quot;&quot;&quot;</span>
@@ -699,6 +767,11 @@
 
 <div class="viewcode-block" id="ExtendableEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.ExtendableEvent">[docs]</a><span class="k">class</span> <span class="nc">ExtendableEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; ExtendableEvent &quot;&quot;&quot;</span>
+
+    <span class="c1"># CAPTURING_PHASE = 1</span>
+    <span class="c1"># AT_TARGET = 2</span>
+    <span class="c1"># BUBBLING_PHASE = 3</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">extendable</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns whether the event is extendable or not &quot;&quot;&quot;</span>
@@ -711,6 +784,8 @@
 
 <div class="viewcode-block" id="SyncEvent"><a class="viewcode-back" href="../../packages/events.html#domonic.events.SyncEvent">[docs]</a><span class="k">class</span> <span class="nc">SyncEvent</span><span class="p">(</span><span class="n">ExtendableEvent</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; SyncEvent &quot;&quot;&quot;</span>
+    <span class="n">SYNC</span> <span class="o">=</span> <span class="s2">&quot;sync&quot;</span>  <span class="c1">#:</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_type</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="sd">&quot;&quot;&quot; Returns the tag of the sync event &quot;&quot;&quot;</span>
@@ -1163,8 +1238,8 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-<span class="c1"># TODO - put in the window module?</span>
-<span class="k">class</span> <span class="nc">WindowEventHandler</span><span class="p">:</span>  <span class="c1"># (EventHandler):</span>
+
+<span class="k">class</span> <span class="nc">WindowEventHandler</span><span class="p">:</span>  <span class="c1"># (EventHandler): # TODO - put in the window module?</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">window</span>
@@ -1243,6 +1318,7 @@
 
     <span class="k">def</span> <span class="nf">ondragover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 </pre></div>
 
           </div>
@@ -1284,8 +1360,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../../packages/decorators.html">decorators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/components.html">Templates and Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/utils.html">utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/webapi.html">webapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../packages/style.html">styles</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/servers.html">🚀 servers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../packages/autodocs.html">🤖 autodocs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contribute.html">Contribute</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
