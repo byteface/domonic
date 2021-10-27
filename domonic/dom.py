@@ -328,7 +328,32 @@ class Node(EventTarget):
     @property
     def nodeName(self):
         """ Returns the name of a node """
-        return self.tagName.upper()
+        # TODO - not sure what's better this or overriding on every element
+        if isinstance(self, Element):
+            return self.tagName#.upper()
+        elif isinstance(self, Text):
+            return '#text'
+        elif isinstance(self, Comment):
+            return '#comment'
+        # elif isinstance(self, DocumentType):
+        #     return '#doctype'
+        elif isinstance(self, Document):
+            return '#document'
+        elif isinstance(self, CDATASection):
+            return '#cdata-section'
+        elif isinstance(self, DocumentFragment):
+            return '#document-fragment'
+        elif isinstance(self, Attr):
+            return self.name
+        elif isinstance(self, ProcessingInstruction):
+            return self.target
+        elif isinstance(self, DocumentType):
+            return self.name
+        else:
+            try:
+                return self.tagName
+            except Exception:
+                return None
 
     @property
     def nodeType(self):
@@ -658,6 +683,12 @@ class Attr(Node):
                 return item
         return None
 
+    # def __getitem__(self, name):
+    #     return self.getNamedItem(name)
+
+    # def __setitem__(self, name, value):
+    #     self.setNamedItem(name, value)
+
     def removeNamedItem(self, name):
         """ Removes a specified attribute node """
         for item in self.parentNode.attributes:
@@ -675,10 +706,21 @@ class Attr(Node):
         return False
 
 
-class NamedNodeMap(object):
-    """ TODO - not tested yet """
+# from xml.dom.minidom import Attr
+from xml.dom.minidom import NamedNodeMap
+# NamedNodeMap = 
 
-    def __init__(self, *args, **kwargs):
+'''
+class NamedNodeMap(object):
+    """ TODO - not tested yet. 
+
+    a live object that represents a list of nodes.
+    """
+
+    def __init__(self, parentNode=None, *args, **kwargs):
+        self.parentNode = parentNode
+        self.args = args
+        self.kwargs = kwargs
         super().__init__(*args, **kwargs)
 
     def getNamedItem(self, name):
@@ -688,13 +730,28 @@ class NamedNodeMap(object):
                 return item
         return None
 
+    def __getitem__(self, name):
+        print('getting:', name)
+        # return self.getNamedItem(name)
+        return self.parentNode.kwargs['_' + name]
+
     def setNamedItem(self, name, value):
-        """ Sets the specified attribute node (by name) """
+        """ Replaces, or adds, the Attr identified in the map by the given name."""
+        # if exists replace it otherwise add it
+        has_item = False
         for item in self.args:
             if item.name == name:
                 item.value = value
-                return True
-        return False
+                has_item = True
+                # return True
+        if not has_item:
+            self.args.append(Attr(name, value))
+
+        self.parentNode.kwargs['_' + name] = value
+        return True
+
+    def __setitem__(self, name, value):
+        self.setNamedItem(name, value)
 
     def removeNamedItem(self, name):
         """ Removes a specified attribute node """
@@ -730,7 +787,7 @@ class NamedNodeMap(object):
                 self.remove(item)  # TODO - check this? where is remove?
                 return True
         return False
-
+'''
 
 class DOMStringMap(object):
     """
@@ -873,6 +930,7 @@ class DocumentType(Node):
         self.name = name  # A DOMString, eg "html" for <!DOCTYPE HTML>.
         self.publicId = publicId  # A DOMString, eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
         self.systemId = systemId  # A DOMString, eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
+        super().__init__()
 
     def internalSubset(self):
         ''' A DOMString of the internal subset, or None. Eg "<!ELEMENT foo (bar)>".'''
@@ -1547,12 +1605,22 @@ class Element(Node):
 
     @property
     def attributes(self):
-        """ Returns a List of an element's attributes """
-        try:
-            return [Attr(key.lstrip('_'), value) for key, value in self.kwargs.items()]
-        except Exception as e:
-            print('Error - no tag!', e)
-            return []
+        # """ Returns a List of an element's attributes """
+        # try:
+        #     return [Attr(key.lstrip('_'), value) for key, value in self.kwargs.items()]
+        # except Exception as e:
+        #     print('Error - no tag!', e)
+        #     return []
+        """ Returns a NamedNodeMap of an element's attributes """
+        # print('attributes', self.kwargs)
+        newargs = []
+        for key, value in self.kwargs.items():
+            # print('key', key)
+            # print('value', value)
+            newargs.append(Attr(key.lstrip('_'), value))
+
+        nnm = NamedNodeMap(newargs, None, self)
+        return nnm
 
     @property
     def innerHTML(self):
@@ -2117,12 +2185,24 @@ class DOMImplementation(object):
         return d
 
     def createDocumentType(self, qualifiedName, publicId, systemId):
+        """[creates a DocumentType node]
+
+        Args:
+            qualifiedName (str): [the qualified name of the document type]
+            publicId (str): [the public identifier of the document type]
+            systemId (str): [the system identifier of the document type]
+
+        Returns:
+            [type]: [a DocumentType object]
+        """
+        return DocumentType(qualifiedName, publicId, systemId)
         # d = DocumentType()
         # d.name = qualifiedName
         # d.publicId = publicId
         # d.systemId = systemId
         # return d
-        pass
+        # pass
+
 
     def createHTMLDocument(self, title=None):
         # d = Document()

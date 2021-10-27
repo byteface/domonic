@@ -452,6 +452,12 @@ def tag_init(self, *args, **kwargs):
     Element.__init__(self, *args, **kwargs)
 
 
+# class HTMLElement:
+#     @property
+#     def lang(self):
+#         return "unknown"
+
+
 html = type('html', (tag, Document), {'name': 'html', '__init__': tag_init})
 body = type('body', (tag, Element), {'name': 'body', '__init__': tag_init})
 head = type('head', (tag, Element), {'name': 'head', '__init__': tag_init})

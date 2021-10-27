@@ -76,7 +76,14 @@ class TestCase(unittest.TestCase):
         d = div("test")
         # print(type(d))
         # print(d.nodeName)
-        self.assertEqual("DIV", d.nodeName)
+
+        # TODO - i thought had to be uppercase. but this breaks on html5lib treeparser
+        # line 1681ish html5parser.py  says... assert node.name == "script"
+        # which stops that parser working with domonic
+        # 
+        # self.assertEqual("DIV", d.nodeName)
+
+
         self.assertEqual("test", d.nodeValue)
         self.assertEqual(True, n.contains(c))
 
