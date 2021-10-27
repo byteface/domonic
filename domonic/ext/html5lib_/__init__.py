@@ -86,8 +86,8 @@ def getDomBuilder(ignore):
             if isinstance(name, tuple):
                 raise NotImplementedError
             else:
-                print(self.element)
-                print(self.element.attributes, name)
+                # print(self.element)
+                # print(self.element.attributes, name)
                 try:
                     return self.element.attributes[name].value
                 except Exception as e:
