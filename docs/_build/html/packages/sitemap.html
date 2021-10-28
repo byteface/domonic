@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>sitemap &#8212; domonic 0.6.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -32,12 +33,12 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="sitemap">
+  <section id="sitemap">
 <h1>sitemap<a class="headerlink" href="#sitemap" title="Permalink to this headline">¶</a></h1>
 <p>domonic can help create a sitemap or sitemapindex for your website.</p>
 <p>A sitemap contains a list of urls for your website. Whereas a sitemap index contains a list of sitemaps.</p>
 <p>You can see below How to make sitemaps with python and domonic.</p>
-<div class="section" id="creating-a-sitemapindex">
+<section id="creating-a-sitemapindex">
 <h2>creating a sitemapindex<a class="headerlink" href="#creating-a-sitemapindex" title="Permalink to this headline">¶</a></h2>
 <p>A sitemap index contains a list of sitemaps. A minimal one might look something like this:</p>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>&#39;<span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>&#39;
@@ -62,8 +63,8 @@
 <span class="n">render</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">doc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s1">&#39;sitemap.xml&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="create-a-sitemap">
+</section>
+<section id="create-a-sitemap">
 <h2>Create a sitemap<a class="headerlink" href="#create-a-sitemap" title="Permalink to this headline">¶</a></h2>
 <p>A sitemap contains a list of urls for your website and is limited to 50,000 urls.</p>
 <p>A minimal one might look something like this:</p>
@@ -96,8 +97,8 @@
 <span class="n">render</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">doc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s1">&#39;sitemap1.xml&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="utils">
+</section>
+<section id="utils">
 <h2>utils<a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h2>
 <p>domonic also has some utils for quickly creating sitemaps with default values.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mypages</span> <span class="o">=</span> <span class="p">[]</span>
@@ -114,8 +115,8 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">sm</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="formatting">
+</section>
+<section id="formatting">
 <h2>formatting<a class="headerlink" href="#formatting" title="Permalink to this headline">¶</a></h2>
 <p>You can format with following normal python methods which are regonised by domonic:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sm</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># f string will call __format__ and run through a prettify</span>
@@ -124,50 +125,50 @@
 <span class="c1"># print(f&quot;{sm!a}&quot;)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="more">
+</section>
+<section id="more">
 <h2>more<a class="headerlink" href="#more" title="Permalink to this headline">¶</a></h2>
 <p>For more infor on sitemaps see…</p>
 <p><a class="reference external" href="https://www.sitemaps.org/protocol.html">https://www.sitemaps.org/protocol.html</a></p>
-<div class="section" id="domonic-sitemap">
+<section id="domonic-sitemap">
 <h3>domonic.sitemap<a class="headerlink" href="#domonic-sitemap" title="Permalink to this headline">¶</a></h3>
 <p>generate or load sitemaps</p>
 <p>warning - when using image and video tags from this package they will be namespaced i.e &lt;image:image&gt; and &lt;video:video&gt;
 so i’d advise to only import them within the def that you use them in to avoid conflict with html.image</p>
 <dl class="py class">
-<dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">changefreq</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">changefreq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">lastmod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">lastmod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">loc</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">loc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">priority</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">priority</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">sitemap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">sitemap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">sitemap_format</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/xml/sitemap.html#sitemap_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">sitemap_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/xml/sitemap.html#sitemap_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>attempts to prettify the output of the sitemap.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">sitemap_from_urls</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/xml/sitemap.html#sitemap_from_urls"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">sitemap_from_urls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/xml/sitemap.html#sitemap_from_urls"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Create a sitemap from a list of urls.add()</p>
 <p>Note: This won’t allow you to add priority or changefreq of the urls. or add images etc
 tho u could loop the nodes afterwards and do that.</p>
@@ -177,13 +178,13 @@ make sure you know what you want.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">sitemapindex</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">sitemapindex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py function">
-<dt>
-<code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">sitemapindex_from_urls</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/xml/sitemap.html#sitemapindex_from_urls"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">sitemapindex_from_urls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/xml/sitemap.html#sitemapindex_from_urls"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Create a sitemap index from a list of urls.</p>
 <p>WARNING:
 there’s a difference between a sitemap index and a sitemap.
@@ -199,18 +200,18 @@ make sure you know what you want.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">url</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
 <dl class="py class">
-<dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></code><code class="sig-name descname"><span class="pre">urlset</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.xml.sitemap.</span></span><span class="sig-name descname"><span class="pre">urlset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span></dt>
 <dd></dd></dl>
 
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -299,7 +300,7 @@ make sure you know what you want.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -17,6 +17,20 @@ and [domonic documentation](https://readthedocs.org/projects/domonic/),
 
 The readme contains some tips on testing and running tests.
 
+For dev you will need to install the requirements-dev.txt file.
+
+clone the repo an cd into it.
+
+setup a virtual environment
+
+```
+python3 -m venv venv
+. venv/bin/activate
+pip install -r requirements-dev.txt
+```
+
+and you should be good to go.
+
 
 Discussion
 ----------

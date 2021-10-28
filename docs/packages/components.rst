@@ -243,8 +243,6 @@ Then a given component or template can just return html and render directly into
 	}
 
 
-
-
 *built-in components*
 
 There is a built in components package but its use is discouraged as they may change or be buggy and untested.

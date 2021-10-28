@@ -54,3 +54,6 @@
 
 .. automodule:: domonic.webapi.url
     :members:
+
+.. automodule:: domonic.webapi.fetch
+    :members:

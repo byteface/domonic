@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>d3 &#8212; domonic 0.6.6 documentation</title>
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
@@ -32,12 +33,12 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="d3">
+  <section id="d3">
 <h1>d3<a class="headerlink" href="#d3" title="Permalink to this headline">¶</a></h1>
 <p><em>WARNING: this package is still in dev. expect bugs</em></p>
 <p>d3 is another popular DOM manipulation library available in javascript. This is the python port of that.</p>
 <p>It has several utilities for working with the DOM.</p>
-<div class="section" id="selection">
+<section id="selection">
 <h2>selection<a class="headerlink" href="#selection" title="Permalink to this headline">¶</a></h2>
 <p>d3’s selection API is very powerful.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="o">*</span>
@@ -47,8 +48,8 @@
 <span class="kn">import</span> <span class="nn">domonic.d3</span> <span class="k">as</span> <span class="nn">d3</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="format">
+</section>
+<section id="format">
 <h2>format<a class="headerlink" href="#format" title="Permalink to this headline">¶</a></h2>
 <p>d3’s has a library for formatting numbers to avoid things like floating precision</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="o">*</span>
@@ -57,8 +58,8 @@
 <span class="kn">from</span> <span class="nn">domonic.d3.format</span> <span class="kn">import</span> <span class="nb">format</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="dispatch">
+</section>
+<section id="dispatch">
 <h2>dispatch<a class="headerlink" href="#dispatch" title="Permalink to this headline">¶</a></h2>
 <p>d3 has an event system</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.dom</span> <span class="kn">import</span> <span class="o">*</span>
@@ -66,26 +67,26 @@
 <span class="kn">from</span> <span class="nn">domonic.d3.dispatch</span> <span class="kn">import</span> <span class="n">dispatch</span><span class="p">,</span> <span class="n">Dispatch</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="path">
+</section>
+<section id="path">
 <h2>path<a class="headerlink" href="#path" title="Permalink to this headline">¶</a></h2>
 <p>d3’s path API converts SVG paths to a d3.path object which is compatible with canvas.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.svg</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">domonic.d3.path</span> <span class="kn">import</span> <span class="n">Path</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="polygon">
+</section>
+<section id="polygon">
 <h2>polygon<a class="headerlink" href="#polygon" title="Permalink to this headline">¶</a></h2>
 <p>d3’s has shape API</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.d3.polygon</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 </div>
-<div class="section" id="domonic-d3">
+<section id="domonic-d3">
 <h3>domonic.d3<a class="headerlink" href="#domonic-d3" title="Permalink to this headline">¶</a></h3>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -174,7 +175,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

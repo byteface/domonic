@@ -6,7 +6,7 @@ certifi==2021.5.30
 chardet==4.0.0
 charset-normalizer==2.0.3
 coverage==5.5
-docutils==0.17.1
+docutils==0.18
 flake8==3.9.2
 httptools==0.2.0
 idna==3.2
@@ -23,12 +23,12 @@ pyparsing==2.4.7
 python-dateutil==2.8.2
 pytz==2021.1
 requests==2.26.0
-sanic==21.6.1
+sanic==21.9.1
 sanic-routing==0.7.1
 sanic-session==0.8.0
 six==1.16.0
 snowballstemmer==2.1.0
-Sphinx==4.1.2
+Sphinx==4.2.0
 sphinxcontrib-applehelp==1.0.2
 sphinxcontrib-devhelp==1.0.2
 sphinxcontrib-htmlhelp==2.0.0
@@ -37,7 +37,7 @@ sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
 toml==0.10.2
 ujson==4.0.2
-urllib3==1.26.6
+urllib3==1.26.7
 uvloop==0.15.3
-websockets==9.1
+websockets==10.0
 wheel
