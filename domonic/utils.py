@@ -249,10 +249,8 @@ class Utils(object):
         from itertools import permutations
         return [''.join(perm) for perm in list(permutations(word))]
 
-    @deprecated
-    @staticmethod
+    @staticmethod  # TODO - remove as we have color class. (might be getting used in examples)
     def random_color(self):
-        ''' TODO - remove in 0.3 as we have color class. '''
         r = lambda: random.randint(0, 255)
         return str('#%02X%02X%02X' % (r(), r(), r()))
 

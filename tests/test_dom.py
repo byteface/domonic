@@ -1088,7 +1088,6 @@ class TestCase(unittest.TestCase):
         # not able to recreate. Comment was updated to a Node in 6.1
         # this may have been due to that
 
-
     def test_treewalker(self):
 
         from domonic.dom import Comment
