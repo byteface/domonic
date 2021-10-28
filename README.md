@@ -14,7 +14,6 @@
 [![Build status](https://travis-ci.com/byteface/domonic.svg?branch=master)](https://travis-ci.com/byteface/domonic.svg?branch=master)
 [![Python package](https://github.com/byteface/domonic/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/byteface/domonic/actions/workflows/python-package.yml)
 
-
 #### Contains several evolving packages:
 
 • [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎 <br />
@@ -505,7 +504,6 @@ command.run("echo hi")
 
 Take a look at the code in 'terminal.py' to see all the commands as there's loads. (Disclaimer: not all tested.)
 
-
 Windows users can use now use cmd.
 
 ```python
@@ -554,7 +552,6 @@ for l in links:
 # turn the downloaded site into .pyml ;)
 print(page.__pyml__())
 ```
-
 
 ## DOCS
 
@@ -607,11 +604,8 @@ TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
     - You are Missing a comma between attributes. before the **{}
 
 
-##### TODO - catch these errors and raise a friendly custom ParseError that tells you what to fix
-
-
-
 ### CLI
+
 Use the command line interface to help you out.
 
 To launch the docs for a quick reference to the APIs use:
@@ -622,28 +616,16 @@ python3 -m domonic -h
 
 ```
 
-This command will attempt to generate a template from a webpage. (only simple pages for now)
-
-```python
-
-python3 -m domonic -d http://eventual.technology
-
-```
-
-Then edit/tweak it to get what you need and build new components quicker.
-
-
 ### EXAMPLE PROJECTS
 
 A browser based file browser. Working example of how components can work:
-https://github.com/byteface/Blueberry/
+[Blueberry](https://github.com/byteface/Blueberry/)
 
 A cron viewer:
-https://github.com/byteface/ezcron/
+[ezcron](https://github.com/byteface/ezcron/)
 
 A basic game:
 https://github.com/byteface/bombdisposer/
-
 
 checkout the docs for examples on how to easily make sitemaps with python. 
 or for example how to use domonic with flask, django, sanic and other server frameworks.
@@ -651,11 +633,10 @@ or for example how to use domonic with flask, django, sanic and other server fra
 docs:
 https://domonic.readthedocs.io/
 
-
 There's also several useage examples in the repo so pull and have a look.
 
-
 ### Join-In
+
 Feel free to contribute if you find it useful. (I'd be grateful for help on all fronts)
 
 Email me, message me directly if you like or create a discussion on here. Or join the discord.
@@ -689,6 +670,7 @@ make test  # default tests ubuntu. so will fail on window when terminal test run
 ```
 
 or to test a single function:
+
 ```bash
 python -m unittest tests.test_javascript.TestCase.test_javascript_array
 python -m unittest tests.test_dQuery.TestCase.test_addClass
@@ -699,19 +681,23 @@ python3 -m unittest tests.test_cmd.TestCase.test_cmd_dir  # only windows
 ```
 
 or to test a whole module
+
 ```bash
 python -m unittest tests.test_html
 python -m unittest tests.test_CDN
 ```
 
 to see coverage
+
 ```bash
 coverage run -m unittest discover tests/
 coverage report
 ```
 
 ### rebuild docs
+
 See Makefile:
+
 ```bash
 . venv/bin/activate
 cd docs

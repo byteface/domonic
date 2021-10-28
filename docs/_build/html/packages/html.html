@@ -337,6 +337,46 @@
 <p><a class="reference external" href="https://github.com/byteface/domonic/issues/28">https://github.com/byteface/domonic/issues/28</a></p>
 <p>you just have to use my fork instead.</p>
 <p><a class="reference external" href="https://github.com/byteface/html5-parser/commit/fa83bf1a5e225f6934a1ad38d092fc6baf3c4934">https://github.com/byteface/html5-parser/commit/fa83bf1a5e225f6934a1ad38d092fc6baf3c4934</a></p>
+</section>
+<section id="common-errors">
+<h2>Common Errors<a class="headerlink" href="#common-errors" title="Permalink to this headline">¶</a></h2>
+<p>If templates are typed incorrectly they will not work.</p>
+<p>There’s a small learning curve getting .pyml templates correct. Usually</p>
+<ul class="simple">
+<li><ol class="arabic simple">
+<li><p>a missing comma between tags,</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="2">
+<li><p>an underscore missing on an attribute or</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="3">
+<li><p>params in the wrong order.</p></li>
+</ol>
+</li>
+</ul>
+<p>Use this reference when starting out as a reminder when you get an error.</p>
+<p>Here are the 4 solutions to those common errors when creating large templates…
+( i.e. see bootstrap5 examples in test_domonic.py )</p>
+<dl class="simple">
+<dt>IndexError: list index out of range</dt><dd><ul class="simple">
+<li><p>You most likely didn’t put a underscore on an attribute.</p></li>
+</ul>
+</dd>
+<dt>SyntaxError: invalid syntax</dt><dd><ul class="simple">
+<li><p>You are Missing a comma between attributes</p></li>
+</ul>
+</dd>
+<dt>SyntaxError: positional argument follows keyword argument</dt><dd><ul class="simple">
+<li><p>You have to pass attributes LAST. and strings and objects first. <em>see notes on templating above</em></p></li>
+</ul>
+</dd>
+<dt>TypeError: unsupported operand type(s) for ** or pow(): ‘str’ and ‘dict’</dt><dd><ul class="simple">
+<li><p>You are Missing a comma between attributes. before the <a href="#id1"><span class="problematic" id="id2">**</span></a>{}</p></li>
+</ul>
+</dd>
+</dl>
 <section id="domonic-html">
 <h3>domonic.html<a class="headerlink" href="#domonic-html" title="Permalink to this headline">¶</a></h3>
 <p>Generate HTML using python 3</p>
@@ -1017,6 +1057,7 @@ i.e. hypenated tags &lt;some-custom-tag&gt;&lt;/some-custom-tag&gt;</p>
 <li class="toctree-l2"><a class="reference internal" href="#f-strings">f-strings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#loading-pyml-templates">loading .pyml templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parsing">parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-errors">Common Errors</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dom.html">dom</a></li>
@@ -1073,7 +1114,8 @@ i.e. hypenated tags &lt;some-custom-tag&gt;&lt;/some-custom-tag&gt;</p>
 <li><a class="reference internal" href="#magic-methods">Magic methods</a></li>
 <li><a class="reference internal" href="#f-strings">f-strings</a></li>
 <li><a class="reference internal" href="#loading-pyml-templates">loading .pyml templates</a></li>
-<li><a class="reference internal" href="#parsing">parsing</a><ul>
+<li><a class="reference internal" href="#parsing">parsing</a></li>
+<li><a class="reference internal" href="#common-errors">Common Errors</a><ul>
 <li><a class="reference internal" href="#domonic-html">domonic.html</a></li>
 </ul>
 </li>

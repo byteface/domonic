@@ -6,7 +6,7 @@ certifi==2021.5.30
 chardet==4.0.0
 charset-normalizer==2.0.3
 coverage==5.5
-docutils==0.18
++docutils==0.17.1
 flake8==3.9.2
 httptools==0.2.0
 idna==3.2

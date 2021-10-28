@@ -425,7 +425,6 @@ this example loads a template and passing params for rendering
 * warning loads also is very basic and can only convert simple html as the parser is still in development
 
 
-
 parsing
 --------------------------------
 
@@ -437,6 +436,34 @@ you just have to use my fork instead.
 
 https://github.com/byteface/html5-parser/commit/fa83bf1a5e225f6934a1ad38d092fc6baf3c4934
 
+
+Common Errors
+--------------------------------
+
+If templates are typed incorrectly they will not work.
+
+There's a small learning curve getting .pyml templates correct. Usually 
+
+- (1) a missing comma between tags, 
+- (2) an underscore missing on an attribute or 
+- (3) params in the wrong order.
+
+Use this reference when starting out as a reminder when you get an error.
+
+Here are the 4 solutions to those common errors when creating large templates...
+( i.e. see bootstrap5 examples in test_domonic.py )
+
+IndexError: list index out of range
+    - You most likely didn't put a underscore on an attribute.
+
+SyntaxError: invalid syntax
+    - You are Missing a comma between attributes
+
+SyntaxError: positional argument follows keyword argument
+    - You have to pass attributes LAST. and strings and objects first. *see notes on templating above*
+
+TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
+    - You are Missing a comma between attributes. before the **{}
 
 
 .. automodule:: domonic.html
