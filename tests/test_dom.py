@@ -83,7 +83,6 @@ class TestCase(unittest.TestCase):
         # 
         # self.assertEqual("DIV", d.nodeName)
 
-
         self.assertEqual("test", d.nodeValue)
         self.assertEqual(True, n.contains(c))
 
@@ -420,33 +419,253 @@ class TestCase(unittest.TestCase):
         assert len(result) == 1
         assert result[0].className == 'test this thing'
 
-        pass
+        # TODO - put this somewhere global and load in to share with other tests
+        page = html(
+            head(
+                meta(_charset="utf-8"),
+                meta(**{"_http-equiv": "X-UA-Compatible"}, _content="IE=edge"),
+                title('website.com'),
+                meta(_name="description", _content=""),
+                meta(_name="viewport", _content="width=device-width, initial-scale=1"),
+                meta(_name="robots", _content="all,follow"),
+                link(_rel="stylesheet", _href="static/css/bootstrap.min.css"),
+                link(_rel="shortcut icon", _href="favicon.png")
+            ),
+            body(
+                div(_class="overlay").html(
+                    div(_class="content h-100 d-flex align-items-center").html(
+                        div(_class="container text-center text-black").html(
+                            p("Welcome to the information age", _class="headings-font-family text-uppercase lead"),
+                            h1("We are", span("COMPANY", _class="font-weight-bold d-block"), _class="text-uppercase hero-text text-black"),
+                            p("And this is our company website", _class="headings-font-family text-uppercase lead")
+                        )
+                    )
+                ),
+                header(_class="header sticky-top").html(
+                    nav(_class="navbar navbar-expand-lg bg-white border-bottom py-0").html(
+                        div(_class="container").html(
+                            h6("website.com"),
+                            div(_id="navbarSupportedContent", _class="collapse navbar-collapse").html(
+                                ul(_class="navbar-nav ml-auto px-3").html(
+                                    li(a("Home", _href="", _class="nav-link text-uppercase link-scroll"), _class="nav-item active"),
+                                    li(a("About", _href="#about", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
+                                    li(a("Services", _href="#services", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
+                                    li(a("Team", _href="#team", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
+                                    li(a("Contact", _href="#contact", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
+                                )
+                            )
+                        )
+                    )
+                ),
+                section(_id="about", _class="about").html(
+                    div(_class="container").html(
+                        div(_class="row mb-5").html(
+                            div(_class="col-lg-12").html(
+                                header(_style="padding-top:20px;").html(
+                                    h6("About us", _class="lined text-uppercase"),
+                                ),
+                                p("Specialists in xxxxx.", _class="lead"),
+                                p("COMPANY can provide xxxxxx solutions. We have expertise in the following areas."),
+                                div(_class="row").html(
+                                    div(_class="col-lg-6").html(
+                                        ul(_class="mb-0").html(
+                                            li("A"),
+                                            li("B"),
+                                            li("C"),
+                                        )
+                                    ),
+                                    div(_class="col-lg-6").html(
+                                        ul(_class="mb-0").html(
+                                            li("1"),
+                                            li("2"),
+                                            li("3"),
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                div(_class="row text-white text-center", _style="background: url(static/img/header.jpg); padding:20px;").html(
+                    div(_class="col-lg-12").html(
+                        h5(_class="text-uppercase font-weight-bold").html(
+                            i(_class="far fa-image mr-2", ), "Headline."),
+                        p("Lorem ipsum."),
+                    ),
+                    div(_class="col-lg-12").html(
+                        h5(_class="text-uppercase font-weight-bold").html(
+                            i(_class="far fa-image mr-2", ), "Headline."),
+                        p("Lorem ipsum."),
+                    ),
+
+                ),
+                section(_id="services", _class="bg-gray").html(
+                    div(_class="container").html(
+                        header(_class="text-center mb-5").html(
+                            #  h2("Services", _class="lined text-uppercase"),
+                        ),
+                        div(_class="row text-center").html(
+                            div(_class="col-lg-4").html(
+                                div(_class="bg-white mb-4 p-4").html(
+                                    h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
+                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    p("Lorem ipsum.", _class="small text-gray"),
+                                )
+                            ),
+                            div(_class="col-lg-4").html(
+                                div(_class="bg-white mb-4 p-4").html(
+                                    h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
+                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    p("Lorem ipsum.", _class="small text-gray"),
+                                )
+                            ),
+                            div(_class="col-lg-4").html(
+                                div(_class="bg-white mb-4 p-4").html(
+                                    h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
+                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    p("Lorem ipsum.", _class="small text-gray"),
+                                )
+                            ),
+                        )
+                    ),
+                    section(_id="team").html(
+                        div(_class="container").html(
+                            header(_class="text-center mb-5").html(
+                                # h2("Our team", _class="text-uppercase lined"),
+                            ),
+                            div(_class="row text-center").html(
+                                # div(_class="col-lg-3 col-md-6 mb-4").html(
+                                div(_class="col-lg-12").html(
+                                    img(_src="static/img/gol.gif", _alt="Username", _class="img-fluid mb-4", _width="300px;", _height="300px;"),
+                                    h4(_class="font-weight-bold text-uppercase").html(
+                                        a("Username", _href="#", _class="no-anchor-style")
+                                    ),
+                                    p("Director", _class="small text-gray text-uppercase"),
+                                ),
+                            )
+                        )
+                    ),
+                    section(_id="contact").html(
+                        div(_class="container").html(
+                            header(_class="text-center mb-5").html(
+                                #  h2("Contact", _class="text-uppercase lined"),
+                            ),
+                            div(_class="row").html(
+                                div(_class="col-lg-12 text-center").html(
+                                    p(
+                                        "Email : ",
+                                        a("user@website.com", _href="mailto:user@website.com"),
+                                        br(),
+                                        "or Call us on : ",
+                                        a("123456789", _href="tel:123456789")
+                                    ),
+                                    ul(_class="mb-0 list-inline text-center").html(
+                                        li(a(i(_class="fab fa-twitter"), _href="https://twitter.com/user", _class="social-link social-link-twitter"), _class="list-inline-item"),
+                                        li(a(i(_class="fab fa-linkedin"), _rel="nofollow", _href="https://www.linkedin.com/in/user/", _class="social-link social-link-instagram"), _class="list-inline-item"),
+                                        li(a(i(_class="fas fa-envelope"), _href="mailto:user@website.com", _class="social-link social-link-email"), _class="list-inline-item")
+                                    )
+                                )
+                            )
+                        )
+                    ),
+                    footer(_style="padding:20px;").html(
+                        div(_class="row text-center").html(
+                            div(_class="col-lg-12 text-center").html(
+                                p("Copyright &copy; 2021 COMPANY. All rights Reserved.", _class="mb-0 text-gray"),
+                            )
+                        )
+                    ),
+                    script(_src="static/js/jquery.min.js"),
+                    link(_rel="stylesheet", _href="https://use.fontawesome.com/releases/v5.7.1/css/all.css", _integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr", _crossorigin="anonymous")
+                )
+            )
+        )
+
+        links = page.querySelectorAll("a[rel=nofollow]")
+        for linky in links:
+            print(linky.getAttribute("href"))
+        print('GO! >>>>>>>>>')  # works
+        # return
+
+        result = page.querySelectorAll("li[class='nav-item']")
+        print(result)
+        for r in result:
+            print(r)
+        print('>>>>>>>>>')  # works
+
+        result = page.querySelectorAll("h4[class='font-weight-bold text-uppercase']")
+        print(result)
+        for r in result:
+            print(r)
+        print('>>>>>>>>>')  # fails
+
+        result = page.querySelectorAll("li.nav-item")
+        print(result)
+        for r in result:
+            print(r)
+        print('>>>>>>>>>')  # works
+
+        result = page.querySelectorAll("a[href='#services']")
+        print(result)
+        for r in result:
+            print(r)
+        print('>>>>>>>>>')  # works
+
+        result = page.querySelectorAll("p.text-gray")
+        print(result)
+        for r in result:
+            print(r)
+        print('>>>>>>>>>')  # works
+
+        result = page.querySelectorAll("a[href$='technology']")
+        print(result)
+        for r in result:
+            print(r)
+
+        print('>>>>>>>>>')  # works
+
+        result = page.querySelectorAll("a[href*='twitter']")
+        print(result)
+        for r in result:
+            print(r)
+
+        print('>>>>>>>>>')  # works
+
+        result = dom1.querySelectorAll('.fa-twitter')
+        print('--')
+        print("z RESULT>>>>>", result)
+        # TODO - failing. however this is now running through qselectorall
+        # return
+        # assert result.className == 'test this thing'
+
+
 
     def test_getElementsBySelector(self):
 
         dom1 = html(div(div(div(div(div(div(div(div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
 
         result = dom1.getElementsBySelector('#thing', dom1)[0]
-        print("RESULT>>>>>", result)
-        print('--')
+        # print("RESULT>>>>>", result)
+        # print('--')
         assert result.id == 'thing'
 
         result = dom1.getElementsBySelector('span', dom1)[0]
-        print('--')
-        print("RESULT>>>>>", result)
-        assert result.id == 'fun'
-
-        result = dom1.getElementsBySelector('.test', dom1)#[0]
-        print('--')
-        print("RESULT>>>>>", result)
-        return
-        assert result.className == 'test this thing'
-
-        result = dom1.getElementsBySelector('.this', dom1)[0]
         # print('--')
         # print("RESULT>>>>>", result)
-        assert len(result) == 1
-        assert result[0].className == 'test this thing'
+        assert result.id == 'fun'
+
+        # result = dom1.getElementsBySelector('.test', dom1)#[0]  # [0] #?? no class called test?
+        # print('--')
+        # print("RESULT>>>>>", result)
+        # TODO - failing. however this is now running through qselectorall
+        # return
+        # assert result.className == 'test this thing'
+
+        # result = dom1.getElementsBySelector('.this', dom1)[0]
+        # print('--')
+        # print("RESULT>>>>>", result)
+        # assert len(result) == 1
+        # assert result[0].className == 'test this thing'
 
         page = html(
             head(
@@ -620,14 +839,6 @@ class TestCase(unittest.TestCase):
         print('xxxxxxxxxxxxxxxxxxxxxxxx')
         node = str(page.getElementsBySelector("#team", page)[0])
         assert node.startswith('<section id="team"')
-
-
-
-
-
-
-
-
 
         # print(º('a[rel=nofollow]'))
         # print(str(page.getElementsBySelector("a[rel=nofollow]", page)[0]))
@@ -971,6 +1182,7 @@ class TestCase(unittest.TestCase):
 
         # test 5
         # https://paul.kinlan.me/dom-treewalker/
+
 
 if __name__ == '__main__':
     unittest.main()

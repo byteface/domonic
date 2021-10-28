@@ -6,7 +6,7 @@
 
     These methods operate strings not on pyml objects. For dom manipulation use the dom.
 
-    WARNING> dont use this class. still in development/idea phase. Teasing util methods out from the in-place parser 
+    WARNING> dont use this class. still in development/idea phase. Teasing util methods out from the in-place parser
 
 """
 
@@ -14,6 +14,7 @@ import re
 
 from domonic.html import *
 from domonic.xml.sitemap import *
+
 
 def create_element(name='custom_tag', *args, **kwargs):
     '''
@@ -60,26 +61,26 @@ def remove_tags(html_str: str, tags):
     return html_str
 
 
-def remove_extra_whitespace(html: str):
+def remove_extra_whitespace(html_str: str):
     """
     only allow single spaces and tabs
     """
-    html = re.sub(r'\s+', ' ', html)
-    html = re.sub(r'\t', ' ', html)
-    return html
+    html_str = re.sub(r'\s+', ' ', html_str)
+    html_str = re.sub(r'\t', ' ', html_str)
+    return html_str
     # remove abnormal spacing between tag attributes (TODO- maybe 2 spaces is valid somewhere?)
     # page = page.replace('   ', ' ')
     # page = page.replace('  ', ' ')
     # page = page.replace('  ', ' ')
 
 
-def remove_doctype(html: str):
+def remove_doctype(html_str: str):
     """
-    remove the doctype from the html
+    remove the doctype from the html_str
     """
     doctype = re.compile(r'<!DOCTYPE.*?>', re.IGNORECASE)
-    html = doctype.sub('', html)
-    return html
+    html_str = doctype.sub('', html_str)
+    return html_str
     # print('parsing parsing parsing!!')
 
     page = ''.join(page.split('<!DOCTYPE HTML>'))
@@ -103,31 +104,34 @@ def remove_doctype(html: str):
     # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'))
     # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'))
 
-def remove_xml_header(html: str):
+
+def remove_xml_header(html_str: str):
     """
-    remove the xml header from the html
+    remove the xml header from the html_str
     """
     header = re.compile(r'<\?xml.*?\?>', re.IGNORECASE)
-    html = header.sub('', html)
-    return html
+    html_str = header.sub('', html_str)
+    return html_str
 
-def remove_html_tags(html: str):
+
+def remove_html_tags(html_str: str):
     """
-    remove all html tags from the html
+    remove all html tags from the html_str
     """
     # remove all tags
     page = re.compile(r'<.*?>', re.IGNORECASE)
-    html = page.sub('', html)
-    return html
+    html_str = page.sub('', html_str)
+    return html_str
 
-def remove_html_tag_by_name(html: str, tag: str):
+
+def remove_html_tag_by_name(html_str: str, tag: str):
     """
-    remove all html tags from the html
+    remove all html tags with the given name from the html_str
     """
     # remove all tags
     page = re.compile(r'<.*?{}.*?>'.format(tag), re.IGNORECASE)
-    html = page.sub('', html)
-    return html
+    html_str = page.sub('', html_str)
+    return html_str
 
 
 # def remove_all_tags(html: str):
@@ -136,102 +140,112 @@ def remove_html_tag_by_name(html: str, tag: str):
 #     """
 #     page = re.sub(r'<[^>]*>', '', page)
 
-def remove_content_between_brackets(html: str):
+def remove_content_between_brackets(html_str: str):
     """
     remove content between brackets
     """
-    page = re.sub(r'\[[^\]]*\]', '', page)
+    page = re.sub(r'\[[^\]]*\]', '', html_str)
+    return page
 
-def remove_content_between_parenthesis(html: str):
+
+def remove_content_between_parenthesis(html_str: str):
     """
     remove content between parenthesis
     """
-    page = re.sub(r'\([^\)]*\)', '', page)
+    page = re.sub(r'\([^\)]*\)', '', html_str)
+    return page
 
-def remove_content_between_braces(html: str):
+
+def remove_content_between_braces(html_str: str):
     """
     remove content between braces
     """
-    page = re.sub(r'\{[^\}]*\}', '', page)
+    page = re.sub(r'\{[^\}]*\}', '', html_str)
+    return page
 
-# def remove_consecutive_spaces(html: str):
+# def remove_consecutive_spaces(html_str: str):
 #     """
 #     remove consecutive spaces
 #     """
 #     page = re.sub(r'\s+', ' ', page)
 
 
-def remove_whitespace(html: str):
+def remove_whitespace(html_str: str):
     """
     remove whitespace
     """
-    html = re.sub(r'\s+', ' ', html)
-    return html
+    html_str = re.sub(r'\s+', ' ', html_str)
+    return html_str
 
-def remove_newlines(html: str):
+
+def remove_newlines(html_str: str):
     """
     remove newlines
     """
-    html = re.sub(r'\n', '', html)
-    return html
+    html_str = re.sub(r'\n', '', html_str)
+    return html_str
 
-def remove_tabs(html: str):
+
+def remove_tabs(html_str: str):
     """
-    remove all tabs from the html
+    remove all tabs from the html_str
     """
-    html = re.sub(r'\t', '', html)
-    return html
+    html_str = re.sub(r'\t', '', html_str)
+    return html_str
 
 
-def replace_special_quotes(html: str):
+def replace_special_quotes(html_str: str):
     """
     replace special quotes with html entities
     """
     # special quotes
-    page = page.replace('“', '&ldquo;')
-    page = page.replace('”', '&rdquo;')
-    page = page.replace('’', '&rsquo;')
-    page = page.replace('‘', '&lsquo;')
-    page = page.replace('„', '&sbquo;')
-    page = page.replace('‚', '&obquo;')
-    page = page.replace('‹', '&usbquo;')
-    page = page.replace('›', '&ensquo;')
+    html_str = html_str.replace('“', '&ldquo;')
+    html_str = html_str.replace('”', '&rdquo;')
+    html_str = html_str.replace('’', '&rsquo;')
+    html_str = html_str.replace('‘', '&lsquo;')
+    html_str = html_str.replace('„', '&sbquo;')
+    html_str = html_str.replace('‚', '&obquo;')
+    html_str = html_str.replace('‹', '&usbquo;')
+    html_str = html_str.replace('›', '&ensquo;')
+    return html_str
 
 
-def replace_special_chars(html: str):
+def replace_special_chars(html_str: str):
     """
     replace special characters with html entities
     """
     # special chars
-    page = page.replace('&', '&amp;')
-    page = page.replace('<', '&lt;')
-    page = page.replace('>', '&gt;')
-    page = page.replace('"', '&quot;')
-    page = page.replace("'", '&#39;')
+    html_str = html_str.replace('&', '&amp;')
+    html_str = html_str.replace('<', '&lt;')
+    html_str = html_str.replace('>', '&gt;')
+    html_str = html_str.replace('"', '&quot;')
+    html_str = html_str.replace("'", '&#39;')
+    return html_str
 
 
 # def remove_bom(html: str):
     # page = page.replace('\ufeff', '')
 
-def replace_punctuation(html: str):
+def replace_punctuation(html_str: str):
     """
     replace punctuation with html entities
     """
     # special chars
-    page = page.replace('.', '&#46;')
-    page = page.replace(',', '&#44;')
-    page = page.replace('!', '&#33;')
-    page = page.replace('?', '&#63;')
-    page = page.replace('(', '&#40;')
-    page = page.replace(')', '&#41;')
-    page = page.replace('[', '&#91;')
-    page = page.replace(']', '&#93;')
-    page = page.replace('{', '&#123;')
-    page = page.replace('}', '&#125;')
-    page = page.replace('<', '&lt;')
-    page = page.replace('>', '&gt;')
-    page = page.replace('"', '&quot;')
-    page = page.replace("'", '&#39;')
+    html_str = html_str.replace('.', '&#46;')
+    html_str = html_str.replace(',', '&#44;')
+    html_str = html_str.replace('!', '&#33;')
+    html_str = html_str.replace('?', '&#63;')
+    html_str = html_str.replace('(', '&#40;')
+    html_str = html_str.replace(')', '&#41;')
+    html_str = html_str.replace('[', '&#91;')
+    html_str = html_str.replace(']', '&#93;')
+    html_str = html_str.replace('{', '&#123;')
+    html_str = html_str.replace('}', '&#125;')
+    html_str = html_str.replace('<', '&lt;')
+    html_str = html_str.replace('>', '&gt;')
+    html_str = html_str.replace('"', '&quot;')
+    html_str = html_str.replace("'", '&#39;')
+    return html_str
 
 
 # def add_newlines(html: str):
@@ -240,11 +254,12 @@ def replace_punctuation(html: str):
     # """
     # page = page.replace('\n', '<br>')
 
-def replace_newlines(html: str):
+def replace_newlines(html_str: str):
     """
     remove newlines
     """
-    page = page.replace('<br>', '\n')
+    html_str = html_str.replace('<br>', '\n')
+    return html_str
 
 # def add_paragraphs(html: str):
 #     """
@@ -332,11 +347,12 @@ def dent(pyml, use_tabs=False):
     return dented
 
 
-def add_cdata_tags_to_every_node(content: str): # TODO - just have a CDATASection class?
+def add_cdata_tags_to_every_node(content: str):  # TODO - just have a CDATASection class?
     """[puts a CDATA tag on every node in the document] """
     content = content.replace('<', '<![CDATA[')
     content = content.replace('>', ']]>')
     return content
+
 
 def remove_cdata_tags_from_every_node(content: str):
     """[removes a CDATA tag from every node in the document] """
@@ -344,12 +360,11 @@ def remove_cdata_tags_from_every_node(content: str):
     content = content.replace('<![CDATA[', '<')
     return content
 
+
 def add_xml_declaration_to_document(content: str):
     """[puts an XML declaration at the top of the document] """
     content = content.replace('<', '<?xml version="1.0" encoding="UTF-8" ?>\n<')
     return content
-
-
 
 
 # TODO - other methods I can add to this class

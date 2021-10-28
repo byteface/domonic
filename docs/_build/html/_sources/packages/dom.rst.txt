@@ -54,12 +54,20 @@ Here's an exmaple of creating your own elements using the DOM API
 
 querySelectorAll
 ----------------
-NOTE ... (this still in dev.)
+
+querySelectorAll and querySelector are useful for finding elements in the DOM.
 
 .. code-block :: python
 
-	mysite.querySelectorAll('button')  # *note - still in dev. use getElementsBySelector for more complex selectors
-	# mysite.getElementsBySelector
+	mysite.querySelectorAll('button')
+	mysite.querySelectorAll('.fa-twitter')
+	mysite.querySelectorAll("a[rel=nofollow]")
+	mysite.querySelectorAll("a[href='#services']")
+	mysite.querySelectorAll("a[href$='technology']")
+
+	somelinks = mysite.querySelectorAll("a[href*='twitter']")
+	for l in somelinks:
+		print(l.href)
 
 
 To use the DOM either reference your root 'html' node or import the dom modules global 'document'

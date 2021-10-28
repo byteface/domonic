@@ -549,16 +549,6 @@ class Function(Object):
         Returns:
             [type]: [result of calling the function.]
         """
-        # raise NotImplementedError
-        # print('CALL!!')
-        # print(thisArg)
-        # print(args)
-        # if thisArg is not None:
-            # return self.func(thisArg, *args)
-            # return self.func(this=thisArg, *args)
-
-        # print('AAAARGGS!!', args)
-
         if thisArg is not None:
             try:
                 return self.func(thisArg)  # kwargs?
@@ -1243,7 +1233,7 @@ class Date(Object):
         if self.formatter == 'python':
             return self.date.strftime('%Y-%m-%d %H:%M:%S')
         else:
-            return self.date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')  #js
+            return self.date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')  # js
 
     def parse_date(self, date_string):
         self.date = parse(date_string)
@@ -3121,7 +3111,7 @@ class String(object):
         Returns:
             [str]: [the string as a webpage]
         """
-        from domonic.html import html, body, head, title, script, style, meta, link, a, h1
+        from domonic.html import html, body, head, title, script, style, meta, link, h1
         content = html(
             head(
                 title(self.x),
@@ -3621,7 +3611,8 @@ class URLSearchParams:
         self.params.sort()
 
     def values(self):
-        """ Returns an iterator allowing iteration through all values of the key/value pairs contained in this object. """
+        """ Returns an iterator allowing iteration through all values of the
+        key/value pairs contained in this object. """
         return self.params.values()
 
     def toString(self):
@@ -3671,7 +3662,7 @@ class ArrayBuffer:
 
     def __getattr__(self, name):
         # return getattr(self.buffer, name)
-        # try on self if not get from buffer
+        # TODO - try on self if not get from buffer. (was this a todo)?
         return getattr(self.buffer, name)
 
     def __len__(self):
@@ -3742,7 +3733,6 @@ class DataView(ArrayBuffer):
 
 
 class TypedArray:
-# class Int8Array:
 
     BYTES_PER_ELEMENT = 1
 
@@ -3794,7 +3784,8 @@ class TypedArray:
                 raise Exception("byteOffset out of range")
 
             # if (this.byteOffset % this.BYTES_PER_ELEMENT) {
-            # // The given byteOffset must be a multiple of the element size of the specific type, otherwise an exception is raised.
+            # // The given byteOffset must be a multiple of the element size of the specific type,
+            # otherwise an exception is raised.
             # throw new RangeError("ArrayBuffer length minus the byteOffset is not a multiple of the element size.");
             # }
             if self.byteOffset % self.BYTES_PER_ELEMENT:
@@ -3964,7 +3955,7 @@ class TypedArray:
         # tmp = None
 
         if (type(index, object) and index == self):
-        #     // void set(TypedArray arr, optional unsigned long offset)
+            # void set(TypedArray arr, optional unsigned long offset)
             arr = index
             offset = ToUint32(value)
 
@@ -3993,13 +3984,13 @@ class TypedArray:
                     s += 1
                     d += 1
         elif (type(index, object) and index != self):
-        #     // void set(sequence<type> arr, optional unsigned long offset);
+            # void set(sequence<type> arr, optional unsigned long offset);
             sequence = index
             nlen = ToUint32(sequence.length)
             offset = ToUint32(value)
 
             if (offset + nlen > self.length):
-            #   raise RangeError("Offset plus length of arr is out of range")
+                # raise RangeError("Offset plus length of arr is out of range")
                 raise Exception("Offset plus length of arr is out of range")
 
             for i in range(0, len):
@@ -4241,37 +4232,58 @@ class __byteutils__():
         # return struct.pack('>f', v)
 
 
-Int8Array = type('Int8Array', (TypedArray,), {'name': 'Int8Array', '_pack': __byteutils__.packI8, '_unpack': __byteutils__.unpackI8})
+Int8Array = type('Int8Array',
+                 (TypedArray,),
+                 {'name': 'Int8Array', '_pack': __byteutils__.packI8, '_unpack': __byteutils__.unpackI8})
 Int8Array.BYTES_PER_ELEMENT = 1
 
-Uint8Array = type('Uint8Array', (TypedArray,), {'name': 'Uint8Array', '_pack': __byteutils__.packU8, '_unpack': __byteutils__.unpackU8})
+Uint8Array = type('Uint8Array',
+                  (TypedArray,),
+                  {'name': 'Uint8Array', '_pack': __byteutils__.packU8, '_unpack': __byteutils__.unpackU8})
 Uint8Array.BYTES_PER_ELEMENT = 1
 
-Uint8ClampedArray = type('Uint8ClampedArray', (TypedArray,), {'name': 'Uint8ClampedArray', '_pack': __byteutils__.packU8Clamped, '_unpack': __byteutils__.unpackU8})
+Uint8ClampedArray = type('Uint8ClampedArray',
+                         (TypedArray,),
+                         {'name': 'Uint8ClampedArray', '_pack': __byteutils__.packU8Clamped, '_unpack': __byteutils__.unpackU8})
 Uint8ClampedArray.BYTES_PER_ELEMENT = 1
 
-Int16Array = type('Int16Array', (TypedArray,), {'name': 'Int16Array', '_pack': __byteutils__.packI16, '_unpack': __byteutils__.unpackI16})
+Int16Array = type('Int16Array',
+                  (TypedArray,),
+                  {'name': 'Int16Array', '_pack': __byteutils__.packI16, '_unpack': __byteutils__.unpackI16})
 Int16Array.BYTES_PER_ELEMENT = 2
 
-Uint16Array = type('Uint16Array', (TypedArray,), {'name': 'Uint16Array', '_pack': __byteutils__.packU16, '_unpack': __byteutils__.unpackU16})
+Uint16Array = type('Uint16Array',
+                   (TypedArray,),
+                   {'name': 'Uint16Array', '_pack': __byteutils__.packU16, '_unpack': __byteutils__.unpackU16})
 Uint16Array.BYTES_PER_ELEMENT = 2
 
-Int32Array = type('Int32Array', (TypedArray,), {'name': 'Int32Array', '_pack': __byteutils__.packI32, '_unpack': __byteutils__.unpackI32})
+Int32Array = type('Int32Array',
+                  (TypedArray,),
+                  {'name': 'Int32Array', '_pack': __byteutils__.packI32, '_unpack': __byteutils__.unpackI32}
+                  )
 Int32Array.BYTES_PER_ELEMENT = 4
 
-Uint32Array = type('Uint32Array', (TypedArray,), {'name': 'Uint32Array', '_pack': __byteutils__.packU32, '_unpack': __byteutils__.unpackU32})
+Uint32Array = type('Uint32Array',
+                   (TypedArray,),
+                   {'name': 'Uint32Array', '_pack': __byteutils__.packU32, '_unpack': __byteutils__.unpackU32})
 Uint32Array.BYTES_PER_ELEMENT = 4
 
-Float32Array = type('Float32Array', (TypedArray,), {'name': 'Float32Array', '_pack': __byteutils__.packF32, '_unpack': __byteutils__.unpackF32})
+Float32Array = type('Float32Array',
+                    (TypedArray,),
+                    {'name': 'Float32Array', '_pack': __byteutils__.packF32, '_unpack': __byteutils__.unpackF32})
 Float32Array.BYTES_PER_ELEMENT = 4
 
-Float64Array = type('Float64Array', (TypedArray,), {'name': 'Float64Array', '_pack': __byteutils__.packF64, '_unpack': __byteutils__.unpackF64})
+Float64Array = type('Float64Array',
+                    (TypedArray,),
+                    {'name': 'Float64Array', '_pack': __byteutils__.packF64, '_unpack': __byteutils__.unpackF64})
 Float64Array.BYTES_PER_ELEMENT = 8
 
-# BigInt64Array = type('BigInt64Array', (TypedArray,), {'name': 'BigInt64Array', '_pack': __byteutils__.packI64, '_unpack': __byteutils__.unpackI64})
+# BigInt64Array = type('BigInt64Array', 
+# (TypedArray,), {'name': 'BigInt64Array', '_pack': __byteutils__.packI64, '_unpack': __byteutils__.unpackI64})
 # BigInt64Array.BYTES_PER_ELEMENT = 8
 
-# BigUint64Array = type('BigUint64Array', (TypedArray,), {'name': 'BigUint64Array', '_pack': __byteutils__.packU64, '_unpack': __byteutils__.unpackU64})
+# BigUint64Array = type('BigUint64Array',
+# (TypedArray,), {'name': 'BigUint64Array', '_pack': __byteutils__.packU64, '_unpack': __byteutils__.unpackU64})
 # BigUint64Array.BYTES_PER_ELEMENT = 8
 
 
@@ -4341,7 +4353,8 @@ class Reflect():
 
     @staticmethod
     def getOwnPropertyDescriptor(target, propertyKey):
-        """ Similar to Object.getOwnPropertyDescriptor(). Returns a property descriptor of the given property if it exists on the object,  undefined otherwise. """
+        """ Similar to Object.getOwnPropertyDescriptor().
+        Returns a property descriptor of the given property if it exists on the object,  undefined otherwise. """
         raise NotImplementedError
 
     getPrototypeOf = Object.getPrototypeOf
@@ -4360,7 +4373,8 @@ class Reflect():
 
     @staticmethod
     def set(target, propertyKey, value, receiver):
-        """ A function that assigns values to properties. Returns a Boolean that is true if the update was successful. """
+        """ A function that assigns values to properties.
+        Returns a Boolean that is true if the update was successful. """
         raise NotImplementedError
 
     @staticmethod
@@ -4393,7 +4407,8 @@ class Symbol():
         return self.symbol == obj.symbol
 
     def isConcatSpreadable(self):
-        """ A Boolean value indicating if an object should be flattened to its array elements. Used by Array.prototype.concat()."""
+        """ A Boolean value indicating if an object should be flattened to its array elements.
+        Used by Array.prototype.concat()."""
         return False
 
     def iterator(self, obj):
@@ -4420,7 +4435,8 @@ class Symbol():
     # A method that replaces matched substrings of a string. Used by String.prototype.replace().
     # def replace(self,
 
-    # A method that returns the index within a string that matches the regular expression. Used by String.prototype.search().
+    # A method that returns the index within a string that matches the regular expression.
+    # Used by String.prototype.search().
     def search(self):
         raise NotImplementedError
 
@@ -4436,7 +4452,8 @@ class Symbol():
     def toPrimitive(self):
         raise NotImplementedError
 
-    # A string value used for the default description of an object. Used by Object.prototype.toString().
+    # A string value used for the default description of an object.
+    # Used by Object.prototype.toString().
     def toStringTag(self):
         raise NotImplementedError
 
@@ -4509,7 +4526,8 @@ class Atomics():
     @staticmethod
     def isLockFree(size):
         """ An optimization primitive that can be used to determine whether to use locks or atomic operations.
-        Returns true if an atomic operation on arrays of the given element size will be implemented using a hardware atomic operation (as opposed to a lock). Experts only."""
+        Returns true if an atomic operation on arrays of the given element size will be implemented
+        using a hardware atomic operation (as opposed to a lock). Experts only."""
         raise NotImplementedError
 
     @staticmethod
@@ -4518,12 +4536,14 @@ class Atomics():
         raise NotImplementedError
 
     # @staticmethod
-    # """ Notifies agents that are waiting on the specified index of the array. Returns the number of agents that were notified."""
+    # """ Notifies agents that are waiting on the specified index of the array.
+    # Returns the number of agents that were notified."""
     # def notify(
 
     @staticmethod
     def or_():
-        """ Computes a bitwise OR on the value at the specified index of the array with the provided value. Returns the old value at that index."""
+        """ Computes a bitwise OR on the value at the specified index of the array with the provided value.
+        Returns the old value at that index."""
         raise NotImplementedError
 
     @staticmethod
@@ -4537,7 +4557,8 @@ class Atomics():
     @staticmethod
     def wait():
         """ Verifies that the specified index of the array still contains a value and sleeps awaiting or times out.
-        Returns either "ok", "not-equal", or "timed-out". If waiting is not allowed in the calling agent then it throws an Error exception. (Most browsers will not allow wait() on the browser's main thread.)"""
+        Returns either "ok", "not-equal", or "timed-out". If waiting is not allowed in the calling agent
+        then it throws an Error exception. (Most browsers will not allow wait() on the browser's main thread.)"""
         raise NotImplementedError
     @staticmethod
     def xor():

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.6.4 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.6.6 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -361,7 +361,32 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodeName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the name of a node &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tagName</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="c1"># TODO - not sure what&#39;s better this or overriding on every element</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Element</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tagName</span><span class="c1">#.upper()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;#text&#39;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Comment</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;#comment&#39;</span>
+        <span class="c1"># elif isinstance(self, DocumentType):</span>
+        <span class="c1">#     return &#39;#doctype&#39;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;#document&#39;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CDATASection</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;#cdata-section&#39;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">DocumentFragment</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;#document-fragment&#39;</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Attr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ProcessingInstruction</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">DocumentType</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tagName</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodeType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -691,6 +716,12 @@
                 <span class="k">return</span> <span class="n">item</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
+    <span class="c1"># def __getitem__(self, name):</span>
+    <span class="c1">#     return self.getNamedItem(name)</span>
+
+    <span class="c1"># def __setitem__(self, name, value):</span>
+    <span class="c1">#     self.setNamedItem(name, value)</span>
+
 <div class="viewcode-block" id="Attr.removeNamedItem"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Attr.removeNamedItem">[docs]</a>    <span class="k">def</span> <span class="nf">removeNamedItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Removes a specified attribute node &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
@@ -708,62 +739,88 @@
         <span class="k">return</span> <span class="kc">False</span></div></div>
 
 
-<div class="viewcode-block" id="NamedNodeMap"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NamedNodeMap">[docs]</a><span class="k">class</span> <span class="nc">NamedNodeMap</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; TODO - not tested yet &quot;&quot;&quot;</span>
+<span class="c1"># from xml.dom.minidom import Attr</span>
+<span class="kn">from</span> <span class="nn">xml.dom.minidom</span> <span class="kn">import</span> <span class="n">NamedNodeMap</span>
+<span class="c1"># NamedNodeMap = </span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">class NamedNodeMap(object):</span>
+<span class="sd">    &quot;&quot;&quot; TODO - not tested yet. </span>
 
-<div class="viewcode-block" id="NamedNodeMap.getNamedItem"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NamedNodeMap.getNamedItem">[docs]</a>    <span class="k">def</span> <span class="nf">getNamedItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a specified attribute node from a NamedNodeMap &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">item</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+<span class="sd">    a live object that represents a list of nodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="NamedNodeMap.setNamedItem"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NamedNodeMap.setNamedItem">[docs]</a>    <span class="k">def</span> <span class="nf">setNamedItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Sets the specified attribute node (by name) &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-                <span class="n">item</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-                <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+<span class="sd">    def __init__(self, parentNode=None, *args, **kwargs):</span>
+<span class="sd">        self.parentNode = parentNode</span>
+<span class="sd">        self.args = args</span>
+<span class="sd">        self.kwargs = kwargs</span>
+<span class="sd">        super().__init__(*args, **kwargs)</span>
 
-<div class="viewcode-block" id="NamedNodeMap.removeNamedItem"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NamedNodeMap.removeNamedItem">[docs]</a>    <span class="k">def</span> <span class="nf">removeNamedItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Removes a specified attribute node &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-                <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+<span class="sd">    def getNamedItem(self, name):</span>
+<span class="sd">        &quot;&quot;&quot; Returns a specified attribute node from a NamedNodeMap &quot;&quot;&quot;</span>
+<span class="sd">        for item in self.args:</span>
+<span class="sd">            if item.name == name:</span>
+<span class="sd">                return item</span>
+<span class="sd">        return None</span>
 
-<div class="viewcode-block" id="NamedNodeMap.item"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NamedNodeMap.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the index&#39;th item in the collection &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+<span class="sd">    def __getitem__(self, name):</span>
+<span class="sd">        print(&#39;getting:&#39;, name)</span>
+<span class="sd">        # return self.getNamedItem(name)</span>
+<span class="sd">        return self.parentNode.kwargs[&#39;_&#39; + name]</span>
 
-<div class="viewcode-block" id="NamedNodeMap.getNameItemNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NamedNodeMap.getNameItemNS">[docs]</a>    <span class="k">def</span> <span class="nf">getNameItemNS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">localName</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a specified attribute node from a NamedNodeMap &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">namespaceURI</span> <span class="o">==</span> <span class="n">namespaceURI</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">localName</span> <span class="o">==</span> <span class="n">localName</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">item</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+<span class="sd">    def setNamedItem(self, name, value):</span>
+<span class="sd">        &quot;&quot;&quot; Replaces, or adds, the Attr identified in the map by the given name.&quot;&quot;&quot;</span>
+<span class="sd">        # if exists replace it otherwise add it</span>
+<span class="sd">        has_item = False</span>
+<span class="sd">        for item in self.args:</span>
+<span class="sd">            if item.name == name:</span>
+<span class="sd">                item.value = value</span>
+<span class="sd">                has_item = True</span>
+<span class="sd">                # return True</span>
+<span class="sd">        if not has_item:</span>
+<span class="sd">            self.args.append(Attr(name, value))</span>
 
-<div class="viewcode-block" id="NamedNodeMap.setNamedItemNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NamedNodeMap.setNamedItemNS">[docs]</a>    <span class="k">def</span> <span class="nf">setNamedItemNS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">localName</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Sets the specified attribute node (by name) &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">namespaceURI</span> <span class="o">==</span> <span class="n">namespaceURI</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">localName</span> <span class="o">==</span> <span class="n">localName</span><span class="p">:</span>
-                <span class="n">item</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-                <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+<span class="sd">        self.parentNode.kwargs[&#39;_&#39; + name] = value</span>
+<span class="sd">        return True</span>
 
-<div class="viewcode-block" id="NamedNodeMap.removeNamedItemNS"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.NamedNodeMap.removeNamedItemNS">[docs]</a>    <span class="k">def</span> <span class="nf">removeNamedItemNS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespaceURI</span><span class="p">,</span> <span class="n">localName</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Removes a specified attribute node &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">namespaceURI</span> <span class="o">==</span> <span class="n">namespaceURI</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">localName</span> <span class="o">==</span> <span class="n">localName</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>  <span class="c1"># TODO - check this? where is remove?</span>
-                <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span></div></div>
+<span class="sd">    def __setitem__(self, name, value):</span>
+<span class="sd">        self.setNamedItem(name, value)</span>
 
+<span class="sd">    def removeNamedItem(self, name):</span>
+<span class="sd">        &quot;&quot;&quot; Removes a specified attribute node &quot;&quot;&quot;</span>
+<span class="sd">        for item in self.args:</span>
+<span class="sd">            if item.name == name:</span>
+<span class="sd">                self.remove(item)</span>
+<span class="sd">                return True</span>
+<span class="sd">        return False</span>
+
+<span class="sd">    def item(self, index):</span>
+<span class="sd">        &quot;&quot;&quot; Returns the index&#39;th item in the collection &quot;&quot;&quot;</span>
+<span class="sd">        return self.args[index]</span>
+
+<span class="sd">    def getNameItemNS(self, namespaceURI, localName):</span>
+<span class="sd">        &quot;&quot;&quot; Returns a specified attribute node from a NamedNodeMap &quot;&quot;&quot;</span>
+<span class="sd">        for item in self.args:</span>
+<span class="sd">            if item.namespaceURI == namespaceURI and item.localName == localName:</span>
+<span class="sd">                return item</span>
+<span class="sd">        return None</span>
+
+<span class="sd">    def setNamedItemNS(self, namespaceURI, localName, value):</span>
+<span class="sd">        &quot;&quot;&quot; Sets the specified attribute node (by name) &quot;&quot;&quot;</span>
+<span class="sd">        for item in self.args:</span>
+<span class="sd">            if item.namespaceURI == namespaceURI and item.localName == localName:</span>
+<span class="sd">                item.value = value</span>
+<span class="sd">                return True</span>
+<span class="sd">        return False</span>
+
+<span class="sd">    def removeNamedItemNS(self, namespaceURI, localName):</span>
+<span class="sd">        &quot;&quot;&quot; Removes a specified attribute node &quot;&quot;&quot;</span>
+<span class="sd">        for item in self.args:</span>
+<span class="sd">            if item.namespaceURI == namespaceURI and item.localName == localName:</span>
+<span class="sd">                self.remove(item)  # TODO - check this? where is remove?</span>
+<span class="sd">                return True</span>
+<span class="sd">        return False</span>
+<span class="sd">&#39;&#39;&#39;</span>
 
 <div class="viewcode-block" id="DOMStringMap"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.DOMStringMap">[docs]</a><span class="k">class</span> <span class="nc">DOMStringMap</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -906,6 +963,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>  <span class="c1"># A DOMString, eg &quot;html&quot; for &lt;!DOCTYPE HTML&gt;.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">publicId</span> <span class="o">=</span> <span class="n">publicId</span>  <span class="c1"># A DOMString, eg &quot;-//W3C//DTD HTML 4.01//EN&quot;, empty string for HTML5.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">systemId</span> <span class="o">=</span> <span class="n">systemId</span>  <span class="c1"># A DOMString, eg &quot;http://www.w3.org/TR/html4/strict.dtd&quot;, empty string for HTML5.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="DocumentType.internalSubset"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.DocumentType.internalSubset">[docs]</a>    <span class="k">def</span> <span class="nf">internalSubset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; A DOMString of the internal subset, or None. Eg &quot;&lt;!ELEMENT foo (bar)&gt;&quot;.&#39;&#39;&#39;</span>
@@ -1580,12 +1638,22 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a List of an element&#39;s attributes &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">Attr</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error - no tag!&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-            <span class="k">return</span> <span class="p">[]</span>
+        <span class="c1"># &quot;&quot;&quot; Returns a List of an element&#39;s attributes &quot;&quot;&quot;</span>
+        <span class="c1"># try:</span>
+        <span class="c1">#     return [Attr(key.lstrip(&#39;_&#39;), value) for key, value in self.kwargs.items()]</span>
+        <span class="c1"># except Exception as e:</span>
+        <span class="c1">#     print(&#39;Error - no tag!&#39;, e)</span>
+        <span class="c1">#     return []</span>
+        <span class="sd">&quot;&quot;&quot; Returns a NamedNodeMap of an element&#39;s attributes &quot;&quot;&quot;</span>
+        <span class="c1"># print(&#39;attributes&#39;, self.kwargs)</span>
+        <span class="n">newargs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># print(&#39;key&#39;, key)</span>
+            <span class="c1"># print(&#39;value&#39;, value)</span>
+            <span class="n">newargs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Attr</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">),</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="n">nnm</span> <span class="o">=</span> <span class="n">NamedNodeMap</span><span class="p">(</span><span class="n">newargs</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nnm</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1999,6 +2067,23 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            [type]: [a list of Element objects]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># TODO - if query is more complex than just single tagname, class or id then call getElementsBySelector instead</span>
+        <span class="c1"># remove the first character if it&#39;s a &#39;.&#39; or &#39;#&#39;</span>
+        <span class="c1"># bodge for now. better than not working</span>
+        <span class="c1"># print(query)</span>
+        <span class="c1"># if query[0] == &#39;.&#39; or query[0] == &#39;#&#39;:</span>
+        <span class="c1"># print(&#39;it startes!&#39;)</span>
+        <span class="n">naked_query</span> <span class="o">=</span> <span class="n">query</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="c1"># print(&quot;dis:::&quot;,naked_query)</span>
+        <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">naked_query</span> <span class="ow">or</span> <span class="s1">&#39;[&#39;</span> <span class="ow">in</span> <span class="n">naked_query</span><span class="p">:</span>
+            <span class="c1"># print(&#39;DIVERTED!&#39;, query)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElementsBySelector</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span> 
+        <span class="c1"># TODO - bug?. elements selector seems to only work if tag is provided</span>
+        <span class="c1"># so having to do this for now.</span>
+
+        <span class="c1"># print(&#39;NOT DIVERTED&#39;)</span>
+
         <span class="n">elements</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">def</span> <span class="nf">anon</span><span class="p">(</span><span class="n">el</span><span class="p">):</span>
@@ -2150,12 +2235,23 @@
         <span class="k">return</span> <span class="n">d</span>
 
     <span class="k">def</span> <span class="nf">createDocumentType</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qualifiedName</span><span class="p">,</span> <span class="n">publicId</span><span class="p">,</span> <span class="n">systemId</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;[creates a DocumentType node]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            qualifiedName (str): [the qualified name of the document type]</span>
+<span class="sd">            publicId (str): [the public identifier of the document type]</span>
+<span class="sd">            systemId (str): [the system identifier of the document type]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [a DocumentType object]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DocumentType</span><span class="p">(</span><span class="n">qualifiedName</span><span class="p">,</span> <span class="n">publicId</span><span class="p">,</span> <span class="n">systemId</span><span class="p">)</span>
         <span class="c1"># d = DocumentType()</span>
         <span class="c1"># d.name = qualifiedName</span>
         <span class="c1"># d.publicId = publicId</span>
         <span class="c1"># d.systemId = systemId</span>
         <span class="c1"># return d</span>
-        <span class="k">pass</span>
+        <span class="c1"># pass</span>
 
     <span class="k">def</span> <span class="nf">createHTMLDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># d = Document()</span>

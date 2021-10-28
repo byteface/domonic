@@ -158,9 +158,17 @@ And check the code/docs to see what's currently been implemented.
 
 
 ```python
-mysite.querySelectorAll('button')  # *note - still in dev. use getElementsBySelector for more complex selectors
+mysite.querySelectorAll('button') 
 
-# mysite.getElementsBySelector
+mysite.querySelectorAll("a[rel=nofollow]")
+mysite.querySelectorAll("a[href='#services']")
+mysite.querySelectorAll("a[href$='technology']")
+mysite.querySelectorAll('.fa-twitter')
+
+somelinks = mysite.querySelectorAll("a[href*='twitter']")
+for l in somelinks:
+    print(l.href)
+
 ```
 
 To use the DOM either reference your root 'html' node or import the dom modules global 'document'
@@ -504,6 +512,47 @@ Windows users can use now use cmd.
 from domonic.cmd import *
 print(dir())
 print(dir("..\\")) 
+```
+
+## parsing
+
+domonic can work with other Treebuilders
+
+There's a builtin ext to tap into html5lib. And also fork of the c++ htmlparser (see parsing ticket)
+
+To use the pure python htm5lib with domonic you need to install it
+
+```bash
+pip install html5lib
+```
+
+Then use the domonic treebuilder instead of any of the html5lib treebuilders.
+
+```python
+import requests
+import html5lib
+from domonic.ext.html5lib_ import getTreeBuilder
+
+
+r = requests.get("https://google.com")
+parser = html5lib.HTMLParser(tree=getTreeBuilder())
+page = parser.parse(r.content.decode("utf-8"))
+
+# print the page with formatting
+# print(f'{page}')
+
+'''
+links = page.getElementsByTagName('a')
+for l in links:
+    try:
+        print(l.href)
+    except Exception as e:
+        # no href on this tag
+        pass
+'''
+
+# turn the downloaded site into .pyml ;)
+print(page.__pyml__())
 ```
 
 

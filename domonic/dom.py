@@ -2034,6 +2034,23 @@ class Element(Node):
         Returns:
             [type]: [a list of Element objects]
         """
+
+        # TODO - if query is more complex than just single tagname, class or id then call getElementsBySelector instead
+        # remove the first character if it's a '.' or '#'
+        # bodge for now. better than not working
+        # print(query)
+        # if query[0] == '.' or query[0] == '#':
+        # print('it startes!')
+        naked_query = query[1:]
+        # print("dis:::",naked_query)
+        if '.' in naked_query or '[' in naked_query:
+            # print('DIVERTED!', query)
+            return self.getElementsBySelector(query, self) 
+        # TODO - bug?. elements selector seems to only work if tag is provided
+        # so having to do this for now.
+
+        # print('NOT DIVERTED')
+
         elements = []
 
         def anon(el):
@@ -2202,7 +2219,6 @@ class DOMImplementation(object):
         # d.systemId = systemId
         # return d
         # pass
-
 
     def createHTMLDocument(self, title=None):
         # d = Document()

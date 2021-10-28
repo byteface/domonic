@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.6.4 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.6.6 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -582,16 +582,6 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            [type]: [result of calling the function.]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># raise NotImplementedError</span>
-        <span class="c1"># print(&#39;CALL!!&#39;)</span>
-        <span class="c1"># print(thisArg)</span>
-        <span class="c1"># print(args)</span>
-        <span class="c1"># if thisArg is not None:</span>
-            <span class="c1"># return self.func(thisArg, *args)</span>
-            <span class="c1"># return self.func(this=thisArg, *args)</span>
-
-        <span class="c1"># print(&#39;AAAARGGS!!&#39;, args)</span>
-
         <span class="k">if</span> <span class="n">thisArg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">thisArg</span><span class="p">)</span>  <span class="c1"># kwargs?</span>
@@ -1276,7 +1266,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatter</span> <span class="o">==</span> <span class="s1">&#39;python&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>  <span class="c1">#js</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>  <span class="c1"># js</span></div>
 
     <span class="k">def</span> <span class="nf">parse_date</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_string</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">date_string</span><span class="p">)</span>
@@ -3154,7 +3144,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            [str]: [the string as a webpage]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="n">html</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">script</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">h1</span>
+        <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="n">html</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">script</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">h1</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span>
             <span class="n">head</span><span class="p">(</span>
                 <span class="n">title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span>
@@ -3654,7 +3644,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="URLSearchParams.values"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing iteration through all values of the key/value pairs contained in this object. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing iteration through all values of the</span>
+<span class="sd">        key/value pairs contained in this object. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="URLSearchParams.toString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3704,7 +3695,7 @@
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="c1"># return getattr(self.buffer, name)</span>
-        <span class="c1"># try on self if not get from buffer</span>
+        <span class="c1"># TODO - try on self if not get from buffer. (was this a todo)?</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3775,7 +3766,6 @@
 
 
 <span class="k">class</span> <span class="nc">TypedArray</span><span class="p">:</span>
-<span class="c1"># class Int8Array:</span>
 
     <span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">1</span>
 
@@ -3827,7 +3817,8 @@
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;byteOffset out of range&quot;</span><span class="p">)</span>
 
             <span class="c1"># if (this.byteOffset % this.BYTES_PER_ELEMENT) {</span>
-            <span class="c1"># // The given byteOffset must be a multiple of the element size of the specific type, otherwise an exception is raised.</span>
+            <span class="c1"># // The given byteOffset must be a multiple of the element size of the specific type,</span>
+            <span class="c1"># otherwise an exception is raised.</span>
             <span class="c1"># throw new RangeError(&quot;ArrayBuffer length minus the byteOffset is not a multiple of the element size.&quot;);</span>
             <span class="c1"># }</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">byteOffset</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span><span class="p">:</span>
@@ -3997,7 +3988,7 @@
         <span class="c1"># tmp = None</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span> <span class="ow">and</span> <span class="n">index</span> <span class="o">==</span> <span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#     // void set(TypedArray arr, optional unsigned long offset)</span>
+            <span class="c1"># void set(TypedArray arr, optional unsigned long offset)</span>
             <span class="n">arr</span> <span class="o">=</span> <span class="n">index</span>
             <span class="n">offset</span> <span class="o">=</span> <span class="n">ToUint32</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
@@ -4026,13 +4017,13 @@
                     <span class="n">s</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="n">d</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">elif</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span> <span class="ow">and</span> <span class="n">index</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#     // void set(sequence&lt;type&gt; arr, optional unsigned long offset);</span>
+            <span class="c1"># void set(sequence&lt;type&gt; arr, optional unsigned long offset);</span>
             <span class="n">sequence</span> <span class="o">=</span> <span class="n">index</span>
             <span class="n">nlen</span> <span class="o">=</span> <span class="n">ToUint32</span><span class="p">(</span><span class="n">sequence</span><span class="o">.</span><span class="n">length</span><span class="p">)</span>
             <span class="n">offset</span> <span class="o">=</span> <span class="n">ToUint32</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="p">(</span><span class="n">offset</span> <span class="o">+</span> <span class="n">nlen</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">):</span>
-            <span class="c1">#   raise RangeError(&quot;Offset plus length of arr is out of range&quot;)</span>
+                <span class="c1"># raise RangeError(&quot;Offset plus length of arr is out of range&quot;)</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Offset plus length of arr is out of range&quot;</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">):</span>
@@ -4274,37 +4265,58 @@
         <span class="c1"># return struct.pack(&#39;&gt;f&#39;, v)</span>
 
 
-<span class="n">Int8Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Int8Array&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Int8Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packI8</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackI8</span><span class="p">})</span>
+<span class="n">Int8Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Int8Array&#39;</span><span class="p">,</span>
+                 <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span>
+                 <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Int8Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packI8</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackI8</span><span class="p">})</span>
 <span class="n">Int8Array</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">1</span>
 
-<span class="n">Uint8Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Uint8Array&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Uint8Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packU8</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackU8</span><span class="p">})</span>
+<span class="n">Uint8Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Uint8Array&#39;</span><span class="p">,</span>
+                  <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span>
+                  <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Uint8Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packU8</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackU8</span><span class="p">})</span>
 <span class="n">Uint8Array</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">1</span>
 
-<span class="n">Uint8ClampedArray</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Uint8ClampedArray&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Uint8ClampedArray&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packU8Clamped</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackU8</span><span class="p">})</span>
+<span class="n">Uint8ClampedArray</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Uint8ClampedArray&#39;</span><span class="p">,</span>
+                         <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span>
+                         <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Uint8ClampedArray&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packU8Clamped</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackU8</span><span class="p">})</span>
 <span class="n">Uint8ClampedArray</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">1</span>
 
-<span class="n">Int16Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Int16Array&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Int16Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packI16</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackI16</span><span class="p">})</span>
+<span class="n">Int16Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Int16Array&#39;</span><span class="p">,</span>
+                  <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span>
+                  <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Int16Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packI16</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackI16</span><span class="p">})</span>
 <span class="n">Int16Array</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">2</span>
 
-<span class="n">Uint16Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Uint16Array&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Uint16Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packU16</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackU16</span><span class="p">})</span>
+<span class="n">Uint16Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Uint16Array&#39;</span><span class="p">,</span>
+                   <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span>
+                   <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Uint16Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packU16</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackU16</span><span class="p">})</span>
 <span class="n">Uint16Array</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">2</span>
 
-<span class="n">Int32Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Int32Array&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Int32Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packI32</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackI32</span><span class="p">})</span>
+<span class="n">Int32Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Int32Array&#39;</span><span class="p">,</span>
+                  <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span>
+                  <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Int32Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packI32</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackI32</span><span class="p">}</span>
+                  <span class="p">)</span>
 <span class="n">Int32Array</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">4</span>
 
-<span class="n">Uint32Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Uint32Array&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Uint32Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packU32</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackU32</span><span class="p">})</span>
+<span class="n">Uint32Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Uint32Array&#39;</span><span class="p">,</span>
+                   <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span>
+                   <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Uint32Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packU32</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackU32</span><span class="p">})</span>
 <span class="n">Uint32Array</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">4</span>
 
-<span class="n">Float32Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Float32Array&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Float32Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packF32</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackF32</span><span class="p">})</span>
+<span class="n">Float32Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Float32Array&#39;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span>
+                    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Float32Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packF32</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackF32</span><span class="p">})</span>
 <span class="n">Float32Array</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">4</span>
 
-<span class="n">Float64Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Float64Array&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Float64Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packF64</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackF64</span><span class="p">})</span>
+<span class="n">Float64Array</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s1">&#39;Float64Array&#39;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">TypedArray</span><span class="p">,),</span>
+                    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Float64Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packF64</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackF64</span><span class="p">})</span>
 <span class="n">Float64Array</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">8</span>
 
-<span class="c1"># BigInt64Array = type(&#39;BigInt64Array&#39;, (TypedArray,), {&#39;name&#39;: &#39;BigInt64Array&#39;, &#39;_pack&#39;: __byteutils__.packI64, &#39;_unpack&#39;: __byteutils__.unpackI64})</span>
+<span class="c1"># BigInt64Array = type(&#39;BigInt64Array&#39;, </span>
+<span class="c1"># (TypedArray,), {&#39;name&#39;: &#39;BigInt64Array&#39;, &#39;_pack&#39;: __byteutils__.packI64, &#39;_unpack&#39;: __byteutils__.unpackI64})</span>
 <span class="c1"># BigInt64Array.BYTES_PER_ELEMENT = 8</span>
 
-<span class="c1"># BigUint64Array = type(&#39;BigUint64Array&#39;, (TypedArray,), {&#39;name&#39;: &#39;BigUint64Array&#39;, &#39;_pack&#39;: __byteutils__.packU64, &#39;_unpack&#39;: __byteutils__.unpackU64})</span>
+<span class="c1"># BigUint64Array = type(&#39;BigUint64Array&#39;,</span>
+<span class="c1"># (TypedArray,), {&#39;name&#39;: &#39;BigUint64Array&#39;, &#39;_pack&#39;: __byteutils__.packU64, &#39;_unpack&#39;: __byteutils__.unpackU64})</span>
 <span class="c1"># BigUint64Array.BYTES_PER_ELEMENT = 8</span>
 
 
@@ -4374,7 +4386,8 @@
 
 <div class="viewcode-block" id="Reflect.getOwnPropertyDescriptor"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.getOwnPropertyDescriptor">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">getOwnPropertyDescriptor</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">propertyKey</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Similar to Object.getOwnPropertyDescriptor(). Returns a property descriptor of the given property if it exists on the object,  undefined otherwise. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Similar to Object.getOwnPropertyDescriptor().</span>
+<span class="sd">        Returns a property descriptor of the given property if it exists on the object,  undefined otherwise. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
     <span class="n">getPrototypeOf</span> <span class="o">=</span> <span class="n">Object</span><span class="o">.</span><span class="n">getPrototypeOf</span>
@@ -4393,7 +4406,8 @@
 
 <div class="viewcode-block" id="Reflect.set"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.set">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">propertyKey</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">receiver</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; A function that assigns values to properties. Returns a Boolean that is true if the update was successful. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; A function that assigns values to properties.</span>
+<span class="sd">        Returns a Boolean that is true if the update was successful. &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Reflect.setPrototypeOf"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Reflect.setPrototypeOf">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -4426,7 +4440,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span> <span class="o">==</span> <span class="n">obj</span><span class="o">.</span><span class="n">symbol</span>
 
     <span class="k">def</span> <span class="nf">isConcatSpreadable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; A Boolean value indicating if an object should be flattened to its array elements. Used by Array.prototype.concat().&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; A Boolean value indicating if an object should be flattened to its array elements.</span>
+<span class="sd">        Used by Array.prototype.concat().&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
@@ -4453,7 +4468,8 @@
     <span class="c1"># A method that replaces matched substrings of a string. Used by String.prototype.replace().</span>
     <span class="c1"># def replace(self,</span>
 
-    <span class="c1"># A method that returns the index within a string that matches the regular expression. Used by String.prototype.search().</span>
+    <span class="c1"># A method that returns the index within a string that matches the regular expression.</span>
+    <span class="c1"># Used by String.prototype.search().</span>
     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
@@ -4469,7 +4485,8 @@
     <span class="k">def</span> <span class="nf">toPrimitive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="c1"># A string value used for the default description of an object. Used by Object.prototype.toString().</span>
+    <span class="c1"># A string value used for the default description of an object.</span>
+    <span class="c1"># Used by Object.prototype.toString().</span>
     <span class="k">def</span> <span class="nf">toStringTag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
@@ -4542,7 +4559,8 @@
 <span class="sd">    @staticmethod</span>
 <span class="sd">    def isLockFree(size):</span>
 <span class="sd">        &quot;&quot;&quot; An optimization primitive that can be used to determine whether to use locks or atomic operations.</span>
-<span class="sd">        Returns true if an atomic operation on arrays of the given element size will be implemented using a hardware atomic operation (as opposed to a lock). Experts only.&quot;&quot;&quot;</span>
+<span class="sd">        Returns true if an atomic operation on arrays of the given element size will be implemented</span>
+<span class="sd">        using a hardware atomic operation (as opposed to a lock). Experts only.&quot;&quot;&quot;</span>
 <span class="sd">        raise NotImplementedError</span>
 
 <span class="sd">    @staticmethod</span>
@@ -4551,12 +4569,14 @@
 <span class="sd">        raise NotImplementedError</span>
 
 <span class="sd">    # @staticmethod</span>
-<span class="sd">    # &quot;&quot;&quot; Notifies agents that are waiting on the specified index of the array. Returns the number of agents that were notified.&quot;&quot;&quot;</span>
+<span class="sd">    # &quot;&quot;&quot; Notifies agents that are waiting on the specified index of the array.</span>
+<span class="sd">    # Returns the number of agents that were notified.&quot;&quot;&quot;</span>
 <span class="sd">    # def notify(</span>
 
 <span class="sd">    @staticmethod</span>
 <span class="sd">    def or_():</span>
-<span class="sd">        &quot;&quot;&quot; Computes a bitwise OR on the value at the specified index of the array with the provided value. Returns the old value at that index.&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot; Computes a bitwise OR on the value at the specified index of the array with the provided value.</span>
+<span class="sd">        Returns the old value at that index.&quot;&quot;&quot;</span>
 <span class="sd">        raise NotImplementedError</span>
 
 <span class="sd">    @staticmethod</span>
@@ -4570,7 +4590,8 @@
 <span class="sd">    @staticmethod</span>
 <span class="sd">    def wait():</span>
 <span class="sd">        &quot;&quot;&quot; Verifies that the specified index of the array still contains a value and sleeps awaiting or times out.</span>
-<span class="sd">        Returns either &quot;ok&quot;, &quot;not-equal&quot;, or &quot;timed-out&quot;. If waiting is not allowed in the calling agent then it throws an Error exception. (Most browsers will not allow wait() on the browser&#39;s main thread.)&quot;&quot;&quot;</span>
+<span class="sd">        Returns either &quot;ok&quot;, &quot;not-equal&quot;, or &quot;timed-out&quot;. If waiting is not allowed in the calling agent</span>
+<span class="sd">        then it throws an Error exception. (Most browsers will not allow wait() on the browser&#39;s main thread.)&quot;&quot;&quot;</span>
 <span class="sd">        raise NotImplementedError</span>
 <span class="sd">    @staticmethod</span>
 <span class="sd">    def xor():</span>

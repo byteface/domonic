@@ -327,10 +327,13 @@ class tag(object):
 
     def __pyml__(self):
         """ [returns a representation of the object as a pyml string] """
-        from domonic.dom import Text
+        # from domonic.dom import Text
         params = ""
         for key, value in self.kwargs.items():
-            params += f'{key}="{value}", '
+            if '-' in key:
+                params += f'**\u007b"{key}":{value}\u007d,'
+            else:
+                params += f'{key}="{value}", '
         # TODO - will need to loop args and call __pyml__ on each one
         for arg in self.args:
             try:
@@ -340,6 +343,7 @@ class tag(object):
                     params += f"{arg.__pyml__()}, "
             except Exception as e:
                 params += str(arg) + ", "
+        # TODO - if self is document do dentage
         return f"{self.name}({params[:-2]})"
         # return f"{self.name}({params})"
         # return f"{self.name}({args}, {params})"

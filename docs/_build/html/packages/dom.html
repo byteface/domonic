@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dom &#8212; domonic 0.6.4 documentation</title>
+    <title>dom &#8212; domonic 0.6.6 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -75,9 +75,16 @@
 </div>
 <div class="section" id="queryselectorall">
 <h2>querySelectorAll<a class="headerlink" href="#queryselectorall" title="Permalink to this headline">¶</a></h2>
-<p>NOTE … (this still in dev.)</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mysite</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">)</span>  <span class="c1"># *note - still in dev. use getElementsBySelector for more complex selectors</span>
-<span class="c1"># mysite.getElementsBySelector</span>
+<p>querySelectorAll and querySelector are useful for finding elements in the DOM.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mysite</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">)</span>
+<span class="n">mysite</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s1">&#39;.fa-twitter&#39;</span><span class="p">)</span>
+<span class="n">mysite</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s2">&quot;a[rel=nofollow]&quot;</span><span class="p">)</span>
+<span class="n">mysite</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s2">&quot;a[href=&#39;#services&#39;]&quot;</span><span class="p">)</span>
+<span class="n">mysite</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s2">&quot;a[href$=&#39;technology&#39;]&quot;</span><span class="p">)</span>
+
+<span class="n">somelinks</span> <span class="o">=</span> <span class="n">mysite</span><span class="o">.</span><span class="n">querySelectorAll</span><span class="p">(</span><span class="s2">&quot;a[href*=&#39;twitter&#39;]&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">somelinks</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">href</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To use the DOM either reference your root ‘html’ node or import the dom modules global ‘document’</p>
@@ -751,7 +758,7 @@ and if force is false, removes token from list if present.</p>
 <dd><dl class="py method">
 <dt>
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">attributes</span></code></dt>
-<dd><p>Returns a List of an element’s attributes</p>
+<dd><p>Returns a NamedNodeMap of an element’s attributes</p>
 </dd></dl>
 
 <dl class="py method">
@@ -861,7 +868,7 @@ and if force is false, removes token from list if present.</p>
 <dl class="py method">
 <dt>
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">attributes</span></code></dt>
-<dd><p>Returns a List of an element’s attributes</p>
+<dd><p>Returns a NamedNodeMap of an element’s attributes</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1379,54 +1386,6 @@ and does not have any child nodes.</p>
 <dt>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.dom.</span></code><code class="sig-name descname"><span class="pre">EventTarget</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#EventTarget"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>EventTarget interface</p>
-</dd></dl>
-
-<dl class="py class">
-<dt>
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.dom.</span></code><code class="sig-name descname"><span class="pre">NamedNodeMap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>TODO - not tested yet</p>
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">getNameItemNS</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.getNameItemNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns a specified attribute node from a NamedNodeMap</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">getNamedItem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.getNamedItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns a specified attribute node from a NamedNodeMap</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">item</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns the index’th item in the collection</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">removeNamedItem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.removeNamedItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Removes a specified attribute node</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">removeNamedItemNS</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.removeNamedItemNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Removes a specified attribute node</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">setNamedItem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.setNamedItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Sets the specified attribute node (by name)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname"><span class="pre">setNamedItemNS</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.setNamedItemNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Sets the specified attribute node (by name)</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">

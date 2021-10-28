@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🤖 autodocs &#8212; domonic 0.6.4 documentation</title>
+    <title>🤖 autodocs &#8212; domonic 0.6.6 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -1332,7 +1332,7 @@ and if force is false, removes token from list if present.</p>
 <dd><dl class="py method">
 <dt id="domonic.dom.DocumentFragment.attributes">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">attributes</span></code><a class="headerlink" href="#domonic.dom.DocumentFragment.attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a List of an element’s attributes</p>
+<dd><p>Returns a NamedNodeMap of an element’s attributes</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1442,7 +1442,7 @@ and if force is false, removes token from list if present.</p>
 <dl class="py method">
 <dt id="domonic.dom.Element.attributes">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">attributes</span></code><a class="headerlink" href="#domonic.dom.Element.attributes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a List of an element’s attributes</p>
+<dd><p>Returns a NamedNodeMap of an element’s attributes</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1960,54 +1960,6 @@ and does not have any child nodes.</p>
 <dt id="domonic.dom.EventTarget">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.dom.</span></code><code class="sig-name descname"><span class="pre">EventTarget</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#EventTarget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.EventTarget" title="Permalink to this definition">¶</a></dt>
 <dd><p>EventTarget interface</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="domonic.dom.NamedNodeMap">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">domonic.dom.</span></code><code class="sig-name descname"><span class="pre">NamedNodeMap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.NamedNodeMap" title="Permalink to this definition">¶</a></dt>
-<dd><p>TODO - not tested yet</p>
-<dl class="py method">
-<dt id="domonic.dom.NamedNodeMap.getNameItemNS">
-<code class="sig-name descname"><span class="pre">getNameItemNS</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.getNameItemNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.NamedNodeMap.getNameItemNS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a specified attribute node from a NamedNodeMap</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.dom.NamedNodeMap.getNamedItem">
-<code class="sig-name descname"><span class="pre">getNamedItem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.getNamedItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.NamedNodeMap.getNamedItem" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a specified attribute node from a NamedNodeMap</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.dom.NamedNodeMap.item">
-<code class="sig-name descname"><span class="pre">item</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.NamedNodeMap.item" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the index’th item in the collection</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.dom.NamedNodeMap.removeNamedItem">
-<code class="sig-name descname"><span class="pre">removeNamedItem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.removeNamedItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.NamedNodeMap.removeNamedItem" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes a specified attribute node</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.dom.NamedNodeMap.removeNamedItemNS">
-<code class="sig-name descname"><span class="pre">removeNamedItemNS</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.removeNamedItemNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.NamedNodeMap.removeNamedItemNS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes a specified attribute node</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.dom.NamedNodeMap.setNamedItem">
-<code class="sig-name descname"><span class="pre">setNamedItem</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.setNamedItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.NamedNodeMap.setNamedItem" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the specified attribute node (by name)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="domonic.dom.NamedNodeMap.setNamedItemNS">
-<code class="sig-name descname"><span class="pre">setNamedItemNS</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">localName</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#NamedNodeMap.setNamedItemNS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.dom.NamedNodeMap.setNamedItemNS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the specified attribute node (by name)</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -3517,7 +3469,8 @@ Works like getting a property from an object (target[propertyKey]) as a function
 <dl class="py method">
 <dt id="domonic.javascript.Reflect.getOwnPropertyDescriptor">
 <em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">getOwnPropertyDescriptor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propertyKey</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.getOwnPropertyDescriptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.getOwnPropertyDescriptor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Similar to Object.getOwnPropertyDescriptor(). Returns a property descriptor of the given property if it exists on the object,  undefined otherwise.</p>
+<dd><p>Similar to Object.getOwnPropertyDescriptor().
+Returns a property descriptor of the given property if it exists on the object,  undefined otherwise.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3548,7 +3501,8 @@ Either as own or inherited. Works like the in operator as a function.</p>
 <dl class="py method">
 <dt id="domonic.javascript.Reflect.set">
 <em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">propertyKey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Reflect.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.Reflect.set" title="Permalink to this definition">¶</a></dt>
-<dd><p>A function that assigns values to properties. Returns a Boolean that is true if the update was successful.</p>
+<dd><p>A function that assigns values to properties.
+Returns a Boolean that is true if the update was successful.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4271,7 +4225,8 @@ If there are several values, the others are deleted.</p>
 <dl class="py method">
 <dt id="domonic.javascript.URLSearchParams.values">
 <code class="sig-name descname"><span class="pre">values</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.javascript.URLSearchParams.values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an iterator allowing iteration through all values of the key/value pairs contained in this object.</p>
+<dd><p>Returns an iterator allowing iteration through all values of the
+key/value pairs contained in this object.</p>
 </dd></dl>
 
 </dd></dl>
