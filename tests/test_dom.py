@@ -35,7 +35,8 @@ class TestCase(unittest.TestCase):
 
         b = Node()
         n.appendChild(b)
-        self.assertEqual(True, n.hasChildNodes)
+        # note this was fixed from being a property to a method in 6.6.7
+        self.assertEqual(True, n.hasChildNodes())
 
         c = Node()
         n.appendChild(c)

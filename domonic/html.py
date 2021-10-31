@@ -14,7 +14,7 @@ html_tags = [
             "hgroup", "header", "footer", "figure", "canvas", "button", "video", "track", "title", "title",
             "thead", "tfoot", "tbody", "table", "style", "small", "param", "meter", "label", "input", "embed",
             "audio", "aside", "time", "span", "span", "samp", "ruby", "meta", "meta", "menu", "mark", "link",
-            "applet", "object", "basefont", "center", "dir", "embed", "font", "isindex", "listing", "menu",
+            "applet", "object", "basefont", "center", "dir", "embed", "font", "isindex", "listing", "menuitem",
             "plaintext", "pre", "strike", "xmp", "template", "picture",
             "html", "head", "form", "font", "code", "cite", "body", "base", "area", "abbr", "wbr", "var", "sup",
             "sub", "pre", "nav", "map", "main", "kbd", "ins", "img", "div", "dfn", "del", "col", "bdo", "bdi",
@@ -601,6 +601,7 @@ meter = type('meter', (tag, Element), {'name': 'meter', '__init__': tag_init})
 details = type('details', (tag, Element), {'name': 'details', '__init__': tag_init})
 summary = type('summary', (tag, Element), {'name': 'summary', '__init__': tag_init})
 menu = type('menu', (tag, Element), {'name': 'menu', '__init__': tag_init})
+menuitem = type('menuitem', (tag, Element), {'name': 'menuitem', '__init__': tag_init})  # dead but may be used
 font = type('font', (tag, Element), {'name': 'font', '__init__': tag_init})
 header = type('header', (tag, Element), {'name': 'header', '__init__': tag_init})
 footer = type('footer', (tag, Element), {'name': 'footer', '__init__': tag_init})
@@ -637,7 +638,7 @@ embed = type('embed', (tag, Element), {'name': 'embed', '__init__': tag_init})
 font = type('font', (tag, Element), {'name': 'font', '__init__': tag_init})
 isindex = type('isindex', (tag, Element), {'name': 'isindex', '__init__': tag_init})
 listing = type('listing', (tag, Element), {'name': 'listing', '__init__': tag_init})
-menu = type('menu', (tag, Element), {'name': 'menu', '__init__': tag_init})
+# menu = type('menu', (tag, Element), {'name': 'menu', '__init__': tag_init})
 plaintext = type('plaintext', (tag, Element), {'name': 'plaintext', '__init__': tag_init})
 pre = type('pre', (tag, Element), {'name': 'pre', '__init__': tag_init})
 s = type('s', (tag, Element), {'name': 's', '__init__': tag_init})

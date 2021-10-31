@@ -305,7 +305,6 @@ class Node(EventTarget):
         except Exception:
             return None
 
-    @property
     def hasChildNodes(self):
         """ Returns true if an element has any child nodes, otherwise false """
         return len(self.args) > 0
