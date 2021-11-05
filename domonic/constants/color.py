@@ -157,7 +157,7 @@ class Color():
 
         # print(self.r, self.g, self.b)
 
-    def toRGB(self):
+    def toRGB(self):  # : -> vec3:
         """[returns the color as RGB]
 
         Returns:

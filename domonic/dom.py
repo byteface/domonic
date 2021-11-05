@@ -279,7 +279,7 @@ class Node(EventTarget):
         # return item  # causes max recursion when called chained
 
     @property
-    def childElementCount(self):
+    def childElementCount(self) -> int:
         """ Returns the number of child elements an element has """
         return len(self.args)
 
@@ -305,7 +305,7 @@ class Node(EventTarget):
         except Exception:
             return None
 
-    def hasChildNodes(self):
+    def hasChildNodes(self) -> bool:
         """ Returns true if an element has any child nodes, otherwise false """
         return len(self.args) > 0
 
@@ -1508,7 +1508,7 @@ class Element(Node):
             return found
 
         context = [document]
-        inheriters = str.split(all_selectors, " ")
+        inheriters = all_selectors.split(" ")
         # print(inheriters)
 
         # Space
@@ -1820,7 +1820,7 @@ class Element(Node):
         #     return self.children
         return self.querySelectorAll(tagName)
 
-    def hasAttribute(self, attribute: str) -> str:
+    def hasAttribute(self, attribute: str) -> bool:
         """ Returns true if an element has the specified attribute, otherwise false """
         try:
             if attribute[0:1] != '_':
@@ -2042,7 +2042,7 @@ class Element(Node):
         # print('it startes!')
         naked_query = query[1:]
         # print("dis:::",naked_query)
-        if '.' in naked_query or '[' in naked_query:
+        if '.' in naked_query or '[' in naked_query or ' ' in naked_query:
             # print('DIVERTED!', query)
             return self.getElementsBySelector(query, self) 
         # TODO - bug?. elements selector seems to only work if tag is provided
@@ -2212,12 +2212,6 @@ class DOMImplementation(object):
             [type]: [a DocumentType object]
         """
         return DocumentType(qualifiedName, publicId, systemId)
-        # d = DocumentType()
-        # d.name = qualifiedName
-        # d.publicId = publicId
-        # d.systemId = systemId
-        # return d
-        # pass
 
     def createHTMLDocument(self, title=None):
         # d = Document()
@@ -2228,7 +2222,7 @@ class DOMImplementation(object):
         # return d
         pass
 
-    def hasFeatures(self, featureList):
+    def hasFeatures(self, featureList) -> bool:
         # return True
         pass
 
