@@ -37,7 +37,7 @@ class Cmdcommand():
     """ wrapper class for all cmd commands """
 
     @staticmethod
-    def run(cmd):
+    def run(cmd: str) -> str:
         """[runs any command on the cmd]
 
         Args:

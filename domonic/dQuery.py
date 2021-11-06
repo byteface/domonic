@@ -97,7 +97,8 @@ class dQuery_el():
     def dom(self):
         # print('getting')
         if dQuery_el.DOM is None:
-            return
+            from domonic.dom import document
+            return document
         # else:
         # print('GOT ONE')
         return dQuery_el.DOM

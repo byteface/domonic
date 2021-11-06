@@ -4,7 +4,7 @@
     methods on the dom
 """
 
-from typing import *
+from typing import *  # List, Dict, Any, Union, Optional, Callable, Tuple
 import re
 
 from domonic.style import CSSStyleDeclaration as Style
@@ -329,7 +329,7 @@ class Node(EventTarget):
         """ Returns the name of a node """
         # TODO - not sure what's better this or overriding on every element
         if isinstance(self, Element):
-            return self.tagName#.upper()
+            return self.tagName  # .upper()
         elif isinstance(self, Text):
             return '#text'
         elif isinstance(self, Comment):
