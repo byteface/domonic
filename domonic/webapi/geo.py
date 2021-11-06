@@ -5,6 +5,7 @@
 """
 
 from domonic.events import Event
+from domonic.javascript import Error
 
 
 class Geolocation:

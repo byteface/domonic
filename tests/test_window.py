@@ -15,7 +15,8 @@ class TestCase(unittest.TestCase):
 
     def test_window(self):
         window.location = "http://www.google.com"
-        print(window.document.body.innerHTML)
+        # print(window.document.body.innerHTML)
+        print(window.document.title)
 
 
 if __name__ == '__main__':

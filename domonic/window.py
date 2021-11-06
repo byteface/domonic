@@ -20,7 +20,7 @@ from domonic.javascript import Window
 from domonic.dom import *
 from domonic.dom import document, Location
 
-from domonic.webapi import Storage
+from domonic.webapi.storage import Storage
 
 # TODO - test
 class CustomElementRegistry():
@@ -174,7 +174,7 @@ class Navigator(object):
         """ Returns the maximum number of touch points Navigator """
         return 1
 
-    @saticmethod
+    @staticmethod
     def registerProtocolHandler(scheme, url, title):
         """ Registers a new protocol handler Navigator """
         raise NotImplementedError
@@ -270,7 +270,7 @@ class Window(Window):
 
         r = requests.get(url)
         parser = HTMLParser(tree=getTreeBuilder())
-        page = parser.parse(r.content.decode("utf-8"))
+        page = parser.parse(r.text)
 
         # from domonic.dom import document
         document = page
@@ -282,10 +282,14 @@ class Window(Window):
         # self._location = value
         # TODO - load the content of the location using requests
 
-        if 'html5lib' in sys.modules:
-            self.document = self._set_location_using_htm5lib(value)
-            self._location = Location(value)
-            return
+        try:
+            import html5lib
+            if 'html5lib' in sys.modules:
+                self.document = self._set_location_using_htm5lib(value)
+                self._location = Location(value)
+                return
+        except ImportError:
+            pass
 
         if value is None:
             return
@@ -415,7 +419,7 @@ class Window(Window):
     def navigator(self):
         """ Returns the Navigator object for the window """
         return self._navigator
-    
+
     '''
     # # The event occurs when the window's history changes  PopStateEvent?
     # def onpopstate(self):

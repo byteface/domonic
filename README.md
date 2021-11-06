@@ -553,6 +553,15 @@ for l in links:
 print(page.__pyml__())
 ```
 
+For a quick parse try the window module...
+
+```python
+from domonic.window import *
+window.location = "http://www.google.com"
+print(window.document.title)
+```
+
+
 ## DOCS
 
 https://domonic.readthedocs.io/

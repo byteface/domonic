@@ -4287,6 +4287,7 @@ Float64Array.BYTES_PER_ELEMENT = 8
 # BigUint64Array.BYTES_PER_ELEMENT = 8
 
 
+# TODO - error package in the webapi?
 # TODO - test
 class Error(Exception):
     ''' Raise Errors '''
