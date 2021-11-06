@@ -193,12 +193,15 @@ class URL(object):
 
     # @staticmethod
     # def fileURLToPath(url: str):
-    #     """[summary]
+    #     """[ensures the correct decodings of percent-encoded characters as well as
+    #     ensuring a cross-platform valid absolute path string.]
 
     #     Args:
-    #         url (str): [description]
+    #         url (str): [The fully-resolved platform-specific file path.]
     #     """
-    #     pass
+    #     if url is None:
+    #         return
+    #     return urllib.parse.unquote(url)
 
     # @staticmethod
     # def format(URL, options):
@@ -299,7 +302,8 @@ class URLSearchParams:
         self.params.sort()
 
     def values(self):
-        """ Returns an iterator allowing iteration through all values of the key/value pairs contained in this object. """
+        """ Returns an iterator allowing iteration through all values of the key/value pairs
+        contained in this object. """
         return self.params.values()
 
     def toString(self):

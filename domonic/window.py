@@ -13,6 +13,8 @@
 """
 import sys
 
+import requests
+
 from domonic import domonic
 from domonic.javascript import Window
 from domonic.dom import *
@@ -255,11 +257,36 @@ class Window(Window):
         return self._location
         # return Location(self.window.location.href)
 
+    def _set_location_using_htm5lib(self, url):
+        # from html5lib import parse
+        # return parse(html)
+        # import html5lib
+        # import requests
+        from html5lib import HTMLParser
+        from domonic.ext.html5lib_ import getTreeBuilder
+
+        if 'http' not in url:
+            url = 'https://' + url
+
+        r = requests.get(url)
+        parser = HTMLParser(tree=getTreeBuilder())
+        page = parser.parse(r.content.decode("utf-8"))
+
+        # from domonic.dom import document
+        document = page
+        return document
+
     @location.setter
     def location(self, value):
         # NOTE - not documented. still unverified
         # self._location = value
         # TODO - load the content of the location using requests
+
+        if 'html5lib' in sys.modules:
+            self.document = self._set_location_using_htm5lib(value)
+            self._location = Location(value)
+            return
+
         if value is None:
             return
         import requests

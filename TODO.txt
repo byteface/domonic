@@ -220,7 +220,8 @@ terminal.py:pip = type('pip', (command,), {'name': 'pip'})  # TODO - change to '
 terminal.py:# youtube-dl = type('youtube-dl', (command,), {'name': 'youtube-dl'}) # TODO - illegal chars
 terminal.py:wc = type('wc', (command,), {'name': 'wc'})  # < TODO - stream. plus figure out piping
 utils.py:        ''' TODO - remove in 0.3 as we have color class. '''
-window.py:# TODO - test
+
+
 window.py:        # TODO - load the content of the location using requests
 window.py:        # content = domonic.parsers.remove_html_tag_by_name(content, 'head') # TODO - buggy.removed start of docs too?
 window.py:        # TODO - don't use parseString as it is not a HTML parser its XML parser. atm I'm just using for testing

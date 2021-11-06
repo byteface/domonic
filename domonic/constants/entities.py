@@ -7,6 +7,8 @@
 
 class Entity():
 
+    # __slots__ = ('entity',)
+
     def __init__(self, entity: str):
         self.entity = entity
 

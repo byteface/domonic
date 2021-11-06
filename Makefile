@@ -16,6 +16,7 @@ test:
 	python3 -m unittest tests.test_sitemap
 	python3 -m unittest tests.test_domonic
 	python3 -m unittest tests.test_templates
+	python3 -m unittest tests.test_window
 
 testpc:
 	python3 -m unittest tests.test_html
@@ -33,7 +34,7 @@ testpc:
 	python3 -m unittest tests.test_d3
 	python3 -m unittest tests.test_sitemap
 	python3 -m unittest tests.test_domonic
-
+	python3 -m unittest tests.test_window
 
 # test single modules
 test_domonic:

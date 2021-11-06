@@ -3,6 +3,10 @@
     ====================================
 """
 
+# from typing import Union, Tuple, List, Dict, Any, Optional, Callable, cast, TypeVar, Generic, Iterable, Sequence
+
+from typing import Tuple
+
 from domonic.geom import vec3, vec4
 
 
@@ -13,7 +17,7 @@ class Color():
     # WHITE = Color(255, 255, 255)
 
     @staticmethod
-    def random_hex():
+    def random_hex() -> str:
         """[returns a random hex color i.e. #000000]
 
         Returns:
@@ -29,7 +33,7 @@ class Color():
         # rgba = '#'+secrets.token_hex(4)
 
     @staticmethod
-    def hex2rgb(h: str):
+    def hex2rgb(h: str) -> Tuple[int, int, int]:
         """[takes a hex color in the form of #RRGGBB and returns the rgb values as a tuple i.e (r, g, b)]
 
         Args:
@@ -83,13 +87,13 @@ class Color():
     #     return h, s, l
 
     @staticmethod
-    def rgb2hex(r, g, b):
+    def rgb2hex(r: int, g: int, b: int) -> str:
         """[ takes 3 rgb values and returns a hex string i.e. #000000]
 
         Args:
-            a ([type]): [r]
-            b ([type]): [g]
-            c ([type]): [b]
+            r ([int]): [a value between 0 and 255]
+            g ([int]): [a value between 0 and 255]
+            b ([int]): [a value between 0 and 255]
 
         Returns:
             [str]: [retuns a hex string i.e #ffffff]
@@ -101,17 +105,17 @@ class Color():
 
     # deprecated
     @staticmethod
-    def fromRGBA(r, g, b, a):
+    def fromRGBA(r: int, g: int, b: int, a: int = 255):
         """[creates a Color from rgba values]
 
         Args:
-            r ([type]): [description]
-            g ([type]): [description]
-            b ([type]): [description]
-            a ([type]): [description]
+            r ([int]): [a value between 0 and 255]
+            g ([int]): [a value between 0 and 255]
+            b ([int]): [a value between 0 and 255]
+            a ([int]): [a value between 0 and 255]
 
         Returns:
-            [type]: [description]
+            [type]: [a Color object]
         """
         return Color(r, g, b, a)
 
@@ -121,7 +125,7 @@ class Color():
 
     # deprecated
     @staticmethod
-    def fromHex(hex):
+    def fromHex(hex: str):
         """ create a Color from a hex string i.e. #ffffff """
         return Color(hex)
 
@@ -182,11 +186,11 @@ class Color():
         """ get the hsv for the color """
         return (self.hue, self.saturation, self.brightness)
 
-    def toCSS(self):
+    def toCSS(self) -> str:
         """ return the color as a CSS string """
         return '#%02x%02x%02x' % (self.r, self.g, self.b)
 
-    def toHex(self):
+    def toHex(self) -> str:
         return str(self)
 
     def toRGBA(self):
@@ -232,7 +236,7 @@ class Color():
 
     # set(*args)
 
-    def hasAlpha(self):
+    def hasAlpha(self) -> bool:
         """[does the color have an alpha channel]
 
         Returns:
@@ -240,7 +244,7 @@ class Color():
         """
         return self.a > 0
 
-    def equals(self, color):
+    def equals(self, color) -> bool:
         return self.r == color.r and self.g == color.g and self.b == color.b
 
     def __eq__(self, other):
@@ -1336,3 +1340,4 @@ class Color():
     yellowtan = "#ffe36e"  #:
     yellowybrown = "#ae8b0c"  #:
     yellowygreen = "#bff128"  #:
+

@@ -5,7 +5,6 @@ Welcome!  domonic is an open-source project that aims to work for a wide
 range of users and codebases.  If you're using domonic your experience
 is important to the project's success.
 
-
 Getting started, building, and testing
 --------------------------------------
 
@@ -23,7 +22,7 @@ clone the repo an cd into it.
 
 setup a virtual environment
 
-```
+```bash
 python3 -m venv venv
 . venv/bin/activate
 pip install -r requirements-dev.txt
@@ -31,6 +30,32 @@ pip install -r requirements-dev.txt
 
 and you should be good to go.
 
+The Makefile can be used to run all tests.
+
+```bash
+make test
+```
+
+or you can run tests just for a single module.
+
+```python
+python3 -m unittest tests.test_html
+python3 -m unittest tests.test_dom
+python3 -m unittest tests.test_style
+python3 -m unittest tests.test_javascript
+python3 -m unittest tests.test_terminal
+python3 -m unittest tests.test_CDN
+python3 -m unittest tests.test_JSON
+python3 -m unittest tests.test_svg
+python3 -m unittest tests.test_collada
+python3 -m unittest tests.test_x3d
+python3 -m unittest tests.test_dQuery
+python3 -m unittest tests.test_geom
+python3 -m unittest tests.test_d3
+python3 -m unittest tests.test_sitemap
+python3 -m unittest tests.test_domonic
+python3 -m unittest tests.test_templates
+```
 
 Discussion
 ----------
@@ -41,9 +66,10 @@ Our forum for discussion is the project's
 [GitHub issue tracker](https://github.com/byteface/domonic/issues) or 
 [discussion board](https://github.com/byteface/domonic/discussions)
 
-For less formal discussion send me a message
+For less formal discussion send me a message or join the discord server.
 
-#### Code of Conduct
+Code of Conduct
+-----------------------
 
 Everyone contributing to domonic, and in particular in our
 issue tracker, pull requests, is expected to treat other people with respect.
@@ -51,18 +77,17 @@ issue tracker, pull requests, is expected to treat other people with respect.
 First Time Contributors
 -----------------------
 
-domonic appreciates your contribution! If you are interested in helping improve
+I appreciates your contribution! If you are interested in helping improve
 domonic, there are several ways to get started:
-
 
 * Docs - learn to publish the sphinx docs and make some small edits.
 
-    cd docs
-    make html
-
+```bash
+cd docs
+make html
+```
 
 * Unit Test - These are severely lacking and writing them uncovers bugs. Try to start everthing you are doing with tests.
-
 
 Submitting Changes
 ------------------
@@ -73,7 +98,6 @@ Try to do unit tests if you can and add new ones to the test files if you need t
 
 The best thing is to commit little and often. single functions and unit tests. Making sure all existing tests pass (unless they were incorrect).
 
-
 Preparing Changes
 -----------------
 
@@ -83,19 +107,16 @@ what you want to do.  That lets a conversation happen early in case
 other contributors disagree with what you'd like to do or have ideas
 that will help you do it.
 
-
 I'd like to get the conventions as good as possbile but it's a big project with a lot to do.
 
 I'm severly behind on unit tests and documentation.
 
 If you want you can also raise a bug and suggest a fix as a comment. If you have patched something locally and just want to suggest the change but don't feel confident setting everything up just put a message dicussion board.
 
-
 Issue-tracker conventions
 -------------------------
 
 I aim to reply to all issues promptly but I may not be able for somethings or might be busy so please also be patient.
-
 
 Thanks
 -------------------------
