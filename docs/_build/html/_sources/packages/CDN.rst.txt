@@ -1,23 +1,19 @@
 CDN
 =============
 
-To quickly use and reference external assets when prototyping use the CDN package.
+For quick reference when prototyping you can use the CDN package.
 
-Currently there are 3 types of CDN. .js, .css and .img
-
-Their features will be added here.
-
-To use features from CDN they must be imported.
+To use a CDN class it must be imported.
 
 .. code-block :: python
 
 	from domonic.CDN import *
 
-Or just class you need
+Or just classes you need...
 
 .. code-block :: python
 
-	from domonic.CDN import CDN_JS
+	from domonic.CDN import CDN_JS, CDN_CSS
 
 
 CDN_JS
@@ -27,19 +23,6 @@ CDN_JS
 
 	script(_src=CDN_JS.JQUERY_3_5_1)
 
-currently constants exist for:
-
-- JQUERY_3_5_1
-- JQUERY_UI
-- UNDERSCORE
-- BOOTSTRAP_4
-- POPPER_1_16_1
-- BOOTSTRAP_5_ALPHA
-- D3_6_1_0
-- MODERNIZER_2_8_3
-- MOMENT_2_27_0
-- PIXI_5_3_3
-- SOCKET_1_4_5
 
 
 CDN_CSS
