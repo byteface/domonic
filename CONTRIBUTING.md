@@ -1,9 +1,19 @@
 Contributing to domonic
 =======================
 
-Welcome!  domonic is an open-source project that aims to work for a wide
-range of users and codebases.  If you're using domonic your experience
+Welcome! domonic is an open-source project that aims to work for a wide
+range of users and codebases. If you're using domonic your experience
 is important to the project's success.
+
+It's probably more fun to clone and download domonic than it is to pip install it. 
+
+I'd encourage you to download and play. If you do manage to improve it
+in even the smallest way, please feel free to send a pull request.
+
+Small commits are good. You can even fork, edit and submit a pull request
+all within github without even downloading the repo. In just 3 or 4 simple steps.
+
+But for a full setup keep reading.
 
 Getting started, building, and testing
 --------------------------------------
@@ -14,7 +24,7 @@ If you haven't already, take a look at the project's
 
 and [domonic documentation](https://readthedocs.org/projects/domonic/),
 
-The readme contains some tips on testing and running tests.
+The readme contains some tips on running tests.
 
 For dev you will need to install the requirements-dev.txt file.
 
