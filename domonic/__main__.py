@@ -190,6 +190,12 @@ def do_things(arguments):
                 print(prog)
 
 
-if __name__ == "__main__":
+def run():
+    """[Entry point required by setup.py console_scripts. Saves having to add alias to .bash_profile]
+    """
     args = parse_args()
     do_things(args)
+
+
+if __name__ == "__main__":
+    run()
