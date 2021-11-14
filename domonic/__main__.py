@@ -66,20 +66,140 @@ function project(){
 
 '''
 # TODO - nautilus instead of open for linux
-
-# def install():
-# def clone_webpage(url):
-# clone a webpage and all the resources for that page with wget
-# import os
-# os.system('wget -r -l1 -A.js,.css,.jpg,.jpeg,.png,.gif,.svg ' + url)
+# wrewrite as pure python
 
 
-# class domonic_ui(object):
-#     """
-#         domonic UI - browser interface to create pyml via contextmenu clicks?.
-#     """
-#     def __init__(self):
-#         pass
+def project(name):
+    """
+    this will replace the older bash script
+    """
+    PROJECT_NAME = name
+    os.mkdir(PROJECT_NAME)
+    os.chdir(PROJECT_NAME)
+
+    # with python not touch
+    with open("app.py", "w") as f:
+        f.write("from domonic.html import *")
+
+    # create a Makefile
+    # os.system("touch Makefile")
+    with open("Makefile", "w") as f:
+        f.write("")
+
+    # create a README.md
+    with open("README.md", "w") as f:
+        f.write("# " + PROJECT_NAME + "\n")
+        f.write("## Description" + "\n")
+        f.write("## Installation" + "\n")
+        f.write("## Usage" + "\n")
+        f.write("## Tests" + "\n")
+        f.write("## License")
+
+    # create app
+    os.mkdir("app")
+    with open("app/__init__.py", "w") as f:
+        f.write('__version__ = "0.0.1"')
+
+    # create a git repo
+    os.system("git init")
+    with open(".gitignore", "w") as f:
+        f.write("*.pyc")
+        f.write("*.pyo")
+        f.write("*.swp")
+        f.write("*.swo")
+        f.write("*.DS_Store")
+        f.write("__pycache__/")
+
+    # create a venv
+    # os.system("python3 -m venv venv")
+    # if os.name == "nt":
+    #     os.system("venv\Scripts\activate")
+    # else:
+    #     os.system("source venv/bin/activate")
+    # # install requirements
+    # os.system("python3 -m pip install requests")
+    # os.system("python3 -m pip install sanic")
+    # os.system("python3 -m pip install domonic")
+    # os.system("python3 -m pip freeze > requirements.txt")
+
+    # ask the user which server they want to use
+    server_opt = ["none", "sanic", "flask", "cherrypy", "django", "bottle"]
+    print("You want a server?")
+    for i, server in enumerate(server_opt):
+        print(str(i) + ": " + server)
+    server_choice = input("Enter a number: ")
+    server_choice = server_opt[int(server_choice)]
+
+    os.system("python3 -m venv venv")
+    from domonic.utils import Utils
+    if Utils.is_windows():
+        # create a bat file to activate the venv an install requirements
+        with open("activate.bat", "w") as f:
+            f.write("@echo off\n")
+            f.write("call \"venv\Scripts\activate\"\n")
+            f.write("python3 -m pip install requests\n")
+            f.write(f"python3 -m pip install {server_choice}\n")
+            f.write("python3 -m pip install domonic\n")
+            f.write("python3 -m pip freeze > requirements.txt\n")
+        # call the bat file
+        os.system("activate.bat")
+        # remove the activate.bat file
+        os.system("rm activate.bat")
+    else:
+        # create a bash file to activate the venv an install requirements
+        with open("activate.sh", "w") as f:
+            f.write("#!/bin/bash\n")
+            f.write("source venv/bin/activate\n")
+            f.write("python3 -m pip install requests\n")
+            f.write(f"python3 -m pip install {server_choice}\n")
+            f.write("python3 -m pip install domonic\n")
+            f.write("python3 -m pip freeze > requirements.txt\n")
+        # call the bash file
+        os.system("bash activate.sh")
+        # remove the activate.sh file
+        os.system("rm activate.sh")
+
+    # license_opt = ["none", "mit", "gpl", "apache", "bsd", "mpl"]
+    # print("You want a license?")
+    # for i, license in enumerate(license_opt):
+    #     print(str(i) + ": " + license)
+    # license_choice = input("Enter a number: ")
+    # license_choice = license_opt[int(license_choice)]
+    # dl the license
+
+    # create static
+    os.mkdir("static")
+    os.mkdir("static/js")
+    os.mkdir("static/css")
+    os.mkdir("static/img")
+    os.mkdir("static/data")
+
+    # create files
+    with open("static/js/master.js", "w") as f:
+        f.write("")
+    with open("static/css/styles.css", "w") as f:
+        f.write("")
+    with open("static/data/data.json", "w") as f:
+        f.write("")
+
+    # chmod
+    if os.name == 'posix':
+        os.system("chmod -R 777 static")
+
+    if Utils.is_mac():
+        os.system("open .")
+    elif Utils.is_linux():
+        os.system("nautilus .")
+    elif Utils.is_windows():
+        # TODO - check what to do on windows
+        os.system("start .")
+        # explorer.exe .?
+        # os.system("explorer.exe .")
+
+# def webpage(content):
+#     from domonic.components import webpage_tmpl
+#     with open("index.html", "w") as f:
+#         f.write(webpage_tmpl(content))
 
 
 def parse_args():
@@ -91,9 +211,10 @@ def parse_args():
     parser.add_argument('-d', '--download', help="Attempts to to generate domonic template from a webpage", type=str)
     parser.add_argument('-h', '--help', action='store_true')  # launch the docs
     parser.add_argument('-v', '--version', action='store_true')
+
     # parser.add_argument('-u', '--ui', help="launches a UI")
 
-    parser.add_argument('-i', '--install', action='store_true')  # add 'projects' to the .bashprofile or .bashrc
+    parser.add_argument('-p', '--project', help="create a new project", type=str)
 
     # parser.add_argument('-p', '--pyml2html', help="converts a .pyml template file to html", type=str)
     # parser.add_argument('-g', '--html2pyml', help="converts a .html file to a .pyml template", type=str)
@@ -142,6 +263,10 @@ def do_things(arguments):
         print("filename:", Utils.url2file(arguments.download))
         render(page, Utils.url2file(arguments.download))
 
+    if arguments.project is not None:
+        print('creating a basic project:')
+        project(arguments.project)
+
     if arguments.help is True:
         import webbrowser
         webbrowser.open_new("https://domonic.readthedocs.io/")
@@ -154,40 +279,6 @@ def do_things(arguments):
     # if arguments.server is True:
         # port = domonic.get(arguments.server)
         # os.system('python -m http.server ' + port)
-
-    if arguments.install is True:
-        # detect operating system and attempts to append prog to the .bashprofile or .bashrc
-        if os.name == 'nt':
-            print('Sorry, this install is currently unavaialable for windows')
-        else:
-
-            # detect if the user has a bashrc or bashprofile
-            if os.path.exists(os.path.expanduser('~/.bashrc')):
-
-                # dont do it if alreay exists
-                if 'function project()' not in open(os.path.expanduser('~/.bashrc')).read():
-                    print('found .bashrc')
-                    with open(os.path.expanduser('~/.bashrc'), 'a') as f:
-                        f.write('\n\n# domonic\n')
-                        f.write(prog)
-                        f.write('alias domonic="python3 -m domonic"\n')
-                else:
-                    print('already installed. You need to manually remove it from ~/.bashrc')
-
-            elif os.path.exists(os.path.expanduser('~/.bash_profile')):
-
-                if 'function project()' not in open(os.path.expanduser('~/.bash_profile')).read():
-                    print('found .bash_profile')
-                    with open(os.path.expanduser('~/.bash_profile'), 'a') as f:
-                        f.write('\n\n# domonic\n')
-                        f.write(prog)
-                        f.write('alias domonic="python3 -m domonic"\n')
-                else:
-                    print('already installed. You need to manually remove it from ~/.bash_profile')
-
-            else:
-                print('no bashrc or bash_profile found. you need to manually add the following to your .bashrc or .bash_profile')
-                print(prog)
 
 
 def run():

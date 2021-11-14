@@ -80,7 +80,6 @@ install
 
   python3 -m pip install domonic
 
-
 or if you had it before upgrade:
 
 .. code-block :: python
@@ -126,46 +125,23 @@ CLI
 
 There's a few args you can pass to domonic on the command line to help you out.
 
-To launch the docs for a quick reference to the APIs use:
-
-.. code-block :: python
-
-  python3 -m domonic -h
-
-
-This command will attempt to generate a template from a webpage. (only simple pages for now)
-
-.. code-block :: python
-
-  python3 -m domonic -d http://eventual.technology
-
-
-Then you can edit/tweak it to get what you need and build new components quicker.
-
-
-INSTALLING - (linux/mac only)
-
-If you like you can install domonic to your .bashprofile
-
-.. code-block :: python
-
-  python3 -m domonic --install
-
-Now in your terminal whenever you want to start a new project you can type...
-
-.. code-block :: python
-
-  project mycoolproject
-
-and it will smash out a basic project for you.
-
-you can also now access the docs quickly simply by typing...
+To view the online the docs:
 
 .. code-block :: python
 
   domonic -h
 
-Finally, you can open and edit .bashprofile to tweak it to your own preferences.
+To see the version:
+
+.. code-block :: python
+
+  domonic -v
+
+To quickly create a domonic style project:
+
+.. code-block :: python
+
+  domonic -p
 
 
 Join-In
@@ -177,7 +153,7 @@ If there's any methods you want that are missing or not complete yet. Just updat
 I'll merge and releaese asap.
 
 
-EXAMPLE PROJECT
+EXAMPLE PROJECTS
 ----------------
 A browser based file browser. Working example of how components can work:
 https://github.com/byteface/Blueberry/

@@ -21,6 +21,7 @@ from domonic.dom import *
 from domonic.dom import document, Location
 
 from domonic.webapi.storage import Storage
+from domonic.webapi.console import Console
 
 # TODO - test
 class CustomElementRegistry():
@@ -235,7 +236,13 @@ class Window(Window):
         self._navigator = Navigator()
 
         self._location = Location('eventual.technology')
+        self._console = Console()
         super(Window, Window).__init__(self)
+
+    @property
+    def console(self):
+        """ Returns the console object """
+        return self._console
 
     @property
     def localStorage(self):

@@ -367,6 +367,49 @@ class Utils(object):
             # print("No internet connection available.")
             return False
 
+    @staticmethod
+    def is_nix():
+        """[check if the system is a nix based system]
+
+        Returns:
+            [bool]: [True if it is a nix based system]
+        """
+        import os
+        return os.name == "posix"
+
+    @staticmethod
+    def is_mac():
+        """[check if the system is a mac]
+
+        Returns:
+            [bool]: [True if the system is a mac]
+        """
+        import sys
+        return sys.platform == "darwin"
+
+    @staticmethod
+    def is_windows():
+        """[check if the system is a windows]
+
+        Returns:
+            [bool]: [True if windows]
+        """
+        import os
+        return os.name == "nt"
+
+    @staticmethod
+    def is_linux():
+        """[check if the system is a linux]
+
+        Returns:
+            [bool]: [description]
+        """
+        import sys
+        return sys.platform.startswith('linux')
+
+
+
+
     # def convert_file(filepath, filetype=None):
     #     """
     #         convert a file to a different file type
@@ -472,48 +515,3 @@ class Utils(object):
             digits.append(int(n % b))
             n //= b
         return digits[::-1]
-
-    # @staticmethod
-    # def is_nix():
-    #     """[check if the system is a nix based system]
-
-    #     Returns:
-    #         [bool]: [description]
-    #     """
-    #     return os.name == "posix"
-
-    # @staticmethod
-    # def is_mac():
-    #     """[check if the system is a mac]
-
-    #     Returns:
-    #         [bool]: [description]
-    #     """
-    #     return sys.platform == "darwin"
-
-    # @staticmethod
-    # def is_windows():
-    #     """[check if the system is a windows]
-
-    #     Returns:
-    #         [bool]: [description]
-    #     """
-    #     return os.name == "nt"
-
-    # @staticmethod
-    # def is_linux():
-    #     """[check if the system is a linux]
-
-    #     Returns:
-    #         [bool]: [description]
-    #     """
-    #     return sys.platform.startswith('linux')
-
-    # @staticmethod
-    # def is_unix():
-    #     """[check if the system is a unix]
-
-    #     Returns:
-    #         [bool]: [description]
-    #     """
-    #     return os.name == "posix"

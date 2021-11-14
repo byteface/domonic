@@ -67,6 +67,12 @@ python3 -m unittest tests.test_domonic
 python3 -m unittest tests.test_templates
 ```
 
+To install from source and use domonic with your changes do:
+
+```python
+python3 setup.py install
+```
+
 Discussion
 ----------
 

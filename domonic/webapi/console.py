@@ -5,7 +5,7 @@
 """
 
 
-class Console(object):  # TODO - test - migrated here from the DOM
+class Console(object):
 
     @staticmethod
     def log(msg: str, substitute=None, *args):
@@ -118,21 +118,103 @@ class Console(object):  # TODO - test - migrated here from the DOM
             print(msg)
             return msg
 
+    @staticmethod
+    def clear():
+        """clear
+
+        clears the console
+        """
+        print("\033[2J")
+
+    # @staticmethod
+    # def dir(obj): # TODO - does this exist?
+    #     """dir
+
+    #     prints the properties of an object
+    #     """
+    #     print(dir(obj))
+
+    # @staticmethod
+    # def dirxml(obj): # TODO - does this exist?
+    #     """dirxml
+
+    #     prints the properties of an object
+    #     """
+    #     print(dir(obj))
+
+    # @staticmethod
+    # def group(msg: str):
+    #     """group
+
+    #     prints a message to the console
+    #     """
+    #     print(msg)
+
+    # @staticmethod
+    # def groupCollapsed(msg: str):
+    #     """groupCollapsed
+
+    #     prints a message to the console
+    #     """
+    #     print(msg)
+
+    # @staticmethod
+    # def groupEnd():
+    #     """groupEnd
+
+    #     prints a message to the console
+    #     """
+    #     print("")
+
+    # @staticmethod
+    # def profile(label: str):
+    #     """[starts a profiler]
+
+    #     Args:
+    #         label (str): [The name to give the new profiler.]
+    #     """
+    #     pass
+
+    # @staticmethod
+    # def profileEnd(label: str):
+    #     """[stops a profiler]
+
+    #     Args:
+    #         label (str): [The name to of the profiler to stop]
+
+    #     Returns:
+    #         [type]: [label: time - profiler ended]
+    #     """
+    #     pass
+
+    @staticmethod
+    def table(data: list):
+        """table
+
+        prints a table
+        """
+        print(data)
+
+    # @staticmethod
+    # def timeStamp(label: str):
+    #     """[starts a timer]
+
+    #     Args:
+    #         label (str): [The name to give the new timer.]
+    #     """
+    #     Console._timers[label] = Console._getTime()
+
     def __init__(self, *args, **kwargs):
         # self.args = args
         # self.kwargs = kwargs
-        # self.log = lambda msg : print(msg)
-        # clear()
         # group()
         # groupCollapsed()
         # groupEnd()
-        # info()
         # def table(json_str, filter_array):
         # trace()
-        # warn()
         __count_var = 0
 
 
-Console.info = Console.log
-Console.warn = Console.log
+Console.info = Console.log  # info()
+Console.warn = Console.log  # warn()
 console = Console
