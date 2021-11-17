@@ -14,6 +14,7 @@ from domonic.geom import vec3
 
 from domonic.webapi.console import Console  # left here for legacy reasons. access via window module instead
 
+console = Console  # legacy. should access via window
 
 class EventTarget:
     """ EventTarget interface """
