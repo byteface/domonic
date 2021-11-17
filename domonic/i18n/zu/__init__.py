@@ -4,9 +4,8 @@
 
     html tags in Zulu
 
-	# first translated to Zulu using google translate.
-	# feel free to send a pull request if you think it should be different
-
+    first translated to Zulu using google translate.
+    feel free to send a pull request if you think it should be different
 """
 from domonic.html import *
 

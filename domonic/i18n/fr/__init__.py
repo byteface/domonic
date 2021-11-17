@@ -4,9 +4,8 @@
 
     html tags in French
 
-	# translated to french using google translate.
-	# feel free to send a pull request if you think it should be different
-
+    translated to French using google translate.
+    send a pull request if you have a better translation.
 """
 from domonic.html import *
 

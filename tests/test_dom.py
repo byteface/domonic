@@ -913,7 +913,6 @@ class TestCase(unittest.TestCase):
         # object equality in JavaScript.)
         # JSON.stringify(Sanitizer.getDefaultConfiguration()) == JSON.stringify(new Sanitizer().getConfiguration());  // true
 
-
     def test_comment(self):
         from domonic.html import comment
         # https://github.com/byteface/domonic/issues/38

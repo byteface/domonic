@@ -4,13 +4,10 @@
 
     html tags in Chinese
 
-	# first translated to Chinese using google translate.
-	# send a pull request if you think anything should be different
-
-
+    first translated to Chinese using google translate.
+    send a pull request if you have a better translation.
 """
 from domonic.html import *
-
 
 Shēntǐ = 身体 = body
 tóu = 头 = head

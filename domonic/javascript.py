@@ -4278,7 +4278,7 @@ Float64Array = type('Float64Array',
                     {'name': 'Float64Array', '_pack': __byteutils__.packF64, '_unpack': __byteutils__.unpackF64})
 Float64Array.BYTES_PER_ELEMENT = 8
 
-# BigInt64Array = type('BigInt64Array', 
+# BigInt64Array = type('BigInt64Array',
 # (TypedArray,), {'name': 'BigInt64Array', '_pack': __byteutils__.packI64, '_unpack': __byteutils__.unpackI64})
 # BigInt64Array.BYTES_PER_ELEMENT = 8
 

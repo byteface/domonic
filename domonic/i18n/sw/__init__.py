@@ -4,18 +4,15 @@
 
     html tags in Swahili
 
-	# translated to Swahili using google translate.
-	# feel free to send a pull request if you think it should be different
+    translated to Swahili using google translate.
+    send a pull request if you have a better translation.
 
-
-	html(
-		kichwa(),
-		mwili(
-			div('Salamu, Dunia')
-		)
-	)
-
-
+    html(
+        kichwa(),
+        mwili(
+            div('Salamu, Dunia')
+        )
+    )
 """
 from domonic.html import *
 

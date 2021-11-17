@@ -4,9 +4,8 @@
 
     html tags in Spanish
 
-	# translated to Spanish using google translate.
-	# send a pull request if you think it should be different
-
+    translated to Spanish using google translate.
+    send a pull request if you have a better translation.
 """
 from domonic.html import *
 

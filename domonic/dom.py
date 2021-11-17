@@ -16,6 +16,7 @@ from domonic.webapi.console import Console  # left here for legacy reasons. acce
 
 console = Console  # legacy. should access via window
 
+
 class EventTarget:
     """ EventTarget interface """
 
@@ -3544,6 +3545,7 @@ class DOMPointReadOnly(DOMPoint):
 
     def __repr__(self):
         return '({}, {}, {}, {})'.format(self.x, self.y, self.z, self.w)
+
 
 '''
 class DOMMatrix(mat4):

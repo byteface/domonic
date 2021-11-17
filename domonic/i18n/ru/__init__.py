@@ -4,9 +4,8 @@
 
     html tags in Russian
 
-	# first translated to Russian using google translate.
-	# send a pull request if you think it should be different
-
+    first translated to Russian using google translate.
+    send a pull request if you have a better translation.
 """
 from domonic.html import *
 

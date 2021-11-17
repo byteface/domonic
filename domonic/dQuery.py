@@ -656,6 +656,7 @@ class dQuery_el():
         for el in self.elements:
             el.innerHTML = ""
             el.innerHTML = "<div class='loading'></div>"
+
             def load(el, url, data, complete):
                 def onload(response):
                     el.innerHTML = ""
