@@ -87,6 +87,30 @@ or if you had it before upgrade:
   python3 -m pip install domonic --upgrade
 
 
+CLI
+----------------
+
+There's a few args you can pass to domonic on the command line to help you out.
+
+To view the online the docs:
+
+.. code-block :: python
+
+  domonic -h
+
+To see the version:
+
+.. code-block :: python
+
+  domonic -v
+
+To quickly create a domonic project for prototyping:
+
+.. code-block :: python
+
+  domonic -p
+
+
 The User Guide
 ----------------
 
@@ -119,29 +143,6 @@ Here you can find some instructions for getting the most out of Domonic.
    packages/servers
    packages/autodocs
    contribute
-
-CLI
-----------------
-
-There's a few args you can pass to domonic on the command line to help you out.
-
-To view the online the docs:
-
-.. code-block :: python
-
-  domonic -h
-
-To see the version:
-
-.. code-block :: python
-
-  domonic -v
-
-To quickly create a domonic style project:
-
-.. code-block :: python
-
-  domonic -p
 
 
 Join-In

@@ -80,7 +80,14 @@ def project(name):
     # create a Makefile
     # os.system("touch Makefile")
     with open("Makefile", "w") as f:
-        f.write("")
+        # start venv and run app
+        # f.write(". venv/bin/activate\n")
+        # f.write("python3 app.py\n")
+        # TOD as a run command
+        f.write("""
+run:
+\t(. venv/bin/activate; python3 app.py;)
+""")
 
     # create a README.md
     with open("README.md", "w") as f:

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>html &#8212; domonic 0.6.9 documentation</title>
+    <title>html &#8212; domonic 0.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -185,6 +185,18 @@
 <section id="decorators">
 <h2>Decorators<a class="headerlink" href="#decorators" title="Permalink to this headline">¶</a></h2>
 <p>You can use decorators to wrap elements around function results</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.decorators</span> <span class="kn">import</span> <span class="n">el</span>
+
+<span class="nd">@el</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+<span class="nd">@el</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+<span class="nd">@el</span><span class="p">(</span><span class="n">div</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s1">&#39;hi!&#39;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">test</span><span class="p">())</span>
+<span class="c1"># &lt;html&gt;&lt;body&gt;&lt;div&gt;hi!&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</span>
+</pre></div>
+</div>
 </section>
 <section id="magic-methods">
 <h2>Magic methods<a class="headerlink" href="#magic-methods" title="Permalink to this headline">¶</a></h2>
@@ -303,6 +315,10 @@
 </section>
 <section id="loading-pyml-templates">
 <h2>loading .pyml templates<a class="headerlink" href="#loading-pyml-templates" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">div</span><span class="p">(</span><span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
+<span class="c1">#&lt;div&gt;Hello tabs&lt;/div&gt;</span>
+</pre></div>
+</div>
 <p>‘loads’ imports a pyml file and turns it into a program</p>
 <p>this example loads a template and passing params for rendering</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic</span> <span class="kn">import</span> <span class="n">loads</span>

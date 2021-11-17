@@ -625,7 +625,7 @@ class ParentNode(object):
         return self
 
     def replaceChildren(self, children):
-        self.args = args
+        self.args = children
 
 
 class ChildNode(Node):

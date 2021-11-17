@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.6.9 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -44,6 +44,8 @@
 <span class="kn">import</span> <span class="nn">domonic.javascript</span>
 <span class="kn">from</span> <span class="nn">domonic.events</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">domonic.geom</span> <span class="kn">import</span> <span class="n">vec3</span>
+
+<span class="kn">from</span> <span class="nn">domonic.webapi.console</span> <span class="kn">import</span> <span class="n">Console</span>  <span class="c1"># left here for legacy reasons. access via window module instead</span>
 
 
 <div class="viewcode-block" id="EventTarget"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.EventTarget">[docs]</a><span class="k">class</span> <span class="nc">EventTarget</span><span class="p">:</span>
@@ -656,7 +658,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">replaceChildren</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">children</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">children</span></div>
 
 
 <div class="viewcode-block" id="ChildNode"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.ChildNode">[docs]</a><span class="k">class</span> <span class="nc">ChildNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
@@ -820,6 +822,7 @@
 <span class="sd">                return True</span>
 <span class="sd">        return False</span>
 <span class="sd">&#39;&#39;&#39;</span>
+
 
 <div class="viewcode-block" id="DOMStringMap"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.DOMStringMap">[docs]</a><span class="k">class</span> <span class="nc">DOMStringMap</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -1527,7 +1530,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">selected</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># import string</span>
-        <span class="n">all_selectors</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*([^\w])\s*&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">all_selectors</span><span class="p">)</span>  <span class="c1"># cleann</span>
+        <span class="n">all_selectors</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s*([^\w])\s*&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">all_selectors</span><span class="p">)</span>  <span class="c1"># clean up whitespace</span>
         <span class="c1"># Grab all of the tagName elements within current context</span>
 
         <span class="k">def</span> <span class="nf">getElements</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
@@ -2077,7 +2080,7 @@
         <span class="c1"># print(&quot;dis:::&quot;,naked_query)</span>
         <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">naked_query</span> <span class="ow">or</span> <span class="s1">&#39;[&#39;</span> <span class="ow">in</span> <span class="n">naked_query</span> <span class="ow">or</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">naked_query</span><span class="p">:</span>
             <span class="c1"># print(&#39;DIVERTED!&#39;, query)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElementsBySelector</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span> 
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElementsBySelector</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="c1"># TODO - bug?. elements selector seems to only work if tag is provided</span>
         <span class="c1"># so having to do this for now.</span>
 
@@ -3196,139 +3199,6 @@
 <span class="n">location</span> <span class="o">=</span> <span class="n">Location</span>
 
 
-<span class="k">class</span> <span class="nc">Console</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>  <span class="c1"># TODO - switch to importing the webapi.console module</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">substitute</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;log</span>
-
-<span class="sd">        prints a message to the console</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            msg (str): msg to log</span>
-<span class="sd">            substitute : replaces %s or %d with this</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="n">argstring</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">substitute</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span> <span class="ow">and</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
-                <span class="n">argstring</span> <span class="o">=</span> <span class="n">argstring</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">substitute</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">substitute</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">substitute</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">substitute</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="n">substitute</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">))</span>
-
-        <span class="c1"># print(args)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span> <span class="o">+</span> <span class="n">argstring</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">msg</span> <span class="o">+</span> <span class="n">argstring</span>
-
-    <span class="n">__count_var</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">count</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot;count</span>
-
-<span class="sd">        increments a number</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Console</span><span class="o">.</span><span class="n">__count_var</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">__count_var</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">Console</span><span class="o">.</span><span class="n">__count_var</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;error</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="n">error</span>
-
-    <span class="n">_timers</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_getTime</span><span class="p">():</span>
-        <span class="kn">import</span> <span class="nn">time</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">()</span> <span class="o">//</span> <span class="mi">1000</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="c1"># python 3.6 doesn&#39;t have _ns</span>
-            <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000000</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[starts a timer]</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            label (str): [The name to give the new timer.]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">_getTime</span><span class="p">()</span>  <span class="c1"># time.time_ns() // 1000</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">timeLog</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[summary]</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            label (str): [The name to of the timer to log]</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            [type]: [description]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># if label = None</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">_getTime</span><span class="p">()</span>  <span class="c1"># time.time_ns() // 1000</span>
-            <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;ms&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;ms&quot;</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Timer &#39;</span> <span class="o">+</span> <span class="n">label</span> <span class="o">+</span> <span class="s1">&#39; does not exist&#39;</span><span class="p">)</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">timeEnd</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[stops a timer]</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            label (str): [The name to of the timer to stop]</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            [type]: [label: time - timer ended]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">_getTime</span><span class="p">()</span>  <span class="c1"># time.time_ns() // 1000</span>
-            <span class="n">fin</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
-            <span class="k">del</span> <span class="n">Console</span><span class="o">.</span><span class="n">_timers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
-            <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;ms - timer ended&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;ms - timer ended&quot;</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Timer &#39;</span> <span class="o">+</span> <span class="n">label</span> <span class="o">+</span> <span class="s1">&#39; does not exist&#39;</span><span class="p">)</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">assert_</span><span class="p">(</span><span class="n">assertion</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;[return an error message if the assertion is false. If the assertion is true, nothing happens.]</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            assertion (bool): [any boolean expression]</span>
-<span class="sd">            msg (str): [output if expression if false]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">assertion</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">msg</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># self.args = args</span>
-        <span class="c1"># self.kwargs = kwargs</span>
-        <span class="c1"># self.log = lambda msg : print(msg)</span>
-        <span class="c1"># clear()</span>
-        <span class="c1"># group()</span>
-        <span class="c1"># groupCollapsed()</span>
-        <span class="c1"># groupEnd()</span>
-        <span class="c1"># info()</span>
-        <span class="c1"># def table(json_str, filter_array):</span>
-        <span class="c1"># trace()</span>
-        <span class="c1"># warn()</span>
-        <span class="n">__count_var</span> <span class="o">=</span> <span class="mi">0</span>
-
-
-<span class="n">Console</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">log</span>
-<span class="n">Console</span><span class="o">.</span><span class="n">warn</span> <span class="o">=</span> <span class="n">Console</span><span class="o">.</span><span class="n">log</span>
-<span class="n">console</span> <span class="o">=</span> <span class="n">Console</span>
-
-
 <div class="viewcode-block" id="DocumentFragment"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.DocumentFragment">[docs]</a><span class="k">class</span> <span class="nc">DocumentFragment</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -3643,6 +3513,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;DOMException&quot;</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span>
@@ -4289,6 +4160,7 @@
 <span class="c1"># also</span>
 <span class="c1"># https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API</span>
 
+<span class="c1"># HTMLElementTagNameMap &lt; how many of these types are there?</span>
 
 <span class="c1"># XMLSerializer = xml.dom.minidom.XMLSerializer?</span>
 <span class="c1"># XMLSerializer.serializeToString(rootNode)</span>

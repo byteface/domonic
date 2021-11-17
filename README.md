@@ -1,7 +1,5 @@
 <h1 align="center">
-    <img src="https://image.freepik.com/free-vector/demonic-goat_71119-56.jpg"
-    style="background-color:rgba(0,0,0,0);" height=230 alt="domonic: generate html with python 3!">
-    <br>domonic<br>
+    <br>𖤐domonic𖤐<br>
     <sup><sub><sup>Generate html with python 3! (and much more)</sup></sub></sup>
     <br>
 </h1>
@@ -91,44 +89,6 @@ there's also a render method that takes 2 parameters, some domonic and an option
 ```python
 page = div(span('Hello World'))
 render(f"{page}", 'index.html')  # notice use of f-string to pretty print the html
-```
-
-Now try building your own static site generator!
-
-### decorators
-
-use decorators to wrap elements around function results
-
-```python
-from domonic.decorators import el
-
-@el(html, True)
-@el(body)
-@el(div)
-def test():
-    return 'hi!'
-
-print(test())
-# <html><body><div>hi!</div></body></html>
-
-# returns pyml objects so call str to render
-assert str(test()) == '<html><body><div>hi!</div></body></html>'
-```
-
-It returns the tag object by default. You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.
-
-
-### data-tags
-python doesn't allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags
-```python
-div("test", **{"_data-test":"test"} )
-```
-
-or for example a colon...
-
-```python
-t = div( **{"_:test":"something"} )
-str(t)
 ```
 
 ### DOM
@@ -319,6 +279,43 @@ style("""
 }
 """),
 ```
+
+### decorators
+
+use decorators to wrap elements around function results
+
+```python
+from domonic.decorators import el
+
+@el(html, True)
+@el(body)
+@el(div)
+def test():
+    return 'hi!'
+
+print(test())
+# <html><body><div>hi!</div></body></html>
+
+# returns pyml objects so call str to render
+assert str(test()) == '<html><body><div>hi!</div></body></html>'
+```
+
+It returns the tag object by default. You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.
+
+
+### data-tags
+python doesn't allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags
+```python
+div("test", **{"_data-test":"test"} )
+```
+
+or for example a colon...
+
+```python
+t = div( **{"_:test":"something"} )
+str(t)
+```
+
 
 ### JSON (utils)
 

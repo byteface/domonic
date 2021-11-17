@@ -200,6 +200,7 @@ Decorators
 You can use decorators to wrap elements around function results
 
 .. code-block :: python
+
 	from domonic.decorators import el
 
 	@el(html)
@@ -382,13 +383,10 @@ https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dicti
 loading .pyml templates
 --------------------------------
 
-.. code-tab:: python
+.. code-block:: python
 
     div("Hello World")
-
-.. code-tab:: html
-
-    <div>Hello tabs</div>
+    #<div>Hello tabs</div>
 
 
 'loads' imports a pyml file and turns it into a program

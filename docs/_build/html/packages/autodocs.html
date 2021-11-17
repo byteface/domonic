@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>🤖 autodocs &#8212; domonic 0.6.9 documentation</title>
+    <title>🤖 autodocs &#8212; domonic 0.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -5832,6 +5832,10 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 <span class="target" id="module-domonic.events"></span><section id="domonic-events">
 <h2>domonic.events<a class="headerlink" href="#domonic-events" title="Permalink to this headline">¶</a></h2>
 <p>dom events</p>
+<dl class="simple">
+<dt># TODO - this should be moved to the webapi on next major revision</dt><dd><p># might be able to still reference it for backward compatibility</p>
+</dd>
+</dl>
 <p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/Events">https://developer.mozilla.org/en-US/docs/Web/Events</a></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="domonic.events.AnimationEvent">
@@ -6896,6 +6900,7 @@ img(_src=CDN_IMG.PLACEHOLDER(300,100,’x’))</p>
 </section>
 <span class="target" id="module-domonic.style"></span><section id="domonic-style">
 <h2>domonic.style<a class="headerlink" href="#domonic-style" title="Permalink to this headline">¶</a></h2>
+<p># TODO - should this be moved to the webapi in a future revision?</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="domonic.style.CSSRule">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.style.</span></span><span class="sig-name descname"><span class="pre">CSSRule</span></span><a class="reference internal" href="../_modules/domonic/style.html#CSSRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.style.CSSRule" title="Permalink to this definition">¶</a></dt>
@@ -8305,8 +8310,7 @@ it can be iterated over in a standard for loop over its indices, or converted to
 <dl class="py class">
 <dt class="sig sig-object py" id="domonic.utils.Utils">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.utils.</span></span><span class="sig-name descname"><span class="pre">Utils</span></span><a class="reference internal" href="../_modules/domonic/utils.html#Utils"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.utils.Utils" title="Permalink to this definition">¶</a></dt>
-<dd><p>utils</p>
-<dl class="py method">
+<dd><dl class="py method">
 <dt class="sig sig-object py" id="domonic.utils.Utils.acronym">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">acronym</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sentence</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.acronym"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.utils.Utils.acronym" title="Permalink to this definition">¶</a></dt>
 <dd><p>[pass a sentence, returns the acronym]</p>
@@ -8359,24 +8363,24 @@ it can be iterated over in a standard for loop over its indices, or converted to
 <dd><p>[removes falsy values (False, None, 0 and “”) from a list ]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>lst</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [lst to operate on]</p>
+<dd class="field-odd"><p><strong>lst</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>]</em>) – [lst to operate on]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[a new list with falsy values removed]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="domonic.utils.Utils.dictify">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">dictify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.dictify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.utils.Utils.dictify" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">dictify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.10)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.dictify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.utils.Utils.dictify" title="Permalink to this definition">¶</a></dt>
 <dd><p>[turns a list into a dictionary where the list items are the keys]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>arr</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [list to change]</p>
+<dd class="field-odd"><p><strong>arr</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>]</em>) – [list to change]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[a new dict where the list items are now the keys]</p>
@@ -8413,7 +8417,7 @@ it can be iterated over in a standard for loop over its indices, or converted to
 <dd class="field-odd"><p><strong>s</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [the string to escape]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[description]</p>
+<dd class="field-even"><p>[the escaped string]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
@@ -8467,7 +8471,7 @@ it can be iterated over in a standard for loop over its indices, or converted to
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[description]</p>
+<dd class="field-even"><p>[True if you have internet]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
@@ -8482,6 +8486,62 @@ it can be iterated over in a standard for loop over its indices, or converted to
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – [default directory name]. Defaults to ‘assets’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.utils.Utils.is_linux">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">is_linux</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.is_linux"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.utils.Utils.is_linux" title="Permalink to this definition">¶</a></dt>
+<dd><p>[check if the system is a linux]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[description]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.utils.Utils.is_mac">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">is_mac</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.is_mac"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.utils.Utils.is_mac" title="Permalink to this definition">¶</a></dt>
+<dd><p>[check if the system is a mac]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[True if the system is a mac]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.utils.Utils.is_nix">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">is_nix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.is_nix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.utils.Utils.is_nix" title="Permalink to this definition">¶</a></dt>
+<dd><p>[check if the system is a nix based system]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[True if it is a nix based system]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="domonic.utils.Utils.is_windows">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">is_windows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/utils.html#Utils.is_windows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#domonic.utils.Utils.is_windows" title="Permalink to this definition">¶</a></dt>
+<dd><p>[check if the system is a windows]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[True if windows]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -8515,10 +8575,10 @@ it can be iterated over in a standard for loop over its indices, or converted to
 <dd class="field-odd"><p><strong>word</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [the word to get permutations for]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[description]</p>
+<dd class="field-even"><p>[a list of permutations]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -8538,7 +8598,7 @@ it can be iterated over in a standard for loop over its indices, or converted to
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[description]</p>
+<dd class="field-even"><p>[the new string]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
@@ -8552,7 +8612,7 @@ it can be iterated over in a standard for loop over its indices, or converted to
 <dd><p>[turns a 2d array into a flat one]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>the_list</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [a 2d array]</p>
+<dd class="field-odd"><p><strong>the_list</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>]</em>) – [a 2d array]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[a flattened 1d array]</p>
@@ -8570,8 +8630,8 @@ it can be iterated over in a standard for loop over its indices, or converted to
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [a list of keys]</p></li>
-<li><p><strong>values</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [a list of value]</p></li>
+<li><p><strong>keys</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>]</em>) – [a list of keys]</p></li>
+<li><p><strong>values</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>]</em>) – [a list of value]</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -8595,7 +8655,7 @@ it can be iterated over in a standard for loop over its indices, or converted to
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[description]</p>
+<dd class="field-even"><p>[the truncated string]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
@@ -8612,7 +8672,7 @@ it can be iterated over in a standard for loop over its indices, or converted to
 <dd class="field-odd"><p><strong>s</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [the string to unescape]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[description]</p>
+<dd class="field-even"><p>[the unescaped string]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
@@ -8626,7 +8686,7 @@ it can be iterated over in a standard for loop over its indices, or converted to
 <dd><p>[removes duplicates from a list]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>some_arr</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [list containing duplicates]</p>
+<dd class="field-odd"><p><strong>some_arr</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)"><em>list</em></a><em>]</em>) – [list containing duplicates]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[a list containing no duplicates]</p>
@@ -8643,13 +8703,13 @@ it can be iterated over in a standard for loop over its indices, or converted to
 <dd><p>[the opposite of title]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>str</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [the string to change]</p>
+<dd class="field-odd"><p><strong>str</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>]</em>) – [the string to change]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>[a string with the first character set to lowercase]</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)">type</a>]</p>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a>]</p>
 </dd>
 </dl>
 </dd></dl>
