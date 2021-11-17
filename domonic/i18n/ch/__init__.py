@@ -45,7 +45,7 @@ huàbù = 画布 = canvas
 biāotí = 标题 = caption
 zǔqún = 组群 = colgroup
 shēntǐ = 身体 = tbody
-tóu = 头 = thead
+# tóu = 头 = thead
 jiǎo = 脚 = tfoot
 zìduànjí = 字段集 = fieldset
 chuánshuō = 传说 = legend
