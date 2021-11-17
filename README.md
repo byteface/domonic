@@ -618,11 +618,27 @@ TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
 
 Use the command line interface to help you out.
 
-To launch the docs for a quick reference to the APIs use:
+To view the online the docs:
 
 ```python
 
-python3 -m domonic -h
+domonic -h
+
+```
+
+To see the version:
+
+```python
+
+  domonic -v
+
+```
+
+To quickly create a domonic project for prototyping:
+
+```python
+
+  domonic -p myproject
 
 ```
 
