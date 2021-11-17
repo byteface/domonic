@@ -164,7 +164,7 @@ run:
         # call the bat file
         os.system("activate.bat")
         # remove the activate.bat file
-        os.system("rm activate.bat")
+        os.system("del activate.bat")
     else:
         # create a bash file to activate the venv an install requirements
         with open("activate.sh", "w") as f:
