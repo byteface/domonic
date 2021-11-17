@@ -13,7 +13,7 @@ from domonic.decorators import deprecated
 
 
 class Utils(object):
-    """ utils """
+    """ Utils """
 
     @staticmethod
     def case_camel(s: str) -> str:
@@ -46,7 +46,7 @@ class Utils(object):
         """[turns a 2d array into a flat one]
 
         Args:
-            the_list ([type]): [a 2d array]
+            the_list ([list]): [a 2d array]
 
         Returns:
             [list]: [a flattened 1d array]
@@ -59,11 +59,11 @@ class Utils(object):
         return [list[i:i + size] for i in range(0, len(list), size)]
 
     @staticmethod
-    def dictify(arr: str) -> dict:
+    def dictify(arr: list) -> dict:
         """[turns a list into a dictionary where the list items are the keys]
 
         Args:
-            arr ([type]): [list to change]
+            arr ([list]): [list to change]
 
         Returns:
             [dict]: [a new dict where the list items are now the keys]
@@ -79,7 +79,7 @@ class Utils(object):
         """[removes duplicates from a list]
 
         Args:
-            some_arr ([type]): [list containing duplicates]
+            some_arr ([list]): [list containing duplicates]
 
         Returns:
             [list]: [a list containing no duplicates]
@@ -101,10 +101,10 @@ class Utils(object):
         """[removes falsy values (False, None, 0 and “”) from a list ]
 
         Args:
-            lst ([type]): [lst to operate on]
+            lst ([list]): [lst to operate on]
 
         Returns:
-            [type]: [a new list with falsy values removed]
+            [list]: [a new list with falsy values removed]
         """
         return list(filter(None, lst))
 
@@ -125,10 +125,10 @@ class Utils(object):
         """[the opposite of title]
 
         Args:
-            str ([type]): [the string to change]
+            str ([str]): [the string to change]
 
         Returns:
-            [type]: [a string with the first character set to lowercase]
+            [str]: [a string with the first character set to lowercase]
         """
         return string[:1].lower() + string[1:]
 
@@ -150,8 +150,8 @@ class Utils(object):
         """[take a list of keys and values and returns a dict]
 
         Args:
-            keys ([type]): [a list of keys]
-            values ([type]): [a list of value]
+            keys ([list]): [a list of keys]
+            values ([list]): [a list of value]
 
         Returns:
             [dict]: [a dictionary]
@@ -244,7 +244,7 @@ class Utils(object):
             word ([str]): [the word to get permutations for]
 
         Returns:
-            [str]: [description]
+            [list]: [a list of permutations]
         """
         from itertools import permutations
         return [''.join(perm) for perm in list(permutations(word))]
@@ -262,7 +262,7 @@ class Utils(object):
             s ([str]): [the string to escape]
 
         Returns:
-            [str]: [description]
+            [str]: [the escaped string]
         """
         chars = {
             "&": "&amp;",
@@ -281,7 +281,7 @@ class Utils(object):
             s ([str]): [the string to unescape]
 
         Returns:
-            [str]: [description]
+            [str]: [the unescaped string]
         """
         s = s.replace("&lt;", "<")
         s = s.replace("&gt;", ">")
@@ -302,7 +302,7 @@ class Utils(object):
             end (int, optional): [end index]. Defaults to 0.
 
         Returns:
-            [str]: [description]
+            [str]: [the new string]
         """
         front = content[0:start]
         mid = content[start:end]
@@ -319,7 +319,7 @@ class Utils(object):
             length (int, optional): [the max length]. Defaults to 0.
 
         Returns:
-            [str]: [description]
+            [str]: [the truncated string]
         """
         if len(text) > length:
             return text[0:length] + "..."
@@ -357,7 +357,7 @@ class Utils(object):
             timeout (int, optional): [the timeout]. Defaults to 5.
 
         Returns:
-            [bool]: [description]
+            [bool]: [True if you have internet]
         """
         import requests
         try:
@@ -406,9 +406,6 @@ class Utils(object):
         """
         import sys
         return sys.platform.startswith('linux')
-
-
-
 
     # def convert_file(filepath, filetype=None):
     #     """

@@ -790,6 +790,7 @@ class NamedNodeMap(object):
         return False
 '''
 
+
 class DOMStringMap(object):
     """
     TODO - not tested yet
@@ -1496,7 +1497,7 @@ class Element(Node):
         """
         selected = []
         # import string
-        all_selectors = re.sub(r'\s*([^\w])\s*', r'\1', all_selectors)  # cleann
+        all_selectors = re.sub(r'\s*([^\w])\s*', r'\1', all_selectors)  # clean up whitespace
         # Grab all of the tagName elements within current context
 
         def getElements(context, tag):
@@ -2046,7 +2047,7 @@ class Element(Node):
         # print("dis:::",naked_query)
         if '.' in naked_query or '[' in naked_query or ' ' in naked_query:
             # print('DIVERTED!', query)
-            return self.getElementsBySelector(query, self) 
+            return self.getElementsBySelector(query, self)
         # TODO - bug?. elements selector seems to only work if tag is provided
         # so having to do this for now.
 
@@ -3479,6 +3480,7 @@ class DOMException(Exception):
     def __init__(self, code, message):
         self.code = code
         self.message = message
+        self.name = "DOMException"
 
     def __str__(self):
         return self.message
@@ -4125,6 +4127,7 @@ class TreeWalker():
 # also
 # https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API
 
+# HTMLElementTagNameMap < how many of these types are there?
 
 # XMLSerializer = xml.dom.minidom.XMLSerializer?
 # XMLSerializer.serializeToString(rootNode)

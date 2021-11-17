@@ -8,10 +8,8 @@
 class Console(object):
 
     @staticmethod
-    def log(msg: str, substitute=None, *args):
-        """log
-
-        prints a message to the console
+    def log(msg: str, substitute=None, *args):  # -> None:
+        """prints a message to the console
 
         Args:
             msg (str): msg to log
@@ -34,11 +32,8 @@ class Console(object):
     __count_var = 0
 
     @staticmethod
-    def count():
-        """count
-
-        increments a number
-        """
+    def count() -> int:
+        """returns the number of times count() has been called"""
         Console.__count_var = Console.__count_var + 1
         return Console.__count_var
 
@@ -191,7 +186,7 @@ class Console(object):
     def table(data: list):
         """table
 
-        prints a table
+        prints a table to the console
         """
         print(data)
 
@@ -212,7 +207,7 @@ class Console(object):
         # groupEnd()
         # def table(json_str, filter_array):
         # trace()
-        __count_var = 0
+        Console.__count_var = 0
 
 
 Console.info = Console.log  # info()

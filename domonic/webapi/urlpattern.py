@@ -4,15 +4,15 @@
     https://developer.mozilla.org/en-US/docs/Web/API/URLPattern
 """
 
+
 class URLPattern:
-    """[matches URLs or parts of URLs against a pattern. The pattern can contain capturing groups that extract parts of the matched URL.]
-    """
 
     def __init__(self, pattern):
-        """[summary]
+        """[matches URLs or parts of URLs against a pattern.
+        The pattern can contain capturing groups that extract parts of the matched URL.]
 
         Args:
-            pattern (str): [description]
+            pattern (str): [The pattern to match against.]
         """
         self.pattern = pattern
         self.hash = ''
@@ -40,6 +40,10 @@ class URLPattern:
         #     baseURL = ''
         # else:
         #     baseURL = baseURL.href
+        # if input == self.pattern:
+        #     return self.href
+        # else:
+        #     return None
         raise NotImplementedError
 
     # TODO - unit tests 

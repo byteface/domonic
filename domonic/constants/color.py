@@ -1340,4 +1340,3 @@ class Color():
     yellowtan = "#ffe36e"  #:
     yellowybrown = "#ae8b0c"  #:
     yellowygreen = "#bff128"  #:
-

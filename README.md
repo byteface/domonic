@@ -1,9 +1,7 @@
 <h1 align="center">
     <img src="https://image.freepik.com/free-vector/demonic-goat_71119-56.jpg"
     style="background-color:rgba(0,0,0,0);" height=230 alt="domonic: generate html with python 3!">
-    <br>
-    domonic
-    <br>
+    <br>domonic<br>
     <sup><sub><sup>Generate html with python 3! (and much more)</sup></sub></sup>
     <br>
 </h1>
@@ -16,14 +14,12 @@
 
 #### Contains several evolving packages:
 
-• [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎 <br />
-• [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲 <br />
-• [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 <br />
-• [dQuery](https://domonic.readthedocs.io/_modules/domonic/dQuery.html) - utils for querying domonic. (alt + 0 for the º symbol)<br />
-• terminal || cmd : call terminal commands with python3 😱 (*see at the end*)<br />
-• JSON : utils for loading / decorating / transforming<br />
-• SVG : Generate svg using python (untested)<br />
-• aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder)<br />
+- [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎
+- [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲
+- [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), ([d3](https://domonic.readthedocs.io/packages/d3.html))
+- JSON : utils for loading / decorating / transforming
+- SVG || mathml || aframe || x3d tags - generators for popular tags
+- terminal || cmd : call terminal commands with python3 😱
 
 See the docs/code for more features...
 https://domonic.readthedocs.io/
@@ -32,15 +28,12 @@ or examples in the [repo...](https://github.com/byteface/domonic/tree/master/exa
 
 (small footprint. with only a few common lightweight dependencies)
 
-
 ## HTML Templating with Python 3
 
 ```python
 from domonic.html import *
 print(html(body(h1('Hello, World!'))))
-```
-```html
-<html><body><h1>Hello, World!</h1></body></html>
+# <html><body><h1>Hello, World!</h1></body></html>
 ```
 
 or to format it and insert the doctype use an f-string:
@@ -49,6 +42,7 @@ or to format it and insert the doctype use an f-string:
 mydom = html(body(h1('Hello, World!')))
 print(f"{mydom}")
 ```
+
 ```html
 <!DOCTYPE html>
 <html>
@@ -59,6 +53,7 @@ print(f"{mydom}")
 ```
 
 ### install
+
 ```bash
 python3 -m pip install domonic
 ```
@@ -70,11 +65,14 @@ python3 -m pip install domonic --upgrade
 ```
 
 ### attributes
+
 prepend attributes with an underscore ( avoids clashing with python keywords )
+
 ```python
 test = label(_class='classname', _for="someinput")
 print(test)
 ```
+
 ```html
 <label class="classname" for="someinput"></label>
 ```
@@ -89,6 +87,7 @@ print(el_string)
 ```
 
 there's also a render method that takes 2 parameters, some domonic and an optional output file.
+
 ```python
 page = div(span('Hello World'))
 render(f"{page}", 'index.html')  # notice use of f-string to pretty print the html
@@ -154,7 +153,6 @@ There's an evolving DOM API. To learn more about the webAPI go here.
 https://developer.mozilla.org/en-US/docs/Web/API
 
 And check the code/docs to see what's currently been implemented.
-
 
 ```python
 mysite.querySelectorAll('button') 
@@ -248,15 +246,15 @@ timeoutID = setTimeout(hi, 1000)
 call ```()``` on a stringvar to transform it into a Node
 
 ```python
-    >>> from domonic.javascript import String
+from domonic.javascript import String
 
-	>>> test = String("Hi there!")
-	>>> test('div', _style="font-color:red;")
-	>>> str(test('div', _style="font-color:red;"))
+test = String("Hi there!")
+test('div', _style="font-color:red;")
+str(test('div', _style="font-color:red;"))
+# <div style="font-color:red;">Hi there!</div>
 ```
 
 passing it the tag and attributes...
-
 
 a-tags inherit URL:
 
@@ -265,12 +263,16 @@ from domonic.html import *
 
 atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
 print('href:', atag.href)
+# href: https://somesite.com:8000/blog/article-one#some-hash
 print('protocol:', atag.protocol)
+# protocol: https:
 print('port:', atag.port)
+# port: 8000
 
 atag.protocol = "http"
 atag.port = 8983
 print(atag)
+# <a href="http://somesite.com:8983/blog/article-one#some-hash">
 ```
 
 For writing and using regular javascript, load from a src...
@@ -286,7 +288,6 @@ script("""
 let itbe = ""
 """),
 ```
-
 
 ### Styling
 
@@ -332,7 +333,9 @@ def somefunc():
     return myObj
 
 print( somefunc() )
+# {"hi":[1,2,3]}
 print( is_json(somefunc()) )
+# True
 ```
 
 convert json arrays into html tables...
@@ -370,21 +373,19 @@ print(json_data)
 
 more to come...
 
-
 ### SVG
 
 All tags extend 'Node' and 'tag'. So will have DOM and magic methods available to them. see the docs.
 
 ```python
-        circ = svg(
-            circle(_cx="50", _cy="50", _r="40", _stroke="green", **{"_stroke-width": "4"}, _fill="yellow"),
-            _width="100", _height="100",
-        )
-        mysvg = svg()
-        mysvg.appendChild(circ / 10)
-        print(mysvg)
+circ = svg(
+    circle(_cx="50", _cy="50", _r="40", _stroke="green", **{"_stroke-width": "4"}, _fill="yellow"),
+    _width="100", _height="100",
+)
+mysvg = svg()
+mysvg.appendChild(circ / 10)
+print(mysvg)
 ```
-
 
 ### Tweening
 
@@ -398,7 +399,6 @@ someObj = {'x':0,'y':0,'z':0}
 twn = Tween( someObj, { 'x':10, 'y':5, 'z':3 }, 6, Linear.easeIn )
 twn.start()
 ```
-
 
 ### aframe / x3d
 
@@ -426,7 +426,6 @@ _webpage = html(head(),body(
 render( _webpage, 'hello.html' )
 ```
 
-
 ### dQuery (NEW)
 
 dQuery uses the º symbol (alt+0).
@@ -449,7 +448,6 @@ dQuery uses the º symbol (alt+0).
 ```
 
 Only recently started so check to see what's implemented.
-
 
 ### terminal
 
@@ -497,6 +495,7 @@ print(cal())
 ```
 
 or just run arbitrary commands...
+
 ```python
 from domonic.terminal import command
 command.run("echo hi")
@@ -561,7 +560,6 @@ window.location = "http://www.google.com"
 print(window.document.title)
 ```
 
-
 ## DOCS
 
 https://domonic.readthedocs.io/
@@ -570,26 +568,33 @@ https://domonic.readthedocs.io/
 
 while you can create a div with content like :
 
+```python
     div("some content")
+```
 
 python doesn't allow named params before unamed ones. So you can't do this:
 
+```python
     div(_class="container", p("Some content") )
+```
 
 or it will complain the params are in the wrong order. You have to instead put content before attributes:
 
+```python
     div( p("Some content"), _class="container")
+```
 
 which is annoying when a div gets long.
 
 You can get around this by using 'html' which is available on every Element:
 
-div( _class="container" ).html("Some content")
+```python
+    div( _class="container" ).html("Some content")
+```
 
 This is NOT like jQuery html func that returns just the inner content. use innerHTML for that.
 
 It is used specifically for rendering.
-
 
 ### Common Errors
 
@@ -611,7 +616,6 @@ SyntaxError: positional argument follows keyword argument
 
 TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
     - You are Missing a comma between attributes. before the **{}
-
 
 ### CLI
 
@@ -657,7 +661,6 @@ I'll merge and releaese asap.
 In the repo there's a requirements-dev.txt which is mostly the libs used in the examples.
 
 requirements.txt are the libs used for packaging just the lib.
-
 
 ### running examples
 

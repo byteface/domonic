@@ -3,6 +3,9 @@
     ====================================
     dom events
 
+    # TODO - this should be moved to the webapi on next major revision
+        # might be able to still reference it for backward compatibility
+
     https://developer.mozilla.org/en-US/docs/Web/Events
 
 """

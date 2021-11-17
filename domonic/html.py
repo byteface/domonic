@@ -10,17 +10,17 @@ from domonic.dom import Node, Element, Document, DocumentType, Comment, Text
 html_tags = [
             "figcaption", "blockquote", "textarea", "progress", "optgroup", "noscript", "fieldset", "datalist",
             "colgroup", "summary", "section", "details", "command", "caption", "article", "address", "submit",
-            "strong", "source", "select", "script", "output", "option", "object", "legend", "keygen", "iframe",
-            "hgroup", "header", "footer", "figure", "canvas", "button", "video", "track", "title", "title",
-            "thead", "tfoot", "tbody", "table", "style", "small", "param", "meter", "label", "input", "embed",
-            "audio", "aside", "time", "span", "span", "samp", "ruby", "meta", "meta", "menu", "mark", "link",
-            "applet", "object", "basefont", "center", "dir", "embed", "font", "isindex", "listing", "menuitem",
+            "strong", "source", "select", "script", "output", "option", "legend", "keygen", "iframe",
+            "hgroup", "header", "footer", "figure", "canvas", "button", "video", "track", "title",
+            "thead", "tfoot", "tbody", "table", "style", "small", "param", "meter", "label", "input",
+            "audio", "aside", "time", "span", "samp", "ruby", "meta", "menu", "mark", "link",
+            "applet", "object", "basefont", "center", "dir", "embed", "isindex", "listing", "menuitem",
             "plaintext", "pre", "strike", "xmp", "template", "picture",
             "html", "head", "form", "font", "code", "cite", "body", "base", "area", "abbr", "wbr", "var", "sup",
-            "sub", "pre", "nav", "map", "main", "kbd", "ins", "img", "div", "dfn", "del", "col", "bdo", "bdi",
-            "ul", "tr", "th", "td", "rt", "rp", "ol", "li", "hr", "hr", "h6", "h5", "h4", "h3", "h2", "h1",
+            "sub", "nav", "map", "main", "kbd", "ins", "img", "div", "dfn", "del", "col", "bdo", "bdi",
+            "ul", "tr", "th", "td", "rt", "rp", "ol", "li", "hr", "h6", "h5", "h4", "h3", "h2", "h1",
             "em", "dt", "dl", "dd", "br", "u", "s", "q", "p", "i", "b", "a"]
-            # big, small, blink, bold, strong, em, i, u, s, strike, tt, code, kbd, samp, var,
+            # big, blink, bold, tt, var,
 
 html_attributes = [
             "accept", "accesskey", "action", "align", "alt", "async", "autocomplete", "autofocus",
@@ -617,7 +617,6 @@ hr = type('hr', (closed_tag, Element), {'name': 'hr', '__init__': tag_init})
 br = type('br', (closed_tag, Element), {'name': 'br', '__init__': tag_init})
 wbr = type('wbr', (closed_tag, Element), {'name': 'wbr', '__init__': tag_init})
 img = type('img', (closed_tag, Element), {'name': 'img', '__init__': tag_init})
-embed = type('embed', (closed_tag, Element), {'name': 'embed', '__init__': tag_init})
 param = type('param', (closed_tag, Element), {'name': 'param', '__init__': tag_init})
 source = type('source', (closed_tag, Element), {'name': 'source', '__init__': tag_init})
 track = type('track', (closed_tag, Element), {'name': 'track', '__init__': tag_init})
@@ -635,12 +634,10 @@ basefont = type('basefont', (tag, Element), {'name': 'basefont', '__init__': tag
 center = type('center', (tag, Element), {'name': 'center', '__init__': tag_init})
 # dir = type('dir', (tag, Element), {'name': 'dir', '__init__': tag_init})
 embed = type('embed', (tag, Element), {'name': 'embed', '__init__': tag_init})
-font = type('font', (tag, Element), {'name': 'font', '__init__': tag_init})
 isindex = type('isindex', (tag, Element), {'name': 'isindex', '__init__': tag_init})
 listing = type('listing', (tag, Element), {'name': 'listing', '__init__': tag_init})
 # menu = type('menu', (tag, Element), {'name': 'menu', '__init__': tag_init})
 plaintext = type('plaintext', (tag, Element), {'name': 'plaintext', '__init__': tag_init})
-pre = type('pre', (tag, Element), {'name': 'pre', '__init__': tag_init})
 s = type('s', (tag, Element), {'name': 's', '__init__': tag_init})
 u = type('u', (tag, Element), {'name': 'u', '__init__': tag_init})
 strike = type('strike', (tag, Element), {'name': 'strike', '__init__': tag_init})

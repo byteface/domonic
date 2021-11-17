@@ -226,7 +226,7 @@ def getDomBuilder(ignore):
                 self.dom.appendChild(self.dom.createTextNode(data))
 
         from xml.dom import minidom
-        implementation = minidom#DomImplementation
+        implementation = minidom  # DomImplementation
         name = None
 
     def testSerializer(element):
@@ -289,16 +289,10 @@ def getDomBuilder(ignore):
 # The actual means to get a module!
 getDomModule = moduleFactoryFactory(getDomBuilder)
 
-
-# class stupid_shit:
-#     def getDOMImplementation(self):
-#         from domonic.dom import DOMImplementation
-        # return DOMImplementation
-
-
 # if implementation is None:
 from xml.dom import minidom
 implementation = minidom
+
 
 def getTreeBuilder():
     return getDomModule(implementation).TreeBuilder

@@ -4,6 +4,7 @@
     https://developer.mozilla.org/en-US/docs/Web/API/Permissions
 """
 
+
 class PermissionStatus:
     """
     The PermissionStatus interface represents the current state of a permission.

@@ -77,10 +77,6 @@ def project(name):
     os.mkdir(PROJECT_NAME)
     os.chdir(PROJECT_NAME)
 
-    # with python not touch
-    with open("app.py", "w") as f:
-        f.write("from domonic.html import *")
-
     # create a Makefile
     # os.system("touch Makefile")
     with open("Makefile", "w") as f:
@@ -123,12 +119,28 @@ def project(name):
     # os.system("python3 -m pip freeze > requirements.txt")
 
     # ask the user which server they want to use
-    server_opt = ["none", "sanic", "flask", "cherrypy", "django", "bottle"]
+    server_opt = ["none", "sanic", "flask", "cherrypy", "django", "bottle", "pyramid", "werkzeug", "tornado", "aiohttp", "fastapi", "starlette"]
     print("You want a server?")
     for i, server in enumerate(server_opt):
         print(str(i) + ": " + server)
     server_choice = input("Enter a number: ")
-    server_choice = server_opt[int(server_choice)]
+    try:
+        server_choice = server_opt[int(server_choice)]
+    except ValueError:
+        if server_choice in server_opt:
+            server_choice = server_choice
+
+    # TODO - any plugins?.. cors etc
+
+    # with python not touch
+    with open("app.py", "w") as f:
+        # write the hello world for the given server
+        from domonic.ext import get_hello_world
+        code = get_hello_world(server_choice)
+        if code is not None:
+            f.write(code)
+        else:
+            f.write("from domonic.html import *")
 
     os.system("python3 -m venv venv")
     from domonic.utils import Utils
@@ -138,7 +150,8 @@ def project(name):
             f.write("@echo off\n")
             f.write("call \"venv\Scripts\activate\"\n")
             f.write("python3 -m pip install requests\n")
-            f.write(f"python3 -m pip install {server_choice}\n")
+            if server_choice != 'none':
+                f.write(f"python3 -m pip install {server_choice}\n")
             f.write("python3 -m pip install domonic\n")
             f.write("python3 -m pip freeze > requirements.txt\n")
         # call the bat file
@@ -151,7 +164,8 @@ def project(name):
             f.write("#!/bin/bash\n")
             f.write("source venv/bin/activate\n")
             f.write("python3 -m pip install requests\n")
-            f.write(f"python3 -m pip install {server_choice}\n")
+            if server_choice != 'none':
+                f.write(f"python3 -m pip install {server_choice}\n")
             f.write("python3 -m pip install domonic\n")
             f.write("python3 -m pip freeze > requirements.txt\n")
         # call the bash file
@@ -168,6 +182,7 @@ def project(name):
     # dl the license
 
     # create static
+    # TODO - build asset folders based on server choice.
     os.mkdir("static")
     os.mkdir("static/js")
     os.mkdir("static/css")

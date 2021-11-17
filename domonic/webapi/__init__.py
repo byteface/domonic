@@ -6,7 +6,6 @@
 
 """
 
-
 from .encoding import *
 from .fetch import *
 
