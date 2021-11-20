@@ -4,12 +4,13 @@
 
 """
 
+from typing import Callable
 import warnings
 import functools
 from functools import wraps
 
 
-def el(element='div', string=False):
+def el(element='div', string: bool=False):
     """[wraps the results of a function in an element]"""
 
     if isinstance(element, str):
@@ -46,7 +47,27 @@ def el(element='div', string=False):
 #     return decorator
 
 
-def called(before=None, error=None):
+def called(before=None, error: Callable[[Exception], None]=None):
+    """
+    Decorator to call a function before and after a function call.
+    """
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            if before:
+                before()
+            try:
+                return f(*args, **kwargs)
+            except Exception as e:
+                if error:
+                    error(e)
+                else:
+                    raise
+            finally:
+                if before:
+                    before()
+        return wrapper
+    return decorator
     """[calls before() passing the response as args to the decorated function.
         optional error handler. run the decorated function immediately.
 

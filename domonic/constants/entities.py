@@ -9,10 +9,10 @@ class Entity():
 
     # __slots__ = ('entity',)
 
-    def __init__(self, entity: str):
+    def __init__(self, entity: str) -> None:
         self.entity = entity
 
-    def __str__(self):
+    def __str__(self) -> str:
         import html
         return html.unescape(self.character)
 

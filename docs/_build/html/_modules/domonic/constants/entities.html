@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.constants.entities &#8212; domonic 0.6.9 documentation</title>
+    <title>domonic.constants.entities &#8212; domonic 0.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
@@ -42,20 +42,20 @@
 
     <span class="c1"># __slots__ = (&#39;entity&#39;,)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">entity</span> <span class="o">=</span> <span class="n">entity</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">html</span>
         <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">unescape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Char"><a class="viewcode-back" href="../../../packages/constants.html#domonic.constants.entities.Char">[docs]</a><span class="k">class</span> <span class="nc">Char</span><span class="p">():</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">character</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">character</span> <span class="o">=</span> <span class="n">character</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">html</span>
         <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="p">)</span>
 
@@ -64,313 +64,313 @@
 
     <span class="c1"># web</span>
     <span class="c1"># ASCII Characters (Printable)</span>
-    <span class="n">SPACE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#32;&#39;</span>
-    <span class="n">EXCLAMATION_MARK</span> <span class="o">=</span> <span class="s1">&#39;&amp;#33;&#39;</span>  <span class="c1">#: !</span>
-    <span class="n">QUOTATION_MARK</span> <span class="o">=</span> <span class="s1">&#39;&amp;#34;&#39;</span>  <span class="c1">#: &quot;</span>
-    <span class="n">NUMBER_SIGN</span> <span class="o">=</span> <span class="s1">&#39;&amp;#35;&#39;</span>  <span class="c1">#: #</span>
-    <span class="n">DOLLAR_SIGN</span> <span class="o">=</span> <span class="s1">&#39;&amp;#36;&#39;</span>  <span class="c1">#: $</span>
-    <span class="n">PERCENT_SIGN</span> <span class="o">=</span> <span class="s1">&#39;&amp;#37;&#39;</span>  <span class="c1">#: %</span>
-    <span class="n">AMPERSAND</span> <span class="o">=</span> <span class="s1">&#39;&amp;amp;&#39;</span>  <span class="c1">#: &amp;</span>
-    <span class="n">APOSTROPHE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#39;&#39;</span>  <span class="c1">#: &#39;</span>
-    <span class="n">OPENING_PARENTHESIS</span> <span class="o">=</span> <span class="s1">&#39;&amp;#40;&#39;</span>  <span class="c1">#: (</span>
-    <span class="n">LEFT_PARENTHESIS</span> <span class="o">=</span> <span class="s1">&#39;&amp;#40;&#39;</span>  <span class="c1">#: (</span>
-    <span class="n">CLOSING_PARENTHESIS</span> <span class="o">=</span> <span class="s1">&#39;&amp;#41;&#39;</span>  <span class="c1">#: )</span>
-    <span class="n">RIGHT_PARENTHESIS</span> <span class="o">=</span> <span class="s1">&#39;&amp;#41;&#39;</span>  <span class="c1">#: )</span>
-    <span class="n">ASTERISK</span> <span class="o">=</span> <span class="s1">&#39;&amp;#42;&#39;</span>  <span class="c1">#: *</span>
-    <span class="n">PLUS_SIGN</span> <span class="o">=</span> <span class="s1">&#39;&amp;#43;&#39;</span>  <span class="c1">#: +</span>
-    <span class="n">COMMA</span> <span class="o">=</span> <span class="s1">&#39;&amp;#44;&#39;</span>  <span class="c1">#: ,</span>
-    <span class="n">HYPHEN</span> <span class="o">=</span> <span class="s1">&#39;&amp;#45;&#39;</span>  <span class="c1">#: -</span>
-    <span class="n">PERIOD</span> <span class="o">=</span> <span class="s1">&#39;&amp;#46;&#39;</span>  <span class="c1">#: .</span>
-    <span class="n">SLASH</span> <span class="o">=</span> <span class="s1">&#39;&amp;#47;&#39;</span>  <span class="c1">#: /</span>
-    <span class="n">ZERO</span> <span class="o">=</span> <span class="s1">&#39;&amp;#48;&#39;</span>  <span class="c1">#: 0</span>
-    <span class="n">ONE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#49;&#39;</span>  <span class="c1">#: 1</span>
-    <span class="n">TWO</span> <span class="o">=</span> <span class="s1">&#39;&amp;#50;&#39;</span>  <span class="c1">#: 2</span>
-    <span class="n">THREE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#51;&#39;</span>  <span class="c1">#: 3</span>
-    <span class="n">FOUR</span> <span class="o">=</span> <span class="s1">&#39;&amp;#52;&#39;</span>  <span class="c1">#: 4</span>
-    <span class="n">FIVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#53;&#39;</span>  <span class="c1">#: 5</span>
-    <span class="n">SIX</span> <span class="o">=</span> <span class="s1">&#39;&amp;#54;&#39;</span>  <span class="c1">#: 6</span>
-    <span class="n">SEVEN</span> <span class="o">=</span> <span class="s1">&#39;&amp;#55;&#39;</span>  <span class="c1">#: 7</span>
-    <span class="n">EIGHT</span> <span class="o">=</span> <span class="s1">&#39;&amp;#56;&#39;</span>  <span class="c1">#: 8</span>
-    <span class="n">NINE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#57;&#39;</span>  <span class="c1">#: 9</span>
+    <span class="n">SPACE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#32;&#39;</span>
+    <span class="n">EXCLAMATION_MARK</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#33;&#39;</span>  <span class="c1">#: !</span>
+    <span class="n">QUOTATION_MARK</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#34;&#39;</span>  <span class="c1">#: &quot;</span>
+    <span class="n">NUMBER_SIGN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#35;&#39;</span>  <span class="c1">#: #</span>
+    <span class="n">DOLLAR_SIGN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#36;&#39;</span>  <span class="c1">#: $</span>
+    <span class="n">PERCENT_SIGN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#37;&#39;</span>  <span class="c1">#: %</span>
+    <span class="n">AMPERSAND</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;amp;&#39;</span>  <span class="c1">#: &amp;</span>
+    <span class="n">APOSTROPHE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#39;&#39;</span>  <span class="c1">#: &#39;</span>
+    <span class="n">OPENING_PARENTHESIS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#40;&#39;</span>  <span class="c1">#: (</span>
+    <span class="n">LEFT_PARENTHESIS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#40;&#39;</span>  <span class="c1">#: (</span>
+    <span class="n">CLOSING_PARENTHESIS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#41;&#39;</span>  <span class="c1">#: )</span>
+    <span class="n">RIGHT_PARENTHESIS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#41;&#39;</span>  <span class="c1">#: )</span>
+    <span class="n">ASTERISK</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#42;&#39;</span>  <span class="c1">#: *</span>
+    <span class="n">PLUS_SIGN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#43;&#39;</span>  <span class="c1">#: +</span>
+    <span class="n">COMMA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#44;&#39;</span>  <span class="c1">#: ,</span>
+    <span class="n">HYPHEN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#45;&#39;</span>  <span class="c1">#: -</span>
+    <span class="n">PERIOD</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#46;&#39;</span>  <span class="c1">#: .</span>
+    <span class="n">SLASH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#47;&#39;</span>  <span class="c1">#: /</span>
+    <span class="n">ZERO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#48;&#39;</span>  <span class="c1">#: 0</span>
+    <span class="n">ONE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#49;&#39;</span>  <span class="c1">#: 1</span>
+    <span class="n">TWO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#50;&#39;</span>  <span class="c1">#: 2</span>
+    <span class="n">THREE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#51;&#39;</span>  <span class="c1">#: 3</span>
+    <span class="n">FOUR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#52;&#39;</span>  <span class="c1">#: 4</span>
+    <span class="n">FIVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#53;&#39;</span>  <span class="c1">#: 5</span>
+    <span class="n">SIX</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#54;&#39;</span>  <span class="c1">#: 6</span>
+    <span class="n">SEVEN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#55;&#39;</span>  <span class="c1">#: 7</span>
+    <span class="n">EIGHT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#56;&#39;</span>  <span class="c1">#: 8</span>
+    <span class="n">NINE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#57;&#39;</span>  <span class="c1">#: 9</span>
 
-    <span class="n">COLON</span> <span class="o">=</span> <span class="s1">&#39;&amp;#58;&#39;</span>  <span class="c1">#: :</span>
-    <span class="n">SEMICOLON</span> <span class="o">=</span> <span class="s1">&#39;&amp;#59;&#39;</span>  <span class="c1">#: ;</span>
-    <span class="n">LESS_THAN</span> <span class="o">=</span> <span class="s1">&#39;&amp;lt;&#39;</span>  <span class="c1">#: &lt;</span>
-    <span class="n">EQUALS_SIGN</span> <span class="o">=</span> <span class="s1">&#39;&amp;#61;&#39;</span>  <span class="c1">#: =</span>
-    <span class="n">GREATER_THAN</span> <span class="o">=</span> <span class="s1">&#39;&amp;gt;&#39;</span>  <span class="c1">#: &gt;</span>
-    <span class="n">QUESTION_MARK</span> <span class="o">=</span> <span class="s1">&#39;&amp;#63;&#39;</span>  <span class="c1">#: ?</span>
-    <span class="n">AT_SIGN</span> <span class="o">=</span> <span class="s1">&#39;&amp;#64;&#39;</span>  <span class="c1">#: @</span>
+    <span class="n">COLON</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#58;&#39;</span>  <span class="c1">#: :</span>
+    <span class="n">SEMICOLON</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#59;&#39;</span>  <span class="c1">#: ;</span>
+    <span class="n">LESS_THAN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;lt;&#39;</span>  <span class="c1">#: &lt;</span>
+    <span class="n">EQUALS_SIGN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#61;&#39;</span>  <span class="c1">#:: str =</span>
+    <span class="n">GREATER_THAN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;gt;&#39;</span>  <span class="c1">#: &gt;</span>
+    <span class="n">QUESTION_MARK</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#63;&#39;</span>  <span class="c1">#: ?</span>
+    <span class="n">AT_SIGN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#64;&#39;</span>  <span class="c1">#: @</span>
 
-    <span class="n">UPPERCASE_A</span> <span class="o">=</span> <span class="s1">&#39;&amp;#65;&#39;</span>  <span class="c1">#: A</span>
-    <span class="n">UPPERCASE_B</span> <span class="o">=</span> <span class="s1">&#39;&amp;#66;&#39;</span>  <span class="c1">#: B</span>
-    <span class="n">UPPERCASE_C</span> <span class="o">=</span> <span class="s1">&#39;&amp;#67;&#39;</span>  <span class="c1">#: C</span>
-    <span class="n">UPPERCASE_D</span> <span class="o">=</span> <span class="s1">&#39;&amp;#68;&#39;</span>  <span class="c1">#: D</span>
-    <span class="n">UPPERCASE_E</span> <span class="o">=</span> <span class="s1">&#39;&amp;#69;&#39;</span>  <span class="c1">#: E</span>
-    <span class="n">UPPERCASE_F</span> <span class="o">=</span> <span class="s1">&#39;&amp;#70;&#39;</span>  <span class="c1">#: F</span>
-    <span class="n">UPPERCASE_G</span> <span class="o">=</span> <span class="s1">&#39;&amp;#71;&#39;</span>  <span class="c1">#: G</span>
-    <span class="n">UPPERCASE_H</span> <span class="o">=</span> <span class="s1">&#39;&amp;#72;&#39;</span>  <span class="c1">#: H</span>
-    <span class="n">UPPERCASE_I</span> <span class="o">=</span> <span class="s1">&#39;&amp;#73;&#39;</span>  <span class="c1">#: I</span>
-    <span class="n">UPPERCASE_J</span> <span class="o">=</span> <span class="s1">&#39;&amp;#74;&#39;</span>  <span class="c1">#: J</span>
-    <span class="n">UPPERCASE_K</span> <span class="o">=</span> <span class="s1">&#39;&amp;#75;&#39;</span>  <span class="c1">#: K</span>
-    <span class="n">UPPERCASE_L</span> <span class="o">=</span> <span class="s1">&#39;&amp;#76;&#39;</span>  <span class="c1">#: L</span>
-    <span class="n">UPPERCASE_M</span> <span class="o">=</span> <span class="s1">&#39;&amp;#77;&#39;</span>  <span class="c1">#: M</span>
-    <span class="n">UPPERCASE_N</span> <span class="o">=</span> <span class="s1">&#39;&amp;#78;&#39;</span>  <span class="c1">#: N</span>
-    <span class="n">UPPERCASE_O</span> <span class="o">=</span> <span class="s1">&#39;&amp;#79;&#39;</span>  <span class="c1">#: O</span>
-    <span class="n">UPPERCASE_P</span> <span class="o">=</span> <span class="s1">&#39;&amp;#80;&#39;</span>  <span class="c1">#: P</span>
-    <span class="n">UPPERCASE_Q</span> <span class="o">=</span> <span class="s1">&#39;&amp;#81;&#39;</span>  <span class="c1">#: Q</span>
-    <span class="n">UPPERCASE_R</span> <span class="o">=</span> <span class="s1">&#39;&amp;#82;&#39;</span>  <span class="c1">#: R</span>
-    <span class="n">UPPERCASE_S</span> <span class="o">=</span> <span class="s1">&#39;&amp;#83;&#39;</span>  <span class="c1">#: S</span>
-    <span class="n">UPPERCASE_T</span> <span class="o">=</span> <span class="s1">&#39;&amp;#84;&#39;</span>  <span class="c1">#: T</span>
-    <span class="n">UPPERCASE_U</span> <span class="o">=</span> <span class="s1">&#39;&amp;#85;&#39;</span>  <span class="c1">#: U</span>
-    <span class="n">UPPERCASE_V</span> <span class="o">=</span> <span class="s1">&#39;&amp;#86;&#39;</span>  <span class="c1">#: V</span>
-    <span class="n">UPPERCASE_W</span> <span class="o">=</span> <span class="s1">&#39;&amp;#87;&#39;</span>  <span class="c1">#: W</span>
-    <span class="n">UPPERCASE_X</span> <span class="o">=</span> <span class="s1">&#39;&amp;#88;&#39;</span>  <span class="c1">#: X</span>
-    <span class="n">UPPERCASE_Y</span> <span class="o">=</span> <span class="s1">&#39;&amp;#89;&#39;</span>  <span class="c1">#: Y</span>
-    <span class="n">UPPERCASE_Z</span> <span class="o">=</span> <span class="s1">&#39;&amp;#90;&#39;</span>  <span class="c1">#: Z</span>
+    <span class="n">UPPERCASE_A</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#65;&#39;</span>  <span class="c1">#: A</span>
+    <span class="n">UPPERCASE_B</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#66;&#39;</span>  <span class="c1">#: B</span>
+    <span class="n">UPPERCASE_C</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#67;&#39;</span>  <span class="c1">#: C</span>
+    <span class="n">UPPERCASE_D</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#68;&#39;</span>  <span class="c1">#: D</span>
+    <span class="n">UPPERCASE_E</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#69;&#39;</span>  <span class="c1">#: E</span>
+    <span class="n">UPPERCASE_F</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#70;&#39;</span>  <span class="c1">#: F</span>
+    <span class="n">UPPERCASE_G</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#71;&#39;</span>  <span class="c1">#: G</span>
+    <span class="n">UPPERCASE_H</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#72;&#39;</span>  <span class="c1">#: H</span>
+    <span class="n">UPPERCASE_I</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#73;&#39;</span>  <span class="c1">#: I</span>
+    <span class="n">UPPERCASE_J</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#74;&#39;</span>  <span class="c1">#: J</span>
+    <span class="n">UPPERCASE_K</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#75;&#39;</span>  <span class="c1">#: K</span>
+    <span class="n">UPPERCASE_L</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#76;&#39;</span>  <span class="c1">#: L</span>
+    <span class="n">UPPERCASE_M</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#77;&#39;</span>  <span class="c1">#: M</span>
+    <span class="n">UPPERCASE_N</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#78;&#39;</span>  <span class="c1">#: N</span>
+    <span class="n">UPPERCASE_O</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#79;&#39;</span>  <span class="c1">#: O</span>
+    <span class="n">UPPERCASE_P</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#80;&#39;</span>  <span class="c1">#: P</span>
+    <span class="n">UPPERCASE_Q</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#81;&#39;</span>  <span class="c1">#: Q</span>
+    <span class="n">UPPERCASE_R</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#82;&#39;</span>  <span class="c1">#: R</span>
+    <span class="n">UPPERCASE_S</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#83;&#39;</span>  <span class="c1">#: S</span>
+    <span class="n">UPPERCASE_T</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#84;&#39;</span>  <span class="c1">#: T</span>
+    <span class="n">UPPERCASE_U</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#85;&#39;</span>  <span class="c1">#: U</span>
+    <span class="n">UPPERCASE_V</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#86;&#39;</span>  <span class="c1">#: V</span>
+    <span class="n">UPPERCASE_W</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#87;&#39;</span>  <span class="c1">#: W</span>
+    <span class="n">UPPERCASE_X</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#88;&#39;</span>  <span class="c1">#: X</span>
+    <span class="n">UPPERCASE_Y</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#89;&#39;</span>  <span class="c1">#: Y</span>
+    <span class="n">UPPERCASE_Z</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#90;&#39;</span>  <span class="c1">#: Z</span>
 
-    <span class="n">OPENING_SQUARE_BRACKET</span> <span class="o">=</span> <span class="s1">&#39;&amp;#91;&#39;</span>  <span class="c1">#: [</span>
-    <span class="n">BACKSLASH</span> <span class="o">=</span> <span class="s1">&#39;&amp;#92;&#39;</span>  <span class="c1">#: \</span>
-    <span class="n">CLOSING_SQUARE_BRACKET</span> <span class="o">=</span> <span class="s1">&#39;&amp;#93;&#39;</span>  <span class="c1">#: ]</span>
-    <span class="n">CARET</span> <span class="o">=</span> <span class="s1">&#39;&amp;#94;&#39;</span>  <span class="c1">#: ^</span>
-    <span class="n">UNDERSCORE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#95;&#39;</span>  <span class="c1">#: _</span>
-    <span class="n">GRAVE_ACCENT</span> <span class="o">=</span> <span class="s1">&#39;&amp;#96;&#39;</span>  <span class="c1">#:</span>
-    <span class="n">LOWERCASE_A</span> <span class="o">=</span> <span class="s1">&#39;&amp;#97;&#39;</span>  <span class="c1">#: a</span>
-    <span class="n">LOWERCASE_B</span> <span class="o">=</span> <span class="s1">&#39;&amp;#98;&#39;</span>  <span class="c1">#: b</span>
-    <span class="n">LOWERCASE_C</span> <span class="o">=</span> <span class="s1">&#39;&amp;#99;&#39;</span>  <span class="c1">#: c</span>
-    <span class="n">LOWERCASE_D</span> <span class="o">=</span> <span class="s1">&#39;&amp;#100;&#39;</span>  <span class="c1">#: d</span>
-    <span class="n">LOWERCASE_E</span> <span class="o">=</span> <span class="s1">&#39;&amp;#101;&#39;</span>  <span class="c1">#: e</span>
-    <span class="n">LOWERCASE_F</span> <span class="o">=</span> <span class="s1">&#39;&amp;#102;&#39;</span>  <span class="c1">#: f</span>
-    <span class="n">LOWERCASE_G</span> <span class="o">=</span> <span class="s1">&#39;&amp;#103;&#39;</span>  <span class="c1">#: g</span>
-    <span class="n">LOWERCASE_H</span> <span class="o">=</span> <span class="s1">&#39;&amp;#104;&#39;</span>  <span class="c1">#: h</span>
-    <span class="n">LOWERCASE_I</span> <span class="o">=</span> <span class="s1">&#39;&amp;#105;&#39;</span>  <span class="c1">#: i</span>
-    <span class="n">LOWERCASE_J</span> <span class="o">=</span> <span class="s1">&#39;&amp;#106;&#39;</span>  <span class="c1">#: j</span>
-    <span class="n">LOWERCASE_K</span> <span class="o">=</span> <span class="s1">&#39;&amp;#107;&#39;</span>  <span class="c1">#: k</span>
-    <span class="n">LOWERCASE_L</span> <span class="o">=</span> <span class="s1">&#39;&amp;#108;&#39;</span>  <span class="c1">#: l</span>
-    <span class="n">LOWERCASE_M</span> <span class="o">=</span> <span class="s1">&#39;&amp;#109;&#39;</span>  <span class="c1">#: m</span>
-    <span class="n">LOWERCASE_N</span> <span class="o">=</span> <span class="s1">&#39;&amp;#110;&#39;</span>  <span class="c1">#: n</span>
-    <span class="n">LOWERCASE_O</span> <span class="o">=</span> <span class="s1">&#39;&amp;#111;&#39;</span>  <span class="c1">#: o</span>
-    <span class="n">LOWERCASE_P</span> <span class="o">=</span> <span class="s1">&#39;&amp;#112;&#39;</span>  <span class="c1">#: p</span>
-    <span class="n">LOWERCASE_Q</span> <span class="o">=</span> <span class="s1">&#39;&amp;#113;&#39;</span>  <span class="c1">#: q</span>
-    <span class="n">LOWERCASE_R</span> <span class="o">=</span> <span class="s1">&#39;&amp;#114;&#39;</span>  <span class="c1">#: r</span>
-    <span class="n">LOWERCASE_S</span> <span class="o">=</span> <span class="s1">&#39;&amp;#115;&#39;</span>  <span class="c1">#: s</span>
-    <span class="n">LOWERCASE_T</span> <span class="o">=</span> <span class="s1">&#39;&amp;#116;&#39;</span>  <span class="c1">#: t</span>
-    <span class="n">LOWERCASE_U</span> <span class="o">=</span> <span class="s1">&#39;&amp;#117;&#39;</span>  <span class="c1">#: u</span>
-    <span class="n">LOWERCASE_V</span> <span class="o">=</span> <span class="s1">&#39;&amp;#118;&#39;</span>  <span class="c1">#: v</span>
-    <span class="n">LOWERCASE_W</span> <span class="o">=</span> <span class="s1">&#39;&amp;#119;&#39;</span>  <span class="c1">#: w</span>
-    <span class="n">LOWERCASE_X</span> <span class="o">=</span> <span class="s1">&#39;&amp;#120;&#39;</span>  <span class="c1">#: x</span>
-    <span class="n">LOWERCASE_Y</span> <span class="o">=</span> <span class="s1">&#39;&amp;#121;&#39;</span>  <span class="c1">#: y</span>
-    <span class="n">LOWERCASE_Z</span> <span class="o">=</span> <span class="s1">&#39;&amp;#122;&#39;</span>  <span class="c1">#: z</span>
+    <span class="n">OPENING_SQUARE_BRACKET</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#91;&#39;</span>  <span class="c1">#: [</span>
+    <span class="n">BACKSLASH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#92;&#39;</span>  <span class="c1">#: \</span>
+    <span class="n">CLOSING_SQUARE_BRACKET</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#93;&#39;</span>  <span class="c1">#: ]</span>
+    <span class="n">CARET</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#94;&#39;</span>  <span class="c1">#: ^</span>
+    <span class="n">UNDERSCORE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#95;&#39;</span>  <span class="c1">#: _</span>
+    <span class="n">GRAVE_ACCENT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#96;&#39;</span>  <span class="c1">#:</span>
+    <span class="n">LOWERCASE_A</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#97;&#39;</span>  <span class="c1">#: a</span>
+    <span class="n">LOWERCASE_B</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#98;&#39;</span>  <span class="c1">#: b</span>
+    <span class="n">LOWERCASE_C</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#99;&#39;</span>  <span class="c1">#: c</span>
+    <span class="n">LOWERCASE_D</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#100;&#39;</span>  <span class="c1">#: d</span>
+    <span class="n">LOWERCASE_E</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#101;&#39;</span>  <span class="c1">#: e</span>
+    <span class="n">LOWERCASE_F</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#102;&#39;</span>  <span class="c1">#: f</span>
+    <span class="n">LOWERCASE_G</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#103;&#39;</span>  <span class="c1">#: g</span>
+    <span class="n">LOWERCASE_H</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#104;&#39;</span>  <span class="c1">#: h</span>
+    <span class="n">LOWERCASE_I</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#105;&#39;</span>  <span class="c1">#: i</span>
+    <span class="n">LOWERCASE_J</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#106;&#39;</span>  <span class="c1">#: j</span>
+    <span class="n">LOWERCASE_K</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#107;&#39;</span>  <span class="c1">#: k</span>
+    <span class="n">LOWERCASE_L</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#108;&#39;</span>  <span class="c1">#: l</span>
+    <span class="n">LOWERCASE_M</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#109;&#39;</span>  <span class="c1">#: m</span>
+    <span class="n">LOWERCASE_N</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#110;&#39;</span>  <span class="c1">#: n</span>
+    <span class="n">LOWERCASE_O</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#111;&#39;</span>  <span class="c1">#: o</span>
+    <span class="n">LOWERCASE_P</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#112;&#39;</span>  <span class="c1">#: p</span>
+    <span class="n">LOWERCASE_Q</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#113;&#39;</span>  <span class="c1">#: q</span>
+    <span class="n">LOWERCASE_R</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#114;&#39;</span>  <span class="c1">#: r</span>
+    <span class="n">LOWERCASE_S</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#115;&#39;</span>  <span class="c1">#: s</span>
+    <span class="n">LOWERCASE_T</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#116;&#39;</span>  <span class="c1">#: t</span>
+    <span class="n">LOWERCASE_U</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#117;&#39;</span>  <span class="c1">#: u</span>
+    <span class="n">LOWERCASE_V</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#118;&#39;</span>  <span class="c1">#: v</span>
+    <span class="n">LOWERCASE_W</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#119;&#39;</span>  <span class="c1">#: w</span>
+    <span class="n">LOWERCASE_X</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#120;&#39;</span>  <span class="c1">#: x</span>
+    <span class="n">LOWERCASE_Y</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#121;&#39;</span>  <span class="c1">#: y</span>
+    <span class="n">LOWERCASE_Z</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#122;&#39;</span>  <span class="c1">#: z</span>
 
-    <span class="n">OPENING_CURLY_BRACE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#123;&#39;</span>  <span class="c1">#: {</span>
-    <span class="n">LEFT_CURLY_BRACE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#123;&#39;</span>  <span class="c1">#: {</span>
-    <span class="n">VERTICAL_BAR</span> <span class="o">=</span> <span class="s1">&#39;&amp;#124;&#39;</span>  <span class="c1">#: |</span>
-    <span class="n">CLOSING_CURLY_BRACE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#125;&#39;</span>  <span class="c1">#: }</span>
-    <span class="n">RIGHT_CURLY_BRACE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#125;&#39;</span>  <span class="c1">#: }</span>
-    <span class="n">TILDE</span> <span class="o">=</span> <span class="s1">&#39;&amp;#126;&#39;</span>  <span class="c1">#: ~</span>
+    <span class="n">OPENING_CURLY_BRACE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#123;&#39;</span>  <span class="c1">#: {</span>
+    <span class="n">LEFT_CURLY_BRACE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#123;&#39;</span>  <span class="c1">#: {</span>
+    <span class="n">VERTICAL_BAR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#124;&#39;</span>  <span class="c1">#: |</span>
+    <span class="n">CLOSING_CURLY_BRACE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#125;&#39;</span>  <span class="c1">#: }</span>
+    <span class="n">RIGHT_CURLY_BRACE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#125;&#39;</span>  <span class="c1">#: }</span>
+    <span class="n">TILDE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;#126;&#39;</span>  <span class="c1">#: ~</span>
 
     <span class="c1"># ISO-8859-1 Characters</span>
-    <span class="n">AGRAVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Agrave;&#39;</span>  <span class="c1">#: À</span>
-    <span class="n">AACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Aacute;&#39;</span>  <span class="c1">#: Á</span>
-    <span class="n">ACIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;Acirc;&#39;</span>  <span class="c1">#: Â</span>
-    <span class="n">ATILDE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Atilde;&#39;</span>  <span class="c1">#: Ã</span>
-    <span class="n">AUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;Auml;&#39;</span>  <span class="c1">#: Ä</span>
-    <span class="n">ARING</span> <span class="o">=</span> <span class="s1">&#39;&amp;Aring;&#39;</span>  <span class="c1">#: Å</span>
-    <span class="n">AELIG</span> <span class="o">=</span> <span class="s1">&#39;&amp;AElig;&#39;</span>  <span class="c1">#: Æ</span>
-    <span class="n">CCEDIL</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ccedil;&#39;</span>  <span class="c1">#: Ç</span>
-    <span class="n">EGRAVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Egrave;&#39;</span>  <span class="c1">#: È</span>
-    <span class="n">EACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Eacute;&#39;</span>  <span class="c1">#: É</span>
-    <span class="n">ECIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ecirc;&#39;</span>  <span class="c1">#: Ê</span>
-    <span class="n">EUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;Euml;&#39;</span>  <span class="c1">#: Ë</span>
-    <span class="n">IGRAVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Igrave;&#39;</span>  <span class="c1">#: Ì</span>
-    <span class="n">IACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Iacute;&#39;</span>  <span class="c1">#: Í</span>
-    <span class="n">ICIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;Icirc;&#39;</span>  <span class="c1">#: Î</span>
-    <span class="n">IUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;Iuml;&#39;</span>  <span class="c1">#: Ï</span>
-    <span class="n">ETH</span> <span class="o">=</span> <span class="s1">&#39;&amp;ETH;&#39;</span>  <span class="c1">#: Ð</span>
-    <span class="n">NTILDE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ntilde;&#39;</span>  <span class="c1">#: Ñ</span>
-    <span class="n">OGRAVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ograve;&#39;</span>  <span class="c1">#: Ò</span>
-    <span class="n">OACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Oacute;&#39;</span>  <span class="c1">#: Ó</span>
-    <span class="n">OCIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ocirc;&#39;</span>  <span class="c1">#: Ô</span>
-    <span class="n">OTILDE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Otilde;&#39;</span>  <span class="c1">#: Õ</span>
-    <span class="n">OUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ouml;&#39;</span>  <span class="c1">#: Ö</span>
-    <span class="n">OSLASH</span> <span class="o">=</span> <span class="s1">&#39;&amp;Oslash;&#39;</span>  <span class="c1">#: Ø</span>
-    <span class="n">UGRAVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ugrave;&#39;</span>  <span class="c1">#: Ù</span>
-    <span class="n">UACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Uacute;&#39;</span>  <span class="c1">#: Ú</span>
-    <span class="n">UCIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ucirc;&#39;</span>  <span class="c1">#: Û</span>
-    <span class="n">UUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;Uuml;&#39;</span>  <span class="c1">#: Ü</span>
-    <span class="n">YACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;Yacute;&#39;</span>  <span class="c1">#: Ý</span>
-    <span class="n">THORN</span> <span class="o">=</span> <span class="s1">&#39;&amp;THORN;&#39;</span>  <span class="c1">#: Þ</span>
-    <span class="n">SZLIG</span> <span class="o">=</span> <span class="s1">&#39;&amp;szlig;&#39;</span>  <span class="c1">#: ß</span>
-    <span class="n">AGRAVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;agrave;&#39;</span>  <span class="c1">#: à</span>
-    <span class="n">AACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;aacute;&#39;</span>  <span class="c1">#: á</span>
-    <span class="n">ACIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;acirc;&#39;</span>  <span class="c1">#: â</span>
-    <span class="n">ATILDE</span> <span class="o">=</span> <span class="s1">&#39;&amp;atilde;&#39;</span>  <span class="c1">#: ã</span>
-    <span class="n">AUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;auml;&#39;</span>  <span class="c1">#: ä</span>
-    <span class="n">ARING</span> <span class="o">=</span> <span class="s1">&#39;&amp;aring;&#39;</span>  <span class="c1">#: å</span>
-    <span class="n">AELIG</span> <span class="o">=</span> <span class="s1">&#39;&amp;aelig;&#39;</span>  <span class="c1">#: æ</span>
-    <span class="n">CCEDIL</span> <span class="o">=</span> <span class="s1">&#39;&amp;ccedil;&#39;</span>  <span class="c1">#: ç</span>
-    <span class="n">EGRAVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;egrave;&#39;</span>  <span class="c1">#: è</span>
-    <span class="n">EACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;eacute;&#39;</span>  <span class="c1">#: é</span>
-    <span class="n">ECIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;ecirc;&#39;</span>  <span class="c1">#: ê</span>
-    <span class="n">EUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;euml;&#39;</span>  <span class="c1">#: ë</span>
-    <span class="n">IGRAVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;igrave;&#39;</span>  <span class="c1">#: ì</span>
-    <span class="n">IACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;iacute;&#39;</span>  <span class="c1">#: í</span>
-    <span class="n">ICIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;icirc;&#39;</span>  <span class="c1">#: î</span>
-    <span class="n">IUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;iuml;&#39;</span>  <span class="c1">#: ï</span>
-    <span class="n">ETH</span> <span class="o">=</span> <span class="s1">&#39;&amp;eth;&#39;</span>  <span class="c1">#: ð</span>
-    <span class="n">NTILDE</span> <span class="o">=</span> <span class="s1">&#39;&amp;ntilde;&#39;</span>  <span class="c1">#: ñ</span>
-    <span class="n">OGRAVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;ograve;&#39;</span>  <span class="c1">#: ò</span>
-    <span class="n">OACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;oacute;&#39;</span>  <span class="c1">#: ó</span>
-    <span class="n">OCIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;ocirc;&#39;</span>  <span class="c1">#: ô</span>
-    <span class="n">OTILDE</span> <span class="o">=</span> <span class="s1">&#39;&amp;otilde;&#39;</span>  <span class="c1">#: õ</span>
-    <span class="n">OUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;ouml;&#39;</span>  <span class="c1">#: ö</span>
-    <span class="n">OSLASH</span> <span class="o">=</span> <span class="s1">&#39;&amp;oslash;&#39;</span>  <span class="c1">#: ø</span>
-    <span class="n">UGRAVE</span> <span class="o">=</span> <span class="s1">&#39;&amp;ugrave;&#39;</span>  <span class="c1">#: ù</span>
-    <span class="n">UACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;uacute;&#39;</span>  <span class="c1">#: ú</span>
-    <span class="n">UCIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;ucirc;&#39;</span>  <span class="c1">#: û</span>
-    <span class="n">UUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;uuml;&#39;</span>  <span class="c1">#: ü</span>
-    <span class="n">YACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;yacute;&#39;</span>  <span class="c1">#: ý</span>
-    <span class="n">THORN</span> <span class="o">=</span> <span class="s1">&#39;&amp;thorn;&#39;</span>  <span class="c1">#: þ</span>
-    <span class="n">YUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;yuml;&#39;</span>  <span class="c1">#: ÿ</span>
+    <span class="n">AGRAVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Agrave;&#39;</span>  <span class="c1">#: À</span>
+    <span class="n">AACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Aacute;&#39;</span>  <span class="c1">#: Á</span>
+    <span class="n">ACIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Acirc;&#39;</span>  <span class="c1">#: Â</span>
+    <span class="n">ATILDE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Atilde;&#39;</span>  <span class="c1">#: Ã</span>
+    <span class="n">AUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Auml;&#39;</span>  <span class="c1">#: Ä</span>
+    <span class="n">ARING</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Aring;&#39;</span>  <span class="c1">#: Å</span>
+    <span class="n">AELIG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;AElig;&#39;</span>  <span class="c1">#: Æ</span>
+    <span class="n">CCEDIL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ccedil;&#39;</span>  <span class="c1">#: Ç</span>
+    <span class="n">EGRAVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Egrave;&#39;</span>  <span class="c1">#: È</span>
+    <span class="n">EACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Eacute;&#39;</span>  <span class="c1">#: É</span>
+    <span class="n">ECIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ecirc;&#39;</span>  <span class="c1">#: Ê</span>
+    <span class="n">EUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Euml;&#39;</span>  <span class="c1">#: Ë</span>
+    <span class="n">IGRAVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Igrave;&#39;</span>  <span class="c1">#: Ì</span>
+    <span class="n">IACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Iacute;&#39;</span>  <span class="c1">#: Í</span>
+    <span class="n">ICIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Icirc;&#39;</span>  <span class="c1">#: Î</span>
+    <span class="n">IUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Iuml;&#39;</span>  <span class="c1">#: Ï</span>
+    <span class="n">ETH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ETH;&#39;</span>  <span class="c1">#: Ð</span>
+    <span class="n">NTILDE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ntilde;&#39;</span>  <span class="c1">#: Ñ</span>
+    <span class="n">OGRAVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ograve;&#39;</span>  <span class="c1">#: Ò</span>
+    <span class="n">OACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Oacute;&#39;</span>  <span class="c1">#: Ó</span>
+    <span class="n">OCIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ocirc;&#39;</span>  <span class="c1">#: Ô</span>
+    <span class="n">OTILDE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Otilde;&#39;</span>  <span class="c1">#: Õ</span>
+    <span class="n">OUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ouml;&#39;</span>  <span class="c1">#: Ö</span>
+    <span class="n">OSLASH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Oslash;&#39;</span>  <span class="c1">#: Ø</span>
+    <span class="n">UGRAVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ugrave;&#39;</span>  <span class="c1">#: Ù</span>
+    <span class="n">UACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Uacute;&#39;</span>  <span class="c1">#: Ú</span>
+    <span class="n">UCIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Ucirc;&#39;</span>  <span class="c1">#: Û</span>
+    <span class="n">UUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Uuml;&#39;</span>  <span class="c1">#: Ü</span>
+    <span class="n">YACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Yacute;&#39;</span>  <span class="c1">#: Ý</span>
+    <span class="n">THORN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;THORN;&#39;</span>  <span class="c1">#: Þ</span>
+    <span class="n">SZLIG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;szlig;&#39;</span>  <span class="c1">#: ß</span>
+    <span class="n">AGRAVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;agrave;&#39;</span>  <span class="c1">#: à</span>
+    <span class="n">AACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;aacute;&#39;</span>  <span class="c1">#: á</span>
+    <span class="n">ACIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;acirc;&#39;</span>  <span class="c1">#: â</span>
+    <span class="n">ATILDE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;atilde;&#39;</span>  <span class="c1">#: ã</span>
+    <span class="n">AUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;auml;&#39;</span>  <span class="c1">#: ä</span>
+    <span class="n">ARING</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;aring;&#39;</span>  <span class="c1">#: å</span>
+    <span class="n">AELIG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;aelig;&#39;</span>  <span class="c1">#: æ</span>
+    <span class="n">CCEDIL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ccedil;&#39;</span>  <span class="c1">#: ç</span>
+    <span class="n">EGRAVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;egrave;&#39;</span>  <span class="c1">#: è</span>
+    <span class="n">EACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;eacute;&#39;</span>  <span class="c1">#: é</span>
+    <span class="n">ECIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ecirc;&#39;</span>  <span class="c1">#: ê</span>
+    <span class="n">EUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;euml;&#39;</span>  <span class="c1">#: ë</span>
+    <span class="n">IGRAVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;igrave;&#39;</span>  <span class="c1">#: ì</span>
+    <span class="n">IACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;iacute;&#39;</span>  <span class="c1">#: í</span>
+    <span class="n">ICIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;icirc;&#39;</span>  <span class="c1">#: î</span>
+    <span class="n">IUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;iuml;&#39;</span>  <span class="c1">#: ï</span>
+    <span class="n">ETH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;eth;&#39;</span>  <span class="c1">#: ð</span>
+    <span class="n">NTILDE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ntilde;&#39;</span>  <span class="c1">#: ñ</span>
+    <span class="n">OGRAVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ograve;&#39;</span>  <span class="c1">#: ò</span>
+    <span class="n">OACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;oacute;&#39;</span>  <span class="c1">#: ó</span>
+    <span class="n">OCIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ocirc;&#39;</span>  <span class="c1">#: ô</span>
+    <span class="n">OTILDE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;otilde;&#39;</span>  <span class="c1">#: õ</span>
+    <span class="n">OUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ouml;&#39;</span>  <span class="c1">#: ö</span>
+    <span class="n">OSLASH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;oslash;&#39;</span>  <span class="c1">#: ø</span>
+    <span class="n">UGRAVE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ugrave;&#39;</span>  <span class="c1">#: ù</span>
+    <span class="n">UACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;uacute;&#39;</span>  <span class="c1">#: ú</span>
+    <span class="n">UCIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ucirc;&#39;</span>  <span class="c1">#: û</span>
+    <span class="n">UUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;uuml;&#39;</span>  <span class="c1">#: ü</span>
+    <span class="n">YACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;yacute;&#39;</span>  <span class="c1">#: ý</span>
+    <span class="n">THORN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;thorn;&#39;</span>  <span class="c1">#: þ</span>
+    <span class="n">YUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;yuml;&#39;</span>  <span class="c1">#: ÿ</span>
 
     <span class="c1"># ISO-8859-1 Symbols</span>
-    <span class="n">NBSP</span> <span class="o">=</span> <span class="s1">&#39;&amp;nbsp;&#39;</span>  <span class="c1">#:</span>
-    <span class="n">IEXCL</span> <span class="o">=</span> <span class="s1">&#39;&amp;iexcl;&#39;</span>  <span class="c1">#: ¡</span>
-    <span class="n">CENT</span> <span class="o">=</span> <span class="s1">&#39;&amp;cent;&#39;</span>  <span class="c1">#: ¢</span>
-    <span class="n">POUND</span> <span class="o">=</span> <span class="s1">&#39;&amp;pound;&#39;</span>  <span class="c1">#: £</span>
-    <span class="n">CURREN</span> <span class="o">=</span> <span class="s1">&#39;&amp;curren;&#39;</span>  <span class="c1">#: ¤</span>
-    <span class="n">YEN</span> <span class="o">=</span> <span class="s1">&#39;&amp;yen;&#39;</span>  <span class="c1">#: ¥</span>
-    <span class="n">BRVBAR</span> <span class="o">=</span> <span class="s1">&#39;&amp;brvbar;&#39;</span>  <span class="c1">#: ¦</span>
-    <span class="n">SECT</span> <span class="o">=</span> <span class="s1">&#39;&amp;sect;&#39;</span>  <span class="c1">#: §</span>
-    <span class="n">UML</span> <span class="o">=</span> <span class="s1">&#39;&amp;uml;&#39;</span>  <span class="c1">#: ¨</span>
-    <span class="n">COPY</span> <span class="o">=</span> <span class="s1">&#39;&amp;copy;&#39;</span>  <span class="c1">#: ©</span>
-    <span class="n">COPYRIGHT</span> <span class="o">=</span> <span class="s1">&#39;&amp;copy;&#39;</span>  <span class="c1">#: ©</span>
-    <span class="n">ORDF</span> <span class="o">=</span> <span class="s1">&#39;&amp;ordf;&#39;</span>  <span class="c1">#: ª</span>
-    <span class="n">LAQUO</span> <span class="o">=</span> <span class="s1">&#39;&amp;laquo;&#39;</span>  <span class="c1">#: «</span>
-    <span class="n">NOT</span> <span class="o">=</span> <span class="s1">&#39;&amp;not;&#39;</span>  <span class="c1">#: ¬</span>
+    <span class="n">NBSP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;nbsp;&#39;</span>  <span class="c1">#:</span>
+    <span class="n">IEXCL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;iexcl;&#39;</span>  <span class="c1">#: ¡</span>
+    <span class="n">CENT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;cent;&#39;</span>  <span class="c1">#: ¢</span>
+    <span class="n">POUND</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;pound;&#39;</span>  <span class="c1">#: £</span>
+    <span class="n">CURREN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;curren;&#39;</span>  <span class="c1">#: ¤</span>
+    <span class="n">YEN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;yen;&#39;</span>  <span class="c1">#: ¥</span>
+    <span class="n">BRVBAR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;brvbar;&#39;</span>  <span class="c1">#: ¦</span>
+    <span class="n">SECT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sect;&#39;</span>  <span class="c1">#: §</span>
+    <span class="n">UML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;uml;&#39;</span>  <span class="c1">#: ¨</span>
+    <span class="n">COPY</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;copy;&#39;</span>  <span class="c1">#: ©</span>
+    <span class="n">COPYRIGHT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;copy;&#39;</span>  <span class="c1">#: ©</span>
+    <span class="n">ORDF</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ordf;&#39;</span>  <span class="c1">#: ª</span>
+    <span class="n">LAQUO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;laquo;&#39;</span>  <span class="c1">#: «</span>
+    <span class="n">NOT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;not;&#39;</span>  <span class="c1">#: ¬</span>
     <span class="c1"># ­   &amp;shy;   &amp;#173;  Soft hyphen</span>
-    <span class="n">REG</span> <span class="o">=</span> <span class="s1">&#39;&amp;reg;&#39;</span>  <span class="c1">#: ®</span>
-    <span class="n">MACR</span> <span class="o">=</span> <span class="s1">&#39;&amp;macr;&#39;</span>  <span class="c1">#: ¯</span>
-    <span class="n">DEG</span> <span class="o">=</span> <span class="s1">&#39;&amp;deg;&#39;</span>  <span class="c1">#: °</span>
-    <span class="n">PLUSMN</span> <span class="o">=</span> <span class="s1">&#39;&amp;plusmn;&#39;</span>  <span class="c1">#: ±</span>
-    <span class="n">SUP2</span> <span class="o">=</span> <span class="s1">&#39;&amp;sup2;&#39;</span>  <span class="c1">#: ²</span>
-    <span class="n">SUP3</span> <span class="o">=</span> <span class="s1">&#39;&amp;sup3;&#39;</span>  <span class="c1">#: ³</span>
-    <span class="n">ACUTE</span> <span class="o">=</span> <span class="s1">&#39;&amp;acute;&#39;</span>  <span class="c1">#: ´</span>
-    <span class="n">MICRO</span> <span class="o">=</span> <span class="s1">&#39;&amp;micro;&#39;</span>  <span class="c1">#: µ</span>
-    <span class="n">PARA</span> <span class="o">=</span> <span class="s1">&#39;&amp;para;&#39;</span>  <span class="c1">#: ¶</span>
-    <span class="n">CEDIL</span> <span class="o">=</span> <span class="s1">&#39;&amp;cedil;&#39;</span>  <span class="c1">#: ¸</span>
-    <span class="n">SUP1</span> <span class="o">=</span> <span class="s1">&#39;&amp;sup1;&#39;</span>  <span class="c1">#: ¹</span>
-    <span class="n">ORDM</span> <span class="o">=</span> <span class="s1">&#39;&amp;ordm;&#39;</span>  <span class="c1">#: º</span>
-    <span class="n">RAQUO</span> <span class="o">=</span> <span class="s1">&#39;&amp;raquo;&#39;</span>  <span class="c1">#: »</span>
-    <span class="n">FRAC14</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac14;&#39;</span>  <span class="c1">#: ¼</span>
-    <span class="n">FRAC12</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac12;&#39;</span>  <span class="c1">#: ½</span>
-    <span class="n">FRAC34</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac34;&#39;</span>  <span class="c1">#: ¾</span>
-    <span class="n">IQUEST</span> <span class="o">=</span> <span class="s1">&#39;&amp;iquest;&#39;</span>  <span class="c1">#: ¿</span>
-    <span class="n">TIMES</span> <span class="o">=</span> <span class="s1">&#39;&amp;times;&#39;</span>  <span class="c1">#: ×</span>
-    <span class="n">DIVIDE</span> <span class="o">=</span> <span class="s1">&#39;&amp;divide;&#39;</span>  <span class="c1">#: ÷</span>
+    <span class="n">REG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;reg;&#39;</span>  <span class="c1">#: ®</span>
+    <span class="n">MACR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;macr;&#39;</span>  <span class="c1">#: ¯</span>
+    <span class="n">DEG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;deg;&#39;</span>  <span class="c1">#: °</span>
+    <span class="n">PLUSMN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;plusmn;&#39;</span>  <span class="c1">#: ±</span>
+    <span class="n">SUP2</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sup2;&#39;</span>  <span class="c1">#: ²</span>
+    <span class="n">SUP3</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sup3;&#39;</span>  <span class="c1">#: ³</span>
+    <span class="n">ACUTE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;acute;&#39;</span>  <span class="c1">#: ´</span>
+    <span class="n">MICRO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;micro;&#39;</span>  <span class="c1">#: µ</span>
+    <span class="n">PARA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;para;&#39;</span>  <span class="c1">#: ¶</span>
+    <span class="n">CEDIL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;cedil;&#39;</span>  <span class="c1">#: ¸</span>
+    <span class="n">SUP1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sup1;&#39;</span>  <span class="c1">#: ¹</span>
+    <span class="n">ORDM</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ordm;&#39;</span>  <span class="c1">#: º</span>
+    <span class="n">RAQUO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;raquo;&#39;</span>  <span class="c1">#: »</span>
+    <span class="n">FRAC14</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac14;&#39;</span>  <span class="c1">#: ¼</span>
+    <span class="n">FRAC12</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac12;&#39;</span>  <span class="c1">#: ½</span>
+    <span class="n">FRAC34</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac34;&#39;</span>  <span class="c1">#: ¾</span>
+    <span class="n">IQUEST</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;iquest;&#39;</span>  <span class="c1">#: ¿</span>
+    <span class="n">TIMES</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;times;&#39;</span>  <span class="c1">#: ×</span>
+    <span class="n">DIVIDE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;divide;&#39;</span>  <span class="c1">#: ÷</span>
 
     <span class="c1"># Math Symbols</span>
-    <span class="n">FORALL</span> <span class="o">=</span> <span class="s1">&#39;&amp;forall;&#39;</span>  <span class="c1">#: ∀</span>
-    <span class="n">PART</span> <span class="o">=</span> <span class="s1">&#39;&amp;part;&#39;</span>  <span class="c1">#: ∂</span>
-    <span class="n">EXIST</span> <span class="o">=</span> <span class="s1">&#39;&amp;exist;&#39;</span>  <span class="c1">#: ∃</span>
-    <span class="n">EMPTY</span> <span class="o">=</span> <span class="s1">&#39;&amp;empty;&#39;</span>  <span class="c1">#: ∅</span>
-    <span class="n">NABLA</span> <span class="o">=</span> <span class="s1">&#39;&amp;nabla;&#39;</span>  <span class="c1">#: ∇</span>
-    <span class="n">ISIN</span> <span class="o">=</span> <span class="s1">&#39;&amp;isin;&#39;</span>  <span class="c1">#: ∈</span>
-    <span class="n">NOTIN</span> <span class="o">=</span> <span class="s1">&#39;&amp;notin;&#39;</span>  <span class="c1">#: ∉</span>
-    <span class="n">NI</span> <span class="o">=</span> <span class="s1">&#39;&amp;ni;&#39;</span>  <span class="c1">#: ∋</span>
-    <span class="n">PROD</span> <span class="o">=</span> <span class="s1">&#39;&amp;prod;&#39;</span>  <span class="c1">#: ∏</span>
-    <span class="n">SUM</span> <span class="o">=</span> <span class="s1">&#39;&amp;sum;&#39;</span>  <span class="c1">#: ∑</span>
-    <span class="n">MINUS</span> <span class="o">=</span> <span class="s1">&#39;&amp;minus;&#39;</span>  <span class="c1">#: −</span>
-    <span class="n">LOWAST</span> <span class="o">=</span> <span class="s1">&#39;&amp;lowast;&#39;</span>  <span class="c1">#: ∗</span>
-    <span class="n">RADIC</span> <span class="o">=</span> <span class="s1">&#39;&amp;radic;&#39;</span>  <span class="c1">#: √</span>
-    <span class="n">PROP</span> <span class="o">=</span> <span class="s1">&#39;&amp;prop;&#39;</span>  <span class="c1">#: ∝</span>
-    <span class="n">INFIN</span> <span class="o">=</span> <span class="s1">&#39;&amp;infin;&#39;</span>  <span class="c1">#: ∞</span>
-    <span class="n">ANG</span> <span class="o">=</span> <span class="s1">&#39;&amp;ang;&#39;</span>  <span class="c1">#: ∠</span>
-    <span class="n">AND</span> <span class="o">=</span> <span class="s1">&#39;&amp;and;&#39;</span>  <span class="c1">#: ∧</span>
-    <span class="n">OR</span> <span class="o">=</span> <span class="s1">&#39;&amp;or;&#39;</span>  <span class="c1">#: ∨</span>
-    <span class="n">CAP</span> <span class="o">=</span> <span class="s1">&#39;&amp;cap;&#39;</span>  <span class="c1">#: ∩</span>
-    <span class="n">CUP</span> <span class="o">=</span> <span class="s1">&#39;&amp;cup;&#39;</span>  <span class="c1">#: ∪</span>
-    <span class="n">INT</span> <span class="o">=</span> <span class="s1">&#39;&amp;int;&#39;</span>  <span class="c1">#: ∫</span>
-    <span class="n">THERE4</span> <span class="o">=</span> <span class="s1">&#39;&amp;there4;&#39;</span>  <span class="c1">#: ∴</span>
-    <span class="n">SIM</span> <span class="o">=</span> <span class="s1">&#39;&amp;sim;&#39;</span>  <span class="c1">#: ∼</span>
-    <span class="n">CONG</span> <span class="o">=</span> <span class="s1">&#39;&amp;cong;&#39;</span>  <span class="c1">#: ≅</span>
-    <span class="n">ASYMP</span> <span class="o">=</span> <span class="s1">&#39;&amp;asymp;&#39;</span>  <span class="c1">#: ≈</span>
-    <span class="n">NE</span> <span class="o">=</span> <span class="s1">&#39;&amp;ne;&#39;</span>  <span class="c1">#: ≠</span>
-    <span class="n">EQUIV</span> <span class="o">=</span> <span class="s1">&#39;&amp;equiv;&#39;</span>  <span class="c1">#: ≡</span>
-    <span class="n">LE</span> <span class="o">=</span> <span class="s1">&#39;&amp;le;&#39;</span>  <span class="c1">#: ≤</span>
-    <span class="n">GE</span> <span class="o">=</span> <span class="s1">&#39;&amp;ge;&#39;</span>  <span class="c1">#: ≥</span>
-    <span class="n">SUB</span> <span class="o">=</span> <span class="s1">&#39;&amp;sub;&#39;</span>  <span class="c1">#: ⊂</span>
-    <span class="n">SUP</span> <span class="o">=</span> <span class="s1">&#39;&amp;sup;&#39;</span>  <span class="c1">#: ⊃</span>
-    <span class="n">NSUB</span> <span class="o">=</span> <span class="s1">&#39;&amp;nsub;&#39;</span>  <span class="c1">#: ⊄</span>
-    <span class="n">SUBE</span> <span class="o">=</span> <span class="s1">&#39;&amp;sube;&#39;</span>  <span class="c1">#: ⊆</span>
-    <span class="n">SUPE</span> <span class="o">=</span> <span class="s1">&#39;&amp;supe;&#39;</span>  <span class="c1">#: ⊇</span>
-    <span class="n">OPLUS</span> <span class="o">=</span> <span class="s1">&#39;&amp;oplus;&#39;</span>  <span class="c1">#: ⊕</span>
-    <span class="n">OTIMES</span> <span class="o">=</span> <span class="s1">&#39;&amp;otimes;&#39;</span>  <span class="c1">#: ⊗</span>
-    <span class="n">PERP</span> <span class="o">=</span> <span class="s1">&#39;&amp;perp;&#39;</span>  <span class="c1">#: ⊥</span>
-    <span class="n">SDOT</span> <span class="o">=</span> <span class="s1">&#39;&amp;sdot;&#39;</span>  <span class="c1">#: ⋅</span>
+    <span class="n">FORALL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;forall;&#39;</span>  <span class="c1">#: ∀</span>
+    <span class="n">PART</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;part;&#39;</span>  <span class="c1">#: ∂</span>
+    <span class="n">EXIST</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;exist;&#39;</span>  <span class="c1">#: ∃</span>
+    <span class="n">EMPTY</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;empty;&#39;</span>  <span class="c1">#: ∅</span>
+    <span class="n">NABLA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;nabla;&#39;</span>  <span class="c1">#: ∇</span>
+    <span class="n">ISIN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;isin;&#39;</span>  <span class="c1">#: ∈</span>
+    <span class="n">NOTIN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;notin;&#39;</span>  <span class="c1">#: ∉</span>
+    <span class="n">NI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ni;&#39;</span>  <span class="c1">#: ∋</span>
+    <span class="n">PROD</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;prod;&#39;</span>  <span class="c1">#: ∏</span>
+    <span class="n">SUM</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sum;&#39;</span>  <span class="c1">#: ∑</span>
+    <span class="n">MINUS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;minus;&#39;</span>  <span class="c1">#: −</span>
+    <span class="n">LOWAST</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;lowast;&#39;</span>  <span class="c1">#: ∗</span>
+    <span class="n">RADIC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;radic;&#39;</span>  <span class="c1">#: √</span>
+    <span class="n">PROP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;prop;&#39;</span>  <span class="c1">#: ∝</span>
+    <span class="n">INFIN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;infin;&#39;</span>  <span class="c1">#: ∞</span>
+    <span class="n">ANG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ang;&#39;</span>  <span class="c1">#: ∠</span>
+    <span class="n">AND</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;and;&#39;</span>  <span class="c1">#: ∧</span>
+    <span class="n">OR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;or;&#39;</span>  <span class="c1">#: ∨</span>
+    <span class="n">CAP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;cap;&#39;</span>  <span class="c1">#: ∩</span>
+    <span class="n">CUP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;cup;&#39;</span>  <span class="c1">#: ∪</span>
+    <span class="n">INT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;int;&#39;</span>  <span class="c1">#: ∫</span>
+    <span class="n">THERE4</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;there4;&#39;</span>  <span class="c1">#: ∴</span>
+    <span class="n">SIM</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sim;&#39;</span>  <span class="c1">#: ∼</span>
+    <span class="n">CONG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;cong;&#39;</span>  <span class="c1">#: ≅</span>
+    <span class="n">ASYMP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;asymp;&#39;</span>  <span class="c1">#: ≈</span>
+    <span class="n">NE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ne;&#39;</span>  <span class="c1">#: ≠</span>
+    <span class="n">EQUIV</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;equiv;&#39;</span>  <span class="c1">#: ≡</span>
+    <span class="n">LE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;le;&#39;</span>  <span class="c1">#: ≤</span>
+    <span class="n">GE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ge;&#39;</span>  <span class="c1">#: ≥</span>
+    <span class="n">SUB</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sub;&#39;</span>  <span class="c1">#: ⊂</span>
+    <span class="n">SUP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sup;&#39;</span>  <span class="c1">#: ⊃</span>
+    <span class="n">NSUB</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;nsub;&#39;</span>  <span class="c1">#: ⊄</span>
+    <span class="n">SUBE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sube;&#39;</span>  <span class="c1">#: ⊆</span>
+    <span class="n">SUPE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;supe;&#39;</span>  <span class="c1">#: ⊇</span>
+    <span class="n">OPLUS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;oplus;&#39;</span>  <span class="c1">#: ⊕</span>
+    <span class="n">OTIMES</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;otimes;&#39;</span>  <span class="c1">#: ⊗</span>
+    <span class="n">PERP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;perp;&#39;</span>  <span class="c1">#: ⊥</span>
+    <span class="n">SDOT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sdot;&#39;</span>  <span class="c1">#: ⋅</span>
 
     <span class="c1"># Greek Letters</span>
-    <span class="n">ALPHA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Alpha;&#39;</span>  <span class="c1">#: Α</span>
-    <span class="n">BETA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Beta;&#39;</span>  <span class="c1">#: Β</span>
-    <span class="n">GAMMA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Gamma;&#39;</span>  <span class="c1">#: Γ</span>
-    <span class="n">DELTA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Delta;&#39;</span>  <span class="c1">#: Δ</span>
-    <span class="n">EPSILON</span> <span class="o">=</span> <span class="s1">&#39;&amp;Epsilon;&#39;</span>  <span class="c1">#: Ε</span>
-    <span class="n">ZETA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Zeta;&#39;</span>  <span class="c1">#: Ζ</span>
-    <span class="n">ETA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Eta;&#39;</span>  <span class="c1">#: Η</span>
-    <span class="n">THETA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Theta;&#39;</span>  <span class="c1">#: Θ</span>
-    <span class="n">IOTA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Iota;&#39;</span>  <span class="c1">#: Ι</span>
-    <span class="n">KAPPA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Kappa;&#39;</span>  <span class="c1">#: Κ</span>
-    <span class="n">LAMBDA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Lambda;&#39;</span>  <span class="c1">#: Λ</span>
-    <span class="n">MU</span> <span class="o">=</span> <span class="s1">&#39;&amp;Mu;&#39;</span>  <span class="c1">#: Μ</span>
-    <span class="n">NU</span> <span class="o">=</span> <span class="s1">&#39;&amp;Nu;&#39;</span>  <span class="c1">#: Ν</span>
-    <span class="n">XI</span> <span class="o">=</span> <span class="s1">&#39;&amp;Xi;&#39;</span>  <span class="c1">#: Ξ</span>
-    <span class="n">OMICRON</span> <span class="o">=</span> <span class="s1">&#39;&amp;Omicron;&#39;</span>  <span class="c1">#: Ο</span>
-    <span class="n">PI</span> <span class="o">=</span> <span class="s1">&#39;&amp;Pi;&#39;</span>  <span class="c1">#: Π</span>
-    <span class="n">RHO</span> <span class="o">=</span> <span class="s1">&#39;&amp;Rho;&#39;</span>  <span class="c1">#: Ρ</span>
-    <span class="n">SIGMA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Sigma;&#39;</span>  <span class="c1">#: Σ</span>
-    <span class="n">TAU</span> <span class="o">=</span> <span class="s1">&#39;&amp;Tau;&#39;</span>  <span class="c1">#: Τ</span>
-    <span class="n">UPSILON</span> <span class="o">=</span> <span class="s1">&#39;&amp;Upsilon;&#39;</span>  <span class="c1">#: Υ</span>
-    <span class="n">PHI</span> <span class="o">=</span> <span class="s1">&#39;&amp;Phi;&#39;</span>  <span class="c1">#: Φ</span>
-    <span class="n">CHI</span> <span class="o">=</span> <span class="s1">&#39;&amp;Chi;&#39;</span>  <span class="c1">#: Χ</span>
-    <span class="n">PSI</span> <span class="o">=</span> <span class="s1">&#39;&amp;Psi;&#39;</span>  <span class="c1">#: Ψ</span>
-    <span class="n">OMEGA</span> <span class="o">=</span> <span class="s1">&#39;&amp;Omega;&#39;</span>  <span class="c1">#: Ω</span>
-    <span class="n">ALPHA</span> <span class="o">=</span> <span class="s1">&#39;&amp;alpha;&#39;</span>  <span class="c1">#: α</span>
-    <span class="n">BETA</span> <span class="o">=</span> <span class="s1">&#39;&amp;beta;&#39;</span>  <span class="c1">#: β</span>
-    <span class="n">GAMMA</span> <span class="o">=</span> <span class="s1">&#39;&amp;gamma;&#39;</span>  <span class="c1">#: γ</span>
-    <span class="n">DELTA</span> <span class="o">=</span> <span class="s1">&#39;&amp;delta;&#39;</span>  <span class="c1">#: δ</span>
-    <span class="n">EPSILON</span> <span class="o">=</span> <span class="s1">&#39;&amp;epsilon;&#39;</span>  <span class="c1">#: ε</span>
-    <span class="n">ZETA</span> <span class="o">=</span> <span class="s1">&#39;&amp;zeta;&#39;</span>  <span class="c1">#: ζ</span>
-    <span class="n">ETA</span> <span class="o">=</span> <span class="s1">&#39;&amp;eta;&#39;</span>  <span class="c1">#: η</span>
-    <span class="n">THETA</span> <span class="o">=</span> <span class="s1">&#39;&amp;theta;&#39;</span>  <span class="c1">#: θ</span>
-    <span class="n">IOTA</span> <span class="o">=</span> <span class="s1">&#39;&amp;iota;&#39;</span>  <span class="c1">#: ι</span>
-    <span class="n">KAPPA</span> <span class="o">=</span> <span class="s1">&#39;&amp;kappa;&#39;</span>  <span class="c1">#: κ</span>
-    <span class="n">LAMBDA</span> <span class="o">=</span> <span class="s1">&#39;&amp;lambda;&#39;</span>  <span class="c1">#: λ</span>
-    <span class="n">MU</span> <span class="o">=</span> <span class="s1">&#39;&amp;mu;&#39;</span>  <span class="c1">#: μ</span>
-    <span class="n">NU</span> <span class="o">=</span> <span class="s1">&#39;&amp;nu;&#39;</span>  <span class="c1">#: ν</span>
-    <span class="n">XI</span> <span class="o">=</span> <span class="s1">&#39;&amp;xi;&#39;</span>  <span class="c1">#: ξ</span>
-    <span class="n">OMICRON</span> <span class="o">=</span> <span class="s1">&#39;&amp;omicron;&#39;</span>  <span class="c1">#: ο</span>
-    <span class="n">PI</span> <span class="o">=</span> <span class="s1">&#39;&amp;pi;&#39;</span>  <span class="c1">#: π</span>
-    <span class="n">RHO</span> <span class="o">=</span> <span class="s1">&#39;&amp;rho;&#39;</span>  <span class="c1">#: ρ</span>
-    <span class="n">SIGMAF</span> <span class="o">=</span> <span class="s1">&#39;&amp;sigmaf;&#39;</span>  <span class="c1">#: ς</span>
-    <span class="n">SIGMA</span> <span class="o">=</span> <span class="s1">&#39;&amp;sigma;&#39;</span>  <span class="c1">#: σ</span>
-    <span class="n">TAU</span> <span class="o">=</span> <span class="s1">&#39;&amp;tau;&#39;</span>  <span class="c1">#: τ</span>
-    <span class="n">UPSILON</span> <span class="o">=</span> <span class="s1">&#39;&amp;upsilon;&#39;</span>  <span class="c1">#: υ</span>
-    <span class="n">PHI</span> <span class="o">=</span> <span class="s1">&#39;&amp;phi;&#39;</span>  <span class="c1">#: φ</span>
-    <span class="n">CHI</span> <span class="o">=</span> <span class="s1">&#39;&amp;chi;&#39;</span>  <span class="c1">#: χ</span>
-    <span class="n">PSI</span> <span class="o">=</span> <span class="s1">&#39;&amp;psi;&#39;</span>  <span class="c1">#: ψ</span>
-    <span class="n">OMEGA</span> <span class="o">=</span> <span class="s1">&#39;&amp;omega;&#39;</span>  <span class="c1">#: ω</span>
-    <span class="n">THETASYM</span> <span class="o">=</span> <span class="s1">&#39;&amp;thetasym;&#39;</span>  <span class="c1">#: ϑ</span>
-    <span class="n">UPSIH</span> <span class="o">=</span> <span class="s1">&#39;&amp;upsih;&#39;</span>  <span class="c1">#: ϒ</span>
-    <span class="n">PIV</span> <span class="o">=</span> <span class="s1">&#39;&amp;piv;&#39;</span>  <span class="c1">#: ϖ</span>
+    <span class="n">ALPHA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Alpha;&#39;</span>  <span class="c1">#: Α</span>
+    <span class="n">BETA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Beta;&#39;</span>  <span class="c1">#: Β</span>
+    <span class="n">GAMMA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Gamma;&#39;</span>  <span class="c1">#: Γ</span>
+    <span class="n">DELTA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Delta;&#39;</span>  <span class="c1">#: Δ</span>
+    <span class="n">EPSILON</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Epsilon;&#39;</span>  <span class="c1">#: Ε</span>
+    <span class="n">ZETA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Zeta;&#39;</span>  <span class="c1">#: Ζ</span>
+    <span class="n">ETA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Eta;&#39;</span>  <span class="c1">#: Η</span>
+    <span class="n">THETA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Theta;&#39;</span>  <span class="c1">#: Θ</span>
+    <span class="n">IOTA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Iota;&#39;</span>  <span class="c1">#: Ι</span>
+    <span class="n">KAPPA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Kappa;&#39;</span>  <span class="c1">#: Κ</span>
+    <span class="n">LAMBDA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Lambda;&#39;</span>  <span class="c1">#: Λ</span>
+    <span class="n">MU</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Mu;&#39;</span>  <span class="c1">#: Μ</span>
+    <span class="n">NU</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Nu;&#39;</span>  <span class="c1">#: Ν</span>
+    <span class="n">XI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Xi;&#39;</span>  <span class="c1">#: Ξ</span>
+    <span class="n">OMICRON</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Omicron;&#39;</span>  <span class="c1">#: Ο</span>
+    <span class="n">PI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Pi;&#39;</span>  <span class="c1">#: Π</span>
+    <span class="n">RHO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Rho;&#39;</span>  <span class="c1">#: Ρ</span>
+    <span class="n">SIGMA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Sigma;&#39;</span>  <span class="c1">#: Σ</span>
+    <span class="n">TAU</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Tau;&#39;</span>  <span class="c1">#: Τ</span>
+    <span class="n">UPSILON</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Upsilon;&#39;</span>  <span class="c1">#: Υ</span>
+    <span class="n">PHI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Phi;&#39;</span>  <span class="c1">#: Φ</span>
+    <span class="n">CHI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Chi;&#39;</span>  <span class="c1">#: Χ</span>
+    <span class="n">PSI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Psi;&#39;</span>  <span class="c1">#: Ψ</span>
+    <span class="n">OMEGA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Omega;&#39;</span>  <span class="c1">#: Ω</span>
+    <span class="n">ALPHA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;alpha;&#39;</span>  <span class="c1">#: α</span>
+    <span class="n">BETA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;beta;&#39;</span>  <span class="c1">#: β</span>
+    <span class="n">GAMMA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;gamma;&#39;</span>  <span class="c1">#: γ</span>
+    <span class="n">DELTA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;delta;&#39;</span>  <span class="c1">#: δ</span>
+    <span class="n">EPSILON</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;epsilon;&#39;</span>  <span class="c1">#: ε</span>
+    <span class="n">ZETA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;zeta;&#39;</span>  <span class="c1">#: ζ</span>
+    <span class="n">ETA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;eta;&#39;</span>  <span class="c1">#: η</span>
+    <span class="n">THETA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;theta;&#39;</span>  <span class="c1">#: θ</span>
+    <span class="n">IOTA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;iota;&#39;</span>  <span class="c1">#: ι</span>
+    <span class="n">KAPPA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;kappa;&#39;</span>  <span class="c1">#: κ</span>
+    <span class="n">LAMBDA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;lambda;&#39;</span>  <span class="c1">#: λ</span>
+    <span class="n">MU</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;mu;&#39;</span>  <span class="c1">#: μ</span>
+    <span class="n">NU</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;nu;&#39;</span>  <span class="c1">#: ν</span>
+    <span class="n">XI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;xi;&#39;</span>  <span class="c1">#: ξ</span>
+    <span class="n">OMICRON</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;omicron;&#39;</span>  <span class="c1">#: ο</span>
+    <span class="n">PI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;pi;&#39;</span>  <span class="c1">#: π</span>
+    <span class="n">RHO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;rho;&#39;</span>  <span class="c1">#: ρ</span>
+    <span class="n">SIGMAF</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sigmaf;&#39;</span>  <span class="c1">#: ς</span>
+    <span class="n">SIGMA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sigma;&#39;</span>  <span class="c1">#: σ</span>
+    <span class="n">TAU</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;tau;&#39;</span>  <span class="c1">#: τ</span>
+    <span class="n">UPSILON</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;upsilon;&#39;</span>  <span class="c1">#: υ</span>
+    <span class="n">PHI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;phi;&#39;</span>  <span class="c1">#: φ</span>
+    <span class="n">CHI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;chi;&#39;</span>  <span class="c1">#: χ</span>
+    <span class="n">PSI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;psi;&#39;</span>  <span class="c1">#: ψ</span>
+    <span class="n">OMEGA</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;omega;&#39;</span>  <span class="c1">#: ω</span>
+    <span class="n">THETASYM</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;thetasym;&#39;</span>  <span class="c1">#: ϑ</span>
+    <span class="n">UPSIH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;upsih;&#39;</span>  <span class="c1">#: ϒ</span>
+    <span class="n">PIV</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;piv;&#39;</span>  <span class="c1">#: ϖ</span>
 
-    <span class="n">OELIG</span> <span class="o">=</span> <span class="s1">&#39;&amp;OElig;&#39;</span>  <span class="c1">#: Œ</span>
-    <span class="n">oeLIG</span> <span class="o">=</span> <span class="s1">&#39;&amp;oelig;&#39;</span>  <span class="c1">#: œ</span>
-    <span class="n">SCARON</span> <span class="o">=</span> <span class="s1">&#39;&amp;Scaron;&#39;</span>  <span class="c1">#: Š</span>
-    <span class="n">Scaron</span> <span class="o">=</span> <span class="s1">&#39;&amp;Scaron;&#39;</span>  <span class="c1">#: Š</span>
-    <span class="n">scaron</span> <span class="o">=</span> <span class="s1">&#39;&amp;scaron;&#39;</span>  <span class="c1">#: š</span>
-    <span class="n">YUML</span> <span class="o">=</span> <span class="s1">&#39;&amp;Yuml;&#39;</span>  <span class="c1">#: Ÿ</span>
-    <span class="n">FNOF</span> <span class="o">=</span> <span class="s1">&#39;&amp;fnof;&#39;</span>  <span class="c1">#: ƒ</span>
-    <span class="n">CIRC</span> <span class="o">=</span> <span class="s1">&#39;&amp;circ;&#39;</span>  <span class="c1">#: ˆ</span>
-    <span class="n">TILDE</span> <span class="o">=</span> <span class="s1">&#39;&amp;tilde;&#39;</span>  <span class="c1">#: ˜</span>
+    <span class="n">OELIG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;OElig;&#39;</span>  <span class="c1">#: Œ</span>
+    <span class="n">oeLIG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;oelig;&#39;</span>  <span class="c1">#: œ</span>
+    <span class="n">SCARON</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Scaron;&#39;</span>  <span class="c1">#: Š</span>
+    <span class="n">Scaron</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Scaron;&#39;</span>  <span class="c1">#: Š</span>
+    <span class="n">scaron</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;scaron;&#39;</span>  <span class="c1">#: š</span>
+    <span class="n">YUML</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Yuml;&#39;</span>  <span class="c1">#: Ÿ</span>
+    <span class="n">FNOF</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;fnof;&#39;</span>  <span class="c1">#: ƒ</span>
+    <span class="n">CIRC</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;circ;&#39;</span>  <span class="c1">#: ˆ</span>
+    <span class="n">TILDE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;tilde;&#39;</span>  <span class="c1">#: ˜</span>
 
     <span class="c1">#     &amp;ensp;  &amp;#8194; En space</span>
     <span class="c1">#     &amp;emsp;  &amp;#8195; Em space</span>
@@ -380,85 +380,85 @@
     <span class="c1"># ‎   &amp;lrm;   &amp;#8206; Left-to-right mark</span>
     <span class="c1"># ‏   &amp;rlm;   &amp;#8207; Right-to-left mark</span>
 
-    <span class="n">NDASH</span> <span class="o">=</span> <span class="s1">&#39;&amp;ndash;&#39;</span>  <span class="c1">#: –</span>
-    <span class="n">MDASH</span> <span class="o">=</span> <span class="s1">&#39;&amp;mdash;&#39;</span>  <span class="c1">#: —</span>
-    <span class="n">LSQUO</span> <span class="o">=</span> <span class="s1">&#39;&amp;lsquo;&#39;</span>  <span class="c1">#: ‘</span>
-    <span class="n">RSQUO</span> <span class="o">=</span> <span class="s1">&#39;&amp;rsquo;&#39;</span>  <span class="c1">#: ’</span>
-    <span class="n">SBQUO</span> <span class="o">=</span> <span class="s1">&#39;&amp;sbquo;&#39;</span>  <span class="c1">#: ‚</span>
-    <span class="n">LDQUO</span> <span class="o">=</span> <span class="s1">&#39;&amp;ldquo;&#39;</span>  <span class="c1">#: “</span>
-    <span class="n">RDQUO</span> <span class="o">=</span> <span class="s1">&#39;&amp;rdquo;&#39;</span>  <span class="c1">#: ”</span>
-    <span class="n">BDQUO</span> <span class="o">=</span> <span class="s1">&#39;&amp;bdquo;&#39;</span>  <span class="c1">#: „</span>
-    <span class="n">DAGGER</span> <span class="o">=</span> <span class="s1">&#39;&amp;dagger;&#39;</span>  <span class="c1">#: †</span>
-    <span class="n">DAGGER</span> <span class="o">=</span> <span class="s1">&#39;&amp;Dagger;&#39;</span>  <span class="c1">#: ‡</span>
-    <span class="n">BULL</span> <span class="o">=</span> <span class="s1">&#39;&amp;bull;&#39;</span>  <span class="c1">#: •</span>
-    <span class="n">HELLIP</span> <span class="o">=</span> <span class="s1">&#39;&amp;hellip;&#39;</span>  <span class="c1">#: …</span>
-    <span class="n">PERMIL</span> <span class="o">=</span> <span class="s1">&#39;&amp;permil;&#39;</span>  <span class="c1">#: ‰</span>
-    <span class="n">PRIME</span> <span class="o">=</span> <span class="s1">&#39;&amp;prime;&#39;</span>  <span class="c1">#: ′</span>
-    <span class="n">PRIME</span> <span class="o">=</span> <span class="s1">&#39;&amp;Prime;&#39;</span>  <span class="c1">#: ″</span>
-    <span class="n">LSAQUO</span> <span class="o">=</span> <span class="s1">&#39;&amp;lsaquo;&#39;</span>  <span class="c1">#: ‹</span>
-    <span class="n">RSAQUO</span> <span class="o">=</span> <span class="s1">&#39;&amp;rsaquo;&#39;</span>  <span class="c1">#: ›</span>
-    <span class="n">OLINE</span> <span class="o">=</span> <span class="s1">&#39;&amp;oline;&#39;</span>  <span class="c1">#: ‾</span>
-    <span class="n">EURO</span> <span class="o">=</span> <span class="s1">&#39;&amp;euro;&#39;</span>  <span class="c1">#: €</span>
-    <span class="n">TRADE</span> <span class="o">=</span> <span class="s1">&#39;&amp;trade;&#39;</span>  <span class="c1">#: ™</span>
-    <span class="n">TRADEMARK</span> <span class="o">=</span> <span class="s1">&#39;&amp;trade;&#39;</span>  <span class="c1">#: ™</span>
+    <span class="n">NDASH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ndash;&#39;</span>  <span class="c1">#: –</span>
+    <span class="n">MDASH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;mdash;&#39;</span>  <span class="c1">#: —</span>
+    <span class="n">LSQUO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;lsquo;&#39;</span>  <span class="c1">#: ‘</span>
+    <span class="n">RSQUO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;rsquo;&#39;</span>  <span class="c1">#: ’</span>
+    <span class="n">SBQUO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sbquo;&#39;</span>  <span class="c1">#: ‚</span>
+    <span class="n">LDQUO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ldquo;&#39;</span>  <span class="c1">#: “</span>
+    <span class="n">RDQUO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;rdquo;&#39;</span>  <span class="c1">#: ”</span>
+    <span class="n">BDQUO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;bdquo;&#39;</span>  <span class="c1">#: „</span>
+    <span class="n">DAGGER</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;dagger;&#39;</span>  <span class="c1">#: †</span>
+    <span class="n">DAGGER</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Dagger;&#39;</span>  <span class="c1">#: ‡</span>
+    <span class="n">BULL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;bull;&#39;</span>  <span class="c1">#: •</span>
+    <span class="n">HELLIP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;hellip;&#39;</span>  <span class="c1">#: …</span>
+    <span class="n">PERMIL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;permil;&#39;</span>  <span class="c1">#: ‰</span>
+    <span class="n">PRIME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;prime;&#39;</span>  <span class="c1">#: ′</span>
+    <span class="n">PRIME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;Prime;&#39;</span>  <span class="c1">#: ″</span>
+    <span class="n">LSAQUO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;lsaquo;&#39;</span>  <span class="c1">#: ‹</span>
+    <span class="n">RSAQUO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;rsaquo;&#39;</span>  <span class="c1">#: ›</span>
+    <span class="n">OLINE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;oline;&#39;</span>  <span class="c1">#: ‾</span>
+    <span class="n">EURO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;euro;&#39;</span>  <span class="c1">#: €</span>
+    <span class="n">TRADE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;trade;&#39;</span>  <span class="c1">#: ™</span>
+    <span class="n">TRADEMARK</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;trade;&#39;</span>  <span class="c1">#: ™</span>
 
     <span class="c1"># ARROWS</span>
-    <span class="n">LARR</span> <span class="o">=</span> <span class="s1">&#39;&amp;larr;&#39;</span>  <span class="c1">#: ←</span>
-    <span class="n">LEFT</span> <span class="o">=</span> <span class="s1">&#39;&amp;larr;&#39;</span>  <span class="c1">#: ←</span>
-    <span class="n">UARR</span> <span class="o">=</span> <span class="s1">&#39;&amp;uarr;&#39;</span>  <span class="c1">#: ↑</span>
-    <span class="n">UP</span> <span class="o">=</span> <span class="s1">&#39;&amp;uarr;&#39;</span>  <span class="c1">#: ↑</span>
-    <span class="n">RARR</span> <span class="o">=</span> <span class="s1">&#39;&amp;rarr;&#39;</span>  <span class="c1">#: →</span>
-    <span class="n">RIGHT</span> <span class="o">=</span> <span class="s1">&#39;&amp;rarr;&#39;</span>  <span class="c1">#: →</span>
-    <span class="n">DARR</span> <span class="o">=</span> <span class="s1">&#39;&amp;darr;&#39;</span>  <span class="c1">#: ↓</span>
-    <span class="n">DOWN</span> <span class="o">=</span> <span class="s1">&#39;&amp;darr;&#39;</span>  <span class="c1">#: ↓</span>
+    <span class="n">LARR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;larr;&#39;</span>  <span class="c1">#: ←</span>
+    <span class="n">LEFT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;larr;&#39;</span>  <span class="c1">#: ←</span>
+    <span class="n">UARR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;uarr;&#39;</span>  <span class="c1">#: ↑</span>
+    <span class="n">UP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;uarr;&#39;</span>  <span class="c1">#: ↑</span>
+    <span class="n">RARR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;rarr;&#39;</span>  <span class="c1">#: →</span>
+    <span class="n">RIGHT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;rarr;&#39;</span>  <span class="c1">#: →</span>
+    <span class="n">DARR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;darr;&#39;</span>  <span class="c1">#: ↓</span>
+    <span class="n">DOWN</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;darr;&#39;</span>  <span class="c1">#: ↓</span>
 
-    <span class="n">HARR</span> <span class="o">=</span> <span class="s1">&#39;&amp;harr;&#39;</span>  <span class="c1">#: ↔</span>
-    <span class="n">CRARR</span> <span class="o">=</span> <span class="s1">&#39;&amp;crarr;&#39;</span>  <span class="c1">#: ↵</span>
-    <span class="n">LCEIL</span> <span class="o">=</span> <span class="s1">&#39;&amp;lceil;&#39;</span>  <span class="c1">#: ⌈</span>
-    <span class="n">RCEIL</span> <span class="o">=</span> <span class="s1">&#39;&amp;rceil;&#39;</span>  <span class="c1">#: ⌉</span>
-    <span class="n">LFLOOR</span> <span class="o">=</span> <span class="s1">&#39;&amp;lfloor;&#39;</span>  <span class="c1">#: ⌊</span>
-    <span class="n">RFLOOR</span> <span class="o">=</span> <span class="s1">&#39;&amp;rfloor;&#39;</span>  <span class="c1">#: ⌋</span>
-    <span class="n">LOZ</span> <span class="o">=</span> <span class="s1">&#39;&amp;loz;&#39;</span>  <span class="c1">#: ◊</span>
+    <span class="n">HARR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;harr;&#39;</span>  <span class="c1">#: ↔</span>
+    <span class="n">CRARR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;crarr;&#39;</span>  <span class="c1">#: ↵</span>
+    <span class="n">LCEIL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;lceil;&#39;</span>  <span class="c1">#: ⌈</span>
+    <span class="n">RCEIL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;rceil;&#39;</span>  <span class="c1">#: ⌉</span>
+    <span class="n">LFLOOR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;lfloor;&#39;</span>  <span class="c1">#: ⌊</span>
+    <span class="n">RFLOOR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;rfloor;&#39;</span>  <span class="c1">#: ⌋</span>
+    <span class="n">LOZ</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;loz;&#39;</span>  <span class="c1">#: ◊</span>
 
-    <span class="n">SPADES</span> <span class="o">=</span> <span class="s1">&#39;&amp;spades;&#39;</span>  <span class="c1">#: ♠</span>
-    <span class="n">CLUBS</span> <span class="o">=</span> <span class="s1">&#39;&amp;clubs;&#39;</span>  <span class="c1">#: ♣</span>
-    <span class="n">HEARTS</span> <span class="o">=</span> <span class="s1">&#39;&amp;hearts;&#39;</span>  <span class="c1">#: ♥</span>
-    <span class="n">DIAMS</span> <span class="o">=</span> <span class="s1">&#39;&amp;diams;&#39;</span>  <span class="c1">#: ♦</span>
-    <span class="n">DIAMONDS</span> <span class="o">=</span> <span class="s1">&#39;&amp;diams;&#39;</span>  <span class="c1">#: ♦</span>
+    <span class="n">SPADES</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;spades;&#39;</span>  <span class="c1">#: ♠</span>
+    <span class="n">CLUBS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;clubs;&#39;</span>  <span class="c1">#: ♣</span>
+    <span class="n">HEARTS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;hearts;&#39;</span>  <span class="c1">#: ♥</span>
+    <span class="n">DIAMS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;diams;&#39;</span>  <span class="c1">#: ♦</span>
+    <span class="n">DIAMONDS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;diams;&#39;</span>  <span class="c1">#: ♦</span>
 
-    <span class="n">SUNG</span> <span class="o">=</span> <span class="s1">&#39;&amp;sung;&#39;</span>  <span class="c1">#: ♪</span>
-    <span class="n">FLAT</span> <span class="o">=</span> <span class="s1">&#39;&amp;flat;&#39;</span>  <span class="c1">#: ♭</span>
-    <span class="n">NATUR</span> <span class="o">=</span> <span class="s1">&#39;&amp;natur;&#39;</span>  <span class="c1">#: ♮</span>
-    <span class="n">NATURAL</span> <span class="o">=</span> <span class="s1">&#39;&amp;natural;&#39;</span>  <span class="c1">#: ♮</span>
-    <span class="n">SHARP</span> <span class="o">=</span> <span class="s1">&#39;&amp;sharp;&#39;</span>  <span class="c1">#: ♯</span>
+    <span class="n">SUNG</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sung;&#39;</span>  <span class="c1">#: ♪</span>
+    <span class="n">FLAT</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;flat;&#39;</span>  <span class="c1">#: ♭</span>
+    <span class="n">NATUR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;natur;&#39;</span>  <span class="c1">#: ♮</span>
+    <span class="n">NATURAL</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;natural;&#39;</span>  <span class="c1">#: ♮</span>
+    <span class="n">SHARP</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;sharp;&#39;</span>  <span class="c1">#: ♯</span>
 
-    <span class="n">CHECK</span> <span class="o">=</span> <span class="s2">&quot;&amp;check;&quot;</span>  <span class="c1">#: ✓</span>
-    <span class="n">CHECKMARK</span> <span class="o">=</span> <span class="s2">&quot;&amp;checkmark;&quot;</span>  <span class="c1">#: ✓</span>
-    <span class="n">TICK</span> <span class="o">=</span> <span class="s2">&quot;&amp;check;&quot;</span>  <span class="c1">#: ✓</span>
-    <span class="n">CROSS</span> <span class="o">=</span> <span class="s2">&quot;&amp;cross;&quot;</span>  <span class="c1">#: ✗</span>
+    <span class="n">CHECK</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&amp;check;&quot;</span>  <span class="c1">#: ✓</span>
+    <span class="n">CHECKMARK</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&amp;checkmark;&quot;</span>  <span class="c1">#: ✓</span>
+    <span class="n">TICK</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&amp;check;&quot;</span>  <span class="c1">#: ✓</span>
+    <span class="n">CROSS</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&amp;cross;&quot;</span>  <span class="c1">#: ✗</span>
 
-    <span class="n">OHM</span> <span class="o">=</span> <span class="s1">&#39;&amp;ohm;&#39;</span>  <span class="c1">#: Ω</span>
-    <span class="n">MHO</span> <span class="o">=</span> <span class="s1">&#39;&amp;mho;&#39;</span>  <span class="c1">#: ℧</span>
+    <span class="n">OHM</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;ohm;&#39;</span>  <span class="c1">#: Ω</span>
+    <span class="n">MHO</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;mho;&#39;</span>  <span class="c1">#: ℧</span>
 
-    <span class="n">FRAC13</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac13;&#39;</span>  <span class="c1">#: ⅓</span>
-    <span class="n">FRAC23</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac23;&#39;</span>  <span class="c1">#: ⅔</span>
-    <span class="n">FRAC15</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac15;&#39;</span>  <span class="c1">#: ⅕</span>
-    <span class="n">FRAC25</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac25;&#39;</span>  <span class="c1">#: ⅖</span>
-    <span class="n">FRAC35</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac35;&#39;</span>  <span class="c1">#: ⅗</span>
-    <span class="n">FRAC45</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac45;&#39;</span>  <span class="c1">#: ⅘</span>
-    <span class="n">FRAC16</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac16;&#39;</span>  <span class="c1">#: ⅙</span>
-    <span class="n">FRAC56</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac56;&#39;</span>  <span class="c1">#: ⅚</span>
-    <span class="n">FRAC18</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac18;&#39;</span>  <span class="c1">#: ⅛</span>
-    <span class="n">FRAC38</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac38;&#39;</span>  <span class="c1">#: ⅜</span>
-    <span class="n">FRAC58</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac58;&#39;</span>  <span class="c1">#: ⅝</span>
-    <span class="n">FRAC78</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac78;&#39;</span>  <span class="c1">#: ⅞</span>
+    <span class="n">FRAC13</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac13;&#39;</span>  <span class="c1">#: ⅓</span>
+    <span class="n">FRAC23</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac23;&#39;</span>  <span class="c1">#: ⅔</span>
+    <span class="n">FRAC15</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac15;&#39;</span>  <span class="c1">#: ⅕</span>
+    <span class="n">FRAC25</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac25;&#39;</span>  <span class="c1">#: ⅖</span>
+    <span class="n">FRAC35</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac35;&#39;</span>  <span class="c1">#: ⅗</span>
+    <span class="n">FRAC45</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac45;&#39;</span>  <span class="c1">#: ⅘</span>
+    <span class="n">FRAC16</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac16;&#39;</span>  <span class="c1">#: ⅙</span>
+    <span class="n">FRAC56</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac56;&#39;</span>  <span class="c1">#: ⅚</span>
+    <span class="n">FRAC18</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac18;&#39;</span>  <span class="c1">#: ⅛</span>
+    <span class="n">FRAC38</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac38;&#39;</span>  <span class="c1">#: ⅜</span>
+    <span class="n">FRAC58</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac58;&#39;</span>  <span class="c1">#: ⅝</span>
+    <span class="n">FRAC78</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&amp;frac78;&#39;</span>  <span class="c1">#: ⅞</span>
 
-    <span class="n">STAR</span> <span class="o">=</span> <span class="s2">&quot;&amp;star;&quot;</span>  <span class="c1">#: ☆</span>
-    <span class="n">STARF</span> <span class="o">=</span> <span class="s2">&quot;&amp;starf;&quot;</span>  <span class="c1">#: ★</span>
-    <span class="n">BIGSTAR</span> <span class="o">=</span> <span class="s2">&quot;&amp;bigstar;&quot;</span>
-    <span class="n">PHONE</span> <span class="o">=</span> <span class="s2">&quot;&amp;phone;&quot;</span>  <span class="c1">#: ☎</span>
-    <span class="n">FEMALE</span> <span class="o">=</span> <span class="s2">&quot;&amp;female;&quot;</span>  <span class="c1">#: ♀</span>
-    <span class="n">MALE</span> <span class="o">=</span> <span class="s2">&quot;&amp;male;&quot;</span>  <span class="c1">#: ♂</span></div>
+    <span class="n">STAR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&amp;star;&quot;</span>  <span class="c1">#: ☆</span>
+    <span class="n">STARF</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&amp;starf;&quot;</span>  <span class="c1">#: ★</span>
+    <span class="n">BIGSTAR</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&amp;bigstar;&quot;</span>
+    <span class="n">PHONE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&amp;phone;&quot;</span>  <span class="c1">#: ☎</span>
+    <span class="n">FEMALE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&amp;female;&quot;</span>  <span class="c1">#: ♀</span>
+    <span class="n">MALE</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&amp;male;&quot;</span>  <span class="c1">#: ♂</span></div>
 </pre></div>
 
           </div>

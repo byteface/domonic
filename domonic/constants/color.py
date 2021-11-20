@@ -9,6 +9,14 @@ from typing import Tuple
 
 from domonic.geom import vec3, vec4
 
+# function rgb
+# function rgba
+# function hsl
+# function hsla
+# function hex
+# function hexa
+# function hsv
+
 
 class Color():
     """ Color Functions """
@@ -45,6 +53,8 @@ class Color():
         if h[0] == '#':
             h = h.lstrip('#')
         return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+    # rgb = hex2rgb  # TODO - as static. but can also check if instance has value? so can get/set.
 
     # @staticmethod
     # def hsl2rgb(h, s, l):

@@ -36,7 +36,7 @@
 <span class="sd">    ====================================</span>
 <span class="sd">    snippets etc</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span class="c1"># import typing</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">sub</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">islice</span>
@@ -344,7 +344,7 @@
         <span class="k">return</span> <span class="n">front</span> <span class="o">+</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">end</span></div>
 
 <div class="viewcode-block" id="Utils.truncate"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.truncate">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[truncates a string and appends 3 dots]</span>
 
 <span class="sd">        Args:</span>
@@ -360,7 +360,7 @@
             <span class="k">return</span> <span class="n">text</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span></div>
 
 <div class="viewcode-block" id="Utils.digits"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.digits">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">digits</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">digits</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[takes a string of mix of digits and letters and returns a string of digits]</span>
 
 <span class="sd">        Args:</span>
@@ -382,7 +382,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;text must be a string&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Utils.has_internet"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.has_internet">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">has_internet</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;http://www.google.com/&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">has_internet</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;http://www.google.com/&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[check if you have internet connection]</span>
 
 <span class="sd">        Args:</span>
@@ -401,7 +401,7 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Utils.is_nix"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.is_nix">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_nix</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">is_nix</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[check if the system is a nix based system]</span>
 
 <span class="sd">        Returns:</span>
@@ -411,7 +411,7 @@
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;posix&quot;</span></div>
 
 <div class="viewcode-block" id="Utils.is_mac"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.is_mac">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_mac</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">is_mac</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[check if the system is a mac]</span>
 
 <span class="sd">        Returns:</span>
@@ -421,7 +421,7 @@
         <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span></div>
 
 <div class="viewcode-block" id="Utils.is_windows"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.is_windows">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_windows</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">is_windows</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[check if the system is a windows]</span>
 
 <span class="sd">        Returns:</span>
@@ -431,7 +431,7 @@
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;nt&quot;</span></div>
 
 <div class="viewcode-block" id="Utils.is_linux"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.is_linux">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_linux</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">is_linux</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[check if the system is a linux]</span>
 
 <span class="sd">        Returns:</span>

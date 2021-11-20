@@ -648,8 +648,7 @@ xmp = type('xmp', (tag, Element), {'name': 'xmp', '__init__': tag_init})
 template = type('template', (tag, Element), {'name': 'template', '__init__': tag_init})
 picture = type('picture', (tag, Element), {'name': 'picture', '__init__': tag_init})
 dialog = type('dialog', (tag, HTMLDialogElement), {'name': 'dialog', '__init__': tag_init})
-
-# dialog = HTMLDialogElement
+# dialog = HTMLDialogElement  # TODO - might get rid of tag and put all its methods on Node directly
 
 # legacy.
 doctype = DocumentType

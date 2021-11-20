@@ -120,5 +120,5 @@ class KeyCode():
     #     return None
 
     def __init__(self) -> None:
-        """ constructor for the keyboard class """
+        """ constructor for the KeyCode class """
         pass

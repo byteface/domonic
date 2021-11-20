@@ -781,18 +781,18 @@ class Namespaces:
             localname = None
             prefix = EMPTY_PREFIX
         # node = minidom.Element(qname, uri, prefix, localname)
-        print(qname, uri, prefix, localname)
+        # print(qname, uri, prefix, localname)
         from domonic.parsers import create_element
         # from domonic.html import create_element
         # node = Element(qname, uri, prefix, localname)
         node = create_element(qname)  #, uri, prefix, localname)
-        print( "NODE", node )
+        # print( "NODE", node )
         node.namespaceURI = uri
         node.prefix = prefix
         # node.ownerDocument = self.document
         node.parentNode = self.curNode  # self.document
-        print("THIS::::", self.curNode, node)
-        print("THIS::::", type(self.curNode), type(node))
+        # print("THIS::::", self.curNode, node)
+        # print("THIS::::", type(self.curNode), type(node))
         # _append_child(self.curNode, node)
         if isinstance(self.curNode, Document) and isinstance(node, Document):
             # NOTE - because the domonic Document is a tag. the first one needs to be the root
@@ -1042,3 +1042,4 @@ def makeBuilder(options):
         return ExpatBuilderNS(options)
     else:
         return ExpatBuilder(options)
+s

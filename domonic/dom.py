@@ -13,8 +13,6 @@ from domonic.events import Event, EventTarget, MouseEvent  # , KeyboardEvent, To
 from domonic.style import CSSStyleDeclaration as Style
 from domonic.geom import vec3
 
-# from domonic.javascript import *
-
 from domonic.webapi.url import URL
 from domonic.webapi.console import Console  # left here for legacy reasons. access via window module instead
 
@@ -43,6 +41,9 @@ class Node(EventTarget):
     ENTITY_REFERENCE_NODE: int = 5
     ENTITY_NODE: int = 6
     NOTATION_NODE: int = 12
+
+    # TODO - merge with html.tags
+    # __slots__ = ['args', 'baseURI', 'isConnected', 'namespaceURI', 'outerText', 'parentNode', 'prefix']
 
     def __init__(self, *args, **kwargs) -> None:
         self.args = args
@@ -147,7 +148,7 @@ class Node(EventTarget):
         except Exception as e:
             print('unable to update parent', e)
 
-    def _iterate(self, element, callback):
+    def _iterate(self, element, callback) -> None:
         '''
         private.
         currently used for querySelector
@@ -166,7 +167,7 @@ class Node(EventTarget):
             callback(element)
             nodes.extend(element.children)
 
-    def appendChild(self, item):
+    def appendChild(self, item) -> None:
         """ Adds a new child node, to an element, as the last child node """
         self.args = self.args + (item,)
         # return item  # causes max recursion when called chained
@@ -276,10 +277,11 @@ class Node(EventTarget):
             except Exception:
                 return None
 
-    @property
-    def nodeType(self):
-        """ Returns the node type of a node """
-        return self.ELEMENT_NODE
+    # @property
+    # def nodeType(self):
+    #     """ Returns the node type of a node """
+    #     return self.ELEMENT_NODE
+    nodeType: int = ELEMENT_NODE
 
     @property
     def nodeValue(self):
@@ -441,7 +443,6 @@ class Node(EventTarget):
         else:
             return None
 
-
     @property
     def nextSibling(self):
         """[returns the next sibling of the current node.]
@@ -455,7 +456,6 @@ class Node(EventTarget):
                         return None
                     else:
                         return self.parentNode.args[count + 1]
-
 
     def normalize(self):
         """ Normalize a node's value """
@@ -499,18 +499,6 @@ class Node(EventTarget):
         """ Sets the text content of a node and its descendants """
         self.args = (content,)
         return content
-
-    # def isSupported(self, feature, version):
-    #     """ Checks if a feature is supported """
-    #     return None
-
-    # def getUserData(self, key):
-    #     """ Returns the value of a user data item """
-    #     return None
-
-    # def setUserData(self, key, value):
-    #     """ Sets a user data item """
-    #     return None
 
     # def isSupported(self): return False #  🗑
     # getUserData() 🗑️
@@ -576,31 +564,24 @@ class ChildNode(Node):
 
 
 class Attr(Node):
-
     # https://developer.mozilla.org/en-US/docs/Web/API/Attr
-    # TODO - seems awash with deprecated / borrowed / overriden methods need to go through see what's actually needed
 
-    def __init__(self, name, value="", *args, **kwargs):
-        self.name = name
+    nodeType: int = Node.ATTRIBUTE_NODE
+    __slots__ = ('name', 'value')
+
+    def __init__(self, name: str, value="", *args, **kwargs) -> None:
+        self.name: str = name
         self.value = value
-        self.specified = False
-
-    # @property
-    # def specified(self):
-    #     return self.__specified
-
-    # @specified.setter
-    # def specified(self, value):
-    #     self.__specified = value
+        # self.nodeType: int = Node.ATTRIBUTE_NODE
 
     @property
-    def isId(self):
+    def isId(self) -> bool:
         if self.name == "id":
             return True
         else:
             return False
 
-    def getNamedItem(self, name):
+    def getNamedItem(self, name: str):
         """ Returns a specified attribute node from a NamedNodeMap """
         for item in self.parentNode.attributes:
             if item.name == name:
@@ -613,7 +594,7 @@ class Attr(Node):
     # def __setitem__(self, name, value):
     #     self.setNamedItem(name, value)
 
-    def removeNamedItem(self, name):
+    def removeNamedItem(self, name: str) -> bool:
         """ Removes a specified attribute node """
         for item in self.parentNode.attributes:
             if item.name == name:
@@ -621,7 +602,7 @@ class Attr(Node):
                 return True
         return False
 
-    def setNamedItem(self, name, value):
+    def setNamedItem(self, name: str, value) -> bool:
         """ Sets the specified attribute node (by name) """
         for item in self.parentNode.attributes:
             if item.name == name:
@@ -632,7 +613,6 @@ class Attr(Node):
 
 # from xml.dom.minidom import Attr
 from xml.dom.minidom import NamedNodeMap
-# NamedNodeMap = 
 
 '''
 class NamedNodeMap(object):
@@ -674,10 +654,10 @@ class NamedNodeMap(object):
         self.parentNode.kwargs['_' + name] = value
         return True
 
-    def __setitem__(self, name, value):
+    def __setitem__(self, name: str, value):
         self.setNamedItem(name, value)
 
-    def removeNamedItem(self, name):
+    def removeNamedItem(self, name: str):
         """ Removes a specified attribute node """
         for item in self.args:
             if item.name == name:
@@ -689,14 +669,14 @@ class NamedNodeMap(object):
         """ Returns the index'th item in the collection """
         return self.args[index]
 
-    def getNameItemNS(self, namespaceURI, localName):
+    def getNameItemNS(self, namespaceURI: str, localName: str):
         """ Returns a specified attribute node from a NamedNodeMap """
         for item in self.args:
             if item.namespaceURI == namespaceURI and item.localName == localName:
                 return item
         return None
 
-    def setNamedItemNS(self, namespaceURI, localName, value):
+    def setNamedItemNS(self, namespaceURI: str, localName: str, value):
         """ Sets the specified attribute node (by name) """
         for item in self.args:
             if item.namespaceURI == namespaceURI and item.localName == localName:
@@ -704,7 +684,7 @@ class NamedNodeMap(object):
                 return True
         return False
 
-    def removeNamedItemNS(self, namespaceURI, localName):
+    def removeNamedItemNS(self, namespaceURI: str, localName: str) -> bool:
         """ Removes a specified attribute node """
         for item in self.args:
             if item.namespaceURI == namespaceURI and item.localName == localName:
@@ -722,14 +702,14 @@ class DOMStringMap(object):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def get(self, name):
+    def get(self, name: str):
         """ Returns the value of the item with the specified name """
         for item in self.args:
             if item.name == name:
                 return item.value
         return None
 
-    def set(self, name, value):
+    def set(self, name: str, value):
         """ Sets the value of the item with the specified name """
         for item in self.args:
             if item.name == name:
@@ -737,7 +717,7 @@ class DOMStringMap(object):
                 return True
         return False
 
-    def delete(self, name):
+    def delete(self, name: str) -> bool:
         """ Deletes the item with the specified name """
         for item in self.args:
             if item.name == name:
@@ -772,7 +752,7 @@ class DOMTokenList(object):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def add(self, *args):
+    def add(self, *args) -> bool:
         """ Adds the given tokens to the list """
         for item in args:
             if item not in self.args:
@@ -780,7 +760,7 @@ class DOMTokenList(object):
                 return True
         return False
 
-    def remove(self, *args):
+    def remove(self, *args) -> bool:
         """ Removes the given tokens from the list """
         for item in args:
             if item in self.args:
@@ -804,17 +784,17 @@ class DOMTokenList(object):
         else:
             raise TypeError("force must be a boolean")
 
-    def contains(self, token):
+    def contains(self, token) -> bool:
         """ Returns true if the token is in the list, and false otherwise """
         if token in self.args:
             return True
         return False
 
-    def item(self, index):
+    def item(self, index: int):
         """ Returns the token at the specified index """
         return self.args[index]
 
-    def toString(self):
+    def toString(self) -> str:
         """ Returns a string containing all tokens in the list, with spaces separating each token """
         return " ".join(self.args)
 
@@ -851,10 +831,10 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
 
 class DocumentType(Node):
 
-    def __init__(self, name="html", publicId="", systemId=""):
-        self.name = name  # A DOMString, eg "html" for <!DOCTYPE HTML>.
-        self.publicId = publicId  # A DOMString, eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
-        self.systemId = systemId  # A DOMString, eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
+    def __init__(self, name: str="html", publicId: str="", systemId: str="") -> None:
+        self.name: str = name  # A DOMString, eg "html" for <!DOCTYPE HTML>.
+        self.publicId: str = publicId  # A DOMString, eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
+        self.systemId: str = systemId  # A DOMString, eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
         super().__init__()
 
     def internalSubset(self):
@@ -1284,7 +1264,7 @@ class RadioNodeList(NodeList):
     def __getitem__(self, index):
         return self.getElementsByName(self.name)[index]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.getElementsByName(self.name))
 
     @property
@@ -1629,9 +1609,15 @@ class Element(Node):
         """ Returns the width of an element, including padding """
         return self.style.width + self.style.paddingLeft + self.style.paddingRight
 
-    def contentEditable(self):
-        """ Sets or returns whether the content of an element is editable or not """
-        raise NotImplementedError
+    @property
+    def contentEditable(self) -> bool:
+        """ Sets or returns whether an element is editable """
+        is_editable = self.getAttribute('contenteditable')
+        return True if (is_editable == 'true' or is_editable == True) else False
+
+    @contentEditable.setter
+    def contentEditable(self, value: bool) -> None:
+        self.setAttribute('contenteditable', value)
 
     @property
     def dataset(self):
@@ -1815,7 +1801,7 @@ class Element(Node):
         #     self.insertAdjacentElement('afterend', text)
         pass
 
-    def isContentEditable(self):
+    def isContentEditable(self) -> bool:
         """Returns true if the content of an element is editable, otherwise false"""
         if self.getAttribute('contenteditable') == 'true':
             return True
@@ -2085,7 +2071,7 @@ class Element(Node):
         """
         self.setAttribute('title', newtitle)
 
-    def toString(self):
+    def toString(self) -> str:
         """ Converts an element to a string """
         return str(self)
 
@@ -2096,7 +2082,7 @@ class DOMImplementation(object):
         # self.__domImplementation = None
         pass
 
-    def createDocument(self, namespaceURI, qualifiedName, doctype):
+    def createDocument(self, namespaceURI: str, qualifiedName: str, doctype: str):
         if namespaceURI is None:
             namespaceURI = ''
         if qualifiedName is None:
@@ -2110,7 +2096,7 @@ class DOMImplementation(object):
         d.doctype = doctype
         return d
 
-    def createDocumentType(self, qualifiedName, publicId, systemId):
+    def createDocumentType(self, qualifiedName: str, publicId: str, systemId: str) -> DocumentType:
         """[creates a DocumentType node]
 
         Args:
@@ -2139,52 +2125,56 @@ class DOMImplementation(object):
 
 class ProcessingInstruction(Node):
 
-    def __init__(self, target, data):
+    nodeType: int = Node.PROCESSING_INSTRUCTION_NODE
+    __slots__ = ('target', 'data')
+
+    def __init__(self, target, data) -> None:
+        super().__init__()
         self.target = target
         self.data = data
 
-    def toString(self):
+    def toString(self) -> str:
         return f'<?{self.target} {self.data}?>'
+    __str__ = toString
 
-    @property
-    def nodeType(self):
-        return Node.PROCESSING_INSTRUCTION_NODE
-
-    def __str__(self):
-        return f'<?{self.target} {self.data}?>'
+    # @property
+    # def nodeType(self) -> int:
+    #     return Node.PROCESSING_INSTRUCTION_NODE
 
 
 class Comment(Node):
 
-    def __init__(self, data):
+    nodeType: int = Node.COMMENT_NODE
+    __slots__ = ('data')
+
+    def __init__(self, data) -> None:
         self.data = data
         super().__init__()
 
-    def toString(self):
+    def toString(self) -> str:
         return f'<!--{self.data}-->'
+    __str__ = toString
 
-    @property
-    def nodeType(self):
-        return Node.COMMENT_NODE
-
-    def __str__(self):
-        return f'<!--{self.data}-->'
+    # @property
+    # def nodeType(self) -> int:
+    #     return Node.COMMENT_NODE
 
 
 class CDATASection(Node):
 
-    def __init__(self, data):
+    nodeType: int = Node.CDATA_SECTION_NODE
+    __slots__ = ('data')
+
+    def __init__(self, data) -> None:
         self.data = data
 
-    def toString(self):
+    def toString(self) -> str:
         return f'<![CDATA[{self.data}]]>'
+    __str__ = toString
 
-    @property
-    def nodeType(self):
-        return Node.CDATA_SECTION_NODE
-
-    def __str__(self):
-        return f'<![CDATA[{self.data}]]>'
+    # @property
+    # def nodeType(self) -> int:
+    #     return Node.CDATA_SECTION_NODE
 
 
 class AbastractRange(object):
@@ -2252,7 +2242,7 @@ class AbastractRange(object):
     def surroundContents(self, newParent):
         raise NotImplementedError
 
-    def toString(self):
+    def toString(self) -> str:
         raise NotImplementedError
 
     def comparePoint(self, refNode, offset):
@@ -2364,7 +2354,7 @@ class Range(AbastractRange):
     def createContextualFragment(self, fragment):
         raise NotImplementedError
 
-    def toString(self):
+    def toString(self) -> str:
         raise NotImplementedError
 
 
@@ -2827,9 +2817,10 @@ class Document(Element):
         """ Returns a collection of all <a> and <area> elements in the document that have a href attribute """
         return self.querySelectorAll('a')
 
-    @property
-    def nodeType(self):
-        return Node.DOCUMENT_NODE
+    # @property
+    # def nodeType(self):
+    #     return Node.DOCUMENT_NODE
+    nodeType: int = Node.DOCUMENT_NODE
 
     def normalizeDocument(self):  # TODO - test
         """ Removes empty Text nodes, and joins adjacent nodes """
@@ -2957,10 +2948,10 @@ class Document(Element):
 class Location():
     # TODO - move this to the window class and remove all domonic.javascript refs in this file
 
-    def __init__(self, url: str = None, *args, **kwargs):
+    def __init__(self, url: str = None, *args, **kwargs) -> None:
         self.href = url
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.href
 
     # def __repr__(self):
@@ -3011,9 +3002,10 @@ class DocumentFragment(Node):
         """ Replaces the childNodes of the DocumentFragment object. """
         self.content.replaceChild(newChildren)
 
-    @property
-    def nodeType(self) -> int:
-        return Node.DOCUMENT_FRAGMENT_NODE
+    # @property
+    # def nodeType(self) -> int:
+    #     return Node.DOCUMENT_FRAGMENT_NODE
+    nodeType: int = Node.DOCUMENT_FRAGMENT_NODE
 
     def __str__(self) -> str:
         return ''.join([str(a) for a in self.args])
@@ -3076,10 +3068,10 @@ class EntityReference(Node):
     and does not have any child nodes.
     """
 
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         self.args = args
 
-    def __str__(self):
+    def __str__(self) -> str:
         return ''.join([str(a) for a in self.args])
 
     @staticmethod
@@ -3095,19 +3087,19 @@ class EntityReference(Node):
 
 class Entity(Node):
 
-    def __init__(self, *args):
+    def __init__(self, *args) -> None:
         self.args = args
 
-    def __str__(self):
+    def __str__(self) -> str:
         return ''.join([str(a) for a in self.args])
 
     @staticmethod
-    def fromName(entityName: str):
+    def fromName(entityName: str) -> str:
         """ Returns the entity name corresponding to the given character. """
         return chr(ord(entityName))
 
     @staticmethod
-    def fromChar(char: str):
+    def fromChar(char: str) -> str:
         """ Returns the character corresponding to the given entity name. """
         return ord(char)
 
@@ -3158,9 +3150,10 @@ class Text(CharacterData):
         self.args = (data,)
         return self.args[0]
 
-    @property
-    def nodeType(self):
-        return Node.TEXT_NODE
+    # @property
+    # def nodeType(self):
+    #     return Node.TEXT_NODE
+    nodeType: int = Node.TEXT_NODE
 
     @property  # TODO - is this correct?
     def firstChild(self):
@@ -3182,7 +3175,7 @@ class Text(CharacterData):
     # def textContent(self, content):
     #     self.nodeValue = content
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.textContent)
 
     # def __repr__(self):
@@ -3339,14 +3332,14 @@ class DOMPoint(vec3):
     def fromPoint(point) -> 'DOMPoint':
         return DOMPoint(point.x, point.y, point.z, point.w)
 
-    def __init__(self, x, y, z=0, w=1):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.w = w
+    def __init__(self, x: float, y: float, z: float=0, w: float=1) -> None:
+        self.x: float = x
+        self.y: float = y
+        self.z: float = z
+        self.w: float = w
         super().__init__(x, y, z, w)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '({}, {}, {}, {})'.format(self.x, self.y, self.z, self.w)
 
     def __repr__(self):
@@ -3360,14 +3353,14 @@ class DOMPointReadOnly(DOMPoint):
     def fromPoint(point) -> 'DOMPointReadOnly':
         return DOMPointReadOnly(point.x, point.y, point.z, point.w)
 
-    def __init__(self, x, y, z=0, w=1):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.w = w
+    def __init__(self, x: float, y: float, z: float=0, w: float=1) -> None:
+        self.x: float = x
+        self.y: float = y
+        self.z: float = z
+        self.w: float = w
         super().__init__(x, y, z, w)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '({}, {}, {}, {})'.format(self.x, self.y, self.z, self.w)
 
     def __repr__(self):
@@ -3938,10 +3931,6 @@ class TreeWalker():
 # ImageBitmap
 # ImageBitmapRenderingContext
 # ImageData
-# KeyPair
-# KeyPairGenerator
-# KeyPairGeneratorResult
-# KeyType
 # MutationObserver
 # MutationRecord
 # OverconstrainedError
@@ -4114,7 +4103,7 @@ class Sanitizer():
         # print(type(frag))
         return frag
 
-    def sanitizeToString(self, frag):
+    def sanitizeToString(self, frag) -> str:
         """ Returns a sanitized String from an input, removing any offending elements or attributes. """
         return str(self.sanitize(frag))
 
@@ -4234,6 +4223,26 @@ class HTMLEmbedElement(HTMLElement):
 global document
 document = Document
 console = Console  # legacy. should access via window
+
+
+# Considered obsolete dom classes ----
+# DOMConfiguration
+# DOMErrorHandler
+# DOMImplementationList
+# DOMImplementationRegistry
+# DOMImplementationSource
+# DOMLocator
+# DOMObject
+# DOMSettableTokenList
+# DOMUserData
+# ElementTraversal
+# Entity
+# EntityReference
+# NameList
+# Notation
+# TypeInfo
+# UserDataHandler
+
 
 '''
 # self.screen = type('screen', (DOM,), {'name':'screen'})

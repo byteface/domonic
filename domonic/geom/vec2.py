@@ -11,16 +11,16 @@
 
 """
 import math
-from domonic.javascript import Math
+# import operator
 
 
 class vec2():
     """[vec2]
     """
 
-    def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
+    def __init__(self, x: float = 0, y: float = 0):
+        self.x: float = x
+        self.y: float = y
 
     def __mul__(self, other):
         """[vec2] * [number] or [vec2] * [vec2]]

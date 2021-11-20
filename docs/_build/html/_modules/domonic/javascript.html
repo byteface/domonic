@@ -51,7 +51,7 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">signal</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span class="c1"># import typing</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">gc</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
@@ -62,8 +62,10 @@
 <span class="kn">import</span> <span class="nn">array</span>
 <span class="kn">import</span> <span class="nn">struct</span>
 
+<span class="kn">from</span> <span class="nn">domonic.webapi.url</span> <span class="kn">import</span> <span class="n">URL</span><span class="p">,</span> <span class="n">URLSearchParams</span>  <span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/URL</span>
 
-<div class="viewcode-block" id="function"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.function">[docs]</a><span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="n">python_str</span><span class="p">):</span>
+
+<div class="viewcode-block" id="function"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.function">[docs]</a><span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="n">python_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;[evals a string i.e.</span>
 
 <span class="sd">    sup = function(&#39;&#39;&#39;print(hi)&#39;&#39;&#39;)</span>
@@ -80,10 +82,10 @@
 
 
 <span class="c1"># TODO - list all javascript keywords to python keywords</span>
-<span class="n">true</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">false</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">null</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">undefined</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">true</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">false</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">null</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">undefined</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="c1"># globalThis # TODO - do i need to use inpect? or is globals() ok?</span>
 
 
@@ -91,13 +93,13 @@
     <span class="sd">&quot;&quot;&quot;[Creates a Boolean Object.</span>
 <span class="sd">        Warning this is NOT a boolean type. for that use Global.Boolean()]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">Boolean</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Global</span><span class="o">.</span><span class="n">Boolean</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">Object</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[Creates a Javascript-like Object in python]</span>
 
 <span class="sd">        Args:</span>
@@ -621,21 +623,21 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Map requires a list or dict.&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span>
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
@@ -644,7 +646,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="Map.delete"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="Map.delete"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns true if an element in the Map object existed and has been removed,</span>
 <span class="sd">        or false if the element does not exist. Map.prototype.has(key) will return false afterwards. &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -654,15 +656,15 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Map.get"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Map.get"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns the value associated to the key, or undefined if there is none. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Map.has"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<div class="viewcode-block" id="Map.has"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns a boolean asserting whether a value has been associated to the key in the Map object or not.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span></div>
 
-<div class="viewcode-block" id="Map.set"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Map.set"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Map.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the value for the key in the Map object. Returns the Map object. &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
@@ -693,6 +695,9 @@
 
     <span class="c1"># def forEach(self, callbackFn[, thisArg]):</span>
     <span class="c1">#     raise NotImplementedError</span>
+            <span class="c1"># TODO - is this supposed to pass count like Node list? i.e.</span>
+        <span class="c1"># for i in range(len(self.args)):</span>
+            <span class="c1"># func(self.args[i], i, self.args)</span>
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ordered_dict</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">ordered_dict</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
@@ -783,20 +788,18 @@
 <div class="viewcode-block" id="Math"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Math">[docs]</a><span class="k">class</span> <span class="nc">Math</span><span class="p">(</span><span class="n">Object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Math class that mirrors javascript implementation.</span>
 
-<span class="sd">    i.e. you can pass strings and it will also work</span>
-<span class="sd">    Math.abs(&#39;-1&#39;)</span>
+<span class="sd">    i.e. you can pass strings and it will also work, Math.abs(&#39;-1&#39;)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># CONSTANTS</span>
-    <span class="n">PI</span> <span class="o">=</span> <span class="mf">3.141592653589793</span>
-    <span class="n">E</span> <span class="o">=</span> <span class="mf">2.718281828459045</span>
-    <span class="n">LN2</span> <span class="o">=</span> <span class="mf">0.6931471805599453</span>
-    <span class="n">LN10</span> <span class="o">=</span> <span class="mf">2.302585092994046</span>
-    <span class="n">LOG2E</span> <span class="o">=</span> <span class="mf">1.4426950408889634</span>
-    <span class="n">LOG10E</span> <span class="o">=</span> <span class="mf">0.4342944819032518</span>
-    <span class="n">SQRT1_2</span> <span class="o">=</span> <span class="mf">0.7071067811865476</span>
-    <span class="n">SQRT2</span> <span class="o">=</span> <span class="mf">1.4142135623730951</span>
+    <span class="n">PI</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3.141592653589793</span>
+    <span class="n">E</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.718281828459045</span>
+    <span class="n">LN2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6931471805599453</span>
+    <span class="n">LN10</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.302585092994046</span>
+    <span class="n">LOG2E</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4426950408889634</span>
+    <span class="n">LOG10E</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.4342944819032518</span>
+    <span class="n">SQRT1_2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7071067811865476</span>
+    <span class="n">SQRT2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4142135623730951</span>
 
     <span class="k">def</span> <span class="nf">_force_number</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[private decorator to make Math behave like javascript and turn strings, bools and None into numbers]]</span>
@@ -841,160 +844,175 @@
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the absolute value of x &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[Returns the absolute value of a number.]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x ([float]): [number]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [float]: [absolute value]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">acos</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the arccosine of x, in radians &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">acos</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[Returns the arccosine (in radians) of a number.]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x ([float]): [number]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [float]: [arccosine]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arccosine of x &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arccosine of a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">asin</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the arcsine of x, in radians &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">asin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the arcsine (in radians) of a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">asinh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arcsine of x &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">asinh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arcsine of a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">asinh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">atan</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the arctangent of x as a numeric value between -PI/2 and PI/2 radians &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">atan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the arctangent (in radians) of a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">atan2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the arctangent of the quotient of its arguments &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">atan2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the arctangent of the quotient of its arguments. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">atanh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arctangent of x &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">atanh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic arctangent of a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">atanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">cbrt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the cubic root of x &quot;&quot;&quot;</span>
-        <span class="c1"># return math.cbrt(x)</span>
-        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">cbrt</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the cube root of a number. &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">cbrt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">ceil</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns x, rounded upwards to the nearest integer &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">ceil</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the smallest integer greater than or equal to a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">cos</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the cosine of x (x is in radians) &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">cos</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the cosine of a number. (x is in radians) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic cosine of x &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic cosine of a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the value of Ex &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the value of E^x. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">floor</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns x, rounded downwards to the nearest integer &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">floor</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the largest integer less than or equal to a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the natural logarithm (base E) of x &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the natural logarithm (base E) of a number. &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the number with the highest value &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the largest of two numbers. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the number with the lowest value &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the smallest of two numbers. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">random</span><span class="p">():</span>
-        <span class="sd">&quot;&quot;&quot; Returns a random number between 0 and 1 &quot;&quot;&quot;</span>
-        <span class="c1"># return math.random(x)</span>
+    <span class="k">def</span> <span class="nf">random</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns a random number between 0 and 1. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Rounds x to the nearest integer &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">round</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the value of a number rounded to its nearest integer. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the value of x to the power of y &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">pow</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the value of a number raised to a power. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">sin</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the sine of x (x is in radians) &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">sin</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the sine of a number. (x is in radians) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic sine of x &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic sine of a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the square root of x &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the square root of a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">tan</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the tangent of an angle &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">tan</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the tangent of a number. (x is in radians) &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic tangent of a number &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the hyperbolic tangent of a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@_force_number</span>
-    <span class="k">def</span> <span class="nf">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the integer part of a number (x) &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Returns the integer part of a number. &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="c1"># TODO - test</span>
@@ -1085,7 +1103,7 @@
         <span class="nb">eval</span><span class="p">(</span><span class="n">pythonstring</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Global.isFinite"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Global.isFinite">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">isFinite</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>  <span class="c1"># TODO - test</span>
+    <span class="k">def</span> <span class="nf">isFinite</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># TODO - test</span>
         <span class="sd">&quot;&quot;&quot; Returns true if x is a finite number &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
@@ -2272,6 +2290,9 @@
         <span class="c1"># written by .ai (https://6b.eleuther.ai/)</span>
         <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+        <span class="c1"># TODO - is this supposed to pass count like Node list? i.e.</span>
+        <span class="c1"># for i in range(len(self.args)):</span>
+            <span class="c1"># func(self.args[i], i, self.args)</span>
 
 <div class="viewcode-block" id="Array.keys"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Array.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Returns a Array Iteration Object, containing the keys of the original array &quot;&quot;&quot;</span>
@@ -2962,7 +2983,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.includes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.includes">[docs]</a>    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchValue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="String.includes"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.includes">[docs]</a>    <span class="k">def</span> <span class="nf">includes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchValue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[returns true if the specified string is found within the calling String object,]</span>
 
 <span class="sd">        Args:</span>
@@ -2974,7 +2995,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">searchValue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">position</span><span class="p">:]</span></div>
 
-<div class="viewcode-block" id="String.search"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchValue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="String.search"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searchValue</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[returns true if the specified string is found within the calling String object,]</span>
 <span class="sd">        starting at the specified position.</span>
 <span class="sd">        Args:</span>
@@ -3350,322 +3371,6 @@
     <span class="c1"># Searches the match in given string and returns the index the pattern found in the string.</span>
     <span class="c1"># def [@@split]()</span>
     <span class="c1"># Splits given string into an array by separating the strin</span>
-
-
-<span class="c1"># https://developer.mozilla.org/en-US/docs/Web/API/URL</span>
-
-<div class="viewcode-block" id="URL"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URL">[docs]</a><span class="k">class</span> <span class="nc">URL</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; a-tag extends from URL &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__update__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># print( &quot;update URL:&quot;, type(self), self  )</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># make obj with all old props</span>
-            <span class="n">new</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">scheme</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hostname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">hostname</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">port</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># self.url.hostname</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># self.url.hash</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;search&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1"># self.url.hash</span>
-
-            <span class="c1"># update it with all the new ones</span>
-            <span class="n">new</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hostname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">href</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathname</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hash</span>  <span class="c1"># self.hash</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;search&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search</span>  <span class="c1"># self.url.query</span>
-            <span class="n">new</span><span class="p">[</span><span class="s1">&#39;_searchParams&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_searchParams</span>  <span class="c1"># URLSearchParams(self.url.query)</span>
-            <span class="c1"># NOTE - rebuild happening here</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span>
-                <span class="n">new</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;://&quot;</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;host&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;hash&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="s1">&#39;search&#39;</span><span class="p">])</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">href</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
-
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># as e:</span>
-            <span class="c1"># print(&#39;fails on props called by init as they dont exist yet&#39;)</span>
-            <span class="c1"># print(e)</span>
-            <span class="k">pass</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># TODO - relative to</span>
-        <span class="sd">&quot;&quot;&quot;URL</span>
-
-<span class="sd">        builds a url</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            url (str): a url</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlsplit</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">href</span> <span class="o">=</span> <span class="n">url</span>  <span class="c1"># self.url.geturl()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">scheme</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">hostname</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">port</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">hostname</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pathname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hash</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">search</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">query</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_searchParams</span> <span class="o">=</span> <span class="n">URLSearchParams</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">searchParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_searchParams</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="p">)</span>
-
-    <span class="c1"># def toJson</span>
-
-    <span class="c1"># @property</span>
-    <span class="c1"># def href(self):</span>
-    <span class="c1"># TODO - check js vs tag. does js version remove query?. if so detect self.</span>
-    <span class="c1">#     return self.href</span>
-
-    <span class="c1"># @href.setter</span>
-    <span class="c1"># def href(self, href:str):</span>
-    <span class="c1">#     self.url = href</span>
-    <span class="c1">#     self.href = href</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__protocol</span>
-
-    <span class="nd">@protocol</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">protocol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__protocol</span> <span class="o">=</span> <span class="n">p</span>
-        <span class="c1"># if self.ready : self.__update__() # TODO - this instead of silent err?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">hostname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hostname</span>
-
-    <span class="nd">@hostname</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">hostname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">h</span><span class="p">:</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__hostname</span> <span class="o">=</span> <span class="n">h</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__port</span>
-
-    <span class="nd">@port</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__port</span> <span class="o">=</span> <span class="n">p</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span>
-
-    <span class="nd">@host</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span>
-        <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">h</span><span class="p">:</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__host</span> <span class="o">=</span> <span class="n">h</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span> <span class="o">=</span> <span class="n">h</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">p</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">pathname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pathname</span>
-
-    <span class="nd">@pathname</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">pathname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__pathname</span> <span class="o">=</span> <span class="n">p</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;&quot; hash Sets or returns the anchor part (#) of a URL &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;#&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="c1"># return &#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hash</span>
-
-    <span class="nd">@hash</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__hash</span> <span class="o">=</span> <span class="n">h</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__update__</span><span class="p">()</span>
-
-    <span class="c1"># @property</span>
-    <span class="c1"># def origin(self):</span>
-        <span class="sd">&#39;&#39;&#39;# origin    Returns the protocol, hostname and port number of a URL Location&#39;&#39;&#39;</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">href</span><span class="p">)</span></div>
-
-    <span class="c1"># NOTE - node -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --</span>
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def domainToASCII(domain: str):</span>
-    <span class="c1">#     &quot;&quot;&quot;[It returns the Punycode ASCII serialization of the domain.</span>
-    <span class="c1">#     If domain is an invalid domain, the empty string is returned.]</span>
-
-    <span class="c1">#     Args:</span>
-    <span class="c1">#         domain (str): [description]</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     pass</span>
-
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def domainToUnicode(domain: str):</span>
-    <span class="c1">#     &quot;&quot;&quot;[returns the Unicode serialization of the domain.</span>
-    <span class="c1">#     If the domain is invalid, the empty string is returned]</span>
-
-    <span class="c1">#     Args:</span>
-    <span class="c1">#         domain (str): [description]</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     pass</span>
-
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def fileURLToPath(url: str):</span>
-    <span class="c1">#     &quot;&quot;&quot;[summary]</span>
-
-    <span class="c1">#     Args:</span>
-    <span class="c1">#         url (str): [description]</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     pass</span>
-
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def format(URL, options):</span>
-    <span class="c1">#     &quot;&quot;&quot;[summary]</span>
-
-    <span class="c1">#     Args:</span>
-    <span class="c1">#         URL ([type]): [description]</span>
-    <span class="c1">#         options ([type]): [description]</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     pass</span>
-
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def pathToFileURL(path: str):</span>
-    <span class="c1">#     &quot;&quot;&quot;[summary]</span>
-
-    <span class="c1">#     Args:</span>
-    <span class="c1">#         path (str): [description]</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     pass</span>
-
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def urlToHttpOptions(url: str):</span>
-    <span class="c1">#     &quot;&quot;&quot;[summary]</span>
-
-    <span class="c1">#     Args:</span>
-    <span class="c1">#         url (str): [description]</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     pass</span>
-
-
-<div class="viewcode-block" id="URLSearchParams"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams">[docs]</a><span class="k">class</span> <span class="nc">URLSearchParams</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;[utility methods to work with the query string of a URL]</span>
-
-<span class="sd">        created with help of https://6b.eleuther.ai/</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">paramString</span><span class="p">):</span>  <span class="c1"># , **paramsObj):</span>
-        <span class="sd">&quot;&quot;&quot;[Returns a URLSearchParams object instance.]</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            paramString ([type]): [ i.e. q=URLUtils.searchParams&amp;topic=api]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO - escape</span>
-        <span class="c1"># import ast</span>
-        <span class="c1"># TODO - dont think i can do this cant urls params have duplicate keys?</span>
-        <span class="c1"># self.params = ast.literal_eval(paramString)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">paramString</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">paramString</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;?&#39;</span><span class="p">):</span>
-                <span class="n">paramString</span> <span class="o">=</span> <span class="n">paramString</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">paramString</span><span class="p">)]</span>
-
-            <span class="kn">import</span> <span class="nn">urllib</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">parse_qs</span><span class="p">(</span><span class="n">paramString</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">paramString</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">paramString</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">paramString</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">key</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">paramString</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Malformed paramString.  Must be a string or a dict with dict like items. Got: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">paramString</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>  <span class="c1"># dir(self.params.items()):</span>
-            <span class="c1"># if not attr.startswith(&quot;__&quot;):</span>
-            <span class="k">yield</span> <span class="n">attr</span>
-
-<div class="viewcode-block" id="URLSearchParams.append"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Appends a specified key/value pair as a new search parameter &quot;&quot;&quot;</span>
-        <span class="c1"># TODO - ordereddict?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># [key]=value</span></div>
-
-<div class="viewcode-block" id="URLSearchParams.delete"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Deletes the given search parameter, and its associated value, from the list of all search parameters. &quot;&quot;&quot;</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
-
-<div class="viewcode-block" id="URLSearchParams.has"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.has">[docs]</a>    <span class="k">def</span> <span class="nf">has</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a Boolean indicating if such a given parameter exists. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span></div>
-
-<div class="viewcode-block" id="URLSearchParams.entries"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.entries">[docs]</a>    <span class="k">def</span> <span class="nf">entries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing iteration through all key/value pairs contained in this object. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="URLSearchParams.forEach"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.forEach">[docs]</a>    <span class="k">def</span> <span class="nf">forEach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Allows iteration through all values contained in this object via a callback function. &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">func</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="URLSearchParams.keys"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing iteration through all keys of the key/value pairs contained in this object. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="URLSearchParams.get"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the first value associated with the given search parameter. &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="URLSearchParams.sort"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Sorts all key/value pairs, if any, by their keys. &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="URLSearchParams.values"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns an iterator allowing iteration through all values of the</span>
-<span class="sd">        key/value pairs contained in this object. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="URLSearchParams.toString"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns a string containing a query string suitable for use in a URL. &quot;&quot;&quot;</span>
-        <span class="c1"># return &#39;&amp;&#39;.join([str(x) for x in self.params])</span>
-        <span class="k">return</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">doseq</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-        <span class="c1"># return str(self.params)</span>
-
-<div class="viewcode-block" id="URLSearchParams.set"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Sets the value associated with a given search parameter to the given value.</span>
-<span class="sd">        If there are several values, the others are deleted. &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="URLSearchParams.getAll"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.URLSearchParams.getAll">[docs]</a>    <span class="k">def</span> <span class="nf">getAll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns all the values associated with a given search parameter. &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">doseq</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-
 
 <span class="k">def</span> <span class="nf">ToInt32</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">v</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span>
@@ -4311,7 +4016,7 @@
                     <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Float64Array&#39;</span><span class="p">,</span> <span class="s1">&#39;_pack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">packF64</span><span class="p">,</span> <span class="s1">&#39;_unpack&#39;</span><span class="p">:</span> <span class="n">__byteutils__</span><span class="o">.</span><span class="n">unpackF64</span><span class="p">})</span>
 <span class="n">Float64Array</span><span class="o">.</span><span class="n">BYTES_PER_ELEMENT</span> <span class="o">=</span> <span class="mi">8</span>
 
-<span class="c1"># BigInt64Array = type(&#39;BigInt64Array&#39;, </span>
+<span class="c1"># BigInt64Array = type(&#39;BigInt64Array&#39;,</span>
 <span class="c1"># (TypedArray,), {&#39;name&#39;: &#39;BigInt64Array&#39;, &#39;_pack&#39;: __byteutils__.packI64, &#39;_unpack&#39;: __byteutils__.unpackI64})</span>
 <span class="c1"># BigInt64Array.BYTES_PER_ELEMENT = 8</span>
 
@@ -4320,7 +4025,6 @@
 <span class="c1"># BigUint64Array.BYTES_PER_ELEMENT = 8</span>
 
 
-<span class="c1"># TODO - error package in the webapi?</span>
 <span class="c1"># TODO - test</span>
 <div class="viewcode-block" id="Error"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.Error">[docs]</a><span class="k">class</span> <span class="nc">Error</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Raise Errors &#39;&#39;&#39;</span>

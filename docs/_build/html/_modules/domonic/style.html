@@ -131,22 +131,22 @@
 <span class="sd">    CSSViewportRule</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">UNKNOWN_RULE</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">STYLE_RULE</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">CHARSET_RULE</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">IMPORT_RULE</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">MEDIA_RULE</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="n">FONT_FACE_RULE</span> <span class="o">=</span> <span class="mi">5</span>
-    <span class="n">PAGE_RULE</span> <span class="o">=</span> <span class="mi">6</span>
-    <span class="n">NAMESPACE_RULE</span> <span class="o">=</span> <span class="mi">7</span>
-    <span class="n">KEYFRAMES_RULE</span> <span class="o">=</span> <span class="mi">8</span>
-    <span class="n">KEYFRAME_RULE</span> <span class="o">=</span> <span class="mi">9</span>
-    <span class="n">COUNTER_STYLE_RULE</span> <span class="o">=</span> <span class="mi">10</span>
-    <span class="n">SUPPORTS_RULE</span> <span class="o">=</span> <span class="mi">11</span>
-    <span class="n">FONT_FEATURE_VALUES_RULE</span> <span class="o">=</span> <span class="mi">12</span>
-    <span class="n">VIEWPORT_RULE</span> <span class="o">=</span> <span class="mi">13</span>
-    <span class="n">SUPPORTS_CONDITION_RULE</span> <span class="o">=</span> <span class="mi">14</span>
-    <span class="n">DOCUMENT_RULE</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="n">UNKNOWN_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">STYLE_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">CHARSET_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">IMPORT_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">MEDIA_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">FONT_FACE_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">PAGE_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">NAMESPACE_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="n">KEYFRAMES_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span>
+    <span class="n">KEYFRAME_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9</span>
+    <span class="n">COUNTER_STYLE_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">SUPPORTS_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">11</span>
+    <span class="n">FONT_FEATURE_VALUES_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">VIEWPORT_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">13</span>
+    <span class="n">SUPPORTS_CONDITION_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">14</span>
+    <span class="n">DOCUMENT_RULE</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parentStyleSheet</span> <span class="o">=</span> <span class="kc">None</span>
@@ -181,15 +181,15 @@
 <span class="sd">    it is considered a live object, as the content can change over time.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-<div class="viewcode-block" id="CSSRuleList.length"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSRuleList.length">[docs]</a>    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CSSRuleList.length"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSRuleList.length">[docs]</a>    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Returns an integer representing the number of CSSRule objects in the collection.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="CSSRuleList.item"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSRuleList.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="CSSRuleList.item"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSRuleList.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Gets a single CSSRule.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
@@ -199,7 +199,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cssRules</span><span class="p">():</span>  <span class="c1"># -&gt; &#39;CSSStyleRuleList&#39;:</span>
@@ -214,11 +214,11 @@
 <span class="sd">        the ownerRule property returns the corresponding CSSImportRule; otherwise, this property&#39;s value is null.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-<div class="viewcode-block" id="CSSStyleSheet.deleteRule"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSStyleSheet.deleteRule">[docs]</a>    <span class="k">def</span> <span class="nf">deleteRule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="CSSStyleSheet.deleteRule"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSStyleSheet.deleteRule">[docs]</a>    <span class="k">def</span> <span class="nf">deleteRule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Deletes the rule at the specified index into the stylesheet&#39;s rule list.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="CSSStyleSheet.insertRule"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSStyleSheet.insertRule">[docs]</a>    <span class="k">def</span> <span class="nf">insertRule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="CSSStyleSheet.insertRule"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSStyleSheet.insertRule">[docs]</a>    <span class="k">def</span> <span class="nf">insertRule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Inserts a new rule at the specified position in the stylesheet,</span>
 <span class="sd">        given the textual representation of the rule.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
@@ -240,14 +240,14 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="c1"># Legacy methods</span>
-<div class="viewcode-block" id="CSSStyleSheet.addRule"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSStyleSheet.addRule">[docs]</a>    <span class="k">def</span> <span class="nf">addRule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectorText</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="CSSStyleSheet.addRule"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSStyleSheet.addRule">[docs]</a>    <span class="k">def</span> <span class="nf">addRule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selectorText</span><span class="p">,</span> <span class="n">style</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply</span>
 <span class="sd">        to the matching elements.</span>
 <span class="sd">        This differs from insertRule(), which takes the textual representation of the entire rule as a single string.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="CSSStyleSheet.removeRule"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSStyleSheet.removeRule">[docs]</a>    <span class="k">def</span> <span class="nf">removeRule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<div class="viewcode-block" id="CSSStyleSheet.removeRule"><a class="viewcode-back" href="../../packages/style.html#domonic.style.CSSStyleSheet.removeRule">[docs]</a>    <span class="k">def</span> <span class="nf">removeRule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Functionally identical to deleteRule();</span>
 <span class="sd">        removes the rule at the specified index from the stylesheet&#39;s rule list.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>

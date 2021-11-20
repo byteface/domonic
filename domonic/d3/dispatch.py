@@ -1,5 +1,5 @@
 """
-    domonic.d3
+    domonic.d3.dispatch
     ===================================
 
 """
@@ -36,10 +36,10 @@ def parseTypenames(typenames, types):
 
 class Dispatch():
 
-    def __init__(self, _):
+    def __init__(self, _) -> None:
         self._ = _
 
-    def on(self, typename, callback=None, *args):
+    def on(self, typename: str, callback=None, *args):
         _ = self._
         T = parseTypenames(str(typename), _)
         t = None
@@ -108,7 +108,6 @@ class Dispatch():
                 return c['value']
 
     def set(self, type, name, callback):
-
         for i, t in enumerate(type):
             if t['name'] == name:
                 t = noop

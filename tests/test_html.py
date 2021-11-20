@@ -900,7 +900,7 @@ class TestCase(unittest.TestCase):
         with d:
             with head():
                 with title():
-                    text('Hello World')
+                    Text('Hello World')
             with body():
                 with div(_class="container"):
                     with div(_class="row"):

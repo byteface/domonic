@@ -3,7 +3,7 @@
     ====================================
     snippets etc
 """
-import typing
+# import typing
 import random
 from re import sub
 from itertools import chain, islice
@@ -311,7 +311,7 @@ class Utils(object):
         return front + mid + end
 
     @staticmethod
-    def truncate(text='', length: int = 0) -> str:
+    def truncate(text: str='', length: int = 0) -> str:
         """[truncates a string and appends 3 dots]
 
         Args:
@@ -327,7 +327,7 @@ class Utils(object):
             return text + "..."
 
     @staticmethod
-    def digits(text='') -> str:
+    def digits(text: str='') -> str:
         """[takes a string of mix of digits and letters and returns a string of digits]
 
         Args:
@@ -349,7 +349,7 @@ class Utils(object):
                 raise ValueError("text must be a string")
 
     @staticmethod
-    def has_internet(url='http://www.google.com/', timeout=5):
+    def has_internet(url: str='http://www.google.com/', timeout: int=5) -> bool:
         """[check if you have internet connection]
 
         Args:
@@ -368,7 +368,7 @@ class Utils(object):
             return False
 
     @staticmethod
-    def is_nix():
+    def is_nix() -> bool:
         """[check if the system is a nix based system]
 
         Returns:
@@ -378,7 +378,7 @@ class Utils(object):
         return os.name == "posix"
 
     @staticmethod
-    def is_mac():
+    def is_mac() -> bool:
         """[check if the system is a mac]
 
         Returns:
@@ -388,7 +388,7 @@ class Utils(object):
         return sys.platform == "darwin"
 
     @staticmethod
-    def is_windows():
+    def is_windows() -> bool:
         """[check if the system is a windows]
 
         Returns:
@@ -398,7 +398,7 @@ class Utils(object):
         return os.name == "nt"
 
     @staticmethod
-    def is_linux():
+    def is_linux() -> bool:
         """[check if the system is a linux]
 
         Returns:

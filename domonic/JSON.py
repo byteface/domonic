@@ -175,7 +175,7 @@ class JSON(object):
     # def purify # remove all the data leaving just the data structure/schema
 
     @staticmethod
-    def is_JSON(json: str):
+    def is_JSON(json: str) -> bool:
         if type(json) != str:
             return False
 
