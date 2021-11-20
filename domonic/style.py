@@ -98,22 +98,22 @@ class CSSRule:
     CSSViewportRule
     """
 
-    UNKNOWN_RULE = 0
-    STYLE_RULE = 1
-    CHARSET_RULE = 2
-    IMPORT_RULE = 3
-    MEDIA_RULE = 4
-    FONT_FACE_RULE = 5
-    PAGE_RULE = 6
-    NAMESPACE_RULE = 7
-    KEYFRAMES_RULE = 8
-    KEYFRAME_RULE = 9
-    COUNTER_STYLE_RULE = 10
-    SUPPORTS_RULE = 11
-    FONT_FEATURE_VALUES_RULE = 12
-    VIEWPORT_RULE = 13
-    SUPPORTS_CONDITION_RULE = 14
-    DOCUMENT_RULE = 15
+    UNKNOWN_RULE: int = 0
+    STYLE_RULE: int = 1
+    CHARSET_RULE: int = 2
+    IMPORT_RULE: int = 3
+    MEDIA_RULE: int = 4
+    FONT_FACE_RULE: int = 5
+    PAGE_RULE: int = 6
+    NAMESPACE_RULE: int = 7
+    KEYFRAMES_RULE: int = 8
+    KEYFRAME_RULE: int = 9
+    COUNTER_STYLE_RULE: int = 10
+    SUPPORTS_RULE: int = 11
+    FONT_FEATURE_VALUES_RULE: int = 12
+    VIEWPORT_RULE: int = 13
+    SUPPORTS_CONDITION_RULE: int = 14
+    DOCUMENT_RULE: int = 15
 
     def __init__(self):
         self.parentStyleSheet = None
@@ -148,15 +148,15 @@ class CSSRuleList:
     it is considered a live object, as the content can change over time.
     """
 
-    def __init__(self):
-        self.rules = []
+    def __init__(self) -> None:
+        self.rules: list = []
         raise NotImplementedError
 
-    def length(self):
+    def length(self) -> int:
         """Returns an integer representing the number of CSSRule objects in the collection."""
         raise NotImplementedError
 
-    def item(self, index):
+    def item(self, index: int):
         """Gets a single CSSRule."""
         raise NotImplementedError
 
@@ -166,7 +166,7 @@ class CSSStyleSheet(StyleSheet):
 
     def __init__(self):
         super().__init__()
-        self.rules = []
+        self.rules: list = []
 
     @property
     def cssRules():  # -> 'CSSStyleRuleList':
@@ -181,11 +181,11 @@ class CSSStyleSheet(StyleSheet):
         the ownerRule property returns the corresponding CSSImportRule; otherwise, this property's value is null."""
         raise NotImplementedError
 
-    def deleteRule(self, index):
+    def deleteRule(self, index: int):
         """Deletes the rule at the specified index into the stylesheet's rule list."""
         raise NotImplementedError
 
-    def insertRule(self, rule, index):
+    def insertRule(self, rule, index: int):
         """Inserts a new rule at the specified position in the stylesheet,
         given the textual representation of the rule."""
         raise NotImplementedError
@@ -207,14 +207,14 @@ class CSSStyleSheet(StyleSheet):
         raise NotImplementedError
 
     # Legacy methods
-    def addRule(self, selectorText, style, index):
+    def addRule(self, selectorText, style, index: int):
         """Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply
         to the matching elements.
         This differs from insertRule(), which takes the textual representation of the entire rule as a single string.
         """
         raise NotImplementedError
 
-    def removeRule(self, index):
+    def removeRule(self, index: int):
         """Functionally identical to deleteRule();
         removes the rule at the specified index from the stylesheet's rule list."""
         raise NotImplementedError

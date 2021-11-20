@@ -4,18 +4,18 @@
     written by.ai
 """
 import math
-from domonic.javascript import Math
+# from domonic.javascript import Math
 
 
 class vec3():
     """[vec3]
     """
 
-    def __init__(self, x=0, y=0, z=0, w=0):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.w = w
+    def __init__(self, x: float = 0, y: float = 0, z: float = 0, w: float = 0):
+        self.x: float = x
+        self.y: float = y
+        self.z: float = z
+        self.w: float = w
 
     def __add__(self, other):
         if isinstance(other, vec3):

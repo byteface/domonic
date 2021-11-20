@@ -11,26 +11,26 @@ from domonic.html import *
 
 # tags
 corps = body
-tête = head
-scénario = script
+tete = tête = head
+scenario = scénario = script
 style = style
 portail = portal
 fort = strong
 guillemets = blockquote
 tableau = table
 forme = form
-étiquette = label
+etiquette = étiquette = label
 soumettre = submit
 titre = title
 # noscript = noscript
 rubrique = section
 # nav = nav
 article = article
-decôté = aside
+decote = decôté = aside
 hgroupe = hgroup
 adresse = address
 chiffre = figure
-légendedelafigure = figcaption
+legendedelafigure = légendedelafigure = figcaption
 petit = small
 citer = cite
 code = code
@@ -43,28 +43,28 @@ envergure = span
 vidéo = video
 audio = audio
 toile = canvas
-légende = caption
+# legende = légende = caption
 groupecol = colgroup
 corps = tbody
 # tête = thead
 pied = tfoot
 jeudechamps = fieldset
-légende = legend
+legende = légende = legend
 bouton = button
-sélectionner = select
+selectionner = sélectionner = select
 listededonnées = datalist
 groupeopt = optgroup
 option = option
 zonedetexte = textarea
 sortie = output
-progrès = progress
-mètre = meter
+progres = progrès = progress
+metre = mètre = meter
 détails = details
-résumé = summary
+resume = résumé = summary
 # menu = menu
-élémentdemenu = menuitem
+elementdemenu = élémentdemenu = menuitem
 police = font
-entête = header
+entete = entête = header
 pieddepage = footer
 base = base
 lien = link
@@ -75,7 +75,7 @@ source = source
 piste = track
 zone = area
 # col = col
-entrée = input
+entree = entrée = input
 commande = command
 principal = main
 policedebase = basefont
@@ -85,8 +85,8 @@ incorporer = embed
 # isindex = isindex
 liste = listing
 texteenclair = plaintext
-grève = strike
-modèle = template
+greve = grève = strike
+modele = modèle = template
 image = picture
 typedoc = doctype
 commentaire = comment

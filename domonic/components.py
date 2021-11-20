@@ -336,7 +336,7 @@ class SpriteCSS(object):
         }
     """
 
-    def __init__(self, id, width, height, spritesheet, time, steps, loop=True, y_offset=0, bg_color="none"):
+    def __init__(self, id: str, width: int, height: int, spritesheet: str, time, steps: int, loop: bool=True, y_offset: int=0, bg_color: str="none"):
         self.id = id
         self.styles = SpriteCSS.STYLE(id, width, height, spritesheet, time, steps, loop, y_offset, bg_color)
 

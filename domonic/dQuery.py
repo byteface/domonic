@@ -116,7 +116,8 @@ class dQuery_el():
             # return
 
         if self.q[0] == '<':
-            self.elements = domonic.domonic.load(self.q)
+            from domonic import domonic
+            self.elements = domonic.load(self.q)
             # print(self.elements)
             # print(type(self.elements))
             if isinstance(self.elements, html) or isinstance(self.elements, Document):
@@ -175,7 +176,7 @@ class dQuery_el():
         """ Add the previous set of elements on the stack to the current set, optionally filtered by a selector."""
         raise NotImplementedError
 
-    def addClass(self, name):
+    def addClass(self, name: str):
         """ Adds the specified class to each element in the set of matched elements."""
         # print(self.elements, name)
         # print(type(self.elements))
@@ -909,7 +910,7 @@ class dQuery_el():
             el.remove()  # wont work . does this method even exist?
         return self
 
-    def removeAttr(self, attr):  # TODO - test
+    def removeAttr(self, attr :str):  # TODO - test
         """ Remove an attribute from each element in the set of matched elements."""
         if not isinstance(self.elements, (list, tuple)):
             self.elements = (self.elements,)
@@ -917,7 +918,7 @@ class dQuery_el():
             el.removeAttribute(attr)
         return self
 
-    def removeClass(self, classname):
+    def removeClass(self, classname: str):
         """ Remove a single class, multiple classes, or all classes from each element in the set of matched elements."""
 
         if not isinstance(self.elements, (list, tuple)):
@@ -931,11 +932,11 @@ class dQuery_el():
                     el.setAttribute("class", removed)
         return self
 
-    def removeData(self, name):
+    def removeData(self, name: str):
         """ Remove a previously-stored piece of data."""
         raise NotImplementedError
 
-    def removeProp(self, prop):  # TODO -
+    def removeProp(self, prop: str):  # TODO -
         """ Remove a property for the set of matched elements."""
         if not isinstance(self.elements, (list, tuple)):
             self.elements = (self.elements,)
@@ -1070,7 +1071,7 @@ class dQuery_el():
         """ Bind an event handler to the “submit” JavaScript event, or trigger that event on an element."""
         raise NotImplementedError
 
-    def text(self, newVal=None):
+    def text(self, newVal: str=None):
         """ Get the combined text contents of each element in the set of matched elements, including their descendants,
         or set the text contents of the matched elements."""
         if newVal is not None:
@@ -1786,7 +1787,7 @@ class º(dQuery_el):
     #     raise NotImplementedError
 
     @staticmethod
-    def trim(content):
+    def trim(content: str) -> str:
         """ Remove the whitespace from the beginning and end of a string. """
         content = content.replace('\n', '').replace('\t', '').replace('\r', '').strip()
         return content

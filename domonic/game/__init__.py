@@ -2,38 +2,49 @@
     domonic.game
     ====================================
 
-    some of this was written by.ai
-    (https://6b.eleuther.ai/)
-
 """
 import random
-from domonic.javascript import Math
 
 
 class Game():
 
     @staticmethod
-    def roll_dice():
+    def roll_dice(sides=6) -> int:
         """[rolls a dice]
 
+        Args:
+            sides (int, optional): [number of sides on the dice]. Defaults to 6.
+
         Returns:
-            [int]: [between 1 and 6]
+            [int]: [number rolled]
         """
-        return Math.round(Math.random() * 6)
+        return random.randint(1, sides)
 
     @staticmethod
-    def pick_a_card():
+    def pick_a_card() -> str:
         """[selects a random suit and card]
 
         Returns:
-            [str]: [a card from the deck]
+            [str]: [a card from the deck in the form of a string. i.e '♥A']
         """
         suits = ["♠", "♥", "♦", "♣"]
         cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
         return random.choice(cards) + random.choice(suits)
 
     @staticmethod
-    def random_bool():
+    def deal_cards(n: int=1) -> list:
+        """[deals n cards]
+
+        Args:
+            n (int, optional): [number of cards to deal]. Defaults to 1.
+
+        Returns:
+            [list]: [list of cards]
+        """
+        return [Game.pick_a_card() for _ in range(n)]  # TODO - this could have duplicates
+
+    @staticmethod
+    def random_bool() -> bool:
         #  (https://6b.eleuther.ai/) TODO - test
         rv = random.Random()
         if rv.uniform(0.0, 1.0):
@@ -42,7 +53,7 @@ class Game():
             return False
 
     @staticmethod
-    def random_char():
+    def random_char() -> str:
         return chr(random.choice(range(ord('A'), ord('Z') + 1)))
 
     # @staticmethod

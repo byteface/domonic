@@ -23,16 +23,24 @@ from domonic.dom import document, Location
 from domonic.webapi.storage import Storage
 from domonic.webapi.console import Console
 
+from domonic.webapi.netinfo import NetworkInformation
+from domonic.webapi.credentials import CredentialsContainer
+from domonic.webapi.geo import Geolocation
+
+# from domonic.webapi.mediacapabilities import MediaCapabilities
+# from domonic.webapi.mediasession import MediaSession
+
+
 # TODO - test
 class CustomElementRegistry():
     """ The CustomElementRegistry interface provides methods for registering custom elements and querying registered elements.
     To get an instance of it, use the window.customElements property. """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.store = {}
 
     # Defines a new custom element.
-    def define(self, name, constructor, options=None):
+    def define(self, name: str, constructor, options=None) -> None:
         """[defines a new custom element.]
 
         Args:
@@ -74,14 +82,6 @@ class CustomElementRegistry():
         pass
 
 
-from domonic.webapi.netinfo import NetworkInformation
-from domonic.webapi.credentials import CredentialsContainer
-from domonic.webapi.geo import Geolocation
-
-# from domonic.webapi.mediacapabilities import MediaCapabilities
-# from domonic.webapi.mediasession import MediaSession
-
-
 class Navigator(object):
     """ Navigator """
 
@@ -98,9 +98,9 @@ class Navigator(object):
     appName = "domonic"
 
     def __init__(self, *args, **kwargs):
-        self.connection = NetworkInformation()
-        self.credentials = CredentialsContainer()
-        self.geolocation = Geolocation()
+        self.connection: NetworkInformation = NetworkInformation()
+        self.credentials: CredentialsContainer = CredentialsContainer()
+        self.geolocation: Geolocation = Geolocation()
         self.hid = None
         self.keyboard = None
         self.locks = None
@@ -117,7 +117,6 @@ class Navigator(object):
         self.buildID = None
         self.contacts = None
 
-
     # @property
     # def appVersion():
         """ Returns the version information of the browser """
@@ -133,7 +132,7 @@ class Navigator(object):
     # def languages
 
     @property
-    def platform(self):
+    def platform(self) -> str:
         """ Returns the platform """
         if 'darwin' in sys.platform:
             return 'mac'
@@ -145,17 +144,17 @@ class Navigator(object):
             return 'unknown'
 
     @property
-    def product(self):
+    def product(self) -> str:
         """ Returns the product name """
         return self.appName
 
     @property
-    def userAgent(self):
+    def userAgent(self) -> str:
         """ Returns the user-agent header sent by the browser to the server Navigator """
         raise NotImplementedError
 
     @property
-    def deviceMemory(self):
+    def deviceMemory(self) -> float:
         """ Returns the amount of memory available on the device """
         return 1
 
@@ -228,39 +227,35 @@ class Window(Window):
 
     def __init__(self):
         self.customElements = CustomElementRegistry()
-        # from domonic.dom import document
-        # self.document = document
-
-        self._localStorage = Storage()  # TODO - should persist across sessions
-        self._sessionStorage = Storage()  # TODO - should reset on page refresh
-        self._navigator = Navigator()
-
-        self._location = Location('eventual.technology')
-        self._console = Console()
+        self._localStorage: Storage = Storage()  # TODO - should persist across sessions
+        self._sessionStorage: Storage = Storage()  # TODO - should reset on page refresh
+        self._navigator: Navigator = Navigator()
+        self._location: Location = Location('eventual.technology')
+        self._console: Console = Console()
         super(Window, Window).__init__(self)
 
     @property
-    def console(self):
+    def console(self) -> Console:
         """ Returns the console object """
         return self._console
 
     @property
-    def localStorage(self):
+    def localStorage(self) -> Storage:
         """ Returns the local storage object """
         return self._localStorage
 
     @property
-    def sessionStorage(self):
+    def sessionStorage(self) -> Storage:
         """ Returns the session storage object """
         return self._sessionStorage
 
     @staticmethod
-    def document(self):
+    def document(self) -> Document:
         from domonic.dom import document
         return document
 
     @property
-    def location(self):
+    def location(self) -> Location:
         return self._location
         # return Location(self.window.location.href)
 
@@ -332,20 +327,21 @@ class Window(Window):
         self.document = domonic.domonic.parseString(content)
         self._location = Location(value)
 
-    # WINDOW
-    # """ Removes focus from an element """
     def blur(self):
+        """ Removes focus from an element """
         raise NotImplementedError
 
-    # Returns a Boolean value indicating whether a window has been closed or not
     def closed(self):
+        """[Returns a Boolean value indicating whether a window has been closed or not]
+        """
         raise NotImplementedError
 
-    # Closes the output stream previously opened with document.open()
     def close(self):
+        """[Closes the output stream previously opened with document.open()]
+        """
         raise NotImplementedError
 
-    def confirm(self, message):
+    def confirm(self, message: str):
         """[Displays a dialog box with a message and an OK and a Cancel button.]
         (https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm)
 
@@ -368,16 +364,16 @@ class Window(Window):
         """ Gives focus to an element """
         raise NotImplementedError
 
-    # Returns the <iframe> element in which the current window is inserted  
     def frameElement(self):
+        """Returns the <iframe> element in which the current window is inserted"""
         raise NotImplementedError
 
-    # Gets the current computed CSS styles applied to an element
     def getComputedStyle(self, el, pseudo=None):
+        """ Gets the current computed CSS styles applied to an element """
         raise NotImplementedError
 
-    # Returns a Selection object representing the range of text selected by the user
     def getSelection(self):
+        """ Returns a Selection object representing the range of text selected by the user """
         raise NotImplementedError
 
     def history(self):
@@ -396,8 +392,8 @@ class Window(Window):
         """
         raise NotImplementedError
 
-    # Returns a MediaQueryList object representing the specified CSS media query string 
     def matchMedia(self, media_query_list):
+        """ Returns a MediaQueryList object representing the specified CSS media query string """
         raise NotImplementedError
 
     def moveBy(self, x: int, y: int):
@@ -436,7 +432,7 @@ class Window(Window):
     def open(self):
         raise NotImplementedError
 
-    # Returns a reference to the window that created the window 
+    # Returns a reference to the window that created the window
     def opener(self):
         raise NotImplementedError
 
@@ -448,7 +444,7 @@ class Window(Window):
     def outerWidth(self):
         raise NotImplementedError
 
-    # Returns the pixels the current document has been scrolled (horizontally) from the upper left corner of the window 
+    # Returns the pixels the current document has been scrolled (horizontally) from the upper left corner of the window
     def pageXOffset(self):
         raise NotImplementedError
 
@@ -460,7 +456,7 @@ class Window(Window):
     def parent(self):
         raise NotImplementedError
 
-    # Prints the content of the current window  
+    # Prints the content of the current window
     def _print(self):
         raise NotImplementedError
 
@@ -468,11 +464,11 @@ class Window(Window):
     def resizeBy(self):
         raise NotImplementedError
 
-    # Resizes the window to the specified width and height  
+    # Resizes the window to the specified width and height
     def resizeTo(self):
         raise NotImplementedError
 
-    # Returns the Screen object for the window (See Screen object)  
+    # Returns the Screen object for the window (See Screen object)
     def screen(self):
         raise NotImplementedError
 
@@ -480,7 +476,7 @@ class Window(Window):
     def screenLeft(self):
         raise NotImplementedError
 
-    # Returns the vertical coordinate of the window relative to the screen  
+    # Returns the vertical coordinate of the window relative to the screen
     def screenTop(self):
         raise NotImplementedError
 
@@ -508,11 +504,11 @@ class Window(Window):
     def scrollY(self):
         raise NotImplementedError
 
-    # Stops the window from loading 
+    # Stops the window from loading
     def stop(self):
         raise NotImplementedError
 
-    # Sets or returns the text in the statusbar of a window 
+    # Sets or returns the text in the statusbar of a window
     def status(self):
         raise NotImplementedError
 
@@ -520,6 +516,7 @@ class Window(Window):
     def top(self):
         raise NotImplementedError
     '''
+
 
 # global window
 window = Window()

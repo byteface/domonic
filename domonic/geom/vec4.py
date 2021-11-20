@@ -11,12 +11,12 @@ class vec4():
     """[vec4]
     """
 
-    def __init__(self, x=0, y=0, z=0, w=0, n=1):
-        self.x = x
-        self.y = y
-        self.z = z
-        self.w = w
-        self.n = n
+    def __init__(self, x: float = 0.0, y: float = 0.0, z: float = 0.0, w: float = 0.0, n: float = 1.0):
+        self.x: float = x
+        self.y: float = y
+        self.z: float = z
+        self.w: float = w
+        self.n: float = n
 
     def __add__(self, other):
         x = self.x + other.x

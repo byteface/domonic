@@ -12,22 +12,22 @@ class CDN_JS(object):
     """
     Preferably use version numbers if available.
     """
-    JQUERY_3_5_1 = "https://code.jquery.com/jquery-3.5.1.min.js"  #:
-    JQUERY_UI = "https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"  #:
-    UNDERSCORE = "https://cdn.jsdelivr.net/npm/underscore@1.11.0/underscore-min.js"  #:
-    BOOTSTRAP_4 = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"  #:
-    POPPER_1_16_1 = "https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"  #:
-    BOOTSTRAP_5_ALPHA = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"  #:
-    D3_6_1_0 = "https://cdnjs.cloudflare.com/ajax/libs/d3/6.1.0/d3.min.js"  #:
-    MODERNIZER_2_8_3 = "https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"  #:
-    MOMENT_2_27_0 = "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"  #:
-    PIXI_5_3_3 = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"  #:
-    SOCKET_1_4_5 = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"  #:
-    X3DOM = "https://www.x3dom.org/download/x3dom.js"  #:
-    AFRAME_1_2 = "https://aframe.io/releases/1.2.0/aframe.min.js"  #:
-    BRYTHON_3_9_5 = "https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js"  #:
-    MATHML = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=MML_HTMLorMML"  #:
-    HTMX = "https://unpkg.com/htmx.org@1.5.0"  #:
+    JQUERY_3_5_1: str = "https://code.jquery.com/jquery-3.5.1.min.js"  #:
+    JQUERY_UI: str = "https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"  #:
+    UNDERSCORE: str = "https://cdn.jsdelivr.net/npm/underscore@1.11.0/underscore-min.js"  #:
+    BOOTSTRAP_4: str = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"  #:
+    POPPER_1_16_1: str = "https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"  #:
+    BOOTSTRAP_5_ALPHA: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"  #:
+    D3_6_1_0: str = "https://cdnjs.cloudflare.com/ajax/libs/d3/6.1.0/d3.min.js"  #:
+    MODERNIZER_2_8_3: str = "https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"  #:
+    MOMENT_2_27_0: str = "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"  #:
+    PIXI_5_3_3: str = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"  #:
+    SOCKET_1_4_5: str = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"  #:
+    X3DOM: str = "https://www.x3dom.org/download/x3dom.js"  #:
+    AFRAME_1_2: str = "https://aframe.io/releases/1.2.0/aframe.min.js"  #:
+    BRYTHON_3_9_5: str = "https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js"  #:
+    MATHML: str = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=MML_HTMLorMML"  #:
+    HTMX: str = "https://unpkg.com/htmx.org@1.5.0"  #:
 
 
 class CDN_CSS(object):
@@ -35,18 +35,18 @@ class CDN_CSS(object):
     Preferably use version numbers if available.
     use LATEST if it always gets the latest
     """
-    BOOTSTRAP_5_ALPHA = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"  #:
-    BOOTSTRAP_4 = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"  #:
-    MARX = "https://unpkg.com/marx-css/css/marx.min.css"  #:
-    MVP = "https://unpkg.com/mvp.css"  #:
-    WATER_LATEST = "https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css"  #:
-    BALLOON = "https://unpkg.com/balloon-css/balloon.min.css"  #:
-    THREE_DOTS_0_2_0 = "https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css"  #:
-    MILLIGRAM_1_3_0 = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"  #:
-    X3DOM = "https://www.x3dom.org/download/x3dom.css"  #:
-    FONTAWESOME_5_7_1 = "https://use.fontawesome.com/releases/v5.7.1/css/all.css"  #:
-    MDI_5_4_55 = "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"  #:
-    TAILWIND_2_2_15 = "https://unpkg.com/tailwindcss@^2.2.15/dist/tailwind.min.css"  #:
+    BOOTSTRAP_5_ALPHA: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"  #:
+    BOOTSTRAP_4: str = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"  #:
+    MARX: str = "https://unpkg.com/marx-css/css/marx.min.css"  #:
+    MVP: str = "https://unpkg.com/mvp.css"  #:
+    WATER_LATEST: str = "https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css"  #:
+    BALLOON: str = "https://unpkg.com/balloon-css/balloon.min.css"  #:
+    THREE_DOTS_0_2_0: str = "https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css"  #:
+    MILLIGRAM_1_3_0: str = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"  #:
+    X3DOM: str = "https://www.x3dom.org/download/x3dom.css"  #:
+    FONTAWESOME_5_7_1: str = "https://use.fontawesome.com/releases/v5.7.1/css/all.css"  #:
+    MDI_5_4_55: str = "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"  #:
+    TAILWIND_2_2_15: str = "https://unpkg.com/tailwindcss@^2.2.15/dist/tailwind.min.css"  #:
 
 
 class CDN_IMG(object):
@@ -77,10 +77,10 @@ class CDN_IMG(object):
     https://keywordimg.com/420x320/random
     http://www.dummysrc.com/430x320.png/22c5fc/17202A
     '''
-    PLACEHOLDER_SERVICE = "loremflickr.com"
+    PLACEHOLDER_SERVICE: str = "loremflickr.com"
 
     @staticmethod
-    def PLACEHOLDER(width=100, height=100, HTTP="", seperator='/'):
+    def PLACEHOLDER(width: int=100, height: int=100, HTTP: str="", seperator: str='/') -> str:
         """
         to update do CDN_IMG.PLACEHOLDER_SERVICE = "placebear.com/g"
         usage : img(_src=CDN_IMG.PLACEHOLDER(300,100))
@@ -94,7 +94,8 @@ class CDN_IMG(object):
 class CDN_FONT(object):
 
     @staticmethod
-    def google(family):
+    def google(family: str) -> str:
+        """ pass a font family name and returns the url """
         return "https://fonts.googleapis.com/css?family=" + '+'.join(family)
 
     # @staticmethod

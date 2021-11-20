@@ -1,10 +1,6 @@
 """
     domonic.events
     ====================================
-    dom events
-
-    # TODO - this should be moved to the webapi on next major revision
-        # might be able to still reference it for backward compatibility
 
     https://developer.mozilla.org/en-US/docs/Web/Events
 
@@ -14,7 +10,7 @@
 import time
 
 
-class EventTarget(object):  # TODO - remove DOM.EventTarget. keep just this one
+class EventTarget(object):
     """ EventTarget is a class you can extend to give your obj event dispatching abilities """
 
     def __init__(self, *args, **kwargs):

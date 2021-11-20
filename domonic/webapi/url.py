@@ -3,7 +3,6 @@
     ====================================
     https://developer.mozilla.org/en-US/docs/Web/API/URL
 
-    # TODO - this will let us remove the javascript reference in the dom
     # TODO - move the unit tests for this class from javascript to webapi
     # TODO - untested
 

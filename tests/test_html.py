@@ -900,7 +900,7 @@ class TestCase(unittest.TestCase):
         with d:
             with head():
                 with title():
-                    text('Hello World')
+                    Text('Hello World')
             with body():
                 with div(_class="container"):
                     with div(_class="row"):
@@ -991,6 +991,22 @@ class TestCase(unittest.TestCase):
         s = script(_src="foo.js", _async=True, _hidden=False, _checked=True)
         print(s)
         assert '<script src="foo.js" async="true" hidden="false" checked="true"></script>' == str(s)
+
+
+    def test_dialog(self):
+        
+        d = html()
+        with d:
+            dialog("hello", _open="")
+            form(button("close"), _method="dialog", _action="close")
+            
+        print(d)
+        
+        mydialog = HTMLDialogElement()
+        print(mydialog)
+        print(str(mydialog))
+            
+        # assert str(d) == '<html><dialog open>hello<form method="dialog" action="close"><button>close</button></form></dialog></html>'
 
 
 if __name__ == '__main__':

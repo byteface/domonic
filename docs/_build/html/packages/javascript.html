@@ -1083,7 +1083,7 @@ with a given sequence of arguments preceding any provided when the new function 
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">isFinite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.isFinite"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">isFinite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/domonic/javascript.html#Global.isFinite"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns true if x is a finite number</p>
 </dd></dl>
 
@@ -1166,7 +1166,7 @@ from the args and kwargs arguments, respectively.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns true if an element in the Map object existed and has been removed,
 or false if the element does not exist. Map.prototype.has(key) will return false afterwards.</p>
 </dd></dl>
@@ -1180,13 +1180,13 @@ for each element in the Map object in insertion order.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns the value associated to the key, or undefined if there is none.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">has</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.has"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">has</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.has"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Returns a boolean asserting whether a value has been associated to the key in the Map object or not.</p>
 </dd></dl>
 
@@ -1199,7 +1199,7 @@ for each element in the Map object in insertion order.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Map.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Sets the value for the key in the Map object. Returns the Map object.</p>
 </dd></dl>
 
@@ -1216,8 +1216,7 @@ for each element in the Map object in insertion order.</p>
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">Math</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Math"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Math class that mirrors javascript implementation.</p>
-<p>i.e. you can pass strings and it will also work
-Math.abs(‘-1’)</p>
+<p>i.e. you can pass strings and it will also work, Math.abs(‘-1’)</p>
 <dl class="py method">
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">hypot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Math.hypot"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
@@ -1654,7 +1653,7 @@ only replaces first one.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">includes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchValue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.includes"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">includes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchValue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/domonic/javascript.html#String.includes"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[returns true if the specified string is found within the calling String object,]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1837,7 +1836,7 @@ only replaces first one.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchValue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#String.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">searchValue</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/domonic/javascript.html#String.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[returns true if the specified string is found within the calling String object,]
 starting at the specified position.
 :param searchValue: [The string value to search for.]
@@ -2046,99 +2045,6 @@ and through the specified number of character</p>
 
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">URL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URL"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>a-tag extends from URL</p>
-<dl class="py property">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">hash</span></span></dt>
-<dd><p>” hash Sets or returns the anchor part (#) of a URL</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">URLSearchParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paramString</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>[utility methods to work with the query string of a URL]</p>
-<p>created with help of <a class="reference external" href="https://6b.eleuther.ai/">https://6b.eleuther.ai/</a></p>
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Appends a specified key/value pair as a new search parameter</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Deletes the given search parameter, and its associated value, from the list of all search parameters.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">entries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.entries"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns an iterator allowing iteration through all key/value pairs contained in this object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">forEach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.forEach"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Allows iteration through all values contained in this object via a callback function.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns the first value associated with the given search parameter.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">getAll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.getAll"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns all the values associated with a given search parameter.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">has</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.has"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns a Boolean indicating if such a given parameter exists.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns an iterator allowing iteration through all keys of the key/value pairs contained in this object.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Sets the value associated with a given search parameter to the given value.
-If there are several values, the others are deleted.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Sorts all key/value pairs, if any, by their keys.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">toString</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.toString"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns a string containing a query string suitable for use in a URL.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#URLSearchParams.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns an iterator allowing iteration through all values of the
-key/value pairs contained in this object.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">Window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#Window"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>window</p>
 <dl class="py method">
@@ -2281,7 +2187,7 @@ ServiceWorker instances do not support this method.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">python_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/javascript.html#function"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">domonic.javascript.</span></span><span class="sig-name descname"><span class="pre">function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">python_str</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/domonic/javascript.html#function"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[evals a string i.e.</p>
 <p>sup = function(‘’’print(hi)’’’)
 sup()</p>

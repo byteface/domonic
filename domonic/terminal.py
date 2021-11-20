@@ -22,7 +22,7 @@ class command():
     """ wrapper class for all terminal commands """
 
     @staticmethod
-    def run(cmd):
+    def run(cmd: str):
         """run
 
         runs any command on the terminal
@@ -36,7 +36,7 @@ class command():
         returned_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
         return returned_output.decode("utf-8")
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         self.args = args
         self.kwargs = kwargs
         self.params = ''.join([each.__str__() for each in args])
@@ -113,7 +113,7 @@ class command():
 
         return str(instance.result)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.result)
 
     def __getitem__(self, index):

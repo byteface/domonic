@@ -444,6 +444,7 @@ class TestCase(unittest.TestCase):
     #     page = eval(domonic.get("http://eventual.technology"))
     #     dir(page)
 
+    # TODO - this was move to webapi. tests are working by proxy
     def test_javascript_url(self):
         url = URL('https://somesite.com/blog/article-one#some-hash')
         # print('TESTS:')
@@ -1345,7 +1346,6 @@ class TestCase(unittest.TestCase):
         arr = Float64Array(2)
         print(arr.length)
         assert arr.length == 2
-
 
     # def test_storage(self):
     #     print("test_storage")

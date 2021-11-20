@@ -4,8 +4,6 @@
     https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
 """
 
-# - TODO - create package for this and relocate FormData to it? (i think that's currently in js)
-# XMLHttpRequest
 # class XMLHttpRequest():
 
 #     def __init__(self, url=None, responseType=None, withCredentials=False, timeout=0, onload=None, onerror=None, onprogress=None, ontimeout=None):

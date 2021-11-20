@@ -10,6 +10,7 @@ import unittest
 # import requests
 # from mock import patch
 # from domonic.javascript import Math
+from domonic import domonic
 
 from domonic.dom import *
 from domonic.html import *
@@ -914,11 +915,11 @@ class TestCase(unittest.TestCase):
     def test_select3(self):
 
         # selection.select(…) returns a selection"
-        d = html(head(domonic.domonic.load("<h1>hello</h1>")))
+        d = html(head(domonic.load("<h1>hello</h1>")))
         assert type(select(d).select("h1")) == Selection
 
         # selection.select(string) selects the first descendant that matches the selector string for each selected element
-        d = html(head(domonic.domonic.load("<h1><span id='one'></span><span id='two'></span></h1><h1><span id='three'></span><span id='four'></span></h1>")))
+        d = html(head(domonic.load("<h1><span id='one'></span><span id='two'></span></h1><h1><span id='three'></span><span id='four'></span></h1>")))
         one = d.querySelector("#one")
         three = d.querySelector("#three")
         # assertSelection(select(d).selectAll("h1").select("span"), {"groups": [[one, three]], "parents": [d]})
@@ -930,7 +931,7 @@ class TestCase(unittest.TestCase):
         return
 
         # selection.select(function) selects the return value of the given function for each selected element
-        d = html(head(domonic.domonic.load("<span id='one'></span>")))
+        d = html(head(domonic.load("<span id='one'></span>")))
         one = d.querySelector("#one")
         # assertSelection(select(d).select(function() { return one; }), {"groups": [[one]], "parents": [None]})
 
@@ -987,7 +988,7 @@ class TestCase(unittest.TestCase):
         # assertSelection(selectAll([one, two]).selectAll("child").select("span"), {groups: [[three], [four]], parents: [one, two]})
 
         # selection.select(…) skips missing originating elements
-        d = html(head(domonic.domonic.load("<h1><span>hello</span></h1>")))
+        d = html(head(domonic.load("<h1><span>hello</span></h1>")))
         h1 = d.querySelector("h1")
         span = d.querySelector("span")
         # assertSelection(selectAll([None, h1]).select("span"), {"groups": [[None, span]], "parents": [None]})
@@ -1003,26 +1004,25 @@ class TestCase(unittest.TestCase):
         # assertSelection(selectAll([one, two]).selectAll("child").select(function(d, i) { return i & 1 ? this : None; }).select("span"), {groups: [[, three], [, four]], parents: [one, two]})
 
         # selection.selection() returns itself
-        # d = html(head(domonic.domonic.load("<h1>hello</h1>")))
+        # d = html(head(domonic.load("<h1>hello</h1>")))
         # sel = select(d).select("h1")
         # assert sel == sel.selection() # TODO - check back
         # assert sel == sel.selection().selection()
 
     @silence
     def test_select_all(self):
-
         # selection.selectAll(…) returns a selection
-        d = html(head(domonic.domonic.load("<h1>hello</h1>")))
+        d = html(head(domonic.load("<h1>hello</h1>")))
         assert type(select(d).selectAll("h1")) == Selection
 
         # selection.selectAll(string) selects all descendants that match the selector string for each selected element
-        d = html(head(domonic.domonic.load("<h1 id='one'><span></span><span></span></h1><h1 id='two'><span></span><span></span></h1>")))
+        d = html(head(domonic.load("<h1 id='one'><span></span><span></span></h1><h1 id='two'><span></span><span></span></h1>")))
         one = document.querySelector("#one")
         two = document.querySelector("#two")
         # assertSelection(selectAll([one, two]).selectAll("span"), {groups: [one.querySelectorAll("span"), two.querySelectorAll("span")], parents: [one, two]})
 
         # selection.selectAll(function) selects the return values of the given function for each selected element
-        d = html(head(domonic.domonic.load("<span id='one'></span>")))
+        d = html(head(domonic.load("<span id='one'></span>")))
         one = document.querySelector("#one")
         # assertSelection(select(document).selectAll(function() { return [one]; }), {groups: [[one]], parents: [document]})
 
@@ -1074,7 +1074,7 @@ class TestCase(unittest.TestCase):
         # assertSelection(selectAll([one, two]).selectAll("child").selectAll("span"), {groups: [[five], [six]], parents: [three, four]});
 
         # selection.selectAll(…) skips missing originating elements
-        d = html(head(domonic.domonic.load("<h1><span>hello</span></h1>")))
+        d = html(head(domonic.load("<h1><span>hello</span></h1>")))
         h1 = document.querySelector("h1")
         span = document.querySelector("span")
         # assertSelection(selectAll([, h1]).selectAll("span"), {groups: [[span]], parents: [h1]})
@@ -1370,7 +1370,7 @@ class TestCase(unittest.TestCase):
     def test_size(self):
 
         # selection.size() returns the number of selected elements
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
         assert selectAll([]).size() == 0
@@ -1378,7 +1378,7 @@ class TestCase(unittest.TestCase):
         assert selectAll([one, two]).size() == 2
 
         # selection.size() skips missing elements
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
         assert selectAll([None, one, None, two]).size() == 2
@@ -1386,11 +1386,11 @@ class TestCase(unittest.TestCase):
 
     def test_empty(self):
         #  selection.empty() return false if the selection is not empty
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         assert select(d).empty() == False
 
         # selection.empty() return true if the selection is empty
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         assert select(None).empty() == True
         assert selectAll([]).empty() == True
         assert selectAll([None, None]).empty() == True
@@ -1414,8 +1414,10 @@ class TestCase(unittest.TestCase):
 
 
     def test_call(self):
+        
+        
         # selection.each(function) calls the specified function for each selected element in order
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         # result = []
         # one = document.querySelector("#one")
         # two = document.querySelector("#two")
@@ -1424,7 +1426,7 @@ class TestCase(unittest.TestCase):
         # assert result == [one, "node-0", 0, [one, two], two, "node-1", 1, [one, two]]
 
         # selection.each(function) skips missing elements
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         # result = []
         # one = document.querySelector("#one")
         # two = document.querySelector("#two")
@@ -1434,21 +1436,20 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_node(self):
-
         # selection.node() returns the first element in a selection
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
         assert selectAll([one, two]).node() == one
 
         # selection.node() skips missing elements
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
         assert selectAll([None, one, None, two]).node() == one
 
         # selection.node() skips empty groups
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         # one = d.querySelector("#one")
         # two = d.querySelector("#two")
         # assert selectAll([one, two]).selectAll(function(d, i) { return i ? [this] : [] }).node() == two
@@ -1461,7 +1462,7 @@ class TestCase(unittest.TestCase):
 
     def test_order(self):
         # selection.order() moves selected elements so that they are before their next sibling
-        # d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        # d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         # one = d.querySelector("#one")
         # two = d.querySelector("#two")
         # selection = selectAll([two, one])
@@ -1470,7 +1471,7 @@ class TestCase(unittest.TestCase):
         # assert two.nextSibling == one
 
         # selection.order() only orders within each group
-        # d = html(body(domonic.domonic.load("<h1><span id='one'></span></h1><h1><span id='two'></span></h1>")))
+        # d = html(body(domonic.load("<h1><span id='one'></span></h1><h1><span id='two'></span></h1>")))
         # one = d.querySelector("#one")
         # two = d.querySelector("#two")
         # selection = select(d).selectAll("h1").selectAll("span")
@@ -1481,9 +1482,8 @@ class TestCase(unittest.TestCase):
 
     @silence
     def test_iterator(self):
-
         # selection are iterable over the selected nodes
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
         print( *selectAll([one, two]) )
@@ -1504,7 +1504,7 @@ class TestCase(unittest.TestCase):
     @silence
     def test_nodes(self):
         # selection.nodes() returns an array containing all selected nodes
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         print(d)
         one = d.querySelector("#one")
         two = d.querySelector("#two")
@@ -1512,13 +1512,13 @@ class TestCase(unittest.TestCase):
         assert d3.selectAll([one, two]).nodes() == [one, two]
 
         # selection.nodes() merges nodes from all groups into a single array
-        # d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        # d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         # one = document.querySelector("#one")
         # two = document.querySelector("#two")
         # assert d3.selectAll([one, two]).selectAll(function() { return [this]; }).nodes() == [one, two]
 
         # selection.nodes() skips missing elements
-        d = html(body(domonic.domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
         assert d3.selectAll([None, one, None, two]).nodes() == [one, two]

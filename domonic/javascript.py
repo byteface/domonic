@@ -18,7 +18,7 @@ import math
 import random
 import threading
 import signal
-import typing
+# import typing
 import requests
 import gc
 import multiprocessing
@@ -29,8 +29,10 @@ import os
 import array
 import struct
 
+from domonic.webapi.url import URL, URLSearchParams  # https://developer.mozilla.org/en-US/docs/Web/API/URL
 
-def function(python_str):
+
+def function(python_str: str) -> str:
     """[evals a string i.e.
 
     sup = function('''print(hi)''')
@@ -47,10 +49,10 @@ def function(python_str):
 
 
 # TODO - list all javascript keywords to python keywords
-true = True
-false = False
-null = None
-undefined = None
+true: bool = True
+false: bool = False
+null: object = None
+undefined: object = None
 # globalThis # TODO - do i need to use inpect? or is globals() ok?
 
 
@@ -58,13 +60,13 @@ class Boolean():
     """[Creates a Boolean Object.
         Warning this is NOT a boolean type. for that use Global.Boolean()]
     """
-    def __init__(self, value=False):
-        self.value = Global.Boolean(value)
+    def __init__(self, value=False) -> None:
+        self.value: bool = Global.Boolean(value)
 
 
 class Object(object):
 
-    def __init__(self, obj=None, *args, **kwargs):
+    def __init__(self, obj=None, *args, **kwargs) -> None:
         """[Creates a Javascript-like Object in python]
 
         Args:
@@ -588,21 +590,21 @@ class Map(object):
         else:
             raise TypeError("Map requires a list or dict.")
 
-        self._data = {}
-        self._order = []
+        self._data: dict = {}
+        self._order: list = []
 
-    def __contains__(self, key):
+    def __contains__(self, key: str):
         return key in self._dict
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str):
         return self._dict[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value):
         if key not in self._dict:
             self._order.append(key)
             self._dict[key] = value
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str):
         self._order.remove(key)
         del self._dict[key]
 
@@ -611,7 +613,7 @@ class Map(object):
         self._data = {}
         self._order = []
 
-    def delete(self, key):
+    def delete(self, key: str) -> bool:
         """ Returns true if an element in the Map object existed and has been removed,
         or false if the element does not exist. Map.prototype.has(key) will return false afterwards. """
         try:
@@ -621,15 +623,15 @@ class Map(object):
         except Exception:
             return False
 
-    def get(self, key, default=None):
+    def get(self, key: str, default=None):
         """ Returns the value associated to the key, or undefined if there is none. """
         return self._dict.get(key, default)
 
-    def has(self, key):
+    def has(self, key: str) -> bool:
         """ Returns a boolean asserting whether a value has been associated to the key in the Map object or not."""
         return key in self._dict
 
-    def set(self, key, value):
+    def set(self, key: str, value):
         """ Sets the value for the key in the Map object. Returns the Map object. """
         if key not in self._dict:
             self._order.append(key)
@@ -660,6 +662,9 @@ class Map(object):
 
     # def forEach(self, callbackFn[, thisArg]):
     #     raise NotImplementedError
+            # TODO - is this supposed to pass count like Node list? i.e.
+        # for i in range(len(self.args)):
+            # func(self.args[i], i, self.args)
 
     def update(self, ordered_dict):
         for key, value in ordered_dict.iteritems():
@@ -750,20 +755,18 @@ class Worker(object):
 class Math(Object):
     """ Math class that mirrors javascript implementation.
 
-    i.e. you can pass strings and it will also work
-    Math.abs('-1')
+    i.e. you can pass strings and it will also work, Math.abs('-1')
 
     """
 
-    # CONSTANTS
-    PI = 3.141592653589793
-    E = 2.718281828459045
-    LN2 = 0.6931471805599453
-    LN10 = 2.302585092994046
-    LOG2E = 1.4426950408889634
-    LOG10E = 0.4342944819032518
-    SQRT1_2 = 0.7071067811865476
-    SQRT2 = 1.4142135623730951
+    PI: float = 3.141592653589793
+    E: float = 2.718281828459045
+    LN2: float = 0.6931471805599453
+    LN10: float = 2.302585092994046
+    LOG2E: float = 1.4426950408889634
+    LOG10E: float = 0.4342944819032518
+    SQRT1_2: float = 0.7071067811865476
+    SQRT2: float = 1.4142135623730951
 
     def _force_number(func):
         """[private decorator to make Math behave like javascript and turn strings, bools and None into numbers]]
@@ -808,160 +811,175 @@ class Math(Object):
 
     @staticmethod
     @_force_number
-    def abs(x):
-        """ Returns the absolute value of x """
+    def abs(x: float) -> float:
+        """[Returns the absolute value of a number.]
+
+        Args:
+            x ([float]): [number]
+
+        Returns:
+            [float]: [absolute value]
+        """
         return abs(x)
 
     @staticmethod
     @_force_number
-    def acos(x):
-        """ Returns the arccosine of x, in radians """
+    def acos(x: float) -> float:
+        """[Returns the arccosine (in radians) of a number.]
+
+        Args:
+            x ([float]): [number]
+
+        Returns:
+            [float]: [arccosine]
+        """
         return math.acos(x)
 
     @staticmethod
     @_force_number
-    def acosh(x):
-        """ Returns the hyperbolic arccosine of x """
+    def acosh(x: float) -> float:
+        """ Returns the hyperbolic arccosine of a number. """
         return math.acosh(x)
 
     @staticmethod
     @_force_number
-    def asin(x):
-        """ Returns the arcsine of x, in radians """
+    def asin(x: float) -> float:
+        """ Returns the arcsine (in radians) of a number. """
         return math.asin(x)
 
     @staticmethod
     @_force_number
-    def asinh(x):
-        """ Returns the hyperbolic arcsine of x """
+    def asinh(x: float) -> float:
+        """ Returns the hyperbolic arcsine of a number. """
         return math.asinh(x)
 
     @staticmethod
     @_force_number
-    def atan(x):
-        """ Returns the arctangent of x as a numeric value between -PI/2 and PI/2 radians """
+    def atan(x: float) -> float:
+        """ Returns the arctangent (in radians) of a number. """
         return math.atan(x)
 
     @staticmethod
     @_force_number
-    def atan2(x, y):
-        """ Returns the arctangent of the quotient of its arguments """
+    def atan2(x: float, y: float) -> float:
+        """ Returns the arctangent of the quotient of its arguments. """
         return math.atan2(x, y)
 
     @staticmethod
     @_force_number
-    def atanh(x):
-        """ Returns the hyperbolic arctangent of x """
+    def atanh(x: float) -> float:
+        """ Returns the hyperbolic arctangent of a number. """
         return math.atanh(x)
 
     @staticmethod
     @_force_number
-    def cbrt(x):
-        """ Returns the cubic root of x """
-        # return math.cbrt(x)
-        return round(math.pow(x, 1 / 3))
+    def cbrt(x: float) -> float:
+        """ Returns the cube root of a number. """
+        return math.cbrt(x)
 
     @staticmethod
     @_force_number
-    def ceil(x):
-        """ Returns x, rounded upwards to the nearest integer """
+    def ceil(x: float) -> float:
+        """ Returns the smallest integer greater than or equal to a number. """
         return math.ceil(x)
 
     @staticmethod
     @_force_number
-    def cos(x):
-        """ Returns the cosine of x (x is in radians) """
+    def cos(x: float) -> float:
+        """ Returns the cosine of a number. (x is in radians) """
         return math.cos(x)
 
     @staticmethod
     @_force_number
-    def cosh(x):
-        """ Returns the hyperbolic cosine of x """
+    def cosh(x: float) -> float:
+        """ Returns the hyperbolic cosine of a number. """
         return math.cosh(x)
 
     @staticmethod
     @_force_number
-    def exp(x):
-        """ Returns the value of Ex """
+    def exp(x: float) -> float:
+        """ Returns the value of E^x. """
         return math.exp(x)
 
     @staticmethod
     @_force_number
-    def floor(x):
-        """ Returns x, rounded downwards to the nearest integer """
+    def floor(x: float) -> float:
+        """ Returns the largest integer less than or equal to a number. """
         return math.floor(x)
 
     @staticmethod
     @_force_number
-    def log(x, y):
-        """ Returns the natural logarithm (base E) of x """
-        return math.log(x, y)
+    def log(x: float, base: float = None) -> float:
+        """ Returns the natural logarithm (base E) of a number. """
+        if base is None:
+            return math.log(x)
+        else:
+            return math.log(x, base)
 
     @staticmethod
     @_force_number
-    def max(x, y):
-        """ Returns the number with the highest value """
+    def max(x: float, y: float) -> float:
+        """ Returns the largest of two numbers. """
         return max(x, y)
 
     @staticmethod
     @_force_number
-    def min(x, y):
-        """ Returns the number with the lowest value """
+    def min(x: float, y: float) -> float:
+        """ Returns the smallest of two numbers. """
         return min(x, y)
 
     @staticmethod
     @_force_number
-    def random():
-        """ Returns a random number between 0 and 1 """
-        # return math.random(x)
+    def random() -> float:
+        """ Returns a random number between 0 and 1. """
         return random.random()
 
     @staticmethod
     @_force_number
-    def round(x):
-        """ Rounds x to the nearest integer """
+    def round(x: float) -> float:
+        """ Returns the value of a number rounded to its nearest integer. """
         return round(x)
 
     @staticmethod
     @_force_number
-    def pow(x, y):
-        """ Returns the value of x to the power of y """
+    def pow(x: float, y: float) -> float:
+        """ Returns the value of a number raised to a power. """
         return math.pow(x, y)
 
     @staticmethod
     @_force_number
-    def sin(x):
-        """ Returns the sine of x (x is in radians) """
+    def sin(x: float) -> float:
+        """ Returns the sine of a number. (x is in radians) """
         return math.sin(x)
 
     @staticmethod
     @_force_number
-    def sinh(x):
-        """ Returns the hyperbolic sine of x """
+    def sinh(x: float) -> float:
+        """ Returns the hyperbolic sine of a number. """
         return math.sinh(x)
 
     @staticmethod
     @_force_number
-    def sqrt(x):
-        """ Returns the square root of x """
+    def sqrt(x: float) -> float:
+        """ Returns the square root of a number. """
         return math.sqrt(x)
 
     @staticmethod
     @_force_number
-    def tan(x):
-        """ Returns the tangent of an angle """
+    def tan(x: float) -> float:
+        """ Returns the tangent of a number. (x is in radians) """
         return math.tan(x)
 
     @staticmethod
     @_force_number
-    def tanh(x):
-        """ Returns the hyperbolic tangent of a number """
+    def tanh(x: float) -> float:
+        """ Returns the hyperbolic tangent of a number. """
         return math.tanh(x)
 
     @staticmethod
     @_force_number
-    def trunc(x):
-        """ Returns the integer part of a number (x) """
+    def trunc(x: float) -> float:
+        """ Returns the integer part of a number. """
         return math.trunc(x)
 
     # TODO - test
@@ -1052,7 +1070,7 @@ class Global(object):
         eval(pythonstring)
 
     @staticmethod
-    def isFinite(x):  # TODO - test
+    def isFinite(x) -> bool:  # TODO - test
         """ Returns true if x is a finite number """
         return math.isfinite(x)
 
@@ -2239,6 +2257,9 @@ class Array(object):
         # written by .ai (https://6b.eleuther.ai/)
         for value in self.args:
             func(value)
+        # TODO - is this supposed to pass count like Node list? i.e.
+        # for i in range(len(self.args)):
+            # func(self.args[i], i, self.args)
 
     def keys(self):
         """ Returns a Array Iteration Object, containing the keys of the original array """
@@ -2929,7 +2950,7 @@ class String(object):
         """
         return self.x.rstrip()
 
-    def includes(self, searchValue: str, position: int = 0):
+    def includes(self, searchValue: str, position: int = 0) -> bool:
         """[returns true if the specified string is found within the calling String object,]
 
         Args:
@@ -2941,7 +2962,7 @@ class String(object):
         """
         return searchValue in self.x[position:]
 
-    def search(self, searchValue: str, position: int = 0):
+    def search(self, searchValue: str, position: int = 0) -> bool:
         """[returns true if the specified string is found within the calling String object,]
         starting at the specified position.
         Args:
@@ -3317,322 +3338,6 @@ class RegExp():
     # Searches the match in given string and returns the index the pattern found in the string.
     # def [@@split]()
     # Splits given string into an array by separating the strin
-
-
-# https://developer.mozilla.org/en-US/docs/Web/API/URL
-
-class URL(object):
-    """ a-tag extends from URL """
-
-    def __update__(self):
-        # print( "update URL:", type(self), self  )
-        try:
-            # make obj with all old props
-            new = {}
-            new['protocol'] = self.url.scheme
-            new['hostname'] = self.url.hostname
-            new['href'] = self.url.geturl()
-            new['port'] = self.url.port
-            new['host'] = ''  # self.url.hostname
-            new['pathname'] = self.url.path
-            new['hash'] = ''  # self.url.hash
-            new['search'] = ''  # self.url.hash
-
-            # update it with all the new ones
-            new = {}
-            new['protocol'] = self.protocol
-            new['hostname'] = self.hostname
-            new['href'] = self.href
-            new['port'] = self.port
-            new['host'] = self.host
-            new['pathname'] = self.pathname
-            new['hash'] = self.hash  # self.hash
-            new['search'] = self.search  # self.url.query
-            new['_searchParams'] = self._searchParams  # URLSearchParams(self.url.query)
-            # NOTE - rebuild happening here
-            self.url = urllib.parse.urlsplit(
-                new['protocol'] + "://" + new['host'] + new['pathname'] + new['hash'] + new['search'])
-
-            self.href = self.url.geturl()
-
-        except Exception:  # as e:
-            # print('fails on props called by init as they dont exist yet')
-            # print(e)
-            pass
-
-    def __init__(self, url: str = "", *args, **kwargs):  # TODO - relative to
-        """URL
-
-        builds a url
-
-        Args:
-            url (str): a url
-        """
-        self.url = urllib.parse.urlsplit(url)
-        self.href = url  # self.url.geturl()
-        self.protocol = self.url.scheme
-        self.hostname = self.url.hostname
-        self.port = self.url.port
-        self.host = self.url.hostname
-        self.pathname = self.url.path
-        self.hash = ''
-        self.search = self.url.query
-        self._searchParams = URLSearchParams(self.url.query)
-
-    @property
-    def searchParams(self):
-        return self._searchParams.toString()
-
-    def toString(self):
-        return str(self.href)
-
-    # def toJson
-
-    # @property
-    # def href(self):
-    # TODO - check js vs tag. does js version remove query?. if so detect self.
-    #     return self.href
-
-    # @href.setter
-    # def href(self, href:str):
-    #     self.url = href
-    #     self.href = href
-
-    @property
-    def protocol(self):
-        return self.__protocol
-
-    @protocol.setter
-    def protocol(self, p: str):
-        self.__protocol = p
-        # if self.ready : self.__update__() # TODO - this instead of silent err?
-        self.__update__()
-
-    @property
-    def hostname(self):
-        return self.__hostname
-
-    @hostname.setter
-    def hostname(self, h: str):
-        if h is None:
-            return
-        if ":" in h:
-            h = h.split(':')[0]
-        self.__hostname = h
-        self.__update__()
-
-    @property
-    def port(self):
-        return self.__port
-
-    @port.setter
-    def port(self, p: str):
-        self.__port = p
-        self.__update__()
-
-    @property
-    def host(self):
-        if self.port is not None:
-            return self.hostname + ":" + str(self.port)
-        else:
-            return self.hostname
-
-    @host.setter
-    def host(self, h: str):
-        if h is None:
-            return
-        p = self.port
-        if ":" in h:
-            p = int(h.split(':')[1])
-            h = h.split(':')[0]
-        self.__host = h
-        self.hostname = h
-        self.port = p
-        self.__update__()
-
-    @property
-    def pathname(self):
-        return self.__pathname
-
-    @pathname.setter
-    def pathname(self, p: str):
-        self.__pathname = p
-        self.__update__()
-
-    @property
-    def hash(self):
-        """" hash Sets or returns the anchor part (#) of a URL """
-        if '#' in self.href:
-            return '#' + self.href.split('#')[1]
-        # return ''
-        return self.__hash
-
-    @hash.setter
-    def hash(self, h: str):
-        self.__hash = h
-        self.__update__()
-
-    # @property
-    # def origin(self):
-        '''# origin    Returns the protocol, hostname and port number of a URL Location'''
-
-    def __str__(self):
-        return str(self.href)
-
-    # NOTE - node -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    # @staticmethod
-    # def domainToASCII(domain: str):
-    #     """[It returns the Punycode ASCII serialization of the domain.
-    #     If domain is an invalid domain, the empty string is returned.]
-
-    #     Args:
-    #         domain (str): [description]
-    #     """
-    #     pass
-
-    # @staticmethod
-    # def domainToUnicode(domain: str):
-    #     """[returns the Unicode serialization of the domain.
-    #     If the domain is invalid, the empty string is returned]
-
-    #     Args:
-    #         domain (str): [description]
-    #     """
-    #     pass
-
-    # @staticmethod
-    # def fileURLToPath(url: str):
-    #     """[summary]
-
-    #     Args:
-    #         url (str): [description]
-    #     """
-    #     pass
-
-    # @staticmethod
-    # def format(URL, options):
-    #     """[summary]
-
-    #     Args:
-    #         URL ([type]): [description]
-    #         options ([type]): [description]
-    #     """
-    #     pass
-
-    # @staticmethod
-    # def pathToFileURL(path: str):
-    #     """[summary]
-
-    #     Args:
-    #         path (str): [description]
-    #     """
-    #     pass
-
-    # @staticmethod
-    # def urlToHttpOptions(url: str):
-    #     """[summary]
-
-    #     Args:
-    #         url (str): [description]
-    #     """
-    #     pass
-
-
-class URLSearchParams:
-    """[utility methods to work with the query string of a URL]
-
-        created with help of https://6b.eleuther.ai/
-
-    """
-
-    def __init__(self, paramString):  # , **paramsObj):
-        """[Returns a URLSearchParams object instance.]
-
-        Args:
-            paramString ([type]): [ i.e. q=URLUtils.searchParams&topic=api]
-        """
-        # TODO - escape
-        # import ast
-        # TODO - dont think i can do this cant urls params have duplicate keys?
-        # self.params = ast.literal_eval(paramString)
-        if isinstance(paramString, str):
-            if paramString.startswith('?'):
-                paramString = paramString[1:len(paramString)]
-
-            import urllib
-            self.params = urllib.parse.parse_qs(paramString)
-        elif hasattr(paramString, '__iter__'):
-            self.params = [item for sublist in paramString for item in sublist]
-        elif isinstance(paramString, dict):
-            self.params = dict([(key, item) for key, item in paramString.iteritems()])
-        else:
-            raise TypeError("Malformed paramString.  Must be a string or a dict with dict like items. Got: %s" % paramString)
-
-    def __iter__(self):
-        for attr in self.params.items():  # dir(self.params.items()):
-            # if not attr.startswith("__"):
-            yield attr
-
-    def append(self, key, value):
-        """ Appends a specified key/value pair as a new search parameter """
-        # TODO - ordereddict?
-        self.params[key].append(value)  # [key]=value
-
-    def delete(self, key):
-        """ Deletes the given search parameter, and its associated value, from the list of all search parameters. """
-        del self.params[key]
-
-    def has(self, key):
-        """ Returns a Boolean indicating if such a given parameter exists. """
-        return key in self.params
-
-    def entries(self):
-        """ Returns an iterator allowing iteration through all key/value pairs contained in this object. """
-        return self.params.items()
-
-    def forEach(self, func):
-        """ Allows iteration through all values contained in this object via a callback function. """
-        for key, value in self.params.items():
-            func(key, value)
-
-    def keys(self):
-        """ Returns an iterator allowing iteration through all keys of the key/value pairs contained in this object. """
-        return self.params.keys()
-
-    def get(self, key):
-        """ Returns the first value associated with the given search parameter. """
-        try:
-            return self.params.get(key, None)[0]
-        except Exception:
-            return None
-
-    def sort(self):
-        """ Sorts all key/value pairs, if any, by their keys. """
-        self.params.sort()
-
-    def values(self):
-        """ Returns an iterator allowing iteration through all values of the
-        key/value pairs contained in this object. """
-        return self.params.values()
-
-    def toString(self):
-        """ Returns a string containing a query string suitable for use in a URL. """
-        # return '&'.join([str(x) for x in self.params])
-        return urllib.parse.urlencode(self.params, doseq=True)
-        # return str(self.params)
-
-    def set(self, key, value):
-        """ Sets the value associated with a given search parameter to the given value.
-        If there are several values, the others are deleted. """
-        self.params[key] = (value)
-
-    def getAll(self, key):
-        """ Returns all the values associated with a given search parameter. """
-        return self.params.get(key)
-
-    def __str__(self):
-        return urllib.parse.urlencode(self.params, doseq=True)
-
 
 def ToInt32(v):
     return v >> 0
@@ -4287,7 +3992,6 @@ Float64Array.BYTES_PER_ELEMENT = 8
 # BigUint64Array.BYTES_PER_ELEMENT = 8
 
 
-# TODO - error package in the webapi?
 # TODO - test
 class Error(Exception):
     ''' Raise Errors '''

@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 __license__ = 'MIT'
 __author__ = "@byteface"
 
@@ -631,12 +631,12 @@ class domonic:
             # NOTE - bad! as will skip some params
             if line.count('"') % 2 == 1:
                 return line  # its an opening multi-line string so continue.
-                #continue
+                # continue
 
             # prevents single attrib with missing quotes from losing content. (or throw unclean html errors?)(start doing that you'll never stop)
             if line.count('=') < 2:  # if only 1 attr
                 if line.count('"') < 1 and line.count("'") < 1:
-                    line = line.replace( ',', '$COMMA$')
+                    line = line.replace(',', '$COMMA$')
                     parts = line.split('=')
                     line = parts[0] + "=" + '"' + parts[1] + '"'
                     # print(line)
