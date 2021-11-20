@@ -831,6 +831,9 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
 
 class DocumentType(Node):
 
+    nodeType = Node.DOCUMENT_TYPE_NODE
+    __slots__ = ('name', 'publicId', 'systemId')
+
     def __init__(self, name: str="html", publicId: str="", systemId: str="") -> None:
         self.name: str = name  # A DOMString, eg "html" for <!DOCTYPE HTML>.
         self.publicId: str = publicId  # A DOMString, eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
@@ -844,15 +847,19 @@ class DocumentType(Node):
         else:
             return None
 
-    def notations(self):
+    def notations(self) -> NamedNodeMap:
         """ A NamedNodeMap with notations declared in the DTD. """
-        raise NotImplementedError
+        nnm = NamedNodeMap()
+        for item in self.ownerDocument.args:
+            if item.nodeType == Node.NOTATION_NODE:
+                nnm.append(item)
+        return nnm
 
-    @property
-    def nodeType(self):
-        return Node.DOCUMENT_TYPE_NODE
+    # @property
+    # def nodeType(self):
+    #     return Node.DOCUMENT_TYPE_NODE
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"<!DOCTYPE {self.name} {self.publicId} {self.systemId}>"
 
 

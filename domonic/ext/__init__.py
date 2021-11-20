@@ -8,7 +8,7 @@
 
 # HELLO WORLDS - hello world code for other libs
 
-HELLO_SANIC = """
+HELLO_SANIC: str = """
 from sanic import Sanic
 from sanic import response
 from domonic.html import *
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     app.run()
 """
 
-HELLO_FLASK = """
+HELLO_FLASK: str = """
 from flask import Flask
 from domonic.html import *
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     app.run()
 """
 
-HELLO_CHERRYPY = """
+HELLO_CHERRYPY: str = """
 import cherrypy
 from domonic.html import *
 
@@ -71,7 +71,7 @@ cherrypy.quickstart(HelloWorld())
 """
 
 
-HELLO_BOTTLE = """
+HELLO_BOTTLE: str = """
 from bottle import route, run
 from domonic.html import *
 
@@ -89,7 +89,7 @@ def index(name):
 run(host='localhost', port=8080)
 """
 
-HELLO_AIOHTTP = """
+HELLO_AIOHTTP: str = """
 from domonic.html import *
 from aiohttp import web
 
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     web.run_app(app)
 """
 
-HELLO_TORNADO = """
+HELLO_TORNADO: str = """
 import tornado.ioloop
 import tornado.web
 from domonic.html import *
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     tornado.ioloop.IOLoop.current().start()
 """
 
-HELLO_WERKZEUG = """
+HELLO_WERKZEUG: str = """
 from werkzeug.wrappers import Request, Response
 from domonic.html import *
 
