@@ -181,6 +181,44 @@ class TestCase(unittest.TestCase):
             )
         )
 
+    def test_NodeList(self):
+        nlist = self.page.body.childNodes
+        assert isinstance(nlist, NodeList)
+        # assert len(nlist) == 1
+        # test Nodelist methods and properties. foreach, entries, keys, values
+        node = document.createElement("div")
+        kid1 = document.createElement("p")
+        kid2 = document.createTextNode("hey")
+        kid3 = document.createElement("span")
+        node.appendChild(kid1)
+        node.appendChild(kid2)
+        node.appendChild(kid3)
+        somelist = node.childNodes
+        for each in somelist.values():
+            print(each)
+        # <p>
+        # #text "hey"
+        # <span>
+        # https://developer.mozilla.org/en-US/docs/Web/API/NodeList/values
+        # TODO - output should be no close tag and a hash say text?
+        for each in somelist.keys():
+            print(each)
+        somelist.forEach(
+            lambda currentValue, currentIndex, listObj, **kwargs: print(currentValue, currentIndex, kwargs),
+            'myThisArg'
+        )
+        for each in somelist.entries():
+            print(each)
+        # Array [ 0, <p> ]
+        # Array [ 1, #text "hey" ]
+        # Array [ 2, <span> ]
+        # print(somelist.item(0))
+        # print(somelist.item(1))
+        # print(somelist.item(2))
+        assert somelist.item(0) == kid1
+        assert somelist.item(1) == kid2
+        assert somelist.item(2) == kid3
+
     def test_Node(self):
 
         n = Node()

@@ -116,7 +116,8 @@ class dQuery_el():
             # return
 
         if self.q[0] == '<':
-            self.elements = domonic.domonic.load(self.q)
+            from domonic import domonic
+            self.elements = domonic.load(self.q)
             # print(self.elements)
             # print(type(self.elements))
             if isinstance(self.elements, html) or isinstance(self.elements, Document):

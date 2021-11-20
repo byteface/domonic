@@ -993,5 +993,21 @@ class TestCase(unittest.TestCase):
         assert '<script src="foo.js" async="true" hidden="false" checked="true"></script>' == str(s)
 
 
+    def test_dialog(self):
+        
+        d = html()
+        with d:
+            dialog("hello", _open="")
+            form(button("close"), _method="dialog", _action="close")
+            
+        print(d)
+        
+        mydialog = HTMLDialogElement()
+        print(mydialog)
+        print(str(mydialog))
+            
+        # assert str(d) == '<html><dialog open>hello<form method="dialog" action="close"><button>close</button></form></dialog></html>'
+
+
 if __name__ == '__main__':
     unittest.main()

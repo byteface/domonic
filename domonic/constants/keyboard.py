@@ -1,124 +1,124 @@
 """
     domonic.constants.keyboard
-    ====================================
+    ===================================
 
 """
 
 
 class KeyCode():
 
-    A = '65'  #:
-    ALTERNATE = '18'  #:
-    B = '66'  #:
-    BACKQUOTE = '192'  #:
-    BACKSLASH = '220'  #:
-    BACKSPACE = '8'  #:
-    C = '67'  #:
-    CAPS_LOCK = '20'  #:
-    COMMA = '188'  #:
-    COMMAND = '15'  #:
-    CONTROL = '17'  #:
-    D = '68'  #:
-    DELETE = '46'  #:
-    DOWN = '40'  #:
-    E = '69'  #:
-    END = '35'  #:
+    A: str = '65'  #:
+    ALTERNATE: str = '18'  #:
+    B: str = '66'  #:
+    BACKQUOTE: str = '192'  #:
+    BACKSLASH: str = '220'  #:
+    BACKSPACE: str = '8'  #:
+    C: str = '67'  #:
+    CAPS_LOCK: str = '20'  #:
+    COMMA: str = '188'  #:
+    COMMAND: str = '15'  #:
+    CONTROL: str = '17'  #:
+    D: str = '68'  #:
+    DELETE: str = '46'  #:
+    DOWN: str = '40'  #:
+    E: str = '69'  #:
+    END: str = '35'  #:
 
-    ENTER = '13'  #:
-    RETURN = '13'  #:
+    ENTER: str = '13'  #:
+    RETURN: str = '13'  #:
 
-    EQUAL = '187'  #:
-    ESCAPE = '27'  #:
-    F = '70'  #:
-    F1 = '112'  #:
-    F10 = '121'  #:
-    F11 = '122'  #:
-    F12 = '123'  #:
-    F13 = '124'  #:
-    F14 = '125'  #:
-    F15 = '126'  #:
-    F2 = '113'  #:
-    F3 = '114'  #:
-    F4 = '115'  #:
-    F5 = '116'  #:
-    F6 = '117'  #:
-    F7 = '118'  #:
-    F8 = '119'  #:
-    F9 = '120'  #:
-    G = '71'  #:
-    H = '72'  #:
-    HOME = '36'  #:
-    I = '73'  #:
-    INSERT = '45'  #:
-    J = '74'  #:
-    K = '75'  #:
-    L = '76'  #:
-    LEFT = '37'  #:
-    LEFTBRACKET = '219'  #:
-    M = '77'  #:
-    MINUS = '189'  #:
-    N = '78'  #:
-    NUMBER_0 = '48'  #:
-    NUMBER_1 = '49'  #:
-    NUMBER_2 = '50'  #:
-    NUMBER_3 = '51'  #:
-    NUMBER_4 = '52'  #:
-    NUMBER_5 = '53'  #:
-    NUMBER_6 = '54'  #:
-    NUMBER_7 = '55'  #:
-    NUMBER_8 = '56'  #:
-    NUMBER_9 = '57'  #:
-    NUMPAD = '21'  #:
-    NUMPAD_0 = '96'  #:
-    NUMPAD_1 = '97'  #:
-    NUMPAD_2 = '98'  #:
-    NUMPAD_3 = '99'  #:
-    NUMPAD_4 = '100'  #:
-    NUMPAD_5 = '101'  #:
-    NUMPAD_6 = '102'  #:
-    NUMPAD_7 = '103'  #:
-    NUMPAD_8 = '104'  #:
-    NUMPAD_9 = '105'  #:
-    NUMPAD_ADD = '107'  #:
-    NUMPAD_DECIMAL = '110'  #:
-    NUMPAD_DIVIDE = '111'  #:
-    NUMPAD_ENTER = '108'  #:
-    NUMPAD_MULTIPLY = '106'  #:
-    NUMPAD_SUBTRACT = '109'  #:
-    O = '79'  #:
-    P = '80'  #:
-    PAGE_DOWN = '34'  #:
-    PAGE_UP = '33'  #:
-    PERIOD = '190'  #:
-    Q = '81'  #:
-    QUOTE = '222'  #:
-    R = '82'  #:
-    RIGHT = '39'  #:
-    RIGHTBRACKET = '221'  #:
-    S = '83'  #:
-    SEMICOLON = '186'  #:
-    SHIFT = '16'  #: ?? left or right or both?
-    SLASH = '191'  #:
-    SPACE = '32'  #:
-    T = '84'  #:
-    TAB = '9'  #:
-    U = '85'  #:
-    UP = '38'  #:
-    V = '86'  #:
-    W = '87'  #:
-    X = '88'  #:
-    Y = '89'  #:
-    Z = '9'  #:
+    EQUAL: str = '187'  #:
+    ESCAPE: str = '27'  #:
+    F: str = '70'  #:
+    F1: str = '112'  #:
+    F10: str = '121'  #:
+    F11: str = '122'  #:
+    F12: str = '123'  #:
+    F13: str = '124'  #:
+    F14: str = '125'  #:
+    F15: str = '126'  #:
+    F2: str = '113'  #:
+    F3: str = '114'  #:
+    F4: str = '115'  #:
+    F5: str = '116'  #:
+    F6: str = '117'  #:
+    F7: str = '118'  #:
+    F8: str = '119'  #:
+    F9: str = '120'  #:
+    G: str = '71'  #:
+    H: str = '72'  #:
+    HOME: str = '36'  #:
+    I: str = '73'  #:
+    INSERT: str = '45'  #:
+    J: str = '74'  #:
+    K: str = '75'  #:
+    L: str = '76'  #:
+    LEFT: str = '37'  #:
+    LEFTBRACKET: str = '219'  #:
+    M: str = '77'  #:
+    MINUS: str = '189'  #:
+    N: str = '78'  #:
+    NUMBER_0: str = '48'  #:
+    NUMBER_1: str = '49'  #:
+    NUMBER_2: str = '50'  #:
+    NUMBER_3: str = '51'  #:
+    NUMBER_4: str = '52'  #:
+    NUMBER_5: str = '53'  #:
+    NUMBER_6: str = '54'  #:
+    NUMBER_7: str = '55'  #:
+    NUMBER_8: str = '56'  #:
+    NUMBER_9: str = '57'  #:
+    NUMPAD: str = '21'  #:
+    NUMPAD_0: str = '96'  #:
+    NUMPAD_1: str = '97'  #:
+    NUMPAD_2: str = '98'  #:
+    NUMPAD_3: str = '99'  #:
+    NUMPAD_4: str = '100'  #:
+    NUMPAD_5: str = '101'  #:
+    NUMPAD_6: str = '102'  #:
+    NUMPAD_7: str = '103'  #:
+    NUMPAD_8: str = '104'  #:
+    NUMPAD_9: str = '105'  #:
+    NUMPAD_ADD: str = '107'  #:
+    NUMPAD_DECIMAL: str = '110'  #:
+    NUMPAD_DIVIDE: str = '111'  #:
+    NUMPAD_ENTER: str = '108'  #:
+    NUMPAD_MULTIPLY: str = '106'  #:
+    NUMPAD_SUBTRACT: str = '109'  #:
+    O: str = '79'  #:
+    P: str = '80'  #:
+    PAGE_DOWN: str = '34'  #:
+    PAGE_UP: str = '33'  #:
+    PERIOD: str = '190'  #:
+    Q: str = '81'  #:
+    QUOTE: str = '222'  #:
+    R: str = '82'  #:
+    RIGHT: str = '39'  #:
+    RIGHTBRACKET: str = '221'  #:
+    S: str = '83'  #:
+    SEMICOLON: str = '186'  #:
+    SHIFT: str = '16'  #: ?? left or right or both?
+    SLASH: str = '191'  #:
+    SPACE: str = '32'  #:
+    T: str = '84'  #:
+    TAB: str = '9'  #:
+    U: str = '85'  #:
+    UP: str = '38'  #:
+    V: str = '86'  #:
+    W: str = '87'  #:
+    X: str = '88'  #:
+    Y: str = '89'  #:
+    Z: str = '9'  #:
 
     # TODO - do the modifiers
 
     # find attribute by value
     # def get_letter(self, attr):
     #     for key, value in self.__dict__.iteritems():
-    #         if value == attr:
+    #         if value: str == attr:
     #             return key
     #     return None
 
-    def __init__(self):
+    def __init__(self) -> None:
         """ constructor for the keyboard class """
         pass

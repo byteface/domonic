@@ -787,8 +787,8 @@ class Namespaces:
         node.namespaceURI = uri
         node.prefix = prefix
         node.ownerDocument = self.document
-        # print("THIS::::", self.curNode, node)
-        # print("THIS::::", type(self.curNode), type(node))
+        print("THIS::::", self.curNode, node)
+        print("THIS::::", type(self.curNode), type(node))
         # _append_child(self.curNode, node)
         if isinstance(self.curNode, Document) and isinstance(node, Document):
             # NOTE - because the domonic Document is a tag. the first one needs to be the root

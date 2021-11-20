@@ -6,6 +6,9 @@
 import copy
 from domonic.javascript import URL
 from domonic.dom import Node, Element, Document, DocumentType, Comment, Text
+from domonic.dom import (HTMLDialogElement)
+
+
 
 html_tags = [
             "figcaption", "blockquote", "textarea", "progress", "optgroup", "noscript", "fieldset", "datalist",
@@ -15,7 +18,7 @@ html_tags = [
             "thead", "tfoot", "tbody", "table", "style", "small", "param", "meter", "label", "input",
             "audio", "aside", "time", "span", "samp", "ruby", "meta", "menu", "mark", "link",
             "applet", "object", "basefont", "center", "dir", "embed", "isindex", "listing", "menuitem",
-            "plaintext", "pre", "strike", "xmp", "template", "picture",
+            "plaintext", "pre", "strike", "xmp", "template", "picture", "dialog"
             "html", "head", "form", "font", "code", "cite", "body", "base", "area", "abbr", "wbr", "var", "sup",
             "sub", "nav", "map", "main", "kbd", "ins", "img", "div", "dfn", "del", "col", "bdo", "bdi",
             "ul", "tr", "th", "td", "rt", "rp", "ol", "li", "hr", "h6", "h5", "h4", "h3", "h2", "h1",
@@ -154,7 +157,7 @@ class tag(object):
             key = key.split('_', 1)[1]
             # lets us have boolean attributes  # TODO - should be optional by a global config
             if key in ['async', 'checked', 'autofocus', 'disabled', 'formnovalidate', 'hidden', 'multiple',
-                       'novalidate', 'readonly', 'required', 'selected']:
+                       'novalidate', 'readonly', 'required', 'selected', "open"]:
                 if value == '' or value == key:
                     return ''' %s''' % key
             return ''' %s="%s"''' % (key, value)
@@ -636,7 +639,6 @@ center = type('center', (tag, Element), {'name': 'center', '__init__': tag_init}
 embed = type('embed', (tag, Element), {'name': 'embed', '__init__': tag_init})
 isindex = type('isindex', (tag, Element), {'name': 'isindex', '__init__': tag_init})
 listing = type('listing', (tag, Element), {'name': 'listing', '__init__': tag_init})
-# menu = type('menu', (tag, Element), {'name': 'menu', '__init__': tag_init})
 plaintext = type('plaintext', (tag, Element), {'name': 'plaintext', '__init__': tag_init})
 s = type('s', (tag, Element), {'name': 's', '__init__': tag_init})
 u = type('u', (tag, Element), {'name': 'u', '__init__': tag_init})
@@ -645,7 +647,9 @@ xmp = type('xmp', (tag, Element), {'name': 'xmp', '__init__': tag_init})
 
 template = type('template', (tag, Element), {'name': 'template', '__init__': tag_init})
 picture = type('picture', (tag, Element), {'name': 'picture', '__init__': tag_init})
+dialog = type('dialog', (tag, HTMLDialogElement), {'name': 'dialog', '__init__': tag_init})
 
+# dialog = HTMLDialogElement
 
 # legacy.
 doctype = DocumentType

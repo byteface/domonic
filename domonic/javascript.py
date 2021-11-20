@@ -18,7 +18,7 @@ import math
 import random
 import threading
 import signal
-import typing
+# import typing
 import requests
 import gc
 import multiprocessing
@@ -30,7 +30,7 @@ import array
 import struct
 
 
-def function(python_str):
+def function(python_str: str) -> str:
     """[evals a string i.e.
 
     sup = function('''print(hi)''')
@@ -47,10 +47,10 @@ def function(python_str):
 
 
 # TODO - list all javascript keywords to python keywords
-true = True
-false = False
-null = None
-undefined = None
+true: bool = True
+false: bool = False
+null: object = None
+undefined: object = None
 # globalThis # TODO - do i need to use inpect? or is globals() ok?
 
 
@@ -58,13 +58,13 @@ class Boolean():
     """[Creates a Boolean Object.
         Warning this is NOT a boolean type. for that use Global.Boolean()]
     """
-    def __init__(self, value=False):
-        self.value = Global.Boolean(value)
+    def __init__(self, value=False) -> None:
+        self.value: bool = Global.Boolean(value)
 
 
 class Object(object):
 
-    def __init__(self, obj=None, *args, **kwargs):
+    def __init__(self, obj=None, *args, **kwargs) -> None:
         """[Creates a Javascript-like Object in python]
 
         Args:
@@ -660,6 +660,9 @@ class Map(object):
 
     # def forEach(self, callbackFn[, thisArg]):
     #     raise NotImplementedError
+            # TODO - is this supposed to pass count like Node list? i.e.
+        # for i in range(len(self.args)):
+            # func(self.args[i], i, self.args)
 
     def update(self, ordered_dict):
         for key, value in ordered_dict.iteritems():
@@ -754,16 +757,15 @@ class Math(Object):
     Math.abs('-1')
 
     """
-
     # CONSTANTS
-    PI = 3.141592653589793
-    E = 2.718281828459045
-    LN2 = 0.6931471805599453
-    LN10 = 2.302585092994046
-    LOG2E = 1.4426950408889634
-    LOG10E = 0.4342944819032518
-    SQRT1_2 = 0.7071067811865476
-    SQRT2 = 1.4142135623730951
+    PI: float = 3.141592653589793
+    E: float = 2.718281828459045
+    LN2: float = 0.6931471805599453
+    LN10: float = 2.302585092994046
+    LOG2E: float = 1.4426950408889634
+    LOG10E: float = 0.4342944819032518
+    SQRT1_2: float = 0.7071067811865476
+    SQRT2: float = 1.4142135623730951
 
     def _force_number(func):
         """[private decorator to make Math behave like javascript and turn strings, bools and None into numbers]]
@@ -808,20 +810,20 @@ class Math(Object):
 
     @staticmethod
     @_force_number
-    def abs(x):
-        """ Returns the absolute value of x """
+    def abs(x: float) -> float:
+        """ Returns the absolute value of a number. """
         return abs(x)
 
     @staticmethod
     @_force_number
-    def acos(x):
-        """ Returns the arccosine of x, in radians """
+    def acos(x: float) -> float:
+        """ Returns the arccosine (in radians) of a number. """
         return math.acos(x)
 
     @staticmethod
     @_force_number
-    def acosh(x):
-        """ Returns the hyperbolic arccosine of x """
+    def acosh(x: float) -> float:
+        """ Returns the hyperbolic arccosine of a number. """
         return math.acosh(x)
 
     @staticmethod
@@ -2239,6 +2241,9 @@ class Array(object):
         # written by .ai (https://6b.eleuther.ai/)
         for value in self.args:
             func(value)
+        # TODO - is this supposed to pass count like Node list? i.e.
+        # for i in range(len(self.args)):
+            # func(self.args[i], i, self.args)
 
     def keys(self):
         """ Returns a Array Iteration Object, containing the keys of the original array """
