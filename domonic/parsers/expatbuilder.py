@@ -251,7 +251,7 @@ class ExpatBuilder:
                                    has_internal_subset):
         doctype = self.document.implementation.createDocumentType(
             doctypeName, publicId, systemId)
-        doctype.ownerDocument = self.document
+        # doctype.ownerDocument = self.document
         # _append_child(self.document, doctype)
         # print(">>.", node, type(node))
         # if isinstance(node, Document):
@@ -309,7 +309,8 @@ class ExpatBuilder:
         else:
             node = Text()
             node.data = data
-            node.ownerDocument = self.document
+            # node.ownerDocument = self.document
+            node.parentNode = self.curNode
         # _append_child(self.curNode, node)
         self.curNode.appendChild(node)
 
@@ -322,7 +323,8 @@ class ExpatBuilder:
             return
         node = Text()
         node.data = node.data + data
-        node.ownerDocument = self.document
+        # node.ownerDocument = self.document
+        node.parentNode = self.curNode
         # _append_child(self.curNode, node)
         self.curNode.appendChild(node)
 
@@ -394,7 +396,8 @@ class ExpatBuilder:
                                  None, EMPTY_PREFIX)
                 value = attributes[i+1]
                 a.value = value
-                a.ownerDocument = self.document
+                # a.ownerDocument = self.document
+                a.parentNode = self.curNode
                 # _set_attribute_node(node, a)
                 node.setAttributeNode(a)
 
@@ -669,7 +672,7 @@ class FragmentBuilder(ExpatBuilder):
                 ident = 'SYSTEM "%s"' % doctype.systemId
         else:
             subset = ""
-        nsattrs = self._getNSattrs() # get ns decls from node's ancestors
+        nsattrs = self._getNSattrs()  # get ns decls from node's ancestors
         document = _FRAGMENT_BUILDER_TEMPLATE % (ident, subset, nsattrs)
         try:
             parser.Parse(document, True)
@@ -778,15 +781,16 @@ class Namespaces:
             localname = None
             prefix = EMPTY_PREFIX
         # node = minidom.Element(qname, uri, prefix, localname)
-        # print(qname, uri, prefix, localname)
+        print(qname, uri, prefix, localname)
         from domonic.parsers import create_element
         # from domonic.html import create_element
         # node = Element(qname, uri, prefix, localname)
-        node = create_element(qname, uri, prefix, localname)
-        # print( "NODE", node )
+        node = create_element(qname)  #, uri, prefix, localname)
+        print( "NODE", node )
         node.namespaceURI = uri
         node.prefix = prefix
-        node.ownerDocument = self.document
+        # node.ownerDocument = self.document
+        node.parentNode = self.curNode  # self.document
         print("THIS::::", self.curNode, node)
         print("THIS::::", type(self.curNode), type(node))
         # _append_child(self.curNode, node)
@@ -817,7 +821,8 @@ class Namespaces:
                 # a.ownerDocument = self.document
 
                 # a.value = uri
-                a.ownerDocument = self.document
+                # a.ownerDocument = self.document
+                # a.parentNode = self.curNode
                 # _set_attribute_node(node, a)
                 node.setAttributeNode(a)
 

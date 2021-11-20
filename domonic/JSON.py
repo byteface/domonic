@@ -35,7 +35,7 @@ class JSON(object):
         return data
 
     @staticmethod
-    def parse(json_string):
+    def parse(json_string: str):
         return json.loads(json_string)
 
     @staticmethod
