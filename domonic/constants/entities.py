@@ -63,7 +63,7 @@ class Char():
     COLON: str = '&#58;'  #: :
     SEMICOLON: str = '&#59;'  #: ;
     LESS_THAN: str = '&lt;'  #: <
-    EQUALS_SIGN: str = '&#61;'  #:: str =
+    EQUALS_SIGN: str = '&#61;'  # :: str =
     GREATER_THAN: str = '&gt;'  #: >
     QUESTION_MARK: str = '&#63;'  #: ?
     AT_SIGN: str = '&#64;'  #: @

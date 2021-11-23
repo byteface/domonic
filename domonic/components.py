@@ -599,7 +599,6 @@ class Webpage(object):  # TODO - shouldn't this extend html?
 
 # quick templates
 
-
 webpage_tmpl = lambda content: f"""
     <!DOCTYPE html>
     <html>
@@ -612,6 +611,7 @@ webpage_tmpl = lambda content: f"""
     </body>
     </html>
     """
+
 
 # carousel_tmpl = lambda content: f"""
 #     <div class="carousel slide" data-ride="carousel">

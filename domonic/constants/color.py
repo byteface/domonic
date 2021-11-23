@@ -166,7 +166,7 @@ class Color():
         # self.green = kwargs.get('g', self.g)
         # self.blue = kwargs.get('b', self.b)
 
-        self.alpha = kwargs.get('alpha', 1.0) # TODO - props instead?
+        self.alpha = kwargs.get('alpha', 1.0)  # TODO - props instead?
         self.red = kwargs.get('red', self.r)
         self.green = kwargs.get('green', self.g)
         self.blue = kwargs.get('blue', self.b)

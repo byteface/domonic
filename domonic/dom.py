@@ -8,6 +8,7 @@
 from typing import *  # List, Dict, Any, Union, Optional, Callable, Tuple
 
 import re
+from xml.dom.minidom import DocumentFragment
 
 from domonic.events import Event, EventTarget, MouseEvent  # , KeyboardEvent, TouchEvent, UIEvent, CustomEvent
 from domonic.style import CSSStyleDeclaration as Style
@@ -167,10 +168,25 @@ class Node(EventTarget):
             callback(element)
             nodes.extend(element.children)
 
-    def appendChild(self, item) -> None:
-        """ Adds a new child node, to an element, as the last child node """
-        self.args = self.args + (item,)
-        # return item  # causes max recursion when called chained
+    def __len__(self):
+        return len(self.args)
+
+    def appendChild(self, aChild) -> None:
+        """
+        Adds a child to the current element.
+        If item is a DocumentFragment, all its children are added.
+
+        Args:
+            item (Node): The Node to add.
+        """
+        if isinstance(aChild, DocumentFragment):
+            items = aChild.args
+            self.args = self.args + items
+            return DocumentFragment()
+        else:
+            self.args = self.args + (aChild,)
+            # return aChild  # causes max recursion when called chained? then don't chain?
+            return aChild
 
     @property
     def childElementCount(self) -> int:
@@ -193,18 +209,82 @@ class Node(EventTarget):
         return newlist
 
     def compareDocumentPosition(self, otherElement) -> int:
-        """ Returns a bitmask indicating the position of the other element relative to this element """
-        if self.parentNode is None:
-            if otherElement.parentNode is None:
-                return 0
-            else:
-                return 1
+        """
+        An integer value representing otherNode's position relative to node as a bitmask combining the following constant properties of Node:
+
+        https://stackoverflow.com/questions/8334286/cross-browser-compare-document-position
+
+        """
+        thisNode = self
+        other = otherElement
+
+        # if isinstance(other, str):
+        #     other = Text(other)
+        # if isinstance(thisNode, str):
+        #     thisNode = Text(thisNode)
+
+        def recursivelyWalk(nodes, cb):
+            for node in nodes:
+                if isinstance(node, str):
+                    node = Text(node)
+                    # continue
+                ret = cb(node)
+                if ret:
+                    return ret
+                if node.childNodes and node.childNodes.length > 0:
+                    ret = recursivelyWalk(node.childNodes, cb)
+                    if ret:
+                        return ret
+
+        def testNodeForComparePosition(node, other):
+            if node is other:
+                return True
+
+        def identifyWhichIsFirst(node):
+            if (node == other):
+                return "other"
+            elif (node == reference):
+                return "reference"
+
+        reference = thisNode
+        referenceTop = thisNode
+        otherTop = other
+
+        if self == other:
+            return 0
+        while referenceTop.parentNode is not None:
+            referenceTop = referenceTop.parentNode
+        while otherTop.parentNode is not None:
+            otherTop = otherTop.parentNode
+
+        # print(referenceTop, otherTop)
+        if referenceTop != otherTop:
+            return Node.DOCUMENT_POSITION_DISCONNECTED
+
+        children = reference.childNodes
+
+        ret = recursivelyWalk(
+            children,
+            lambda p: testNodeForComparePosition(other, p)
+        )
+        if ret:
+            return Node.DOCUMENT_POSITION_CONTAINED_BY  # + Node.DOCUMENT_POSITION_FOLLOWING
+
+        children = other.childNodes
+        ret = recursivelyWalk(
+            children,
+            lambda p: testNodeForComparePosition(reference, p)
+        )
+        if ret:
+            return Node.DOCUMENT_POSITION_CONTAINS  # + Node.DOCUMENT_POSITION_PRECEDING
+        ret = recursivelyWalk(
+            [referenceTop],
+            identifyWhichIsFirst
+        )
+        if ret == "other":
+            return Node.DOCUMENT_POSITION_PRECEDING
         else:
-            if otherElement.parentNode is None:
-                return -1
-            else:
-                return self.parentNode.compareDocumentPosition(otherElement.parentNode)
-        return 0
+            return Node.DOCUMENT_POSITION_FOLLOWING
 
     def contains(self, node):
         """ Check whether a node is a descendant of a given node """
@@ -334,14 +414,19 @@ class Node(EventTarget):
             nxt = nxt.parentNode
         return node
 
-    def insertBefore(self, new_node, reference_node):
-        """ inserts a node before a reference node as a child of a specified parent node. """
-        for count, each in enumerate(self.args):
-            if each == reference_node:
-                replace_args = list(self.args)
-                replace_args.insert(count, new_node)
-                self.args = tuple(replace_args)
-                return new_node
+    def insertBefore(self, new_node, reference_node = None):
+        """ inserts a node before a reference node as a child of a specified parent node. 
+            this will remove the node from its previous parent node, if any.
+
+            # TODO - can throw value error if wrong ordered params. may be helpful to catch to say so.
+        """
+        if reference_node is None:
+            self.appendChild(new_node)
+        else:
+            # remove new_node from its previous parent node
+            if new_node.parentNode is not None:
+                new_node.parentNode.removeChild(new_node)
+            self.args = self.args[:self.args.index(reference_node)] + (new_node,) + self.args[self.args.index(reference_node):]
         return new_node
 
     def removeChild(self, node):
@@ -450,7 +535,7 @@ class Node(EventTarget):
         if self.parentNode is None:
             return None
         else:
-            for node, count in enumerate(self.parentNode.args):
+            for count, node in enumerate(self.parentNode.args):
                 if node == self:
                     if count == len(self.parentNode.args) - 1:
                         return None
@@ -465,10 +550,11 @@ class Node(EventTarget):
     def previousSibling(self):
         """[returns the previous sibling of the current node.]
         """
+        # print('prev sib', self.parentNode.args)
         if self.parentNode is None:
             return None
         else:
-            for node, count in enumerate(self.parentNode.args):
+            for count, node in enumerate(self.parentNode.args):
                 if node == self:
                     if count == 0:
                         return None
@@ -613,6 +699,15 @@ class Attr(Node):
 
 # from xml.dom.minidom import Attr
 from xml.dom.minidom import NamedNodeMap
+
+# class NamedNodeMap(NamedNodeMap):
+
+    # def __getitem__(self, name):
+    #     self.getNamedItem(name)
+
+    # def __setitem__(self, name: str, value):
+    #     self.setNamedItem(name, value)
+
 
 '''
 class NamedNodeMap(object):
@@ -1313,12 +1408,14 @@ class Element(Node):
             return self
         try:
             for child in self.childNodes:
+                if isinstance(child, str):
+                    continue
                 match = child._getElementById(_id)
-                if match:
+                if match is not False and match is not None:
                     return match
         except Exception as e:
-            # print('fail', e)
-            pass  # TODO - dont iterate strings
+            print('fail', e)
+            pass  # TODO - dont iterate strings.... ooof nasty. so thats why you never pass silently.
         return False
 
     def _getElementByAttrVal(self, attr: str, val: str):
@@ -1506,6 +1603,7 @@ class Element(Node):
             context = found
 
         selected.extend(context)
+        # print('SELECTED:::', selected)
         return selected
 
     def append(self, *args):
@@ -1866,17 +1964,25 @@ class Element(Node):
     def normalize(self):
         '''Joins adjacent text nodes and removes empty text nodes in an element'''
         content = []
+        # print(self.args)
+        nodestr = ''
         for s in self.args:
             if type(s) == Text:
-                content.append(s.textContent)
+                # content.append(s.textContent)
+                nodestr += s.textContent
                 continue
-            if type(s) != str:
-                content.append(str(s))
+            elif type(s) == str:
+                nodestr += s
                 continue
-            content.append(s)
-
+            elif nodestr != '':
+                content.append(nodestr)
+                nodestr = ''
+            elif type(s) != str:
+                content.append(s)
+        if nodestr != '':
+            content.append(nodestr)
+        # print(">>", content)
         self.args = content
-        self.args = [Text(' '.join([str(s) for s in self.args]))]
         return self.args
 
     def offsetHeight(self):
@@ -1904,14 +2010,19 @@ class Element(Node):
         """ Returns the parent element node of an element """
         return self.parentNode
 
-    @property
-    def previousSibling(self):
-        """ Returns the previous node at the same node tree level """
-        if self.parentNode is not None:
-            for count, el in enumerate(self.parentNode.args):
-                if el is self and count > 1:
-                    return self.parentNode.args[count - 1]
-        return None
+    # @property
+    # def previousSibling(self):
+    #     """ Returns the previous node at the same node tree level """
+    #     if self.parentNode is not None:
+    #         for count, el in enumerate(self.parentNode.args):
+    #             if el is self and count > 1:
+    #                 return self.parentNode.args[count - 1]
+    #     return None
+
+    def prepend(self, *args):
+        """ Prepends a node to the current element """
+        newargs = list(args) + list(self.args)
+        self.args = tuple(newargs)
 
     def querySelector(self, query: str):
         """[Returns the first child element that matches a specified CSS selector(s) of an element]
@@ -2430,6 +2541,8 @@ class Document(Element):
 
     def __init__(self, *args, **kwargs):
         """ init Creates a new Document """
+        self.args = args
+        self.kwargs = kwargs
         # self.doc = doc
         # self.uri = uri
         # self.documentURI = uri
@@ -2741,10 +2854,13 @@ class Document(Element):
                 return each
             try:
                 for child in each.childNodes:
+                    # print("0000",each)
+                    if isinstance(child, str):
+                        continue
                     match = child._getElementById(_id)
                     # TODO - i think i need to build a hash map of IDs to positions on the tree
                     # for now I'm going to use recursion and add this same method to Element
-                    if match:
+                    if match is not False and match is not None:
                         return match
 
             except Exception as e:
@@ -3161,6 +3277,10 @@ class Text(CharacterData):
     # def nodeType(self):
     #     return Node.TEXT_NODE
     nodeType: int = Node.TEXT_NODE
+
+    @property
+    def childNodes(self):
+        return 0
 
     @property  # TODO - is this correct?
     def firstChild(self):
@@ -3640,16 +3760,10 @@ def str_to_TextNode(content_str):
 
 def traverseChildren(tw, _type):
     # var child, node, parent, result, sibling
-    # print('sup', _type)
     # print('mapChild[_type]', mapChild[_type])
     node = getattr(tw.currentNode, mapChild[_type])  # TODO - allow dict access to node props?.... tw.currentNode[mapChild[_type]]
-    # print('flaps', tw.currentNode.firstChild)
-    # print('flaps2', )
     # print('tw.currentNode', tw.currentNode)
-    # print('MAKE THIS WORK ON NODE:', tw.currentNode[mapChild[_type]]) #done
-
     # node = str_to_TextNode(node)
-
     while node != None:
         # node = str_to_TextNode(node)
         result = nodeFilter(tw, node)
@@ -3707,20 +3821,20 @@ def nextSkippingChildren(node, stayWithin):
     # print( "AND:", node.nextSibling )
 
     if node == stayWithin:
-        print('a')
+        # print('a')
         return None
     if node.nextSibling != None:
-        print('b')
+        # print('b')
         return node.nextSibling
 
     while node.parentNode != None:
-        print('c')
+        # print('c')
         node = node.parentNode
         if node == stayWithin:
-            print('d')
+            # print('d')
             return None
         if node.nextSibling != None:
-            print('e')
+            # print('e')
             return node.nextSibling
     return None
 
@@ -4082,8 +4196,9 @@ class Sanitizer():
             els = frag.getElementsByTagName(e)
             if els != False and len(els) > 0:
                 for el in els:
-                    # print(el.kwargs, el.attributes, el.__attributes__, type(el.attributes))
+                    # print(el, el.kwargs, el.attributes, el.__attributes__, type(el.attributes))
                     for each in el.attributes:
+                        # print(each)
                         key = each.name
                         val = each.value
                         # print(key, val)

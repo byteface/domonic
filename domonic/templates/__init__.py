@@ -5,7 +5,8 @@
 
 """
 
-from domonic import *
+from domonic.html import *
+from domonic.constants.entities import Char
 
 
 class status_page():
@@ -136,7 +137,6 @@ class d_b():
     # def query(self, query):
     # def close(self):
 '''
-
 
 # from domonic.templates import status_page
 

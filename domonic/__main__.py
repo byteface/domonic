@@ -6,7 +6,7 @@
 
 import argparse
 import os
-
+import sys
 
 prog = '''
 
@@ -229,15 +229,15 @@ def parse_args():
                                      prog="domonic",
                                      usage="%(prog)s [options]",
                                      description="Generate HTML with Python 3")
-    parser.add_argument('-a', '--assets', help="generate as assets directory with common files", action='store_true')
-    parser.add_argument('-d', '--download', help="Attempts to to generate domonic template from a webpage", type=str)
-    parser.add_argument('-h', '--help', action='store_true')  # launch the docs
+    parser.add_argument('-h', '--help', help="Opens the online docs in your default browser", action='store_true')
     parser.add_argument('-v', '--version', action='store_true')
+    parser.add_argument('-p', '--project', help="Create a new project", type=str)
+    parser.add_argument('-e', '--eval', help="Evaluates a domonic pyml string and returns html", type=str)  # default=sys.stdin, nargs='*')
+
+    parser.add_argument('-a', '--assets', help="Generate an assets directory with common files", action='store_true')
+    parser.add_argument('-d', '--download', help="Attempts to to generate domonic template from a webpage", type=str)
 
     # parser.add_argument('-u', '--ui', help="launches a UI")
-
-    parser.add_argument('-p', '--project', help="create a new project", type=str)
-
     # parser.add_argument('-p', '--pyml2html', help="converts a .pyml template file to html", type=str)
     # parser.add_argument('-g', '--html2pyml', help="converts a .html file to a .pyml template", type=str)
 
@@ -297,6 +297,12 @@ def do_things(arguments):
         from domonic import __version__
         print(__version__)
         return __version__
+
+    if arguments.eval is not None:
+        import domonic
+        result = f"{domonic.domonic.domonify(arguments.eval)}"
+        print(result)
+        return result
 
     # if arguments.server is True:
         # port = domonic.get(arguments.server)

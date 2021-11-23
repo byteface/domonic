@@ -232,6 +232,7 @@ class Window(Window):
         self._navigator: Navigator = Navigator()
         self._location: Location = Location('eventual.technology')
         self._console: Console = Console()
+        # personalbar?
         super(Window, Window).__init__(self)
 
     @property

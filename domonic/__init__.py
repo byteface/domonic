@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "0.7.1"
+__version__ = "0.7.2"
 __license__ = 'MIT'
 __author__ = "@byteface"
 
@@ -86,7 +86,7 @@ class domonic:
                 prog = prog[0]
         return prog
 
-    @staticmethod  # load replaces this.
+    @staticmethod
     def domonify(pyml: str, *args, **kwargs):
         """ [
             attempts to fix pyml
@@ -973,7 +973,7 @@ class domonic:
             from domonic.parsers import expatbuilder
             return expatbuilder.parseString(string)
         except Exception as e:
-            # TODO - problem with this method. is it takes literally forever. 
+            # TODO - problem with this method. is it takes literally forever.
             # as it removes 1 char then reparses entire doc. even on small pages this is a problem.
             print(e)
             dodgycharIndex = int(Utils.digits(str(e).split(',')[1]))

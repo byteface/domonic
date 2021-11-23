@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.dom &#8212; domonic 0.7.1 documentation</title>
+    <title>domonic.dom &#8212; domonic 0.7.2 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -41,6 +41,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="o">*</span>  <span class="c1"># List, Dict, Any, Union, Optional, Callable, Tuple</span>
 
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">xml.dom.minidom</span> <span class="kn">import</span> <span class="n">DocumentFragment</span>
 
 <span class="kn">from</span> <span class="nn">domonic.events</span> <span class="kn">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">EventTarget</span><span class="p">,</span> <span class="n">MouseEvent</span>  <span class="c1"># , KeyboardEvent, TouchEvent, UIEvent, CustomEvent</span>
 <span class="kn">from</span> <span class="nn">domonic.style</span> <span class="kn">import</span> <span class="n">CSSStyleDeclaration</span> <span class="k">as</span> <span class="n">Style</span>
@@ -200,10 +201,25 @@
             <span class="n">callback</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
             <span class="n">nodes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Node.appendChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.appendChild">[docs]</a>    <span class="k">def</span> <span class="nf">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Adds a new child node, to an element, as the last child node &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">+</span> <span class="p">(</span><span class="n">item</span><span class="p">,)</span></div>
-        <span class="c1"># return item  # causes max recursion when called chained</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Node.appendChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.appendChild">[docs]</a>    <span class="k">def</span> <span class="nf">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aChild</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a child to the current element.</span>
+<span class="sd">        If item is a DocumentFragment, all its children are added.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            item (Node): The Node to add.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aChild</span><span class="p">,</span> <span class="n">DocumentFragment</span><span class="p">):</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="n">aChild</span><span class="o">.</span><span class="n">args</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">+</span> <span class="n">items</span>
+            <span class="k">return</span> <span class="n">DocumentFragment</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">+</span> <span class="p">(</span><span class="n">aChild</span><span class="p">,)</span>
+            <span class="c1"># return aChild  # causes max recursion when called chained? then don&#39;t chain?</span>
+            <span class="k">return</span> <span class="n">aChild</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">childElementCount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -226,18 +242,82 @@
         <span class="k">return</span> <span class="n">newlist</span>
 
 <div class="viewcode-block" id="Node.compareDocumentPosition"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.compareDocumentPosition">[docs]</a>    <span class="k">def</span> <span class="nf">compareDocumentPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">otherElement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot; Returns a bitmask indicating the position of the other element relative to this element &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">otherElement</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="mi">0</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="mi">1</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An integer value representing otherNode&#39;s position relative to node as a bitmask combining the following constant properties of Node:</span>
+
+<span class="sd">        https://stackoverflow.com/questions/8334286/cross-browser-compare-document-position</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thisNode</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">other</span> <span class="o">=</span> <span class="n">otherElement</span>
+
+        <span class="c1"># if isinstance(other, str):</span>
+        <span class="c1">#     other = Text(other)</span>
+        <span class="c1"># if isinstance(thisNode, str):</span>
+        <span class="c1">#     thisNode = Text(thisNode)</span>
+
+        <span class="k">def</span> <span class="nf">recursivelyWalk</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">cb</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">node</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                    <span class="c1"># continue</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">cb</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ret</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">childNodes</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">childNodes</span><span class="o">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">ret</span> <span class="o">=</span> <span class="n">recursivelyWalk</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">childNodes</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">ret</span>
+
+        <span class="k">def</span> <span class="nf">testNodeForComparePosition</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="n">other</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">def</span> <span class="nf">identifyWhichIsFirst</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">node</span> <span class="o">==</span> <span class="n">other</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;other&quot;</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">node</span> <span class="o">==</span> <span class="n">reference</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;reference&quot;</span>
+
+        <span class="n">reference</span> <span class="o">=</span> <span class="n">thisNode</span>
+        <span class="n">referenceTop</span> <span class="o">=</span> <span class="n">thisNode</span>
+        <span class="n">otherTop</span> <span class="o">=</span> <span class="n">other</span>
+
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">other</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">referenceTop</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">referenceTop</span> <span class="o">=</span> <span class="n">referenceTop</span><span class="o">.</span><span class="n">parentNode</span>
+        <span class="k">while</span> <span class="n">otherTop</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">otherTop</span> <span class="o">=</span> <span class="n">otherTop</span><span class="o">.</span><span class="n">parentNode</span>
+
+        <span class="c1"># print(referenceTop, otherTop)</span>
+        <span class="k">if</span> <span class="n">referenceTop</span> <span class="o">!=</span> <span class="n">otherTop</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Node</span><span class="o">.</span><span class="n">DOCUMENT_POSITION_DISCONNECTED</span>
+
+        <span class="n">children</span> <span class="o">=</span> <span class="n">reference</span><span class="o">.</span><span class="n">childNodes</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">recursivelyWalk</span><span class="p">(</span>
+            <span class="n">children</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">testNodeForComparePosition</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Node</span><span class="o">.</span><span class="n">DOCUMENT_POSITION_CONTAINED_BY</span>  <span class="c1"># + Node.DOCUMENT_POSITION_FOLLOWING</span>
+
+        <span class="n">children</span> <span class="o">=</span> <span class="n">other</span><span class="o">.</span><span class="n">childNodes</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">recursivelyWalk</span><span class="p">(</span>
+            <span class="n">children</span><span class="p">,</span>
+            <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">testNodeForComparePosition</span><span class="p">(</span><span class="n">reference</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Node</span><span class="o">.</span><span class="n">DOCUMENT_POSITION_CONTAINS</span>  <span class="c1"># + Node.DOCUMENT_POSITION_PRECEDING</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">recursivelyWalk</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">referenceTop</span><span class="p">],</span>
+            <span class="n">identifyWhichIsFirst</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="s2">&quot;other&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Node</span><span class="o">.</span><span class="n">DOCUMENT_POSITION_PRECEDING</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">otherElement</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">compareDocumentPosition</span><span class="p">(</span><span class="n">otherElement</span><span class="o">.</span><span class="n">parentNode</span><span class="p">)</span>
-        <span class="k">return</span> <span class="mi">0</span></div>
+            <span class="k">return</span> <span class="n">Node</span><span class="o">.</span><span class="n">DOCUMENT_POSITION_FOLLOWING</span></div>
 
 <div class="viewcode-block" id="Node.contains"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Check whether a node is a descendant of a given node &quot;&quot;&quot;</span>
@@ -367,14 +447,19 @@
             <span class="n">nxt</span> <span class="o">=</span> <span class="n">nxt</span><span class="o">.</span><span class="n">parentNode</span>
         <span class="k">return</span> <span class="n">node</span>
 
-<div class="viewcode-block" id="Node.insertBefore"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.insertBefore">[docs]</a>    <span class="k">def</span> <span class="nf">insertBefore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_node</span><span class="p">,</span> <span class="n">reference_node</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; inserts a node before a reference node as a child of a specified parent node. &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">each</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">each</span> <span class="o">==</span> <span class="n">reference_node</span><span class="p">:</span>
-                <span class="n">replace_args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
-                <span class="n">replace_args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">new_node</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">replace_args</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">new_node</span>
+<div class="viewcode-block" id="Node.insertBefore"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.insertBefore">[docs]</a>    <span class="k">def</span> <span class="nf">insertBefore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_node</span><span class="p">,</span> <span class="n">reference_node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; inserts a node before a reference node as a child of a specified parent node. </span>
+<span class="sd">            this will remove the node from its previous parent node, if any.</span>
+
+<span class="sd">            # TODO - can throw value error if wrong ordered params. may be helpful to catch to say so.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">reference_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># remove new_node from its previous parent node</span>
+            <span class="k">if</span> <span class="n">new_node</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">new_node</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">removeChild</span><span class="p">(</span><span class="n">new_node</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">reference_node</span><span class="p">)]</span> <span class="o">+</span> <span class="p">(</span><span class="n">new_node</span><span class="p">,)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">reference_node</span><span class="p">):]</span>
         <span class="k">return</span> <span class="n">new_node</span></div>
 
 <div class="viewcode-block" id="Node.removeChild"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Node.removeChild">[docs]</a>    <span class="k">def</span> <span class="nf">removeChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
@@ -483,7 +568,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
                         <span class="k">return</span> <span class="kc">None</span>
@@ -498,10 +583,11 @@
     <span class="k">def</span> <span class="nf">previousSibling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[returns the previous sibling of the current node.]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># print(&#39;prev sib&#39;, self.parentNode.args)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="bp">self</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="k">return</span> <span class="kc">None</span>
@@ -646,6 +732,15 @@
 
 <span class="c1"># from xml.dom.minidom import Attr</span>
 <span class="kn">from</span> <span class="nn">xml.dom.minidom</span> <span class="kn">import</span> <span class="n">NamedNodeMap</span>
+
+<span class="c1"># class NamedNodeMap(NamedNodeMap):</span>
+
+    <span class="c1"># def __getitem__(self, name):</span>
+    <span class="c1">#     self.getNamedItem(name)</span>
+
+    <span class="c1"># def __setitem__(self, name: str, value):</span>
+    <span class="c1">#     self.setNamedItem(name, value)</span>
+
 
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">class NamedNodeMap(object):</span>
@@ -864,6 +959,9 @@
 
 <div class="viewcode-block" id="DocumentType"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.DocumentType">[docs]</a><span class="k">class</span> <span class="nc">DocumentType</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
 
+    <span class="n">nodeType</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">DOCUMENT_TYPE_NODE</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;publicId&#39;</span><span class="p">,</span> <span class="s1">&#39;systemId&#39;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;html&quot;</span><span class="p">,</span> <span class="n">publicId</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">systemId</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>  <span class="c1"># A DOMString, eg &quot;html&quot; for &lt;!DOCTYPE HTML&gt;.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">publicId</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">publicId</span>  <span class="c1"># A DOMString, eg &quot;-//W3C//DTD HTML 4.01//EN&quot;, empty string for HTML5.</span>
@@ -877,15 +975,19 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="DocumentType.notations"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.DocumentType.notations">[docs]</a>    <span class="k">def</span> <span class="nf">notations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DocumentType.notations"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.DocumentType.notations">[docs]</a>    <span class="k">def</span> <span class="nf">notations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NamedNodeMap</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; A NamedNodeMap with notations declared in the DTD. &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+        <span class="n">nnm</span> <span class="o">=</span> <span class="n">NamedNodeMap</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownerDocument</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">nodeType</span> <span class="o">==</span> <span class="n">Node</span><span class="o">.</span><span class="n">NOTATION_NODE</span><span class="p">:</span>
+                <span class="n">nnm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nnm</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">nodeType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Node</span><span class="o">.</span><span class="n">DOCUMENT_TYPE_NODE</span>
+    <span class="c1"># @property</span>
+    <span class="c1"># def nodeType(self):</span>
+    <span class="c1">#     return Node.DOCUMENT_TYPE_NODE</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;!DOCTYPE </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">publicId</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">systemId</span><span class="si">}</span><span class="s2">&gt;&quot;</span></div>
 
 
@@ -1339,12 +1441,14 @@
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="k">continue</span>
                 <span class="n">match</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">_getElementById</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">match</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="c1"># print(&#39;fail&#39;, e)</span>
-            <span class="k">pass</span>  <span class="c1"># TODO - dont iterate strings</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;fail&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="k">pass</span>  <span class="c1"># TODO - dont iterate strings.... ooof nasty. so thats why you never pass silently.</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">_getElementByAttrVal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -1532,6 +1636,7 @@
             <span class="n">context</span> <span class="o">=</span> <span class="n">found</span>
 
         <span class="n">selected</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="c1"># print(&#39;SELECTED:::&#39;, selected)</span>
         <span class="k">return</span> <span class="n">selected</span></div>
 
 <div class="viewcode-block" id="Element.append"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
@@ -1892,17 +1997,25 @@
 <div class="viewcode-block" id="Element.normalize"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Joins adjacent text nodes and removes empty text nodes in an element&#39;&#39;&#39;</span>
         <span class="n">content</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># print(self.args)</span>
+        <span class="n">nodestr</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="n">Text</span><span class="p">:</span>
-                <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">textContent</span><span class="p">)</span>
+                <span class="c1"># content.append(s.textContent)</span>
+                <span class="n">nodestr</span> <span class="o">+=</span> <span class="n">s</span><span class="o">.</span><span class="n">textContent</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
-                <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="n">nodestr</span> <span class="o">+=</span> <span class="n">s</span>
                 <span class="k">continue</span>
-            <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-
+            <span class="k">elif</span> <span class="n">nodestr</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodestr</span><span class="p">)</span>
+                <span class="n">nodestr</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nodestr</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodestr</span><span class="p">)</span>
+        <span class="c1"># print(&quot;&gt;&gt;&quot;, content)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">content</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">Text</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">]))]</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span></div>
 
 <div class="viewcode-block" id="Element.offsetHeight"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.offsetHeight">[docs]</a>    <span class="k">def</span> <span class="nf">offsetHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1930,14 +2043,19 @@
         <span class="sd">&quot;&quot;&quot; Returns the parent element node of an element &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">previousSibling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the previous node at the same node tree level &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">args</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">el</span> <span class="ow">is</span> <span class="bp">self</span> <span class="ow">and</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="n">count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="k">return</span> <span class="kc">None</span>
+    <span class="c1"># @property</span>
+    <span class="c1"># def previousSibling(self):</span>
+    <span class="c1">#     &quot;&quot;&quot; Returns the previous node at the same node tree level &quot;&quot;&quot;</span>
+    <span class="c1">#     if self.parentNode is not None:</span>
+    <span class="c1">#         for count, el in enumerate(self.parentNode.args):</span>
+    <span class="c1">#             if el is self and count &gt; 1:</span>
+    <span class="c1">#                 return self.parentNode.args[count - 1]</span>
+    <span class="c1">#     return None</span>
+
+<div class="viewcode-block" id="Element.prepend"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.prepend">[docs]</a>    <span class="k">def</span> <span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Prepends a node to the current element &quot;&quot;&quot;</span>
+        <span class="n">newargs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">newargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Element.querySelector"><a class="viewcode-back" href="../../packages/dom.html#domonic.dom.Element.querySelector">[docs]</a>    <span class="k">def</span> <span class="nf">querySelector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[Returns the first child element that matches a specified CSS selector(s) of an element]</span>
@@ -2456,6 +2574,8 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; init Creates a new Document &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
         <span class="c1"># self.doc = doc</span>
         <span class="c1"># self.uri = uri</span>
         <span class="c1"># self.documentURI = uri</span>
@@ -2767,10 +2887,13 @@
                 <span class="k">return</span> <span class="n">each</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">each</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+                    <span class="c1"># print(&quot;0000&quot;,each)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                        <span class="k">continue</span>
                     <span class="n">match</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">_getElementById</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
                     <span class="c1"># TODO - i think i need to build a hash map of IDs to positions on the tree</span>
                     <span class="c1"># for now I&#39;m going to use recursion and add this same method to Element</span>
-                    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">match</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">match</span>
 
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -3187,6 +3310,10 @@
     <span class="c1"># def nodeType(self):</span>
     <span class="c1">#     return Node.TEXT_NODE</span>
     <span class="n">nodeType</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">TEXT_NODE</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">childNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
 
     <span class="nd">@property</span>  <span class="c1"># TODO - is this correct?</span>
     <span class="k">def</span> <span class="nf">firstChild</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3666,16 +3793,10 @@
 
 <span class="k">def</span> <span class="nf">traverseChildren</span><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">_type</span><span class="p">):</span>
     <span class="c1"># var child, node, parent, result, sibling</span>
-    <span class="c1"># print(&#39;sup&#39;, _type)</span>
     <span class="c1"># print(&#39;mapChild[_type]&#39;, mapChild[_type])</span>
     <span class="n">node</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">currentNode</span><span class="p">,</span> <span class="n">mapChild</span><span class="p">[</span><span class="n">_type</span><span class="p">])</span>  <span class="c1"># TODO - allow dict access to node props?.... tw.currentNode[mapChild[_type]]</span>
-    <span class="c1"># print(&#39;flaps&#39;, tw.currentNode.firstChild)</span>
-    <span class="c1"># print(&#39;flaps2&#39;, )</span>
     <span class="c1"># print(&#39;tw.currentNode&#39;, tw.currentNode)</span>
-    <span class="c1"># print(&#39;MAKE THIS WORK ON NODE:&#39;, tw.currentNode[mapChild[_type]]) #done</span>
-
     <span class="c1"># node = str_to_TextNode(node)</span>
-
     <span class="k">while</span> <span class="n">node</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># node = str_to_TextNode(node)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">nodeFilter</span><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
@@ -3733,20 +3854,20 @@
     <span class="c1"># print( &quot;AND:&quot;, node.nextSibling )</span>
 
     <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="n">stayWithin</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="c1"># print(&#39;a&#39;)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">nextSibling</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="c1"># print(&#39;b&#39;)</span>
         <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">nextSibling</span>
 
     <span class="k">while</span> <span class="n">node</span><span class="o">.</span><span class="n">parentNode</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">)</span>
+        <span class="c1"># print(&#39;c&#39;)</span>
         <span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">parentNode</span>
         <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="n">stayWithin</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">)</span>
+            <span class="c1"># print(&#39;d&#39;)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">nextSibling</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;e&#39;</span><span class="p">)</span>
+            <span class="c1"># print(&#39;e&#39;)</span>
             <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">nextSibling</span>
     <span class="k">return</span> <span class="kc">None</span>
 
@@ -4108,8 +4229,9 @@
             <span class="n">els</span> <span class="o">=</span> <span class="n">frag</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">els</span> <span class="o">!=</span> <span class="kc">False</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">els</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">els</span><span class="p">:</span>
-                    <span class="c1"># print(el.kwargs, el.attributes, el.__attributes__, type(el.attributes))</span>
+                    <span class="c1"># print(el, el.kwargs, el.attributes, el.__attributes__, type(el.attributes))</span>
                     <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">el</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+                        <span class="c1"># print(each)</span>
                         <span class="n">key</span> <span class="o">=</span> <span class="n">each</span><span class="o">.</span><span class="n">name</span>
                         <span class="n">val</span> <span class="o">=</span> <span class="n">each</span><span class="o">.</span><span class="n">value</span>
                         <span class="c1"># print(key, val)</span>

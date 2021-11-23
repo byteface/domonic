@@ -288,8 +288,7 @@ This also works for text nodes but be aware they will be irreversibly flattened 
     a1 = button()
     a1 += "hi"
     a1 += "how"
-    a1 += "are"
-    a1 += "you"
+    a1 += ["are", "you", "today"]
     print(a1)
     a1 -= "hi"
     print(a1)

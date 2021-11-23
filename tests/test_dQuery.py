@@ -33,6 +33,7 @@ class TestCase(unittest.TestCase):
         print(a)
 
         print('b::')
+        print(º('#test'))
         b = º('#test').append(a)
         print(b)
 

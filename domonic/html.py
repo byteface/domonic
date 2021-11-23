@@ -157,7 +157,7 @@ class tag(object):
             key = key.split('_', 1)[1]
             # lets us have boolean attributes  # TODO - should be optional by a global config
             if key in ['async', 'checked', 'autofocus', 'disabled', 'formnovalidate', 'hidden', 'multiple',
-                       'novalidate', 'readonly', 'required', 'selected', "open"]:
+                       'novalidate', 'readonly', 'required', 'selected', "open", "contenteditable"]:
                 if value == '' or value == key:
                     return ''' %s''' % key
             return ''' %s="%s"''' % (key, value)
@@ -241,7 +241,13 @@ class tag(object):
         return self
 
     def __iadd__(self, item):
-        """ adds an item to the nodes of children """
+        """ adds an item to the nodes of children. can also pass a list and it will unpack them """
+
+        if isinstance(item, (list, tuple)):
+            for i in item:
+                self.args = self.args + (i,)
+            return self
+
         self.args = self.args + (item,)
         return self
 
@@ -355,9 +361,15 @@ class tag(object):
     # def __repr__(self):
     #     return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
 
-    # def __setitem__(self,key,value):
+    def __setitem__(self, key, value):
         # self.args[key] = value
         # print(self.args[key])
+        try:
+            self.kwargs[key] = value
+            return self
+        except Exception as e:
+            print(e)
+            raise ValueError
 
     def __enter__(self):
         if tag.__context is None:

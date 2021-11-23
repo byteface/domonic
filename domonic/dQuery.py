@@ -13,7 +13,7 @@ from domonic.javascript import *
 
 
 class EventHandler():
-
+    
     def __init__(self):
         self.events = []
 
@@ -240,7 +240,7 @@ class dQuery_el():
     def append(self, html):
         """ Insert content, specified by the parameter, to the end of each element in the set of matched elements."""
 
-        # print('running append')
+        # print('running append', self.elements, html)
         # print(len(self.elements))
         # print(":::::::::::", type(self.elements))
 
@@ -1448,11 +1448,11 @@ class º(dQuery_el):
             # )
             # print(r.status_code)
             if r.status_code == 200:
-                print('sup')
+                # print('sup')
                 if success is not None:
                     success(r.text)
             else:
-                print('sup2')
+                # print('sup2')
                 if error is not None:
                     error(r.text)
             s.close()
@@ -1575,7 +1575,7 @@ class º(dQuery_el):
         Returns:
             [type]: [the response]
         """
-        print("GO!")
+        # print("GO!")
         # r = requests.get(url)
         # return r.content.decode("utf-8")
         r = º.ajax({

@@ -1,5 +1,5 @@
 <h1 align="center">
-    <br>𖤐domonic𖤐<br>
+    <br>𖤐 domonic 𖤐<br>
     <sup><sub><sup>Generate html with python 3! (and much more)</sup></sub></sup>
     <br>
 </h1>
@@ -77,14 +77,22 @@ print(test)
 
 ### rendering
 
+A domonic tree is composed of objects. i.e
+
+```python
+div()
+# <domonic.html.div object at 0x106b0e6b0>
+```
+
 cast str() on any element to render it without formatting.
 
 ```python
-el_string = str(div())
-print(el_string)
+el = str(div())
+print(el)
+# <div></div>
 ```
 
-there's also a render method that takes 2 parameters, some domonic and an optional output file.
+There's also a render method that takes 2 parameters, some domonic and an optional output file.
 
 ```python
 page = div(span('Hello World'))
@@ -105,6 +113,7 @@ site = html()
 el = document.createElement('myelement')
 site.appendChild(el)
 print(site)
+# <html><myelement></myelement></html>
 
 ```
 
@@ -154,13 +163,14 @@ print(Math.random())
 from domonic.javascript import Array
 myArr=Array(1,2,3)
 print(myArr.splice(1))
+# [2, 3]
 
 from domonic.javascript import URL
 url = URL('https://somesite.com/blog/article-one#some-hash')
-print(url.protocol)
-print(url.host)
-print(url.pathname)
-print(url.hash)
+print(url.protocol)  # https
+print(url.host)  # somesite.com
+print(url.pathname)  # /blog/article-one
+print(url.hash)  # #some-hash
 
 # Use Global class to import all the js methods from the global namespace i.e
 # from domonic.javascript import Global
@@ -429,18 +439,21 @@ dQuery uses the º symbol (alt+0).
 
 ```python
 
+    from domonic.html import *
+    from domonic.dQuery import º
+
     d = html(head(body(li(_class='things'), div(_id="test"))))
-    
-    º(d) # you need to init a dom first. i.e. a html element
 
-    # now you can use it
     print( º('#test') )
+    # <div id="test">
     print( º('.things') )
-    a = º('<div class="test2"></div>')
-    print( a )
+    # <li class="things">
+    mydiv = º('<div class="test2"></div>')
+    # <domonic.dQuery.o object at 0x107d5c9a0>
 
-    b = º('#test').append(a)
+    b = º('#test').append(mydiv)
     print(b)
+    # <div id="test"><div class="test2"></div></div>
 
 ```
 
@@ -602,17 +615,25 @@ There's a small learning curve getting .pyml templates correct. Usually (1) a mi
 Here are the 4 solutions to those common errors when creating large templates...
 ( i.e. see bootstrap5 examples in test_domonic.py )
 
+```python
 IndexError: list index out of range
-    - You most likely didn't put a underscore on an attribute.
+# - You most likely didn't put a underscore on an attribute.
+```  
 
+```python
 SyntaxError: invalid syntax
-    - You are Missing a comma between attributes
+# - You are Missing a comma between attributes
+```
 
+```python
 SyntaxError: positional argument follows keyword argument
-    - You have to pass attributes LAST. and strings and objects first. *see notes on templating above*
+# - You have to pass attributes LAST. and strings and objects first. *see notes on templating above*
+```
 
+```python
 TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
-    - You are Missing a comma between attributes. before the **{}
+# - You are Missing a comma between attributes. before the **{}
+```
 
 ### CLI
 
@@ -621,25 +642,25 @@ Use the command line interface to help you out.
 To view the online the docs:
 
 ```python
-
 domonic -h
-
 ```
 
 To see the version:
 
 ```python
-
   domonic -v
-
 ```
 
 To quickly create a domonic project for prototyping:
 
 ```python
-
   domonic -p myproject
+```
 
+To evaluate some domonic pyml:
+
+```python
+  domonic -e 'html(head(),body(div()))'
 ```
 
 ### EXAMPLE PROJECTS
@@ -651,9 +672,9 @@ A cron viewer:
 [ezcron](https://github.com/byteface/ezcron/)
 
 A basic game:
-https://github.com/byteface/bombdisposer/
+[bombdisposer](https://github.com/byteface/bombdisposer/)
 
-checkout the docs for examples on how to easily make sitemaps with python. 
+checkout [the docs](https://domonic.readthedocs.io/) for examples on how to easily make sitemaps with python.
 or for example how to use domonic with flask, django, sanic and other server frameworks.
 
 docs:
