@@ -12,8 +12,10 @@ STYLESHEET = lambda xsl: f"""<?xml-stylesheet type="text/xsl" href="{xsl}"?>"""
 
 # comment = lambda comment: f"""<!-- {comment} -->"""
 
+
 def comment(comment: str):  # -> str:
-    return '<!-- {} -->'.format(comment)
+    return "<!-- {} -->".format(comment)
+
 
 cdata = lambda cdata: f"""<![CDATA[{cdata}]]>"""
 CDATA = cdata
@@ -32,6 +34,7 @@ def prettify(elem):
         str: prettified xml element
     """
     from xml.dom import minidom
+
     x = minidom.parseString(elem)
     # pretty = '\n'.join(x.toprettyxml().splitlines()[1:])
     return x.toprettyxml()

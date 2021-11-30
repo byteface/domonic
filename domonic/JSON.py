@@ -7,205 +7,220 @@ import json
 import csv
 
 from domonic.html import table, td, tr, th
-# from domonic.javascript import Array
+from domonic.decorators import as_json
 
 
-def return_json(func):
-    """ decorate any function to return json instead of a python obj """
-    def JSON_decorator(*args, **kwargs):
-        return json.dumps(func(*args, **kwargs))
-    return JSON_decorator
+return_json = as_json  # legacy. use the one in decorators package
 
 
-class JSON(object):
-    """ A class containing JSON utils """
+def parse_file(filepath: str):
+    """[loads a json file and returns a python object]
 
-    def __init__(self, data):
-        # self.data = data
-        # self.json = json.dumps(data)
-        # self.json_obj = json.loads(self.json)
-        # self.json_str = json.dumps(self.json_obj)
-        pass
+    Args:
+        filepath (str): [path to json file]
 
-    @staticmethod
-    def parse_file(filepath: str):
-        f = open(filepath)
-        data = json.load(f)
-        f.close()
-        return data
+    Returns:
+        [type]: [a python object]
+    """
+    f = open(filepath)
+    data = json.load(f)
+    f.close()
+    return data
 
-    @staticmethod
-    def parse(json_string: str):
-        return json.loads(json_string)
 
-    @staticmethod
-    def stringify(data, filepath: str = None, **kwargs):
-        if filepath is not None:
-            json.dump(data, filepath, **kwargs)
-            return json.dumps(data, **kwargs)
-        return json.dumps(data, **kwargs)  # indent=4, sort_keys=True, default=str
+def parse(json_string: str):
+    """[take a json string and return a python object]
 
-    @staticmethod
-    def tablify(arr):
-        """tablify
+    Args:
+        json_string (str): [a json string]
 
-        takes a json array and returns a html table
-        # TODO - reverse. table to json
+    Returns:
+        [type]: [a python object]
+    """
+    return json.loads(json_string)
 
-        Args:
-            arr (list): the json array
 
-        Returns:
-            str: a html table
-        """
-        def _get_headings(arr, t):
-            headings = []
-            row = tr()
-            for each in arr:
-                for key in each:
-                    if key not in headings:
-                        headings.append(key)
-                        row.appendChild(th(key))
-            t.appendChild(row)
-            return headings
+def stringify(data, filepath: str = None, **kwargs):
+    """[stringify a python object]
 
-        if type(arr) == str:
-            arr = json.loads(arr)  # leniency. allow for a string
-        if type(arr) == dict:
-            arr = arr[next(iter(arr))]  # leniency. allow for a dict wrapping a list
-        if type(arr) != list:
-            raise ValueError  # if it aint a list by now reject it
+    Args:
+        data ([type]): [the python object]
+        filepath (str, optional): [an optional filepath to save the stringified object] [default: None]
 
-        t = table()
-        headings = _get_headings(arr, t)
-        for item in arr:
-            row = tr(''.join([str(td(item.get(heading, ""))) for heading in headings]))
-            t.appendChild(row)
-        return t
+    Returns:
+        [type]: [the stringified object]
+    """
+    if filepath is not None:
+        json.dump(data, filepath, **kwargs)
+        return json.dumps(data, **kwargs)
+    return json.dumps(data, **kwargs)  # indent=4, sort_keys=True, default=str
 
-    @staticmethod
-    def csvify(arr, outfile="data.csv"):
-        """csvify
 
-        takes a json array and dumps a csv file
+def tablify(arr):
+    """tablify
 
-        Args:
-            arr (list): the json array
-            outfile (list): the output file
+    takes a json array and returns a html table
+    # TODO - reverse. table to json
 
-        Returns:
-            str: a csv file
-        """
-        if type(arr) == str:
-            arr = json.loads(arr)  # leniency. allow for a string
-        if type(arr) == dict:
-            arr = arr[next(iter(arr))]  # leniency. allow for a dict wrapping a list
-        if type(arr) != list:
-            raise ValueError  # if it aint a list by now reject it
+    Args:
+        arr (list): the json array
 
-        def _get_headings(arr):
-            headings = []
-            for each in arr:
-                for key in each:
-                    if key not in headings:
-                        headings.append(key)
-            return headings
+    Returns:
+        str: a html table
+    """
+    def _get_headings(arr, t):
+        headings = []
+        row = tr()
+        for each in arr:
+            for key in each:
+                if key not in headings:
+                    headings.append(key)
+                    row.appendChild(th(key))
+        t.appendChild(row)
+        return headings
 
-        with open(outfile, "w") as file:
-            output = csv.writer(file)
-            output.writerow(_get_headings(arr))
-            for row in arr:
-                output.writerow(row.values())
+    # print( type(arr) )
 
-    @staticmethod
-    def csv2json(csv_filepath, json_filepath=None):
-        '''
-        convert a CSV to JSON.
-        '''
-        items = []
-        with open(csv_filepath, encoding='utf-8') as csvf:
-            csvReader = csv.DictReader(csvf)
-            for row in csvReader:
-                items.append(row)
+    if isinstance(arr, str):
+        arr = json.loads(arr)
+    if isinstance(arr, dict):
+        arr = [arr]
+    if type(arr) != list:
+        raise ValueError  # need to pass a list of dicts [{},{}]
 
-        if json_filepath is None:
-            return json.dumps(items)
+    t = table()
+    headings = _get_headings(arr, t)
+    for item in arr:
+        # row = tr([td(item.get(heading, "")) for heading in headings]) # incorrect
+        row = tr(*[td(item.get(heading, "")) for heading in headings])  # correct
+        t.appendChild(row)
+    return t
 
-        with open(json_filepath, 'w', encoding='utf-8') as f:
-            f.write(json.dumps(items, indent=4))
-            return json.dumps(items)
 
+def csvify(arr, outfile="data.csv"):
+    """csvify
+
+    takes a json array and dumps a csv file
+
+    Args:
+        arr (list): the json array
+        outfile (list): the output file
+
+    Returns:
+        str: a csv file
+    """
+    if isinstance(arr, str):
+        arr = json.loads(arr)  # leniency. allow for a string
+    elif isinstance(arr, dict):
+        arr = [arr]
+    if type(arr) != list:
+        raise ValueError  # if it aint a list by now reject it
+
+    def _get_headings(arr):
+        headings = []
+        for each in arr:
+            for key in each:
+                if key not in headings:
+                    headings.append(key)
+        return headings
+
+    with open(outfile, "w") as file:
+        output = csv.writer(file)
+        output.writerow(_get_headings(arr))
+        for row in arr:
+            output.writerow(row.values())
+
+
+def csv2json(csv_filepath, json_filepath=None):
     '''
-    @staticmethod
-    def csv2json_hugefile(arr, infile="data.csv", start_row=0):
-
-        def _load_data(csv_fname):
-            with open(csv_fname, "r", encoding="latin-1") as records:
-                for row in csv.reader(records):
-                    yield row
-
-        items = iter(load_data(infile))
-        headings = next(companies)
-
-        for i in range(start_row):
-            next(companies)
-
-        for item in items:
-            # TODO - streamwrite to json file.
+    convert a CSV to JSON.
     '''
+    items = []
+    with open(csv_filepath, encoding='utf-8') as csvf:
+        csvReader = csv.DictReader(csvf)
+        for row in csvReader:
+            items.append(row)
 
-    @staticmethod
-    def flatten(b, delim="__"):
-        '''
-        # i.e. input = map( lambda x: JSON.flatten( x, "__" ), input )
-        '''
-        val = {}
-        for i in b.keys():
-            if isinstance(b[i], dict):
-                get = JSON.flatten(b[i], delim)
-                for j in get.keys():
-                    val[i + delim + j] = get[j]
-            else:
-                val[i] = b[i]
+    if json_filepath is None:
+        return json.dumps(items)
 
-        return val
+    with open(json_filepath, 'w', encoding='utf-8') as f:
+        f.write(json.dumps(items, indent=4))
+        return json.dumps(items)
 
-    # def flatten(): # completely flatten. underscore by default or based on rule
-    # def nest(): # completely nest. underscore by default or based on rule
-    # def purify # remove all the data leaving just the data structure/schema
 
-    @staticmethod
-    def is_JSON(json: str) -> bool:
-        if type(json) != str:
-            return False
+'''
+def csv2json_hugefile(arr, infile="data.csv", start_row=0):
 
-        if json.startswith('{') and json.endswith('}'):
-            return True
+    def _load_data(csv_fname):
+        with open(csv_fname, "r", encoding="latin-1") as records:
+            for row in csv.reader(records):
+                yield row
 
-        if json.startswith('[') and json.endswith(']'):
-            return True
+    items = iter(load_data(infile))
+    headings = next(companies)
 
+    for i in range(start_row):
+        next(companies)
+
+    for item in items:
+        # TODO - streamwrite to json file.
+'''
+
+
+def flatten(b, delim="__"):
+    '''
+    # i.e. input = map( lambda x: JSON.flatten( x, "__" ), input )
+    '''
+    val = {}
+    for i in b.keys():
+        if isinstance(b[i], dict):
+            get = flatten(b[i], delim)
+            for j in get.keys():
+                val[i + delim + j] = get[j]
+        else:
+            val[i] = b[i]
+
+    return val
+
+# def flatten(): # completely flatten. underscore by default or based on rule
+# def nest(): # completely nest. underscore by default or based on rule
+# def purify # remove all the data leaving just the data structure/schema
+
+
+def is_JSON(json: str) -> bool:
+    if type(json) != str:
         return False
 
-    # def minify(json):
-    #     """ minifes a json string """
-    #     return json.replace("\n", "").replace(" ", "")
+    if json.startswith('{') and json.endswith('}'):
+        return True
 
-    # @staticmethod
-    # def is_array(json: str):
-    #     if type(json) != str:
-    #         return False
-    #     if json.startswith('[') and json.endswith(']'):
-    #         return True
-    #     return False
+    if json.startswith('[') and json.endswith(']'):
+        return True
+
+    return False
+
+
+# def minify(json):
+#     """ minifes a json string """
+#     return json.replace("\n", "").replace(" ", "")
+
+
+# @staticmethod
+# def is_array(json: str):
+#     if type(json) != str:
+#         return False
+#     if json.startswith('[') and json.endswith(']'):
+#         return True
+#     return False
 
 
 '''
 # ideas....
 
 # with JSON( data, 'items') as item:
-    # print(item)
-    # print(item.id)
+# print(item)
+# print(item.id)
 
 # iterator = JSON( data, 'items.age', lambda i: i<30 )
 

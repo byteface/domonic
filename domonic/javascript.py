@@ -2710,7 +2710,7 @@ class String(object):
     def __imul__(self, other):
         return self.x * int(other)
 
-    def split(self, expr):
+    def split(self, expr) -> list:
         """[can split a string based on a regex]
 
         Args:
@@ -2736,7 +2736,7 @@ class String(object):
         else:
             return self.x.split(expr)
 
-    def concat(self, *args, seperator=""):
+    def concat(self, *args, seperator: str="") -> str:
         """[concatenates the string arguments to the calling string and returns a new string.]
 
         Args:
@@ -2750,24 +2750,24 @@ class String(object):
         return seperator.join(args)
 
     # @staticmethod
-    def charCodeAt(self, index: int):
+    def charCodeAt(self, index: int) -> int:
         """ Returns the Unicode of the character at the specified index """
         return ord(self.x[index])
 
     # @staticmethod
-    def fromCharCode(self, *codes):
+    def fromCharCode(self, *codes) -> str:
         """ returns a string created from the specified sequence of UTF-16 code units """
         return "".join([str(chr(x)) for x in codes])
 
     @property
-    def length(self):
+    def length(self) -> int:
         return len(self.x)
 
-    def repeat(self, count: int):
+    def repeat(self, count: int) -> str:
         """ Returns a new string with a specified number of copies of an existing string """
         return self.x * count
 
-    def startsWith(self, x: str, start: int = None, end: int = None):
+    def startsWith(self, x: str, start: int = None, end: int = None) -> bool:
         """ Checks whether a string begins with specified characters """
         if start is None:
             start = 0
@@ -2776,7 +2776,7 @@ class String(object):
         # print(self.x.startswith(x, start, end))
         return self.x.startswith(x, start, end)
 
-    def substring(self, start: int, end: int = None):
+    def substring(self, start: int, end: int = None) -> str:
         """ Extracts the characters from a string, between two specified indices """
         if start < 0:
             start = 0
@@ -2784,7 +2784,7 @@ class String(object):
             end = len(self.x)
         return self.x[start:end]
 
-    def endsWith(self, x: str, start: int = None, end: int = None):
+    def endsWith(self, x: str, start: int = None, end: int = None) -> bool:
         """ Checks whether a string ends with specified string/characters """
         if start is None:
             start = 0
@@ -2792,15 +2792,15 @@ class String(object):
             end = len(x)
         return self.x.endswith(x, start, end)
 
-    def toLowerCase(self):
+    def toLowerCase(self) -> str:
         """ Converts a string to lowercase letters """
         return self.x.lower()
 
-    def toUpperCase(self):
+    def toUpperCase(self) -> str:
         """ Converts a string to uppercase letters """
         return self.x.upper()
 
-    def slice(self, start: int = 0, end: int = None):
+    def slice(self, start: int = 0, end: int = None) -> str:
         """ Selects a part of an string, and returns the new string """
         if end is None:
             end = len(self.x)
@@ -2810,25 +2810,30 @@ class String(object):
         """ Removes whitespace from both ends of a string """
         return self.x.strip()
 
-    def charAt(self, index: int):
+    def charAt(self, index: int) -> str:
         """[Returns the character at the specified index (position)]
 
         Args:
             index (int): [index position]
 
         Returns:
-            [str]: [character]
+            [str]: [the character at the specified index. 
+            if the index is out of range, an empty string is returned.]
         """
-        return self.x[index]
+        try:
+            return self.x[index]
+        except IndexError:
+            return ""
 
-    def replace(self, old: str, new: str):
+    def replace(self, old: str, new) -> str:
         """
         Searches a string for a specified value, or a regular expression,
         and returns a new string where the specified values are replaced.
         only replaces first one.
         """
         if callable(new):
-            return new(self.x, old)
+            # return new(self.x, old)
+            return re.sub(old, new, self.x)
         else:
             return self.x.replace(old, new, 1)
         # re.sub(r"regepx", "old", "new") # TODO - js one also takes a regex
@@ -2856,12 +2861,12 @@ class String(object):
             end = len(self.x)
         return self.x[start:start + end]
 
-    def toLocaleLowerCase(self):
+    def toLocaleLowerCase(self) -> str:
         """ Converts a string to lowercase letters, according to the host's locale """
         # locale.setlocale()
         return self.x.lower()
 
-    def toLocaleUpperCase(self):
+    def toLocaleUpperCase(self) -> str:
         """ Converts a string to uppercase letters, according to the host's locale """
         # locale.setlocale()
         return self.x.upper()
@@ -2894,7 +2899,7 @@ class String(object):
         """
         return ord(self.x[index])
 
-    def padEnd(self, length: int, padChar: str = " "):
+    def padEnd(self, length: int, padChar: str = " ") -> str:
         """[Pads the end of a string with a specified character
         (repeated, if needed) to create a new string.]
 
@@ -2907,7 +2912,7 @@ class String(object):
         """
         return str(self.x + padChar * (length - len(self.x)))
 
-    def padStart(self, length: int, padChar: str = " "):
+    def padStart(self, length: int, padChar: str = " ") -> str:
         """[Pads the start of a string with a specified character]
 
         Args:
@@ -2919,13 +2924,14 @@ class String(object):
         """
         return padChar * (length - len(self.x)) + self.x
 
-    def localeCompare(self, comparisonString: str, locale: str = None, *args):
+    def localeCompare(self, comparisonString: str, locale: str = None, *args) -> int:
         """ method returns a number indicating whether a reference string comes before,
             or after, or is the same as the given string in sort order """
         # if locale is None:
         #     locale = self.locale
         # return locale.strcoll(self.x, comparisonString, *args)
         # pass
+        # TODO - implement localeCompare
         raise NotImplementedError
 
     def trimStart(self, length: int):  # TODO - huh?. length

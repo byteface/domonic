@@ -10,8 +10,10 @@ import json
 # import requests
 # from mock import patch
 
-# from domonic.html import *
-from domonic.JSON import JSON, return_json
+from domonic.html import *
+
+from domonic.decorators import as_json
+import domonic.JSON as JSON  # do this to use same way as previous versions of domonic
 
 
 class TestCase(unittest.TestCase):
@@ -57,17 +59,18 @@ class TestCase(unittest.TestCase):
     '''
 
     def test_domonic_JSON(self):
-        # data = JSON.parse(SOMEJSON)
-        # print(data)
-
         t = JSON.tablify(TestCase.SOMEJSON2)
-        print(t)
-
-        t = JSON.tablify(json.loads(TestCase.SOMEJSON2))
-        print(t)
-
-        t = JSON.tablify(TestCase.SOMEJSON)
-        print(t)
+        assert isinstance(t, Element)
+        assert t.tagName == 'table'
+        t = JSON.tablify({'id': 1, 'name': 'test'})
+        assert isinstance(t, Element)
+        assert t.tagName == 'table'
+        t = JSON.tablify(JSON.parse(TestCase.SOMEJSON2))
+        assert isinstance(t, Element)
+        assert t.tagName == 'table'
+        assert t.getElementsByTagName('td')[0].textContent == '01'
+        t = JSON.tablify(JSON.parse(TestCase.SOMEJSON)['items'])
+        assert t.getElementsByTagName('td')[0].textContent == '01'
 
         # t = JSON.csvify(TestCase.SOMEJSON)
         # print(t)
@@ -75,13 +78,11 @@ class TestCase(unittest.TestCase):
         # t = JSON.csv2json("data.csv")
         # print(t)
 
-        @return_json
+        @as_json
         def yo():
             myObj = {"hi": [1, 2, 3]}
             return myObj
-
-        print('goat')
-        print(yo())
+        assert yo() == '{"hi": [1, 2, 3]}'
 
         # json_data = JSON.parse_file('surveys.json')
         # mytable = JSON.tablify(json_data)

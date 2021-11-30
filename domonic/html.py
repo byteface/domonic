@@ -116,6 +116,11 @@ class tag(object):
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
+
+        # if only 1 arg and its a list, then assume its a list of tags?
+        # if len(args) == 1 and isinstance(args[0], (list, tuple)):
+            # self.args = args[0]
+
         # self.name = 'tag'  # not set which means extended tags that don't use create_element will break
 
         # TODO - this may break a lot of existing implementations.
@@ -140,7 +145,15 @@ class tag(object):
 
     @property
     def content(self):  # TODO - test
-        return ''.join([each.__str__() for each in self.args])
+        # return ''.join([each.__str__() for each in self.args])
+        # if any child are lists by mistake, loop and call __str__ on each first
+        cnt = self.args
+        for i, arg in enumerate(cnt):
+            if isinstance(arg, list):
+                cnt = list(cnt)
+                cnt[i] = ''.join([each.__str__() for each in arg])
+                cnt = tuple(cnt)
+        return ''.join([each.__str__() for each in cnt])
 
     @content.setter
     def content(self, ignore):

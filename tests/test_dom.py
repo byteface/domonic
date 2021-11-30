@@ -450,17 +450,16 @@ class TestCase(unittest.TestCase):
         assert str(mydiv) == '<div>I like cake<div class="myclass"><div>1</div><div>2</div><div>3</div></div></div>'
 
         print(sometag.innerText())
+
         # return
         # print(sometag.nodeName)
         # assert(sometag.nodeName, 'DIV') # TODO - i checked one site in chrome, was upper case. not sure if a standard?
 
-        print(sometag.setAttribute('id', 'newid'))
+        sometag.setAttribute('id', 'newid')
         assert sometag.getAttribute('id') == 'newid'
         assert str(sometag) == '<div id="newid"></div>'
-
-        print(sometag.lastChild)
-        print(sometag.hasChildNodes)
-        # print('>>',sometag.textContent()) # TODO - will have a think. either strip or render tagless somehow
+        assert sometag.lastChild == sometag.firstChild
+        assert sometag.hasChildNodes() == False
 
         sometag.removeAttribute('id')
         assert str(sometag) == '<div></div>'
@@ -496,7 +495,7 @@ class TestCase(unittest.TestCase):
         # print(comm)
         assert str(comm) == '<!--hi there here is a comment-->'
 
-        print(html().createElement('sometag'))
+        # print(html().createElement('sometag'))
         # somebody = document.createElement('sometag')
         # print(str(somebody()))
         assert str(somebody) == '<sometag></sometag>'
@@ -630,14 +629,13 @@ class TestCase(unittest.TestCase):
         links = self.page.querySelectorAll("a[rel=nofollow]")
         for linky in links:
             print(linky.getAttribute("href"))
-        print('GO! >>>>>>>>>')  # works
-        # return
+        assert len(links) == 1
 
         result = self.page.querySelectorAll("li[class='nav-item']")
-        print(result)
-        for r in result:
-            print(r)
-        print('>>>>>>>>>')  # works
+        expected = ["About", "Services", "Team", "Contact"]
+        for i, r in enumerate(result):
+            assert r.textContent == expected[i]
+        assert len(result) == 4
 
         result = self.page.querySelectorAll("h4[class='font-weight-bold text-uppercase']")
         print(result)
@@ -691,8 +689,7 @@ class TestCase(unittest.TestCase):
         result = dom1.getElementsBySelector('#thing', dom1)[0]
         print("RESULT>>>>>", result)
         print('--')
-        return
-        
+        # return
         assert result.id == 'thing'
 
         result = dom1.getElementsBySelector('span', dom1)[0]
@@ -803,9 +800,9 @@ class TestCase(unittest.TestCase):
         @el(div)
         def test():
             return 'hi!'
-        print(test())
+        # print(test())
         assert str(test()) == '<html><body><div>hi!</div></body></html>'
-        print('decorators work!')
+        # print('decorators work!')
 
         @el(html, True)
         @el(body, True)
@@ -813,16 +810,16 @@ class TestCase(unittest.TestCase):
         def test():
             return 'hi!'
         assert test() == '<html><body><div>hi!</div></body></html>'
-        print('decorators work2!')
+        # print('decorators work2!')
 
         @el('html')
         @el('body')
         @el('div')
         def test():
             return 'hi!'
-        print(test())
+        # print(test())
         assert str(test()) == '<html><body><div>hi!</div></body></html>'
-        print('decorators work3!')
+        # print('decorators work3!')
 
         @el(html, True)
         @el(body)
@@ -830,7 +827,8 @@ class TestCase(unittest.TestCase):
         def test():
             return 'hi!'
         print(test())
-        print('decorators work4!')
+        # print('decorators work4!')
+        assert str(test()) == '<html><body><div>hi!</div></body></html>'
 
     def test_domonic_window_console_log(self):
         # note originally dom had everything from document
@@ -865,8 +863,8 @@ class TestCase(unittest.TestCase):
 
         console.info('test2')
         console.warn('test3')
-
         pass
+
 
     def test_domonic_matches(self):
         content = ul(_id="birds").html(
@@ -875,11 +873,39 @@ class TestCase(unittest.TestCase):
             li("Great white pelican")
         )
         birds = content.getElementsByTagName('li')
-        # print(birds)
+        # print(type(birds))
+        assert len(birds) == 3
+        assert birds[1] == content.getElementsBySelector('li.endangered', content)[0]
+        assert birds[1].className == 'endangered'
+        assert birds[1].classList == ['endangered']
         for bird in birds:
-            # print(bird)
             if bird.matches('.endangered'):
-                print('The ' + bird.textContent + ' is endangered!')
+                # print('The ' + bird.textContent + ' is endangered!')
+                assert 'The ' + bird.textContent + ' is endangered!' == 'The Philippine eagle is endangered!'
+
+
+    def test_getElementsByTagName(self):
+        content = ul(_id="birds").html(
+            li("Orange-winged parrot"),
+            li("Philippine eagle", _class="endangered"),
+            li("Great white pelican")
+        )
+        birds = content.getElementsByTagName('li')
+        assert len(birds) == 3
+        assert birds[1] == content.getElementsBySelector('li.endangered', content)[0]
+        assert birds[1].className == 'endangered'
+        assert birds[1].classList == ['endangered']
+
+        a = self.page.getElementsByTagName('a')
+        assert len(a) == 11
+        # print(a)
+        assert a[1].href == "#about"
+        assert a[1].textContent == "About"
+
+        titletag = self.page.getElementsByTagName('h1')
+        assert len(titletag) == 1
+        # print(titletag[0].textContent)
+        assert titletag[0].textContent == "We areCOMPANY"
 
     # def test_domonic_closest(self):
 
@@ -990,7 +1016,11 @@ class TestCase(unittest.TestCase):
         walker = doc.createTreeWalker(rootnode, NodeFilter.SHOW_ELEMENT, None, False)
 
         print(walker.currentNode)
-        print(walker.firstChild())
+        assert str(walker.currentNode) == '<div id="contentarea"><p>Some <span>text</span></p><b>Bold text</b></div>'
+        # print(walker.firstChild())
+        # print(walker.firstChild())
+        # print(walker.firstChild())
+        # print(walker.firstChild())
 
         # //Alert the starting node Tree Walker currently points to (root node)
         window.alert(walker.currentNode.tagName)  # alerts DIV (with id=contentarea)
@@ -998,17 +1028,19 @@ class TestCase(unittest.TestCase):
 
         # Step through and alert all child nodes
         # for n in walker.nextNode():
+        print('---')
         while walker.nextNode():
-            print('+++', walker.nextNode())
+            # print('+++', walker.nextNode())
             window.alert(walker.currentNode)  # //alerts P, SPAN, and B.
-
-        return
+        print('---')
 
         # //Go back to the first child node of the collection and alert it
         walker.currentNode = rootnode  # //reset TreeWalker pointer to point to root node
         print(walker.currentNode)
-        print(walker.firstChild())
-        window.alert(walker.firstChild().tagName)  # //alerts P
+        # print('>>', walker.firstChild()) # calling it breaks it cos it moves it?. is it like an iterator then?
+        assert walker.firstChild().tagName.lower() == 'p'   # //alerts P
+
+        return
 
         # test 2
         doc = html(
@@ -1140,7 +1172,6 @@ class NodeTest(TestCase):
                         assert getattr(item, 'parentNode', node) is node, \
                                'parentNode is incorrect (%s)' % item.parentNode
                         self._checkPositions(item)
-
 
     def test_Document(self):
         # There should be one-- and preferably only one --obvious way to do it.
@@ -1376,7 +1407,7 @@ class NodeTest(TestCase):
         # node.insert(1, frag)
         # node.args = (args).extend(self.args)
         # add frag at nodes position 1
-        # TODO - what is expected behaviour for prepending frags?. 
+        # TODO - what is expected behaviour for prepending frags?.
         # as appendChild says to break it apart and add each child?. not sure with append/prepend
         node.prepend(frag)
         # print(node)

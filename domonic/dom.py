@@ -150,10 +150,32 @@ class Node(EventTarget):
             print('unable to update parent', e)
 
     def _iterate(self, element, callback) -> None:
+        ''' private. - TODO < check these docstrings don't export in docs
+        loops all children and sets self as parent.
+        cant do as decorator for now as that seems to breaks potential for json serialisation (see Style)
+        so will have to call manually whenever self.args are ammended.
         '''
-        private.
-        currently used for querySelector
-        '''
+        callback(element)  # TODO - this can block on failed attributes
+        elements = []
+        if isinstance(element, Node):
+            elements = element.args
+        elif isinstance(element, list):
+            elements = element
+        try:
+            # print(self.args)
+            for el in elements:
+                # print('INSIDE:', el, type(el))
+                if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
+                    # callback(el)
+                    el._iterate(el, callback)
+                elif isinstance(el, list):  # if someone is incorrectly using a list as a child
+                    for e in el:
+                        if type(e) not in (str, list, dict, int, float, tuple, object, set):
+                            # print('&&&&&&&')
+                            e._iterate(e, callback)
+        except Exception as e:
+            print('unable to update parent', e)
+
         # from domonic.javascript import Array
         # nodes = Array()
         # nodes.push(element)
@@ -161,12 +183,14 @@ class Node(EventTarget):
         #     element = nodes.shift()
         #     callback(element)
         #     nodes.unshift(*element.children)
-        nodes: list = []
-        nodes.append(element)
-        while len(nodes) > 0:
-            element = nodes.pop(0)
-            callback(element)
-            nodes.extend(element.children)
+        #     element._iterate(element, callback)
+
+        # nodes: list = []
+        # nodes.append(element)
+        # while len(nodes) > 0:
+        #     element = nodes.pop(0)
+        #     callback(element)
+        #     nodes.extend(element.children)
 
     def __len__(self):
         return len(self.args)
@@ -414,8 +438,8 @@ class Node(EventTarget):
             nxt = nxt.parentNode
         return node
 
-    def insertBefore(self, new_node, reference_node = None):
-        """ inserts a node before a reference node as a child of a specified parent node. 
+    def insertBefore(self, new_node, reference_node=None):
+        """ inserts a node before a reference node as a child of a specified parent node.
             this will remove the node from its previous parent node, if any.
 
             # TODO - can throw value error if wrong ordered params. may be helpful to catch to say so.
@@ -701,17 +725,15 @@ class Attr(Node):
 from xml.dom.minidom import NamedNodeMap
 
 # class NamedNodeMap(NamedNodeMap):
-
-    # def __getitem__(self, name):
-    #     self.getNamedItem(name)
-
-    # def __setitem__(self, name: str, value):
-    #     self.setNamedItem(name, value)
+# def __getitem__(self, name):
+#     self.getNamedItem(name)
+# def __setitem__(self, name: str, value):
+#     self.setNamedItem(name, value)
 
 
 '''
 class NamedNodeMap(object):
-    """ TODO - not tested yet. 
+    """ TODO - not tested yet.
 
     a live object that represents a list of nodes.
     """
@@ -929,10 +951,10 @@ class DocumentType(Node):
     nodeType = Node.DOCUMENT_TYPE_NODE
     __slots__ = ('name', 'publicId', 'systemId')
 
-    def __init__(self, name: str="html", publicId: str="", systemId: str="") -> None:
+    def __init__(self, name: str = "html", publicId: str = "", systemId: str = "") -> None:
         self.name: str = name  # A DOMString, eg "html" for <!DOCTYPE HTML>.
-        self.publicId: str = publicId  # A DOMString, eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
-        self.systemId: str = systemId  # A DOMString, eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
+        self.publicId: str = publicId  # eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
+        self.systemId: str = systemId  # eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
         super().__init__()
 
     def internalSubset(self):
@@ -1437,32 +1459,27 @@ class Element(Node):
         tries to match an element based on the query
         at moment very basic. i.e. single level. just checks between id/tag/class
         """
-        try:
-            if query[0] == '#':
-                if element.getAttribute('id') == query.split('#')[1]:
-                    return True
-        except Exception as e:
-            pass
+        # print(type(element))
+        if not isinstance(element, Element):
+            return False
 
-        try:
-            if element.tagName.lower() == query.lower():
+        if query[0] == '#':
+            if element.getAttribute('id') == query.split('#')[1]:
                 return True
-        except Exception as e:
-            pass
 
-        try:
-            if query[0] == '.':
-                if query.split('.')[1] in element.classList:
-                    return True
-        except Exception as e:
-            pass
+        if element.tagName.lower() == query.lower():
+            return True
+
+        if query[0] == '.':
+            if query.split('.')[1] in element.classList:
+                return True
 
         return False
 
-    # https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
-    # @classmethod
     def matches(self, s: str) -> bool:
         """[checks to see if the Element would be selected by the provided selectorString]
+
+        https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
 
         Args:
             s (str): [css selector]
@@ -1470,10 +1487,6 @@ class Element(Node):
         Returns:
             [bool]: [True if selector maches Element otherwise False]
         """
-        # print("matches:", s)
-        # print(self.document) # TODO - buggin?
-        # print(self.ownerDocument)
-        # matches = (self.document or self.ownerDocument).querySelectorAll(s)
         matches = self.ownerDocument.querySelectorAll(s)
         for match in matches:
             if match == self:
@@ -1669,7 +1682,11 @@ class Element(Node):
     @property
     def classList(self):
         """ Returns the value of the classList attribute of an element """
-        return self.getAttribute('class').split(' ')
+        cl = self.getAttribute('class')
+        if cl is None:
+            return []
+        else:
+            return cl.split(' ')
 
     @classList.setter
     def classList(self, newname: str):
@@ -1801,7 +1818,7 @@ class Element(Node):
                 attribute = '_' + attribute
             return self.kwargs[attribute]
         except Exception as e:
-            # print('failed to get attribute')
+            # print('attribute does not exist', e)  # TODO - something about this
             # print(e)
             return None
 
@@ -1818,7 +1835,7 @@ class Element(Node):
         """ Returns the size of an element and its position relative to the viewport """
         raise NotImplementedError
 
-    def getElementsByClassName(self, className: str):
+    def getElementsByClassName(self, className: str) -> 'HTMLCollection':
         """[Returns a collection of all child elements with the specified class name]
 
         Args:
@@ -1827,14 +1844,25 @@ class Element(Node):
         Returns:
             [type]: [a NodeList of all child elements with the specified class name]
         """
-        return self.querySelectorAll('.' + className)
+        # TODO - this will have to change as this i live and qsa aint.
+        # return self.querySelectorAll('.' + className)
+        return HTMLCollection(self.querySelectorAll('.' + className))
 
-    def getElementsByTagName(self, tagName: str) -> List:
-        """ Returns a collection of all child elements with the specified tag name """
-        # tagName = tagName.lower()
-        # if tag == '*':
-        #     return self.children
-        return self.querySelectorAll(tagName)
+    def getElementsByTagName(self, tagName: str) -> 'HTMLCollection':
+        """[Returns a collection of all child elements with the specified tag name
+
+        Args:
+            tagName (str): [a DOMString representing the tag name to match]
+
+        Returns:
+            [type]: [method returns a live HTMLCollection of elements with the given tag name.]
+        """
+        elements = HTMLCollection()
+        def anon(el):
+            if self._matchElement(el, tagName):
+                elements.append(el)
+        self._iterate(self, anon)
+        return elements
 
     def hasAttribute(self, attribute: str) -> bool:
         """ Returns true if an element has the specified attribute, otherwise false """
@@ -2047,37 +2075,23 @@ class Element(Node):
         Returns:
             [type]: [a list of Element objects]
         """
-
-        # TODO - if query is more complex than just single tagname, class or id then call getElementsBySelector instead
-        # remove the first character if it's a '.' or '#'
-        # bodge for now. better than not working
-        # print(query)
-        # if query[0] == '.' or query[0] == '#':
-        # print('it startes!')
         naked_query = query[1:]
-        # print("dis:::",naked_query)
         if '.' in naked_query or '[' in naked_query or ' ' in naked_query:
-            # print('DIVERTED!', query)
             return self.getElementsBySelector(query, self)
-        # TODO - bug?. elements selector seems to only work if tag is provided
-        # so having to do this for now.
-
-        # print('NOT DIVERTED')
-
         elements = []
-
         def anon(el):
             if self._matchElement(el, query):
                 elements.append(el)
-
         self._iterate(self, anon)
         return elements
 
     def remove(self):
         """ Removes the element from the DOM """
-        # self.ownerDocument
-        # raise NotImplementedError
-        self.parentNode.removeChild(self)
+        try:
+            self.parentNode.args.remove(self)
+        except Exception:
+            # print("Element not found")
+            pass
 
     def removeAttribute(self, attribute: str):
         """ Removes a specified attribute from an element """
@@ -3308,45 +3322,47 @@ class Text(CharacterData):
     # def __repr__(self):
         # return str(self.textContent)
 
-# class HTMLCollection(Node):
 
-#     def __init__(self, *args):
-#         self.args = args
-#         self.length = len(self.args)
+class HTMLCollection(list):
 
-#     def __len__(self):
-#         return self.length
+    def __str__(self) -> str:
+        return ''.join([str(a) for a in self])
 
-#     def __getitem__(self, index):
-#         return self.args[index]
+    def item(self, index: int):
+        """[gets the indexth item in the collection.
+        If index is greater than or equal to the number of nodes in the list, this returns null.]
 
-#     def item(self, index):
-#         return self.args[index]
+        Args:
+            index ([type]): [the index of the item to return.]
 
-# item()    Returns the attribute node at a specified index in a NamedNodeMap   Attribute, HTMLCollection
-# namedItem()   Returns the element with the specified ID, or name, in an HTMLCollection    HTMLCollection
+        Returns:
+            [type]: [the node at the indexth position, or None]
+        """
+        if index < len(self):
+            return self[index]
+        else:
+            return None
 
-#     def __iter__(self):
-#         return iter(self.args)
+    def namedItem(self, name: str):
+        """Returns the specific node whose ID or, as a fallback, name matches the string specified by name."""
+        for item in self:
+            if item.id == name:
+                return item
+            elif item.name == name:
+                return item
+        return None
 
-#     def __next__(self):
-#         return next(self.args)
-
-#     def __str__(self):
-#         return str(self.args)
-
-#     def __repr__(self):
-#         return str(self.args)
-
-#     def __add__(self, other):
-#         return self.args + other.args
-
-#     def __radd__(self, other):
-#         return other.args + self.args
-
-#     def __iadd__(self, other):
-#         self.args += other.args
-#         return self
+    def __getitem__(self, index):
+        # can return dot notation i.e
+        # index = "named.item.with.periods" # TODO - test
+        if isinstance(index, str):
+            names = index.split(".")
+            if len(names) > 1:
+                return self.namedItem(names[0]).namedItem(".".join(names[1:]))
+            else:
+                return self.namedItem(index)
+        else:
+            return super().__getitem__(index)
 
 
 # TODO - is there a webapi module for this now?
@@ -3459,7 +3475,7 @@ class DOMPoint(vec3):
     def fromPoint(point) -> 'DOMPoint':
         return DOMPoint(point.x, point.y, point.z, point.w)
 
-    def __init__(self, x: float, y: float, z: float=0, w: float=1) -> None:
+    def __init__(self, x: float, y: float, z: float = 0, w: float = 1) -> None:
         self.x: float = x
         self.y: float = y
         self.z: float = z
@@ -3480,7 +3496,7 @@ class DOMPointReadOnly(DOMPoint):
     def fromPoint(point) -> 'DOMPointReadOnly':
         return DOMPointReadOnly(point.x, point.y, point.z, point.w)
 
-    def __init__(self, x: float, y: float, z: float=0, w: float=1) -> None:
+    def __init__(self, x: float, y: float, z: float = 0, w: float = 1) -> None:
         self.x: float = x
         self.y: float = y
         self.z: float = z
@@ -4074,60 +4090,356 @@ class TreeWalker():
 # XMLSerializer = xml.dom.minidom.XMLSerializer?
 # XMLSerializer.serializeToString(rootNode)
 
-class Sanitizer():
-
+class Sanitizer:
     def __init__(self, rules=None, *args, **kwargs):
-        """ Creates and returns a Sanitizer object."""
+        """Creates and returns a Sanitizer object."""
 
         # casting as object gives us . notation
         from domonic.javascript import Object
-        self._default_configuration = Object({
-        "allowCustomElements": False,
-        #"allowElements": [],  # elements that the sanitizer should retain in the input.
-        "blockElements": [],  # elements where the sanitizer should remove the elements from the input, but retain their children.
-        "dropElements": [],  # elements that the sanitizer should remove from the input, including its children.
-        #"allowAttributes": [],  # determines whether an attribute (on a given element) should be allowed.
-        "dropAttributes": [],  # determines whether an attribute (on a given element) should be dropped.
-        "allowCustomElements": False,  # determines whether custom elements are to be considered. The default is to drop them. If this option is true, custom elements will still be checked against all other built-in or configured configured checks.
-        "allowComments": False,  # determines whether HTML comments are allowed.
-        "allowElements": ["a", "abbr", "acronym", "address", "area", "article", "aside", "audio", "b", "bdi", "bdo", "bgsound",
-        "big", "blockquote", "body", "br", "button", "canvas", "caption", "center", "cite", "code", "col", "colgroup", "datalist",
-        "dd", "del", "details", "dfn", "dialog", "dir", "div", "dl", "dt", "em", "fieldset", "figcaption", "figure", "font", "footer",
-        "form", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html", "i", "img", "input", "ins", "kbd", "keygen",
-        "label", "layer", "legend", "li", "link", "listing", "main", "map", "mark", "marquee", "menu", "meta", "meter", "nav", "nobr",
-        "ol", "optgroup", "option", "output", "p", "picture", "popup", "pre", "progress", "q", "rb", "rp", "rt", "rtc", "ruby", "s",
-        "samp", "section", "select", "selectmenu", "small", "source", "span", "strike", "strong", "style", "sub", "summary", "sup",
-        "table", "tbody", "td", "tfoot", "th", "thead", "time", "tr", "track", "tt", "u", "ul", "var", "video", "wbr"],
-        "allowAttributes": {
-            "abbr": ["*"], "accept": ["*"], "accept-charset": ["*"], "accesskey": ["*"], "action": ["*"], "align": ["*"],
-            "alink": ["*"], "allow": ["*"], "allowfullscreen": ["*"], "alt": ["*"], "anchor": ["*"], "archive": ["*"], "as": ["*"],
-            "async": ["*"], "autocapitalize": ["*"], "autocomplete": ["*"], "autocorrect": ["*"], "autofocus": ["*"], "autopictureinpicture": ["*"],
-            "autoplay": ["*"], "axis": ["*"], "background": ["*"], "behavior": ["*"], "bgcolor": ["*"], "border": ["*"], "bordercolor": ["*"],
-            "capture": ["*"], "cellpadding": ["*"], "cellspacing": ["*"], "challenge": ["*"], "char": ["*"], "charoff": ["*"], "charset": ["*"],
-            "checked": ["*"], "cite": ["*"], "class": ["*"], "classid": ["*"], "clear": ["*"], "code": ["*"], "codebase": ["*"], "codetype": ["*"],
-            "color": ["*"], "cols": ["*"], "colspan": ["*"], "compact": ["*"], "content": ["*"], "contenteditable": ["*"], "controls": ["*"],
-            "controlslist": ["*"], "conversiondestination": ["*"], "coords": ["*"], "crossorigin": ["*"], "csp": ["*"], "data": ["*"], "datetime": ["*"],
-            "declare": ["*"], "decoding": ["*"], "default": ["*"], "defer": ["*"], "dir": ["*"], "direction": ["*"], "dirname": ["*"], "disabled": ["*"],
-            "disablepictureinpicture": ["*"], "disableremoteplayback": ["*"], "disallowdocumentaccess": ["*"], "download": ["*"], "draggable": ["*"],
-            "elementtiming": ["*"], "enctype": ["*"], "end": ["*"], "enterkeyhint": ["*"], "event": ["*"], "exportparts": ["*"], "face": ["*"], "for": ["*"],
-            "form": ["*"], "formaction": ["*"], "formenctype": ["*"], "formmethod": ["*"], "formnovalidate": ["*"], "formtarget": ["*"], "frame": ["*"],
-            "frameborder": ["*"], "headers": ["*"], "height": ["*"], "hidden": ["*"], "high": ["*"], "href": ["*"], "hreflang": ["*"], "hreftranslate": ["*"],
-            "hspace": ["*"], "http-equiv": ["*"], "id": ["*"], "imagesizes": ["*"], "imagesrcset": ["*"], "importance": ["*"], "impressiondata": ["*"],
-            "impressionexpiry": ["*"], "incremental": ["*"], "inert": ["*"], "inputmode": ["*"], "integrity": ["*"], "invisible": ["*"], "is": ["*"], "ismap": ["*"],
-            "keytype": ["*"], "kind": ["*"], "label": ["*"], "lang": ["*"], "language": ["*"], "latencyhint": ["*"], "leftmargin": ["*"], "link": ["*"], "list": ["*"],
-            "loading": ["*"], "longdesc": ["*"], "loop": ["*"], "low": ["*"], "lowsrc": ["*"], "manifest": ["*"], "marginheight": ["*"], "marginwidth": ["*"], "max": ["*"],
-            "maxlength": ["*"], "mayscript": ["*"], "media": ["*"], "method": ["*"], "min": ["*"], "minlength": ["*"], "multiple": ["*"], "muted": ["*"], "name": ["*"],
-            "nohref": ["*"], "nomodule": ["*"], "nonce": ["*"], "noresize": ["*"], "noshade": ["*"], "novalidate": ["*"], "nowrap": ["*"], "object": ["*"], "open": ["*"],
-            "optimum": ["*"], "part": ["*"], "pattern": ["*"], "ping": ["*"], "placeholder": ["*"], "playsinline": ["*"], "policy": ["*"], "poster": ["*"], "preload": ["*"],
-            "pseudo": ["*"], "readonly": ["*"], "referrerpolicy": ["*"], "rel": ["*"], "reportingorigin": ["*"], "required": ["*"], "resources": ["*"], "rev": ["*"],
-            "reversed": ["*"], "role": ["*"], "rows": ["*"], "rowspan": ["*"], "rules": ["*"], "sandbox": ["*"], "scheme": ["*"], "scope": ["*"], "scopes": ["*"],
-            "scrollamount": ["*"], "scrolldelay": ["*"], "scrolling": ["*"], "select": ["*"], "selected": ["*"], "shadowroot": ["*"], "shadowrootdelegatesfocus": ["*"],
-            "shape": ["*"], "size": ["*"], "sizes": ["*"], "slot": ["*"], "span": ["*"], "spellcheck": ["*"], "src": ["*"], "srcdoc": ["*"], "srclang": ["*"], "srcset": ["*"],
-            "standby": ["*"], "start": ["*"], "step": ["*"], "style": ["*"], "summary": ["*"], "tabindex": ["*"], "target": ["*"], "text": ["*"], "title": ["*"],
-            "topmargin": ["*"], "translate": ["*"], "truespeed": ["*"], "trusttoken": ["*"], "type": ["*"], "usemap": ["*"], "valign": ["*"], "value": ["*"],
-            "valuetype": ["*"], "version": ["*"], "virtualkeyboardpolicy": ["*"], "vlink": ["*"], "vspace": ["*"], "webkitdirectory": ["*"], "width": ["*"], "wrap": ["*"]
+
+        self._default_configuration = Object(
+            {
+                "allowCustomElements": False,
+                # "allowElements": [],  # elements that the sanitizer should retain in the input.
+                "blockElements": [],  # elements where the sanitizer should remove the elements from the input, but retain their children.
+                "dropElements": [],  # elements that the sanitizer should remove from the input, including its children.
+                # "allowAttributes": [],  # determines whether an attribute (on a given element) should be allowed.
+                "dropAttributes": [],  # determines whether an attribute (on a given element) should be dropped.
+                "allowCustomElements": False,  # determines whether custom elements are to be considered. The default is to drop them. If this option is true, custom elements will still be checked against all other built-in or configured configured checks.
+                "allowComments": False,  # determines whether HTML comments are allowed.
+                "allowElements": [
+                    "a",
+                    "abbr",
+                    "acronym",
+                    "address",
+                    "area",
+                    "article",
+                    "aside",
+                    "audio",
+                    "b",
+                    "bdi",
+                    "bdo",
+                    "bgsound",
+                    "big",
+                    "blockquote",
+                    "body",
+                    "br",
+                    "button",
+                    "canvas",
+                    "caption",
+                    "center",
+                    "cite",
+                    "code",
+                    "col",
+                    "colgroup",
+                    "datalist",
+                    "dd",
+                    "del",
+                    "details",
+                    "dfn",
+                    "dialog",
+                    "dir",
+                    "div",
+                    "dl",
+                    "dt",
+                    "em",
+                    "fieldset",
+                    "figcaption",
+                    "figure",
+                    "font",
+                    "footer",
+                    "form",
+                    "h1",
+                    "h2",
+                    "h3",
+                    "h4",
+                    "h5",
+                    "h6",
+                    "head",
+                    "header",
+                    "hgroup",
+                    "hr",
+                    "html",
+                    "i",
+                    "img",
+                    "input",
+                    "ins",
+                    "kbd",
+                    "keygen",
+                    "label",
+                    "layer",
+                    "legend",
+                    "li",
+                    "link",
+                    "listing",
+                    "main",
+                    "map",
+                    "mark",
+                    "marquee",
+                    "menu",
+                    "meta",
+                    "meter",
+                    "nav",
+                    "nobr",
+                    "ol",
+                    "optgroup",
+                    "option",
+                    "output",
+                    "p",
+                    "picture",
+                    "popup",
+                    "pre",
+                    "progress",
+                    "q",
+                    "rb",
+                    "rp",
+                    "rt",
+                    "rtc",
+                    "ruby",
+                    "s",
+                    "samp",
+                    "section",
+                    "select",
+                    "selectmenu",
+                    "small",
+                    "source",
+                    "span",
+                    "strike",
+                    "strong",
+                    "style",
+                    "sub",
+                    "summary",
+                    "sup",
+                    "table",
+                    "tbody",
+                    "td",
+                    "tfoot",
+                    "th",
+                    "thead",
+                    "time",
+                    "tr",
+                    "track",
+                    "tt",
+                    "u",
+                    "ul",
+                    "var",
+                    "video",
+                    "wbr",
+                ],
+                "allowAttributes": {
+                    "abbr": ["*"],
+                    "accept": ["*"],
+                    "accept-charset": ["*"],
+                    "accesskey": ["*"],
+                    "action": ["*"],
+                    "align": ["*"],
+                    "alink": ["*"],
+                    "allow": ["*"],
+                    "allowfullscreen": ["*"],
+                    "alt": ["*"],
+                    "anchor": ["*"],
+                    "archive": ["*"],
+                    "as": ["*"],
+                    "async": ["*"],
+                    "autocapitalize": ["*"],
+                    "autocomplete": ["*"],
+                    "autocorrect": ["*"],
+                    "autofocus": ["*"],
+                    "autopictureinpicture": ["*"],
+                    "autoplay": ["*"],
+                    "axis": ["*"],
+                    "background": ["*"],
+                    "behavior": ["*"],
+                    "bgcolor": ["*"],
+                    "border": ["*"],
+                    "bordercolor": ["*"],
+                    "capture": ["*"],
+                    "cellpadding": ["*"],
+                    "cellspacing": ["*"],
+                    "challenge": ["*"],
+                    "char": ["*"],
+                    "charoff": ["*"],
+                    "charset": ["*"],
+                    "checked": ["*"],
+                    "cite": ["*"],
+                    "class": ["*"],
+                    "classid": ["*"],
+                    "clear": ["*"],
+                    "code": ["*"],
+                    "codebase": ["*"],
+                    "codetype": ["*"],
+                    "color": ["*"],
+                    "cols": ["*"],
+                    "colspan": ["*"],
+                    "compact": ["*"],
+                    "content": ["*"],
+                    "contenteditable": ["*"],
+                    "controls": ["*"],
+                    "controlslist": ["*"],
+                    "conversiondestination": ["*"],
+                    "coords": ["*"],
+                    "crossorigin": ["*"],
+                    "csp": ["*"],
+                    "data": ["*"],
+                    "datetime": ["*"],
+                    "declare": ["*"],
+                    "decoding": ["*"],
+                    "default": ["*"],
+                    "defer": ["*"],
+                    "dir": ["*"],
+                    "direction": ["*"],
+                    "dirname": ["*"],
+                    "disabled": ["*"],
+                    "disablepictureinpicture": ["*"],
+                    "disableremoteplayback": ["*"],
+                    "disallowdocumentaccess": ["*"],
+                    "download": ["*"],
+                    "draggable": ["*"],
+                    "elementtiming": ["*"],
+                    "enctype": ["*"],
+                    "end": ["*"],
+                    "enterkeyhint": ["*"],
+                    "event": ["*"],
+                    "exportparts": ["*"],
+                    "face": ["*"],
+                    "for": ["*"],
+                    "form": ["*"],
+                    "formaction": ["*"],
+                    "formenctype": ["*"],
+                    "formmethod": ["*"],
+                    "formnovalidate": ["*"],
+                    "formtarget": ["*"],
+                    "frame": ["*"],
+                    "frameborder": ["*"],
+                    "headers": ["*"],
+                    "height": ["*"],
+                    "hidden": ["*"],
+                    "high": ["*"],
+                    "href": ["*"],
+                    "hreflang": ["*"],
+                    "hreftranslate": ["*"],
+                    "hspace": ["*"],
+                    "http-equiv": ["*"],
+                    "id": ["*"],
+                    "imagesizes": ["*"],
+                    "imagesrcset": ["*"],
+                    "importance": ["*"],
+                    "impressiondata": ["*"],
+                    "impressionexpiry": ["*"],
+                    "incremental": ["*"],
+                    "inert": ["*"],
+                    "inputmode": ["*"],
+                    "integrity": ["*"],
+                    "invisible": ["*"],
+                    "is": ["*"],
+                    "ismap": ["*"],
+                    "keytype": ["*"],
+                    "kind": ["*"],
+                    "label": ["*"],
+                    "lang": ["*"],
+                    "language": ["*"],
+                    "latencyhint": ["*"],
+                    "leftmargin": ["*"],
+                    "link": ["*"],
+                    "list": ["*"],
+                    "loading": ["*"],
+                    "longdesc": ["*"],
+                    "loop": ["*"],
+                    "low": ["*"],
+                    "lowsrc": ["*"],
+                    "manifest": ["*"],
+                    "marginheight": ["*"],
+                    "marginwidth": ["*"],
+                    "max": ["*"],
+                    "maxlength": ["*"],
+                    "mayscript": ["*"],
+                    "media": ["*"],
+                    "method": ["*"],
+                    "min": ["*"],
+                    "minlength": ["*"],
+                    "multiple": ["*"],
+                    "muted": ["*"],
+                    "name": ["*"],
+                    "nohref": ["*"],
+                    "nomodule": ["*"],
+                    "nonce": ["*"],
+                    "noresize": ["*"],
+                    "noshade": ["*"],
+                    "novalidate": ["*"],
+                    "nowrap": ["*"],
+                    "object": ["*"],
+                    "open": ["*"],
+                    "optimum": ["*"],
+                    "part": ["*"],
+                    "pattern": ["*"],
+                    "ping": ["*"],
+                    "placeholder": ["*"],
+                    "playsinline": ["*"],
+                    "policy": ["*"],
+                    "poster": ["*"],
+                    "preload": ["*"],
+                    "pseudo": ["*"],
+                    "readonly": ["*"],
+                    "referrerpolicy": ["*"],
+                    "rel": ["*"],
+                    "reportingorigin": ["*"],
+                    "required": ["*"],
+                    "resources": ["*"],
+                    "rev": ["*"],
+                    "reversed": ["*"],
+                    "role": ["*"],
+                    "rows": ["*"],
+                    "rowspan": ["*"],
+                    "rules": ["*"],
+                    "sandbox": ["*"],
+                    "scheme": ["*"],
+                    "scope": ["*"],
+                    "scopes": ["*"],
+                    "scrollamount": ["*"],
+                    "scrolldelay": ["*"],
+                    "scrolling": ["*"],
+                    "select": ["*"],
+                    "selected": ["*"],
+                    "shadowroot": ["*"],
+                    "shadowrootdelegatesfocus": ["*"],
+                    "shape": ["*"],
+                    "size": ["*"],
+                    "sizes": ["*"],
+                    "slot": ["*"],
+                    "span": ["*"],
+                    "spellcheck": ["*"],
+                    "src": ["*"],
+                    "srcdoc": ["*"],
+                    "srclang": ["*"],
+                    "srcset": ["*"],
+                    "standby": ["*"],
+                    "start": ["*"],
+                    "step": ["*"],
+                    "style": ["*"],
+                    "summary": ["*"],
+                    "tabindex": ["*"],
+                    "target": ["*"],
+                    "text": ["*"],
+                    "title": ["*"],
+                    "topmargin": ["*"],
+                    "translate": ["*"],
+                    "truespeed": ["*"],
+                    "trusttoken": ["*"],
+                    "type": ["*"],
+                    "usemap": ["*"],
+                    "valign": ["*"],
+                    "value": ["*"],
+                    "valuetype": ["*"],
+                    "version": ["*"],
+                    "virtualkeyboardpolicy": ["*"],
+                    "vlink": ["*"],
+                    "vspace": ["*"],
+                    "webkitdirectory": ["*"],
+                    "width": ["*"],
+                    "wrap": ["*"],
+                },
             }
-        })
+        )
 
         self.config = None
         if isinstance(rules, dict):
@@ -4233,53 +4545,70 @@ class Sanitizer():
 class HTMLElement(Element):
     pass
 
+
 class HTMLAnchorElement(HTMLElement):
     pass
+
 
 class HTMLAreaElement(HTMLElement):
     pass
 
+
 class HTMLAudioElement(HTMLElement):
     pass
+
 
 class HTMLBRElement(HTMLElement):
     pass
 
+
 class HTMLBaseElement(HTMLElement):
     pass
-    
+
+
 class HTMLBaseFontElement(HTMLElement):
     pass
+
 
 class HTMLBodyElement(HTMLElement):
     pass
 
+
 class HTMLButtonElement(HTMLElement):
     pass
+
 
 class HTMLCanvasElement(HTMLElement):
     pass
 
+
 class HTMLContentElement(HTMLElement):
     pass
+
 
 class HTMLDListElement(HTMLElement):
     pass
 
+
 class HTMLDataElement(HTMLElement):
     pass
+
 
 class HTMLDataListElement(HTMLElement):
     pass
 
+
 class HTMLDialogElement(HTMLElement):
     pass
+
 
 class HTMLDivElement(HTMLElement):
     pass
 
+
 class HTMLDocument(Document):
     pass
+
 
 class HTMLEmbedElement(HTMLElement):
     pass
