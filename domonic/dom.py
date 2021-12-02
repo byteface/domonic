@@ -12,8 +12,6 @@ from typing import *  # List, Dict, Any, Union, Optional, Callable, Tuple
 import re
 import copy
 
-from xml.dom.minidom import DocumentFragment
-
 from domonic.events import Event, EventTarget, MouseEvent  # , KeyboardEvent, TouchEvent, UIEvent, CustomEvent
 from domonic.style import CSSStyleDeclaration as Style
 from domonic.geom import vec3
@@ -47,19 +45,18 @@ class Node(EventTarget):
     ENTITY_NODE: int = 6
     NOTATION_NODE: int = 12
 
-    # TODO - merge with html.tags
-    # __slots__ = ['args', 'baseURI', 'isConnected', 'namespaceURI', 'outerText', 'parentNode', 'prefix']
-
-    # __slots__ = [
-    #     "args",
-    #     "kwargs",
-    #     "__content",
-    #     "____attributes__",  # ? seems to work. but not sure if its correct
-    # ]
-
     __context: list = None  # private. tags will append to last item in context on creation.
 
-    __slots__ = ['____attributes__', '__content', 'name', '__rootNode', 'parentNode', 'baseURI', 'isConnected', 'namespaceURI', 'outerText', 'prefix']
+    __slots__ = ['____attributes__',
+                 '__content',
+                 'name',
+                 '__rootNode',
+                 'parentNode',
+                 'baseURI',
+                 'isConnected',
+                 'namespaceURI',
+                 'outerText',
+                 'prefix']
 
     def __init__(self, *args, **kwargs) -> None:
         self.args = args
@@ -68,7 +65,7 @@ class Node(EventTarget):
         if getattr(self, 'name', None) is None:
             self.name = ''
 
-        # if user doesn't put underscore
+        # if user doesn't put underscore (dont advertise this as still has issues.)
         new_kwargs = {}
         for k, v in kwargs.items():
             if k[0] != "_":
@@ -117,10 +114,10 @@ class Node(EventTarget):
             # print('nope!', e)
             pass
 
+        # this is for using 'with'
         if Node.__context is not None:
             Node.__context[len(Node.__context) - 1] += self
         super().__init__(*args, **kwargs)
-
 
     @property
     def content(self):  # TODO - test
@@ -157,6 +154,7 @@ class Node(EventTarget):
         try:
             return ''.join([format_attr(key, value) for key, value in self.kwargs.items()])
         except IndexError as e:
+            from domonic.html import TemplateError
             raise TemplateError(e)
         # except Exception as e:
             # print(e)
@@ -166,6 +164,7 @@ class Node(EventTarget):
         try:
             self.__attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
         except IndexError as e:
+            from domonic.html import TemplateError
             raise TemplateError(e)
         # except Exception as e:
             # print(e)
@@ -327,8 +326,8 @@ class Node(EventTarget):
             return getattr(self.__class__, attr)  # means overrideing for style etc in element?
             # return getattr(Element, attr)
         except AttributeError as e:
-            # print(e) # TODO - careful. this would be better 'on' during debugging. growing case for a logger
-            raise e  #("attribute does not exist:", attr)
+            # print(e) # TODO - careful. better on for debugging.
+            raise e  # ("attribute does not exist:", attr)
 
         raise AttributeError
 
@@ -2217,6 +2216,7 @@ class Element(Node):
             [type]: [method returns a live HTMLCollection of elements with the given tag name.]
         """
         elements = HTMLCollection()
+
         def anon(el):
             if self._matchElement(el, tagName):
                 elements.append(el)
@@ -4907,15 +4907,15 @@ class Sanitizer:
         return str(self.sanitize(frag))
 
 
-class HTMLElement(Element):  #TODO - check
+class HTMLElement(Element):  # TODO - check
     name = ''
 
 
-class HTMLAnchorElement(HTMLElement):  #TODO - check
+class HTMLAnchorElement(HTMLElement):  # TODO - check
     name = 'a'
 
 
-class HTMLAreaElement(HTMLElement):  #TODO - check
+class HTMLAreaElement(HTMLElement):  # TODO - check
     name = 'area'
 
 
@@ -4931,7 +4931,7 @@ class HTMLBaseElement(HTMLElement):
     name = 'base'
 
 
-class HTMLBaseFontElement(HTMLElement):  #TODO - check
+class HTMLBaseFontElement(HTMLElement):  # TODO - check
     name = 'basefont'
 
 
@@ -4947,7 +4947,7 @@ class HTMLCanvasElement(HTMLElement):
     name = 'canvas'
 
 
-class HTMLContentElement(HTMLElement):  #TODO - check
+class HTMLContentElement(HTMLElement):  # TODO - check
     name = 'content'
 
 
@@ -4979,11 +4979,11 @@ class HTMLEmbedElement(HTMLElement):
     name = 'embed'
 
 
-class HTMLFieldSetElement(HTMLElement):  #TODO - check
+class HTMLFieldSetElement(HTMLElement):  # TODO - check
     name = 'fieldset'
 
 
-class HTMLFormControlsCollection(HTMLElement):  #TODO - check
+class HTMLFormControlsCollection(HTMLElement):  # TODO - check
     name = 'formcontrols'
 
 
@@ -4991,7 +4991,7 @@ class HTMLFormElement(HTMLElement):
     name = 'form'
 
 
-class HTMLFrameSetElement(HTMLElement):  #TODO - check
+class HTMLFrameSetElement(HTMLElement):  # TODO - check
     name = 'frameset'
 
 
@@ -5019,7 +5019,7 @@ class HTMLInputElement(HTMLElement):
     name = 'input'
 
 
-class HTMLIsIndexElement(HTMLElement):  #TODO - check
+class HTMLIsIndexElement(HTMLElement):  # TODO - check
     name = ''
 
 
@@ -5043,11 +5043,11 @@ class HTMLLinkElement(HTMLElement):
     name = 'link'
 
 
-class HTMLMapElement(HTMLElement):  #TODO - check
+class HTMLMapElement(HTMLElement):  # TODO - check
     name = 'map'
 
 
-class HTMLMediaElement(HTMLElement):  #TODO - check
+class HTMLMediaElement(HTMLElement):  # TODO - check
     name = 'media'
 
 
@@ -5059,7 +5059,7 @@ class HTMLMeterElement(HTMLElement):
     name = 'meter'
 
 
-class HTMLModElement(HTMLElement):  #TODO - check
+class HTMLModElement(HTMLElement):  # TODO - check
     name = 'mod'
 
 
@@ -5079,7 +5079,7 @@ class HTMLOptionElement(HTMLElement):
     name = 'option'
 
 
-# class HTMLOptionsCollection(HTMLElement):   #TODO - check
+# class HTMLOptionsCollection(HTMLElement):   # TODO - check
 #     name = 'options'
 
 
@@ -5091,7 +5091,7 @@ class HTMLParagraphElement(HTMLElement):
     name = 'p'
 
 
-class HTMLParamElement(HTMLElement):  #TODO - check
+class HTMLParamElement(HTMLElement):  # TODO - check
     name = 'param'
 
 
@@ -5107,7 +5107,7 @@ class HTMLProgressElement(HTMLElement):
     name = 'progress'
 
 
-class HTMLQuoteElement(HTMLElement):  #TODO - check
+class HTMLQuoteElement(HTMLElement):  # TODO - check
     name = 'q'
 
 
@@ -5119,11 +5119,11 @@ class HTMLSelectElement(HTMLElement):
     name = 'select'
 
 
-class HTMLShadowElement(HTMLElement):  #TODO - check
+class HTMLShadowElement(HTMLElement):  # TODO - check
     name = 'shadow'
 
 
-class HTMLSourceElement(HTMLElement):  #TODO - check
+class HTMLSourceElement(HTMLElement):  # TODO - check
     name = 'source'
 
 
@@ -5135,11 +5135,11 @@ class HTMLStyleElement(HTMLElement):
     name = 'style'
 
 
-class HTMLTableCaptionElement(HTMLElement):  #TODO - check
+class HTMLTableCaptionElement(HTMLElement):  # TODO - check
     name = 'caption'
 
 
-class HTMLTableCellElement(HTMLElement):  #TODO - check
+class HTMLTableCellElement(HTMLElement):  # TODO - check
     name = 'td'
 
 
@@ -5147,7 +5147,7 @@ class HTMLTableColElement(HTMLElement):
     name = 'col'
 
 
-class HTMLTableDataCellElement(HTMLElement):  #TODO - check
+class HTMLTableDataCellElement(HTMLElement):  # TODO - check
     name = 'td'
 
 
@@ -5167,7 +5167,7 @@ class HTMLTableSectionElement(HTMLElement):
     name = 'tbody'
 
 
-class HTMLTemplateElement(HTMLElement):  #TODO - check
+class HTMLTemplateElement(HTMLElement):  # TODO - check
     name = 'template'
 
 

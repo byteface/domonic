@@ -843,7 +843,7 @@ class domonic:
                         next(lines_iterator, None)  # skip the iterator along by 1
 
                 else:
-                    if is_multiline_string == False:
+                    if not is_multiline_string == False:
                         x = line.rindex('"')
                         if x:
                             line = line[:x] + '"""' + line[x + 1:]
