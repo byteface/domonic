@@ -15,7 +15,7 @@ from domonic.dom import Element, Document
 
 # __all__ = ['sitemap', 'url', 'lastmod']
 
-sitemap_tags = ["sitemapindex", "sitemap", "urlset", "url", "loc", "lastmod", "changefreq", "priority", 
+sitemap_tags = ["sitemapindex", "sitemap", "urlset", "url", "loc", "lastmod", "changefreq", "priority",
                 "image:image", "image:loc"]
 
 sitemap_attributes = ["xmlns", "xmlns:xsi", "xsi:schemaLocation",
@@ -65,7 +65,7 @@ def sitemapindex_from_urls(urls):
     Create a sitemap index from a list of urls.
 
     WARNING:
-    there's a difference between a sitemap index and a sitemap. 
+    there's a difference between a sitemap index and a sitemap.
     make sure you know what you want.
 
     # i.e
@@ -92,7 +92,7 @@ def sitemap_from_urls(urls):
     tho u could loop the nodes afterwards and do that.
 
     WARNING:
-    there's a difference between a sitemap index and a sitemap. 
+    there's a difference between a sitemap index and a sitemap.
     make sure you know what you want.
 
     """

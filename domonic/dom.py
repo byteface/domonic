@@ -1,8 +1,10 @@
 """
     domonic.dom
     ====================================
+
     The DOM represents a document with a logical tree.
     https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model
+
 """
 
 from typing import *  # List, Dict, Any, Union, Optional, Callable, Tuple
@@ -97,18 +99,19 @@ class Node(EventTarget):
         # attempt to set init namespaceURI based on the tag name
         try:
             n = self.rootNode
+            nm = n.tagName
             # print(n)
-            if n.tagName == 'html':
+            if nm == 'html':
                 self.namespaceURI = 'http://www.w3.org/1999/xhtml'
-            elif n.tagName == 'svg':
+            elif nm == 'svg':
                 self.namespaceURI = 'http://www.w3.org/2000/svg'
-            elif n.tagName == 'xhtml':
+            elif nm == 'xhtml':
                 self.namespaceURI = 'http://www.w3.org/1999/xhtml'
-            elif n.tagName == 'xml':
+            elif nm == 'xml':
                 self.namespaceURI = 'http://www.w3.org/XML/1998/namespace'
-            elif n.tagName == 'xlink':
+            elif nm == 'xlink':
                 self.namespaceURI = 'http://www.w3.org/1999/xlink'
-            elif n.tagName == 'math':
+            elif nm == 'math':
                 self.namespaceURI = 'http://www.w3.org/1998/Math/MathML'
         except Exception as e:
             # print('nope!', e)
@@ -322,6 +325,7 @@ class Node(EventTarget):
             # return getattr(self, attr)
             # return getattr(Node, attr)  # means overrideing for style etc in element?
             return getattr(self.__class__, attr)  # means overrideing for style etc in element?
+            # return getattr(Element, attr)
         except AttributeError as e:
             print(e)
             raise e  #("attribute does not exist:", attr)
@@ -704,11 +708,9 @@ class Node(EventTarget):
     def nodeName(self):
         """ Returns the name of a node """
         # TODO - not sure what's better this or overriding on every element
-        if isinstance(self, Element):
-            return self.tagName  # .upper()
-        elif isinstance(self, Text):
-            return '#text'
-        elif isinstance(self, Comment):
+        # if isinstance(self, Text):
+        #     return '#text'
+        if isinstance(self, Comment):
             return '#comment'
         # elif isinstance(self, DocumentType):
         #     return '#doctype'
@@ -724,8 +726,13 @@ class Node(EventTarget):
             return self.target
         elif isinstance(self, DocumentType):
             return self.name
+
+        # print(type(self))
+        if isinstance(self, Element):
+            return self.tagName  # .upper()
         else:
             try:
+                # print('sup:',type(self))
                 return self.tagName
             except Exception:
                 return None
@@ -2531,6 +2538,7 @@ class Element(Node):
 
     @property
     def tagName(self):
+        # print('sup!:',type(self))
         return self.name
 
     # @property
@@ -3643,6 +3651,11 @@ class Text(CharacterData):
     # def nodeType(self):
     #     return Node.TEXT_NODE
     nodeType: int = Node.TEXT_NODE
+
+    @property
+    def nodeName(self):
+        # print('Text.NodeName')
+        return '#text'
 
     @property
     def childNodes(self):
@@ -4894,132 +4907,296 @@ class Sanitizer:
         return str(self.sanitize(frag))
 
 
-class HTMLElement(Element):
-    pass
+class HTMLElement(Element):  #TODO - check
+    name = ''
 
 
-class HTMLAnchorElement(HTMLElement):
-    pass
+class HTMLAnchorElement(HTMLElement):  #TODO - check
+    name = 'a'
 
 
-class HTMLAreaElement(HTMLElement):
-    pass
+class HTMLAreaElement(HTMLElement):  #TODO - check
+    name = 'area'
 
 
 class HTMLAudioElement(HTMLElement):
-    pass
+    name = 'audio'
 
 
 class HTMLBRElement(HTMLElement):
-    pass
+    name = 'br'
 
 
 class HTMLBaseElement(HTMLElement):
-    pass
+    name = 'base'
 
 
-class HTMLBaseFontElement(HTMLElement):
-    pass
+class HTMLBaseFontElement(HTMLElement):  #TODO - check
+    name = 'basefont'
 
 
 class HTMLBodyElement(HTMLElement):
-    pass
+    name = 'body'
 
 
 class HTMLButtonElement(HTMLElement):
-    pass
+    name = 'button'
 
 
 class HTMLCanvasElement(HTMLElement):
-    pass
+    name = 'canvas'
 
 
-class HTMLContentElement(HTMLElement):
-    pass
+class HTMLContentElement(HTMLElement):  #TODO - check
+    name = 'content'
 
 
 class HTMLDListElement(HTMLElement):
-    pass
+    name = 'dl'
 
 
 class HTMLDataElement(HTMLElement):
-    pass
+    name = 'data'
 
 
 class HTMLDataListElement(HTMLElement):
-    pass
+    name = 'datalist'
 
 
 class HTMLDialogElement(HTMLElement):
-    pass
+    name = 'dialog'
 
 
 class HTMLDivElement(HTMLElement):
-    pass
+    name = 'div'
 
 
 class HTMLDocument(Document):
-    pass
+    name = 'html'
 
 
 class HTMLEmbedElement(HTMLElement):
-    pass
+    name = 'embed'
 
-# HTMLFieldSetElement
-# HTMLFormControlsCollection
-# HTMLFormElement
-# HTMLFrameSetElement
-# HTMLHRElement
-# HTMLHeadElement
-# HTMLHeadingElement
-# HTMLIFrameElement
-# HTMLImageElement
-# HTMLInputElement
-# HTMLIsIndexElement
-# HTMLKeygenElement
-# HTMLLIElement
-# HTMLLabelElement
-# HTMLLegendElement
-# HTMLLinkElement
-# HTMLMapElement
-# HTMLMediaElement
-# HTMLMetaElement
-# HTMLMeterElement
-# HTMLModElement
-# HTMLOListElement
-# HTMLObjectElement
-# HTMLOptGroupElement
-# HTMLOptionElement
-# HTMLOptionsCollection
-# HTMLOutputElement
-# HTMLParagraphElement
-# HTMLParamElement
-# HTMLPictureElement
-# HTMLPreElement
-# HTMLProgressElement
-# HTMLQuoteElement
-# HTMLScriptElement
-# HTMLSelectElement
-# HTMLShadowElement
-# HTMLSourceElement
-# HTMLSpanElement
-# HTMLStyleElement
-# HTMLTableCaptionElement
-# HTMLTableCellElement
-# HTMLTableColElement
-# HTMLTableDataCellElement
-# HTMLTableElement
-# HTMLTableHeaderCellElement
-# HTMLTableRowElement
-# HTMLTableSectionElement
-# HTMLTemplateElement
-# HTMLTextAreaElement
-# HTMLTimeElement
-# HTMLTitleElement
-# HTMLTrackElement
-# HTMLUListElement
-# HTMLUnknownElement
-# HTMLVideoElement
+
+class HTMLFieldSetElement(HTMLElement):  #TODO - check
+    name = 'fieldset'
+
+
+class HTMLFormControlsCollection(HTMLElement):  #TODO - check
+    name = 'formcontrols'
+
+
+class HTMLFormElement(HTMLElement):
+    name = 'form'
+
+
+class HTMLFrameSetElement(HTMLElement):  #TODO - check
+    name = 'frameset'
+
+
+class HTMLHRElement(HTMLElement):
+    name = 'hr'
+
+
+class HTMLHeadElement(HTMLElement):
+    name = 'head'
+
+
+class HTMLHeadingElement(HTMLElement):
+    name = 'h1'
+
+
+class HTMLIFrameElement(HTMLElement):
+    name = 'iframe'
+
+
+class HTMLImageElement(HTMLElement):
+    name = 'img'
+
+
+class HTMLInputElement(HTMLElement):
+    name = 'input'
+
+
+class HTMLIsIndexElement(HTMLElement):  #TODO - check
+    name = ''
+
+
+class HTMLKeygenElement(HTMLElement):
+    name = 'keygen'
+
+
+class HTMLLIElement(HTMLElement):
+    name = 'li'
+
+
+class HTMLLabelElement(HTMLElement):
+    name = 'label'
+
+
+class HTMLLegendElement(HTMLElement):
+    name = 'legend'
+
+
+class HTMLLinkElement(HTMLElement):
+    name = 'link'
+
+
+class HTMLMapElement(HTMLElement):  #TODO - check
+    name = 'map'
+
+
+class HTMLMediaElement(HTMLElement):  #TODO - check
+    name = 'media'
+
+
+class HTMLMetaElement(HTMLElement):
+    name = 'meta'
+
+
+class HTMLMeterElement(HTMLElement):
+    name = 'meter'
+
+
+class HTMLModElement(HTMLElement):  #TODO - check
+    name = 'mod'
+
+
+class HTMLOListElement(HTMLElement):
+    name = 'ol'
+
+
+class HTMLObjectElement(HTMLElement):
+    name = 'object'
+
+
+class HTMLOptGroupElement(HTMLElement):
+    name = 'optgroup'
+
+
+class HTMLOptionElement(HTMLElement):
+    name = 'option'
+
+
+# class HTMLOptionsCollection(HTMLElement):   #TODO - check
+#     name = 'options'
+
+
+class HTMLOutputElement(HTMLElement):
+    name = 'output'
+
+
+class HTMLParagraphElement(HTMLElement):
+    name = 'p'
+
+
+class HTMLParamElement(HTMLElement):  #TODO - check
+    name = 'param'
+
+
+class HTMLPictureElement(HTMLElement):
+    name = 'picture'
+
+
+class HTMLPreElement(HTMLElement):
+    name = 'pre'
+
+
+class HTMLProgressElement(HTMLElement):
+    name = 'progress'
+
+
+class HTMLQuoteElement(HTMLElement):  #TODO - check
+    name = 'q'
+
+
+class HTMLScriptElement(HTMLElement):
+    name = 'script'
+
+
+class HTMLSelectElement(HTMLElement):
+    name = 'select'
+
+
+class HTMLShadowElement(HTMLElement):  #TODO - check
+    name = 'shadow'
+
+
+class HTMLSourceElement(HTMLElement):  #TODO - check
+    name = 'source'
+
+
+class HTMLSpanElement(HTMLElement):
+    name = 'span'
+
+
+class HTMLStyleElement(HTMLElement):
+    name = 'style'
+
+
+class HTMLTableCaptionElement(HTMLElement):  #TODO - check
+    name = 'caption'
+
+
+class HTMLTableCellElement(HTMLElement):  #TODO - check
+    name = 'td'
+
+
+class HTMLTableColElement(HTMLElement):
+    name = 'col'
+
+
+class HTMLTableDataCellElement(HTMLElement):  #TODO - check
+    name = 'td'
+
+
+class HTMLTableElement(HTMLElement):
+    name = 'table'
+
+
+class HTMLTableHeaderCellElement(HTMLElement):
+    name = 'th'
+
+
+class HTMLTableRowElement(HTMLElement):
+    name = 'tr'
+
+
+class HTMLTableSectionElement(HTMLElement):
+    name = 'tbody'
+
+
+class HTMLTemplateElement(HTMLElement):  #TODO - check
+    name = 'template'
+
+
+class HTMLTextAreaElement(HTMLElement):
+    name = 'textarea'
+
+
+class HTMLTimeElement(HTMLElement):
+    name = 'time'
+
+
+class HTMLTitleElement(HTMLElement):
+    name = 'title'
+
+
+class HTMLTrackElement(HTMLElement):
+    name = 'track'
+
+
+class HTMLUListElement(HTMLElement):
+    name = 'ul'
+
+
+class HTMLUnknownElement(HTMLElement):
+    name = 'unknown'
+
+
+class HTMLVideoElement(HTMLElement):
+    name = 'video'
 
 
 # document can be set manually but will get set each time a new Document is created.

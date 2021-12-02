@@ -3,13 +3,86 @@
     ====================================
 
     Generate HTML using python.
-    a simple wrapper around the dom to make creating html easy
 
 """
 from domonic.webapi.url import URL
 
 from domonic.dom import Node, Element, Document, DocumentType, Comment, Text
-from domonic.dom import HTMLDialogElement
+from domonic.dom import (
+    HTMLElement,
+    HTMLAnchorElement,
+    HTMLAreaElement,
+    HTMLAudioElement,
+    HTMLBRElement,
+    HTMLBaseElement,
+    HTMLBaseFontElement,
+    HTMLBodyElement,
+    HTMLButtonElement,
+    HTMLCanvasElement,
+    HTMLContentElement,
+    HTMLDListElement,
+    HTMLDataElement,
+    HTMLDataListElement,
+    HTMLDialogElement,
+    HTMLDivElement,
+    HTMLDocument,
+    HTMLEmbedElement,
+    HTMLFieldSetElement,
+    HTMLFormControlsCollection,
+    HTMLFormElement,
+    HTMLFrameSetElement,
+    HTMLHRElement,
+    HTMLHeadElement,
+    HTMLHeadingElement,
+    HTMLIFrameElement,
+    HTMLImageElement,
+    HTMLInputElement,
+    HTMLIsIndexElement,
+    HTMLKeygenElement,
+    HTMLLIElement,
+    HTMLLabelElement,
+    HTMLLegendElement,
+    HTMLLinkElement,
+    HTMLMapElement,
+    HTMLMediaElement,
+    HTMLMetaElement,
+    HTMLMeterElement,
+    HTMLModElement,
+    HTMLOListElement,
+    HTMLObjectElement,
+    HTMLOptGroupElement,
+    HTMLOptionElement,
+    # HTMLOptionsCollection,
+    HTMLOutputElement,
+    HTMLParagraphElement,
+    HTMLParamElement,
+    HTMLPictureElement,
+    HTMLPreElement,
+    HTMLProgressElement,
+    HTMLQuoteElement,
+    HTMLScriptElement,
+    HTMLSelectElement,
+    HTMLShadowElement,
+    HTMLSourceElement,
+    HTMLSpanElement,
+    HTMLStyleElement,
+    HTMLTableCaptionElement,
+    HTMLTableCellElement,
+    HTMLTableColElement,
+    HTMLTableDataCellElement,
+    HTMLTableElement,
+    HTMLTableHeaderCellElement,
+    HTMLTableRowElement,
+    HTMLTableSectionElement,
+    HTMLTemplateElement,
+    HTMLTextAreaElement,
+    HTMLTimeElement,
+    HTMLTitleElement,
+    HTMLTrackElement,
+    HTMLUListElement,
+    HTMLUnknownElement,
+    HTMLVideoElement,
+)
 
 
 html_tags = [
@@ -60,6 +133,19 @@ html_tags = [
     "input",
     "audio",
     "aside",
+    "applet",
+    "object",
+    "basefont",
+    "center",
+    "embed",
+    "isindex",
+    "listing",
+    "menuitem",
+    "plaintext",
+    "strike",
+    "template",
+    "picture",
+    "dialog",
     "time",
     "span",
     "samp",
@@ -68,22 +154,6 @@ html_tags = [
     "menu",
     "mark",
     "link",
-    "applet",
-    "object",
-    "basefont",
-    "center",
-    "dir",
-    "embed",
-    "isindex",
-    "listing",
-    "menuitem",
-    "plaintext",
-    "pre",
-    "strike",
-    "xmp",
-    "template",
-    "picture",
-    "dialog",
     "html",
     "head",
     "form",
@@ -94,13 +164,14 @@ html_tags = [
     "base",
     "area",
     "abbr",
+    "main",
+    "dir",
     "wbr",
     "var",
     "sup",
     "sub",
     "nav",
     "map",
-    "main",
     "kbd",
     "ins",
     "img",
@@ -110,6 +181,8 @@ html_tags = [
     "col",
     "bdo",
     "bdi",
+    "pre",
+    "xmp",
     "ul",
     "tr",
     "th",
@@ -386,7 +459,7 @@ class TemplateError(IndexError):
         super().__init__(self.message)
 
 
-tag = Node  # legacy support?. remove in future?
+tag = Node  # legacy support?. TODO - remove in future? 0.0.9
 
 
 class closed_tag(Node):
@@ -394,22 +467,22 @@ class closed_tag(Node):
         return f"<{self.name}{self.__attributes__}/>"
 
 
-html = type("html", (Document,), {"name": "html"})
-body = type("body", (Element,), {"name": "body"})
-head = type("head", (Element,), {"name": "head"})
-script = type("script", (Element,), {"name": "script"})
-style = type("style", (Element,), {"name": "style"})
-h1 = type("h1", (Element,), {"name": "h1"})
-h2 = type("h2", (Element,), {"name": "h2"})
-h3 = type("h3", (Element,), {"name": "h3"})
-h4 = type("h4", (Element,), {"name": "h4"})
-h5 = type("h5", (Element,), {"name": "h5"})
-h6 = type("h6", (Element,), {"name": "h6"})
-p = type("p", (Element,), {"name": "p"})
-i = type("i", (Element,), {"name": "i"})
-b = type("b", (Element,), {"name": "b"})
+html = HTMLDocument
+body = HTMLBodyElement
+head = HTMLHeadElement
+script = HTMLScriptElement
+style = HTMLStyleElement
+h1 = type("h1", (HTMLHeadingElement,), {"name": "h1"})
+h2 = type("h2", (HTMLHeadingElement,), {"name": "h2"})
+h3 = type("h3", (HTMLHeadingElement,), {"name": "h3"})
+h4 = type("h4", (HTMLHeadingElement,), {"name": "h4"})
+h5 = type("h5", (HTMLHeadingElement,), {"name": "h5"})
+h6 = type("h6", (HTMLHeadingElement,), {"name": "h6"})
+p = HTMLParagraphElement
 
-portal = type("portal", (Element,), {"name": "portal"})
+i = type("i", (Element,), {"name": "i"})  # TODO - check which?
+b = type("b", (Element,), {"name": "b"})  # TODO - check which?
+portal = type("portal", (Element,), {"name": "portal"})  # TODO - check which?
 
 
 def Atag(self, *args, **kwargs):
@@ -428,7 +501,9 @@ def Atag(self, *args, **kwargs):
     # URL.__init__(self, *args, **kwargs)
 
 
-def __update__(self, *args, **kwargs):
+def __update__(
+    self, *args, **kwargs
+):  # TODO - you removed this but where the unit test that you wrote it for in the first place?
     # print('__update__: ', args, kwargs)
     # URL.__update__(self)
     # TODO - fix BUG. this stops having no href on a tags
@@ -440,14 +515,17 @@ def __update__(self, *args, **kwargs):
     Element.__init__(self, *args, **kwargs)
     URL.__init__(self, *args, **kwargs)
 
-a = type("a", (Element, URL), {"name": "a", "__init__": Atag})  # , "__update__": __update__})
-ul = type("ul", (Element,), {"name": "ul"})
-ol = type("ol", (Element,), {"name": "ol"})
-li = type("li", (Element,), {"name": "li"})
-div = type("div", (Element,), {"name": "div"})
-strong = type("strong", (Element,), {"name": "strong"})
-blockquote = type("blockquote", (Element,), {"name": "blockquote"})
-table = type("table", (Element,), {"name": "table"})
+
+a = type(
+    "a", (Element, URL), {"name": "a", "__init__": Atag}
+)  # , "__update__": __update__})
+ul = HTMLUListElement
+ol = HTMLOListElement
+li = HTMLLIElement
+div = HTMLDivElement
+strong = type("strong", (Element,), {"name": "strong"})  # TODO - check
+blockquote = type("blockquote", (Element,), {"name": "blockquote"})  # TODO - check
+table = HTMLTableElement
 tr = type("tr", (Element,), {"name": "tr"})
 td = type("td", (Element,), {"name": "td"})
 # form = type('form', (Element,), {'name': 'form'})
@@ -490,7 +568,7 @@ label = type("label", (Element,), {"name": "label"})
 #                 '''
 
 submit = type("submit", (Element,), {"name": "submit"})
-title = type("title", (Element,), {"name": "title"})
+title = HTMLTitleElement
 noscript = type("noscript", (Element,), {"name": "noscript"})
 section = type("section", (Element,), {"name": "section"})
 nav = type("nav", (Element,), {"name": "nav"})
@@ -524,12 +602,12 @@ rt = type("rt", (Element,), {"name": "rt"})
 rp = type("rp", (Element,), {"name": "rp"})
 bdi = type("bdi", (Element,), {"name": "bdi"})
 bdo = type("bdo", (Element,), {"name": "bdo"})
-span = type("span", (Element,), {"name": "span"})
+span = HTMLSpanElement
 ins = type("ins", (Element,), {"name": "ins"})
 iframe = type("iframe", (Element,), {"name": "iframe"})
-video = type("video", (Element,), {"name": "video"})
-audio = type("audio", (Element,), {"name": "audio"})
-canvas = type("canvas", (Element,), {"name": "canvas"})
+video = HTMLVideoElement
+audio = HTMLAudioElement
+canvas = HTMLCanvasElement
 caption = type("caption", (Element,), {"name": "caption"})
 colgroup = type("colgroup", (Element,), {"name": "colgroup"})
 tbody = type("tbody", (Element,), {"name": "tbody"})
@@ -540,13 +618,13 @@ fieldset = type("fieldset", (Element,), {"name": "fieldset"})
 legend = type("legend", (Element,), {"name": "legend"})
 button = type("button", (Element,), {"name": "button"})
 select = type("select", (Element,), {"name": "select"})
-datalist = type("datalist", (Element,), {"name": "datalist"})
-optgroup = type("optgroup", (Element,), {"name": "optgroup"})
-option = type("option", (Element,), {"name": "option"})
-textarea = type("textarea", (Element,), {"name": "textarea"})
-output = type("output", (Element,), {"name": "output"})  # ?----------
-progress = type("progress", (Element,), {"name": "progress"})
-meter = type("meter", (Element,), {"name": "meter"})
+datalist = HTMLDataListElement
+optgroup = HTMLOptGroupElement
+option = HTMLOptionElement
+textarea = HTMLTextAreaElement
+output = HTMLOutputElement
+progress = HTMLProgressElement
+meter = HTMLMeterElement
 details = type("details", (Element,), {"name": "details"})
 summary = type("summary", (Element,), {"name": "summary"})
 menu = type("menu", (Element,), {"name": "menu"})
@@ -559,17 +637,17 @@ footer = type("footer", (Element,), {"name": "footer"})
 # del_ = type('del_', (tag,), {'name': 'del_'})
 # time_ = type('time_', (tag,), {'name': 'time_'})
 
-base = type("base", (closed_tag, Element, ), {"name": "base"},)
-link = type("link", (closed_tag, Element,), {"name": "link"},)
-meta = type("meta", (closed_tag, Element), {"name": "meta"})
+base = HTMLBaseElement
+link = type("link", (closed_tag, Element), {"name": "link"})  # HTMLLinkElement TODO - closed tags
+meta = type("meta", (closed_tag, Element), {"name": "meta"})  # HTMLMetaElement TODO - closed tags
 hr = type("hr", (closed_tag, Element), {"name": "hr"})
 br = type("br", (closed_tag, Element), {"name": "br"})
 wbr = type("wbr", (closed_tag, Element), {"name": "wbr"})
-img = type("img", (closed_tag, Element), {"name": "img"})
+img = type("img", (closed_tag, Element), {"name": "img"})  # HTMLImageElement TODO - closed tags
 param = type("param", (closed_tag, Element), {"name": "param"})
 source = type("source", (closed_tag, Element), {"name": "source"})
 track = type("track", (closed_tag, Element), {"name": "track"})
-area = type("area", (closed_tag, Element), {"name": "area"})
+area = HTMLAreaElement
 col = type("col", (closed_tag, Element), {"name": "col"})
 input = type("input", (closed_tag, Element), {"name": "input"})
 keygen = type("keygen", (closed_tag, Element), {"name": "keygen"})
@@ -583,7 +661,7 @@ applet = type("applet", (Element,), {"name": "applet"})
 basefont = type("basefont", (Element,), {"name": "basefont"})
 center = type("center", (Element,), {"name": "center"})
 # dir = type('dir', (Element,), {'name': 'dir'})
-embed = type("embed", (Element,), {"name": "embed"})
+embed = HTMLEmbedElement
 isindex = type("isindex", (Element,), {"name": "isindex"})
 listing = type("listing", (Element,), {"name": "listing"})
 plaintext = type("plaintext", (Element,), {"name": "plaintext"})
@@ -593,9 +671,10 @@ strike = type("strike", (Element,), {"name": "strike"})
 xmp = type("xmp", (Element,), {"name": "xmp"})
 
 template = type("template", (Element,), {"name": "template"})
-picture = type("picture", (Element,), {"name": "picture"})
-dialog = type("dialog", (Element,), {"name": "dialog"})
-# dialog = HTMLDialogElement  # TODO - might get rid of tag and put all its methods on Node directly
+
+picture = HTMLPictureElement
+dialog = HTMLDialogElement
+
 
 # legacy.
 doctype = DocumentType
