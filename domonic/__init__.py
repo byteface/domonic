@@ -978,6 +978,7 @@ class domonic:
         # if parser is None:
         # import xml.parsers.expat.ExpatError as ExpatError        # parser = xml.parsers.expat.ParserCreate()
 
+        # TODO - this needs to be off for debugging
         try:
             # if users has html5lib installed used that to parse
             import html5lib

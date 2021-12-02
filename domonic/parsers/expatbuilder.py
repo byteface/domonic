@@ -876,9 +876,11 @@ class Namespaces:
                 # print(name, curNode, curNode.nodeName, type(curNode))
                 # print(curNode.nodeName, name)
                 # print(curNode.nodeName == name)
-                assert curNode.nodeName.upper() == name.upper(), \
+
+                if curNode.nodeName != "#document":
+                    assert curNode.nodeName.upper() == name.upper(), \
                        "element stack messed up - bad nodeName"
-                assert curNode.namespaceURI == EMPTY_NAMESPACE, \
+                    assert curNode.namespaceURI == EMPTY_NAMESPACE, \
                        "element stack messed up - bad namespaceURI"
             self.curNode = curNode.parentNode
             self._finish_end_element(curNode)
