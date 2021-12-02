@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>JSON &#8212; domonic 0.7.2 documentation</title>
+    <title>JSON &#8212; domonic 0.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -48,7 +48,7 @@
 </pre></div>
 </div>
 <p>convert json arrays into html tables…</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.JSON</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">domonic.JSON</span> <span class="k">as</span> <span class="nn">JSON</span>
 
 <span class="c1"># i.e. containting flat json array of dicts... [{&quot;id&quot;:&quot;01&quot;,&quot;name&quot;: &quot;some item&quot;},{&quot;id&quot;:&quot;02&quot;,&quot;name&quot;: &quot;some other item&quot;}]</span>
 
@@ -58,14 +58,14 @@
 </pre></div>
 </div>
 <p>convert json arrays into csv files…</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.JSON</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">domonic.JSON</span> <span class="k">as</span> <span class="nn">JSON</span>
 
 <span class="n">json_data</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="s1">&#39;somefile.json&#39;</span><span class="p">)</span>
 <span class="n">JSON</span><span class="o">.</span><span class="n">csvify</span><span class="p">(</span><span class="n">json_data</span><span class="p">,</span> <span class="s1">&#39;data.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>convert csv files to json…</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">domonic.JSON</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">domonic.JSON</span> <span class="k">as</span> <span class="nn">JSON</span>
 
 <span class="n">json_data</span> <span class="o">=</span><span class="n">JSON</span><span class="o">.</span><span class="n">csv2json</span><span class="p">(</span><span class="s2">&quot;data.csv&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
@@ -74,19 +74,15 @@
 <p>more to come…</p>
 <section id="domonic-json">
 <h2>domonic.JSON<a class="headerlink" href="#domonic-json" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
+<dl class="py function">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.JSON.</span></span><span class="sig-name descname"><span class="pre">JSON</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#JSON"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>A class containing JSON utils</p>
-<dl class="py method">
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">csv2json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#JSON.csv2json"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">domonic.JSON.</span></span><span class="sig-name descname"><span class="pre">csv2json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#csv2json"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>convert a CSV to JSON.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py function">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">csvify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data.csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#JSON.csvify"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">domonic.JSON.</span></span><span class="sig-name descname"><span class="pre">csvify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data.csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#csvify"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>takes a json array and dumps a csv file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -104,15 +100,69 @@
 </dl>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py function">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'__'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#JSON.flatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">domonic.JSON.</span></span><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'__'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#flatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p># i.e. input = map( lambda x: JSON.flatten( x, “__” ), input )</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py function">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">tablify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#JSON.tablify"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-prename descclassname"><span class="pre">domonic.JSON.</span></span><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_string</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[take a json string and return a python object]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>json_string</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – [a json string]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a python object]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)">type</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.JSON.</span></span><span class="sig-name descname"><span class="pre">parse_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#parse_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[loads a json file and returns a python object]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – [path to json file]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[a python object]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)">type</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.JSON.</span></span><span class="sig-name descname"><span class="pre">stringify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#stringify"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>[stringify a python object]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)"><em>type</em></a><em>]</em>) – [the python object]</p></li>
+<li><p><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – [an optional filepath to save the stringified object] [default: None]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[the stringified object]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.10)">type</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">domonic.JSON.</span></span><span class="sig-name descname"><span class="pre">tablify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#tablify"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>takes a json array and returns a html table
 # TODO - reverse. table to json</p>
 <dl class="field-list simple">
@@ -126,14 +176,6 @@
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a></p>
 </dd>
 </dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">domonic.JSON.</span></span><span class="sig-name descname"><span class="pre">return_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/JSON.html#return_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>decorate any function to return json instead of a python obj</p>
 </dd></dl>
 
 </section>

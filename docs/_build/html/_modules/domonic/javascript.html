@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.javascript &#8212; domonic 0.7.1 documentation</title>
+    <title>domonic.javascript &#8212; domonic 0.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -2743,7 +2743,7 @@
     <span class="k">def</span> <span class="fm">__imul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
-<div class="viewcode-block" id="String.split"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
+<div class="viewcode-block" id="String.split"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[can split a string based on a regex]</span>
 
 <span class="sd">        Args:</span>
@@ -2769,7 +2769,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="String.concat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.concat">[docs]</a>    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">seperator</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="String.concat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.concat">[docs]</a>    <span class="k">def</span> <span class="nf">concat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">seperator</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[concatenates the string arguments to the calling string and returns a new string.]</span>
 
 <span class="sd">        Args:</span>
@@ -2783,24 +2783,24 @@
         <span class="k">return</span> <span class="n">seperator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
 
     <span class="c1"># @staticmethod</span>
-<div class="viewcode-block" id="String.charCodeAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charCodeAt">[docs]</a>    <span class="k">def</span> <span class="nf">charCodeAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="String.charCodeAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charCodeAt">[docs]</a>    <span class="k">def</span> <span class="nf">charCodeAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns the Unicode of the character at the specified index &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">])</span></div>
 
     <span class="c1"># @staticmethod</span>
-<div class="viewcode-block" id="String.fromCharCode"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.fromCharCode">[docs]</a>    <span class="k">def</span> <span class="nf">fromCharCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">codes</span><span class="p">):</span>
+<div class="viewcode-block" id="String.fromCharCode"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.fromCharCode">[docs]</a>    <span class="k">def</span> <span class="nf">fromCharCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">codes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; returns a string created from the specified sequence of UTF-16 code units &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">])</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
 
-<div class="viewcode-block" id="String.repeat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="String.repeat"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns a new string with a specified number of copies of an existing string &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">*</span> <span class="n">count</span></div>
 
-<div class="viewcode-block" id="String.startsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.startsWith">[docs]</a>    <span class="k">def</span> <span class="nf">startsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="String.startsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.startsWith">[docs]</a>    <span class="k">def</span> <span class="nf">startsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Checks whether a string begins with specified characters &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
@@ -2809,7 +2809,7 @@
         <span class="c1"># print(self.x.startswith(x, start, end))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="String.substring"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.substring">[docs]</a>    <span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="String.substring"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.substring">[docs]</a>    <span class="k">def</span> <span class="nf">substring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Extracts the characters from a string, between two specified indices &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
@@ -2817,7 +2817,7 @@
             <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="String.endsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.endsWith">[docs]</a>    <span class="k">def</span> <span class="nf">endsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="String.endsWith"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.endsWith">[docs]</a>    <span class="k">def</span> <span class="nf">endsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Checks whether a string ends with specified string/characters &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
@@ -2825,15 +2825,15 @@
             <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="String.toLowerCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toLowerCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLowerCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="String.toLowerCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toLowerCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLowerCase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Converts a string to lowercase letters &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.toUpperCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toUpperCase">[docs]</a>    <span class="k">def</span> <span class="nf">toUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="String.toUpperCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toUpperCase">[docs]</a>    <span class="k">def</span> <span class="nf">toUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Converts a string to uppercase letters &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.slice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="String.slice"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.slice">[docs]</a>    <span class="k">def</span> <span class="nf">slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Selects a part of an string, and returns the new string &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
@@ -2843,25 +2843,30 @@
         <span class="sd">&quot;&quot;&quot; Removes whitespace from both ends of a string &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.charAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charAt">[docs]</a>    <span class="k">def</span> <span class="nf">charAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="String.charAt"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.charAt">[docs]</a>    <span class="k">def</span> <span class="nf">charAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[Returns the character at the specified index (position)]</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            index (int): [index position]</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            [str]: [character]</span>
+<span class="sd">            [str]: [the character at the specified index. </span>
+<span class="sd">            if the index is out of range, an empty string is returned.]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="String.replace"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="String.replace"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.replace">[docs]</a>    <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Searches a string for a specified value, or a regular expression,</span>
 <span class="sd">        and returns a new string where the specified values are replaced.</span>
 <span class="sd">        only replaces first one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">new</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">new</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">old</span><span class="p">)</span>
+            <span class="c1"># return new(self.x, old)</span>
+            <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
         <span class="c1"># re.sub(r&quot;regepx&quot;, &quot;old&quot;, &quot;new&quot;) # TODO - js one also takes a regex</span>
@@ -2889,12 +2894,12 @@
             <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">end</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="String.toLocaleLowerCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toLocaleLowerCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleLowerCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="String.toLocaleLowerCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toLocaleLowerCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleLowerCase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Converts a string to lowercase letters, according to the host&#39;s locale &quot;&quot;&quot;</span>
         <span class="c1"># locale.setlocale()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="String.toLocaleUpperCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toLocaleUpperCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="String.toLocaleUpperCase"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.toLocaleUpperCase">[docs]</a>    <span class="k">def</span> <span class="nf">toLocaleUpperCase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Converts a string to uppercase letters, according to the host&#39;s locale &quot;&quot;&quot;</span>
         <span class="c1"># locale.setlocale()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
@@ -2927,7 +2932,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">ord</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">index</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="String.padEnd"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.padEnd">[docs]</a>    <span class="k">def</span> <span class="nf">padEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">padChar</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="String.padEnd"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.padEnd">[docs]</a>    <span class="k">def</span> <span class="nf">padEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">padChar</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[Pads the end of a string with a specified character</span>
 <span class="sd">        (repeated, if needed) to create a new string.]</span>
 
@@ -2940,7 +2945,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">padChar</span> <span class="o">*</span> <span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)))</span></div>
 
-<div class="viewcode-block" id="String.padStart"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.padStart">[docs]</a>    <span class="k">def</span> <span class="nf">padStart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">padChar</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="String.padStart"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.padStart">[docs]</a>    <span class="k">def</span> <span class="nf">padStart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">padChar</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[Pads the start of a string with a specified character]</span>
 
 <span class="sd">        Args:</span>
@@ -2952,13 +2957,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">padChar</span> <span class="o">*</span> <span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">))</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span></div>
 
-<div class="viewcode-block" id="String.localeCompare"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.localeCompare">[docs]</a>    <span class="k">def</span> <span class="nf">localeCompare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comparisonString</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">locale</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="String.localeCompare"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.localeCompare">[docs]</a>    <span class="k">def</span> <span class="nf">localeCompare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comparisonString</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">locale</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; method returns a number indicating whether a reference string comes before,</span>
 <span class="sd">            or after, or is the same as the given string in sort order &quot;&quot;&quot;</span>
         <span class="c1"># if locale is None:</span>
         <span class="c1">#     locale = self.locale</span>
         <span class="c1"># return locale.strcoll(self.x, comparisonString, *args)</span>
         <span class="c1"># pass</span>
+        <span class="c1"># TODO - implement localeCompare</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="String.trimStart"><a class="viewcode-back" href="../../packages/javascript.html#domonic.javascript.String.trimStart">[docs]</a>    <span class="k">def</span> <span class="nf">trimStart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># TODO - huh?. length</span>

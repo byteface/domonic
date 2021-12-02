@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.JSON &#8212; domonic 0.7.1 documentation</title>
+    <title>domonic.JSON &#8212; domonic 0.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -40,216 +40,194 @@
 <span class="kn">import</span> <span class="nn">csv</span>
 
 <span class="kn">from</span> <span class="nn">domonic.html</span> <span class="kn">import</span> <span class="n">table</span><span class="p">,</span> <span class="n">td</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">th</span>
-<span class="c1"># from domonic.javascript import Array</span>
+<span class="kn">from</span> <span class="nn">domonic.decorators</span> <span class="kn">import</span> <span class="n">as_json</span>
 
 
-<div class="viewcode-block" id="return_json"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.return_json">[docs]</a><span class="k">def</span> <span class="nf">return_json</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; decorate any function to return json instead of a python obj &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">JSON_decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">JSON_decorator</span></div>
+<span class="n">return_json</span> <span class="o">=</span> <span class="n">as_json</span>  <span class="c1"># legacy. use the one in decorators package</span>
 
 
-<div class="viewcode-block" id="JSON"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON">[docs]</a><span class="k">class</span> <span class="nc">JSON</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; A class containing JSON utils &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="parse_file"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.parse_file">[docs]</a><span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;[loads a json file and returns a python object]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="c1"># self.data = data</span>
-        <span class="c1"># self.json = json.dumps(data)</span>
-        <span class="c1"># self.json_obj = json.loads(self.json)</span>
-        <span class="c1"># self.json_str = json.dumps(self.json_obj)</span>
-        <span class="k">pass</span>
+<span class="sd">    Args:</span>
+<span class="sd">        filepath (str): [path to json file]</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">parse_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">data</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        [type]: [a python object]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">data</span></div>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">json_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_string</span><span class="p">)</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">stringify</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># indent=4, sort_keys=True, default=str</span>
+<div class="viewcode-block" id="parse"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.parse">[docs]</a><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">json_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;[take a json string and return a python object]</span>
 
-<div class="viewcode-block" id="JSON.tablify"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON.tablify">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">tablify</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;tablify</span>
+<span class="sd">    Args:</span>
+<span class="sd">        json_string (str): [a json string]</span>
 
-<span class="sd">        takes a json array and returns a html table</span>
-<span class="sd">        # TODO - reverse. table to json</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        [type]: [a python object]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_string</span><span class="p">)</span></div>
 
-<span class="sd">        Args:</span>
-<span class="sd">            arr (list): the json array</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            str: a html table</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">def</span> <span class="nf">_get_headings</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-            <span class="n">headings</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">tr</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">each</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">headings</span><span class="p">:</span>
-                        <span class="n">headings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-                        <span class="n">row</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">th</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-            <span class="n">t</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">headings</span>
+<div class="viewcode-block" id="stringify"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.stringify">[docs]</a><span class="k">def</span> <span class="nf">stringify</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;[stringify a python object]</span>
 
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="n">arr</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>  <span class="c1"># leniency. allow for a string</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
-            <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">arr</span><span class="p">))]</span>  <span class="c1"># leniency. allow for a dict wrapping a list</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span>  <span class="c1"># if it aint a list by now reject it</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data ([type]): [the python object]</span>
+<span class="sd">        filepath (str, optional): [an optional filepath to save the stringified object] [default: None]</span>
 
-        <span class="n">t</span> <span class="o">=</span> <span class="n">table</span><span class="p">()</span>
-        <span class="n">headings</span> <span class="o">=</span> <span class="n">_get_headings</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">tr</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">td</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">heading</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span> <span class="k">for</span> <span class="n">heading</span> <span class="ow">in</span> <span class="n">headings</span><span class="p">]))</span>
-            <span class="n">t</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">t</span></div>
+<span class="sd">    Returns:</span>
+<span class="sd">        [type]: [the stringified object]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">filepath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># indent=4, sort_keys=True, default=str</span></div>
 
-<div class="viewcode-block" id="JSON.csvify"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON.csvify">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">csvify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;data.csv&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;csvify</span>
 
-<span class="sd">        takes a json array and dumps a csv file</span>
+<div class="viewcode-block" id="tablify"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.tablify">[docs]</a><span class="k">def</span> <span class="nf">tablify</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;tablify</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            arr (list): the json array</span>
-<span class="sd">            outfile (list): the output file</span>
+<span class="sd">    takes a json array and returns a html table</span>
+<span class="sd">    # TODO - reverse. table to json</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            str: a csv file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="n">arr</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>  <span class="c1"># leniency. allow for a string</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">dict</span><span class="p">:</span>
-            <span class="n">arr</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">arr</span><span class="p">))]</span>  <span class="c1"># leniency. allow for a dict wrapping a list</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span>  <span class="c1"># if it aint a list by now reject it</span>
+<span class="sd">    Args:</span>
+<span class="sd">        arr (list): the json array</span>
 
-        <span class="k">def</span> <span class="nf">_get_headings</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
-            <span class="n">headings</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">each</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">headings</span><span class="p">:</span>
-                        <span class="n">headings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">headings</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: a html table</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_get_headings</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="n">headings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">tr</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">each</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">headings</span><span class="p">:</span>
+                    <span class="n">headings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">row</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">th</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">headings</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-            <span class="n">output</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">_get_headings</span><span class="p">(</span><span class="n">arr</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
-                <span class="n">output</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+    <span class="c1"># print( type(arr) )</span>
 
-<div class="viewcode-block" id="JSON.csv2json"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON.csv2json">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">csv2json</span><span class="p">(</span><span class="n">csv_filepath</span><span class="p">,</span> <span class="n">json_filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        convert a CSV to JSON.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csv_filepath</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvf</span><span class="p">:</span>
-            <span class="n">csvReader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvf</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csvReader</span><span class="p">:</span>
-                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="n">arr</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>  <span class="c1"># need to pass a list of dicts [{},{}]</span>
 
-        <span class="k">if</span> <span class="n">json_filepath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">table</span><span class="p">()</span>
+    <span class="n">headings</span> <span class="o">=</span> <span class="n">_get_headings</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
+        <span class="c1"># row = tr([td(item.get(heading, &quot;&quot;)) for heading in headings]) # incorrect</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">tr</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">td</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">heading</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">heading</span> <span class="ow">in</span> <span class="n">headings</span><span class="p">])</span>  <span class="c1"># correct</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span></div>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="csvify"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.csvify">[docs]</a><span class="k">def</span> <span class="nf">csvify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;data.csv&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;csvify</span>
+
+<span class="sd">    takes a json array and dumps a csv file</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        arr (list): the json array</span>
+<span class="sd">        outfile (list): the output file</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: a csv file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>  <span class="c1"># leniency. allow for a string</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="n">arr</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>  <span class="c1"># if it aint a list by now reject it</span>
+
+    <span class="k">def</span> <span class="nf">_get_headings</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+        <span class="n">headings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">each</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">each</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">headings</span><span class="p">:</span>
+                    <span class="n">headings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">headings</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">_get_headings</span><span class="p">(</span><span class="n">arr</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="csv2json"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.csv2json">[docs]</a><span class="k">def</span> <span class="nf">csv2json</span><span class="p">(</span><span class="n">csv_filepath</span><span class="p">,</span> <span class="n">json_filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    @staticmethod</span>
-<span class="sd">    def csv2json_hugefile(arr, infile=&quot;data.csv&quot;, start_row=0):</span>
-
-<span class="sd">        def _load_data(csv_fname):</span>
-<span class="sd">            with open(csv_fname, &quot;r&quot;, encoding=&quot;latin-1&quot;) as records:</span>
-<span class="sd">                for row in csv.reader(records):</span>
-<span class="sd">                    yield row</span>
-
-<span class="sd">        items = iter(load_data(infile))</span>
-<span class="sd">        headings = next(companies)</span>
-
-<span class="sd">        for i in range(start_row):</span>
-<span class="sd">            next(companies)</span>
-
-<span class="sd">        for item in items:</span>
-<span class="sd">            # TODO - streamwrite to json file.</span>
+<span class="sd">    convert a CSV to JSON.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csv_filepath</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvf</span><span class="p">:</span>
+        <span class="n">csvReader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvf</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csvReader</span><span class="p">:</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
-<div class="viewcode-block" id="JSON.flatten"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.JSON.flatten">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        # i.e. input = map( lambda x: JSON.flatten( x, &quot;__&quot; ), input )</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">val</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">get</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">delim</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">get</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="n">val</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">delim</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">get</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">json_filepath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">val</span></div>
-
-    <span class="c1"># def flatten(): # completely flatten. underscore by default or based on rule</span>
-    <span class="c1"># def nest(): # completely nest. underscore by default or based on rule</span>
-    <span class="c1"># def purify # remove all the data leaving just the data structure/schema</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_JSON</span><span class="p">(</span><span class="n">json</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">json</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-
-        <span class="k">if</span> <span class="n">json</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">json</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">True</span>
-
-        <span class="k">if</span> <span class="n">json</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">json</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">True</span>
-
-        <span class="k">return</span> <span class="kc">False</span></div>
-
-    <span class="c1"># def minify(json):</span>
-    <span class="c1">#     &quot;&quot;&quot; minifes a json string &quot;&quot;&quot;</span>
-    <span class="c1">#     return json.replace(&quot;\n&quot;, &quot;&quot;).replace(&quot; &quot;, &quot;&quot;)</span>
-
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def is_array(json: str):</span>
-    <span class="c1">#     if type(json) != str:</span>
-    <span class="c1">#         return False</span>
-    <span class="c1">#     if json.startswith(&#39;[&#39;) and json.endswith(&#39;]&#39;):</span>
-    <span class="c1">#         return True</span>
-    <span class="c1">#     return False</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div>
 
 
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd"># ideas....</span>
+<span class="sd">def csv2json_hugefile(arr, infile=&quot;data.csv&quot;, start_row=0):</span>
 
-<span class="sd"># with JSON( data, &#39;items&#39;) as item:</span>
-<span class="sd">    # print(item)</span>
-<span class="sd">    # print(item.id)</span>
+<span class="sd">    def _load_data(csv_fname):</span>
+<span class="sd">        with open(csv_fname, &quot;r&quot;, encoding=&quot;latin-1&quot;) as records:</span>
+<span class="sd">            for row in csv.reader(records):</span>
+<span class="sd">                yield row</span>
 
-<span class="sd"># iterator = JSON( data, &#39;items.age&#39;, lambda i: i&lt;30 )</span>
+<span class="sd">    items = iter(load_data(infile))</span>
+<span class="sd">    headings = next(companies)</span>
 
-<span class="sd"># diff</span>
-<span class="sd"># merge</span>
-<span class="sd"># strip(&#39;key&#39;) .</span>
-<span class="sd"># format / minify</span>
-<span class="sd"># json2sql</span>
-<span class="sd"># json2sqlalchemymodel . i.e. https://www.jsonutils.com/</span>
-<span class="sd"># csvify_stream for bigger ones.</span>
+<span class="sd">    for i in range(start_row):</span>
+<span class="sd">        next(companies)</span>
+
+<span class="sd">    for item in items:</span>
+<span class="sd">        # TODO - streamwrite to json file.</span>
 <span class="sd">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="flatten"><a class="viewcode-back" href="../../packages/autodocs.html#domonic.JSON.flatten">[docs]</a><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s2">&quot;__&quot;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    # i.e. input = map( lambda x: JSON.flatten( x, &quot;__&quot; ), input )</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">get</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">delim</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">get</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">val</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">delim</span> <span class="o">+</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">get</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">val</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">val</span></div>
+
+
+<span class="k">def</span> <span class="nf">is_json</span><span class="p">(</span><span class="n">json</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">json</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">json</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">json</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;}&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="n">json</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">json</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="kc">False</span>
 </pre></div>
 
           </div>

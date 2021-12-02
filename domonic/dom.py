@@ -327,7 +327,7 @@ class Node(EventTarget):
             return getattr(self.__class__, attr)  # means overrideing for style etc in element?
             # return getattr(Element, attr)
         except AttributeError as e:
-            print(e)
+            # print(e) # TODO - careful. this would be better 'on' during debugging. growing case for a logger
             raise e  #("attribute does not exist:", attr)
 
         raise AttributeError
