@@ -602,22 +602,23 @@ class TestCase(unittest.TestCase):
     def test_javascript_interval(self):
 
         def hi():
-            print('hi')
-            pass
+            # print('hi')
+            spin = ["|", "/", "-", "\\"]
+            print('    ' + spin[int(time.time() * 4) % 4], end="\r")
 
         test = window.setInterval(hi, 1)
-        print('im going to do some stuff in the background')
+        print("2 secs. I'm just going to do some stuff in the background")
 
         # keep the test open to see if the intervals fire
         time.sleep(2)
 
-        print('running')
+        print('running again')
         window.clearInterval(test)
         print('ran')
 
     def test_javascript_Number(self):
-        print(Number.MAX_VALUE)
-        pass
+        # print(Number.MAX_VALUE)
+        assert Number.MAX_VALUE == 1.7976931348623157e+308
 
     def test_javascript_fetch(self):
 
@@ -1104,7 +1105,7 @@ class TestCase(unittest.TestCase):
 
     def test_timeouts(self):
         def somefunc():
-            print("hi")
+            print("hi!")
         someID = Global.setTimeout(somefunc, 2000)
         Global.clearTimeout(someID)
         time.sleep(2.5)

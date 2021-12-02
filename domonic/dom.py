@@ -80,6 +80,7 @@ class Node(EventTarget):
             self.content = ''.join([each.__str__() for each in args])
             self.__attributes__ = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
         except IndexError as e:
+            from domonic.html import TemplateError
             raise TemplateError(e)
         # except Exception as e:
             # print(e)
@@ -320,8 +321,7 @@ class Node(EventTarget):
         try:
             # return getattr(super(), attr)
             # return getattr(self, attr)
-            return getattr(Node, attr)
-            
+            return getattr(self.__class__, attr)  # means overrideing for style etc in element?
         except AttributeError:
             raise AttributeError("This attribute or method does not appear to exist on this object:", attr)
 

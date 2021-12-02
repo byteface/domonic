@@ -183,12 +183,8 @@ def flatten(b, delim="__"):
 
     return val
 
-# def flatten(): # completely flatten. underscore by default or based on rule
-# def nest(): # completely nest. underscore by default or based on rule
-# def purify # remove all the data leaving just the data structure/schema
 
-
-def is_JSON(json: str) -> bool:
+def is_json(json: str) -> bool:
     if type(json) != str:
         return False
 
@@ -199,36 +195,3 @@ def is_JSON(json: str) -> bool:
         return True
 
     return False
-
-
-# def minify(json):
-#     """ minifes a json string """
-#     return json.replace("\n", "").replace(" ", "")
-
-
-# @staticmethod
-# def is_array(json: str):
-#     if type(json) != str:
-#         return False
-#     if json.startswith('[') and json.endswith(']'):
-#         return True
-#     return False
-
-
-'''
-# ideas....
-
-# with JSON( data, 'items') as item:
-# print(item)
-# print(item.id)
-
-# iterator = JSON( data, 'items.age', lambda i: i<30 )
-
-# diff
-# merge
-# strip('key') .
-# format / minify
-# json2sql
-# json2sqlalchemymodel . i.e. https://www.jsonutils.com/
-# csvify_stream for bigger ones.
-'''

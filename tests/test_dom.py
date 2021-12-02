@@ -381,7 +381,7 @@ class TestCase(unittest.TestCase):
         a1 = img()
         a1 >> {'_src': "http://www.someurl.com"}
         # print(a1)
-        assert str(a1) == '<img src="http://www.someurl.com" />'
+        assert str(a1) == '<img src="http://www.someurl.com"/>'
 
         a1 = button()
         a1 += "hi"

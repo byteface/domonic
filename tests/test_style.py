@@ -17,7 +17,15 @@ class TestCase(unittest.TestCase):
 
     def test_domonic_css(self):
 
-        atag = a("linky", _href="https://eventual.technology")
+        test = div("huh?", _style="alignContent: center;")  # TODO - should be parsing these styles
+        print(test.style.alignContent)
+        test.style.alignContent = 'flex-start'
+        print(test.style.alignContent)
+        print(str(test))
+        assert test.style.alignContent == 'flex-start'
+        # assert str(test) == '<div style="align-content: flex-start;">huh?</div>'
+
+        atag = a("linky", _href="https://eventual.technology", _style="alignContent: center;")
         print(atag.style.alignContent)
 
         sometag = div("asdfasdf", _id="test")
@@ -39,7 +47,6 @@ class TestCase(unittest.TestCase):
         # print(sometag.tagName)
         # s = Style()
         # print(sometag)
-
 
     # create some failing tests
 

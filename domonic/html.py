@@ -386,17 +386,9 @@ class TemplateError(IndexError):
         super().__init__(self.message)
 
 
-# class tag(Node):
-#     """
-#     The class from which all html tags extend.
-#     """
-
-#     pass
-
-
 class closed_tag(Node):
     def __str__(self):
-        return f"<{self.name}{self.__attributes__} />"
+        return f"<{self.name}{self.__attributes__}/>"
 
 
 html = type("html", (Document,), {"name": "html"})
@@ -420,30 +412,32 @@ portal = type("portal", (Element,), {"name": "portal"})
 def Atag(self, *args, **kwargs):
 
     # print('Atag: ', args, kwargs)
-    Node.__init__(self, *args, **kwargs)
-    Element.__init__(self, *args, **kwargs)
+    # Node.__init__(self, *args, **kwargs)
+    # Element.__init__(self, *args, **kwargs)
 
     # TODO - fix BUG. this stops having no href on a tags
     if kwargs.get("_href", None) is not None:
         URL.__init__(self, url=kwargs["_href"])
-    else:
-        URL.__init__(self, *args, **kwargs)
+    # else:
+    # Node.__init__(*args, **kwargs)
+    Element.__init__(self, *args, **kwargs)
+    # Node.__init__(self, *args, **kwargs)
+    # URL.__init__(self, *args, **kwargs)
 
 
 def __update__(self, *args, **kwargs):
-
     # print('__update__: ', args, kwargs)
-    URL.__update__(self)
-
+    # URL.__update__(self)
     # TODO - fix BUG. this stops having no href on a tags
-    self.kwargs["_href"] = self.href
-    Node.__init__(self, *args, **kwargs)
+    if self.getattr("_href", None) is not None:
+        self.kwargs["_href"] = self.href
+    # Node.__init__(self, *args, **kwargs)
+    # URL.__init__(self, *args, **kwargs)
+    # self.__init__(*args, **kwargs)
+    Element.__init__(self, *args, **kwargs)
+    URL.__init__(self, *args, **kwargs)
 
-
-a = type(
-    "a", (Element, URL), {"name": "a", "__init__": Atag}
-)  # , '__update__': __update__})
-
+a = type("a", (Element, URL), {"name": "a", "__init__": Atag})  # , "__update__": __update__})
 ul = type("ul", (Element,), {"name": "ul"})
 ol = type("ol", (Element,), {"name": "ol"})
 li = type("li", (Element,), {"name": "li"})
@@ -612,14 +606,10 @@ def create_element(name="custom_tag", *args, **kwargs):
     tag name needs to be set due to custom tags with hyphens can't be classnames.
     i.e. hypenated tags <some-custom-tag></some-custom-tag>
     """
-    # import sys
-    # current_module = sys.modules[__name__]
     # checks if already exists
     if name in html_tags:
-        # cl = globals()[name]
         return globals()[name](*args, **kwargs)
 
-    # print('creating custom element')
     custom_tag = type("custom_tag", (Element,), {"name": name})
     new_tag = custom_tag(*args, **kwargs)
     new_tag.name = name
