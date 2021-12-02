@@ -10,16 +10,12 @@ import functools
 from functools import wraps
 
 
-def el(element='div', string: bool=False):
+def el(element='div', string: bool = False):
     """[wraps the results of a function in an element]"""
 
     if isinstance(element, str):
-        # tag = __import__('domonic.html.' + element)
-        # print(tag)
-        # - TODO - get element by name required on html class
-        from domonic.html import tag  #, tag_init
-        from domonic.dom import Element
-        element = type(element, (tag, Element), {'name': element})  #, '__init__': tag_init})
+        from domonic.dom import Document
+        element = Document.createElement(element).__class__
 
     def decorator(function):
         def wrapper(*args, **kwargs):

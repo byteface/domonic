@@ -3059,8 +3059,7 @@ class Document(Element):
     @staticmethod
     def createElementNS(namespaceURI, qualifiedName, options=None):
         """ Creates an element with the specified namespace URI and qualified name."""
-        from domonic.html import tag  #, tag_init
-        el = type(qualifiedName, (tag, Element), {'name': qualifiedName})  #, '__init__': tag_init})
+        el = type(qualifiedName, (Element,), {'name': qualifiedName})
         el.namespaceURI = namespaceURI
         return el()
 

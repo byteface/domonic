@@ -11,7 +11,6 @@
 
 import datetime
 
-from domonic.html import tag  # , closed_tag
 from domonic.dom import Element, Document
 
 # __all__ = ['sitemap', 'url', 'lastmod']
@@ -23,17 +22,12 @@ sitemap_attributes = ["xmlns", "xmlns:xsi", "xsi:schemaLocation",
                       "xmlns:xhtml", "xmlns:xlink", "xmlns:atom", "xmlns:geo"]
 # sitemap_change_frequencies = ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never']
 
-XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9'
-XMLNS_XSI = 'http://www.w3.org/2001/XMLSchema-instance'
-SCHEMA_SITEINDEX = 'http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd'
-SCHEMA_SITEMAP = 'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd'
+XMLNS: str = 'http://www.sitemaps.org/schemas/sitemap/0.9'
+XMLNS_XSI: str = 'http://www.w3.org/2001/XMLSchema-instance'
+SCHEMA_SITEINDEX: str = 'http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd'
+SCHEMA_SITEMAP: str = 'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd'
 #     xmlns="http://www.google.com/schemas/sitemap-image/1.1"
 #     xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-
-
-def sitemap_init(self, *args, **kwargs):
-    tag.__init__(self, *args, **kwargs)
-    Element.__init__(self, *args, **kwargs)
 
 
 def sitemap_format(self, *args, **kwargs):
@@ -43,76 +37,27 @@ def sitemap_format(self, *args, **kwargs):
     return prettify(outp)
 
 
-sitemapindex = type('sitemapindex', (tag, Document), {
+sitemapindex = type('sitemapindex', (Document,), {
     'name': 'sitemapindex',
     'xmlns': XMLNS,
     'xmlns:xsi': XMLNS_XSI,
     'xsi:schemaLocation': SCHEMA_SITEINDEX,
-    '__init__': sitemap_init,
     '__format__': sitemap_format})
 
-sitemap = type('sitemap', (tag, Element), {'name': 'sitemap', '__init__': sitemap_init})
+sitemap = type('sitemap', (Element,), {'name': 'sitemap'})
 
-urlset = type('urlset', (tag, Element), {
+urlset = type('urlset', (Element,), {
     'name': 'urlset',
     'xmlns:xsi': XMLNS_XSI,
     'xsi:schemaLocation': SCHEMA_SITEMAP,
-    'xmlns': XMLNS,
-    '__init__': sitemap_init})
+    'xmlns': XMLNS})
 
 
-def url_init(self, *args, **kwargs):
-    # validate kwargs
-    # if 'xmlns' in kwargs:
-    #     if kwargs['xmlns'] not in sitemap_attributes:
-    #         raise ValueError("xmlns attribute not valid")
-    # if 'lastmod' in kwargs:
-    #     if not isinstance(kwargs['lastmod'], datetime.datetime):
-    #         raise ValueError("lastmod must be a datetime object")
-    # else:
-    #     kwargs['lastmod'] = datetime.datetime.now()
-
-    # if lastmod is a datetime convert it to an lastmod object
-    # if 'lastmod' in kwargs:
-    #     if not isinstance(kwargs['lastmod'], datetime.datetime):
-    #         kwargs['lastmod'] = lastmod(datetime.datetime.now())
-    #     else:
-    #         kwargs['lastmod'] = lastmod(kwargs['lastmod'])
-
-    # if 'priority' in kwargs:
-    #     if kwargs['priority'] not in range(0, 1):
-    #         raise ValueError("priority must be between 0 and 1")
-
-    # if 'changefreq' in kwargs:
-    #     if kwargs['changefreq'] not in ('always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'):
-    #         raise ValueError("changefreq must be one of: always, hourly, daily, weekly, monthly, yearly, never")
-
-    # if 'loc' in kwargs:
-    #     if not isinstance(kwargs['loc'], str):
-    #         raise ValueError("loc must be a string")
-        # escape the loc string ?
-        # kwargs['loc'] = kwargs['loc'].replace('&', '&amp;')
-        # kwargs['loc'] = kwargs['loc'].replace('<', '&lt;')
-        # kwargs['loc'] = kwargs['loc'].replace('>', '&gt;')
-        # kwargs['loc'] = kwargs['loc'].replace('"', '&quot;')
-        # kwargs['loc'] = kwargs['loc'].replace("'", '&apos;')
-
-    tag.__init__(self, *args, **kwargs)
-    Element.__init__(self, *args, **kwargs)
-
-
-url = type('url', (tag, Element), {
-    'name': 'url',
-    # loc = loc
-    # lastmod = lastmod
-    # changefreq = changefreq
-    # priority = priority
-    '__init__': sitemap_init})
-
-loc = type('loc', (tag, Element), {'name': 'loc', '__init__': sitemap_init})
-lastmod = type('lastmod', (tag, Element), {'name': 'lastmod', '__init__': sitemap_init})
-changefreq = type('changefreq', (tag, Element), {'name': 'changefreq', '__init__': sitemap_init})
-priority = type('priority', (tag, Element), {'name': 'priority', '__init__': sitemap_init})
+url = type('url', (Element,), {'name': 'url'})
+loc = type('loc', (Element,), {'name': 'loc'})
+lastmod = type('lastmod', (Element,), {'name': 'lastmod'})
+changefreq = type('changefreq', (Element,), {'name': 'changefreq'})
+priority = type('priority', (Element,), {'name': 'priority'})
 
 
 def sitemapindex_from_urls(urls):
@@ -161,72 +106,15 @@ def get_sitemap(path: str, *args, **kwargs):
     # use requests to downlaod a sitemap
     import requests
     r = requests.get(path)
-    # if r.status_code == 200:
-    #     return r.text
-    # else:
-    #     raise ValueError("Could not get sitemap")
-
     import domonic
     some_sitemap = domonic.domonic.parseString(r.text)
-    # print('RES:', some_sitemap)
-    # print('RES:', type(some_sitemap))
-    # print('RES:', str(some_sitemap))
-    # print( some_sitemap.getElementByTagName('sitemap') )
-    # return some_sitemap
     return some_sitemap
 
 
-# def submit_sitemap(sitemap_url: str, search_engine_url: str):
-#     """
-#     submit a sitemap to a search engine.
-
-#     """
-#     import requests
-#     r = requests.get(search_engine_url + '/ping?sitemap=' + sitemap_url)
-#     print(r.text)
-
-
-
-# a regular site map
-
-# <?xml version="1.0" encoding="UTF-8"?>
-# <?xml-stylesheet type="text/xsl" href="seo/css/main-sitemap.xsl"?>
-# <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-# xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" 
-# xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.google.com/schemas/sitemap-image/1.1 http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd" 
-# xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-	# <url>
-
-
-# note on namespaces
-
-# <image:image>
-# <image:image>
-
-# represent that image node as a python class?
-# image(_namespace="http://www.google.com/schemas/sitemap-image/1.1", )
-
-globals()['image:image'] = type('image:image', (tag, Element), {
+globals()['image:image'] = type('image:image', (Element,), {
     'name': 'image',
-    'ns': 'image',
-    '__init__': sitemap_init})
+    'ns': 'image'})
 
-globals()['image:loc'] = type('image:loc', (tag, Element), {
+globals()['image:loc'] = type('image:loc', (Element,), {
     'name': 'loc',
-    'ns': 'image',
-    '__init__': sitemap_init})
-
-
-#image tag example
-
-# <urlset
-#     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-#     xmlns="http://www.google.com/schemas/sitemap-image/1.1"
-#     xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-    #     <image:image>
-    #       <image:loc>http://e.com/img.png</image:loc>
-    #       <image:caption>Stunning Men's Hats</image:caption>
-    #       <image:geo_location>Boise, Idaho, USA</image:geo_location>
-    #       <image:title>Men's Hat Image</image:title>
-    #    </image:image>
-# </urlset>
+    'ns': 'image'})
