@@ -312,9 +312,10 @@ assert str(test()) == '<html><body><div>hi!</div></body></html>'
 
 It returns the tag object by default. You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.
 
-
 ### data-tags
+
 python doesn't allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags
+
 ```python
 div("test", **{"_data-test":"test"} )
 ```

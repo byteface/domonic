@@ -57,13 +57,12 @@ class Node(EventTarget):
 
     __context: list = None  # private. tags will append to last item in context on creation.
 
+    __slots__ = ['____attributes__', '__content', 'name', '__rootNode', 'parentNode', 'baseURI', 'isConnected', 'namespaceURI', 'outerText', 'prefix']
 
     def __init__(self, *args, **kwargs) -> None:
         self.args = args
         self.kwargs = kwargs
 
-        # if self.name is None:
-        #     self.name = ''
         if getattr(self, 'name', None) is None:
             self.name = ''
 
@@ -321,9 +320,11 @@ class Node(EventTarget):
         try:
             # return getattr(super(), attr)
             # return getattr(self, attr)
+            # return getattr(Node, attr)  # means overrideing for style etc in element?
             return getattr(self.__class__, attr)  # means overrideing for style etc in element?
-        except AttributeError:
-            raise AttributeError("This attribute or method does not appear to exist on this object:", attr)
+        except AttributeError as e:
+            print(e)
+            raise e  #("attribute does not exist:", attr)
 
         raise AttributeError
 
@@ -441,19 +442,6 @@ class Node(EventTarget):
     #     print(args)
     #     print(kwargs)
     #     print(self.name)
-    #     print(self.args)
-    #     print(self.kwargs)
-    #     print(self.__attributes__)
-    #     print(self.content)
-    #     print(self.parentNode)
-    #     print(self.childNodes)
-    #     print(self.previousSibling)
-    #     print(self.nextSibling)
-    #     print(self.ownerDocument)
-    #     print(self.nodeValue)
-    #     print(self.nodeName)
-    #     print(self.nodeType)
-
 
     def __setattr__(self, name: str, value: Any) -> None:
         # print(name, value)
@@ -519,7 +507,8 @@ class Node(EventTarget):
         try:
             # print(self.args)
             for el in self.args:
-                if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
+                # if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
+                if isinstance(el, (Element, Node)):
                     el.parentNode = self
                     el._update_parents()
         except Exception as e:
@@ -550,28 +539,12 @@ class Node(EventTarget):
                             # print('&&&&&&&')
                             e._iterate(e, callback)
         except Exception as e:
-            print('unable to update parent', e)
-
-        # from domonic.javascript import Array
-        # nodes = Array()
-        # nodes.push(element)
-        # while len(nodes) > 0:
-        #     element = nodes.shift()
-        #     callback(element)
-        #     nodes.unshift(*element.children)
-        #     element._iterate(element, callback)
-
-        # nodes: list = []
-        # nodes.append(element)
-        # while len(nodes) > 0:
-        #     element = nodes.pop(0)
-        #     callback(element)
-        #     nodes.extend(element.children)
+            print('_iterate error', e)
 
     def __len__(self):
         return len(self.args)
 
-    def appendChild(self, aChild) -> None:
+    def appendChild(self, aChild: 'Node') -> 'Node':
         """
         Adds a child to the current element.
         If item is a DocumentFragment, all its children are added.
@@ -1776,6 +1749,8 @@ class RadioNodeList(NodeList):
 
 class Element(Node):
     """ Baseclass for all html tags """
+
+    # __slots__ = ('_id')
 
     def __init__(self, *args, **kwargs):
         # self.content = None

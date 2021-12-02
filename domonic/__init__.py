@@ -296,18 +296,26 @@ class domonic:
 
         # fully strip inline css and js
         if not script_tags:
-            scripts = re.compile(r'<(script).*?</\1>(?s)')
+            # scripts = re.compile(r'<(script).*?</\1>(?s)')
+            # TODO fix #DeprecationWarning: Flags not at the start of the expression
+            scripts = re.compile(r'<(script).*?</\1>')
             page = scripts.sub('', page)
 
         if not style_tags:
-            css = re.compile(r'<(style).*?</\1>(?s)')
+            # css = re.compile(r'<(style).*?</\1>(?s)')
+            # TODO fix #DeprecationWarning: Flags not at the start of the expression
+            css = re.compile(r'<(style).*?</\1>', re.DOTALL)
+
             page = css.sub('', page)
 
         # fully strip svg and code tags
         # svg = re.compile(r'<(svg).*?</\1>(?s)')
         # page = svg.sub('', page)
 
-        code = re.compile(r'<(code).*?</\1>(?s)')
+        # code = re.compile(r'<(code).*?</\1>(?s)')
+        # TODO fix #DeprecationWarning: Flags not at the start of the expression
+        code = re.compile(r'<(code).*?</\1>')
+
         page = code.sub('', page)
 
         comments = re.compile(r'<!--(.|\s)*?-->')
@@ -969,6 +977,20 @@ class domonic:
         """ Parse a file into a DOM from a string. """
         # if parser is None:
         # import xml.parsers.expat.ExpatError as ExpatError        # parser = xml.parsers.expat.ParserCreate()
+
+        try:
+            # if users has html5lib installed used that to parse
+            import html5lib
+            if 'html5lib' in sys.modules:
+                from html5lib import HTMLParser
+                from domonic.ext.html5lib_ import getTreeBuilder
+                parser = HTMLParser(tree=getTreeBuilder())
+                page = parser.parse(string)
+                # print('PARSED WITH HTML5 LIB')
+                return page
+        except ImportError:
+            pass
+
         try:
             from domonic.parsers import expatbuilder
             return expatbuilder.parseString(string)

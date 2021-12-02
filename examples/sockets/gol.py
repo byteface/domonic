@@ -8,8 +8,8 @@ sys.path.insert(0, '../..')
 from domonic.javascript import *
 from domonic.html import *
 
-WIDTH = 50
-HEIGHT = 50
+WIDTH = 75
+HEIGHT = 75
 
 randboo = lambda : 1 if Math.round(Math.random() * 2) == 1 else 0
 

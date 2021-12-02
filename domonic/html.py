@@ -386,6 +386,9 @@ class TemplateError(IndexError):
         super().__init__(self.message)
 
 
+tag = Node  # legacy support?. remove in future?
+
+
 class closed_tag(Node):
     def __str__(self):
         return f"<{self.name}{self.__attributes__}/>"
