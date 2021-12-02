@@ -901,6 +901,7 @@ class TestCase(unittest.TestCase):
             with head():
                 with title():
                     Text('Hello World')
+                    # div()
             with body():
                 with div(_class="container"):
                     with div(_class="row"):
@@ -1002,9 +1003,9 @@ class TestCase(unittest.TestCase):
             
         print(d)
         
-        mydialog = HTMLDialogElement()
-        print(mydialog)
-        print(str(mydialog))
+        # mydialog = HTMLDialogElement()
+        # print(mydialog)
+        # print(str(mydialog))
             
         # assert str(d) == '<html><dialog open>hello<form method="dialog" action="close"><button>close</button></form></dialog></html>'
 

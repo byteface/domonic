@@ -8,6 +8,8 @@
 from typing import *  # List, Dict, Any, Union, Optional, Callable, Tuple
 
 import re
+import copy
+
 from xml.dom.minidom import DocumentFragment
 
 from domonic.events import Event, EventTarget, MouseEvent  # , KeyboardEvent, TouchEvent, UIEvent, CustomEvent
@@ -46,9 +48,24 @@ class Node(EventTarget):
     # TODO - merge with html.tags
     # __slots__ = ['args', 'baseURI', 'isConnected', 'namespaceURI', 'outerText', 'parentNode', 'prefix']
 
+    # __slots__ = [
+    #     "args",
+    #     "kwargs",
+    #     "__content",
+    #     "____attributes__",  # ? seems to work. but not sure if its correct
+    # ]
+
+    __context: list = None  # private. tags will append to last item in context on creation.
+
+
     def __init__(self, *args, **kwargs) -> None:
         self.args = args
         self.kwargs = kwargs
+
+        # if self.name is None:
+        #     self.name = ''
+        if getattr(self, 'name', None) is None:
+            self.name = ''
 
         # if user doesn't put underscore
         new_kwargs = {}
@@ -66,7 +83,7 @@ class Node(EventTarget):
             raise TemplateError(e)
         # except Exception as e:
             # print(e)
-        
+
         self.baseURI: str = 'eventual.technology'  # TODO - if ownerdocument has a basetag, use that
         self.isConnected: bool = True
         self.namespaceURI: str = "http://www.w3.org/1999/xhtml"
@@ -96,8 +113,347 @@ class Node(EventTarget):
         except Exception as e:
             # print('nope!', e)
             pass
-        # print("Node:calling super")
+
+        if Node.__context is not None:
+            Node.__context[len(Node.__context) - 1] += self
         super().__init__(*args, **kwargs)
+
+
+    @property
+    def content(self):  # TODO - test
+        # return ''.join([each.__str__() for each in self.args])
+        # if any child are lists by mistake, loop and call __str__ on each first
+        cnt = self.args
+        for i, arg in enumerate(cnt):
+            if isinstance(arg, list):
+                cnt = list(cnt)
+                cnt[i] = ''.join([each.__str__() for each in arg])
+                cnt = tuple(cnt)
+        return ''.join([each.__str__() for each in cnt])
+
+    @content.setter
+    def content(self, ignore):
+        self.__content = ''.join([each.__str__() for each in self.args])
+        return
+
+    @property
+    def __attributes__(self):
+        # print('kwargs is22', self.kwargs)
+        def format_attr(key, value):
+            if value is True:
+                value = 'true'
+            if value is False:
+                value = 'false'
+            key = key.split('_', 1)[1]
+            # lets us have boolean attributes  # TODO - should be optional by a global config
+            if key in ['async', 'checked', 'autofocus', 'disabled', 'formnovalidate', 'hidden', 'multiple',
+                       'novalidate', 'readonly', 'required', 'selected', "open", "contenteditable"]:
+                if value == '' or value == key:
+                    return ''' %s''' % key
+            return ''' %s="%s"''' % (key, value)
+        try:
+            return ''.join([format_attr(key, value) for key, value in self.kwargs.items()])
+        except IndexError as e:
+            raise TemplateError(e)
+        # except Exception as e:
+            # print(e)
+
+    @__attributes__.setter
+    def __attributes__(self, ignore):
+        try:
+            self.__attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
+        except IndexError as e:
+            raise TemplateError(e)
+        # except Exception as e:
+            # print(e)
+
+    def __str__(self):
+        return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
+
+    def __mul__(self, other):
+        """
+        requires you to render yourself i.e.
+        cells = cell()*10
+        print(''.join([str(c) for c in cells]))
+        """
+        reproducer = []
+        for i in range(other):
+            reproducer.append(copy.deepcopy(self))
+        return reproducer
+
+    def __rmul__(self, other):
+        """
+        requires you to render yourself i.e.
+        cells = cell()*10
+        print(''.join([str(c) for c in cells]))
+        """
+        reproducer = []
+        for i in range(other):
+            reproducer.append(copy.deepcopy(self))
+        return reproducer
+
+    def __truediv__(self, other):
+        """ use to render clones without having to parse commas yourself """
+        reproducer = []
+        for i in range(other):
+            reproducer.append(str(self))
+        return ''.join(reproducer)
+
+    def __rtruediv__(self, other):
+        """ use to render clones without having to parse commas yourself """
+        reproducer = []
+        for i in range(other):
+            reproducer.append(str(self))
+        return ''.join(reproducer)
+
+    def __div__(self, other):
+        """
+        useful for prototyping as renders. to retain objects use multiply
+        """
+        reproducer = []
+        for i in range(other):
+            reproducer.append(str(self))
+        return ''.join(reproducer)
+
+    def __rdiv__(self, other):
+        """
+        useful for prototyping as renders. to retain objects use multiply
+        """
+        reproducer = []
+        for i in range(other):
+            reproducer.append(str(self))
+        return ''.join(reproducer)
+
+    def __or__(self, other):
+        """ return self unless other is something """
+        if other is not False:
+            return other
+        return self
+
+    def __iadd__(self, item):
+        """ adds an item to the nodes of children. can also pass a list and it will unpack them """
+
+        if isinstance(item, (list, tuple)):
+            for i in item:
+                self.args = self.args + (i,)
+            return self
+
+        self.args = self.args + (item,)
+        return self
+
+    def __isub__(self, item):
+        """ removes an item from the list of children """
+        replace_args = list(self.args)
+        replace_args.remove(item)
+        self.args = tuple(replace_args)
+        return self
+
+    def __getitem__(self, index):  # TODO - move dunders to Node?
+        # print('getting an item::', index, type(index))
+        if isinstance(index, int):
+            return self.args[index]
+        # elif isinstance(index, str):
+        #     if index.startswith('_'):
+        #         return self.kwargs[index]
+        #     else:
+        #         return getattr(self, index)
+        # super(Node, self).__getitem__(index)
+
+        if isinstance(index, str):
+            # call props on self
+            # print('erk!')
+            try:
+                # return Node.__dict__[index]
+                return getattr(self, index)
+            except Exception as e:
+                print(e)
+                # return None
+        # return super(Node, self).__getitem__(index)
+
+    def __rshift__(self, item):
+        try:
+            for key in item.keys():
+                self.kwargs[key] = item[key]
+            return self
+        except Exception as e:
+            print(e)
+            raise ValueError
+
+    # def __add__(self, item):
+    #     try:
+    #         self.args = self.args + (item,)
+    #         return self
+    #     except Exception as e:
+    #         print(e)
+    #         raise ValueError
+
+    # def __sub__(self, item):
+    #     try:
+    #         self.args = self.args - (item,)
+    #         return self
+    #     except Exception as e:
+    #         print(e)
+    #         raise ValueError
+
+    # def render()
+
+    def __getattr__(self, attr):
+        """
+        allows dot notation for reading attributes
+        *credit to the peeps on discord/python for this one*
+        """
+        kwargs = super().__getattribute__('kwargs')
+        # print("sup::", attr)
+        # print("sup2::", kwargs)
+
+        if attr in kwargs:
+            return kwargs[attr]
+
+        retry = "_" + attr
+        if retry in kwargs:
+            return kwargs[retry]
+
+        retry = attr[1:len(attr)]
+        if retry in kwargs:
+            return kwargs[retry]
+
+        try:
+            # return getattr(super(), attr)
+            # return getattr(self, attr)
+            return getattr(Node, attr)
+            
+        except AttributeError:
+            raise AttributeError("This attribute or method does not appear to exist on this object:", attr)
+
+        raise AttributeError
+
+    def __pyml__(self):
+        """ [returns a representation of the object as a pyml string] """
+        # from domonic.dom import Text
+        params = ""
+        for key, value in self.kwargs.items():
+            if '-' in key:
+                params += f'**\u007b"{key}":{value}\u007d,'
+            else:
+                params += f'{key}="{value}", '
+        # TODO - will need to loop args and call __pyml__ on each one
+        for arg in self.args:
+            try:
+                if isinstance(arg, Text):
+                    params += str(arg) + ", "
+                else:
+                    params += f"{arg.__pyml__()}, "
+            except Exception as e:
+                params += str(arg) + ", "
+        # TODO - if self is document do dentage
+        return f"{self.name}({params[:-2]})"
+        # return f"{self.name}({params})"
+        # return f"{self.name}({args}, {params})"
+        # return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
+
+    # def __repr__(self):
+    #     return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
+
+    def __setitem__(self, key, value):
+        # self.args[key] = value
+        # print(self.args[key])
+        try:
+            self.kwargs[key] = value
+            return self
+        except Exception as e:
+            print(e)
+            raise ValueError
+
+    def __enter__(self):
+        if Node.__context is None:
+            Node.__context = []
+        Node.__context.append(self)
+        return self
+
+    def __exit__(self, type, value, traceback, *args, **kwargs):
+        Node.__context.pop()
+        if len(Node.__context) == 0:
+            Node.__context = None
+        return self
+
+    # def __dir__(self):
+    #     return self.__dict__.keys()
+
+    # TODO - these are hard and wil need tests
+    # def __setattr__(self, attr, value):
+    # def __delattr__(self, attr):
+    # def __next__(self):
+    # def __iter__(self):
+
+    def __format__(self, format_spec):
+        # return super().__format__(format_spec)
+        # get node depth by counting parents
+
+        # TODO - this is a hack to get the depth of the node
+        n = self
+        depth = 0
+        while n is not None:
+            # print(type(n), type(n.parentNode))
+            n = n.parentNode
+            depth += 1
+
+        depth -= 1
+
+        # print(f"depth: {depth}")
+        # dent = '    ' * depth
+        dent = '\t' * depth
+
+        # loop the children and call __format__ on each one
+        # content = ""
+        # for child in self.childNodes:
+        #     content += child.__format__(format_spec)
+
+        self._update_parents()
+
+        content = ''.join([each.__format__(format_spec) for each in self.args])
+
+        wrap = False
+        if len(self.args) == 1:
+            if not isinstance(self.args[0], Element):
+                wrap = True
+
+        dtype = ""
+        if isinstance(self, Document):
+            # dtype = "<!DOCTYPE html>"
+            dtype = self.doctype
+
+        # if self is a closed_tag, return the content
+        from domonic.html import closed_tag
+        if isinstance(self, closed_tag):
+            return f"\n{dent}<{self.name}{self.__attributes__} />"
+
+        size = len(str(content))
+        if size < 150 and wrap:
+            return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
+        else:
+            return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n{dent}</{self.name}>"
+
+    # def __call__(self, *args, **kwargs):
+    #     """
+    #     allows for calling the object as a function
+    #     """
+    #     print('calling a tag')
+    #     print(args)
+    #     print(kwargs)
+    #     print(self.name)
+    #     print(self.args)
+    #     print(self.kwargs)
+    #     print(self.__attributes__)
+    #     print(self.content)
+    #     print(self.parentNode)
+    #     print(self.childNodes)
+    #     print(self.previousSibling)
+    #     print(self.nextSibling)
+    #     print(self.ownerDocument)
+    #     print(self.nodeValue)
+    #     print(self.nodeName)
+    #     print(self.nodeType)
+
 
     def __setattr__(self, name: str, value: Any) -> None:
         # print(name, value)
