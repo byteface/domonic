@@ -27,8 +27,8 @@ def create_element(name='custom_tag', *args, **kwargs):
     if name in sitemap_tags:
         return globals()[name]()
 
-    from domonic.html import tag, Element, tag_init
-    custom_tag = type('custom_tag', (tag, Element), {'name': name, '__init__': tag_init})
+    from domonic.html import tag, Element  #, tag_init
+    custom_tag = type('custom_tag', (tag, Element), {'name': name})   #, '__init__': tag_init})
     new_tag = custom_tag(*args, **kwargs)
     new_tag.name = name
     return new_tag

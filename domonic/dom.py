@@ -49,6 +49,24 @@ class Node(EventTarget):
     def __init__(self, *args, **kwargs) -> None:
         self.args = args
         self.kwargs = kwargs
+
+        # if user doesn't put underscore
+        new_kwargs = {}
+        for k, v in kwargs.items():
+            if k[0] != "_":
+                new_kwargs[f"_{k}"] = v
+            else:
+                new_kwargs[k] = v
+        self.kwargs = new_kwargs
+
+        try:
+            self.content = ''.join([each.__str__() for each in args])
+            self.__attributes__ = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
+        except IndexError as e:
+            raise TemplateError(e)
+        # except Exception as e:
+            # print(e)
+        
         self.baseURI: str = 'eventual.technology'  # TODO - if ownerdocument has a basetag, use that
         self.isConnected: bool = True
         self.namespaceURI: str = "http://www.w3.org/1999/xhtml"
@@ -78,6 +96,7 @@ class Node(EventTarget):
         except Exception as e:
             # print('nope!', e)
             pass
+        # print("Node:calling super")
         super().__init__(*args, **kwargs)
 
     def __setattr__(self, name: str, value: Any) -> None:
@@ -89,6 +108,7 @@ class Node(EventTarget):
                 return
         except Exception as e:
             print(e)
+        # print("Node:calling super")  # TODO - seems exccessive?
         super(Node, self).__setattr__(name, value)
 
     # def __getattr__(self, name):
@@ -1421,6 +1441,7 @@ class Element(Node):
         self.style = None  # Style(self)  # = #'test'#Style()
         self.shadowRoot = None
         self.dir = None
+        # print("Element:calling super")
         super().__init__(*args, **kwargs)
 
     def _getElementById(self, _id: str):
@@ -2565,6 +2586,7 @@ class Document(Element):
         # self.stylesheets = StyleSheetList()
         self.doctype = None
         self.body = ""  # ??
+        # print("Document:calling super")
         super().__init__(*args, **kwargs)
         try:
             global document
@@ -2681,8 +2703,8 @@ class Document(Element):
     @staticmethod
     def createElementNS(namespaceURI, qualifiedName, options=None):
         """ Creates an element with the specified namespace URI and qualified name."""
-        from domonic.html import tag, tag_init
-        el = type(qualifiedName, (tag, Element), {'name': qualifiedName, '__init__': tag_init})
+        from domonic.html import tag  #, tag_init
+        el = type(qualifiedName, (tag, Element), {'name': qualifiedName})  #, '__init__': tag_init})
         el.namespaceURI = namespaceURI
         return el()
 

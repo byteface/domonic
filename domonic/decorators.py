@@ -17,9 +17,9 @@ def el(element='div', string: bool=False):
         # tag = __import__('domonic.html.' + element)
         # print(tag)
         # - TODO - get element by name required on html class
-        from domonic.html import tag, tag_init
+        from domonic.html import tag  #, tag_init
         from domonic.dom import Element
-        element = type(element, (tag, Element), {'name': element, '__init__': tag_init})
+        element = type(element, (tag, Element), {'name': element})  #, '__init__': tag_init})
 
     def decorator(function):
         def wrapper(*args, **kwargs):
