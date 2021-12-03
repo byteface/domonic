@@ -3,6 +3,7 @@
 .vscode
 *.pyc
 venv
+winvenv
 __pycache__/
 
 build
