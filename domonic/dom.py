@@ -47,16 +47,16 @@ class Node(EventTarget):
 
     __context: list = None  # private. tags will append to last item in context on creation.
 
-    __slots__ = ['____attributes__',
-                 '__content',
-                 'name',
-                 '__rootNode',
-                 'parentNode',
-                 'baseURI',
-                 'isConnected',
-                 'namespaceURI',
-                 'outerText',
-                 'prefix']
+    # __slots__ = ['____attributes__',
+    #              '__content',
+    #              'name',
+    #              '__rootNode',
+    #              'parentNode',
+    #              'baseURI',
+    #              'isConnected',
+    #              'namespaceURI',
+    #              'outerText',
+    #              'prefix']
 
     def __init__(self, *args, **kwargs) -> None:
         self.args = args
