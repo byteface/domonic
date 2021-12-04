@@ -32,7 +32,7 @@ class Game():
         return random.choice(cards) + random.choice(suits)
 
     @staticmethod
-    def deal_cards(n: int=1) -> list:
+    def deal_cards(n: int = 1) -> list:
         """[deals n cards]
 
         Args:

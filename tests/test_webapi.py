@@ -99,6 +99,51 @@ class TestCase(unittest.TestCase):
     def test_permissions(self):
         pass
 
+    def test_xhr(self):
+        from domonic.html import form, input, button, br, hr, div
+        from domonic.javascript import Global
+
+        # def on_submit(event):
+        #     event.preventDefault()
+        #     alert("Form submitted")
+
+        # def on_load(event):
+        #     event.preventDefault()
+        #     alert("Page loaded")
+
+        # def on_error(event):
+        #     event.preventDefault()
+        #     alert("Page error")
+
+        from domonic.webapi.xhr import FormData
+
+        myform = form(action='/', method='post')
+        myform += input(type='text', name='name', placeholder='Name')
+        myform += input(type='text', name='email', placeholder='Email')
+        myform += input(type='text', name='phone', placeholder='Phone')
+        myform += input(type='text', name='message', placeholder='Message')
+        # myform += button(type='submit', value='Submit')
+
+        f = FormData(myform)
+        print(f)
+
+        # f.append('name', 'John')
+        # f.append('age', '25')
+        # f.append('email', '
+
+        print('***')
+
+        # myform = """
+        # <form action="/">
+        #     <input type="text" name="name" placeholder="Name">
+        #     <input type="text" name="email" placeholder="Email">
+        #     <input type="text" name="phone" placeholder="Phone">
+        #     <input type="submit" value="Submit">
+        # </form>
+        # """
+        # f = FormData(myform)
+        # print(f)
+
 
 if __name__ == '__main__':
     unittest.main()

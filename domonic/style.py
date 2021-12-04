@@ -15,13 +15,14 @@ class StyleSheet:
     """
 
     def __init__(self):
+        # print('born!')
         self.disabled = True  # a boolean value representing whether the current stylesheet has been applied or not
         self.href = None
 
-    @property
-    def href(self):
-        """Returns a DOMString representing the location of the stylesheet."""
-        return self.href
+    # @property
+    # def href(self):
+    #     """Returns a DOMString representing the location of the stylesheet."""
+    #     return self.href
 
     @property
     def media(self):
@@ -38,45 +39,67 @@ class StyleSheet:
         """Returns a StyleSheet including this one, if any; returns null if there aren't any."""
         raise NotImplementedError
 
-    @property
-    def title(self):
-        """Returns a DOMString representing the advisory title of the current style sheet."""
-        raise NotImplementedError
+    # @property
+    # def title(self):
+    #     """Returns a DOMString representing the advisory title of the current style sheet."""
+    #     raise NotImplementedError
 
-    @property
-    def type(self):
-        """Returns a DOMString representing the style sheet language for this style sheet."""
-        raise NotImplementedError
+    # @property
+    # def type(self):
+    #     """Returns a DOMString representing the style sheet language for this style sheet."""
+    #     raise NotImplementedError
 
 
-class StyleSheetList:
+class StyleSheetList(list):
     """An instance of this object can be returned by Document.styleSheets.
     it can be iterated over in a standard for loop over its indices, or converted to an Array.
     """
 
-    def __init__(self):
-        self.styleSheets = []
-        # self.styleSheets.append(StyleSheet())
-
-    '''
-    def _populate_stylesheets_from_document(self):
+    def _populate_stylesheets_from_document(self, doc):
         """ parse the document to find all the stylesheets and add them to the list.
         """
+        # print('this runs')
         # get loaded styles
-        # sheets = document.getElementsByTagName("style")
-        # for sheet in sheets:
+        # from domonic.dom import document
+        # newme = []
+
+        sheets = doc.querySelectorAll('link[rel="stylesheet"]')
+        for sheet in sheets:
             # get the content of the style sheet
-        raise NotImplementedError
-    '''
+            # TODO - sheet.href # make absolute
+            # TODO - download and parse
+            # self.styleSheets.append(StyleSheet(sheet))
+            print('external:', sheet)
+            ss = StyleSheet()
+            # print('whats going on?')
+            ss.href = sheet.href
+            # ss.disabled = False
+            # ss.ownerNode = doc
+            # ss.parentStyleSheet = None
+            self.append(ss)
+
+        # get inline styles
+        styles = doc.querySelectorAll('style')
+        for style in styles:
+            # self.styleSheets.append(StyleSheet(style))
+            print('inline:', style)
+            ss = StyleSheet()
+            ss.href = doc.URL
+            # ss.disabled = False
+            # ss.ownerNode = doc
+            # ss.parentStyleSheet = None
+            self.append(ss)
+
+        # self = newme
 
     @property
     def length(self):
         """Returns the number of CSSStyleSheet objects in the collection."""
-        return len(self.styleSheets)
+        return len(self)
 
     def item(self, index):
         """Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index."""
-        return self.styleSheets[index]
+        return self[index]
 
 
 class CSSRule:

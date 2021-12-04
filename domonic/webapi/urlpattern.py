@@ -46,7 +46,7 @@ class URLPattern:
         #     return None
         raise NotImplementedError
 
-    # TODO - unit tests 
+    # TODO - unit tests
     def test(self, url):
         """[summary]
 

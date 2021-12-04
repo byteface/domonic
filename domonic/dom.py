@@ -13,7 +13,7 @@ import re
 import copy
 
 from domonic.events import Event, EventTarget, MouseEvent  # , KeyboardEvent, TouchEvent, UIEvent, CustomEvent
-from domonic.style import CSSStyleDeclaration as Style
+from domonic.style import CSSStyleDeclaration as Style, StyleSheetList
 from domonic.geom import vec3
 
 from domonic.webapi.url import URL
@@ -232,8 +232,7 @@ class Node(EventTarget):
 
     def __iadd__(self, item):
         """ adds an item to the nodes of children. can also pass a list and it will unpack them """
-
-        if isinstance(item, (list, tuple)):
+        if isinstance(item, (list, tuple)):  # TODO - Documentfragment?
             for i in item:
                 self.args = self.args + (i,)
             return self
@@ -995,8 +994,11 @@ class ChildNode(Node):
     """ not tested yet """
 
     def remove(self):
-        """ Removes this ChildNode from the children list of its parent. """
-        self.parentNode.removeChild(self)
+        """Removes this ChildNode from the children list of its parent."""
+        if self.parentNode is None:
+            self._update_parents()
+        if self.parentNode is not None:
+            self.parentNode.removeChild(self)
         return self
 
     def replaceWith(self, newChild):
@@ -2420,11 +2422,16 @@ class Element(Node):
 
     def remove(self):
         """ Removes the element from the DOM """
-        try:
-            self.parentNode.args.remove(self)
-        except Exception:
-            # print("Element not found")
-            pass
+        # try:
+        #     self.parentNode.args.remove(self)
+        # except Exception:
+        #     # print("Element not found")
+        #     pass
+        # if self.parentNode is None:
+            # self._update_parents()
+        if self.parentNode is not None:
+            self.parentNode.removeChild(self)
+        return self
 
     def removeAttribute(self, attribute: str):
         """ Removes a specified attribute from an element """
@@ -2894,7 +2901,7 @@ class Document(Element):
         self.kwargs = kwargs
         # self.documentURI = uri
         # self.documentElement = self
-        # self.stylesheets = StyleSheetList()
+        self.stylesheets = None
         self.doctype = None
         super().__init__(*args, **kwargs)
         try:
@@ -2943,6 +2950,18 @@ class Document(Element):
     #     return node
 
     @property
+    def stylesheets(self):
+        if self.__stylesheets is None:
+            self.stylesheets = StyleSheetList()
+            self.stylesheets._populate_stylesheets_from_document(self)
+        return self.__stylesheets
+
+    @stylesheets.setter
+    def stylesheets(self, stylesheets):
+        self.__stylesheets = stylesheets
+        # self.__stylesheets.__init__(self)  # to set the parent??
+
+    @property
     def anchors(self):
         """[get the anchors in the document]"""
         # only the ones with a name
@@ -2969,7 +2988,6 @@ class Document(Element):
                 "The new body element is of type '" + str(type(el)) + "'. It must be a 'HTMLBodyElement'"
             )
         else:
-            # remove existing body
             if self.body is not None:
                 self.body.remove()
             self += el
@@ -3000,8 +3018,6 @@ class Document(Element):
     @staticmethod
     def createComment(message):
         """ Creates a Comment node with the specified text """
-        # from domonic.html import comment
-        # return comment(message)
         return Comment(message)
 
     @staticmethod
@@ -3439,6 +3455,10 @@ class Document(Element):
             html (str, optional): [the content to write to the document]
         """
         self.write(html + '\n')
+
+    # def __md__(self)
+    # def __rst__(self)
+    # def __json__(self)
 
 
 class Location():

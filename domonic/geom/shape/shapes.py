@@ -10,16 +10,34 @@ from domonic.geom.shape import Shape
 
 class Circle(Shape):
 
-    def __init__(self, x, y, radius=1.0, color=None):
+    def __init__(self, x: float, y: float, radius: float = 1.0, color=None) -> None:
+        """[Circle(x, y, radius=1.0, color=None)]
+
+        Args:
+            x ([float]): [the x coordinate of the center of the circle]
+            y ([float]): [the y coordinate of the center of the circle]
+            radius (float, optional): [description]. Defaults to 1.0.
+            color ([type], optional): [description]. Defaults to None.
+        """
         super().__init__(color)
         self.radius = radius  # Create an instance variable radius
 
     @property
-    def area(self):
+    def area(self) -> float:
+        """[area]
+
+        Returns:
+            [float]: [the area of the circle]
+        """
         return self.radius * self.radius * Math.PI
 
     @property
-    def perimeter(self):
+    def perimeter(self) -> float:
+        """[perimeter]
+
+        Returns:
+            [float]: [the perimeter of the circle]
+        """
         return 2 * self.radius * Math.PI
 
     @property

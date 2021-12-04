@@ -555,10 +555,12 @@ class TestCase(unittest.TestCase):
         assert site.contains(another_div)
 
     def test_getElementById(self):
-        dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _id="test")))))))))
+        dom1 = html(div(div(div(div(div(div(div(article("asdfasdf", div(), div("yo"), _id="test")))))))))
         result = dom1.getElementById('test')
-        print(result)
-        # assert result.tagName == 'DIV'  # case changed
+        assert result.tagName == 'article'
+        # print(result)
+        # print(len(result.children))
+        # assert len(result.children) == 3  # TODO - does a text node count?
 
     def test_remove(self):
         dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _id="test")))))))))
@@ -566,10 +568,7 @@ class TestCase(unittest.TestCase):
         # print("owner:", result.ownerDocument)
         assert result.ownerDocument == dom1
         result.remove()
-        print(result)
-        print('--')
-        print(dom1)
-        print('--')
+        assert "asdfasdf" not in str(dom1)
         pass
 
     # def test_getElementByClassName(self):
@@ -1598,7 +1597,7 @@ class NodeTest(TestCase):
     #     node.setUserData('foo', 'bar')
     #     res = node.getUserData('foo')
     #     assert res == 'bar'
-    
+
 
 if __name__ == '__main__':
     unittest.main()

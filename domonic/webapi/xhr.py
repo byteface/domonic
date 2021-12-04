@@ -2,10 +2,22 @@
     domonic.webapi.XMLHttpRequest
     ====================================
     https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
+
 """
 
-# class XMLHttpRequest():
+import json
+import os
+import sys
+import time
+import traceback
+import urllib.parse
+import uuid
+from io import BytesIO
+from typing import Any, Callable, Dict, List, Optional, Union
 
+from domonic.javascript import Global
+
+# class XMLHttpRequest():
 #     def __init__(self, url=None, responseType=None, withCredentials=False, timeout=0, onload=None, onerror=None, onprogress=None, ontimeout=None):
 #         self.url = url
 #         self.responseType = responseType
@@ -23,12 +35,59 @@ class FormData(object):
 
     def __init__(self, form):
         """ creates a new FormData object. """
-        # TODO - parse to domonic.
-        # if isinstance(form, str):
-        #   self._data = domonic.loads(form) # TODO - parser wont be done enough yet
-        # if isinstance(form, Node):
-            # self._data = form
-            # self._formobj = # TODO - serialize to object
+
+        if isinstance(form, str):
+            import domonic
+            page = domonic.domonic.parseString(form)
+            form = page.querySelector('form')
+
+        print(form)
+        print(form.nodeName)
+        if form.nodeName.lower() != "form":
+            print('not a form')
+            return
+
+        q = []
+        for el in form:
+
+            if el.nodeName.lower() == "#text":
+                continue
+
+            if el.getAttribute('name') == "":
+                continue
+
+            if el.nodeName.lower() == 'input':
+                if el.type in ['email', 'text', 'hidden', 'password', 'reset', 'email']:
+                    q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
+                elif el.type in ['checkbox', 'radio']:
+                    if el.checked:
+                        q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
+            elif el.nodeName.lower() == 'textarea':
+                q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
+            elif el.nodeName.lower() == 'select':
+                if el.getAttribute('multiple') != None:
+                    for option in el.getElementsByTagName('option'):
+                        if option.getAttribute('selected') != None:
+                            q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(option.nodeValue))
+                else:
+                    q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
+            elif el.nodeName.lower() == 'button':
+                if el.type in ['reset', 'submit', 'button']:
+                    try:
+                        q.append(el.getAttribute('name') + "=" + Global.encodeURIComponent(el.nodeValue))
+                    except:
+                        pass # ? we dont pass submit button do we?
+
+        # return "&".join(q)
+        self._data = "&".join(q)
+        print(self._data)
+        self._formobj = form
+
+    def __str__(self) -> str:
+        return self._data
+
+    def toString(self):
+        """ Returns a string representing the FormData object. """
         raise NotImplementedError
 
     def append(self, name, value, filename):
