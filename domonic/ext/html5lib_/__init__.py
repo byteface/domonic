@@ -91,8 +91,8 @@ def getDomBuilder(ignore):
                 try:
                     return self.element.attributes[name].value
                 except Exception as e:
-                    print(e)
-                    print('failed on :', name)
+                    # print(e)
+                    # print('failed on :', name)  # TODO
                     return ""
 
         def __delitem__(self, name):

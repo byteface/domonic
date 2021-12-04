@@ -363,7 +363,8 @@ class TestCase(unittest.TestCase):
         assert str(mylist[1]) == "<li>2</li>"
 
         mylist = ul(li(), li(), li())
-        print(*mylist)
+        # print(*mylist)
+        assert str(mylist) == '<ul><li></li><li></li><li></li></ul>'
 
         a1, b1, c1 = ul(li(1), li(2), li(3))
         # print(a1)
@@ -562,7 +563,7 @@ class TestCase(unittest.TestCase):
     def test_remove(self):
         dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _id="test")))))))))
         result = dom1.getElementById('test')
-        print("owner:", result.ownerDocument)
+        # print("owner:", result.ownerDocument)
         assert result.ownerDocument == dom1
         result.remove()
         print(result)
@@ -638,38 +639,38 @@ class TestCase(unittest.TestCase):
         assert len(result) == 4
 
         result = self.page.querySelectorAll("h4[class='font-weight-bold text-uppercase']")
-        print(result)
+        # print(result)
         for r in result:
             print(r)
         print('>>>>>>>>>')  # fails
 
         result = self.page.querySelectorAll("li.nav-item")
-        print(result)
+        # print(result)
         for r in result:
             print(r)
         print('>>>>>>>>>')  # works
 
         result = self.page.querySelectorAll("a[href='#services']")
-        print(result)
+        # print(result)
         for r in result:
             print(r)
         print('>>>>>>>>>')  # works
 
         result = self.page.querySelectorAll("p.text-gray")
-        print(result)
+        # print(result)
         for r in result:
             print(r)
         print('>>>>>>>>>')  # works
 
         result = self.page.querySelectorAll("a[href$='technology']")
-        print(result)
+        # print(result)
         for r in result:
             print(r)
 
         print('>>>>>>>>>')  # works
 
         result = self.page.querySelectorAll("a[href*='twitter']")
-        print(result)
+        # print(result)
         for r in result:
             print(r)
 
@@ -687,8 +688,8 @@ class TestCase(unittest.TestCase):
         dom1 = html(div(div(div(div(div(div(div(div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
 
         result = dom1.getElementsBySelector('#thing', dom1)[0]
-        print("RESULT>>>>>", result)
-        print('--')
+        # print("RESULT>>>>>", result)
+        # print('--')
         # return
         assert result.id == 'thing'
 
@@ -749,44 +750,44 @@ class TestCase(unittest.TestCase):
         print('>>>>>>>>>')  # works
 
         result = self.page.getElementsBySelector("li[class='nav-item']", self.page)
-        print(result)
+        # print(result)
         for r in result:
             print(r)
         print('>>>>>>>>>')  # works
 
         result = self.page.getElementsBySelector("h4[class='font-weight-bold text-uppercase']", self.page)
-        print(result)
+        # print(result)
         for r in result:
             print(r)
         print('>>>>>>>>>')  # fails
 
         result = self.page.getElementsBySelector("li.nav-item", self.page)
-        print(result)
+        # print(result)
         for r in result:
             print(r)
         print('>>>>>>>>>')  # works
 
         result = self.page.getElementsBySelector("a[href='#services']", self.page)
-        print(result)
+        # print(result)
         for r in result:
             print(r)
         print('>>>>>>>>>')  # works
 
         result = self.page.getElementsBySelector("p.text-gray", self.page)
-        print(result)
+        # print(result)
         for r in result:
             print(r)
         print('>>>>>>>>>')  # works
 
         result = self.page.getElementsBySelector("a[href$='technology']", self.page)
-        print(result)
+        # print(result)
         for r in result:
             print(r)
 
         print('>>>>>>>>>')  # works
 
         result = self.page.getElementsBySelector("a[href*='twitter']", self.page)
-        print(result)
+        # print(result)
         for r in result:
             print(r)
 
@@ -998,6 +999,38 @@ class TestCase(unittest.TestCase):
         # not able to recreate. Comment was updated to a Node in 6.1
         # this may have been due to that
         # TODO - mulitple arguments to comment
+
+    def test_body(self):
+        print('im running1')
+        aNewBodyElement = document.createElement("body")
+        aNewBodyElement.id = "newBodyElement"
+        page = html()
+        page.body = aNewBodyElement
+        print('im running2')
+        assert page.body.id == "newBodyElement"
+
+    def test_head(self):
+        aNewHeadElement = document.createElement("head")
+        aNewHeadElement.id = "newHeadElement"
+        page = html()
+        page.head = aNewHeadElement
+        assert page.head.id == "newHeadElement"
+        assert page.head.nodeName == "head"
+        assert page.head.nodeType == Node.ELEMENT_NODE
+
+    def test_title(self):
+        aNewTitleElement = document.createElement("title")
+        aNewTitleElement.textContent = "newTitleElement"
+        page = html()
+        page.title = aNewTitleElement
+        assert page.title == "newTitleElement"
+
+    def test_anchors(self):
+        mydoc = html(body('test'))
+        mydoc.body.append(a(name='foo'))
+        mydoc.body.append(a(name='bar'))
+        mydoc.body.append(a(href='#test'))
+        assert len(mydoc.anchors) == 2
 
     def test_treewalker(self):
 
@@ -1565,7 +1598,7 @@ class NodeTest(TestCase):
     #     node.setUserData('foo', 'bar')
     #     res = node.getUserData('foo')
     #     assert res == 'bar'
-
+    
 
 if __name__ == '__main__':
     unittest.main()

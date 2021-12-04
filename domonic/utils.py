@@ -311,7 +311,7 @@ class Utils(object):
         return front + mid + end
 
     @staticmethod
-    def truncate(text: str='', length: int = 0) -> str:
+    def truncate(text: str = '', length: int = 0) -> str:
         """[truncates a string and appends 3 dots]
 
         Args:
@@ -327,7 +327,7 @@ class Utils(object):
             return text + "..."
 
     @staticmethod
-    def digits(text: str='') -> str:
+    def digits(text: str = '') -> str:
         """[takes a string of mix of digits and letters and returns a string of digits]
 
         Args:
@@ -349,7 +349,7 @@ class Utils(object):
                 raise ValueError("text must be a string")
 
     @staticmethod
-    def has_internet(url: str='http://www.google.com/', timeout: int=5) -> bool:
+    def has_internet(url: str = 'http://www.google.com/', timeout: int = 5) -> bool:
         """[check if you have internet connection]
 
         Args:

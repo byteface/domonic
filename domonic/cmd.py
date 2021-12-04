@@ -27,7 +27,7 @@ equivelents_map = {
 class CmdException(Exception):
     """ raised if cmd throws an exception """
 
-    def __init__(self, error, message: str="An error message was recieved from cmd"):
+    def __init__(self, error, message: str = "An error message was recieved from cmd"):
         print(error, message)
         self.message = message
         super().__init__(self.message)

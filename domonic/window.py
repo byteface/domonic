@@ -290,6 +290,7 @@ class Window(Window):
             if 'html5lib' in sys.modules:
                 self.document = self._set_location_using_htm5lib(value)
                 self._location = Location(value)
+                self.document.URL = value
                 return
         except ImportError:
             pass
@@ -326,6 +327,7 @@ class Window(Window):
 
         # TODO - don't use parseString as it is not a HTML parser its XML parser. atm I'm just using for testing
         self.document = domonic.domonic.parseString(content)
+        self.document.URL = value
         self._location = Location(value)
 
     def blur(self):

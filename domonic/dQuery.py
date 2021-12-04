@@ -13,7 +13,7 @@ from domonic.javascript import *
 
 
 class EventHandler():
-    
+
     def __init__(self):
         self.events = []
 
@@ -910,7 +910,7 @@ class dQuery_el():
             el.remove()  # wont work . does this method even exist?
         return self
 
-    def removeAttr(self, attr :str):  # TODO - test
+    def removeAttr(self, attr: str):  # TODO - test
         """ Remove an attribute from each element in the set of matched elements."""
         if not isinstance(self.elements, (list, tuple)):
             self.elements = (self.elements,)
@@ -1071,7 +1071,7 @@ class dQuery_el():
         """ Bind an event handler to the “submit” JavaScript event, or trigger that event on an element."""
         raise NotImplementedError
 
-    def text(self, newVal: str=None):
+    def text(self, newVal: str = None):
         """ Get the combined text contents of each element in the set of matched elements, including their descendants,
         or set the text contents of the matched elements."""
         if newVal is not None:

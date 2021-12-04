@@ -2736,7 +2736,7 @@ class String(object):
         else:
             return self.x.split(expr)
 
-    def concat(self, *args, seperator: str="") -> str:
+    def concat(self, *args, seperator: str = "") -> str:
         """[concatenates the string arguments to the calling string and returns a new string.]
 
         Args:
@@ -2817,7 +2817,7 @@ class String(object):
             index (int): [index position]
 
         Returns:
-            [str]: [the character at the specified index. 
+            [str]: [the character at the specified index.
             if the index is out of range, an empty string is returned.]
         """
         try:
@@ -3344,6 +3344,7 @@ class RegExp():
     # Searches the match in given string and returns the index the pattern found in the string.
     # def [@@split]()
     # Splits given string into an array by separating the strin
+
 
 def ToInt32(v):
     return v >> 0

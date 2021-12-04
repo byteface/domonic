@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>dom &#8212; domonic 0.8.0 documentation</title>
+    <title>dom &#8212; domonic 0.8.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
@@ -356,23 +356,23 @@ and if force is false, removes token from list if present.</p>
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">domonic.dom.</span></span><span class="sig-name descname"><span class="pre">Document</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>the Document class is also the baseclass for the html tag</p>
-<dl class="py method">
+<dd><p>The Document interface represents the entire HTML or XML document.</p>
+<dl class="py property">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">anchors</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.anchors"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Returns a collection of all &lt;a&gt; elements in the document that have a name attribute</p>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">anchors</span></span></dt>
+<dd><p>[get the anchors in the document]</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py property">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">applets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.applets"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">applets</span></span></dt>
 <dd><p>Returns a collection of all &lt;applet&gt; elements in the document</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">body</span></span></dt>
-<dd><p>returns the document’s body (the &lt;body&gt; element)</p>
+<dd><p>Returns the &lt;body&gt; element in the document</p>
 </dd></dl>
 
 <dl class="py property">
@@ -605,7 +605,7 @@ and if force is false, removes token from list if present.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">head</span></span></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">head</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="autodocs.html#domonic.dom.HTMLHeadElement" title="domonic.dom.HTMLHeadElement"><span class="pre">domonic.dom.HTMLHeadElement</span></a></em></dt>
 <dd><p>Returns the &lt;head&gt; element of the document</p>
 </dd></dl>
 
@@ -627,9 +627,9 @@ and if force is false, removes token from list if present.</p>
 <dd><p>Imports a node from another document to this document.</p>
 </dd></dl>
 
-<dl class="py method">
+<dl class="py property">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">links</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.links"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">links</span></span></dt>
 <dd><p>Returns a collection of all &lt;a&gt; and &lt;area&gt; elements in the document that have a href attribute</p>
 </dd></dl>
 
@@ -647,7 +647,7 @@ and if force is false, removes token from list if present.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">renameNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.renameNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<span class="sig-name descname"><span class="pre">renameNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaceURI</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Document.renameNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>[Renames the specified node, and returns the renamed node.]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -688,7 +688,7 @@ and if force is false, removes token from list if present.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">title</span></span></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">title</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em></dt>
 <dd><p>[gets the title of the document]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1110,6 +1110,12 @@ i.e. (‘a.classname’) will work. but just (‘.classname’) wont</p>
 <dd class="field-odd"><p>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)">bool</a>]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">namespaceURI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/domonic/dom.html#Element.namespaceURI"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Returns the namespace URI of an element</p>
 </dd></dl>
 
 <dl class="py property">

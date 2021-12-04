@@ -43,7 +43,7 @@ def el(element='div', string: bool = False):
 #     return decorator
 
 
-def called(before=None, error: Callable[[Exception], None]=None):
+def called(before=None, error: Callable[[Exception], None] = None):
     """
     Decorator to call a function before and after a function call.
     """

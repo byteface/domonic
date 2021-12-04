@@ -211,7 +211,7 @@ html_tags = [
     "b",
     "a",
 ]
-# big, blink, bold, tt, var,
+# big, blink, bold, tt, var, frameset
 
 html_attributes = [
     "accept",
@@ -480,9 +480,9 @@ h5 = type("h5", (HTMLHeadingElement,), {"name": "h5"})
 h6 = type("h6", (HTMLHeadingElement,), {"name": "h6"})
 p = HTMLParagraphElement
 
-i = type("i", (Element,), {"name": "i"})  # TODO - check which?
-b = type("b", (Element,), {"name": "b"})  # TODO - check which?
-portal = type("portal", (Element,), {"name": "portal"})  # TODO - check which?
+i = type("i", (Element,), {"name": "i"})  # TODO - check which?
+b = type("b", (Element,), {"name": "b"})  # TODO - check which?
+portal = type("portal", (Element,), {"name": "portal"})  # TODO - check which?
 
 
 def Atag(self, *args, **kwargs):

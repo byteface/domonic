@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>domonic.utils &#8212; domonic 0.7.2 documentation</title>
+    <title>domonic.utils &#8212; domonic 0.8.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
@@ -344,7 +344,7 @@
         <span class="k">return</span> <span class="n">front</span> <span class="o">+</span> <span class="n">mid</span> <span class="o">+</span> <span class="n">end</span></div>
 
 <div class="viewcode-block" id="Utils.truncate"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.truncate">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[truncates a string and appends 3 dots]</span>
 
 <span class="sd">        Args:</span>
@@ -360,7 +360,7 @@
             <span class="k">return</span> <span class="n">text</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span></div>
 
 <div class="viewcode-block" id="Utils.digits"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.digits">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">digits</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">digits</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[takes a string of mix of digits and letters and returns a string of digits]</span>
 
 <span class="sd">        Args:</span>
@@ -382,7 +382,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;text must be a string&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Utils.has_internet"><a class="viewcode-back" href="../../packages/utils.html#domonic.utils.Utils.has_internet">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">has_internet</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;http://www.google.com/&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">has_internet</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;http://www.google.com/&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;[check if you have internet connection]</span>
 
 <span class="sd">        Args:</span>

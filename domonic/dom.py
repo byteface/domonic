@@ -111,7 +111,6 @@ class Node(EventTarget):
             elif nm == 'math':
                 self.namespaceURI = 'http://www.w3.org/1998/Math/MathML'
         except Exception as e:
-            # print('nope!', e)
             pass
 
         # this is for using 'with'
@@ -138,7 +137,6 @@ class Node(EventTarget):
 
     @property
     def __attributes__(self):
-        # print('kwargs is22', self.kwargs)
         def format_attr(key, value):
             if value is True:
                 value = 'true'
@@ -250,8 +248,7 @@ class Node(EventTarget):
         self.args = tuple(replace_args)
         return self
 
-    def __getitem__(self, index):  # TODO - move dunders to Node?
-        # print('getting an item::', index, type(index))
+    def __getitem__(self, index):
         if isinstance(index, int):
             return self.args[index]
         # elif isinstance(index, str):
@@ -305,8 +302,6 @@ class Node(EventTarget):
         *credit to the peeps on discord/python for this one*
         """
         kwargs = super().__getattribute__('kwargs')
-        # print("sup::", attr)
-        # print("sup2::", kwargs)
 
         if attr in kwargs:
             return kwargs[attr]
@@ -359,8 +354,6 @@ class Node(EventTarget):
     #     return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
 
     def __setitem__(self, key, value):
-        # self.args[key] = value
-        # print(self.args[key])
         try:
             self.kwargs[key] = value
             return self
@@ -447,7 +440,6 @@ class Node(EventTarget):
     #     print(self.name)
 
     def __setattr__(self, name: str, value: Any) -> None:
-        # print(name, value)
         try:
             if name == "args":
                 super(Node, self).__setattr__(name, value)
@@ -455,7 +447,7 @@ class Node(EventTarget):
                 return
         except Exception as e:
             print(e)
-        # print("Node:calling super")  # TODO - seems exccessive?
+            # pass
         super(Node, self).__setattr__(name, value)
 
     # def __getattr__(self, name):
@@ -530,16 +522,13 @@ class Node(EventTarget):
         elif isinstance(element, list):
             elements = element
         try:
-            # print(self.args)
             for el in elements:
-                # print('INSIDE:', el, type(el))
                 if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
                     # callback(el)
                     el._iterate(el, callback)
                 elif isinstance(el, list):  # if someone is incorrectly using a list as a child
                     for e in el:
                         if type(e) not in (str, list, dict, int, float, tuple, object, set):
-                            # print('&&&&&&&')
                             e._iterate(e, callback)
         except Exception as e:
             print('_iterate error', e)
@@ -731,7 +720,6 @@ class Node(EventTarget):
             return self.tagName  # .upper()
         else:
             try:
-                # print('sup:',type(self))
                 return self.tagName
             except Exception:
                 return None
@@ -929,7 +917,6 @@ class Node(EventTarget):
     def previousSibling(self):
         """[returns the previous sibling of the current node.]
         """
-        # print('prev sib', self.parentNode.args)
         if self.parentNode is None:
             return None
         else:
@@ -1778,7 +1765,6 @@ class Element(Node):
         self.style = None  # Style(self)  # = #'test'#Style()
         self.shadowRoot = None
         self.dir = None
-        # print("Element:calling super")
         super().__init__(*args, **kwargs)
 
     def _getElementById(self, _id: str):
@@ -1817,7 +1803,6 @@ class Element(Node):
         tries to match an element based on the query
         at moment very basic. i.e. single level. just checks between id/tag/class
         """
-        # print(type(element))
         if not isinstance(element, Element):
             return False
 
@@ -1899,7 +1884,6 @@ class Element(Node):
 
         context = [document]
         inheriters = all_selectors.split(" ")
-        # print(inheriters)
 
         # Space
         for element in inheriters:
@@ -1908,26 +1892,20 @@ class Element(Node):
             right_bracket = str.find(element, "]")
             pos = str.find(element, "#")  # ID
             if(pos + 1 and not(pos > left_bracket and pos < right_bracket)):
-                # print('IM A ID')
                 parts = str.split(element, "#")
                 tag = parts[0]
                 id = parts[1]
                 ele = document.getElementById(id)
-                # print('ele::',ele)
                 context = [ele]  # [](ele)
                 continue
 
             pos = str.find(element, ".")  # Class
             if(pos + 1 and not(pos > left_bracket and pos < right_bracket)):
-                # print('IM A CLASS')
                 parts = str.split(element, '.')
                 tag = parts[0]
                 class_name = parts[1]
-                # print(tag)
-                # print(class_name)
                 found = getElements(context, tag)
                 # found = document.getElementsByClassName(class_name)
-                # print(found)
                 context = []
                 for fnd in found:
                     if(fnd.getAttribute("class") and re.search(r'(^|\s)' + class_name + '(\s|$)', fnd.getAttribute("class"))):
@@ -1950,7 +1928,6 @@ class Element(Node):
                 found = getElements(context, tag)
                 context = []
                 for fnd in found:
-                    # print(fnd)
                     if(operator == '=' and fnd.getAttribute(attr) != value):
                         continue  # WORKING
                     if(operator == '~' and not(re.search(r'(^|\\s)' + value + '(\\s|$)', fnd.getAttribute(attr)))):
@@ -1974,7 +1951,6 @@ class Element(Node):
             context = found
 
         selected.extend(context)
-        # print('SELECTED:::', selected)
         return selected
 
     def append(self, *args):
@@ -2351,7 +2327,6 @@ class Element(Node):
     def normalize(self):
         '''Joins adjacent text nodes and removes empty text nodes in an element'''
         content = []
-        # print(self.args)
         nodestr = ''
         for s in self.args:
             if type(s) == Text:
@@ -2368,7 +2343,6 @@ class Element(Node):
                 content.append(s)
         if nodestr != '':
             content.append(nodestr)
-        # print(">>", content)
         self.args = content
         return self.args
 
@@ -2538,7 +2512,6 @@ class Element(Node):
 
     @property
     def tagName(self):
-        # print('sup!:',type(self))
         return self.name
 
     # @property
@@ -2911,21 +2884,18 @@ class XPathEvaluator(object):
 
 
 class Document(Element):
-    """ the Document class is also the baseclass for the html tag """
+    """The Document interface represents the entire HTML or XML document."""
+
+    URL = None
 
     def __init__(self, *args, **kwargs):
-        """ init Creates a new Document """
+        """ Constructor for Document objects """
         self.args = args
         self.kwargs = kwargs
-        # self.doc = doc
-        # self.uri = uri
         # self.documentURI = uri
         # self.documentElement = self
-        # self.raw
         # self.stylesheets = StyleSheetList()
         self.doctype = None
-        self.body = ""  # ??
-        # print("Document:calling super")
         super().__init__(*args, **kwargs)
         try:
             global document
@@ -2972,26 +2942,37 @@ class Document(Element):
     #     node.ownerDocument = self
     #     return node
 
-    def anchors(self):  # TODO - still old
-        ''' Returns a collection of all <a> elements in the document that have a name attribute'''
-        tags = self._get_tags('a')
-        return [x for x in tags if x.hasAttribute('name')]
+    @property
+    def anchors(self):
+        """[get the anchors in the document]"""
+        # only the ones with a name
+        tags = self.querySelectorAll('a')
+        tags = [tag for tag in tags if tag.hasAttribute('name')]
+        return tags
 
+    @property
     def applets(self):
-        """ Returns a collection of all <applet> elements in the document """
+        """Returns a collection of all <applet> elements in the document"""
         return self.querySelectorAll('applet')
 
     @property
     def body(self):
-        """ returns the document's body (the <body> element) """
+        """Returns the <body> element in the document"""
         return self.querySelector('body')
 
     @body.setter
-    def body(self, content):  #  TODO - untested
-        """ Sets the document's body (the <body> element) """
-        # TODO - remove an existing body ?
-        from domonic.html import body
-        self.appendChild(body(content))
+    def body(self, el):
+        """Sets the <body> element in the document"""
+        if not isinstance(el, HTMLBodyElement):
+            raise DOMException(
+                DOMException.TYPE_MISMATCH_ERR,
+                "The new body element is of type '" + str(type(el)) + "'. It must be a 'HTMLBodyElement'"
+            )
+        else:
+            # remove existing body
+            if self.body is not None:
+                self.body.remove()
+            self += el
 
     # def close():
         """ Closes the output stream previously opened with document.open() """
@@ -3228,7 +3209,6 @@ class Document(Element):
                 return each
             try:
                 for child in each.childNodes:
-                    # print("0000",each)
                     if isinstance(child, str):
                         continue
                     match = child._getElementById(_id)
@@ -3236,9 +3216,7 @@ class Document(Element):
                     # for now I'm going to use recursion and add this same method to Element
                     if match is not False and match is not None:
                         return match
-
             except Exception as e:
-                # print('doh', e)
                 pass  # TODO - dont iterate strings
 
         return False
@@ -3269,9 +3247,27 @@ class Document(Element):
         # return
 
     @property
-    def head(self):
-        ''' Returns the <head> element of the document'''
+    def head(self) -> 'HTMLHeadElement':
+        """Returns the <head> element of the document"""
         return self.querySelector('head')
+
+    @head.setter
+    def head(self, el: 'HTMLHeadElement') -> None:
+        """[Sets the <head> element of the document]
+
+        Args:
+            el ([HTMLHeadElement]): [the new <head> element]
+
+        Raises:
+            DOMException: [if the el is not an HTMLHeadElement]
+        """
+        if not isinstance(el, HTMLHeadElement):
+            raise DOMException('el must be an HTMLHeadElement')
+        self.removeChild(self.head)
+        if self.firstChild:
+            self.insertBefore(el, self.firstChild)
+        else:
+            self.appendChild(el)
 
     @property
     def images(self):
@@ -3310,8 +3306,9 @@ class Document(Element):
         # ''' Returns the date and time the document was last modified'''
         # return
 
+    @property
     def links(self):
-        """ Returns a collection of all <a> and <area> elements in the document that have a href attribute """
+        """Returns a collection of all <a> and <area> elements in the document that have a href attribute"""
         return self.querySelectorAll('a')
 
     # @property
@@ -3343,7 +3340,7 @@ class Document(Element):
         # ''' Returns the URL of the document that loaded the current document'''
         # return
 
-    def renameNode(self, node, namespaceURI, nodename):
+    def renameNode(self, node, namespaceURI :str, nodename: str):
         """[Renames the specified node, and returns the renamed node.]
 
         Args:
@@ -3397,27 +3394,29 @@ class Document(Element):
         return False
 
     @property
-    def title(self):
+    def title(self) -> str:
         """[gets the title of the document]
 
         Returns:
             [str]: The title of the document
         """
-        # return self.title
-        return self.querySelector('title')
+        if self.querySelector('title'):
+            return self.querySelector('title').textContent
+        return ''
 
-    @title.setter  # TODO - test
-    def title(self, value):
-        """ [sets the title of the document]
+    @title.setter
+    def title(self, value: str):
+        """[Sets the title of the document]
+
         Args:
-            value (str): The title of the document
+            value ([str]): [the new title of the document]
         """
-        self.title = value
-        return
-
-    # def URL(self):
-    #     ''' Returns the full URL of the HTML document'''
-    #     pass
+        if self.querySelector('title'):
+            self.querySelector('title').textContent = value
+        else:
+            if not self.head:
+                self.head = HTMLHeadElement()
+            self.head.appendChild(HTMLTitleElement(value))
 
     @property
     def visibilityState(self):
@@ -3647,14 +3646,10 @@ class Text(CharacterData):
         self.args = (data,)
         return self.args[0]
 
-    # @property
-    # def nodeType(self):
-    #     return Node.TEXT_NODE
     nodeType: int = Node.TEXT_NODE
 
     @property
     def nodeName(self):
-        # print('Text.NodeName')
         return '#text'
 
     @property
