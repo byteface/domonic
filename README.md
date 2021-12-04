@@ -14,7 +14,7 @@
 
 - [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎
 - [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲
-- [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), ([d3](https://domonic.readthedocs.io/packages/d3.html))
+- [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), [d3](https://domonic.readthedocs.io/packages/d3.html))
 - JSON : utils for loading / decorating / transforming
 - SVG || mathml || aframe || x3d tags - generators for popular tags
 - terminal || cmd : call terminal commands with python3 😱
