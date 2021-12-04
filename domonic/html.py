@@ -216,6 +216,7 @@ html_tags = [
 html_attributes = [
     "accept",
     "accesskey",
+    "loading",
     "action",
     "align",
     "alt",
