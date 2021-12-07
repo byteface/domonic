@@ -37,16 +37,17 @@ print(html(body(h1('Hello, World!'))))
 or to format it and insert the doctype use an f-string:
 
 ```python
-mydom = html(body(h1('Hello, World!')))
+mydom = html(body(h1('Hello, World!'), a("somelink", _href="somepage.html")))
 print(f"{mydom}")
 ```
 
 ```html
 <!DOCTYPE html>
 <html>
-    <body>
-        <h1>Hello, World!</h1>
-    </body>
+	<body>
+		<h1>Hello, World!</h1>
+		<a href="somepage.html">somelink</a>
+	</body>
 </html>
 ```
 
