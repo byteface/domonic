@@ -321,8 +321,10 @@ class TestCase(unittest.TestCase):
         # print('---')
         # print(type(myobj))
         myobj.style.float = "left"
+        # myobj.style.zIndex = "1"
         # print('---')
-        # print(myobj)
+        print(myobj)
+        print(str(myobj))
         self.assertEqual(True, str(myobj) == '<div class="mytest" style="float:left;"></div>')
 
         # print("NOW>>>>")

@@ -116,6 +116,7 @@ class Navigator(object):
         self.xr = None
         self.buildID = None
         self.contacts = None
+        self._screen = Screen()
 
     # @property
     # def appVersion():
@@ -221,6 +222,32 @@ class Navigator(object):
     # Navigator.product
     # Navigator.productSub
     # Navigator.vendorSub
+
+
+class Screen(EventTarget):
+    # https://developer.mozilla.org/en-US/docs/Web/API/Screen
+
+    def __init__(self):
+        """ Screen. (you will need to set them) """
+        self.availLeft = 0
+        self.availTop = 0
+        self.availHeight = 0
+        self.availWidth = 0
+        self.colorDepth = 24
+        self.height = 768
+        self.left = 0
+        self.pixelDepth = 24
+        self.top = 0
+        self.width = 1024
+        self.orientation = None
+
+    # def lockOrientation(self):
+    #     """ Locks the screen orientation """
+    #     raise NotImplementedError
+
+    # def unlockOrientation(self):
+    #     """ Unlocks the screen orientation """
+    #     raise NotImplementedError
 
 
 class Window(Window):
@@ -426,6 +453,21 @@ class Window(Window):
         """ Returns the Navigator object for the window """
         return self._navigator
 
+    @property
+    def screen(self) -> Screen:
+        """Returns the Screen object for the window (See Screen object)"""
+        return self._screen
+
+    @property
+    def screenLeft(self) -> int:
+        """Returns the horizontal coordinate of the window relative to the screen"""
+        return self._screen.screenLeft
+
+    @property
+    def screenTop(self) -> int:
+        """Returns the vertical coordinate of the window relative to the screen"""
+        return self._screen.screenTop
+
     '''
     # # The event occurs when the window's history changes  PopStateEvent?
     # def onpopstate(self):
@@ -469,18 +511,6 @@ class Window(Window):
 
     # Resizes the window to the specified width and height
     def resizeTo(self):
-        raise NotImplementedError
-
-    # Returns the Screen object for the window (See Screen object)
-    def screen(self):
-        raise NotImplementedError
-
-    # Returns the horizontal coordinate of the window relative to the screen
-    def screenLeft(self):
-        raise NotImplementedError
-
-    # Returns the vertical coordinate of the window relative to the screen
-    def screenTop(self):
         raise NotImplementedError
 
     # Deprecated. This method has been replaced by the scrollTo() method. Window

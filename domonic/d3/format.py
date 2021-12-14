@@ -177,6 +177,7 @@ def formatSpecifier(specifier):
     match = RegExp(re).exec(str(specifier))
     if not match:
         raise Exception("invalid format: " + specifier)
+    print(match)
 
     return FormatSpecifier(
         {
@@ -510,7 +511,7 @@ class formatLocale:
             if comma and zero:
                 value = self.group(
                     padding + str(value),
-                    width - len(valueSuffix) if len(padding) else Global.Infinity,
+                    width - len(valueSuffix) if len(padding) else Global.Infinity
                 )
                 padding = ""
 
