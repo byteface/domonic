@@ -3301,6 +3301,23 @@ class RegExp():
         """ (Re-)compiles a regular expression during execution of a script. """
         pass
 
+    # def exec(self, s: str):  # TODO - test
+    #     """ Executes a search for a match in its string parameter. """
+    #     class Match:
+    #         def __init__(self, index: int, match: str):
+    #             self.index = index
+    #             self.match = match
+    #         def __str__(self):
+    #             return f'{self.match}'
+    #         def __repr__(self):
+    #             return f'{self.match}'
+    #         def __getitem__(self, index):
+    #             return self.match[index]
+    #     matches = re.finditer(self.expression, s, flags=re.MULTILINE)  # TODO - flags
+    #     return [Match(m.start(), m.group(0)) for m in matches]
+
+    # TODO - wanted to change this to be like above. but d3 required me to rollback.
+    # need to check if i modifed that implementation to fit my needs at the time.
     def exec(self, s: str):
         """ Executes a search for a match in its string parameter. """
         # print("exec:", self.expression, s)

@@ -6,6 +6,7 @@
 
 """
 
+from re import M, findall, finditer
 from .utils import Utils
 
 
@@ -15,29 +16,31 @@ class StyleSheet:
     """
 
     def __init__(self):
-        # print('born!')
         self.disabled = True  # a boolean value representing whether the current stylesheet has been applied or not
         self.href = None
+        self.parentStyleSheet = None
+        self.ownerNode = None
+        self.media = None
 
     # @property
     # def href(self):
     #     """Returns a DOMString representing the location of the stylesheet."""
     #     return self.href
 
-    @property
-    def media(self):
-        """Returns a MediaList representing the intended destination medium for style information."""
-        raise NotImplementedError
+    # @property
+    # def media(self):
+    #     """Returns a MediaList representing the intended destination medium for style information."""
+    #     raise NotImplementedError
 
-    @property
-    def ownerNode(self):
-        """Returns a Node associating this style sheet with the current document."""
-        raise NotImplementedError
+    # @property
+    # def ownerNode(self):
+    #     """Returns a Node associating this style sheet with the current document."""
+    #     raise NotImplementedError
 
-    @property
-    def parentStyleSheet(self):
-        """Returns a StyleSheet including this one, if any; returns null if there aren't any."""
-        raise NotImplementedError
+    # @property
+    # def parentStyleSheet(self):
+    #     """Returns a StyleSheet including this one, if any; returns null if there aren't any."""
+    #     raise NotImplementedError
 
     # @property
     # def title(self):
@@ -106,17 +109,6 @@ class CSSRule:
     """The CSSRule interface represents a single CSS rule.
     There are several types of rules which inherit properties from CSSRule.
 
-    CSSStyleRule
-    CSSImportRule
-    CSSMediaRule
-    CSSFontFaceRule
-    CSSPageRule
-    CSSNamespaceRule
-    CSSKeyframesRule
-    CSSKeyframeRule
-    CSSCounterStyleRule
-    CSSDocumentRule
-    CSSSupportsRule
     CSSFontFeatureValuesRule
     CSSViewportRule
     """
@@ -138,9 +130,15 @@ class CSSRule:
     SUPPORTS_CONDITION_RULE: int = 14
     DOCUMENT_RULE: int = 15
 
+    # GROUPING_RULES = [FONT_FACE_RULE, MEDIA_RULE, NAMESPACE_RULE, KEYFRAMES_RULE, COUNTER_STYLE_RULE, SUPPORTS_RULE, SUPPORTS_CONDITION_RULE]
+
     def __init__(self):
         self.parentStyleSheet = None
-        self._type = None
+        # self._type = None
+        self.parentRule: 'CSSRule' = None
+        self.parentStyleSheet: 'CSSStyleSheet' = None
+        self.type: int = None
+        self.__cssText: str = None
 
     @property
     def cssText(self):
@@ -148,40 +146,351 @@ class CSSRule:
         To access or modify parts of the rule (e.g. the value of "font-size" in the example)
         use the properties on the specialized interface for the rule's type.
         """
-        pass
+        return self.__cssText
+
+    # @property
+    # def parentRule(self):
+    #     """Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an @media block,
+    #     the parent rule would be that CSSMediaRule."""
+    #     raise NotImplementedError
+
+    # def parentStyleSheet(self):
+    #     """Returns the CSSStyleSheet object for the style sheet that contains this rule"""
+    #     raise NotImplementedError
+
+    # def type(self):
+    #     """Returns one of the Type constants to determine which type of rule is represented."""
+    #     raise NotImplementedError
+
+
+class CSSImportRule(CSSRule):
+    """The CSSImportRule interface represents an @import rule in a CSS style sheet."""
+
+    def __init__(self):
+        super().__init__()
+        self.href: str = None
+        self.media: 'MediaList' = None
+        self.styleSheet: 'CSSStyleSheet' = None
+        self.type = CSSRule.IMPORT_RULE
+
+    # @property
+    # def href(self):
+    #     """Returns a DOMString representing the URL of the imported style sheet."""
+    #     raise NotImplementedError
+
+    # @property
+    # def media(self):
+    #     """Returns a MediaList representing the intended destination medium for style information."""
+    #     raise NotImplementedError
+
+    # @property
+    # def styleSheet(self):
+    #     """Returns the CSSStyleSheet object representing the style sheet referenced by this rule."""
+    #     raise NotImplementedError
+
+
+class CSSStyleRule(CSSRule):
+    """The CSSStyleRule interface represents a single style rule in a CSS style sheet."""
+
+    def __init__(self):
+        super().__init__()
+        self.selectorText: str = None
+        self.style: 'CSSStyleDeclaration' = None
+        self.type = CSSRule.STYLE_RULE
+
+    # @property
+    # def selectorText(self):
+    #     """Returns the textual representation of the rule selector."""
+    #     raise NotImplementedError
+
+    # @property
+    # def style(self):
+    #     """Returns the CSSStyleDeclaration object representing the declaration block of this rule."""
+    #     raise NotImplementedError
 
     @property
-    def parentRule(self):
-        """Returns the containing rule, otherwise null. E.g. if this rule is a style rule inside an @media block,
-        the parent rule would be that CSSMediaRule."""
-        raise NotImplementedError
+    def cssText(self):
+        """Returns the textual representation of the rule."""
+        return self.selectorText + '{' + self.style.cssText + '}'
 
-    def parentStyleSheet(self):
-        """Returns the CSSStyleSheet object for the style sheet that contains this rule"""
-        raise NotImplementedError
-
-    def type(self):
-        """Returns one of the Type constants to determine which type of rule is represented."""
-        raise NotImplementedError
+    # @cssText.setter
+    # def cssText(self, value):
+    #     """Sets the textual representation of the rule."""
+    #     raise NotImplementedError
 
 
-class CSSRuleList:
+class CSSFontFaceRule(CSSRule):
+    """The CSSFontFaceRule interface represents a @font-face rule in a CSS style sheet."""
+
+    def __init__(self):
+        super().__init__()
+        self.style: 'CSSStyleDeclaration' = None
+        self.type = CSSRule.FONT_FACE_RULE
+
+    # @property
+    # def style(self):
+    #     """Returns the CSSStyleDeclaration object representing the declaration block of this rule."""
+    #     raise NotImplementedError
+
+
+class CSSPageRule(CSSRule):
+    """The CSSPageRule interface represents a @page rule in a CSS style sheet."""
+
+    def __init__(self):
+        super().__init__()
+        self.selectorText: str = None
+        self.style: 'CSSStyleDeclaration' = None
+        self.type = CSSRule.PAGE_RULE
+
+    # @property
+    # def selectorText(self):
+    #     """Returns the textual representation of the page selector for the rule."""
+    #     raise NotImplementedError
+
+    # @property
+    # def style(self):
+    #     """Returns the CSSStyleDeclaration object representing the declaration block of this rule."""
+    #     raise NotImplementedError
+
+
+class CSSNamespaceRule(CSSRule):
+    """The CSSNamespaceRule interface represents an @namespace rule in a CSS style sheet."""
+
+    def __init__(self):
+        super().__init__()
+        self.namespaceURI: str = None
+        self.prefix: str = None
+        self.type = CSSRule.NAMESPACE_RULE
+
+    # @property
+    # def namespaceURI(self):
+    #     """Returns the namespace URI for this rule."""
+    #     raise NotImplementedError
+
+    # @property
+    # def prefix(self):
+    #     """Returns the namespace prefix for this rule."""
+    #     raise NotImplementedError
+
+
+class CSSKeyframesRule(CSSRule):
+    """The CSSKeyframesRule interface represents a @keyframes at-rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.cssRules: 'CSSRuleList' = CSSRuleList()
+        self.name: str = None
+        self.type = CSSRule.KEYFRAMES_RULE
+
+    # @property
+    # def cssRules(self):
+    #     """Returns the CSSRuleList object representing the CSS rules in the media rule."""
+    #     raise NotImplementedError
+
+    # @property
+    # def name(self):
+    #     """Returns the name of the keyframes. This is a DOMString containing the unescaped keyframes name."""
+    #     raise NotImplementedError
+
+
+class CSSKeyframeRule(CSSRule):
+    """The CSSKeyframeRule interface represents a single @keyframes at-rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.cssRules: 'CSSRuleList' = CSSRuleList()
+        self.keyText: str = None
+        self.style: 'CSSStyleDeclaration' = None
+        self.type = CSSRule.KEYFRAME_RULE
+
+    # @property
+    # def cssRules(self):
+    #     """Returns the CSSRuleList object representing the CSS rules in the media rule."""
+    #     raise NotImplementedError
+
+    # @property
+    # def keyText(self):
+    #     """Returns the text of the keyframe rule."""
+    #     raise NotImplementedError
+
+    # @property
+    # def style(self):
+    #     """Returns the CSSStyleDeclaration object representing the declaration block of this rule."""
+    #     raise NotImplementedError
+
+
+class CSSCounterStyleRule(CSSRule):
+    """The CSSCounterStyleRule interface represents a @counter-style rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.name: str = None
+        self.system: str = None
+        self.type = CSSRule.COUNTER_STYLE_RULE
+
+    # @property
+    # def name(self):
+    #     """Returns the name of the counter style."""
+    #     raise NotImplementedError
+
+    # @property
+    # def system(self):
+    #     """Returns the system of the counter style."""
+    #     raise NotImplementedError
+
+
+class CSSDocumentRule(CSSRule):
+    """The CSSDocumentRule interface represents an @document rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.cssRules: 'CSSRuleList' = None
+        self.type = CSSRule.DOCUMENT_RULE
+
+    # @property
+    # def cssRules(self):
+    #     """Returns the CSSRuleList object representing the CSS rules in the media rule."""
+    #     raise NotImplementedError
+
+
+# class CSSValue(DOMObject): # deprecated
+# class CSSValueList(list):
+
+# class CSSRuleList(DOMObject):
+# class CSSRuleList(list):
+
+class CSSColorProfileRule(CSSRule):
+    """The CSSColorProfileRule interface represents an @color-profile rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.colorProfile: str = None
+        self.type = CSSRule.COLOR_PROFILE_RULE
+
+    # @property
+    # def colorProfile(self):
+    #     """Returns the textual representation of the rule selector."""
+    #     raise NotImplementedError
+
+
+class CSSFontFeatureValuesRule(CSSRule):
+    """The CSSFontFeatureValuesRule interface represents a @font-feature-values rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.cssRules: 'CSSRuleList' = None
+        self.type = CSSRule.FONT_FEATURE_VALUES_RULE
+
+    # @property
+    # def cssRules(self):
+    #     """Returns the CSSRuleList object representing the CSS rules in the media rule."""
+    #     raise NotImplementedError
+
+
+class CSSGroupingRule(CSSRule):
+    """The CSSGroupingRule interface represents a @grouping rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.cssRules: 'CSSRuleList' = None
+        # self.type = CSSRule.GROUPING_RULE
+
+    # @property
+    # def cssRules(self):
+    #     """Returns the CSSRuleList object representing the CSS rules in the media rule."""
+    #     raise NotImplementedError
+
+
+class CSSConditionRule(CSSGroupingRule):
+    """The CSSConditionRule interface represents a condition rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.conditionText: str = None
+        self.cssRules: 'CSSRuleList' = None
+        # self.type = CSSRule.CONDITIONAL_RULE
+
+    # @property
+    # def conditionText(self):
+    #     """Returns the textual representation of the condition sub-rule."""
+    #     raise NotImplementedError
+
+    # @property
+    # def cssRules(self):
+    #     """Returns the CSSRuleList object representing the CSS rules in the media rule."""
+    #     raise NotImplementedError
+
+
+class CSSSupportsRule(CSSConditionRule):
+    """The CSSSupportsRule interface represents a @supports at-rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.conditionText: str = None
+        self.cssRules: 'CSSRuleList' = None
+        self.type = CSSRule.SUPPORTS_RULE
+
+
+class CSSMediaRule(CSSConditionRule):
+    """The CSSMediaRule interface represents a @media rule in a CSS style sheet."""
+
+    def __init__(self):
+        super().__init__()
+        self.media: 'MediaList' = MediaList()
+        self.cssRules: 'CSSRuleList' = CSSRuleList()
+        self.type = CSSRule.MEDIA_RULE
+
+    # @property
+    # def cssRules(self):
+    #     """Returns a CSSRuleList containing the CSS rules in the media rule."""
+    #     raise NotImplementedError
+
+    # @property
+    # def media(self):
+    #     """Returns a MediaList representing the intended destination medium for style information."""
+    #     raise NotImplementedError
+
+
+class MediaList(list):
+    """The MediaList interface represents a list of media. It is used in the @media at-rule."""
+
+    @property
+    def length(self) -> int:
+        """Returns the number of media in the list."""
+        return len(self)
+
+    @property
+    def mediaText(self) -> str:
+        """Returns a string containing the text of the media query."""
+        return ','.join(self)
+
+    def item(self, index: int) -> str:
+        """Returns the media at the given index in the MediaList."""
+        return self[index]
+
+    def appendMedium(self, newMedium: str) -> None:
+        """Appends a new medium to the end of the list."""
+        self.append(newMedium)
+
+    def deleteMedium(self, oldMedium: str) -> None:
+        """Removes medium in the media list. If the medium is not found nothing happens."""
+        self.remove(oldMedium)
+
+
+class CSSRuleList(list):
     """A CSSRuleList represents an ordered collection of read-only CSSRule objects.
     While the CSSRuleList object is read-only, and cannot be directly modified,
     it is considered a live object, as the content can change over time.
     """
 
-    def __init__(self) -> None:
-        self.rules: list = []
-        raise NotImplementedError
-
+    @property
     def length(self) -> int:
         """Returns an integer representing the number of CSSRule objects in the collection."""
-        raise NotImplementedError
+        return len(self)
 
-    def item(self, index: int):
+    def item(self, index: int) -> 'CSSRule':
         """Gets a single CSSRule."""
-        raise NotImplementedError
+        return self[index]
 
 
 class CSSStyleSheet(StyleSheet):
@@ -190,47 +499,71 @@ class CSSStyleSheet(StyleSheet):
     def __init__(self):
         super().__init__()
         self.rules: list = []
+        self.cssRules: CSSRuleList = CSSRuleList()
+        self.ownerRule: CSSRule = None
 
-    @property
-    def cssRules():  # -> 'CSSStyleRuleList':
-        """Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects
-        that comprise the stylesheet."""
-        # return CSSStyleRuleList()
-        raise NotImplementedError
+    # @property
+    # def cssRules():  # -> 'CSSStyleRuleList':
+    #     """Returns a live CSSRuleList which maintains an up-to-date list of the CSSRule objects
+    #     that comprise the stylesheet."""
+    #     # return CSSStyleRuleList()
+    #     raise NotImplementedError
 
-    @property
-    def ownerRule(self):
-        """If this stylesheet is imported into the document using an @import rule,
-        the ownerRule property returns the corresponding CSSImportRule; otherwise, this property's value is null."""
-        raise NotImplementedError
+    # @property
+    # def ownerRule(self):
+    #     """If this stylesheet is imported into the document using an @import rule,
+    #     the ownerRule property returns the corresponding CSSImportRule; otherwise, this property's value is null."""
+    #     raise NotImplementedError
 
     def deleteRule(self, index: int):
         """Deletes the rule at the specified index into the stylesheet's rule list."""
         raise NotImplementedError
 
-    def insertRule(self, rule, index: int):
+    def insertRule(self, rule: str, index: int = None):
         """Inserts a new rule at the specified position in the stylesheet,
         given the textual representation of the rule."""
-        raise NotImplementedError
+        from domonic.dom import DOMException
+        rules = CSSParser.parseFromString(self, rule)
+        if len(rules) == 0:
+            raise DOMException(
+                DOMException.HIERARCHY_REQUEST_ERR,
+                'Invalid CSS rule.'
+            )
+        if len(rules) > 1:
+            raise DOMException(
+                DOMException.HIERARCHY_REQUEST_ERR,
+                'Only one rule is allowed.'
+            )
+        if index is not None:
+            if index > len(self.cssRules):
+                raise DOMException(
+                    DOMException.INDEX_SIZE_ERR,
+                    'Index is out of range.'
+                )
+            self.cssRules.insert(index, rules[0])
+            return index
+        new_index = len(self.cssRules)
+        self.cssRules.append(rules[0])
+        return new_index
 
-    def replace(self):
+    def replace(self, text: str):
         """Asynchronously replaces the content of the stylesheet and returns
         a Promise that resolves with the updated CSSStyleSheet."""
-        raise NotImplementedError
+        self.replaceSync(text)
 
-    def replaceSync(self):
+    def replaceSync(self, text: str):
         """Synchronously replaces the content of the stylesheet."""
-        raise NotImplementedError
+        self.cssRules = CSSParser.parseFromString(self, text)
 
-    @property
-    def rules(self):
-        """The rules property is functionally identical to the standard cssRules property
-        it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.
-        """
-        raise NotImplementedError
+    # @property
+    # def rules(self):
+    #     """The rules property is functionally identical to the standard cssRules property
+    #     it returns a live CSSRuleList which maintains an up-to-date list of all of the rules in the style sheet.
+    #     """
+    #     raise NotImplementedError
 
     # Legacy methods
-    def addRule(self, selectorText, style, index: int):
+    def addRule(self, selectorText: str, style: str, index: int):
         """Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply
         to the matching elements.
         This differs from insertRule(), which takes the textual representation of the entire rule as a single string.
@@ -257,7 +590,7 @@ class Style(object):
     def __init__(self, parent_node=None):
         # print("*** MADE A STYLE11 ***")
 
-        self._members_checked = 0
+        self._members_checked = False
 
         self._parent_node = parent_node  # so I can update a tags returned style attributes if a style gets set
 
@@ -825,6 +1158,206 @@ class Style(object):
         self.zIndex = "auto"
         """Sets or returns the stack order of a positioned element"""
 
+        # adds a bunch of more recent CSS3 properties
+        self.all = None
+        self.alignmentBaseline = None
+        self.appearance = None
+        self.backdropFilter = None
+        self.backgroundBlendMode = None
+        self.backgroundPositionX = None
+        self.backgroundPositionY = None
+        self.backgroundRepeatX = None
+        self.backgroundRepeatY = None
+        self.baselineShift = None
+        self.blockSize = None
+        self.borderBlockEnd = None
+        self.borderBlockEndColor = None
+        self.borderBlockEndStyle = None
+        self.borderBlockEndWidth = None
+        self.borderBlockStart = None
+        self.borderBlockStartColor = None
+        self.borderBlockStartStyle = None
+        self.borderBlockStartWidth = None
+        self.borderInlineEnd = None
+        self.borderInlineEndColor = None
+        self.borderInlineEndStyle = None
+        self.borderInlineEndWidth = None
+        self.borderInlineStart = None
+        self.borderInlineStartColor = None
+        self.borderInlineStartStyle = None
+        self.borderInlineStartWidth = None
+        self.breakAfter = None
+        self.breakBefore = None
+        self.breakInside = None
+        self.bufferedRendering = None
+        self.caretColor = None
+        self.clipPath = None
+        self.clipRule = None
+        self.colorInterpolation = None
+        self.colorInterpolationFilters = None
+        self.colorRendering = None
+        self.colorScheme = None
+        self.contain = None
+        self.containIntrinsicSize = None
+        self.contentVisibility = None
+        self.counterSet = None
+        self.cx = None
+        self.cy = None
+        self.dominantBaseline = None
+        self.d = None
+        self.fill = None
+        self.fillOpacity = None
+        self.fillRule = None
+        self.fontDisplay = None
+        self.floodColor = None
+        self.floodOpacity = None
+        self.fontFeatureSettings = None
+        self.fontKerning = None
+        self.fontOpticalSizing = None
+        self.fontVariantCaps = None
+        self.fontVariantEastAsian = None
+        self.fontVariantLigatures = None
+        self.fontVariantNumeric = None
+        self.fontVariationSettings = None
+        self.gap = None
+        self.grid = None
+        self.gridArea = None
+        self.gridAutoColumns = None
+        self.gridAutoFlow = None
+        self.gridAutoRows = None
+        self.gridColumn = None
+        self.gridColumnEnd = None
+        self.gridColumnGap = None
+        self.gridColumnStart = None
+        self.gridGap = None
+        self.gridRow = None
+        self.gridRowEnd = None
+        self.gridRowGap = None
+        self.gridRowStart = None
+        self.gridTemplate = None
+        self.gridTemplateAreas = None
+        self.gridTemplateColumns = None
+        self.gridTemplateRows = None
+        self.imageRendering = None
+        self.inherits = None
+        self.initialValue = None
+        self.inlineSize = None
+        self.justifyItems = None
+        self.justifySelf = None
+        self.lightingColor = None
+        self.lineBreak = None
+        self.marginBlockEnd = None
+        self.marginBlockStart = None
+        self.marginInlineEnd = None
+        self.marginInlineStart = None
+        self.marker = None
+        self.markerEnd = None
+        self.markerMid = None
+        self.markerStart = None
+        self.mask = None
+        self.maskType = None
+        self.maxBlockSize = None
+        self.maxInlineSize = None
+        self.maxZoom = None
+        self.minBlockSize = None
+        self.minInlineSize = None
+        self.minZoom = None
+        self.mixBlendMode = None
+        self.objectFit = None
+        self.objectPosition = None
+        self.offset = None
+        self.offsetDistance = None
+        self.offsetPath = None
+        self.offsetRotate = None
+        self.orientation = None
+        self.overflowAnchor = None
+        self.overflowWrap = None
+        self.overscrollBehavior = None
+        self.overscrollBehaviorBlock = None
+        self.overscrollBehaviorInline = None
+        self.overscrollBehaviorX = None
+        self.overscrollBehaviorY = None
+        self.paddingBlockEnd = None
+        self.paddingBlockStart = None
+        self.paddingInlineEnd = None
+        self.paddingInlineStart = None
+        self.page = None
+        self.pageOrientation = None
+        self.paintOrder = None
+        self.placeContent = None
+        self.placeItems = None
+        self.placeSelf = None
+        self.pointerEvents = None
+        self.r = None
+        self.rowGap = None
+        self.rubyPosition = None
+        self.rx = None
+        self.ry = None
+        self.scrollBehavior = None
+        self.scrollMargin = None
+        self.scrollMarginBlock = None
+        self.scrollMarginBlockEnd = None
+        self.scrollMarginBlockStart = None
+        self.scrollMarginBottom = None
+        self.scrollMarginInline = None
+        self.scrollMarginInlineEnd = None
+        self.scrollMarginInlineStart = None
+        self.scrollMarginLeft = None
+        self.scrollMarginRight = None
+        self.scrollMarginTop = None
+        self.scrollPadding = None
+        self.scrollPaddingBlock = None
+        self.scrollPaddingBlockEnd = None
+        self.scrollPaddingBlockStart = None
+        self.scrollPaddingBottom = None
+        self.scrollPaddingInline = None
+        self.scrollPaddingInlineEnd = None
+        self.scrollPaddingInlineStart = None
+        self.scrollPaddingLeft = None
+        self.scrollPaddingRight = None
+        self.scrollPaddingTop = None
+        self.scrollSnapAlign = None
+        self.scrollSnapStop = None
+        self.scrollSnapType = None
+        self.shapeImageThreshold = None
+        self.shapeMargin = None
+        self.shapeOutside = None
+        self.shapeRendering = None
+        self.size = None
+        self.speak = None
+        self.src = None
+        self.stopColor = None
+        self.stopOpacity = None
+        self.stroke = None
+        self.strokeDasharray = None
+        self.strokeDashoffset = None
+        self.strokeLinecap = None
+        self.strokeLinejoin = None
+        self.strokeMiterlimit = None
+        self.strokeOpacity = None
+        self.strokeWidth = None
+        self.syntax = None
+        self.textAnchor = None
+        self.textCombineUpright = None
+        self.textDecorationSkipInk = None
+        self.textOrientation = None
+        self.textRendering = None
+        self.textSizeAdjust = None
+        self.textUnderlinePosition = None
+        self.touchAction = None
+        self.transformBox = None
+        self.unicodeRange = None
+        self.userZoom = None
+        self.vectorEffect = None
+        self.willChange = None
+        self.writingMode = None
+        self.x = None
+        self.y = None
+
+        self._members_checked = True  # NOTE - this ALWAYS needs to be last or all props will render
+
+
+
     def style_set_decorator(func):
         from functools import wraps
 
@@ -835,18 +1368,24 @@ class Style(object):
                 value = "none"
             func(self, value, *args, **kwargs)
 
-            self._members_checked += 1
-            if self._members_checked < len(vars(self)) - 1:
+            # to only render to the Node what gets set. allows init to run first
+            # note - this was a counter prior to 0.8.3 and is now a bool as counter stops custom props on extended classes
+            if not self._members_checked:
                 return
 
             if self._parent_node is not None:
-                s = f"{Utils.case_kebab(func.__name__)}:{value};"
+                key = func.__name__
+                s = f"{Utils.case_kebab(key)}:{value};"
                 styles = self._parent_node.getAttribute("style")
                 # print('sup:', styles)
 
                 if styles is not None:
-                    # TODO - replace if exists
+                    # TODO - replace if exists. should be able to do this now with the parser?
+
+                    # if key not in styles:
                     styles = styles + s
+                    # else:
+                        # styles = styles.replace(f"{key}:{self.__dict__[key]}", s)
                 else:
                     styles = s
 
@@ -2726,6 +3265,1764 @@ class Style(object):
     @style_set_decorator
     def zIndex(self, value=None, *args, **kwargs):
         self.__zIndex = value
+    
+    # new adds all newer css3 properties
+
+    @property
+    def all(self):
+        return self.__all
+
+    @all.setter
+    @style_set_decorator
+    def all(self, value=None, *args, **kwargs):
+        self.__all = value
+
+    @property    
+    def alignmentBaseline(self):
+        return self.__alignmentBaseline
+
+    @alignmentBaseline.setter
+    @style_set_decorator
+    def alignmentBaseline(self, value=None, *args, **kwargs):
+        self.__alignmentBaseline = value
+
+    @property    
+    def appearance(self):
+        return self.__appearance
+
+    @appearance.setter
+    @style_set_decorator
+    def appearance(self, value=None, *args, **kwargs):
+        self.__appearance = value
+
+    @property    
+    def backdropFilter(self):
+        return self.__backdropFilter
+
+    @backdropFilter.setter
+    @style_set_decorator
+    def backdropFilter(self, value=None, *args, **kwargs):
+        self.__backdropFilter = value
+
+    @property    
+    def backgroundBlendMode(self):
+        return self.__backgroundBlendMode
+
+    @backgroundBlendMode.setter
+    @style_set_decorator
+    def backgroundBlendMode(self, value=None, *args, **kwargs):
+        self.__backgroundBlendMode = value
+
+    @property    
+    def backgroundPositionX(self):
+        return self.__backgroundPositionX
+
+    @backgroundPositionX.setter
+    @style_set_decorator
+    def backgroundPositionX(self, value=None, *args, **kwargs):
+        self.__backgroundPositionX = value
+
+    @property    
+    def backgroundPositionY(self):
+        return self.__backgroundPositionY
+
+    @backgroundPositionY.setter
+    @style_set_decorator
+    def backgroundPositionY(self, value=None, *args, **kwargs):
+        self.__backgroundPositionY = value
+
+    @property    
+    def backgroundRepeatX(self):
+        return self.__backgroundRepeatX
+
+    @backgroundRepeatX.setter
+    @style_set_decorator
+    def backgroundRepeatX(self, value=None, *args, **kwargs):
+        self.__backgroundRepeatX = value
+
+    @property    
+    def backgroundRepeatY(self):
+        return self.__backgroundRepeatY
+
+    @backgroundRepeatY.setter
+    @style_set_decorator
+    def backgroundRepeatY(self, value=None, *args, **kwargs):
+        self.__backgroundRepeatY = value
+
+    @property    
+    def baselineShift(self):
+        return self.__baselineShift
+
+    @baselineShift.setter
+    @style_set_decorator
+    def baselineShift(self, value=None, *args, **kwargs):
+        self.__baselineShift = value
+
+    @property    
+    def blockSize(self):
+        return self.__blockSize
+
+    @blockSize.setter
+    @style_set_decorator
+    def blockSize(self, value=None, *args, **kwargs):
+        self.__blockSize = value
+
+    @property    
+    def borderBlockEnd(self):
+        return self.__borderBlockEnd
+
+    @borderBlockEnd.setter
+    @style_set_decorator
+    def borderBlockEnd(self, value=None, *args, **kwargs):
+        self.__borderBlockEnd = value
+
+    @property    
+    def borderBlockEndColor(self):
+        return self.__borderBlockEndColor
+
+    @borderBlockEndColor.setter
+    @style_set_decorator
+    def borderBlockEndColor(self, value=None, *args, **kwargs):
+        self.__borderBlockEndColor = value
+
+    @property    
+    def borderBlockEndStyle(self):
+        return self.__borderBlockEndStyle
+
+    @borderBlockEndStyle.setter
+    @style_set_decorator
+    def borderBlockEndStyle(self, value=None, *args, **kwargs):
+        self.__borderBlockEndStyle = value
+
+    @property    
+    def borderBlockEndWidth(self):
+        return self.__borderBlockEndWidth
+
+    @borderBlockEndWidth.setter
+    @style_set_decorator
+    def borderBlockEndWidth(self, value=None, *args, **kwargs):
+        self.__borderBlockEndWidth = value
+
+    @property    
+    def borderBlockStart(self):
+        return self.__borderBlockStart
+
+    @borderBlockStart.setter
+    @style_set_decorator
+    def borderBlockStart(self, value=None, *args, **kwargs):
+        self.__borderBlockStart = value
+
+    @property    
+    def borderBlockStartColor(self):
+        return self.__borderBlockStartColor
+
+    @borderBlockStartColor.setter
+    @style_set_decorator
+    def borderBlockStartColor(self, value=None, *args, **kwargs):
+        self.__borderBlockStartColor = value
+
+    @property    
+    def borderBlockStartStyle(self):
+        return self.__borderBlockStartStyle
+
+    @borderBlockStartStyle.setter
+    @style_set_decorator
+    def borderBlockStartStyle(self, value=None, *args, **kwargs):
+        self.__borderBlockStartStyle = value
+
+    @property    
+    def borderBlockStartWidth(self):
+        return self.__borderBlockStartWidth
+
+    @borderBlockStartWidth.setter
+    @style_set_decorator
+    def borderBlockStartWidth(self, value=None, *args, **kwargs):
+        self.__borderBlockStartWidth = value
+
+    @property    
+    def borderInlineEnd(self):
+        return self.__borderInlineEnd
+
+    @borderInlineEnd.setter
+    @style_set_decorator
+    def borderInlineEnd(self, value=None, *args, **kwargs):
+        self.__borderInlineEnd = value
+
+    @property    
+    def borderInlineEndColor(self):
+        return self.__borderInlineEndColor
+
+    @borderInlineEndColor.setter
+    @style_set_decorator
+    def borderInlineEndColor(self, value=None, *args, **kwargs):
+        self.__borderInlineEndColor = value
+
+    @property    
+    def borderInlineEndStyle(self):
+        return self.__borderInlineEndStyle
+
+    @borderInlineEndStyle.setter
+    @style_set_decorator
+    def borderInlineEndStyle(self, value=None, *args, **kwargs):
+        self.__borderInlineEndStyle = value
+
+    @property    
+    def borderInlineEndWidth(self):
+        return self.__borderInlineEndWidth
+
+    @borderInlineEndWidth.setter
+    @style_set_decorator
+    def borderInlineEndWidth(self, value=None, *args, **kwargs):
+        self.__borderInlineEndWidth = value
+
+    @property    
+    def borderInlineStart(self):
+        return self.__borderInlineStart
+
+    @borderInlineStart.setter
+    @style_set_decorator
+    def borderInlineStart(self, value=None, *args, **kwargs):
+        self.__borderInlineStart = value
+
+    @property    
+    def borderInlineStartColor(self):
+        return self.__borderInlineStartColor
+
+    @borderInlineStartColor.setter
+    @style_set_decorator
+    def borderInlineStartColor(self, value=None, *args, **kwargs):
+        self.__borderInlineStartColor = value
+
+    @property    
+    def borderInlineStartStyle(self):
+        return self.__borderInlineStartStyle
+
+    @borderInlineStartStyle.setter
+    @style_set_decorator
+    def borderInlineStartStyle(self, value=None, *args, **kwargs):
+        self.__borderInlineStartStyle = value
+
+    @property    
+    def borderInlineStartWidth(self):
+        return self.__borderInlineStartWidth
+
+    @borderInlineStartWidth.setter
+    @style_set_decorator
+    def borderInlineStartWidth(self, value=None, *args, **kwargs):
+        self.__borderInlineStartWidth = value
+
+    @property    
+    def breakAfter(self):
+        return self.__breakAfter
+
+    @breakAfter.setter
+    @style_set_decorator
+    def breakAfter(self, value=None, *args, **kwargs):
+        self.__breakAfter = value
+
+    @property    
+    def breakBefore(self):
+        return self.__breakBefore
+
+    @breakBefore.setter
+    @style_set_decorator
+    def breakBefore(self, value=None, *args, **kwargs):
+        self.__breakBefore = value
+
+    @property    
+    def breakInside(self):
+        return self.__breakInside
+
+    @breakInside.setter
+    @style_set_decorator
+    def breakInside(self, value=None, *args, **kwargs):
+        self.__breakInside = value
+
+    @property    
+    def bufferedRendering(self):
+        return self.__bufferedRendering
+
+    @bufferedRendering.setter
+    @style_set_decorator
+    def bufferedRendering(self, value=None, *args, **kwargs):
+        self.__bufferedRendering = value
+
+    @property    
+    def caretColor(self):
+        return self.__caretColor
+
+    @caretColor.setter
+    @style_set_decorator
+    def caretColor(self, value=None, *args, **kwargs):
+        self.__caretColor = value
+
+    @property    
+    def clipPath(self):
+        return self.__clipPath
+
+    @clipPath.setter
+    @style_set_decorator
+    def clipPath(self, value=None, *args, **kwargs):
+        self.__clipPath = value
+
+    @property    
+    def clipRule(self):
+        return self.__clipRule
+
+    @clipRule.setter
+    @style_set_decorator
+    def clipRule(self, value=None, *args, **kwargs):
+        self.__clipRule = value
+
+    @property    
+    def colorInterpolation(self):
+        return self.__colorInterpolation
+
+    @colorInterpolation.setter
+    @style_set_decorator
+    def colorInterpolation(self, value=None, *args, **kwargs):
+        self.__colorInterpolation = value
+
+    @property    
+    def colorInterpolationFilters(self):
+        return self.__colorInterpolationFilters
+
+    @colorInterpolationFilters.setter
+    @style_set_decorator
+    def colorInterpolationFilters(self, value=None, *args, **kwargs):
+        self.__colorInterpolationFilters = value
+
+    @property    
+    def colorRendering(self):
+        return self.__colorRendering
+
+    @colorRendering.setter
+    @style_set_decorator
+    def colorRendering(self, value=None, *args, **kwargs):
+        self.__colorRendering = value
+
+    @property    
+    def colorScheme(self):
+        return self.__colorScheme
+
+    @colorScheme.setter
+    @style_set_decorator
+    def colorScheme(self, value=None, *args, **kwargs):
+        self.__colorScheme = value
+
+    @property    
+    def contain(self):
+        return self.__contain
+
+    @contain.setter
+    @style_set_decorator
+    def contain(self, value=None, *args, **kwargs):
+        self.__contain = value
+
+    @property    
+    def containIntrinsicSize(self):
+        return self.__containIntrinsicSize
+
+    @containIntrinsicSize.setter
+    @style_set_decorator
+    def containIntrinsicSize(self, value=None, *args, **kwargs):
+        self.__containIntrinsicSize = value
+
+    @property    
+    def contentVisibility(self):
+        return self.__contentVisibility
+
+    @contentVisibility.setter
+    @style_set_decorator
+    def contentVisibility(self, value=None, *args, **kwargs):
+        self.__contentVisibility = value
+
+    @property    
+    def counterSet(self):
+        return self.__counterSet
+
+    @counterSet.setter
+    @style_set_decorator
+    def counterSet(self, value=None, *args, **kwargs):
+        self.__counterSet = value
+
+    @property    
+    def cx(self):
+        return self.__cx
+
+    @cx.setter
+    @style_set_decorator
+    def cx(self, value=None, *args, **kwargs):
+        self.__cx = value
+
+    @property    
+    def cy(self):
+        return self.__cy
+
+    @cy.setter
+    @style_set_decorator
+    def cy(self, value=None, *args, **kwargs):
+        self.__cy = value
+
+    @property    
+    def dominantBaseline(self):
+        return self.__dominantBaseline
+
+    @dominantBaseline.setter
+    @style_set_decorator
+    def dominantBaseline(self, value=None, *args, **kwargs):
+        self.__dominantBaseline = value
+
+    @property    
+    def d(self):
+        return self.__d
+
+    @d.setter
+    @style_set_decorator
+    def d(self, value=None, *args, **kwargs):
+        self.__d = value
+
+    @property    
+    def fill(self):
+        return self.__fill
+
+    @fill.setter
+    @style_set_decorator
+    def fill(self, value=None, *args, **kwargs):
+        self.__fill = value
+
+    @property    
+    def fillOpacity(self):
+        return self.__fillOpacity
+
+    @fillOpacity.setter
+    @style_set_decorator
+    def fillOpacity(self, value=None, *args, **kwargs):
+        self.__fillOpacity = value
+
+    @property    
+    def fillRule(self):
+        return self.__fillRule
+
+    @fillRule.setter
+    @style_set_decorator
+    def fillRule(self, value=None, *args, **kwargs):
+        self.__fillRule = value
+
+    @property    
+    def fontDisplay(self):
+        return self.__fontDisplay
+
+    @fontDisplay.setter
+    @style_set_decorator
+    def fontDisplay(self, value=None, *args, **kwargs):
+        self.__fontDisplay = value
+
+    @property    
+    def floodColor(self):
+        return self.__floodColor
+
+    @floodColor.setter
+    @style_set_decorator
+    def floodColor(self, value=None, *args, **kwargs):
+        self.__floodColor = value
+
+    @property    
+    def floodOpacity(self):
+        return self.__floodOpacity
+
+    @floodOpacity.setter
+    @style_set_decorator
+    def floodOpacity(self, value=None, *args, **kwargs):
+        self.__floodOpacity = value
+
+    @property    
+    def fontFeatureSettings(self):
+        return self.__fontFeatureSettings
+
+    @fontFeatureSettings.setter
+    @style_set_decorator
+    def fontFeatureSettings(self, value=None, *args, **kwargs):
+        self.__fontFeatureSettings = value
+
+    @property    
+    def fontKerning(self):
+        return self.__fontKerning
+
+    @fontKerning.setter
+    @style_set_decorator
+    def fontKerning(self, value=None, *args, **kwargs):
+        self.__fontKerning = value
+
+    @property    
+    def fontOpticalSizing(self):
+        return self.__fontOpticalSizing
+
+    @fontOpticalSizing.setter
+    @style_set_decorator
+    def fontOpticalSizing(self, value=None, *args, **kwargs):
+        self.__fontOpticalSizing = value
+
+    @property    
+    def fontVariantCaps(self):
+        return self.__fontVariantCaps
+
+    @fontVariantCaps.setter
+    @style_set_decorator
+    def fontVariantCaps(self, value=None, *args, **kwargs):
+        self.__fontVariantCaps = value
+
+    @property    
+    def fontVariantEastAsian(self):
+        return self.__fontVariantEastAsian
+
+    @fontVariantEastAsian.setter
+    @style_set_decorator
+    def fontVariantEastAsian(self, value=None, *args, **kwargs):
+        self.__fontVariantEastAsian = value
+
+    @property    
+    def fontVariantLigatures(self):
+        return self.__fontVariantLigatures
+
+    @fontVariantLigatures.setter
+    @style_set_decorator
+    def fontVariantLigatures(self, value=None, *args, **kwargs):
+        self.__fontVariantLigatures = value
+
+    @property    
+    def fontVariantNumeric(self):
+        return self.__fontVariantNumeric
+
+    @fontVariantNumeric.setter
+    @style_set_decorator
+    def fontVariantNumeric(self, value=None, *args, **kwargs):
+        self.__fontVariantNumeric = value
+
+    @property    
+    def fontVariationSettings(self):
+        return self.__fontVariationSettings
+
+    @fontVariationSettings.setter
+    @style_set_decorator
+    def fontVariationSettings(self, value=None, *args, **kwargs):
+        self.__fontVariationSettings = value
+
+    @property    
+    def gap(self):
+        return self.__gap
+
+    @gap.setter
+    @style_set_decorator
+    def gap(self, value=None, *args, **kwargs):
+        self.__gap = value
+
+    @property    
+    def grid(self):
+        return self.__grid
+
+    @grid.setter
+    @style_set_decorator
+    def grid(self, value=None, *args, **kwargs):
+        self.__grid = value
+
+    @property    
+    def gridArea(self):
+        return self.__gridArea
+
+    @gridArea.setter
+    @style_set_decorator
+    def gridArea(self, value=None, *args, **kwargs):
+        self.__gridArea = value
+
+    @property    
+    def gridAutoColumns(self):
+        return self.__gridAutoColumns
+
+    @gridAutoColumns.setter
+    @style_set_decorator
+    def gridAutoColumns(self, value=None, *args, **kwargs):
+        self.__gridAutoColumns = value
+
+    @property    
+    def gridAutoFlow(self):
+        return self.__gridAutoFlow
+
+    @gridAutoFlow.setter
+    @style_set_decorator
+    def gridAutoFlow(self, value=None, *args, **kwargs):
+        self.__gridAutoFlow = value
+
+    @property    
+    def gridAutoRows(self):
+        return self.__gridAutoRows
+
+    @gridAutoRows.setter
+    @style_set_decorator
+    def gridAutoRows(self, value=None, *args, **kwargs):
+        self.__gridAutoRows = value
+
+    @property    
+    def gridColumn(self):
+        return self.__gridColumn
+
+    @gridColumn.setter
+    @style_set_decorator
+    def gridColumn(self, value=None, *args, **kwargs):
+        self.__gridColumn = value
+
+    @property    
+    def gridColumnEnd(self):
+        return self.__gridColumnEnd
+
+    @gridColumnEnd.setter
+    @style_set_decorator
+    def gridColumnEnd(self, value=None, *args, **kwargs):
+        self.__gridColumnEnd = value
+
+    @property    
+    def gridColumnGap(self):
+        return self.__gridColumnGap
+
+    @gridColumnGap.setter
+    @style_set_decorator
+    def gridColumnGap(self, value=None, *args, **kwargs):
+        self.__gridColumnGap = value
+
+    @property    
+    def gridColumnStart(self):
+        return self.__gridColumnStart
+
+    @gridColumnStart.setter
+    @style_set_decorator
+    def gridColumnStart(self, value=None, *args, **kwargs):
+        self.__gridColumnStart = value
+
+    @property    
+    def gridGap(self):
+        return self.__gridGap
+
+    @gridGap.setter
+    @style_set_decorator
+    def gridGap(self, value=None, *args, **kwargs):
+        self.__gridGap = value
+
+    @property    
+    def gridRow(self):
+        return self.__gridRow
+
+    @gridRow.setter
+    @style_set_decorator
+    def gridRow(self, value=None, *args, **kwargs):
+        self.__gridRow = value
+
+    @property    
+    def gridRowEnd(self):
+        return self.__gridRowEnd
+
+    @gridRowEnd.setter
+    @style_set_decorator
+    def gridRowEnd(self, value=None, *args, **kwargs):
+        self.__gridRowEnd = value
+
+    @property    
+    def gridRowGap(self):
+        return self.__gridRowGap
+
+    @gridRowGap.setter
+    @style_set_decorator
+    def gridRowGap(self, value=None, *args, **kwargs):
+        self.__gridRowGap = value
+
+    @property    
+    def gridRowStart(self):
+        return self.__gridRowStart
+
+    @gridRowStart.setter
+    @style_set_decorator
+    def gridRowStart(self, value=None, *args, **kwargs):
+        self.__gridRowStart = value
+
+    @property    
+    def gridTemplate(self):
+        return self.__gridTemplate
+
+    @gridTemplate.setter
+    @style_set_decorator
+    def gridTemplate(self, value=None, *args, **kwargs):
+        self.__gridTemplate = value
+
+    @property    
+    def gridTemplateAreas(self):
+        return self.__gridTemplateAreas
+
+    @gridTemplateAreas.setter
+    @style_set_decorator
+    def gridTemplateAreas(self, value=None, *args, **kwargs):
+        self.__gridTemplateAreas = value
+
+    @property    
+    def gridTemplateColumns(self):
+        return self.__gridTemplateColumns
+
+    @gridTemplateColumns.setter
+    @style_set_decorator
+    def gridTemplateColumns(self, value=None, *args, **kwargs):
+        self.__gridTemplateColumns = value
+
+    @property    
+    def gridTemplateRows(self):
+        return self.__gridTemplateRows
+
+    @gridTemplateRows.setter
+    @style_set_decorator
+    def gridTemplateRows(self, value=None, *args, **kwargs):
+        self.__gridTemplateRows = value
+
+    @property    
+    def imageRendering(self):
+        return self.__imageRendering
+
+    @imageRendering.setter
+    @style_set_decorator
+    def imageRendering(self, value=None, *args, **kwargs):
+        self.__imageRendering = value
+
+    @property    
+    def inherits(self):
+        return self.__inherits
+
+    @inherits.setter
+    @style_set_decorator
+    def inherits(self, value=None, *args, **kwargs):
+        self.__inherits = value
+
+    @property    
+    def initialValue(self):
+        return self.__initialValue
+
+    @initialValue.setter
+    @style_set_decorator
+    def initialValue(self, value=None, *args, **kwargs):
+        self.__initialValue = value
+
+    @property    
+    def inlineSize(self):
+        return self.__inlineSize
+
+    @inlineSize.setter
+    @style_set_decorator
+    def inlineSize(self, value=None, *args, **kwargs):
+        self.__inlineSize = value
+
+    @property    
+    def justifyItems(self):
+        return self.__justifyItems
+
+    @justifyItems.setter
+    @style_set_decorator
+    def justifyItems(self, value=None, *args, **kwargs):
+        self.__justifyItems = value
+
+    @property    
+    def justifySelf(self):
+        return self.__justifySelf
+
+    @justifySelf.setter
+    @style_set_decorator
+    def justifySelf(self, value=None, *args, **kwargs):
+        self.__justifySelf = value
+
+    @property    
+    def lightingColor(self):
+        return self.__lightingColor
+
+    @lightingColor.setter
+    @style_set_decorator
+    def lightingColor(self, value=None, *args, **kwargs):
+        self.__lightingColor = value
+
+    @property    
+    def lineBreak(self):
+        return self.__lineBreak
+
+    @lineBreak.setter
+    @style_set_decorator
+    def lineBreak(self, value=None, *args, **kwargs):
+        self.__lineBreak = value
+
+    @property    
+    def marginBlockEnd(self):
+        return self.__marginBlockEnd
+
+    @marginBlockEnd.setter
+    @style_set_decorator
+    def marginBlockEnd(self, value=None, *args, **kwargs):
+        self.__marginBlockEnd = value
+
+    @property    
+    def marginBlockStart(self):
+        return self.__marginBlockStart
+
+    @marginBlockStart.setter
+    @style_set_decorator
+    def marginBlockStart(self, value=None, *args, **kwargs):
+        self.__marginBlockStart = value
+
+    @property    
+    def marginInlineEnd(self):
+        return self.__marginInlineEnd
+
+    @marginInlineEnd.setter
+    @style_set_decorator
+    def marginInlineEnd(self, value=None, *args, **kwargs):
+        self.__marginInlineEnd = value
+
+    @property    
+    def marginInlineStart(self):
+        return self.__marginInlineStart
+
+    @marginInlineStart.setter
+    @style_set_decorator
+    def marginInlineStart(self, value=None, *args, **kwargs):
+        self.__marginInlineStart = value
+
+    @property    
+    def marker(self):
+        return self.__marker
+
+    @marker.setter
+    @style_set_decorator
+    def marker(self, value=None, *args, **kwargs):
+        self.__marker = value
+
+    @property    
+    def markerEnd(self):
+        return self.__markerEnd
+
+    @markerEnd.setter
+    @style_set_decorator
+    def markerEnd(self, value=None, *args, **kwargs):
+        self.__markerEnd = value
+
+    @property    
+    def markerMid(self):
+        return self.__markerMid
+
+    @markerMid.setter
+    @style_set_decorator
+    def markerMid(self, value=None, *args, **kwargs):
+        self.__markerMid = value
+
+    @property    
+    def markerStart(self):
+        return self.__markerStart
+
+    @markerStart.setter
+    @style_set_decorator
+    def markerStart(self, value=None, *args, **kwargs):
+        self.__markerStart = value
+
+    @property    
+    def mask(self):
+        return self.__mask
+
+    @mask.setter
+    @style_set_decorator
+    def mask(self, value=None, *args, **kwargs):
+        self.__mask = value
+
+    @property    
+    def maskType(self):
+        return self.__maskType
+
+    @maskType.setter
+    @style_set_decorator
+    def maskType(self, value=None, *args, **kwargs):
+        self.__maskType = value
+
+    @property    
+    def maxBlockSize(self):
+        return self.__maxBlockSize
+
+    @maxBlockSize.setter
+    @style_set_decorator
+    def maxBlockSize(self, value=None, *args, **kwargs):
+        self.__maxBlockSize = value
+
+    @property    
+    def maxInlineSize(self):
+        return self.__maxInlineSize
+
+    @maxInlineSize.setter
+    @style_set_decorator
+    def maxInlineSize(self, value=None, *args, **kwargs):
+        self.__maxInlineSize = value
+
+    @property    
+    def maxZoom(self):
+        return self.__maxZoom
+
+    @maxZoom.setter
+    @style_set_decorator
+    def maxZoom(self, value=None, *args, **kwargs):
+        self.__maxZoom = value
+
+    @property    
+    def minBlockSize(self):
+        return self.__minBlockSize
+
+    @minBlockSize.setter
+    @style_set_decorator
+    def minBlockSize(self, value=None, *args, **kwargs):
+        self.__minBlockSize = value
+
+    @property    
+    def minInlineSize(self):
+        return self.__minInlineSize
+
+    @minInlineSize.setter
+    @style_set_decorator
+    def minInlineSize(self, value=None, *args, **kwargs):
+        self.__minInlineSize = value
+
+    @property    
+    def minZoom(self):
+        return self.__minZoom
+
+    @minZoom.setter
+    @style_set_decorator
+    def minZoom(self, value=None, *args, **kwargs):
+        self.__minZoom = value
+
+    @property    
+    def mixBlendMode(self):
+        return self.__mixBlendMode
+
+    @mixBlendMode.setter
+    @style_set_decorator
+    def mixBlendMode(self, value=None, *args, **kwargs):
+        self.__mixBlendMode = value
+
+    @property    
+    def objectFit(self):
+        return self.__objectFit
+
+    @objectFit.setter
+    @style_set_decorator
+    def objectFit(self, value=None, *args, **kwargs):
+        self.__objectFit = value
+
+    @property    
+    def objectPosition(self):
+        return self.__objectPosition
+
+    @objectPosition.setter
+    @style_set_decorator
+    def objectPosition(self, value=None, *args, **kwargs):
+        self.__objectPosition = value
+
+    @property    
+    def offset(self):
+        return self.__offset
+
+    @offset.setter
+    @style_set_decorator
+    def offset(self, value=None, *args, **kwargs):
+        self.__offset = value
+
+    @property    
+    def offsetDistance(self):
+        return self.__offsetDistance
+
+    @offsetDistance.setter
+    @style_set_decorator
+    def offsetDistance(self, value=None, *args, **kwargs):
+        self.__offsetDistance = value
+
+    @property    
+    def offsetPath(self):
+        return self.__offsetPath
+
+    @offsetPath.setter
+    @style_set_decorator
+    def offsetPath(self, value=None, *args, **kwargs):
+        self.__offsetPath = value
+
+    @property    
+    def offsetRotate(self):
+        return self.__offsetRotate
+
+    @offsetRotate.setter
+    @style_set_decorator
+    def offsetRotate(self, value=None, *args, **kwargs):
+        self.__offsetRotate = value
+
+    @property    
+    def orientation(self):
+        return self.__orientation
+
+    @orientation.setter
+    @style_set_decorator
+    def orientation(self, value=None, *args, **kwargs):
+        self.__orientation = value
+
+    @property    
+    def overflowAnchor(self):
+        return self.__overflowAnchor
+
+    @overflowAnchor.setter
+    @style_set_decorator
+    def overflowAnchor(self, value=None, *args, **kwargs):
+        self.__overflowAnchor = value
+
+    @property    
+    def overflowWrap(self):
+        return self.__overflowWrap
+
+    @overflowWrap.setter
+    @style_set_decorator
+    def overflowWrap(self, value=None, *args, **kwargs):
+        self.__overflowWrap = value
+
+    @property    
+    def overscrollBehavior(self):
+        return self.__overscrollBehavior
+
+    @overscrollBehavior.setter
+    @style_set_decorator
+    def overscrollBehavior(self, value=None, *args, **kwargs):
+        self.__overscrollBehavior = value
+
+    @property    
+    def overscrollBehaviorBlock(self):
+        return self.__overscrollBehaviorBlock
+
+    @overscrollBehaviorBlock.setter
+    @style_set_decorator
+    def overscrollBehaviorBlock(self, value=None, *args, **kwargs):
+        self.__overscrollBehaviorBlock = value
+
+    @property    
+    def overscrollBehaviorInline(self):
+        return self.__overscrollBehaviorInline
+
+    @overscrollBehaviorInline.setter
+    @style_set_decorator
+    def overscrollBehaviorInline(self, value=None, *args, **kwargs):
+        self.__overscrollBehaviorInline = value
+
+    @property    
+    def overscrollBehaviorX(self):
+        return self.__overscrollBehaviorX
+
+    @overscrollBehaviorX.setter
+    @style_set_decorator
+    def overscrollBehaviorX(self, value=None, *args, **kwargs):
+        self.__overscrollBehaviorX = value
+
+    @property    
+    def overscrollBehaviorY(self):
+        return self.__overscrollBehaviorY
+
+    @overscrollBehaviorY.setter
+    @style_set_decorator
+    def overscrollBehaviorY(self, value=None, *args, **kwargs):
+        self.__overscrollBehaviorY = value
+
+    @property    
+    def paddingBlockEnd(self):
+        return self.__paddingBlockEnd
+
+    @paddingBlockEnd.setter
+    @style_set_decorator
+    def paddingBlockEnd(self, value=None, *args, **kwargs):
+        self.__paddingBlockEnd = value
+
+    @property    
+    def paddingBlockStart(self):
+        return self.__paddingBlockStart
+
+    @paddingBlockStart.setter
+    @style_set_decorator
+    def paddingBlockStart(self, value=None, *args, **kwargs):
+        self.__paddingBlockStart = value
+
+    @property    
+    def paddingInlineEnd(self):
+        return self.__paddingInlineEnd
+
+    @paddingInlineEnd.setter
+    @style_set_decorator
+    def paddingInlineEnd(self, value=None, *args, **kwargs):
+        self.__paddingInlineEnd = value
+
+    @property    
+    def paddingInlineStart(self):
+        return self.__paddingInlineStart
+
+    @paddingInlineStart.setter
+    @style_set_decorator
+    def paddingInlineStart(self, value=None, *args, **kwargs):
+        self.__paddingInlineStart = value
+
+    @property    
+    def page(self):
+        return self.__page
+
+    @page.setter
+    @style_set_decorator
+    def page(self, value=None, *args, **kwargs):
+        self.__page = value
+
+    @property    
+    def pageOrientation(self):
+        return self.__pageOrientation
+
+    @pageOrientation.setter
+    @style_set_decorator
+    def pageOrientation(self, value=None, *args, **kwargs):
+        self.__pageOrientation = value
+
+    @property    
+    def paintOrder(self):
+        return self.__paintOrder
+
+    @paintOrder.setter
+    @style_set_decorator
+    def paintOrder(self, value=None, *args, **kwargs):
+        self.__paintOrder = value
+
+    @property    
+    def placeContent(self):
+        return self.__placeContent
+
+    @placeContent.setter
+    @style_set_decorator
+    def placeContent(self, value=None, *args, **kwargs):
+        self.__placeContent = value
+
+    @property    
+    def placeItems(self):
+        return self.__placeItems
+
+    @placeItems.setter
+    @style_set_decorator
+    def placeItems(self, value=None, *args, **kwargs):
+        self.__placeItems = value
+
+    @property    
+    def placeSelf(self):
+        return self.__placeSelf
+
+    @placeSelf.setter
+    @style_set_decorator
+    def placeSelf(self, value=None, *args, **kwargs):
+        self.__placeSelf = value
+
+    @property    
+    def pointerEvents(self):
+        return self.__pointerEvents
+
+    @pointerEvents.setter
+    @style_set_decorator
+    def pointerEvents(self, value=None, *args, **kwargs):
+        self.__pointerEvents = value
+
+    @property    
+    def r(self):
+        return self.__r
+
+    @r.setter
+    @style_set_decorator
+    def r(self, value=None, *args, **kwargs):
+        self.__r = value
+
+    @property    
+    def rowGap(self):
+        return self.__rowGap
+
+    @rowGap.setter
+    @style_set_decorator
+    def rowGap(self, value=None, *args, **kwargs):
+        self.__rowGap = value
+
+    @property    
+    def rubyPosition(self):
+        return self.__rubyPosition
+
+    @rubyPosition.setter
+    @style_set_decorator
+    def rubyPosition(self, value=None, *args, **kwargs):
+        self.__rubyPosition = value
+
+    @property    
+    def rx(self):
+        return self.__rx
+
+    @rx.setter
+    @style_set_decorator
+    def rx(self, value=None, *args, **kwargs):
+        self.__rx = value
+
+    @property    
+    def ry(self):
+        return self.__ry
+
+    @ry.setter
+    @style_set_decorator
+    def ry(self, value=None, *args, **kwargs):
+        self.__ry = value
+
+    @property    
+    def scrollBehavior(self):
+        return self.__scrollBehavior
+
+    @scrollBehavior.setter
+    @style_set_decorator
+    def scrollBehavior(self, value=None, *args, **kwargs):
+        self.__scrollBehavior = value
+
+    @property    
+    def scrollMargin(self):
+        return self.__scrollMargin
+
+    @scrollMargin.setter
+    @style_set_decorator
+    def scrollMargin(self, value=None, *args, **kwargs):
+        self.__scrollMargin = value
+
+    @property    
+    def scrollMarginBlock(self):
+        return self.__scrollMarginBlock
+
+    @scrollMarginBlock.setter
+    @style_set_decorator
+    def scrollMarginBlock(self, value=None, *args, **kwargs):
+        self.__scrollMarginBlock = value
+
+    @property    
+    def scrollMarginBlockEnd(self):
+        return self.__scrollMarginBlockEnd
+
+    @scrollMarginBlockEnd.setter
+    @style_set_decorator
+    def scrollMarginBlockEnd(self, value=None, *args, **kwargs):
+        self.__scrollMarginBlockEnd = value
+
+    @property    
+    def scrollMarginBlockStart(self):
+        return self.__scrollMarginBlockStart
+
+    @scrollMarginBlockStart.setter
+    @style_set_decorator
+    def scrollMarginBlockStart(self, value=None, *args, **kwargs):
+        self.__scrollMarginBlockStart = value
+
+    @property    
+    def scrollMarginBottom(self):
+        return self.__scrollMarginBottom
+
+    @scrollMarginBottom.setter
+    @style_set_decorator
+    def scrollMarginBottom(self, value=None, *args, **kwargs):
+        self.__scrollMarginBottom = value
+
+    @property    
+    def scrollMarginInline(self):
+        return self.__scrollMarginInline
+
+    @scrollMarginInline.setter
+    @style_set_decorator
+    def scrollMarginInline(self, value=None, *args, **kwargs):
+        self.__scrollMarginInline = value
+
+    @property    
+    def scrollMarginInlineEnd(self):
+        return self.__scrollMarginInlineEnd
+
+    @scrollMarginInlineEnd.setter
+    @style_set_decorator
+    def scrollMarginInlineEnd(self, value=None, *args, **kwargs):
+        self.__scrollMarginInlineEnd = value
+
+    @property    
+    def scrollMarginInlineStart(self):
+        return self.__scrollMarginInlineStart
+
+    @scrollMarginInlineStart.setter
+    @style_set_decorator
+    def scrollMarginInlineStart(self, value=None, *args, **kwargs):
+        self.__scrollMarginInlineStart = value
+
+    @property    
+    def scrollMarginLeft(self):
+        return self.__scrollMarginLeft
+
+    @scrollMarginLeft.setter
+    @style_set_decorator
+    def scrollMarginLeft(self, value=None, *args, **kwargs):
+        self.__scrollMarginLeft = value
+
+    @property    
+    def scrollMarginRight(self):
+        return self.__scrollMarginRight
+
+    @scrollMarginRight.setter
+    @style_set_decorator
+    def scrollMarginRight(self, value=None, *args, **kwargs):
+        self.__scrollMarginRight = value
+
+    @property    
+    def scrollMarginTop(self):
+        return self.__scrollMarginTop
+
+    @scrollMarginTop.setter
+    @style_set_decorator
+    def scrollMarginTop(self, value=None, *args, **kwargs):
+        self.__scrollMarginTop = value
+
+    @property    
+    def scrollPadding(self):
+        return self.__scrollPadding
+
+    @scrollPadding.setter
+    @style_set_decorator
+    def scrollPadding(self, value=None, *args, **kwargs):
+        self.__scrollPadding = value
+
+    @property    
+    def scrollPaddingBlock(self):
+        return self.__scrollPaddingBlock
+
+    @scrollPaddingBlock.setter
+    @style_set_decorator
+    def scrollPaddingBlock(self, value=None, *args, **kwargs):
+        self.__scrollPaddingBlock = value
+
+    @property    
+    def scrollPaddingBlockEnd(self):
+        return self.__scrollPaddingBlockEnd
+
+    @scrollPaddingBlockEnd.setter
+    @style_set_decorator
+    def scrollPaddingBlockEnd(self, value=None, *args, **kwargs):
+        self.__scrollPaddingBlockEnd = value
+
+    @property    
+    def scrollPaddingBlockStart(self):
+        return self.__scrollPaddingBlockStart
+
+    @scrollPaddingBlockStart.setter
+    @style_set_decorator
+    def scrollPaddingBlockStart(self, value=None, *args, **kwargs):
+        self.__scrollPaddingBlockStart = value
+
+    @property    
+    def scrollPaddingBottom(self):
+        return self.__scrollPaddingBottom
+
+    @scrollPaddingBottom.setter
+    @style_set_decorator
+    def scrollPaddingBottom(self, value=None, *args, **kwargs):
+        self.__scrollPaddingBottom = value
+
+    @property    
+    def scrollPaddingInline(self):
+        return self.__scrollPaddingInline
+
+    @scrollPaddingInline.setter
+    @style_set_decorator
+    def scrollPaddingInline(self, value=None, *args, **kwargs):
+        self.__scrollPaddingInline = value
+
+    @property    
+    def scrollPaddingInlineEnd(self):
+        return self.__scrollPaddingInlineEnd
+
+    @scrollPaddingInlineEnd.setter
+    @style_set_decorator
+    def scrollPaddingInlineEnd(self, value=None, *args, **kwargs):
+        self.__scrollPaddingInlineEnd = value
+
+    @property    
+    def scrollPaddingInlineStart(self):
+        return self.__scrollPaddingInlineStart
+
+    @scrollPaddingInlineStart.setter
+    @style_set_decorator
+    def scrollPaddingInlineStart(self, value=None, *args, **kwargs):
+        self.__scrollPaddingInlineStart = value
+
+    @property    
+    def scrollPaddingLeft(self):
+        return self.__scrollPaddingLeft
+
+    @scrollPaddingLeft.setter
+    @style_set_decorator
+    def scrollPaddingLeft(self, value=None, *args, **kwargs):
+        self.__scrollPaddingLeft = value
+
+    @property    
+    def scrollPaddingRight(self):
+        return self.__scrollPaddingRight
+
+    @scrollPaddingRight.setter
+    @style_set_decorator
+    def scrollPaddingRight(self, value=None, *args, **kwargs):
+        self.__scrollPaddingRight = value
+
+    @property    
+    def scrollPaddingTop(self):
+        return self.__scrollPaddingTop
+
+    @scrollPaddingTop.setter
+    @style_set_decorator
+    def scrollPaddingTop(self, value=None, *args, **kwargs):
+        self.__scrollPaddingTop = value
+
+    @property    
+    def scrollSnapAlign(self):
+        return self.__scrollSnapAlign
+
+    @scrollSnapAlign.setter
+    @style_set_decorator
+    def scrollSnapAlign(self, value=None, *args, **kwargs):
+        self.__scrollSnapAlign = value
+
+    @property    
+    def scrollSnapStop(self):
+        return self.__scrollSnapStop
+
+    @scrollSnapStop.setter
+    @style_set_decorator
+    def scrollSnapStop(self, value=None, *args, **kwargs):
+        self.__scrollSnapStop = value
+
+    @property    
+    def scrollSnapType(self):
+        return self.__scrollSnapType
+
+    @scrollSnapType.setter
+    @style_set_decorator
+    def scrollSnapType(self, value=None, *args, **kwargs):
+        self.__scrollSnapType = value
+
+    @property    
+    def shapeImageThreshold(self):
+        return self.__shapeImageThreshold
+
+    @shapeImageThreshold.setter
+    @style_set_decorator
+    def shapeImageThreshold(self, value=None, *args, **kwargs):
+        self.__shapeImageThreshold = value
+
+    @property    
+    def shapeMargin(self):
+        return self.__shapeMargin
+
+    @shapeMargin.setter
+    @style_set_decorator
+    def shapeMargin(self, value=None, *args, **kwargs):
+        self.__shapeMargin = value
+
+    @property    
+    def shapeOutside(self):
+        return self.__shapeOutside
+
+    @shapeOutside.setter
+    @style_set_decorator
+    def shapeOutside(self, value=None, *args, **kwargs):
+        self.__shapeOutside = value
+
+    @property    
+    def shapeRendering(self):
+        return self.__shapeRendering
+
+    @shapeRendering.setter
+    @style_set_decorator
+    def shapeRendering(self, value=None, *args, **kwargs):
+        self.__shapeRendering = value
+
+    @property    
+    def size(self):
+        return self.__size
+
+    @size.setter
+    @style_set_decorator
+    def size(self, value=None, *args, **kwargs):
+        self.__size = value
+
+    @property    
+    def speak(self):
+        return self.__speak
+
+    @speak.setter
+    @style_set_decorator
+    def speak(self, value=None, *args, **kwargs):
+        self.__speak = value
+
+    @property    
+    def src(self):
+        return self.__src
+
+    @src.setter
+    @style_set_decorator
+    def src(self, value=None, *args, **kwargs):
+        self.__src = value
+
+    @property    
+    def stopColor(self):
+        return self.__stopColor
+
+    @stopColor.setter
+    @style_set_decorator
+    def stopColor(self, value=None, *args, **kwargs):
+        self.__stopColor = value
+
+    @property    
+    def stopOpacity(self):
+        return self.__stopOpacity
+
+    @stopOpacity.setter
+    @style_set_decorator
+    def stopOpacity(self, value=None, *args, **kwargs):
+        self.__stopOpacity = value
+
+    @property    
+    def stroke(self):
+        return self.__stroke
+
+    @stroke.setter
+    @style_set_decorator
+    def stroke(self, value=None, *args, **kwargs):
+        self.__stroke = value
+
+    @property    
+    def strokeDasharray(self):
+        return self.__strokeDasharray
+
+    @strokeDasharray.setter
+    @style_set_decorator
+    def strokeDasharray(self, value=None, *args, **kwargs):
+        self.__strokeDasharray = value
+
+    @property    
+    def strokeDashoffset(self):
+        return self.__strokeDashoffset
+
+    @strokeDashoffset.setter
+    @style_set_decorator
+    def strokeDashoffset(self, value=None, *args, **kwargs):
+        self.__strokeDashoffset = value
+
+    @property    
+    def strokeLinecap(self):
+        return self.__strokeLinecap
+
+    @strokeLinecap.setter
+    @style_set_decorator
+    def strokeLinecap(self, value=None, *args, **kwargs):
+        self.__strokeLinecap = value
+
+    @property    
+    def strokeLinejoin(self):
+        return self.__strokeLinejoin
+
+    @strokeLinejoin.setter
+    @style_set_decorator
+    def strokeLinejoin(self, value=None, *args, **kwargs):
+        self.__strokeLinejoin = value
+
+    @property    
+    def strokeMiterlimit(self):
+        return self.__strokeMiterlimit
+
+    @strokeMiterlimit.setter
+    @style_set_decorator
+    def strokeMiterlimit(self, value=None, *args, **kwargs):
+        self.__strokeMiterlimit = value
+
+    @property    
+    def strokeOpacity(self):
+        return self.__strokeOpacity
+
+    @strokeOpacity.setter
+    @style_set_decorator
+    def strokeOpacity(self, value=None, *args, **kwargs):
+        self.__strokeOpacity = value
+
+    @property    
+    def strokeWidth(self):
+        return self.__strokeWidth
+
+    @strokeWidth.setter
+    @style_set_decorator
+    def strokeWidth(self, value=None, *args, **kwargs):
+        self.__strokeWidth = value
+
+    @property    
+    def syntax(self):
+        return self.__syntax
+
+    @syntax.setter
+    @style_set_decorator
+    def syntax(self, value=None, *args, **kwargs):
+        self.__syntax = value
+
+    @property    
+    def textAnchor(self):
+        return self.__textAnchor
+
+    @textAnchor.setter
+    @style_set_decorator
+    def textAnchor(self, value=None, *args, **kwargs):
+        self.__textAnchor = value
+
+    @property    
+    def textCombineUpright(self):
+        return self.__textCombineUpright
+
+    @textCombineUpright.setter
+    @style_set_decorator
+    def textCombineUpright(self, value=None, *args, **kwargs):
+        self.__textCombineUpright = value
+
+    @property    
+    def textDecorationSkipInk(self):
+        return self.__textDecorationSkipInk
+
+    @textDecorationSkipInk.setter
+    @style_set_decorator
+    def textDecorationSkipInk(self, value=None, *args, **kwargs):
+        self.__textDecorationSkipInk = value
+
+    @property    
+    def textOrientation(self):
+        return self.__textOrientation
+
+    @textOrientation.setter
+    @style_set_decorator
+    def textOrientation(self, value=None, *args, **kwargs):
+        self.__textOrientation = value
+
+    @property    
+    def textRendering(self):
+        return self.__textRendering
+
+    @textRendering.setter
+    @style_set_decorator
+    def textRendering(self, value=None, *args, **kwargs):
+        self.__textRendering = value
+
+    @property    
+    def textSizeAdjust(self):
+        return self.__textSizeAdjust
+
+    @textSizeAdjust.setter
+    @style_set_decorator
+    def textSizeAdjust(self, value=None, *args, **kwargs):
+        self.__textSizeAdjust = value
+
+    @property    
+    def textUnderlinePosition(self):
+        return self.__textUnderlinePosition
+
+    @textUnderlinePosition.setter
+    @style_set_decorator
+    def textUnderlinePosition(self, value=None, *args, **kwargs):
+        self.__textUnderlinePosition = value
+
+    @property    
+    def touchAction(self):
+        return self.__touchAction
+
+    @touchAction.setter
+    @style_set_decorator
+    def touchAction(self, value=None, *args, **kwargs):
+        self.__touchAction = value
+
+    @property    
+    def transformBox(self):
+        return self.__transformBox
+
+    @transformBox.setter
+    @style_set_decorator
+    def transformBox(self, value=None, *args, **kwargs):
+        self.__transformBox = value
+
+    @property    
+    def unicodeRange(self):
+        return self.__unicodeRange
+
+    @unicodeRange.setter
+    @style_set_decorator
+    def unicodeRange(self, value=None, *args, **kwargs):
+        self.__unicodeRange = value
+
+    @property    
+    def userZoom(self):
+        return self.__userZoom
+
+    @userZoom.setter
+    @style_set_decorator
+    def userZoom(self, value=None, *args, **kwargs):
+        self.__userZoom = value
+
+    @property    
+    def vectorEffect(self):
+        return self.__vectorEffect
+
+    @vectorEffect.setter
+    @style_set_decorator
+    def vectorEffect(self, value=None, *args, **kwargs):
+        self.__vectorEffect = value
+
+    @property    
+    def willChange(self):
+        return self.__willChange
+
+    @willChange.setter
+    @style_set_decorator
+    def willChange(self, value=None, *args, **kwargs):
+        self.__willChange = value
+
+    @property    
+    def writingMode(self):
+        return self.__writingMode
+
+    @writingMode.setter
+    @style_set_decorator
+    def writingMode(self, value=None, *args, **kwargs):
+        self.__writingMode = value
+
+    @property    
+    def x(self):
+        return self.__x
+
+    @x.setter
+    @style_set_decorator
+    def x(self, value=None, *args, **kwargs):
+        self.__x = value
+
+    @property    
+    def y(self):
+        return self.__y
+
+    @y.setter
+    @style_set_decorator
+    def y(self, value=None, *args, **kwargs):
+        self.__y = value
+
+    @property
+    @style_get_decorator
+    def zoom(self):
+        return self.__zoom
+
+    @zoom.setter
+    @style_set_decorator
+    def zoom(self, value=None, *args, **kwargs):
+        self.__zoom = value
 
     # @property
     # @style_get_decorator
@@ -2747,16 +5044,6 @@ class Style(object):
     # def zoomAndResize(self, value=None, *args, **kwargs):
     #     self.__zoomAndResize = value
 
-    @property
-    @style_get_decorator
-    def zoom(self):
-        return self.__zoom
-
-    @zoom.setter
-    @style_set_decorator
-    def zoom(self, value=None, *args, **kwargs):
-        self.__zoom = value
-
     # @property
     # @style_get_decorator
     # def zoomType(self):
@@ -2769,8 +5056,8 @@ class Style(object):
 
     # Modifies an existing CSS property or creates a new CSS property in the declaration block. """
     # def setProperty(self, property, value):
-    # print('shut your fucking mouth!')
     # self[property] = value
+
 
 
 class CSSStyleDeclaration(Style):
@@ -2789,24 +5076,32 @@ class CSSStyleDeclaration(Style):
         # print("*** MADE A STYLE ***")
         # super(Style).__init__(*args, **kwargs)
         super().__init__(parentNode, *args, **kwargs)
+        # self.__parentNode = parentNode
+        # self.__cssText = None
+        self.parentRule = None
+        self.cssText = None
 
-    @property
-    def cssText(self):
-        """Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
-        Setting this attribute changes the inline style.
-        If you want a text representation of a computed declaration block,
-        you can get it with JSON.stringify()."""
-        raise NotImplementedError
+    # @property
+    # def cssText(self):
+    #     """Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
+    #     Setting this attribute changes the inline style.
+    #     If you want a text representation of a computed declaration block,
+    #     you can get it with JSON.stringify()."""
+    #     raise NotImplementedError
 
     @property
     def length(self):
         """The number of properties. See the item() method below."""
         raise NotImplementedError
 
-    @property
-    def parentRule(self):
-        """The containing CSSRule."""
-        raise NotImplementedError
+    # @property
+    # def parentRule(self):
+    #     """The containing CSSRule."""
+    #     return self.__parentRule
+
+    # @parentRule.setter
+    # def parentRule(self, value=None, *args, **kwargs):
+    #     self.__parentRule = value
 
     # @property
     # def cssFloat(self):
@@ -2817,11 +5112,11 @@ class CSSStyleDeclaration(Style):
         """Returns the optional priority, "important"."""
         raise NotImplementedError
 
-    def getPropertyValue(self):
-        """Returns the property value given a property name."""
+    def getPropertyValue(self, propertyName: str) -> str:  # TODO - test
+        """Returns the value of the property with the specified name."""
         raise NotImplementedError
 
-    def item(self):
+    def item(self, index: int) -> str:
         """Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.
         An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).
         This is mostly useful for non-JavaScript DOM implementations.
@@ -2842,3 +5137,92 @@ class CSSStyleDeclaration(Style):
         """ Only supported via getComputedStyle in Firefox. Returns the property value as a
         CSSPrimitiveValue or null for shorthand properties."""
         raise NotImplementedError
+
+
+COMMENT_REGEXP = r'/\/\*[^*]*\*\//gm'
+
+class CSSParser:
+
+    @staticmethod
+    def parseFromString(parentStyleSheet: CSSStyleSheet, cssText: str): 
+        css = cssText.replace(COMMENT_REGEXP, '')
+        cssRules = []
+        stack = []
+        parentRule: CSSRule = None
+        lastIndex = 0
+        match = None
+
+        def matches(s: str):
+            regExp = r'{|}'
+            class Match:
+                def __init__(self, index: int, match: str):
+                    self.index = index
+                    self.match = match
+                def __str__(self):
+                    return f'{self.match}'
+                def __repr__(self):
+                    return f'{self.match}'
+                def __getitem__(self, index):
+                    return self.match[index]
+
+            import re
+            matches = re.finditer(regExp, s, flags=re.MULTILINE)
+            return [Match(m.start(), m.group(0)) for m in matches]
+
+        for count, match in enumerate(matches(css)):
+            if (match[0] == '{'):
+                selectorText = css[lastIndex:match.index].strip()
+                if selectorText.startswith('@keyframes'):
+                    newRule = CSSKeyframesRule()
+                    newRule.name = selectorText.replace('@keyframes ', '')
+                    newRule.parentStyleSheet = parentStyleSheet
+                    cssRules.append(newRule)
+                    parentRule = newRule
+                elif selectorText.startswith('@media'):
+                    mediums = selectorText.replace('@media', '').split(',')
+                    newRule = CSSMediaRule()
+                    for medium in mediums:
+                        newRule.media.appendMedium(medium.strip())
+                    newRule.parentStyleSheet = parentStyleSheet
+                    cssRules.append(newRule)
+                    parentRule = newRule
+                elif parentRule is not None and parentRule.type == CSSRule.KEYFRAMES_RULE:
+                    newRule = CSSKeyframeRule()
+                    newRule.keyText = selectorText.strip()
+                    newRule.parentStyleSheet = parentStyleSheet
+                    newRule.parentRule = parentRule
+                    parentRule.cssRules.append(newRule)
+                    parentRule = newRule
+                elif parentRule is not None and parentRule.type == CSSRule.MEDIA_RULE:
+                    newRule = CSSStyleRule()
+                    newRule.selectorText = selectorText
+                    newRule.parentStyleSheet = parentStyleSheet
+                    newRule.parentRule = parentRule
+                    parentRule.cssRules.append(newRule)
+                    parentRule = newRule
+                else:
+                    newRule = CSSStyleRule()
+                    newRule.selectorText = selectorText
+                    newRule.parentStyleSheet = parentStyleSheet
+                    newRule.parentRule = parentRule
+                    if not parentRule:
+                        cssRules.append(newRule)
+                    parentRule = newRule
+                stack.append(parentRule)
+            else:
+                if parentRule is not None:
+                    cssText = css[lastIndex:match.index].strip()
+                    import re
+                    cssText = re.sub(' +', ' ', cssText)
+                    cssText = re.sub('\n', '', cssText)
+                    if parentRule.type == CSSRule.FONT_FACE_RULE or parentRule.type == CSSRule.KEYFRAME_RULE or parentRule.type == CSSRule.STYLE_RULE:
+                            style = CSSStyleDeclaration()
+                            style.cssText = cssText
+                            style.parentRule = parentRule
+                            parentRule.style = style
+                            # print('break')
+
+                stack.pop()
+                parentRule = stack[-1] if stack else None
+            lastIndex = match.index + 1
+        return cssRules
