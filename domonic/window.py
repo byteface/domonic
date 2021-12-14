@@ -20,7 +20,7 @@ from domonic.javascript import Window
 from domonic.dom import *
 from domonic.dom import document, Location
 
-from domonic.webapi.storage import Storage
+from domonic.webapi.webstorage import Storage
 from domonic.webapi.console import Console
 
 from domonic.webapi.netinfo import NetworkInformation
