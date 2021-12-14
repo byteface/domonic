@@ -1357,7 +1357,6 @@ class Style(object):
         self._members_checked = True  # NOTE - this ALWAYS needs to be last or all props will render
 
 
-
     def style_set_decorator(func):
         from functools import wraps
 
@@ -1377,18 +1376,14 @@ class Style(object):
                 key = func.__name__
                 s = f"{Utils.case_kebab(key)}:{value};"
                 styles = self._parent_node.getAttribute("style")
-                # print('sup:', styles)
-
                 if styles is not None:
                     # TODO - replace if exists. should be able to do this now with the parser?
-
                     # if key not in styles:
                     styles = styles + s
                     # else:
                         # styles = styles.replace(f"{key}:{self.__dict__[key]}", s)
                 else:
                     styles = s
-
                 # print(styles)
                 self._parent_node.setAttribute("style", styles)
 
@@ -5129,7 +5124,7 @@ class CSSStyleDeclaration(Style):
 
     # Modifies an existing CSS property or creates a new CSS property in the declaration block. """
     def setProperty(self, property, value, priority=None):
-        print("is this magic!")
+        # print("is this magic!")
         # self[property] = value
         setattr(self, property, value)
 
