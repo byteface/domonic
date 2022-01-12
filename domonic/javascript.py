@@ -6,28 +6,29 @@
 
 """
 
-# from typing import *
-import sys
-import urllib.parse
-from dateutil.parser import parse
-import datetime
-from datetime import timedelta
-import time
-from urllib.parse import unquote, quote
-import math
-import random
-import threading
-import signal
-# import typing
-import requests
+from typing import Union, Tuple, List, Dict, Any, Optional, Callable
+
 import gc
-import multiprocessing
-from multiprocessing.pool import ThreadPool as Pool
 import re
 import json
 import os
 import array
 import struct
+import sys
+import time
+import math
+import random
+import datetime
+import threading
+import signal
+import urllib.parse
+from urllib.parse import unquote, quote
+
+import multiprocessing
+from multiprocessing.pool import ThreadPool as Pool
+
+from dateutil.parser import parse
+import requests
 
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.webstorage import Storage
@@ -1567,7 +1568,7 @@ class SetInterval(object):
     def __init__(self, function, time, *args, **kwargs):
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
-        self.job = Job(timedelta(microseconds=time * 1000), function, *args, **kwargs)
+        self.job = Job(datetime.timedelta(microseconds=time * 1000), function, *args, **kwargs)
         self.job.start()
 
     # def stop(self):
@@ -1959,6 +1960,52 @@ class Array(object):
         for i in range(start, end):
             self.args[i] = value
         return self.args
+
+    def groupBy(self, callback) -> dict:  # TODO - test
+        """[Groups the elements of an array according to the result of calling a callback function on each element]
+
+        Args:
+            callback (callable): [the callback recieves the following paramters(value, index, target)]
+
+        Returns:
+            [dict]: [a dictionary of arrays]
+        """
+        groups = {}
+        for i in range(len(self.args)):
+            key = callback(self.args[i], i, self.args)
+            if key in groups:
+                groups[key].append(self.args[i])
+            else:
+                groups[key] = [self.args[i]]
+        return groups
+
+    # def groupByToMap(self, callback):
+    #     """[returns a Map object]
+    #     """
+    #     groups = {}
+    #     for i in range(len(self.args)):
+    #         key = callback(self.args[i], i, self.args)
+    #         if key in groups:
+    #             groups[key].append(self.args[i])
+    #         else:
+    #             groups[key] = [self.args[i]]
+    #     return Map(groups)
+
+    def findLast(self, callback):
+        """[Returns the last element in an array that passes a test]
+        """
+        for i in range(len(self.args) - 1, -1, -1):
+            if callback(self.args[i], i, self.args):
+                return self.args[i]
+        return None
+
+    def findLastIndex(self, callback):
+        """[Returns the last index of an element in an array that passes a test]
+        """
+        for i in range(len(self.args) - 1, -1, -1):
+            if callback(self.args[i], i, self.args):
+                return i
+        return -1
 
     def includes(self, value):  # -> bool:
         """[Check if an array contains the specified item
@@ -4144,6 +4191,47 @@ class Symbol():
     def valueOf(self):
         """ Returns the Symbol. Overrides the Object.prototype.valueOf() method. """
         raise NotImplementedError
+
+
+# class _TNow:
+
+#     def timeZone():
+#         pass
+
+#     def instant():
+#         pass
+
+#     def plainDateTime(calendar, temporalTimeZoneLike):
+#         pass
+
+#     def plainDateTimeISO(temporalTimeZoneLike):
+#         pass
+
+#     def zonedDateTime(calendar, temporalTimeZoneLike):
+#         pass
+
+#     def zonedDateTimeISO(temporalTimeZoneLike):
+#         pass
+
+#     def plainDate(calendar, temporalTimeZoneLike):
+#         pass
+
+#     def plainDateISO(temporalTimeZoneLike):
+#         pass
+
+#     def plainTimeISO(temporalTimeZoneLike):
+#         pass
+
+
+# class Temporal(Object):
+
+#     @staticmethod
+#     def Now(self):
+#         return _TNow()
+
+#     @staticmethod
+#     def _from(self, temporal):
+#         pass
 
 
 '''

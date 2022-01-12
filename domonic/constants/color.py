@@ -5,7 +5,7 @@
 
 # from typing import Union, Tuple, List, Dict, Any, Optional, Callable, cast, TypeVar, Generic, Iterable, Sequence
 
-from typing import Tuple
+from typing import Tuple, Optional
 
 from domonic.geom import vec3, vec4
 

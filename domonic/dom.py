@@ -7,7 +7,7 @@
 
 """
 
-from typing import *  # List, Dict, Any, Union, Optional, Callable, Tuple
+from typing import Union, Tuple, List, Dict, Any, Optional, Callable
 
 import re
 import copy
@@ -407,6 +407,11 @@ class Node(EventTarget):
         self._update_parents()
 
         content = ''.join([each.__format__(format_spec) for each in self.args])
+        # from concurrent.futures import ThreadPoolExecutor
+        # content = ''
+        # with ThreadPoolExecutor(10) as executor:
+        #     for result in executor.map(lambda x: x.__format__(format_spec), self.args):
+        #         content += result
 
         wrap = False
         if len(self.args) == 1:
@@ -507,6 +512,7 @@ class Node(EventTarget):
                     el._update_parents()
         except Exception as e:
             print('unable to update parent', e)
+
 
     def _iterate(self, element, callback) -> None:
         ''' private. - TODO < check these docstrings don't export in docs
@@ -3822,15 +3828,15 @@ class DOMException(Exception):
     INVALID_NODE_TYPE_ERR: int = 24
     DATA_CLONE_ERR: int = 25
 
-    def __init__(self, code, message: str = None) -> None:
+    def __init__(self, code, message: Optional[str] = None) -> None:
         self.code = code
         self.message: str = message
         self.name = "DOMException"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.message
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.message
 
 

@@ -92,10 +92,10 @@ run:
     # create a README.md
     with open("README.md", "w") as f:
         f.write("# " + PROJECT_NAME + "\n")
-        f.write("## Description" + "\n")
-        f.write("## Installation" + "\n")
-        f.write("## Usage" + "\n")
-        f.write("## Tests" + "\n")
+        f.write("## Description\n")
+        f.write("## Installation\n")
+        f.write("## Usage\n")
+        f.write("## Tests\n")
         f.write("## License")
 
     # create app
@@ -106,12 +106,12 @@ run:
     # create a git repo
     os.system("git init")
     with open(".gitignore", "w") as f:
-        f.write("*.pyc")
-        f.write("*.pyo")
-        f.write("*.swp")
-        f.write("*.swo")
-        f.write("*.DS_Store")
-        f.write("__pycache__/")
+        f.write("*.pyc\n")
+        f.write("*.pyo\n")
+        f.write("*.swp\n")
+        f.write("*.swo\n")
+        f.write("*.DS_Store\n")
+        f.write("__pycache__/\n")
 
     # create a venv
     # os.system("python3 -m venv venv")
@@ -126,7 +126,7 @@ run:
     # os.system("python3 -m pip freeze > requirements.txt")
 
     # ask the user which server they want to use
-    server_opt = ["none", "sanic", "flask", "cherrypy", "django", "bottle", "pyramid", "werkzeug", "tornado", "aiohttp", "fastapi", "starlette"]
+    server_opt = ["none", "sanic", "flask", "cherrypy", "django", "bottle", "pyramid", "werkzeug", "tornado", "aiohttp", "fastapi", "starlette", "blacksheep", "muffin", "falcon", "baize", "emmett", "quart"]
     print("You want a server?")
     for i, server in enumerate(server_opt):
         print(str(i) + ": " + server)
