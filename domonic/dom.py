@@ -7,7 +7,7 @@
 
 """
 
-from typing import Union, Tuple, List, Dict, Any, Optional, Callable
+from typing import Union, Tuple, List, Dict, Any, Optional, Callable, Iterable
 
 import re
 import copy
@@ -960,6 +960,48 @@ class Node(EventTarget):
     # def isSupported(self): return False #  🗑
     # getUserData() 🗑️
     # setUserData() 🗑️
+
+    # non standard methods to be etree compatible
+    # seems to make it work with https://github.com/sissaschool/elementpath
+    # if i hack it to allow domonic root nodes
+
+    def iter(self, tag=None):
+        """ Creates a tree iterator with the current element as the root. 
+        The iterator iterates over this element and all elements below it, in document (depth first) order.
+        If tag is not None or '*', only elements whose tag equals tag are returned from the iterator.
+        If the tree structure is modified during iteration, the result is undefined."""
+        for each in self.args:
+            if type(each) is str:
+                continue
+            if tag is None or tag == '*':
+                yield each
+            elif each.tag == tag:
+                yield each
+            for x in each.iter(tag):
+                yield x
+
+    @property
+    def tag(self):
+        """ Returns the tag name of the current node """
+        return self.nodeName
+
+    @property
+    def text(self):
+        """ Returns the text content of the current node """
+        return self.textContent
+
+    @property
+    def attrib(self):
+        """ Returns the attributes of the current node """
+        try:
+            return self.attributes
+        except:
+            return None
+
+    @property
+    def tail(self):
+        """ Returns the text content of the current node """
+        return self.textContent
 
 
 class ParentNode(object):
@@ -3707,6 +3749,9 @@ class Text(CharacterData):
 
     # def __repr__(self):
         # return str(self.textContent)
+
+    def __iter__(self):
+        yield self
 
 
 class HTMLCollection(list):
