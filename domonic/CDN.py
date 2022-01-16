@@ -47,6 +47,7 @@ class CDN_CSS(object):
     FONTAWESOME_5_7_1: str = "https://use.fontawesome.com/releases/v5.7.1/css/all.css"  #:
     MDI_5_4_55: str = "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"  #:
     TAILWIND_2_2_15: str = "https://unpkg.com/tailwindcss@^2.2.15/dist/tailwind.min.css"  #:
+    SIMPLE: str = "https://cdn.simplecss.org/simple.min.css"  #:
 
 
 class CDN_IMG(object):
