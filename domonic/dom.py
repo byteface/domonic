@@ -7,7 +7,7 @@
 
 """
 
-from typing import Union, Tuple, List, Dict, Any, Optional, Callable
+from typing import Union, Tuple, List, Dict, Any, Optional, Callable, Iterable
 
 import re
 import copy
@@ -961,6 +961,50 @@ class Node(EventTarget):
     # getUserData() 🗑️
     # setUserData() 🗑️
 
+    # non standard methods to be etree compatible
+    # seems to make it work with https://github.com/sissaschool/elementpath
+    # if i hack it to allow domonic root nodes
+
+    def iter(self, tag=None):
+        """ Creates a tree iterator with the current element as the root. 
+        The iterator iterates over this element and all elements below it, in document (depth first) order.
+        If tag is not None or '*', only elements whose tag equals tag are returned from the iterator.
+        If the tree structure is modified during iteration, the result is undefined."""
+        for each in self.args:
+            if type(each) is str:
+                continue
+            if tag is None or tag == '*':
+                yield each
+            elif each.tag == tag:
+                yield each
+            for x in each.iter(tag):
+                yield x
+
+    @property
+    def tag(self):
+        """ Returns the tag name of the current node """
+        return self.nodeName
+
+    @property
+    def text(self):
+        """ Returns the text content of the current node """
+        return self.textContent
+
+    @property
+    def attrib(self):
+        """ Returns the attributes of the current node as a dict not a NamedNodeMap """
+        try:
+            # print(self.kwargs)
+            return self.kwargs
+        except Exception as e:
+            # print('failed::', e)
+            return None
+
+    @property
+    def tail(self):
+        """ Returns the text content of the current node """
+        return self.textContent
+
 
 class ParentNode(object):
     """ not tested yet """
@@ -1701,6 +1745,10 @@ class NodeList(list):
             return self[index]
         except IndexError:
             return None
+
+    # def items(self):
+    #     """ Returns a list of the nodes in the list."""
+    #     return self
 
     def entries(self) -> Iterable[Tuple[int, Node]]:
         """ Returns an iterator, allowing code to go through all key/value pairs contained in the collection.
@@ -3707,6 +3755,9 @@ class Text(CharacterData):
 
     # def __repr__(self):
         # return str(self.textContent)
+
+    def __iter__(self):
+        yield self
 
 
 class HTMLCollection(list):
