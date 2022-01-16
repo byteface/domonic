@@ -56,6 +56,8 @@ null: object = None
 undefined: object = None
 # globalThis # TODO - do i need to use inpect? or is globals() ok?
 
+# def typeof(v):
+#     return type(v).__name__
 
 class Boolean():
     """[Creates a Boolean Object.

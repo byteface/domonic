@@ -992,10 +992,12 @@ class Node(EventTarget):
 
     @property
     def attrib(self):
-        """ Returns the attributes of the current node """
+        """ Returns the attributes of the current node as a dict not a NamedNodeMap """
         try:
-            return self.attributes
-        except:
+            # print(self.kwargs)
+            return self.kwargs
+        except Exception as e:
+            # print('failed::', e)
             return None
 
     @property
@@ -1743,6 +1745,10 @@ class NodeList(list):
             return self[index]
         except IndexError:
             return None
+
+    # def items(self):
+    #     """ Returns a list of the nodes in the list."""
+    #     return self
 
     def entries(self) -> Iterable[Tuple[int, Node]]:
         """ Returns an iterator, allowing code to go through all key/value pairs contained in the collection.
