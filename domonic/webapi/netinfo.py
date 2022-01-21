@@ -6,6 +6,7 @@
 
 from domonic.dom import EventTarget
 
+
 class NetworkInformation(EventTarget):
 
     def __init__(self):

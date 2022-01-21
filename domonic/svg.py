@@ -12,7 +12,6 @@
 # from domonic.html import tag
 from domonic.dom import Element
 
-
 svg_tags = [
     "svg",
     "animate",

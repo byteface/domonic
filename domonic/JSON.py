@@ -3,12 +3,11 @@
     ====================================
 """
 
-import json
 import csv
+import json
 
-from domonic.html import table, td, tr, th
 from domonic.decorators import as_json
-
+from domonic.html import table, td, th, tr
 
 return_json = as_json  # legacy. use the one in decorators package
 

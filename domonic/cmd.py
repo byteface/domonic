@@ -3,8 +3,8 @@
     ====================================
     - call cmd commands from python 3
 """
-import subprocess
 import os
+import subprocess
 
 from domonic.javascript import window
 

@@ -6,13 +6,15 @@
 """
 
 import unittest
+
+from domonic import *
+from domonic.dom import *
+from domonic.html import *
+from domonic.style import *
+
 # import requests
 # from mock import patch
 
-from domonic.html import *
-from domonic.style import *
-from domonic.dom import *
-from domonic import *
 
 
 class TestCase(unittest.TestCase):
@@ -987,6 +989,7 @@ class TestCase(unittest.TestCase):
 
     def test_comment(self):
         from domonic.html import comment
+
         # https://github.com/byteface/domonic/issues/38
         com = f"{html(head(),body(comment('foo')))}"
         # print(com)
@@ -994,6 +997,7 @@ class TestCase(unittest.TestCase):
         # print(f'{com}')
         assert str(com) == '<!--foo-->'
         from domonic.dom import Comment
+
         # https://github.com/byteface/domonic/issues/38
         com = f"{html(head(),body(Comment('foo')))}"
         print(com)
@@ -1035,8 +1039,7 @@ class TestCase(unittest.TestCase):
 
     def test_treewalker(self):
 
-        from domonic.dom import Comment
-        from domonic.dom import TreeWalker
+        from domonic.dom import Comment, TreeWalker
 
         doc = html(
             div(_id="contentarea").html(

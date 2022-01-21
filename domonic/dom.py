@@ -7,17 +7,18 @@
 
 """
 
-from typing import Union, Tuple, List, Dict, Any, Optional, Callable, Iterable
-
-import re
 import copy
+import re
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
-from domonic.events import Event, EventTarget, MouseEvent  # , KeyboardEvent, TouchEvent, UIEvent, CustomEvent
-from domonic.style import CSSStyleDeclaration as Style, StyleSheetList
-from domonic.geom import vec3
-
+from domonic.events import (  # , KeyboardEvent, TouchEvent, UIEvent, CustomEvent
+    Event, EventTarget, MouseEvent)
+from domonic.geom.vec3 import vec3
+from domonic.style import CSSStyleDeclaration as Style
+from domonic.style import StyleSheetList
+from domonic.webapi.console import \
+    Console  # left here for legacy reasons. access via window module instead
 from domonic.webapi.url import URL
-from domonic.webapi.console import Console  # left here for legacy reasons. access via window module instead
 
 
 class Node(EventTarget):

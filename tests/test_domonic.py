@@ -8,11 +8,13 @@
 """
 
 import unittest
-# import requests
-# from mock import patch
 
 # from domonic.dom import *
 from domonic import domonic
+
+# import requests
+# from mock import patch
+
 
 
 class TestCase(unittest.TestCase):

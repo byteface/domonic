@@ -4,14 +4,16 @@
 """
 
 import unittest
-# import requests
-# from mock import patch
-
 from datetime import datetime
 
 from domonic import domonic
-from domonic.xml.sitemap import *
 from domonic.decorators import silence
+from domonic.xml.sitemap import *
+
+# import requests
+# from mock import patch
+
+
 
 
 class TestCase(unittest.TestCase):
@@ -44,13 +46,12 @@ class TestCase(unittest.TestCase):
 
     def test_sitemapindex(self):
 
-        from domonic.xml.sitemap import sitemapindex, sitemap, url, urlset
+        from domonic.xml.sitemap import sitemap, sitemapindex, url, urlset
 
         # sm = sitemapindex()
         # sm.addChild(sitemap(loc('https://abd.net/sitemap1.xml'), lastmod(datetime.datetime.now())))
         # sm.addChild(sitemap(loc('https://abd.net/sitemap2.xml'), lastmod(datetime.datetime.now())))
         # sm.addChild(sitemap(loc('https://abd.net/sitemap3.xml'), lastmod(datetime.datetime.now())))
-
         # print(f"{sm!s}")
         # print(f"{sm!r}")
 
@@ -67,6 +68,7 @@ class TestCase(unittest.TestCase):
     @silence
     def test_loadsitemap(self):
         from domonic.xml.sitemap import get_sitemap
+
         # sm = get_sitemap('https://x.net/sitemap.xml')
         sm = get_sitemap('https://x.net/merchants/ar/sitemap_index.xml')
         print(sm)

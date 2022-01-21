@@ -5,9 +5,8 @@
 
 """
 
-from domonic.html import closed_tag
 from domonic.dom import Element
-
+from domonic.html import closed_tag
 
 x3d = X3D = type('x3d', (Element,), {'name': 'x3d'})
 scene = Scene = type('scene', (Element,), {'name': 'scene'})

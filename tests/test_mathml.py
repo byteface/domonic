@@ -6,12 +6,14 @@
 """
 
 import unittest
+
+from domonic.xml.mathml import *
+
 # import requests
 # from mock import patch
 
 # from domonic import domonic
 
-from domonic.xml.mathml import *
 # from domonic.decorators import silence
 
 

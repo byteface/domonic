@@ -9,7 +9,6 @@
 # import {slice} from "./array";
 from domonic.javascript import *
 
-
 noabort = {}
 
 

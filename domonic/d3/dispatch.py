@@ -4,7 +4,7 @@
 
 """
 
-from domonic.javascript import Array, String, RegExp, Object, Function
+from domonic.javascript import Array, Function, Object, RegExp, String
 
 noop = {"value": lambda *args: {}}
 

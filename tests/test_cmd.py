@@ -6,6 +6,7 @@
 import unittest
 
 from domonic.cmd import dir
+
 # from domonic.decorators import silence
 
 

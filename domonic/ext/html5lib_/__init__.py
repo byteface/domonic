@@ -36,17 +36,19 @@ except ImportError:  # Python 2.7
 # from xml.dom import minidom, Node
 import weakref
 
+from html5lib import constants
+from html5lib._utils import moduleFactoryFactory
+from html5lib.constants import namespaces
+from html5lib.treebuilders import base
+
+from domonic.dom import DOMImplementation, Node
+
 # from . import base
 # from .. import constants
 # from ..constants import namespaces
 # from .._utils import moduleFactoryFactory
 
-from html5lib.treebuilders import base
-from html5lib import constants
-from html5lib.constants import namespaces
-from html5lib._utils import moduleFactoryFactory
 
-from domonic.dom import DOMImplementation, Node
 
 
 # def getDomBuilder(DomImplementation):
@@ -291,6 +293,7 @@ getDomModule = moduleFactoryFactory(getDomBuilder)
 
 # if implementation is None:
 from xml.dom import minidom
+
 implementation = minidom
 
 

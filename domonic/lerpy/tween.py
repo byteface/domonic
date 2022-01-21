@@ -1,6 +1,5 @@
-﻿from domonic.javascript import window
-from domonic.events import EventDispatcher
-from domonic.events import TweenEvent
+﻿from domonic.events import EventDispatcher, TweenEvent
+from domonic.javascript import window
 from domonic.lerpy import get_timer
 from domonic.lerpy.easing import *
 

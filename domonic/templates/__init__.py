@@ -5,9 +5,9 @@
 
 """
 
-from domonic.html import *
-from domonic.constants.entities import Char
 from domonic.constants import http_response_status_codes
+from domonic.constants.entities import Char
+from domonic.html import *
 
 
 class status_page():

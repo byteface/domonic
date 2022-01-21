@@ -6,32 +6,31 @@
 
 """
 
-from typing import Union, Tuple, List, Dict, Any, Optional, Callable
-
-import gc
-import re
-import json
-import os
 import array
+import datetime
+import gc
+import json
+import math
+import multiprocessing
+import os
+import random
+import re
+import signal
 import struct
 import sys
-import time
-import math
-import random
-import datetime
 import threading
-import signal
+import time
 import urllib.parse
-from urllib.parse import unquote, quote
-
-import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from urllib.parse import quote, unquote
 
-from dateutil.parser import parse
 import requests
+from dateutil.parser import parse
 
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.webstorage import Storage
+
 
 def function(python_str: str) -> str:
     """[evals a string i.e.
@@ -2703,6 +2702,7 @@ class String(object):
         # if isinstance( expr, RegExp)
 
         import re
+
         # print( '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.', type(expr) )
         is_regex = False
         try:
@@ -3118,7 +3118,8 @@ class String(object):
         Returns:
             [str]: [the string as a webpage]
         """
-        from domonic.html import html, body, head, title, script, style, meta, link, h1
+        from domonic.html import (body, h1, head, html, link, meta, script,
+                                  style, title)
         content = html(
             head(
                 title(self.x),

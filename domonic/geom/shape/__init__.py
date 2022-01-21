@@ -4,7 +4,7 @@
 
 """
 
-from domonic.geom import vec2
+from domonic.geom.vec2 import vec2
 from domonic.svg import *
 
 
@@ -787,6 +787,6 @@ class Polyline(Shape):
 #         self.color = color
 
 
-from domonic.geom.shape.shapes import Circle
-from domonic.geom.shape.shapes import Oval
+from domonic.geom.shape.shapes import Circle, Oval
+
 # from domonic.geom.shape.circle import Elipse

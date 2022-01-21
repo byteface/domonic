@@ -4,10 +4,12 @@
     https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API
 """
 
+from domonic.javascript import (ArrayBuffer, DataView, Float32Array,
+                                Float64Array, Function, Int8Array, Int16Array,
+                                Int32Array, String, Uint8Array, Uint16Array,
+                                Uint32Array)
 from domonic.webapi.streams import ReadableStream
-from domonic.javascript import (Uint8Array, Int8Array, Uint16Array, Int16Array, Int32Array, Uint32Array, Float32Array, Float64Array, DataView)
-from domonic.javascript import String, Function
-from domonic.javascript import ArrayBuffer
+
 # from domonic.javascript import ArrayBufferView
 
 

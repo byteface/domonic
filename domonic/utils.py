@@ -5,9 +5,9 @@
 """
 # import typing
 import random
-from re import sub
-from itertools import chain, islice
 from collections import Counter
+from itertools import chain, islice
+from re import sub
 
 from domonic.decorators import deprecated
 

@@ -6,13 +6,15 @@
 """
 
 import unittest
+
+from domonic import domonic
+from domonic.decorators import silence
+from domonic.html import *
+
 # import requests
 # from mock import patch
 
-from domonic import domonic
 
-from domonic.html import *
-from domonic.decorators import silence
 
 
 class TestCase(unittest.TestCase):

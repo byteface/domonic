@@ -4,10 +4,10 @@
 
 """
 
-from typing import Callable
-import warnings
 import functools
+import warnings
 from functools import wraps
+from typing import Callable
 
 
 def el(element='div', string: bool = False):

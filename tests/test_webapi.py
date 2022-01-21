@@ -8,6 +8,7 @@ import unittest
 from domonic.dom import *
 from domonic.javascript import *
 from domonic.webapi import *
+
 # from domonic.decorators import silence
 
 
@@ -100,21 +101,17 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_xhr(self):
-        from domonic.html import form, input, button, br, hr, div
+        from domonic.html import br, button, div, form, hr, input
         from domonic.javascript import Global
-
         # def on_submit(event):
         #     event.preventDefault()
         #     alert("Form submitted")
-
         # def on_load(event):
         #     event.preventDefault()
         #     alert("Page loaded")
-
         # def on_error(event):
         #     event.preventDefault()
         #     alert("Page error")
-
         from domonic.webapi.xhr import FormData
 
         myform = form(action='/', method='post')
@@ -146,7 +143,7 @@ class TestCase(unittest.TestCase):
 
 
     def test_xpath(self):
-
+    
         from domonic import domonic
         from domonic.webapi.xpath import XPathEvaluator, XPathResult
 

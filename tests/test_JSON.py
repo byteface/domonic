@@ -4,16 +4,17 @@
     unit tests for css
 """
 
+import json
 import unittest
 
-import json
+import domonic.JSON as JSON  # do this to use same way as previous versions of domonic
+from domonic.decorators import as_json
+from domonic.html import *
+
 # import requests
 # from mock import patch
 
-from domonic.html import *
 
-from domonic.decorators import as_json
-import domonic.JSON as JSON  # do this to use same way as previous versions of domonic
 
 
 class TestCase(unittest.TestCase):

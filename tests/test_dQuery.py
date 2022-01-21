@@ -7,13 +7,15 @@
 
 import time
 import unittest
+
+from domonic.dom import *
+from domonic.dQuery import *
+from domonic.html import *
+
 # import requests
 # from mock import patch
 # from domonic.javascript import Math
 
-from domonic.dom import *
-from domonic.html import *
-from domonic.dQuery import *
 
 
 class TestCase(unittest.TestCase):

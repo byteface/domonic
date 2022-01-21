@@ -12,8 +12,8 @@
 import base64
 import json
 
-from domonic.html import *
 from domonic.events import *
+from domonic.html import *
 
 
 class Websocket(object):

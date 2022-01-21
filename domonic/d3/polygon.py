@@ -4,7 +4,8 @@
 
 """
 
-from domonic.javascript import Math, Array
+from domonic.javascript import Array, Math
+
 
 def polygonArea(polygon):
     i = -1

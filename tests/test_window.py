@@ -5,11 +5,12 @@
 
 import unittest
 
+from domonic.decorators import *
 # from domonic.dom import *
 # from domonic.javascript import *
 # from domonic.webapi import *
 from domonic.window import *
-from domonic.decorators import *
+
 
 class TestCase(unittest.TestCase):
 

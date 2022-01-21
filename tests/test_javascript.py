@@ -6,23 +6,19 @@
 
 import time
 import unittest
+from inspect import stack
 from unittest.mock import Mock
+
+from domonic.javascript import *
+from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
+                                Window)
+
 # import requests
 # from mock import patch
 
-from domonic.javascript import Object
-from domonic.javascript import Math
-from domonic.javascript import Global
-from domonic.javascript import Window
-from domonic.javascript import Date
-from domonic.javascript import URL
-from domonic.javascript import Array
-from domonic.javascript import String
-
-from domonic.javascript import *
 
 
-from inspect import stack
+
 
 
 class TestCase(unittest.TestCase):
@@ -960,14 +956,13 @@ class TestCase(unittest.TestCase):
     def test_javascript_called(self):
 
         from domonic.decorators import called
-        from domonic.dQuery import º, dQuery_el
+        from domonic.dQuery import dQuery_el, º
 
         # import time
         # @called(lambda:time.sleep(2))
         # def anon( data=None ):
         #     print("func you")
         #     print(data)
-
         # import time
         # @called(time.sleep(2)) # calls right away without lambda. but doesnt pass data. can i detect it?
         # def anon( data=None ):

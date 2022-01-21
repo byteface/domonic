@@ -4,7 +4,7 @@
 
 """
 
-from domonic.javascript import Math, Array, Number, String, Global, RegExp
+from domonic.javascript import Array, Global, Math, Number, RegExp, String
 
 
 def formatDecimal(x, ignore=None):

@@ -4,15 +4,17 @@
 """
 
 import unittest
-# import requests
-# from mock import patch
 
 from domonic import domonic
-
+from domonic.decorators import silence
 from domonic.dom import *
 from domonic.html import *
 from domonic.xml.x3d import *
-from domonic.decorators import silence
+
+# import requests
+# from mock import patch
+
+
 
 
 class TestCase(unittest.TestCase):

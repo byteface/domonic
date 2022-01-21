@@ -5,12 +5,14 @@
 """
 
 import unittest
+
+from domonic.dom import *
+from domonic.html import *
+from domonic.style import *
+
 # import requests
 # from mock import patch
 
-from domonic.html import *
-from domonic.style import *
-from domonic.dom import *
 
 
 class TestCase(unittest.TestCase):

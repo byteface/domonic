@@ -4,12 +4,14 @@
 """
 
 import unittest
+
+from domonic.xml.collada import *
+
 # import requests
 # from mock import patch
 
 # from domonic import domonic
 
-from domonic.xml.collada import *
 # from domonic.decorators import silence
 
 

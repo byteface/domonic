@@ -5,9 +5,10 @@
 
 # from typing import Union, Tuple, List, Dict, Any, Optional, Callable, cast, TypeVar, Generic, Iterable, Sequence
 
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
-from domonic.geom import vec3, vec4
+from domonic.geom.vec3 import vec3
+from domonic.geom.vec4 import vec4
 
 # function rgb
 # function rgba

@@ -28,16 +28,16 @@ __all__ = (
 VERSION = __version__
 # LICENSE = __license__
 
-import requests
 import re
 
-from domonic.svg import *
+import requests
+
+from domonic.components import Input
 from domonic.html import *
 from domonic.html import html_attributes as attributes
 from domonic.javascript import *
-
+from domonic.svg import *
 from domonic.utils import Utils
-from domonic.components import Input
 
 
 class domonic:
@@ -984,6 +984,7 @@ class domonic:
             import html5lib
             if 'html5lib' in sys.modules:
                 from html5lib import HTMLParser
+
                 from domonic.ext.html5lib_ import getTreeBuilder
                 parser = HTMLParser(tree=getTreeBuilder())
                 page = parser.parse(string)

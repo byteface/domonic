@@ -3,8 +3,8 @@
     ====================================
     - call command line functions in python 3
 """
-import subprocess
 import os
+import subprocess
 
 from domonic.javascript import window
 
@@ -191,7 +191,7 @@ class history(command):
         self.iterable = True
         try:
             # history is empty for non interactive sessions so read file
-            from os.path import join, expanduser
+            from os.path import expanduser, join
             with open(join(expanduser('~'), '.bash_history'), 'r') as f:
                 self.result = ''.join(f.readlines())
         except Exception as e:

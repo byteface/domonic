@@ -16,16 +16,14 @@ import sys
 import requests
 
 from domonic import domonic
-from domonic.javascript import Window
 from domonic.dom import *
-from domonic.dom import document, Location
-
-from domonic.webapi.webstorage import Storage
+from domonic.dom import Location, document
+from domonic.javascript import Window
 from domonic.webapi.console import Console
-
-from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.credentials import CredentialsContainer
 from domonic.webapi.geo import Geolocation
+from domonic.webapi.netinfo import NetworkInformation
+from domonic.webapi.webstorage import Storage
 
 # from domonic.webapi.mediacapabilities import MediaCapabilities
 # from domonic.webapi.mediasession import MediaSession
@@ -52,8 +50,8 @@ class CustomElementRegistry():
             raise ValueError('Invalid custom element name. Must contain hypen: ' + name)
         # el = document.createElement(name)
         # el.constructor = constructor
-        from domonic.html import tag
         from domonic.dom import Element
+        from domonic.html import tag
         el = type(name, (tag, Element), {'name': name, '__init__': constructor})
         if options is not None:
             if 'extends' in options:
@@ -293,6 +291,7 @@ class Window(Window):
         # import html5lib
         # import requests
         from html5lib import HTMLParser
+
         from domonic.ext.html5lib_ import getTreeBuilder
 
         if 'http' not in url:
@@ -333,7 +332,7 @@ class Window(Window):
         # content = content.replace(' ', '')
         # content = content.replace('\r', '')
 
-        from domonic.parsers import remove_tags, remove_doctype
+        from domonic.parsers import remove_doctype, remove_tags
         content = remove_tags(content, ['js', 'css', '#'])
         content = remove_doctype(content)
 

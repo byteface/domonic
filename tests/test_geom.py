@@ -4,12 +4,16 @@
 """
 
 import unittest
+
+from domonic.constants.color import Color
+from domonic.geom.shape import Circle, Line, Rect, Shape
+# from domonic import domonic
+from domonic.geom.vec2 import vec2
+from domonic.geom.vec3 import vec3
+
 # import requests
 # from mock import patch
 
-# from domonic import domonic
-from domonic.geom import vec2, vec3, Shape, Rect, Line, Circle
-from domonic.constants.color import Color
 
 
 class TestCase(unittest.TestCase):

@@ -4,6 +4,7 @@
     written by.ai
 """
 import math
+
 from domonic.javascript import Math
 
 

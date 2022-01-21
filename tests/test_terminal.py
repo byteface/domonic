@@ -5,8 +5,8 @@
 
 import unittest
 
-from domonic.terminal import *
 from domonic.decorators import silence
+from domonic.terminal import *
 
 
 class TestCase(unittest.TestCase):

@@ -5,8 +5,8 @@
 
 """
 
-from domonic.html import closed_tag
 from domonic.dom import Element
+from domonic.html import closed_tag
 
 
 def write(inp, outp='output'):

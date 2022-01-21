@@ -8,8 +8,8 @@
 
 # from domonic.html import *
 
-from domonic.javascript import *
 from domonic.dom import document  # bring in the global
+from domonic.javascript import *
 
 xhtml = "http://www.w3.org/1999/xhtml"
 
@@ -32,6 +32,7 @@ def creatorInherit(name):
     def anon(this):
         # document = this.ownerDocument
         from domonic.dom import document
+
         # uri = this.namespaceURI
         uri = document.namespaceURI
         return document.createElement(name) if uri == xhtml and document.documentElement.namespaceURI == xhtml else document.createElementNS(uri, name)
@@ -1249,6 +1250,7 @@ def empty():
 
 def selectAll(selector):
     from domonic.dom import document  # bring in the global document
+
     # print(document)
     if isinstance(selector, str):
         return Selection([document.querySelectorAll(selector)], [document.documentElement])

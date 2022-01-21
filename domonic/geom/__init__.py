@@ -6,12 +6,18 @@
 
 """
 import math
-from domonic.javascript import Math
 
+# from domonic.geom.shape import Triangle
+# from domonic.geom.shape import Quad
+# from domonic.geom.shape import Hexagon
+# from domonic.geom.shape import Rectangle
+# from domonic.geom.shape import Plane
+# from domonic.geom.shape import Circle, Line, Point, Polygon, Rect, Shape
 # from domonic.vector import vector
 from domonic.geom.vec2 import vec2
-from domonic.geom.vec3 import vec3
-from domonic.geom.vec4 import vec4
+# from domonic.geom.vec3 import vec3
+# from domonic.geom.vec4 import vec4
+# from domonic.javascript import Math
 
 # from domonic.mat4 import mat4
 # from domonic.mat3 import mat3
@@ -30,17 +36,6 @@ from domonic.geom.vec4 import vec4
 # from domonic.geom_shader_math import *
 # from domonic.geom_shader_math_utils import *
 
-from domonic.geom.shape import Shape
-from domonic.geom.shape import Point
-from domonic.geom.shape import Line
-# from domonic.geom.shape import Plane
-from domonic.geom.shape import Circle
-from domonic.geom.shape import Polygon
-# from domonic.geom.shape import Triangle
-# from domonic.geom.shape import Quad
-# from domonic.geom.shape import Hexagon
-# from domonic.geom.shape import Rectangle
-from domonic.geom.shape import Rect
 # from domonic.geom.shape import Ellipse
 # from domonic.geom.shape import BoundingBox
 # from domonic.geom.shape import BoundingCircle

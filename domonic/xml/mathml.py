@@ -8,7 +8,6 @@
 
 from domonic.dom import Element
 
-
 mathml_tags = [
     "mmultiscripts",
     "munderover",

@@ -11,7 +11,7 @@
 
 import datetime
 
-from domonic.dom import Element, Document
+from domonic.dom import Document, Element
 
 # __all__ = ['sitemap', 'url', 'lastmod']
 

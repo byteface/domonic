@@ -4,8 +4,8 @@
     written by.ai
 """
 
-from domonic.javascript import Math
 from domonic.geom.shape import Shape
+from domonic.javascript import Math
 
 
 class Circle(Shape):

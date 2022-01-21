@@ -5,12 +5,14 @@
 """
 
 import unittest
+
+from domonic import domonic
+from domonic.svg import *
+
 # import requests
 # from mock import patch
 
-from domonic import domonic
 
-from domonic.svg import *
 # from domonic.decorators import silence
 
 
