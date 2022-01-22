@@ -49,6 +49,30 @@ for more information see mdn docs...
 # TODO - link
 
 
+XPATH
+----------------
+
+Here's a quick example of using xpath...
+
+.. code-block :: python
+
+	somehtml = '''
+	<div>XPath example</div>
+	<div>Number of &lt;div&gt;s: <output></output></div>
+	'''
+	page = domonic.parseString(somehtml)  # NOTE - probably requries html5lib install
+	evaluator = XPathEvaluator()
+	expression = evaluator.createExpression("//div")
+	result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+	assert result.snapshotLength == 2
+
+
+for more information see mdn docs... 
+# TODO - link
+
+
+
+
 .. automodule:: domonic.webapi.console
     :members:
     :noindex:
@@ -66,5 +90,9 @@ for more information see mdn docs...
     :noindex:
 
 .. automodule:: domonic.webapi.xhr
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.xpath
     :members:
     :noindex:

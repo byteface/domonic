@@ -6,6 +6,7 @@
 import unittest
 
 from domonic.dom import *
+from domonic.html import *
 from domonic.javascript import *
 from domonic.webapi import *
 
@@ -143,7 +144,7 @@ class TestCase(unittest.TestCase):
 
 
     def test_xpath(self):
-    
+
         from domonic import domonic
         from domonic.webapi.xpath import XPathEvaluator, XPathResult
 
@@ -223,6 +224,10 @@ class TestCase(unittest.TestCase):
         print(str(result.nodes[0]))
         # wow. nice!
 
+        expression = evaluator.createExpression("//a[contains(@href, 'twitter')]")
+        result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        print("NO UNDERSCORE", str(result.nodes[0]))
+
         expression = evaluator.createExpression('//*[last()][name()="a"]')
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         print(str(result.nodes[0]))
@@ -231,6 +236,20 @@ class TestCase(unittest.TestCase):
         expression = evaluator.createExpression('//span/text()')
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         print(str(result.nodes[0]))
+
+        somepage = html(head(), 
+                        body(
+                            h1("some title"),
+                            p("some text"),
+                            div("some more text")
+                        )
+                    )
+
+        expression = evaluator.createExpression('//div/text()')
+        result = expression.evaluate(somepage, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        print(str(result.nodes[0]))
+
+
 
         '''
         TODO - unit tests for the following so i know what works

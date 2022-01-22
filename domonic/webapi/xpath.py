@@ -31,14 +31,42 @@ class XPathException:
     def __init__(self) -> None:
         pass
 
+
 class XPathExpression(object):
 
     def __init__(self, expr: str):  #, resolver):
+
+        # TODO - hack.
+        # need to allow non underscore accessors to get underscored.
+        # when that's fixed can remove this.
+        expr = expr.replace('[@', '[@_')
+        expr = expr.replace('[@__', '[@_')
+        expr = expr.replace('(@', '(@_')
+        expr = expr.replace('(@__', '(@_')
+        # why do i suddenly feel like one of those people that wears an 'only god can judge me' t-shirt
+
         if len(expr) <= 0:
             raise Exception('no expression')
         self.selector = elementpath.Selector(expr)
 
+    # TODO - DRY - make some utils . just stole this from Treewalker.
+    @staticmethod
+    def _upgrade_dom(node):
+        def upgrade(el):
+            from domonic.dom import Text
+            if isinstance(el, (Text, str)):
+                return
+            for child in el:
+                if isinstance(child, str):
+                    newchild = Text(child)
+                    el.replaceChild(newchild, child)
+                    newchild.parentNode = el
+        node._iterate(node, upgrade)
+        return node
+
     def evaluate(self, node, type=6):  # XPathResult.ANY_TYPE):
+        # note: otherwise would fail on regular text?
+        node = XPathExpression._upgrade_dom(node)
         return XPathResult(self.selector.select(node), type)
 
 
