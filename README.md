@@ -649,20 +649,26 @@ domonic -h
 
 To see the version:
 
-```python
-  domonic -v
+```bash
+domonic -v
 ```
 
 To quickly create a domonic project for prototyping:
 
-```python
-  domonic -p myproject
+```bash
+domonic -p myproject
 ```
 
 To evaluate some domonic pyml:
 
-```python
-  domonic -e 'html(head(),body(div()))'
+```bash
+domonic -e 'html(head(),body(div()))'
+```
+
+To use xpath on a website (new)
+
+```bash
+domonic -x https://google.com //a
 ```
 
 ### EXAMPLE PROJECTS
