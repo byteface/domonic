@@ -43,7 +43,8 @@ class XPathExpression(object):
         expr = expr.replace('[@__', '[@_')
         expr = expr.replace('(@', '(@_')
         expr = expr.replace('(@__', '(@_')
-        # why do i suddenly feel like one of those people that wears an 'only god can judge me' t-shirt
+        expr = expr.replace('/@', '/@_')
+        expr = expr.replace('/@__', '/@_')
 
         if len(expr) <= 0:
             raise Exception('no expression')
