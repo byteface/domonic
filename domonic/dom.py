@@ -11,13 +11,11 @@ import copy
 import re
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
-from domonic.events import (  # , KeyboardEvent, TouchEvent, UIEvent, CustomEvent
-    Event, EventTarget, MouseEvent)
+from domonic.events import (Event, EventTarget, MouseEvent)
 from domonic.geom.vec3 import vec3
 from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
-from domonic.webapi.console import \
-    Console  # left here for legacy reasons. access via window module instead
+from domonic.webapi.console import Console
 from domonic.webapi.url import URL
 
 
@@ -514,7 +512,6 @@ class Node(EventTarget):
         except Exception as e:
             print('unable to update parent', e)
 
-
     def _iterate(self, element, callback) -> None:
         ''' private. - TODO < check these docstrings don't export in docs
         loops all children and sets self as parent.
@@ -967,7 +964,7 @@ class Node(EventTarget):
     # if i hack it to allow domonic root nodes
 
     def iter(self, tag=None):
-        """ Creates a tree iterator with the current element as the root. 
+        """ Creates a tree iterator with the current element as the root.
         The iterator iterates over this element and all elements below it, in document (depth first) order.
         If tag is not None or '*', only elements whose tag equals tag are returned from the iterator.
         If the tree structure is modified during iteration, the result is undefined."""
@@ -3411,7 +3408,7 @@ class Document(Element):
         # ''' Returns the URL of the document that loaded the current document'''
         # return
 
-    def renameNode(self, node, namespaceURI :str, nodename: str):
+    def renameNode(self, node, namespaceURI: str, nodename: str):
         """[Renames the specified node, and returns the renamed node.]
 
         Args:

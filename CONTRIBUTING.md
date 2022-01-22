@@ -5,7 +5,7 @@ Welcome! domonic is an open-source project that aims to work for a wide
 range of users and codebases. If you're using domonic your experience
 is important to the project's success.
 
-It's probably more fun to clone and download domonic than it is to pip install it. 
+It's probably more fun to clone and download domonic than it is to pip install it.
 
 I'd encourage you to download and play. If you do manage to improve it
 in even the smallest way, please feel free to send a pull request.
@@ -78,8 +78,8 @@ Discussion
 
 If you found a bug or think something should behave differently we want to hear from you!
 
-Our forum for discussion is the project's 
-[GitHub issue tracker](https://github.com/byteface/domonic/issues) or 
+Our forum for discussion is the projects
+[GitHub issue tracker](https://github.com/byteface/domonic/issues) or
 [discussion board](https://github.com/byteface/domonic/discussions)
 
 For less formal discussion send me a message or join the discord server.
@@ -145,5 +145,7 @@ I'd like to thank here...
 * Jordan Cottle - Jordan-Cottle
 * Alfas Esty - alfasst
 * Kristian Thy - kthy
+* Arjix - ArjixWasTaken
+* ShoGinn
 
 and of course dependabot[bot]

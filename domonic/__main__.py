@@ -236,6 +236,7 @@ def parse_args():
 
     parser.add_argument('-a', '--assets', help="Generate an assets directory with common files", action='store_true')
     parser.add_argument('-d', '--download', help="Attempts to to generate domonic template from a webpage", type=str)
+    parser.add_argument('-x', '--xpath', help="pass a url and an xpath", type=str, nargs="*", default=None)
 
     # parser.add_argument('-u', '--ui', help="launches a UI")
     # parser.add_argument('-p', '--pyml2html', help="converts a .pyml template file to html", type=str)
@@ -303,6 +304,23 @@ def do_things(arguments):
         result = f"{domonic.domonic.domonify(arguments.eval)}"
         print(result)
         return result
+
+    if arguments.xpath is not None:
+        from domonic import domonic
+        from domonic.webapi.xpath import XPathEvaluator, XPathResult
+        url, xpath = arguments.xpath
+        # try:
+        import requests
+        r = requests.get(url)
+        page = domonic.parseString(r.text)
+        evaluator = XPathEvaluator()
+        expression = evaluator.createExpression(xpath)
+        result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        # assert str(result.nodes[0])
+        for n in result.nodes:
+            print(n)
+        # except Exception as e:
+        #     print('pip install html5lib')
 
     # if arguments.server is True:
         # port = domonic.get(arguments.server)
