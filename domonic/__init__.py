@@ -1014,3 +1014,4 @@ class domonic:
             # from xml.dom import pulldom
             # return _do_pulldom_parse(pulldom.parseString, (string,),
                                     # {'parser': parser})
+
