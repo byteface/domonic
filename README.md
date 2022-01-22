@@ -665,7 +665,7 @@ To evaluate some domonic pyml:
 domonic -e 'html(head(),body(div()))'
 ```
 
-To use xpath on a website (new)
+To use xpath on a website (new. requires html5lib installed):
 
 ```bash
 domonic -x https://google.com //a
