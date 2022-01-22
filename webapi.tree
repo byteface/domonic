@@ -1,0 +1,140 @@
+# **********************************************************************
+# **********************************************************************
+#        _                          _                 _            
+#       | |                        | |               | |           
+#    ___| |__   __ _ _ __ _ __  ___| |__   ___   ___ | |_ ___ _ __ 
+#   / __| '_ \ / _` | '__| '_ \/ __| '_ \ / _ \ / _ \| __/ _ \ '__|
+#   \__ \ | | | (_| | |  | |_) \__ \ | | | (_) | (_) | ||  __/ |   
+#   |___/_| |_|\__,_|_|  | .__/|___/_| |_|\___/ \___/ \__\___|_|   
+#                        | |                                       
+#                        |_|                                       
+#
+#   This is a sharpshooter .tree file. (v0.2.2)
+#
+#   For more info visit:
+#   https://github.com/byteface/sharpshooter/
+#
+#   sharpshooter (tree) is open sourced under a MIT License
+#
+# **********************************************************************
+# **********************************************************************
+
+#/webapi
+#/w3c
+/web
+    /parsers
+        expatbuilder.py
+        __init__.py
+    cmd.py
+    dQuery.py
+    style.py
+    window.py
+    terminal.py
+    events.py
+    /constants
+        color.py
+        __init__.py
+        entities.py
+        keyboard.py
+    /ext
+        /html5lib_
+
+            __init__.py
+        __init__.py
+    html.py < from domonic.html import *
+    __init__.py
+    /game
+        __init__.py
+    /xml
+        collada.py
+        x3d.py
+        aframe.py
+        mathml.py
+        sitemap.py
+        __init__.py
+    /lerpy
+        easing.py
+        __init__.py
+        tween.py
+    /geom
+        /shape
+            shapes.py
+            __init__.py
+        vec4.py
+        __init__.py
+        particles.py
+        vec3.py
+        vec2.py
+    utils.py
+    svg.py
+    /d3
+        queue.py
+        tile.py
+        dispatch.py
+        timer.py
+        polygon.py
+        __init__.py
+        format.py
+        selection.py
+        path.py
+    CDN.py
+    /templates
+        __init__.py
+    components.py
+    /webapi
+        fetch.py
+        geo.py
+        console.py
+        streams.py
+        encoding.py
+        webstorage.py
+        credentials.py
+        webrtc.py
+        mediacapabilities.py
+        mediasession.py
+        webworkers.py
+        __init__.py
+        urlpattern.py
+        url.py
+        xhr.py
+        permissions.py
+        xpath.py
+        dragndrop.py
+        clipboard.py
+        mediadevices.py
+        serviceworker.py
+        netinfo.py
+        websocket.py
+        push.py
+        history.py
+    /i18n
+        /sw
+            __init__.py
+        /da
+            __init__.py
+        /mi
+            __init__.py
+        /ch
+            __init__.py
+        /it
+            __init__.py
+        /ru
+            __init__.py
+        __init__.py
+        /zu
+            __init__.py
+        /ar
+            __init__.py
+        /hi
+            __init__.py
+        /de
+            __init__.py
+        /fr
+            __init__.py
+        /es
+            __init__.py
+    javascript.py
+    JSON.py
+    __main__.py
+    dom.py
+    decorators.py
