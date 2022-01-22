@@ -8,7 +8,7 @@ import argparse
 import os
 import sys
 
-prog = '''
+prog = """
 
 function project(){
     PROJECT_NAME=$1
@@ -64,7 +64,7 @@ function project(){
     open .
 }
 
-'''
+"""
 # TODO - nautilus instead of open for linux
 # wrewrite as pure python
 
@@ -84,10 +84,12 @@ def project(name):
         # f.write(". venv/bin/activate\n")
         # f.write("python3 app.py\n")
         # TOD as a run command
-        f.write("""
+        f.write(
+            """
 run:
 \t(. venv/bin/activate; python3 app.py;)
-""")
+"""
+        )
 
     # create a README.md
     with open("README.md", "w") as f:
@@ -126,7 +128,26 @@ run:
     # os.system("python3 -m pip freeze > requirements.txt")
 
     # ask the user which server they want to use
-    server_opt = ["none", "sanic", "flask", "cherrypy", "django", "bottle", "pyramid", "werkzeug", "tornado", "aiohttp", "fastapi", "starlette", "blacksheep", "muffin", "falcon", "baize", "emmett", "quart"]
+    server_opt = [
+        "none",
+        "sanic",
+        "flask",
+        "cherrypy",
+        "django",
+        "bottle",
+        "pyramid",
+        "werkzeug",
+        "tornado",
+        "aiohttp",
+        "fastapi",
+        "starlette",
+        "blacksheep",
+        "muffin",
+        "falcon",
+        "baize",
+        "emmett",
+        "quart",
+    ]
     print("You want a server?")
     for i, server in enumerate(server_opt):
         print(str(i) + ": " + server)
@@ -143,6 +164,7 @@ run:
     with open("app.py", "w") as f:
         # write the hello world for the given server
         from domonic.ext import get_hello_world
+
         code = get_hello_world(server_choice)
         if code is not None:
             f.write(code)
@@ -151,13 +173,14 @@ run:
 
     os.system("python3 -m venv venv")
     from domonic.utils import Utils
+
     if Utils.is_windows():
         # create a bat file to activate the venv an install requirements
         with open("activate.bat", "w") as f:
             f.write("@echo off\n")
-            f.write("call \"venv\Scripts\activate\"\n")
+            f.write('call "venv\Scripts\activate"\n')
             f.write("python3 -m pip install requests\n")
-            if server_choice != 'none':
+            if server_choice != "none":
                 f.write(f"python3 -m pip install {server_choice}\n")
             f.write("python3 -m pip install domonic\n")
             f.write("python3 -m pip freeze > requirements.txt\n")
@@ -171,7 +194,7 @@ run:
             f.write("#!/bin/bash\n")
             f.write("source venv/bin/activate\n")
             f.write("python3 -m pip install requests\n")
-            if server_choice != 'none':
+            if server_choice != "none":
                 f.write(f"python3 -m pip install {server_choice}\n")
             f.write("python3 -m pip install domonic\n")
             f.write("python3 -m pip freeze > requirements.txt\n")
@@ -205,7 +228,7 @@ run:
         f.write("")
 
     # chmod
-    if os.name == 'posix':
+    if os.name == "posix":
         os.system("chmod -R 777 static")
 
     if Utils.is_mac():
@@ -218,6 +241,7 @@ run:
         # explorer.exe .?
         # os.system("explorer.exe .")
 
+
 # def webpage(content):
 #     from domonic.components import webpage_tmpl
 #     with open("index.html", "w") as f:
@@ -225,18 +249,47 @@ run:
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(add_help=False,
-                                     prog="domonic",
-                                     usage="%(prog)s [options]",
-                                     description="Generate HTML with Python 3")
-    parser.add_argument('-h', '--help', help="Opens the online docs in your default browser", action='store_true')
-    parser.add_argument('-v', '--version', action='store_true')
-    parser.add_argument('-p', '--project', help="Create a new project", type=str)
-    parser.add_argument('-e', '--eval', help="Evaluates a domonic pyml string and returns html", type=str)  # default=sys.stdin, nargs='*')
+    parser = argparse.ArgumentParser(
+        add_help=False,
+        prog="domonic",
+        usage="%(prog)s [options]",
+        description="Generate HTML with Python 3",
+    )
+    parser.add_argument(
+        "-h",
+        "--help",
+        help="Opens the online docs in your default browser",
+        action="store_true",
+    )
+    parser.add_argument("-v", "--version", action="store_true")
+    parser.add_argument("-p", "--project", help="Create a new project", type=str)
+    parser.add_argument(
+        "-e",
+        "--eval",
+        help="Evaluates a domonic pyml string and returns html",
+        type=str,
+    )  # default=sys.stdin, nargs='*')
 
-    parser.add_argument('-a', '--assets', help="Generate an assets directory with common files", action='store_true')
-    parser.add_argument('-d', '--download', help="Attempts to to generate domonic template from a webpage", type=str)
-    parser.add_argument('-x', '--xpath', help="pass a url and an xpath", type=str, nargs="*", default=None)
+    parser.add_argument(
+        "-a",
+        "--assets",
+        help="Generate an assets directory with common files",
+        action="store_true",
+    )
+    parser.add_argument(
+        "-d",
+        "--download",
+        help="Attempts to to generate domonic template from a webpage",
+        type=str,
+    )
+    parser.add_argument(
+        "-x",
+        "--xpath",
+        help="pass a url and an xpath",
+        type=str,
+        nargs="*",
+        default=None,
+    )
 
     # parser.add_argument('-u', '--ui', help="launches a UI")
     # parser.add_argument('-p', '--pyml2html', help="converts a .pyml template file to html", type=str)
@@ -267,9 +320,11 @@ def parse_args():
 
 def do_things(arguments):
     from domonic.terminal import TerminalException
+
     try:
         if arguments.assets is True:
             from domonic.utils import Utils
+
             Utils.init_assets()
             # --license,readme,sitemap,requirements
     except TerminalException as e:
@@ -277,30 +332,35 @@ def do_things(arguments):
 
     # print(arguments.download)
     if arguments.download is not None:
-        print('creating domonic template from url:')
+        print("creating domonic template from url:")
         from domonic import domonic
+
         page = domonic.get(arguments.download)
 
         from domonic.html import render
         from domonic.utils import Utils
+
         print("filename:", Utils.url2file(arguments.download))
         render(page, Utils.url2file(arguments.download))
 
     if arguments.project is not None:
-        print('creating a basic project:')
+        print("creating a basic project:")
         project(arguments.project)
 
     if arguments.help is True:
         import webbrowser
+
         webbrowser.open_new("https://domonic.readthedocs.io/")
 
     if arguments.version is True:
         from domonic import __version__
+
         print(__version__)
         return __version__
 
     if arguments.eval is not None:
         import domonic
+
         result = f"{domonic.domonic.domonify(arguments.eval)}"
         print(result)
         return result
@@ -308,9 +368,11 @@ def do_things(arguments):
     if arguments.xpath is not None:
         from domonic import domonic
         from domonic.webapi.xpath import XPathEvaluator, XPathResult
+
         url, xpath = arguments.xpath
         # try:
         import requests
+
         r = requests.get(url)
         page = domonic.parseString(r.text)
         evaluator = XPathEvaluator()
@@ -323,13 +385,12 @@ def do_things(arguments):
         #     print('pip install html5lib')
 
     # if arguments.server is True:
-        # port = domonic.get(arguments.server)
-        # os.system('python -m http.server ' + port)
+    # port = domonic.get(arguments.server)
+    # os.system('python -m http.server ' + port)
 
 
 def run():
-    """[Entry point required by setup.py console_scripts. Saves having to add alias to .bash_profile]
-    """
+    """[Entry point required by setup.py console_scripts. Saves having to add alias to .bash_profile]"""
     args = parse_args()
     do_things(args)
 

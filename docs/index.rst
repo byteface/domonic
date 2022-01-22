@@ -111,6 +111,13 @@ To quickly create a domonic project for prototyping:
   domonic -p
 
 
+To use xpath on a website (new):
+
+.. code-block :: python
+
+  domonic -x https://google.com //a
+
+
 The User Guide
 ----------------
 
