@@ -4,6 +4,12 @@ from setuptools import find_packages, setup
 
 from domonic import __version__ as version
 
+# TODO - see if can do it like html5lib in ext folder first
+# PLUS_REQUIREMENTS = [
+#     'git+https://github.com/byteface/html5-parser.git',
+        # pip install --no-binary lxml html5-parser ?? how you do that in requirements.txt?
+# ]
+
 
 def read(filename):
     """Returns the contents of a file."""
@@ -85,6 +91,9 @@ setup(
         "Topic :: Text Processing :: Markup :: HTML",
     ],
     install_requires=get_requirements(),
+    # extras_require={
+    #         'plus': PLUS_REQUIREMENTS,
+    # },
     packages=find_packages(),
     include_package_data=True,
     entry_points={
