@@ -56,6 +56,8 @@ Here's a quick example of using xpath...
 
 .. code-block :: python
 
+	from domonic.webapi.xpath import XPathEvaluator, XPathResult
+	
 	somehtml = '''
 	<div>XPath example</div>
 	<div>Number of &lt;div&gt;s: <output></output></div>
