@@ -64,6 +64,28 @@ class TestCase(unittest.TestCase):
             rm('somefile')
             self.assertTrue('somefile' not in ls())
 
+    def test_bash_mv(self):
+        try:
+            touch('somefile')
+            mv('somefile temp')
+        except Exception as e:
+            print(e)
+        finally:
+            self.assertTrue('somefile' not in ls())
+            self.assertTrue('temp' in ls())
+            rm('temp')
+
+    def test_bash_cp(self):
+        try:
+            touch('somefile')
+            cp('somefile temp')
+        except Exception as e:
+            print(e)
+        finally:
+            self.assertTrue('temp' in ls())
+            rm('somefile')
+            rm('temp')
+
     @silence
     def test_bash_git(self):
         print(git('status'))
