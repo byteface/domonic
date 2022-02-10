@@ -8,16 +8,15 @@ from domonic.javascript import Array, Math
 
 
 def polygonArea(polygon):
-    points = parsePoints(polygon)
     i = -1
-    n = len(points) # This returns 0, need to access the points
+    n = len(polygon) # This returns 0, need to access the points
     a = 0
-    b = points[n - 1]
+    b = polygon[n - 1]
     area = 0
 
     while i < n:
         a = b
-        b = points[i]
+        b = polygon[i]
         area += a[1] * b[0] - a[0] * b[1]
         i+=1
 
@@ -173,9 +172,3 @@ def polygonLength(polygon):
         perimeter += Math.hypot(xa, ya)
         i += 1
     return perimeter
-
-def parsePoints(polygon):
-    pointSet = []
-    for tuple in polygon.points.split(' '):
-        pointSet.append([int(n) for n in tuple.split(',')])
-    return pointSet
