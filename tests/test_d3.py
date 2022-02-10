@@ -21,6 +21,7 @@ from domonic.d3.dispatch import Dispatch, dispatch
 from domonic.d3.format import *
 from domonic.d3.format import format
 from domonic.d3.path import Path
+from domonic.d3.polygon import *
 from domonic.d3.selection import *
 from domonic.decorators import silence
 
@@ -1524,6 +1525,29 @@ class TestCase(unittest.TestCase):
         two = d.querySelector("#two")
         assert d3.selectAll([None, one, None, two]).nodes() == [one, two]
 
+
+    # Polygon Tests
+    
+    # ADD 3 side
+    # ADD 5 side
+
+    def test_polygonArea(self):
+        irreg_0 = polygon(points="5,11 12,4 7,7 6,1") # area: 15
+        irreg_1 = polygon(points="-6,12 23,2 19,-8 -7,-6") # area: 400
+        irreg_2 = polygon(points="0,4 12,8 23,-5 -5,-3") # area: 203
+        square = polygon(points="0,4 4,4 4,0 0,0") # area: 16
+        self.assertEquals(polygonArea(irreg_0), 15)
+        self.assertEquals(polygonArea(irreg_1), 400)
+        self.assertEquals(polygonArea(irreg_2), 203)
+        self.assertEquals(polygonArea(square), 16)
+        
+    # def test_polygonCentriod():
+    # def test_cross():
+    # def test_lexicographicOrder():
+    # def test_polygonHull():
+    # def test_polygonContains():
+    # def test_polygonLength():
+        
 
 if __name__ == '__main__':
     unittest.main()
