@@ -25,8 +25,6 @@ from domonic.d3.polygon import *
 from domonic.d3.selection import *
 from domonic.decorators import silence
 
-
-# from domonic.d3.polygon import *
 # from domonic.d3.timer import *
 
 from domonic.svg import *  # lowercase path is in here
@@ -1527,28 +1525,24 @@ class TestCase(unittest.TestCase):
 
 
     # Polygon Tests
-
-    def test_parsePoints(self):
-        irreg = polygon(points='0,4 12,8 23,-5 -5,-3')
-        manyPoints = polygon(points='-4,4 -8,0 -8,-2 -10,-6 0,-6 2,0 2,2 3,4 0,6')
-        pointSet_irreg = parsePoints(irreg)
-        pointSet_many = parsePoints(manyPoints)
-        self.assertEquals(pointSet_irreg, [[0,4],[12,8],[23,-5],[-5,-3]])
-        self.assertEquals(pointSet_many, [[-4,4],[-8,0],[-8,-2],[-10,-6],[0,-6],[2,0],[2,2],[3,4],[0,6]])
+    # D3 expects a "polygon" is a 2D array of integers listed counterclockwise (clockwise works too)
+    # This does not work with the polygon as defined by SVG, SVG polygons have a points method you can
+    # parse into a 2D array and use here.
 
     def test_polygonArea(self):
-        irreg_0 = polygon(points='5,11 12,4 7,7 6,1') # area: 15
-        irreg_1 = polygon(points='-6,12 23,2 19,-8 -7,-6') # area: 400
-        irreg_2 = polygon(points='0,4 12,8 23,-5 -5,-3') # area: 203
-        square = polygon(points='0,4 4,4 4,0 0,0') # area: 16
-        # ADD 3 side
-        # ADD 5 side
+        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]       # area: 15
+        irreg_1 = [[-6,12],[23,2],[19,-8],[-7,-6]]  # area: 400
+        irreg_2 = [[0,4],[12,8],[23,-5],[-5,-3]]    # area: 203
+        square = [[0,4],[4,4],[4,0],[0,0]]          # area: 16
+        triangle = [[-4,0],[0,4],[2,0]]             # area: 12
+
         self.assertEquals(polygonArea(irreg_0), 15)
         self.assertEquals(polygonArea(irreg_1), 400)
         self.assertEquals(polygonArea(irreg_2), 203)
         self.assertEquals(polygonArea(square), 16)
+        self.assertEquals(polygonArea(triangle), 12)
         
-    # def test_polygonCentriod():
+    # def test_polygonCentroid():
     # def test_cross():
     # def test_lexicographicOrder():
     # def test_polygonHull():
