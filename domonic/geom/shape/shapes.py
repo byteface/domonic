@@ -9,7 +9,6 @@ from domonic.javascript import Math
 
 
 class Circle(Shape):
-
     def __init__(self, x: float, y: float, radius: float = 1.0, color=None) -> None:
         """[Circle(x, y, radius=1.0, color=None)]
 
@@ -60,11 +59,11 @@ class Circle(Shape):
     #     return "Circle(%s, %s, %s)" % (self.center, self.radius, self.color)
 
     def __getstate__(self):
-        return {'center': self.center, 'radius': self.radius}
+        return {"center": self.center, "radius": self.radius}
 
     def __setstate__(self, state):
-        self.center = state['center']
-        self.radius = state['radius']
+        self.center = state["center"]
+        self.radius = state["radius"]
 
     def __copy__(self):
         return Circle(self.center, self.radius, self.color)
@@ -102,7 +101,7 @@ class Circle(Shape):
 
 class Oval(Circle):
     def __init__(self, radius=2.5, size=3):
-        super().__init__(size, 'green')
+        super().__init__(size, "green")
         self.radius = radius
         self.x = self.width / 2 - self.radius / 2
         self.y = self.width / 2 + self.radius / 2

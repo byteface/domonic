@@ -15,6 +15,7 @@ import math
 # from domonic.geom.shape import Circle, Line, Point, Polygon, Rect, Shape
 # from domonic.vector import vector
 from domonic.geom.vec2 import vec2
+
 # from domonic.geom.vec3 import vec3
 # from domonic.geom.vec4 import vec4
 # from domonic.javascript import Math
@@ -45,27 +46,25 @@ from domonic.geom.vec2 import vec2
 
 
 class matrix(object):
-    """[matrixs]
-    """
+    """[matrixs]"""
 
     def __init__(self, m):
         self.m = m
 
     def translate(self, pt):
-        """ Translates the point on the vector defined by the vectors m[0] and m[1]."""
+        """Translates the point on the vector defined by the vectors m[0] and m[1]."""
         return vec2(self.m[0][0], self.m[0][1]) + pt - self.m[0][0]
 
     def rotate(self, pt):
-        """ Rotates the point on the vector defined by the vectors m[0] and m[1]."""
+        """Rotates the point on the vector defined by the vectors m[0] and m[1]."""
         return vec2(self.m[1][0], self.m[1][1]) + pt - self.m[1][0]
 
     def scale(self, pt):
-        """ Scales the point on the vector defined by the vectors m[0] and m[1]."""
+        """Scales the point on the vector defined by the vectors m[0] and m[1]."""
         return vec2(self.m[2][0], self.m[2][1]) + pt - self.m[2][0]
 
 
-class Quaternion():
-
+class Quaternion:
     def __init__(self, w, x, y, z):
         self.w = w
         self.x = x
@@ -125,7 +124,6 @@ class Group(object):
 
 
 class Layer(object):
-
     def __init__(self, name=None):
         self.name = name
         self.shapes = []
@@ -173,7 +171,10 @@ class Layer(object):
         self.shapes[self.shapes.index(shape1)] = shape2
 
     def swap_at(self, index1, index2):
-        self.shapes[index1], self.shapes[index2] = self.shapes[index2], self.shapes[index1]
+        self.shapes[index1], self.shapes[index2] = (
+            self.shapes[index2],
+            self.shapes[index1],
+        )
         return self
 
     def show(self):
@@ -261,7 +262,6 @@ class Layer(object):
 
 
 class Timeline(object):
-
     def __init__(self):
         self.layers = []
         # self.current_layer = None
@@ -284,15 +284,16 @@ class Timeline(object):
     def stop(self):
         self.is_playing = False
 
-# class Interactive(object):#??
-    # def handle_click_event(self):
 
-    # onFrame
-    # onMouseDown
-    # onMouseDrag
-    # onMouseUp
-    # onClick
-    # onDoubleClick
-    # onMouseMove
-    # onMouseEnter
-    # onMouseLeave
+# class Interactive(object):#??
+# def handle_click_event(self):
+
+# onFrame
+# onMouseDown
+# onMouseDrag
+# onMouseUp
+# onClick
+# onDoubleClick
+# onMouseMove
+# onMouseEnter
+# onMouseLeave

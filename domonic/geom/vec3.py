@@ -8,9 +8,8 @@ import math
 # from domonic.javascript import Math
 
 
-class vec3():
-    """[vec3]
-    """
+class vec3:
+    """[vec3]"""
 
     def __init__(self, x: float = 0, y: float = 0, z: float = 0, w: float = 0):
         self.x: float = x
@@ -20,30 +19,46 @@ class vec3():
 
     def __add__(self, other):
         if isinstance(other, vec3):
-            return self.__class__((self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w))
+            return self.__class__(
+                (self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w)
+            )
         else:
-            return self.__class__((self.x + other, self.y + other, self.z + other, self.w + other))
+            return self.__class__(
+                (self.x + other, self.y + other, self.z + other, self.w + other)
+            )
 
     def __sub__(self, other):
         if isinstance(other, vec3):
-            return self.__class__((self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w))
+            return self.__class__(
+                (self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
+            )
         else:
-            return self.__class__((self.x - other, self.y - other, self.z - other, self.w - other))
+            return self.__class__(
+                (self.x - other, self.y - other, self.z - other, self.w - other)
+            )
 
     def __mul__(self, other):
         if isinstance(other, vec3):
-            return self.__class__((self.x * other.x, self.y * other.y, self.z * other.z, self.w * other.w))
+            return self.__class__(
+                (self.x * other.x, self.y * other.y, self.z * other.z, self.w * other.w)
+            )
         else:
-            return self.__class__((self.x * other, self.y * other, self.z * other, self.w * other))
+            return self.__class__(
+                (self.x * other, self.y * other, self.z * other, self.w * other)
+            )
 
     # def __rmul__(self, other):
     #     return vec3(other.x * self.x, other.y * self.y, other.z * self.z, other.w * self.w)
 
     def __truediv__(self, other):
         if isinstance(other, vec3):
-            return self.__class__(self.x / other.x, self.y / other.y, self.z / other.z, self.w / other.w)
+            return self.__class__(
+                self.x / other.x, self.y / other.y, self.z / other.z, self.w / other.w
+            )
         else:
-            return self.__class__(self.x / other, self.y / other, self.z / other, self.w / other)
+            return self.__class__(
+                self.x / other, self.y / other, self.z / other, self.w / other
+            )
 
     # def __pow__(self, other):
     #     return vec3(self.x ** other.x, self.y ** other.y, self.z ** other.z, self.w ** other.w)
@@ -62,13 +77,13 @@ class vec3():
             elif item == 3:
                 return self.w
         elif isinstance(item, str):
-            if item == 'x':
+            if item == "x":
                 return self.x
-            elif item == 'y':
+            elif item == "y":
                 return self.y
-            elif item == 'z':
+            elif item == "z":
                 return self.z
-            elif item == 'w':
+            elif item == "w":
                 return self.w
 
     def __iadd__(self, other):
@@ -84,7 +99,7 @@ class vec3():
         return self
 
     def subtract(self, point):
-        """ Subtract from this point. """
+        """Subtract from this point."""
         self.x -= point.x
         self.y -= point.y
         self.z -= point.z
@@ -94,13 +109,17 @@ class vec3():
         return self.x * other.x + self.y * other.y + self.z * other.z + self.w * other.w
 
     def cross(self, other):
-        return self.x * other.y - self.y * other.x, self.y * other.z - self.z * other.y, self.z * other.x - self.x * other.z
+        return (
+            self.x * other.y - self.y * other.x,
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+        )
 
     def mul(self, v):
-        return (v.x * self.x + v.y * self.y + v.z * self.z + v.w * self.w)
+        return v.x * self.x + v.y * self.y + v.z * self.z + v.w * self.w
 
     def copy(self):
-        """ Creates a copy of this object. """
+        """Creates a copy of this object."""
         return vec3(self.x, self.y, self.z, self.w)
 
     def angleBetween(self, other):
@@ -110,31 +129,54 @@ class vec3():
         return math.sqrt(dx * dx + dy * dy + dz * dz)
 
     def length(self):
-        return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w)
+        return math.sqrt(
+            self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w
+        )
 
     def distance(self, other):
-        """ Returns the distance between this point and another vector3."""
-        return (self.x - other.x)**2 + (self.y - other.y)**2 + (self.z - other.z)**2 + (self.w - other.w)**2
+        """Returns the distance between this point and another vector3."""
+        return (
+            (self.x - other.x) ** 2
+            + (self.y - other.y) ** 2
+            + (self.z - other.z) ** 2
+            + (self.w - other.w) ** 2
+        )
         # return sqrt(pow(self.x - other.x, 2) + pow(self.y - other.y, 2) + pow(self.z - other.z, 2) + pow(self.w - other.w, 2))
 
     def equals(self, other):
-        """ Determine whether two objects are identical. """
-        return self.x == other.x and self.y == other.y and self.z == other.z and self.w == other.w
+        """Determine whether two objects are identical."""
+        return (
+            self.x == other.x
+            and self.y == other.y
+            and self.z == other.z
+            and self.w == other.w
+        )
 
     def intersects(self, other):
         dx = self.x - other.x
         dy = self.y - other.y
         dz = self.z - other.z
         dw = self.w - other.w
-        return (dx * dy - dy * dz) > 0 and (dx * dw - dw * dz) > 0 and (dx * dz + dz * dw) > 0 and (dy * dw - dw * dy) > 0 and (dy * dw - dw * dw) > 0
+        return (
+            (dx * dy - dy * dz) > 0
+            and (dx * dw - dw * dz) > 0
+            and (dx * dz + dz * dw) > 0
+            and (dy * dw - dw * dy) > 0
+            and (dy * dw - dw * dw) > 0
+        )
 
     def clone(self):
-        """ Returns a new instance of this vector3. """
+        """Returns a new instance of this vector3."""
         return vec3(self.x, self.y, self.z, self.w)
 
     def apply(self, point, amount):
-        """ Moves the points x,y,z,w by amount. """
-        return vec3(point.x + amount.x, point.y + amount.y, point.z + amount.z, point.w + amount.w)
+        """Moves the points x,y,z,w by amount."""
+        return vec3(
+            point.x + amount.x,
+            point.y + amount.y,
+            point.z + amount.z,
+            point.w + amount.w,
+        )
 
     def __str__(self):
         return str(self.x) + " " + str(self.y) + " " + str(self.z)

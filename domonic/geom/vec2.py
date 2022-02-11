@@ -15,9 +15,8 @@ import math
 # import operator
 
 
-class vec2():
-    """[vec2]
-    """
+class vec2:
+    """[vec2]"""
 
     def __init__(self, x: float = 0, y: float = 0):
         self.x: float = x
@@ -32,9 +31,14 @@ class vec2():
         Returns:
             [vec2]: [new vector]
         """
-        if isinstance(other, vec2):
+        # if isinstance(other, vec2):
+        #     return self.__class__((self.x * other.x, self.y * other.y))
+        # else:
+        #     return self.__class__((self.x * other, self.y * other))
+        # more pythonic...?
+        try:
             return self.__class__((self.x * other.x, self.y * other.y))
-        else:
+        except AttributeError:
             return self.__class__((self.x * other, self.y * other))
 
     def __div__(self, other):
@@ -56,9 +60,9 @@ class vec2():
             elif item == 1:
                 return self.y
         elif isinstance(item, str):
-            if item == 'x':
+            if item == "x":
                 return self.x
-            elif item == 'y':
+            elif item == "y":
                 return self.y
 
     def __len__(self):
@@ -92,22 +96,22 @@ class vec2():
         return vec2(-self.x, -self.y)
 
     def __eq__(self, other):
-        return (self.x == other.x and self.y == other.y)
+        return self.x == other.x and self.y == other.y
 
     def __ne__(self, other):
-        return (self.x != other.x or self.y != other.y)
+        return self.x != other.x or self.y != other.y
 
     def __lt__(self, other):
-        return (self.x < other.x and self.y < other.y)
+        return self.x < other.x and self.y < other.y
 
     def __le__(self, other):
-        return (self.x <= other.x and self.y <= other.y)
+        return self.x <= other.x and self.y <= other.y
 
     def __gt__(self, other):
-        return (self.x > other.x and self.y > other.y)
+        return self.x > other.x and self.y > other.y
 
     def __ge__(self, other):
-        return (self.x >= other.x and self.y >= other.y)
+        return self.x >= other.x and self.y >= other.y
 
     def __hash__(self):
         return hash((self.x, self.y))
@@ -143,19 +147,19 @@ class vec2():
         return str(self.x) + " " + str(self.y)
 
     def add(self, pt):
-        """ Adds a point to this point. returns new one """
+        """Adds a point to this point. returns new one"""
         return vec2(self.x + pt.x, self.y + pt.y)
 
     def subtract(self, pt):
-        """ Subtract from this point. returns new one """
+        """Subtract from this point. returns new one"""
         return vec2(self.x - pt.x, self.y - pt.y)
 
     def copy(self):
-        """ Creates a copy of this Point object. """
+        """Creates a copy of this Point object."""
         return vec2(self.x, self.y)
 
     def dot(self, other):
-        """ Returns the dot product of these two vectors """
+        """Returns the dot product of these two vectors"""
         x1 = self.x
         y1 = self.y
         x2 = other.x
@@ -163,8 +167,8 @@ class vec2():
         return x1 * x2 + y1 * y2
 
     def cross(self, other):
-        """ Returns the cross product of this and other. The cross product is considered 0
-        perpendicular to each other point """
+        """Returns the cross product of this and other. The cross product is considered 0
+        perpendicular to each other point"""
         x1 = self.x
         y1 = self.y
         x2 = other.x
@@ -172,7 +176,7 @@ class vec2():
         return x1 * y2 - y1 * x2
 
     def negative(self):
-        """ return vector but negative version """
+        """return vector but negative version"""
         return vec2(-self.x, -self.y)
 
     def distance(self, other):
@@ -184,13 +188,13 @@ class vec2():
         return self.distance(self) * self.distance(other)
 
     def equals(self, other):
-        """ Returns true if all vectors components are the same """
-        return (self.x == other.x and self.y == other.y)
+        """Returns true if all vectors components are the same"""
+        return self.x == other.x and self.y == other.y
 
     def interpolate(self, pt1, pt2, t):
-        """ Calculates the point that would be reached by this Point
+        """Calculates the point that would be reached by this Point
         if we moved by a given distance vector over time t.
-        Only floats are handled here. """
+        Only floats are handled here."""
         return vec2(self.x * (1 - t) + pt1.x * t, self.y * (1 - t) + pt1.y * t)
 
     def copyRotateAround(self, target, angle):
@@ -209,38 +213,38 @@ class vec2():
         return vec2(-self.x, -self.y)
 
     def length(self):
-        """ returns the length of this vector """
+        """returns the length of this vector"""
         return self.x
 
     def squaredlength(self):
-        """ returns the squared length of this vector """
+        """returns the squared length of this vector"""
         return self.x * self.x + self.y * self.y
 
     def normalize(self):
-        """ returns a normalized vector """
+        """returns a normalized vector"""
         return self / self.length()
 
     def obj(self):
-        """ returns a obj representation of this vector """
+        """returns a obj representation of this vector"""
         return {"x": self.x, "y": self.y}
 
     # def __repr__(self):
     #     return str(self.x) + " " + str(self.y)
 
     def json(self):
-        """ returns a json representation of this vector """
+        """returns a json representation of this vector"""
         return str({"x": self.x, "y": self.y})
 
     def angle(self):
-        """ returns the angle of this vector in radians """
+        """returns the angle of this vector in radians"""
         return math.atan2(self.y, self.x)
 
     def angleBetween(self, other):
-        """ returns the angle between this and another vector in radians """
+        """returns the angle between this and another vector in radians"""
         return math.acos(self.dot(other) / (self.length() * other.length()))
 
     def rotate(self, angle):
-        """ rotates this vector by an angle in radians """
+        """rotates this vector by an angle in radians"""
         x = self.x
         y = self.y
         self.x = x * math.cos(angle) - y * math.sin(angle)
@@ -257,7 +261,7 @@ class vec2():
 
     @staticmethod
     def cmp(a, b):
-        """ Compare two vectors. """
+        """Compare two vectors."""
         return (a > b) - (a < b)
 
     # @staticmethod
@@ -267,25 +271,26 @@ class vec2():
 
     @staticmethod
     def random(min_x, max_x, min_y, max_y):
-        """ returns a random vector """
+        """returns a random vector"""
         import random
+
         return vec2(random.uniform(min_x, max_x), random.uniform(min_y, max_y))
 
     @staticmethod
     def random_unit_vector(min_x, max_x, min_y, max_y):
-        """ returns a random unit vector """
+        """returns a random unit vector"""
         vec = vec2.random(min_x, max_x, min_y, max_y)
         return vec.normalize()
 
     @staticmethod
     def random_point_in_circle(center, radius):
-        """ returns a random point in a circle """
+        """returns a random point in a circle"""
         vec = vec2.random(0, radius)
         return vec.add(center)
 
     @staticmethod
     def random_point_in_rectangle(min_x, max_x, min_y, max_y):
-        """ returns a random point in a rectangle """
+        """returns a random point in a rectangle"""
         vec = vec2.random(min_x, max_x, min_y, max_y)
         return vec.add(vec2.random(0, 1))
 

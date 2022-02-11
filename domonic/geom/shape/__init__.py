@@ -37,8 +37,7 @@ Point = vertex
 
 
 class Shape(Point):
-
-    def __init__(self, x=0, y=0, color='red', vertices=[]):
+    def __init__(self, x=0, y=0, color="red", vertices=[]):
         super().__init__(x, y)
 
         if isinstance(vertices, list):
@@ -86,25 +85,41 @@ class Shape(Point):
 
     @property
     def width(self):
-        """ determine the width of the shape """
-        return max(self.vertices, key=lambda v: v.x).x - min(self.vertices, key=lambda v: v.x).x
+        """determine the width of the shape"""
+        return (
+            max(self.vertices, key=lambda v: v.x).x
+            - min(self.vertices, key=lambda v: v.x).x
+        )
 
     @property
     def height(self):
-        """ determine the height of the shape """
-        return max(self.vertices, key=lambda v: v.y).y - min(self.vertices, key=lambda v: v.y).y
+        """determine the height of the shape"""
+        return (
+            max(self.vertices, key=lambda v: v.y).y
+            - min(self.vertices, key=lambda v: v.y).y
+        )
 
     def rotate(self, angle):
-        """ rotate the shape """
+        """rotate the shape"""
         self.rotation += angle
 
     def draw(self, svg):
-        """ draw the shape """
+        """draw the shape"""
         if self.visible:
-            svg.add(svg.polyline(self.vertices, id=self.id, class_=self.name, style=self.style,
-                                 fill=self.color, stroke=self.strokeColor, stroke_width=self.strokeWidth,
-                                 opacity=self.opacity, fill_opacity=self.opacity,
-                                 fill_rule='evenodd'))
+            svg.add(
+                svg.polyline(
+                    self.vertices,
+                    id=self.id,
+                    class_=self.name,
+                    style=self.style,
+                    fill=self.color,
+                    stroke=self.strokeColor,
+                    stroke_width=self.strokeWidth,
+                    opacity=self.opacity,
+                    fill_opacity=self.opacity,
+                    fill_rule="evenodd",
+                )
+            )
 
     def __len__(self):
         return len(self.vertices)
@@ -128,7 +143,7 @@ class Shape(Point):
         return item in self.vertices
 
     def __add__(self, other):
-        """ add two shapes """
+        """add two shapes"""
         if isinstance(other, Shape):
             return self.vertices + other.vertices
 
@@ -171,7 +186,6 @@ class Shape(Point):
 
 
 class Line(Shape):
-
     def __init__(self, p1, p2, color=None, *args):
         super().__init__(color)
         # if isinstance(p1, vec2):
@@ -273,7 +287,7 @@ class Line(Shape):
     #     self.p2 = state['p2']
 
     def __getstate__(self):
-        return {'p1': self.p1, 'p2': self.p2}
+        return {"p1": self.p1, "p2": self.p2}
 
     def __reduce__(self):
         return (Line, (self.p1, self.p2))
@@ -294,8 +308,7 @@ class Line(Shape):
         return bool(self.p1 and self.p2)
 
 
-class Plane():
-
+class Plane:
     def __init__(self, normal, distance, color=None, *args):
         """[a plane is defined by its normal vector and a distance from the origin]
 
@@ -409,10 +422,20 @@ class Rect(Shape):
     #     return "Rect(%s, %s, %s, %s)" % (self.x, self.y, self.width, self.height)
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height
+        return (
+            self.x == other.x
+            and self.y == other.y
+            and self.width == other.width
+            and self.height == other.height
+        )
 
     def __ne__(self, other):
-        return self.x != other.x or self.y != other.y or self.width != other.width or self.height != other.height
+        return (
+            self.x != other.x
+            or self.y != other.y
+            or self.width != other.width
+            or self.height != other.height
+        )
 
     def __hash__(self):
         return hash((self.x, self.y, self.width, self.height))
@@ -437,19 +460,35 @@ class Rect(Shape):
             self.height = value
 
     def __add__(self, other):
-        return Rect(self.x + other.x, self.y + other.y, self.width + other.width, self.height + other.height)
+        return Rect(
+            self.x + other.x,
+            self.y + other.y,
+            self.width + other.width,
+            self.height + other.height,
+        )
 
     def __sub__(self, other):
-        return Rect(self.x - other.x, self.y - other.y, self.width - other.width, self.height - other.height)
+        return Rect(
+            self.x - other.x,
+            self.y - other.y,
+            self.width - other.width,
+            self.height - other.height,
+        )
 
     def __mul__(self, other):
-        return Rect(self.x * other, self.y * other, self.width * other, self.height * other)
+        return Rect(
+            self.x * other, self.y * other, self.width * other, self.height * other
+        )
 
     def __truediv__(self, other):
-        return Rect(self.x / other, self.y / other, self.width / other, self.height / other)
+        return Rect(
+            self.x / other, self.y / other, self.width / other, self.height / other
+        )
 
     def __floordiv__(self, other):
-        return Rect(self.x // other, self.y // other, self.width // other, self.height // other)
+        return Rect(
+            self.x // other, self.y // other, self.width // other, self.height // other
+        )
 
     def __iadd__(self, other):
         self.x += other.x
@@ -487,7 +526,7 @@ class Rect(Shape):
         return self
 
     # def __getstate__(self):
-        # return {'x': self.x, 'y': self.y, 'width': self.width, 'height': self.height}
+    # return {'x': self.x, 'y': self.y, 'width': self.width, 'height': self.height}
 
     # def __setstate__(self, state):
     #     self.x = state['x']
@@ -505,19 +544,44 @@ class Rect(Shape):
         return Rect(self.x, self.y, self.width, self.height)
 
     def __contains__(self, other):
-        return self.x <= other.x and self.y <= other.y and self.x + self.width >= other.x + other.width and self.y + self.height >= other.y + other.height
+        return (
+            self.x <= other.x
+            and self.y <= other.y
+            and self.x + self.width >= other.x + other.width
+            and self.y + self.height >= other.y + other.height
+        )
 
     def __lt__(self, other):
-        return self.x < other.x and self.y < other.y and self.width < other.width and self.height < other.height
+        return (
+            self.x < other.x
+            and self.y < other.y
+            and self.width < other.width
+            and self.height < other.height
+        )
 
     def __le__(self, other):
-        return self.x <= other.x and self.y <= other.y and self.width <= other.width and self.height <= other.height
+        return (
+            self.x <= other.x
+            and self.y <= other.y
+            and self.width <= other.width
+            and self.height <= other.height
+        )
 
     def __gt__(self, other):
-        return self.x > other.x and self.y > other.y and self.width > other.width and self.height > other.height
+        return (
+            self.x > other.x
+            and self.y > other.y
+            and self.width > other.width
+            and self.height > other.height
+        )
 
     def __ge__(self, other):
-        return self.x >= other.x and self.y >= other.y and self.width >= other.width and self.height >= other.height
+        return (
+            self.x >= other.x
+            and self.y >= other.y
+            and self.width >= other.width
+            and self.height >= other.height
+        )
 
     # def __eq__(self, other):
     #     return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height
@@ -566,7 +630,12 @@ class Square(Rect):
         return Square(self.x, self.y, self.width, self.color)
 
     def __contains__(self, other):
-        return self.x <= other.x and self.y <= other.y and self.x + self.width >= other.x + other.width and self.y + self.height >= other.y + other.height
+        return (
+            self.x <= other.x
+            and self.y <= other.y
+            and self.x + self.width >= other.x + other.width
+            and self.y + self.height >= other.y + other.height
+        )
 
     def get_vertices(self, x=None, y=None):
         if x is None:
@@ -593,7 +662,13 @@ class Square(Rect):
             x = self.x
         if y is None:
             y = self.y
-        return '<rect x="%s" y="%s" width="%s" height="%s" fill="%s"/>' % (x, y, self.width, self.height, self.color)
+        return '<rect x="%s" y="%s" width="%s" height="%s" fill="%s"/>' % (
+            x,
+            y,
+            self.width,
+            self.height,
+            self.color,
+        )
 
     # def draw_to_canvas(self, canvas):
     #     canvas.draw_rect(self.x, self.y, self.width, self.height, self.color)
@@ -635,10 +710,10 @@ class Polyline(Shape):
     #     return "Polyline(%s)" % (self.points)
 
     def __getstate__(self):
-        return {'points': self.points}
+        return {"points": self.points}
 
     def __setstate__(self, state):
-        self.points = state['points']
+        self.points = state["points"]
 
     def __reduce__(self):
         return (Polyline, (self.points,))
