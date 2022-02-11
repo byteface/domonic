@@ -2464,7 +2464,20 @@ class Element(Node):
         """
         naked_query = query[1:]
         if '.' in naked_query or '[' in naked_query or ' ' in naked_query:
-            return self.getElementsBySelector(query, self)
+            # return self.getElementsBySelector(query, self)
+            # from cssselect import GenericTranslator, SelectorError
+            from cssselect import HTMLTranslator, SelectorError
+            try:
+                expression = HTMLTranslator().css_to_xpath(query)
+                from domonic.webapi.xpath import XPathEvaluator, XPathResult
+                evaluator = XPathEvaluator()
+                expression = evaluator.createExpression(expression)
+                result = expression.evaluate(self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+                return result.nodes
+            except SelectorError:
+                print('Invalid selector.')
+                return []
+        
         elements = []
         def anon(el):
             if self._matchElement(el, query):

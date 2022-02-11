@@ -5,15 +5,15 @@
 
 """
 
+from domonic.geom import vec2
 from domonic.javascript import *
 
 
-class Particle:
+class Particle(vec2):
     """a particle class"""
 
-    def __init__(self, size=1):
-        self.x = 0
-        self.y = 0
+    def __init__(self, size=1, x=0, y=0):
+        super().__init__(x, y)
         self.width = size
         self.height = size
         self.rotation = 0
@@ -33,8 +33,8 @@ class Particle:
         self.set_bounds({"xMin": 0, "yMin": 0, "yMax": 800, "xMax": 800})
         # self._bounds = {'top': 0, 'bottom': 0, 'left': 0, 'right': 0}
         self.maxSpeed = Number.MAX_VALUE
-
         # self.turnToPath(False)
+        # self.update()
 
     def set_bounds(self, oBounds):
         self._bounds["top"] = oBounds["yMin"]

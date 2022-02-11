@@ -637,6 +637,7 @@ class TestCase(unittest.TestCase):
 
         result = self.page.querySelectorAll("li[class='nav-item']")
         expected = ["About", "Services", "Team", "Contact"]
+        print('yabadabadooooooo', result)
         for i, r in enumerate(result):
             assert r.textContent == expected[i]
         assert len(result) == 4
