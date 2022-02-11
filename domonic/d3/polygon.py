@@ -9,7 +9,7 @@ from domonic.javascript import Array, Math
 
 def polygonArea(polygon):
     i = -1
-    n = len(polygon) # This returns 0, need to access the points
+    n = len(polygon)
     a = 0
     b = polygon[n - 1]
     area = 0
