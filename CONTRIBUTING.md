@@ -147,5 +147,6 @@ I'd like to thank here...
 * Kristian Thy - kthy
 * Arjix - ArjixWasTaken
 * ShoGinn
+* FrackOverflow
 
 and of course dependabot[bot]
