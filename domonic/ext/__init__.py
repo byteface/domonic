@@ -7,6 +7,83 @@
 """
 
 # HELLO WORLDS - hello world code for other libs
+# "django"
+# "bottle"
+# "pyramid"
+# "werkzeug"
+# "tornado"
+# "aiohttp"
+# "fastapi"
+# "starlette"
+# "blacksheep"
+# "muffin"
+# "falcon"
+# "baize"
+# "emmett"
+# "quart"
+
+# "falcon"
+# "eve"
+# "graphene"
+# "httpx"
+# "invenio"
+# "jupyterhub"
+# "klein"
+# "kombu"
+# "masonite"
+# "motor"
+# "pydantic"
+# "quart"
+# "sanic"
+# "trio"
+
+
+HELLO_BLACKSHEEP: str = """
+import uvicorn
+from domonic.html import *
+
+from blacksheep.server import Application
+from blacksheep.server.responses import html as HTMLResponse
+
+app = Application()
+
+@app.route("/")
+async def home(request):
+    return HTMLResponse(str(
+        html(
+        head(),
+        body(
+            div(span("Hello World!"))
+            )
+        )
+    ))
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+"""
+
+HELLO_FAST_API: str = """
+import uvicorn
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from domonic.html import *
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return HTMLResponse(str(
+        html(
+        head(),
+        body(
+            div(span("Hello World!"))
+            )
+        )
+    ))
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+"""
 
 HELLO_SANIC: str = """
 from sanic import Sanic
@@ -160,7 +237,9 @@ def get_hello_world(server):
         'bottle': HELLO_BOTTLE,
         'aiohttp': HELLO_AIOHTTP,
         'tornado': HELLO_TORNADO,
-        'werkzeug': HELLO_WERKZEUG
+        'werkzeug': HELLO_WERKZEUG,
+        'fastapi': HELLO_FAST_API,
+        'blacksheep': HELLO_BLACKSHEEP,
     }
     if server in hello_words:
         return hello_words[server]

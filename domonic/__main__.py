@@ -182,6 +182,9 @@ run:
             f.write("python3 -m pip install requests\n")
             if server_choice != "none":
                 f.write(f"python3 -m pip install {server_choice}\n")
+                if server_choice in ['fastapi', 'starlette', 'blacksheep', 'muffin', 'falcon', 'baize', 'emmett', 'quart']:
+                    # need to install uvicorn
+                    f.write(f"python3 -m pip install uvicorn\n")
             f.write("python3 -m pip install domonic\n")
             f.write("python3 -m pip freeze > requirements.txt\n")
         # call the bat file
@@ -196,6 +199,9 @@ run:
             f.write("python3 -m pip install requests\n")
             if server_choice != "none":
                 f.write(f"python3 -m pip install {server_choice}\n")
+                if server_choice in ['fastapi', 'starlette', 'blacksheep', 'muffin', 'falcon', 'baize', 'emmett', 'quart']:
+                    # need to install uvicorn
+                    f.write("python3 -m pip install uvicorn\n")
             f.write("python3 -m pip install domonic\n")
             f.write("python3 -m pip freeze > requirements.txt\n")
         # call the bash file
