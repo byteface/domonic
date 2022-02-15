@@ -529,7 +529,7 @@ domonic can work with other Treebuilders
 
 There's a builtin ext to tap into html5lib. And also fork of the c++ htmlparser (see parsing ticket)
 
-To use the pure python htm5lib with domonic you need to install it
+If it isn't already. You may need to install it...
 
 ```bash
 pip install html5lib
@@ -665,10 +665,16 @@ To evaluate some domonic pyml:
 domonic -e 'html(head(),body(div()))'
 ```
 
-To use xpath on a website (new. requires html5lib installed):
+To use xpath on a website from the command line:
 
 ```bash
 domonic -x https://google.com //a
+```
+
+To use css selectors on a website from the command line:
+
+```bash
+domonic -q https://google.com //a
 ```
 
 ### EXAMPLE PROJECTS
@@ -681,6 +687,9 @@ A cron viewer:
 
 A basic game:
 [bombdisposer](https://github.com/byteface/bombdisposer/)
+
+A lightweight version of domonic:
+[htmlx](https://github.com/byteface/htmlx/tree/master/htmlx)
 
 checkout [the docs](https://domonic.readthedocs.io/) for examples on how to easily make sitemaps with python.
 or for example how to use domonic with flask, django, sanic and other server frameworks.
@@ -757,6 +766,7 @@ See Makefile:
 cd docs
 make html
 ```
+
 
 ### Disclaimer
 

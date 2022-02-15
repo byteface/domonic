@@ -20,6 +20,18 @@ Styling gets passed to the style tag on render.
 CSSOM is also stubbed out. See the styles.py class. Feel free to make a PR
 
 
+stylesheets
+----------------
+
+.. code-block :: python
+
+	from domonic.window import *
+	window.location = "https://www.facebook.com"
+	window.document.stylesheets
+
+
+
+
 .. automodule:: domonic.style
     :members:
     :noindex:
