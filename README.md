@@ -668,13 +668,13 @@ domonic -e 'html(head(),body(div()))'
 To use xpath on a website from the command line:
 
 ```bash
-domonic -x https://google.com //a
+domonic -x https://google.com '//a'
 ```
 
 To use css selectors on a website from the command line:
 
 ```bash
-domonic -q https://google.com //a
+domonic -q https://google.com 'a'
 ```
 
 ### EXAMPLE PROJECTS
