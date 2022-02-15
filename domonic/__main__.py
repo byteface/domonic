@@ -296,6 +296,14 @@ def parse_args():
         nargs="*",
         default=None,
     )
+    parser.add_argument(
+        "-q",
+        "--query",
+        help="pass a url and a css query",
+        type=str,
+        nargs="*",
+        default=None,
+    )
 
     # parser.add_argument('-u', '--ui', help="launches a UI")
     # parser.add_argument('-p', '--pyml2html', help="converts a .pyml template file to html", type=str)
@@ -389,6 +397,14 @@ def do_things(arguments):
             print(n)
         # except Exception as e:
         #     print('pip install html5lib')
+
+    if arguments.query is not None:
+        url, query = arguments.query
+        from domonic.window import window
+        window.location = url
+        results = window.document.querySelectorAll(query)
+        for result in results:
+            print(result)
 
     # if arguments.server is True:
     # port = domonic.get(arguments.server)
