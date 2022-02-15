@@ -7,6 +7,7 @@
 
 """
 
+import os
 import copy
 import re
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
@@ -2966,6 +2967,7 @@ class Document(Element):
         self.kwargs = kwargs
         # self.documentURI = uri
         # self.documentElement = self
+        self._open_filename = None
         self.stylesheets = None
         self.doctype = None
         super().__init__(*args, **kwargs)
@@ -3057,9 +3059,9 @@ class Document(Element):
                 self.body.remove()
             self += el
 
-    # def close():
-        """ Closes the output stream previously opened with document.open() """
-        # return
+    def close(self):
+        """Closes the output stream previously opened with document.open()"""
+        self._open_filename = None
 
     # def cookie():
         """ Returns all name/value pairs of cookies in the document """
@@ -3409,9 +3411,14 @@ class Document(Element):
                 each.normalize()
         return
 
-    # def open(self):
-        # '''Opens an HTML output stream to collect output from document.write()'''
-        # return
+    def open(self, index="index.html"):
+        '''Opens an HTML output stream to collect output from document.write()'''
+        # TODO - as this is not static. check if self is str and return an error?
+        self._open_filename = index
+        if not os.path.exists(index):
+            open(index, 'w').close()
+        else:
+            print("File already exists")
 
     # def readyState(self):
         # ''' Returns the (loading) status of the document'''
@@ -3510,6 +3517,13 @@ class Document(Element):
         Args:
             html (str, optional): [the content to write to the document]
         """
+        html = str(html)
+        if self._open_filename is not None:
+            # open the file and APPEND the html to the file without losing the previous content
+            with open(self._open_filename, 'a') as f:
+                f.write(html)
+        else:
+            print("No file opened")
         content = DocumentFragment(html)
         self.__init__(content)
 
@@ -3569,6 +3583,8 @@ location = Location
 
 class DocumentFragment(Node):
 
+    nodeType: int = Node.DOCUMENT_FRAGMENT_NODE
+
     def __init__(self, *args) -> None:
         self.args: list = args
 
@@ -3583,10 +3599,8 @@ class DocumentFragment(Node):
         """ Replaces the childNodes of the DocumentFragment object. """
         self.content.replaceChild(newChildren)
 
-    # @property
-    # def nodeType(self) -> int:
-    #     return Node.DOCUMENT_FRAGMENT_NODE
-    nodeType: int = Node.DOCUMENT_FRAGMENT_NODE
+    def __format__(self, format_spec):
+        return self.__str__()
 
     def __str__(self) -> str:
         return ''.join([str(a) for a in self.args])
@@ -5284,7 +5298,7 @@ class HTMLVideoElement(HTMLElement):
 
 # document can be set manually but will get set each time a new Document is created.
 global document
-document = Document
+document = Document()  # TODO - shouldn't this be an instance not class to start?
 console = Console  # legacy. should access via window
 
 
