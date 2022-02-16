@@ -51,4 +51,6 @@ page = domonic.parseString(r.content.decode("utf-8"))
 # print("results:", str(elementpath.select(page, '//*/a[@href]')))
 # print("results:", str(elementpath.select(page, '//*/a/@_href')))  # ahhh. lol. right. needs the underscores
 
-print("results:", str(elementpath.select(page, '//*//@_class')))  # cool!
+# print("results:", str(elementpath.select(page, '//*//@_class')))  # cool!
+
+print("results:", str(page.evaluate('//*//@_class', page)))  # cool!

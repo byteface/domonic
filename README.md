@@ -19,12 +19,9 @@
 - SVG || mathml || aframe || x3d tags - generators for popular tags
 - terminal || cmd : call terminal commands with python3 😱
 
-See the docs/code for more features...
-https://domonic.readthedocs.io/
+See the [docs/code](https://domonic.readthedocs.io/) for more features...
 
 or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
-
-(small footprint. with only a few common lightweight dependencies)
 
 ## HTML Templating with Python 3
 
@@ -105,6 +102,7 @@ render(f"{page}", 'index.html')  # notice use of f-string to pretty print the ht
 DOM manipulation with python.
 
 #### createElement
+
 to create your own elements use the DOM API
 
 ```python
@@ -118,9 +116,7 @@ print(site)
 
 ```
 
-There's an evolving DOM API. To learn more about the webAPI go here.
-
-https://developer.mozilla.org/en-US/docs/Web/API
+There's an evolving DOM API. To learn more about the webAPI [click here](https://developer.mozilla.org/en-US/docs/Web/API).
 
 And check the code/docs to see what's currently been implemented.
 
@@ -463,7 +459,8 @@ Only recently started so check to see what's implemented.
 
 ### terminal
 
-There is a command line package that can call bash/unix/posix and other apps on the command line: <br />
+There is a command line package that can call bash/unix/posix and other apps on the command line:
+
 This package only works on nix systems as it effectively just passes stuff off to subprocess.
 
 ```python
@@ -574,7 +571,7 @@ print(window.document.title)
 
 ## DOCS
 
-https://domonic.readthedocs.io/
+[https://domonic.readthedocs.io/](https://domonic.readthedocs.io/)
 
 ### notes on templating
 
@@ -695,7 +692,7 @@ checkout [the docs](https://domonic.readthedocs.io/) for examples on how to easi
 or for example how to use domonic with flask, django, sanic and other server frameworks.
 
 docs:
-https://domonic.readthedocs.io/
+[https://domonic.readthedocs.io/](https://domonic.readthedocs.io/)
 
 There's also several useage examples in the repo so pull and have a look.
 
@@ -757,6 +754,13 @@ coverage run -m unittest discover tests/
 coverage report
 ```
 
+or...
+
+```bash
+pip install pytest
+pytest tests
+```
+
 ### rebuild docs
 
 See Makefile:
@@ -766,7 +770,6 @@ See Makefile:
 cd docs
 make html
 ```
-
 
 ### Disclaimer
 

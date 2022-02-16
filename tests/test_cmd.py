@@ -6,13 +6,16 @@
 import unittest
 
 from domonic.cmd import dir
-
+from domonic.utils import Utils
 # from domonic.decorators import silence
 
 
 class TestCase(unittest.TestCase):
 
     def test_cmd_dir(self):
+        if not Utils.is_windows():
+            return
+
         files = dir()
         print(files)
         # return

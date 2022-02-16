@@ -80,7 +80,7 @@ class CustomElementRegistry():
         pass
 
 
-class Navigator(object):
+class Navigator:
     """ Navigator """
 
     # Determines whether cookies are enabled in the browser

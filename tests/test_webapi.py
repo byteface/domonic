@@ -237,7 +237,7 @@ class TestCase(unittest.TestCase):
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         print(str(result.nodes[0]))
 
-        somepage = html(head(), 
+        somepage = html(head(),
                         body(
                             h1("some title"),
                             p("some text"),

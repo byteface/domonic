@@ -58,6 +58,7 @@ undefined: object = None
 # def typeof(v):
 #     return type(v).__name__
 
+
 class Boolean():
     """[Creates a Boolean Object.
         Warning this is NOT a boolean type. for that use Global.Boolean()]
@@ -66,7 +67,7 @@ class Boolean():
         self.value: bool = Global.Boolean(value)
 
 
-class Object(object):
+class Object:
 
     def __init__(self, obj=None, *args, **kwargs) -> None:
         """[Creates a Javascript-like Object in python]
@@ -571,7 +572,7 @@ class Function(Object):
         raise NotImplementedError
 
 
-class Map(object):
+class Map:
     """ Map holds key-value pairs and remembers the original insertion order of the keys.
     """
 
@@ -677,7 +678,7 @@ class Map(object):
 
 
 # TODO - moved to webapi.xhr . might import here for convenience?
-# class FormData(object):
+# class FormData:
 #     """[utils for a form]
 
 #     Args:
@@ -732,7 +733,7 @@ class Map(object):
 #         raise NotImplementedError
 
 
-class Worker(object):
+class Worker:
     """[A background task that can be created via script, which can send messages back to its creator.
     Creating a worker is done by calling the Worker("path/to/worker/script") constructor.]
     TODO - JSWorker - Node
@@ -1031,7 +1032,7 @@ class Math(Object):
 # import urllib
 
 
-class Global(object):
+class Global:
     """ javascript global methods """
 
     NaN = "NaN"
@@ -1453,7 +1454,6 @@ class Date(Object):
 
     def toJSON(self):
         """  Returns the date as a string, formatted as a JSON date """
-        import json
         return json.dumps(self.date.strftime('%Y-%m-%d'))
 
     def toISOString(self):
@@ -1481,7 +1481,7 @@ class Date(Object):
         return self.date.utcnow()
 
 
-class Screen(object):
+class Screen:
     """ screen """
 
     # wrap a lib?
@@ -1561,7 +1561,7 @@ class Job(threading.Thread):
     #     return "Job every %s" % self.interval
 
 
-class SetInterval(object):
+class SetInterval:
 
     def signal_handler(self, signum, frame):
         raise ProgramKilled
@@ -1576,7 +1576,7 @@ class SetInterval(object):
     #     self.job.stop()
 
 
-class Promise(object):
+class Promise:
     # undocumented - warning. use at own risk
     def __init__(self, func=None, *args, **kwargs):
         # print('init')
@@ -1615,7 +1615,7 @@ class Promise(object):
     #     return str(self)
 
 
-class FetchedSet(object):  # not a promise
+class FetchedSet:  # not a promise
     def __init__(self, *args, **kwargs):
         self.results = []
 
@@ -1630,7 +1630,7 @@ class FetchedSet(object):  # not a promise
     #     self.results.append(func)
 
 
-class Window(object):
+class Window:
     """ window """
 
     localStorage = Storage()
@@ -1737,7 +1737,8 @@ class Window(object):
         jobs = []
         for url in urls:
             thread = threading.Thread(target=window._do_request(url, f, **kwargs))
-            thread.setDaemon(True)
+            # thread.setDaemon(True) # deprecated
+            thread.daemon = True
             jobs.append(thread)
         map(lambda j: j.start(), jobs)
         map(lambda j: j.join(), jobs)
@@ -1810,7 +1811,7 @@ Global.clearInterval = Window.clearInterval
 window = Window
 
 
-class Array(object):
+class Array:
     """ javascript array """
 
     @staticmethod
@@ -2611,7 +2612,7 @@ class Number(float):
         return ''.join(digits)
 
 
-class String(object):
+class String:
     """ javascript String methods """
 
     @staticmethod
