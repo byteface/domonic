@@ -8,7 +8,7 @@
 """
 
 
-class CDN_JS(object):
+class CDN_JS:
     """
     Preferably use version numbers if available.
     """
@@ -30,7 +30,7 @@ class CDN_JS(object):
     HTMX: str = "https://unpkg.com/htmx.org@1.5.0"  #:
 
 
-class CDN_CSS(object):
+class CDN_CSS:
     """
     Preferably use version numbers if available.
     use LATEST if it always gets the latest
@@ -50,7 +50,7 @@ class CDN_CSS(object):
     SIMPLE: str = "https://cdn.simplecss.org/simple.min.css"  #:
 
 
-class CDN_IMG(object):
+class CDN_IMG:
     """ CDN images """
     # - icons
     # - UI - emojis
@@ -92,7 +92,7 @@ class CDN_IMG(object):
         return f"{HTTP}://{CDN_IMG.PLACEHOLDER_SERVICE}/{width}{seperator}{height}"
 
 
-class CDN_FONT(object):
+class CDN_FONT:
 
     @staticmethod
     def google(family: str) -> str:

@@ -74,13 +74,12 @@ class TestCase(unittest.TestCase):
         assert zero(2) == "0002"
         assert zero(123) == "0123"
 
-
         # rounded percentage
         print(format(".0%")(0.123))
         # assert format(".0%")(0.123) == "12%"
 
         # localized fixed-point currency
-        print(format("($.2f")(-3.5))#  , "(£3.50)"
+        print(format("($.2f")(-3.5)) #  , "(£3.50)"
 
         # space-filled and signed
         assert format("+20")(42) == "                 +42"
@@ -301,7 +300,7 @@ class TestCase(unittest.TestCase):
         # assert f(0.0001) == "0.01%"
 
         f = format(",~g")
-        print( f(10000.0) )
+        print(f(10000.0))
         # assert f(10000.0) == "10,000"
         # assert f(10000.1) == "10,000.1"
 
@@ -465,10 +464,10 @@ class TestCase(unittest.TestCase):
         # print(format("s")(Number.MIN_VALUE))
         # assert format("s")(Number.MIN_VALUE) == "0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005y"
         # assert format("s")(Number.MAX_VALUE) == "179769000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000Y"
-        print( format("n")(123456.78) )
+        print(format("n")(123456.78))
         # assert format("n")(123456.78) == "123,457"
         # assert format(",g")(123456.78) == "123,457"
-        print( format("012")(123.456) )
+        # print(format("012")(123.456))
         assert format("012")(123.456) == "00000123.456"
         # assert format("0=12")(123.456) == "00000123.456"
 
@@ -1117,7 +1116,7 @@ class TestCase(unittest.TestCase):
         # four = two.querySelector("span:last-child")
         # assertSelection(s, {groups: [[three, four]]});
 
-        # selection.append(name) observes the specified namespace, if any", 
+        # selection.append(name) observes the specified namespace, if any",
         d = html(body(div(_id='one'), div(_id='two')))
         print('should work?::', d.querySelector("#one"))
         one = d.querySelector("#one")
@@ -1536,11 +1535,11 @@ class TestCase(unittest.TestCase):
         square = [[0,4],[4,4],[4,0],[0,0]]          # area: 16
         triangle = [[-4,0],[0,4],[2,0]]             # area: 12
 
-        self.assertEquals(polygonArea(irreg_0), 15)
-        self.assertEquals(polygonArea(irreg_1), 400)
-        self.assertEquals(polygonArea(irreg_2), 203)
-        self.assertEquals(polygonArea(square), 16)
-        self.assertEquals(polygonArea(triangle), 12)
+        self.assertEqual(polygonArea(irreg_0), 15)
+        self.assertEqual(polygonArea(irreg_1), 400)
+        self.assertEqual(polygonArea(irreg_2), 203)
+        self.assertEqual(polygonArea(square), 16)
+        self.assertEqual(polygonArea(triangle), 12)
         
     # def test_polygonCentroid():
     # def test_cross():

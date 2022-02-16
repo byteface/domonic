@@ -5,7 +5,7 @@
 
     uses elementpath lib.
 
-    TODO - content strings must be TextNodes for it to work. 
+    TODO - content strings must be TextNodes for it to work.
         so will have to iterate and update them. i.e. Treewalker
 
 """
@@ -108,27 +108,27 @@ class XPathResult:
         self.resultType = _type
 
         if _type == self.NUMBER_TYPE:
-            #self.numberValue=value.number() if getattr(value,'isNodeSet',None) else toNumber(value)
+            # self.numberValue=value.number() if getattr(value,'isNodeSet',None) else toNumber(value)
             if getattr(value, 'isNodeSet', None):
-                self.numberValue = value#.number()
+                self.numberValue = value  # .number()
             else:
                 self.numberValue = float(value)
         elif _type == self.STRING_TYPE:
-            #self.stringValue=value.string() if getattr(value,'isNodeSet',None) else toString(value)
+            # self.stringValue=value.string() if getattr(value,'isNodeSet',None) else toString(value)
             if getattr(value, 'isNodeSet', None):
-                self.stringValue = value#.string()
+                self.stringValue = value  # .string()
             else:
                 self.stringValue = str(value)
         elif _type == self.BOOLEAN_TYPE:
-            #self.booleanValue=value.bool() if getattr(value,'isNodeSet',None) else toBoolean(value)
+            # self.booleanValue=value.bool() if getattr(value,'isNodeSet',None) else toBoolean(value)
             if getattr(value, 'isNodeSet', None):
-                self.booleanValue = value#.bool()
+                self.booleanValue = value  # .bool()
             else:
                 self.booleanValue = bool(value)
         elif _type == self.ANY_UNORDERED_NODE_TYPE or _type == self.FIRST_ORDERED_NODE_TYPE:
-            self.singleNodeValue = value#.first()
+            self.singleNodeValue = value  #.first()
         else:
-            self.nodes = value#.list()
+            self.nodes = value  # .list()
             self.snapshotLength = len(value)
             self.index = 0
             self.invalidIteratorState = False

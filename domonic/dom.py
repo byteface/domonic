@@ -18,6 +18,7 @@ from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
 from domonic.webapi.console import Console
 from domonic.webapi.url import URL
+from domonic.webapi.xpath import (XPathEvaluator, XPathExpression, XPathResult, XPathException)
 
 
 class Node(EventTarget):
@@ -147,8 +148,8 @@ class Node(EventTarget):
             if key in ['async', 'checked', 'autofocus', 'disabled', 'formnovalidate', 'hidden', 'multiple',
                        'novalidate', 'readonly', 'required', 'selected', "open", "contenteditable"]:
                 if value == '' or value == key:
-                    return ''' %s''' % key
-            return ''' %s="%s"''' % (key, value)
+                    return f''' {key}'''
+            return f''' {key}="{value}"'''
         try:
             return ''.join([format_attr(key, value) for key, value in self.kwargs.items()])
         except IndexError as e:
@@ -160,7 +161,7 @@ class Node(EventTarget):
     @__attributes__.setter
     def __attributes__(self, ignore):
         try:
-            self.__attributes = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
+            self.__attributes = ''.join([f''' {key.split('_', 1)[1]}="{value}"''' for key, value in self.kwargs.items()])
         except IndexError as e:
             from domonic.html import TemplateError
             raise TemplateError(e)
@@ -446,13 +447,13 @@ class Node(EventTarget):
     def __setattr__(self, name: str, value: Any) -> None:
         try:
             if name == "args":
-                super(Node, self).__setattr__(name, value)
+                super().__setattr__(name, value)
                 self._update_parents()
                 return
         except Exception as e:
             print(e)
             # pass
-        super(Node, self).__setattr__(name, value)
+        super().__setattr__(name, value)
 
     # def __getattr__(self, name):
     #     # print(name)
@@ -728,10 +729,6 @@ class Node(EventTarget):
             except Exception:
                 return None
 
-    # @property
-    # def nodeType(self):
-    #     """ Returns the node type of a node """
-    #     return self.ELEMENT_NODE
     nodeType: int = ELEMENT_NODE
 
     @property
@@ -1005,7 +1002,7 @@ class Node(EventTarget):
         return self.textContent
 
 
-class ParentNode(object):
+class ParentNode:
     """ not tested yet """
 
     def __init__(self, *args, **kwargs):
@@ -1125,7 +1122,7 @@ from xml.dom.minidom import NamedNodeMap
 
 
 '''
-class NamedNodeMap(object):
+class NamedNodeMap:
     """ TODO - not tested yet.
 
     a live object that represents a list of nodes.
@@ -1204,7 +1201,7 @@ class NamedNodeMap(object):
 '''
 
 
-class DOMStringMap(object):
+class DOMStringMap:
     """
     TODO - not tested yet
     TODO - make this like a dict
@@ -1256,7 +1253,7 @@ class DOMStringMap(object):
     #     return [item.value for item in self.args]
 
 
-class DOMTokenList(object):
+class DOMTokenList:
     """ TODO - not tested yet """
 
     def __init__(self, *args, **kwargs):
@@ -1712,7 +1709,7 @@ def AriaMixin():  #???
 #         self.labels  # Returns a NodeList of all of the label elements associated with this element.
 
 
-class CustomStateSet(object):
+class CustomStateSet:
 
     def __init__(self):
         pass
@@ -2124,7 +2121,7 @@ class Element(Node):
     def contentEditable(self) -> bool:
         """ Sets or returns whether an element is editable """
         is_editable = self.getAttribute('contenteditable')
-        return True if (is_editable == 'true' or is_editable == True) else False
+        return True if (is_editable == 'true' or is_editable is True) else False
 
     @contentEditable.setter
     def contentEditable(self, value: bool) -> None:
@@ -2478,8 +2475,9 @@ class Element(Node):
             except SelectorError:
                 print('Invalid selector.')
                 return []
-        
+
         elements = []
+
         def anon(el):
             if self._matchElement(el, query):
                 elements.append(el)
@@ -2614,7 +2612,7 @@ class Element(Node):
         return str(self)
 
 
-class DOMImplementation(object):
+class DOMImplementation:
 
     def __init__(self):
         # self.__domImplementation = None
@@ -2675,10 +2673,6 @@ class ProcessingInstruction(Node):
         return f'<?{self.target} {self.data}?>'
     __str__ = toString
 
-    # @property
-    # def nodeType(self) -> int:
-    #     return Node.PROCESSING_INSTRUCTION_NODE
-
 
 class Comment(Node):
 
@@ -2693,10 +2687,6 @@ class Comment(Node):
         return f'<!--{self.data}-->'
     __str__ = toString
 
-    # @property
-    # def nodeType(self) -> int:
-    #     return Node.COMMENT_NODE
-
 
 class CDATASection(Node):
 
@@ -2710,12 +2700,8 @@ class CDATASection(Node):
         return f'<![CDATA[{self.data}]]>'
     __str__ = toString
 
-    # @property
-    # def nodeType(self) -> int:
-    #     return Node.CDATA_SECTION_NODE
 
-
-class AbastractRange(object):
+class AbastractRange:
 
     def __init__(self):
         raise NotImplementedError
@@ -2910,7 +2896,7 @@ class StaticRange(AbastractRange):
     #     return self
 
 
-class TimeRanges(object):
+class TimeRanges:
 
     def __init__(self):
         self.length = 0
@@ -2921,39 +2907,8 @@ class TimeRanges(object):
     def end(self, index):
         raise NotImplementedError
 
-
-class XPathExpression(object):
-
-    def __init__(self, expression, nsResolver):
-        self.expression = expression
-        self.nsResolver = nsResolver
-
-    def evaluate(self, contextNode, type, inResult):
-        raise NotImplementedError
-
-# class XPathResult(object):
-
-#     def __init__(self, resultType, snapshotLength):
-#         self.resultType = resultType
-#         self.snapshotLength = snapshotLength
-
-#     def iter(self):
-#         raise NotImplementedError
-
-#     def snapshotItem(self, index):
-#         raise NotImplementedError
-
-
-class XPathEvaluator(object):
-
-    def createExpression(self, expression, nsResolver):
-        raise NotImplementedError
-
-    def createNSResolver(self, nodeResolver):
-        raise NotImplementedError
-
-    def evaluate(self, expression, contextNode, nsResolver, type, inResult):
-        raise NotImplementedError
+    def __len__(self):
+        return self.length
 
 
 class Document(Element):
@@ -3247,6 +3202,15 @@ class Document(Element):
     def elementFromPoint(self, x, y):
         """ Returns the topmost element at the specified coordinates. """
         raise NotImplementedError
+
+    def evaluate(self, xpathExpression: str, contextNode: 'Node', namespaceResolver=None, resultType=XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, result=None):
+        """ Evaluates an XPath expression and returns the result. """
+        if not isinstance(xpathExpression, str):
+            raise TypeError("xpathExpression must be a string")
+        evaluator = XPathEvaluator()
+        expression = evaluator.createExpression(xpathExpression)
+        result = expression.evaluate(contextNode, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        return result.nodes
 
     def elementsFromPoint(self, x, y):
         """ Returns an array of all elements at the specified coordinates. """

@@ -581,7 +581,7 @@ class CSSStyleSheet(StyleSheet):
         return ''.join([str(rule) for rule in self.rules])
 
 
-class Style(object):
+class Style:
     """[ js syntax styles ]
     # TODO - just add normal float?
     # TODO - consider camel case for hyphen params?

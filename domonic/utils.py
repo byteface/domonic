@@ -12,7 +12,7 @@ from re import sub
 from domonic.decorators import deprecated
 
 
-class Utils(object):
+class Utils:
     """ Utils """
 
     @staticmethod

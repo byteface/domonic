@@ -16,7 +16,7 @@ from domonic.events import *
 from domonic.html import *
 
 
-class Websocket(object):
+class Websocket:
     """[Creates a websocket with listeners for particular events]
 
     # TODO - collect other or all Window data and pass to a window object
@@ -251,7 +251,7 @@ class Websocket(object):
             const socket = new WebSocket("''' + self.address + '''");
 
             function stringify_object(object, depth=0, max_depth=2) {
-                //console.log(object);
+                //console.log;
                 // change max_depth to see more levels, for a touch event, 2 is good
                 if (depth > max_depth)
                     return 'Object';
@@ -294,7 +294,7 @@ class Websocket(object):
 # 	return script(thing)
 
 
-class SpriteCSS(object):
+class SpriteCSS:
     """ a css sprite sheet.
 
     this spritesheet works by shifting the position of a bg image
@@ -360,7 +360,7 @@ class SpriteCSS(object):
 # _ss = TileSet( path )
 
 
-class DomonicJS(object):
+class DomonicJS:
     def __init__(self):
         pass
 
@@ -407,7 +407,7 @@ class DomonicJS(object):
 #         self.down = down
 
 
-class Sound(object):
+class Sound:
 
     def __init__(self, filename):
         self.filename = filename
@@ -430,7 +430,7 @@ class Sound(object):
         )
 
 
-class ProgressBar(object):
+class ProgressBar:
 
     def __init__(self,):
         """
@@ -450,7 +450,7 @@ class ProgressBar(object):
         )
 
 
-class Input(object):
+class Input:
 
     BUTTON = "button"
     CHECKBOX = "checkbox"
@@ -494,7 +494,7 @@ class Input(object):
 # You should build your own components libaries using domonic
 
 
-class Modal(object):  # TODO - shouldn't this extend dom?
+class Modal:  # TODO - shouldn't this extend dom?
 
     def __init__(self, reference=None, content=None):
         self.reference = reference
@@ -517,7 +517,7 @@ class Modal(object):  # TODO - shouldn't this extend dom?
         )
 
 
-class Webpage(object):  # TODO - shouldn't this extend html?
+class Webpage:  # TODO - shouldn't this extend html?
 
     def __init__(self, content=None):
         self.content = content
