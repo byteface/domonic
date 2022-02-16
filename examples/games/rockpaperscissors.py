@@ -15,7 +15,7 @@ from domonic.constants.entities import Char
 #  To run this first:
 #  pip3 install sanic
 
-app = Sanic(name='✊✋✌')
+app = Sanic(name='paper_scissors_rock')
 app.static('/assets', './assets')
 
 # create a template
