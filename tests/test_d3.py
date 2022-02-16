@@ -1536,16 +1536,32 @@ class TestCase(unittest.TestCase):
         square = [[0,4],[4,4],[4,0],[0,0]]          # area: 16
         triangle = [[-4,0],[0,4],[2,0]]             # area: 12
 
-        self.assertEquals(polygonArea(irreg_0), 15)
-        self.assertEquals(polygonArea(irreg_1), 400)
-        self.assertEquals(polygonArea(irreg_2), 203)
-        self.assertEquals(polygonArea(square), 16)
-        self.assertEquals(polygonArea(triangle), 12)
+        self.assertEqual(polygonArea(irreg_0), 15)
+        self.assertEqual(polygonArea(irreg_1), 400)
+        self.assertEqual(polygonArea(irreg_2), 203)
+        self.assertEqual(polygonArea(square), 16)
+        self.assertEqual(polygonArea(triangle), 12)
         
-    # def test_polygonCentroid():
-    # def test_cross():
-    # def test_lexicographicOrder():
-    # def test_polygonHull():
+    def test_polygonCentroid(self): 
+        irreg = [[-4,0],[8,12],[4,8],[-4,-4],[0,0]] # centroid: [0, 4]
+        square = [[0,4],[4,4],[4,0],[0,0]]          # centroid: [2, 2]
+        triangle = [[-4,0],[0,4],[4,2]]             # centroid: [0, 2]
+
+        self.assertEqual(polygonCentroid(irreg), [0, 4])
+        self.assertEqual(polygonCentroid(square), [2, 2])
+        self.assertEqual(polygonCentroid(triangle), [0, 2])
+
+    def test_polygonHull(self):
+        points_0 = [[0,6],[12,8],[23,-5],[-5,-3],[5,11],[12,4],[7,7],[6,1]]
+        points_1 = [[-4,0],[8,12],[4,8],[-4,-4],[0,0],[-6,12],[23,2],[19,-8],[-7,-6]]
+
+        hull_0 = [[-5,-3],[0,6],[5,11],[12,8],[23,-5]]
+        hull_1 = [[-7,-6],[-6,12],[8,12],[19,-8],[23,2]]
+        
+        self.assertEqual(polygonHull(points_0), hull_0)
+        self.assertEqual(polygonHull(points_1), hull_1)
+
+
     # def test_polygonContains():
     # def test_polygonLength():
         
