@@ -70,7 +70,9 @@ D3 expects a "polygon" is a 2D array of integers listed counterclockwise (clockw
 This does not work with the polygon as defined by SVG, SVG polygons have a points method you can parse into a 2D array and use here.
 
 polygonArea() finds the area of a given polygon. It returns a float/int.
+
 .. code-block :: python
+
     def test_polygonArea(self):
         irreg_0 = [[5,11],[12,4],[7,7],[6,1]]       # area: 15
         irreg_1 = [[-6,12],[23,2],[19,-8],[-7,-6]]  # area: 400
@@ -85,7 +87,9 @@ polygonArea() finds the area of a given polygon. It returns a float/int.
         self.assertEqual(polygonArea(triangle), 12)
 
 polygonCentroid() finds the center of mass of a given polygon. It returns 2 ints in an array, representing the point of the polygons center of mass.
+
 .. code-block :: python
+
     def test_polygonCentroid(self): 
         irreg = [[-4,0],[8,12],[4,8],[-4,-4],[0,0]] # centroid: [0, 4]
         square = [[0,4],[4,4],[4,0],[0,0]]          # centroid: [2, 2]
@@ -96,7 +100,9 @@ polygonCentroid() finds the center of mass of a given polygon. It returns 2 ints
         self.assertEqual(polygonCentroid(triangle), [0, 2])
 
 polygonHull() takes a 2D array of points and determines the polygon hull using andrew's monotone chain algorithm. It returns the polygon hull as a 2D array of points.
+
 .. code-block :: python
+
     def test_polygonHull(self):
         points_0 = [[0,6],[12,8],[23,-5],[-5,-3],[5,11],[12,4],[7,7],[6,1]]
         points_1 = [[-4,0],[8,12],[4,8],[-4,-4],[0,0],[-6,12],[23,2],[19,-8],[-7,-6]]
