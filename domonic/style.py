@@ -6,6 +6,7 @@
 
 """
 
+import re
 from re import M, findall, finditer
 
 from .utils import Utils
@@ -1356,7 +1357,6 @@ class Style:
         self.y = None
 
         self._members_checked = True  # NOTE - this ALWAYS needs to be last or all props will render
-
 
     def style_set_decorator(func):
         from functools import wraps
@@ -3261,7 +3261,7 @@ class Style:
     @style_set_decorator
     def zIndex(self, value=None, *args, **kwargs):
         self.__zIndex = value
-    
+
     # new adds all newer css3 properties
 
     @property
@@ -3273,7 +3273,7 @@ class Style:
     def all(self, value=None, *args, **kwargs):
         self.__all = value
 
-    @property    
+    @property
     def alignmentBaseline(self):
         return self.__alignmentBaseline
 
@@ -3282,7 +3282,7 @@ class Style:
     def alignmentBaseline(self, value=None, *args, **kwargs):
         self.__alignmentBaseline = value
 
-    @property    
+    @property
     def appearance(self):
         return self.__appearance
 
@@ -3291,7 +3291,7 @@ class Style:
     def appearance(self, value=None, *args, **kwargs):
         self.__appearance = value
 
-    @property    
+    @property
     def backdropFilter(self):
         return self.__backdropFilter
 
@@ -3300,7 +3300,7 @@ class Style:
     def backdropFilter(self, value=None, *args, **kwargs):
         self.__backdropFilter = value
 
-    @property    
+    @property
     def backgroundBlendMode(self):
         return self.__backgroundBlendMode
 
@@ -3309,7 +3309,7 @@ class Style:
     def backgroundBlendMode(self, value=None, *args, **kwargs):
         self.__backgroundBlendMode = value
 
-    @property    
+    @property
     def backgroundPositionX(self):
         return self.__backgroundPositionX
 
@@ -3318,7 +3318,7 @@ class Style:
     def backgroundPositionX(self, value=None, *args, **kwargs):
         self.__backgroundPositionX = value
 
-    @property    
+    @property
     def backgroundPositionY(self):
         return self.__backgroundPositionY
 
@@ -3327,7 +3327,7 @@ class Style:
     def backgroundPositionY(self, value=None, *args, **kwargs):
         self.__backgroundPositionY = value
 
-    @property    
+    @property
     def backgroundRepeatX(self):
         return self.__backgroundRepeatX
 
@@ -3336,7 +3336,7 @@ class Style:
     def backgroundRepeatX(self, value=None, *args, **kwargs):
         self.__backgroundRepeatX = value
 
-    @property    
+    @property
     def backgroundRepeatY(self):
         return self.__backgroundRepeatY
 
@@ -3345,7 +3345,7 @@ class Style:
     def backgroundRepeatY(self, value=None, *args, **kwargs):
         self.__backgroundRepeatY = value
 
-    @property    
+    @property
     def baselineShift(self):
         return self.__baselineShift
 
@@ -3354,7 +3354,7 @@ class Style:
     def baselineShift(self, value=None, *args, **kwargs):
         self.__baselineShift = value
 
-    @property    
+    @property
     def blockSize(self):
         return self.__blockSize
 
@@ -3363,7 +3363,7 @@ class Style:
     def blockSize(self, value=None, *args, **kwargs):
         self.__blockSize = value
 
-    @property    
+    @property
     def borderBlockEnd(self):
         return self.__borderBlockEnd
 
@@ -3372,7 +3372,7 @@ class Style:
     def borderBlockEnd(self, value=None, *args, **kwargs):
         self.__borderBlockEnd = value
 
-    @property    
+    @property
     def borderBlockEndColor(self):
         return self.__borderBlockEndColor
 
@@ -3381,7 +3381,7 @@ class Style:
     def borderBlockEndColor(self, value=None, *args, **kwargs):
         self.__borderBlockEndColor = value
 
-    @property    
+    @property
     def borderBlockEndStyle(self):
         return self.__borderBlockEndStyle
 
@@ -3390,7 +3390,7 @@ class Style:
     def borderBlockEndStyle(self, value=None, *args, **kwargs):
         self.__borderBlockEndStyle = value
 
-    @property    
+    @property
     def borderBlockEndWidth(self):
         return self.__borderBlockEndWidth
 
@@ -3399,7 +3399,7 @@ class Style:
     def borderBlockEndWidth(self, value=None, *args, **kwargs):
         self.__borderBlockEndWidth = value
 
-    @property    
+    @property
     def borderBlockStart(self):
         return self.__borderBlockStart
 
@@ -3408,7 +3408,7 @@ class Style:
     def borderBlockStart(self, value=None, *args, **kwargs):
         self.__borderBlockStart = value
 
-    @property    
+    @property
     def borderBlockStartColor(self):
         return self.__borderBlockStartColor
 
@@ -3417,7 +3417,7 @@ class Style:
     def borderBlockStartColor(self, value=None, *args, **kwargs):
         self.__borderBlockStartColor = value
 
-    @property    
+    @property
     def borderBlockStartStyle(self):
         return self.__borderBlockStartStyle
 
@@ -3426,7 +3426,7 @@ class Style:
     def borderBlockStartStyle(self, value=None, *args, **kwargs):
         self.__borderBlockStartStyle = value
 
-    @property    
+    @property
     def borderBlockStartWidth(self):
         return self.__borderBlockStartWidth
 
@@ -3435,7 +3435,7 @@ class Style:
     def borderBlockStartWidth(self, value=None, *args, **kwargs):
         self.__borderBlockStartWidth = value
 
-    @property    
+    @property
     def borderInlineEnd(self):
         return self.__borderInlineEnd
 
@@ -3444,7 +3444,7 @@ class Style:
     def borderInlineEnd(self, value=None, *args, **kwargs):
         self.__borderInlineEnd = value
 
-    @property    
+    @property
     def borderInlineEndColor(self):
         return self.__borderInlineEndColor
 
@@ -3453,7 +3453,7 @@ class Style:
     def borderInlineEndColor(self, value=None, *args, **kwargs):
         self.__borderInlineEndColor = value
 
-    @property    
+    @property
     def borderInlineEndStyle(self):
         return self.__borderInlineEndStyle
 
@@ -3462,7 +3462,7 @@ class Style:
     def borderInlineEndStyle(self, value=None, *args, **kwargs):
         self.__borderInlineEndStyle = value
 
-    @property    
+    @property
     def borderInlineEndWidth(self):
         return self.__borderInlineEndWidth
 
@@ -3471,7 +3471,7 @@ class Style:
     def borderInlineEndWidth(self, value=None, *args, **kwargs):
         self.__borderInlineEndWidth = value
 
-    @property    
+    @property
     def borderInlineStart(self):
         return self.__borderInlineStart
 
@@ -3480,7 +3480,7 @@ class Style:
     def borderInlineStart(self, value=None, *args, **kwargs):
         self.__borderInlineStart = value
 
-    @property    
+    @property
     def borderInlineStartColor(self):
         return self.__borderInlineStartColor
 
@@ -3489,7 +3489,7 @@ class Style:
     def borderInlineStartColor(self, value=None, *args, **kwargs):
         self.__borderInlineStartColor = value
 
-    @property    
+    @property
     def borderInlineStartStyle(self):
         return self.__borderInlineStartStyle
 
@@ -3498,7 +3498,7 @@ class Style:
     def borderInlineStartStyle(self, value=None, *args, **kwargs):
         self.__borderInlineStartStyle = value
 
-    @property    
+    @property
     def borderInlineStartWidth(self):
         return self.__borderInlineStartWidth
 
@@ -3507,7 +3507,7 @@ class Style:
     def borderInlineStartWidth(self, value=None, *args, **kwargs):
         self.__borderInlineStartWidth = value
 
-    @property    
+    @property
     def breakAfter(self):
         return self.__breakAfter
 
@@ -3516,7 +3516,7 @@ class Style:
     def breakAfter(self, value=None, *args, **kwargs):
         self.__breakAfter = value
 
-    @property    
+    @property
     def breakBefore(self):
         return self.__breakBefore
 
@@ -3525,7 +3525,7 @@ class Style:
     def breakBefore(self, value=None, *args, **kwargs):
         self.__breakBefore = value
 
-    @property    
+    @property
     def breakInside(self):
         return self.__breakInside
 
@@ -3534,7 +3534,7 @@ class Style:
     def breakInside(self, value=None, *args, **kwargs):
         self.__breakInside = value
 
-    @property    
+    @property
     def bufferedRendering(self):
         return self.__bufferedRendering
 
@@ -3543,7 +3543,7 @@ class Style:
     def bufferedRendering(self, value=None, *args, **kwargs):
         self.__bufferedRendering = value
 
-    @property    
+    @property
     def caretColor(self):
         return self.__caretColor
 
@@ -3552,7 +3552,7 @@ class Style:
     def caretColor(self, value=None, *args, **kwargs):
         self.__caretColor = value
 
-    @property    
+    @property
     def clipPath(self):
         return self.__clipPath
 
@@ -3561,7 +3561,7 @@ class Style:
     def clipPath(self, value=None, *args, **kwargs):
         self.__clipPath = value
 
-    @property    
+    @property
     def clipRule(self):
         return self.__clipRule
 
@@ -3570,7 +3570,7 @@ class Style:
     def clipRule(self, value=None, *args, **kwargs):
         self.__clipRule = value
 
-    @property    
+    @property
     def colorInterpolation(self):
         return self.__colorInterpolation
 
@@ -3579,7 +3579,7 @@ class Style:
     def colorInterpolation(self, value=None, *args, **kwargs):
         self.__colorInterpolation = value
 
-    @property    
+    @property
     def colorInterpolationFilters(self):
         return self.__colorInterpolationFilters
 
@@ -3588,7 +3588,7 @@ class Style:
     def colorInterpolationFilters(self, value=None, *args, **kwargs):
         self.__colorInterpolationFilters = value
 
-    @property    
+    @property
     def colorRendering(self):
         return self.__colorRendering
 
@@ -3597,7 +3597,7 @@ class Style:
     def colorRendering(self, value=None, *args, **kwargs):
         self.__colorRendering = value
 
-    @property    
+    @property
     def colorScheme(self):
         return self.__colorScheme
 
@@ -3606,7 +3606,7 @@ class Style:
     def colorScheme(self, value=None, *args, **kwargs):
         self.__colorScheme = value
 
-    @property    
+    @property
     def contain(self):
         return self.__contain
 
@@ -3615,7 +3615,7 @@ class Style:
     def contain(self, value=None, *args, **kwargs):
         self.__contain = value
 
-    @property    
+    @property
     def containIntrinsicSize(self):
         return self.__containIntrinsicSize
 
@@ -3624,7 +3624,7 @@ class Style:
     def containIntrinsicSize(self, value=None, *args, **kwargs):
         self.__containIntrinsicSize = value
 
-    @property    
+    @property
     def contentVisibility(self):
         return self.__contentVisibility
 
@@ -3633,7 +3633,7 @@ class Style:
     def contentVisibility(self, value=None, *args, **kwargs):
         self.__contentVisibility = value
 
-    @property    
+    @property
     def counterSet(self):
         return self.__counterSet
 
@@ -3642,7 +3642,7 @@ class Style:
     def counterSet(self, value=None, *args, **kwargs):
         self.__counterSet = value
 
-    @property    
+    @property
     def cx(self):
         return self.__cx
 
@@ -3651,7 +3651,7 @@ class Style:
     def cx(self, value=None, *args, **kwargs):
         self.__cx = value
 
-    @property    
+    @property
     def cy(self):
         return self.__cy
 
@@ -3660,7 +3660,7 @@ class Style:
     def cy(self, value=None, *args, **kwargs):
         self.__cy = value
 
-    @property    
+    @property
     def dominantBaseline(self):
         return self.__dominantBaseline
 
@@ -3669,7 +3669,7 @@ class Style:
     def dominantBaseline(self, value=None, *args, **kwargs):
         self.__dominantBaseline = value
 
-    @property    
+    @property
     def d(self):
         return self.__d
 
@@ -3678,7 +3678,7 @@ class Style:
     def d(self, value=None, *args, **kwargs):
         self.__d = value
 
-    @property    
+    @property
     def fill(self):
         return self.__fill
 
@@ -3687,7 +3687,7 @@ class Style:
     def fill(self, value=None, *args, **kwargs):
         self.__fill = value
 
-    @property    
+    @property
     def fillOpacity(self):
         return self.__fillOpacity
 
@@ -3696,7 +3696,7 @@ class Style:
     def fillOpacity(self, value=None, *args, **kwargs):
         self.__fillOpacity = value
 
-    @property    
+    @property
     def fillRule(self):
         return self.__fillRule
 
@@ -3705,7 +3705,7 @@ class Style:
     def fillRule(self, value=None, *args, **kwargs):
         self.__fillRule = value
 
-    @property    
+    @property
     def fontDisplay(self):
         return self.__fontDisplay
 
@@ -3714,7 +3714,7 @@ class Style:
     def fontDisplay(self, value=None, *args, **kwargs):
         self.__fontDisplay = value
 
-    @property    
+    @property
     def floodColor(self):
         return self.__floodColor
 
@@ -3723,7 +3723,7 @@ class Style:
     def floodColor(self, value=None, *args, **kwargs):
         self.__floodColor = value
 
-    @property    
+    @property
     def floodOpacity(self):
         return self.__floodOpacity
 
@@ -3732,7 +3732,7 @@ class Style:
     def floodOpacity(self, value=None, *args, **kwargs):
         self.__floodOpacity = value
 
-    @property    
+    @property
     def fontFeatureSettings(self):
         return self.__fontFeatureSettings
 
@@ -3741,7 +3741,7 @@ class Style:
     def fontFeatureSettings(self, value=None, *args, **kwargs):
         self.__fontFeatureSettings = value
 
-    @property    
+    @property
     def fontKerning(self):
         return self.__fontKerning
 
@@ -3750,7 +3750,7 @@ class Style:
     def fontKerning(self, value=None, *args, **kwargs):
         self.__fontKerning = value
 
-    @property    
+    @property
     def fontOpticalSizing(self):
         return self.__fontOpticalSizing
 
@@ -3759,7 +3759,7 @@ class Style:
     def fontOpticalSizing(self, value=None, *args, **kwargs):
         self.__fontOpticalSizing = value
 
-    @property    
+    @property
     def fontVariantCaps(self):
         return self.__fontVariantCaps
 
@@ -3768,7 +3768,7 @@ class Style:
     def fontVariantCaps(self, value=None, *args, **kwargs):
         self.__fontVariantCaps = value
 
-    @property    
+    @property
     def fontVariantEastAsian(self):
         return self.__fontVariantEastAsian
 
@@ -3777,7 +3777,7 @@ class Style:
     def fontVariantEastAsian(self, value=None, *args, **kwargs):
         self.__fontVariantEastAsian = value
 
-    @property    
+    @property
     def fontVariantLigatures(self):
         return self.__fontVariantLigatures
 
@@ -3786,7 +3786,7 @@ class Style:
     def fontVariantLigatures(self, value=None, *args, **kwargs):
         self.__fontVariantLigatures = value
 
-    @property    
+    @property
     def fontVariantNumeric(self):
         return self.__fontVariantNumeric
 
@@ -3795,7 +3795,7 @@ class Style:
     def fontVariantNumeric(self, value=None, *args, **kwargs):
         self.__fontVariantNumeric = value
 
-    @property    
+    @property
     def fontVariationSettings(self):
         return self.__fontVariationSettings
 
@@ -3804,7 +3804,7 @@ class Style:
     def fontVariationSettings(self, value=None, *args, **kwargs):
         self.__fontVariationSettings = value
 
-    @property    
+    @property
     def gap(self):
         return self.__gap
 
@@ -3813,7 +3813,7 @@ class Style:
     def gap(self, value=None, *args, **kwargs):
         self.__gap = value
 
-    @property    
+    @property
     def grid(self):
         return self.__grid
 
@@ -3822,7 +3822,7 @@ class Style:
     def grid(self, value=None, *args, **kwargs):
         self.__grid = value
 
-    @property    
+    @property
     def gridArea(self):
         return self.__gridArea
 
@@ -3831,7 +3831,7 @@ class Style:
     def gridArea(self, value=None, *args, **kwargs):
         self.__gridArea = value
 
-    @property    
+    @property
     def gridAutoColumns(self):
         return self.__gridAutoColumns
 
@@ -3840,7 +3840,7 @@ class Style:
     def gridAutoColumns(self, value=None, *args, **kwargs):
         self.__gridAutoColumns = value
 
-    @property    
+    @property
     def gridAutoFlow(self):
         return self.__gridAutoFlow
 
@@ -3849,7 +3849,7 @@ class Style:
     def gridAutoFlow(self, value=None, *args, **kwargs):
         self.__gridAutoFlow = value
 
-    @property    
+    @property
     def gridAutoRows(self):
         return self.__gridAutoRows
 
@@ -3858,7 +3858,7 @@ class Style:
     def gridAutoRows(self, value=None, *args, **kwargs):
         self.__gridAutoRows = value
 
-    @property    
+    @property
     def gridColumn(self):
         return self.__gridColumn
 
@@ -3867,7 +3867,7 @@ class Style:
     def gridColumn(self, value=None, *args, **kwargs):
         self.__gridColumn = value
 
-    @property    
+    @property
     def gridColumnEnd(self):
         return self.__gridColumnEnd
 
@@ -3876,7 +3876,7 @@ class Style:
     def gridColumnEnd(self, value=None, *args, **kwargs):
         self.__gridColumnEnd = value
 
-    @property    
+    @property
     def gridColumnGap(self):
         return self.__gridColumnGap
 
@@ -3885,7 +3885,7 @@ class Style:
     def gridColumnGap(self, value=None, *args, **kwargs):
         self.__gridColumnGap = value
 
-    @property    
+    @property
     def gridColumnStart(self):
         return self.__gridColumnStart
 
@@ -3894,7 +3894,7 @@ class Style:
     def gridColumnStart(self, value=None, *args, **kwargs):
         self.__gridColumnStart = value
 
-    @property    
+    @property
     def gridGap(self):
         return self.__gridGap
 
@@ -3903,7 +3903,7 @@ class Style:
     def gridGap(self, value=None, *args, **kwargs):
         self.__gridGap = value
 
-    @property    
+    @property
     def gridRow(self):
         return self.__gridRow
 
@@ -3912,7 +3912,7 @@ class Style:
     def gridRow(self, value=None, *args, **kwargs):
         self.__gridRow = value
 
-    @property    
+    @property
     def gridRowEnd(self):
         return self.__gridRowEnd
 
@@ -3921,7 +3921,7 @@ class Style:
     def gridRowEnd(self, value=None, *args, **kwargs):
         self.__gridRowEnd = value
 
-    @property    
+    @property
     def gridRowGap(self):
         return self.__gridRowGap
 
@@ -3930,7 +3930,7 @@ class Style:
     def gridRowGap(self, value=None, *args, **kwargs):
         self.__gridRowGap = value
 
-    @property    
+    @property
     def gridRowStart(self):
         return self.__gridRowStart
 
@@ -3939,7 +3939,7 @@ class Style:
     def gridRowStart(self, value=None, *args, **kwargs):
         self.__gridRowStart = value
 
-    @property    
+    @property
     def gridTemplate(self):
         return self.__gridTemplate
 
@@ -3948,7 +3948,7 @@ class Style:
     def gridTemplate(self, value=None, *args, **kwargs):
         self.__gridTemplate = value
 
-    @property    
+    @property
     def gridTemplateAreas(self):
         return self.__gridTemplateAreas
 
@@ -3957,7 +3957,7 @@ class Style:
     def gridTemplateAreas(self, value=None, *args, **kwargs):
         self.__gridTemplateAreas = value
 
-    @property    
+    @property
     def gridTemplateColumns(self):
         return self.__gridTemplateColumns
 
@@ -3966,7 +3966,7 @@ class Style:
     def gridTemplateColumns(self, value=None, *args, **kwargs):
         self.__gridTemplateColumns = value
 
-    @property    
+    @property
     def gridTemplateRows(self):
         return self.__gridTemplateRows
 
@@ -3975,7 +3975,7 @@ class Style:
     def gridTemplateRows(self, value=None, *args, **kwargs):
         self.__gridTemplateRows = value
 
-    @property    
+    @property
     def imageRendering(self):
         return self.__imageRendering
 
@@ -3984,7 +3984,7 @@ class Style:
     def imageRendering(self, value=None, *args, **kwargs):
         self.__imageRendering = value
 
-    @property    
+    @property
     def inherits(self):
         return self.__inherits
 
@@ -3993,7 +3993,7 @@ class Style:
     def inherits(self, value=None, *args, **kwargs):
         self.__inherits = value
 
-    @property    
+    @property
     def initialValue(self):
         return self.__initialValue
 
@@ -4002,7 +4002,7 @@ class Style:
     def initialValue(self, value=None, *args, **kwargs):
         self.__initialValue = value
 
-    @property    
+    @property
     def inlineSize(self):
         return self.__inlineSize
 
@@ -4011,7 +4011,7 @@ class Style:
     def inlineSize(self, value=None, *args, **kwargs):
         self.__inlineSize = value
 
-    @property    
+    @property
     def justifyItems(self):
         return self.__justifyItems
 
@@ -4020,7 +4020,7 @@ class Style:
     def justifyItems(self, value=None, *args, **kwargs):
         self.__justifyItems = value
 
-    @property    
+    @property
     def justifySelf(self):
         return self.__justifySelf
 
@@ -4029,7 +4029,7 @@ class Style:
     def justifySelf(self, value=None, *args, **kwargs):
         self.__justifySelf = value
 
-    @property    
+    @property
     def lightingColor(self):
         return self.__lightingColor
 
@@ -4038,7 +4038,7 @@ class Style:
     def lightingColor(self, value=None, *args, **kwargs):
         self.__lightingColor = value
 
-    @property    
+    @property
     def lineBreak(self):
         return self.__lineBreak
 
@@ -4047,7 +4047,7 @@ class Style:
     def lineBreak(self, value=None, *args, **kwargs):
         self.__lineBreak = value
 
-    @property    
+    @property
     def marginBlockEnd(self):
         return self.__marginBlockEnd
 
@@ -4056,7 +4056,7 @@ class Style:
     def marginBlockEnd(self, value=None, *args, **kwargs):
         self.__marginBlockEnd = value
 
-    @property    
+    @property
     def marginBlockStart(self):
         return self.__marginBlockStart
 
@@ -4065,7 +4065,7 @@ class Style:
     def marginBlockStart(self, value=None, *args, **kwargs):
         self.__marginBlockStart = value
 
-    @property    
+    @property
     def marginInlineEnd(self):
         return self.__marginInlineEnd
 
@@ -4074,7 +4074,7 @@ class Style:
     def marginInlineEnd(self, value=None, *args, **kwargs):
         self.__marginInlineEnd = value
 
-    @property    
+    @property
     def marginInlineStart(self):
         return self.__marginInlineStart
 
@@ -4083,7 +4083,7 @@ class Style:
     def marginInlineStart(self, value=None, *args, **kwargs):
         self.__marginInlineStart = value
 
-    @property    
+    @property
     def marker(self):
         return self.__marker
 
@@ -4092,7 +4092,7 @@ class Style:
     def marker(self, value=None, *args, **kwargs):
         self.__marker = value
 
-    @property    
+    @property
     def markerEnd(self):
         return self.__markerEnd
 
@@ -4101,7 +4101,7 @@ class Style:
     def markerEnd(self, value=None, *args, **kwargs):
         self.__markerEnd = value
 
-    @property    
+    @property
     def markerMid(self):
         return self.__markerMid
 
@@ -4110,7 +4110,7 @@ class Style:
     def markerMid(self, value=None, *args, **kwargs):
         self.__markerMid = value
 
-    @property    
+    @property
     def markerStart(self):
         return self.__markerStart
 
@@ -4119,7 +4119,7 @@ class Style:
     def markerStart(self, value=None, *args, **kwargs):
         self.__markerStart = value
 
-    @property    
+    @property
     def mask(self):
         return self.__mask
 
@@ -4128,7 +4128,7 @@ class Style:
     def mask(self, value=None, *args, **kwargs):
         self.__mask = value
 
-    @property    
+    @property
     def maskType(self):
         return self.__maskType
 
@@ -4137,7 +4137,7 @@ class Style:
     def maskType(self, value=None, *args, **kwargs):
         self.__maskType = value
 
-    @property    
+    @property
     def maxBlockSize(self):
         return self.__maxBlockSize
 
@@ -4146,7 +4146,7 @@ class Style:
     def maxBlockSize(self, value=None, *args, **kwargs):
         self.__maxBlockSize = value
 
-    @property    
+    @property
     def maxInlineSize(self):
         return self.__maxInlineSize
 
@@ -4155,7 +4155,7 @@ class Style:
     def maxInlineSize(self, value=None, *args, **kwargs):
         self.__maxInlineSize = value
 
-    @property    
+    @property
     def maxZoom(self):
         return self.__maxZoom
 
@@ -4164,7 +4164,7 @@ class Style:
     def maxZoom(self, value=None, *args, **kwargs):
         self.__maxZoom = value
 
-    @property    
+    @property
     def minBlockSize(self):
         return self.__minBlockSize
 
@@ -4173,7 +4173,7 @@ class Style:
     def minBlockSize(self, value=None, *args, **kwargs):
         self.__minBlockSize = value
 
-    @property    
+    @property
     def minInlineSize(self):
         return self.__minInlineSize
 
@@ -4182,7 +4182,7 @@ class Style:
     def minInlineSize(self, value=None, *args, **kwargs):
         self.__minInlineSize = value
 
-    @property    
+    @property
     def minZoom(self):
         return self.__minZoom
 
@@ -4191,7 +4191,7 @@ class Style:
     def minZoom(self, value=None, *args, **kwargs):
         self.__minZoom = value
 
-    @property    
+    @property
     def mixBlendMode(self):
         return self.__mixBlendMode
 
@@ -4200,7 +4200,7 @@ class Style:
     def mixBlendMode(self, value=None, *args, **kwargs):
         self.__mixBlendMode = value
 
-    @property    
+    @property
     def objectFit(self):
         return self.__objectFit
 
@@ -4209,7 +4209,7 @@ class Style:
     def objectFit(self, value=None, *args, **kwargs):
         self.__objectFit = value
 
-    @property    
+    @property
     def objectPosition(self):
         return self.__objectPosition
 
@@ -4218,7 +4218,7 @@ class Style:
     def objectPosition(self, value=None, *args, **kwargs):
         self.__objectPosition = value
 
-    @property    
+    @property
     def offset(self):
         return self.__offset
 
@@ -4227,7 +4227,7 @@ class Style:
     def offset(self, value=None, *args, **kwargs):
         self.__offset = value
 
-    @property    
+    @property
     def offsetDistance(self):
         return self.__offsetDistance
 
@@ -4236,7 +4236,7 @@ class Style:
     def offsetDistance(self, value=None, *args, **kwargs):
         self.__offsetDistance = value
 
-    @property    
+    @property
     def offsetPath(self):
         return self.__offsetPath
 
@@ -4245,7 +4245,7 @@ class Style:
     def offsetPath(self, value=None, *args, **kwargs):
         self.__offsetPath = value
 
-    @property    
+    @property
     def offsetRotate(self):
         return self.__offsetRotate
 
@@ -4254,7 +4254,7 @@ class Style:
     def offsetRotate(self, value=None, *args, **kwargs):
         self.__offsetRotate = value
 
-    @property    
+    @property
     def orientation(self):
         return self.__orientation
 
@@ -4263,7 +4263,7 @@ class Style:
     def orientation(self, value=None, *args, **kwargs):
         self.__orientation = value
 
-    @property    
+    @property
     def overflowAnchor(self):
         return self.__overflowAnchor
 
@@ -4272,7 +4272,7 @@ class Style:
     def overflowAnchor(self, value=None, *args, **kwargs):
         self.__overflowAnchor = value
 
-    @property    
+    @property
     def overflowWrap(self):
         return self.__overflowWrap
 
@@ -4281,7 +4281,7 @@ class Style:
     def overflowWrap(self, value=None, *args, **kwargs):
         self.__overflowWrap = value
 
-    @property    
+    @property
     def overscrollBehavior(self):
         return self.__overscrollBehavior
 
@@ -4290,7 +4290,7 @@ class Style:
     def overscrollBehavior(self, value=None, *args, **kwargs):
         self.__overscrollBehavior = value
 
-    @property    
+    @property
     def overscrollBehaviorBlock(self):
         return self.__overscrollBehaviorBlock
 
@@ -4299,7 +4299,7 @@ class Style:
     def overscrollBehaviorBlock(self, value=None, *args, **kwargs):
         self.__overscrollBehaviorBlock = value
 
-    @property    
+    @property
     def overscrollBehaviorInline(self):
         return self.__overscrollBehaviorInline
 
@@ -4308,7 +4308,7 @@ class Style:
     def overscrollBehaviorInline(self, value=None, *args, **kwargs):
         self.__overscrollBehaviorInline = value
 
-    @property    
+    @property
     def overscrollBehaviorX(self):
         return self.__overscrollBehaviorX
 
@@ -4317,7 +4317,7 @@ class Style:
     def overscrollBehaviorX(self, value=None, *args, **kwargs):
         self.__overscrollBehaviorX = value
 
-    @property    
+    @property
     def overscrollBehaviorY(self):
         return self.__overscrollBehaviorY
 
@@ -4326,7 +4326,7 @@ class Style:
     def overscrollBehaviorY(self, value=None, *args, **kwargs):
         self.__overscrollBehaviorY = value
 
-    @property    
+    @property
     def paddingBlockEnd(self):
         return self.__paddingBlockEnd
 
@@ -4335,7 +4335,7 @@ class Style:
     def paddingBlockEnd(self, value=None, *args, **kwargs):
         self.__paddingBlockEnd = value
 
-    @property    
+    @property
     def paddingBlockStart(self):
         return self.__paddingBlockStart
 
@@ -4344,7 +4344,7 @@ class Style:
     def paddingBlockStart(self, value=None, *args, **kwargs):
         self.__paddingBlockStart = value
 
-    @property    
+    @property
     def paddingInlineEnd(self):
         return self.__paddingInlineEnd
 
@@ -4353,7 +4353,7 @@ class Style:
     def paddingInlineEnd(self, value=None, *args, **kwargs):
         self.__paddingInlineEnd = value
 
-    @property    
+    @property
     def paddingInlineStart(self):
         return self.__paddingInlineStart
 
@@ -4362,7 +4362,7 @@ class Style:
     def paddingInlineStart(self, value=None, *args, **kwargs):
         self.__paddingInlineStart = value
 
-    @property    
+    @property
     def page(self):
         return self.__page
 
@@ -4371,7 +4371,7 @@ class Style:
     def page(self, value=None, *args, **kwargs):
         self.__page = value
 
-    @property    
+    @property
     def pageOrientation(self):
         return self.__pageOrientation
 
@@ -4380,7 +4380,7 @@ class Style:
     def pageOrientation(self, value=None, *args, **kwargs):
         self.__pageOrientation = value
 
-    @property    
+    @property
     def paintOrder(self):
         return self.__paintOrder
 
@@ -4389,7 +4389,7 @@ class Style:
     def paintOrder(self, value=None, *args, **kwargs):
         self.__paintOrder = value
 
-    @property    
+    @property
     def placeContent(self):
         return self.__placeContent
 
@@ -4398,7 +4398,7 @@ class Style:
     def placeContent(self, value=None, *args, **kwargs):
         self.__placeContent = value
 
-    @property    
+    @property
     def placeItems(self):
         return self.__placeItems
 
@@ -4407,7 +4407,7 @@ class Style:
     def placeItems(self, value=None, *args, **kwargs):
         self.__placeItems = value
 
-    @property    
+    @property
     def placeSelf(self):
         return self.__placeSelf
 
@@ -4416,7 +4416,7 @@ class Style:
     def placeSelf(self, value=None, *args, **kwargs):
         self.__placeSelf = value
 
-    @property    
+    @property
     def pointerEvents(self):
         return self.__pointerEvents
 
@@ -4425,7 +4425,7 @@ class Style:
     def pointerEvents(self, value=None, *args, **kwargs):
         self.__pointerEvents = value
 
-    @property    
+    @property
     def r(self):
         return self.__r
 
@@ -4434,7 +4434,7 @@ class Style:
     def r(self, value=None, *args, **kwargs):
         self.__r = value
 
-    @property    
+    @property
     def rowGap(self):
         return self.__rowGap
 
@@ -4443,7 +4443,7 @@ class Style:
     def rowGap(self, value=None, *args, **kwargs):
         self.__rowGap = value
 
-    @property    
+    @property
     def rubyPosition(self):
         return self.__rubyPosition
 
@@ -4452,7 +4452,7 @@ class Style:
     def rubyPosition(self, value=None, *args, **kwargs):
         self.__rubyPosition = value
 
-    @property    
+    @property
     def rx(self):
         return self.__rx
 
@@ -4461,7 +4461,7 @@ class Style:
     def rx(self, value=None, *args, **kwargs):
         self.__rx = value
 
-    @property    
+    @property
     def ry(self):
         return self.__ry
 
@@ -4470,7 +4470,7 @@ class Style:
     def ry(self, value=None, *args, **kwargs):
         self.__ry = value
 
-    @property    
+    @property
     def scrollBehavior(self):
         return self.__scrollBehavior
 
@@ -4479,7 +4479,7 @@ class Style:
     def scrollBehavior(self, value=None, *args, **kwargs):
         self.__scrollBehavior = value
 
-    @property    
+    @property
     def scrollMargin(self):
         return self.__scrollMargin
 
@@ -4488,7 +4488,7 @@ class Style:
     def scrollMargin(self, value=None, *args, **kwargs):
         self.__scrollMargin = value
 
-    @property    
+    @property
     def scrollMarginBlock(self):
         return self.__scrollMarginBlock
 
@@ -4497,7 +4497,7 @@ class Style:
     def scrollMarginBlock(self, value=None, *args, **kwargs):
         self.__scrollMarginBlock = value
 
-    @property    
+    @property
     def scrollMarginBlockEnd(self):
         return self.__scrollMarginBlockEnd
 
@@ -4506,7 +4506,7 @@ class Style:
     def scrollMarginBlockEnd(self, value=None, *args, **kwargs):
         self.__scrollMarginBlockEnd = value
 
-    @property    
+    @property
     def scrollMarginBlockStart(self):
         return self.__scrollMarginBlockStart
 
@@ -4515,7 +4515,7 @@ class Style:
     def scrollMarginBlockStart(self, value=None, *args, **kwargs):
         self.__scrollMarginBlockStart = value
 
-    @property    
+    @property
     def scrollMarginBottom(self):
         return self.__scrollMarginBottom
 
@@ -4524,7 +4524,7 @@ class Style:
     def scrollMarginBottom(self, value=None, *args, **kwargs):
         self.__scrollMarginBottom = value
 
-    @property    
+    @property
     def scrollMarginInline(self):
         return self.__scrollMarginInline
 
@@ -4533,7 +4533,7 @@ class Style:
     def scrollMarginInline(self, value=None, *args, **kwargs):
         self.__scrollMarginInline = value
 
-    @property    
+    @property
     def scrollMarginInlineEnd(self):
         return self.__scrollMarginInlineEnd
 
@@ -4542,7 +4542,7 @@ class Style:
     def scrollMarginInlineEnd(self, value=None, *args, **kwargs):
         self.__scrollMarginInlineEnd = value
 
-    @property    
+    @property
     def scrollMarginInlineStart(self):
         return self.__scrollMarginInlineStart
 
@@ -4551,7 +4551,7 @@ class Style:
     def scrollMarginInlineStart(self, value=None, *args, **kwargs):
         self.__scrollMarginInlineStart = value
 
-    @property    
+    @property
     def scrollMarginLeft(self):
         return self.__scrollMarginLeft
 
@@ -4560,7 +4560,7 @@ class Style:
     def scrollMarginLeft(self, value=None, *args, **kwargs):
         self.__scrollMarginLeft = value
 
-    @property    
+    @property
     def scrollMarginRight(self):
         return self.__scrollMarginRight
 
@@ -4569,7 +4569,7 @@ class Style:
     def scrollMarginRight(self, value=None, *args, **kwargs):
         self.__scrollMarginRight = value
 
-    @property    
+    @property
     def scrollMarginTop(self):
         return self.__scrollMarginTop
 
@@ -4578,7 +4578,7 @@ class Style:
     def scrollMarginTop(self, value=None, *args, **kwargs):
         self.__scrollMarginTop = value
 
-    @property    
+    @property
     def scrollPadding(self):
         return self.__scrollPadding
 
@@ -4587,7 +4587,7 @@ class Style:
     def scrollPadding(self, value=None, *args, **kwargs):
         self.__scrollPadding = value
 
-    @property    
+    @property
     def scrollPaddingBlock(self):
         return self.__scrollPaddingBlock
 
@@ -4596,7 +4596,7 @@ class Style:
     def scrollPaddingBlock(self, value=None, *args, **kwargs):
         self.__scrollPaddingBlock = value
 
-    @property    
+    @property
     def scrollPaddingBlockEnd(self):
         return self.__scrollPaddingBlockEnd
 
@@ -4605,7 +4605,7 @@ class Style:
     def scrollPaddingBlockEnd(self, value=None, *args, **kwargs):
         self.__scrollPaddingBlockEnd = value
 
-    @property    
+    @property
     def scrollPaddingBlockStart(self):
         return self.__scrollPaddingBlockStart
 
@@ -4614,7 +4614,7 @@ class Style:
     def scrollPaddingBlockStart(self, value=None, *args, **kwargs):
         self.__scrollPaddingBlockStart = value
 
-    @property    
+    @property
     def scrollPaddingBottom(self):
         return self.__scrollPaddingBottom
 
@@ -4623,7 +4623,7 @@ class Style:
     def scrollPaddingBottom(self, value=None, *args, **kwargs):
         self.__scrollPaddingBottom = value
 
-    @property    
+    @property
     def scrollPaddingInline(self):
         return self.__scrollPaddingInline
 
@@ -4632,7 +4632,7 @@ class Style:
     def scrollPaddingInline(self, value=None, *args, **kwargs):
         self.__scrollPaddingInline = value
 
-    @property    
+    @property
     def scrollPaddingInlineEnd(self):
         return self.__scrollPaddingInlineEnd
 
@@ -4641,7 +4641,7 @@ class Style:
     def scrollPaddingInlineEnd(self, value=None, *args, **kwargs):
         self.__scrollPaddingInlineEnd = value
 
-    @property    
+    @property
     def scrollPaddingInlineStart(self):
         return self.__scrollPaddingInlineStart
 
@@ -4650,7 +4650,7 @@ class Style:
     def scrollPaddingInlineStart(self, value=None, *args, **kwargs):
         self.__scrollPaddingInlineStart = value
 
-    @property    
+    @property
     def scrollPaddingLeft(self):
         return self.__scrollPaddingLeft
 
@@ -4659,7 +4659,7 @@ class Style:
     def scrollPaddingLeft(self, value=None, *args, **kwargs):
         self.__scrollPaddingLeft = value
 
-    @property    
+    @property
     def scrollPaddingRight(self):
         return self.__scrollPaddingRight
 
@@ -4668,7 +4668,7 @@ class Style:
     def scrollPaddingRight(self, value=None, *args, **kwargs):
         self.__scrollPaddingRight = value
 
-    @property    
+    @property
     def scrollPaddingTop(self):
         return self.__scrollPaddingTop
 
@@ -4677,7 +4677,7 @@ class Style:
     def scrollPaddingTop(self, value=None, *args, **kwargs):
         self.__scrollPaddingTop = value
 
-    @property    
+    @property
     def scrollSnapAlign(self):
         return self.__scrollSnapAlign
 
@@ -4686,7 +4686,7 @@ class Style:
     def scrollSnapAlign(self, value=None, *args, **kwargs):
         self.__scrollSnapAlign = value
 
-    @property    
+    @property
     def scrollSnapStop(self):
         return self.__scrollSnapStop
 
@@ -4695,7 +4695,7 @@ class Style:
     def scrollSnapStop(self, value=None, *args, **kwargs):
         self.__scrollSnapStop = value
 
-    @property    
+    @property
     def scrollSnapType(self):
         return self.__scrollSnapType
 
@@ -4704,7 +4704,7 @@ class Style:
     def scrollSnapType(self, value=None, *args, **kwargs):
         self.__scrollSnapType = value
 
-    @property    
+    @property
     def shapeImageThreshold(self):
         return self.__shapeImageThreshold
 
@@ -4713,7 +4713,7 @@ class Style:
     def shapeImageThreshold(self, value=None, *args, **kwargs):
         self.__shapeImageThreshold = value
 
-    @property    
+    @property
     def shapeMargin(self):
         return self.__shapeMargin
 
@@ -4722,7 +4722,7 @@ class Style:
     def shapeMargin(self, value=None, *args, **kwargs):
         self.__shapeMargin = value
 
-    @property    
+    @property
     def shapeOutside(self):
         return self.__shapeOutside
 
@@ -4731,7 +4731,7 @@ class Style:
     def shapeOutside(self, value=None, *args, **kwargs):
         self.__shapeOutside = value
 
-    @property    
+    @property
     def shapeRendering(self):
         return self.__shapeRendering
 
@@ -4740,7 +4740,7 @@ class Style:
     def shapeRendering(self, value=None, *args, **kwargs):
         self.__shapeRendering = value
 
-    @property    
+    @property
     def size(self):
         return self.__size
 
@@ -4749,7 +4749,7 @@ class Style:
     def size(self, value=None, *args, **kwargs):
         self.__size = value
 
-    @property    
+    @property
     def speak(self):
         return self.__speak
 
@@ -4758,7 +4758,7 @@ class Style:
     def speak(self, value=None, *args, **kwargs):
         self.__speak = value
 
-    @property    
+    @property
     def src(self):
         return self.__src
 
@@ -4767,7 +4767,7 @@ class Style:
     def src(self, value=None, *args, **kwargs):
         self.__src = value
 
-    @property    
+    @property
     def stopColor(self):
         return self.__stopColor
 
@@ -4776,7 +4776,7 @@ class Style:
     def stopColor(self, value=None, *args, **kwargs):
         self.__stopColor = value
 
-    @property    
+    @property
     def stopOpacity(self):
         return self.__stopOpacity
 
@@ -4785,7 +4785,7 @@ class Style:
     def stopOpacity(self, value=None, *args, **kwargs):
         self.__stopOpacity = value
 
-    @property    
+    @property
     def stroke(self):
         return self.__stroke
 
@@ -4794,7 +4794,7 @@ class Style:
     def stroke(self, value=None, *args, **kwargs):
         self.__stroke = value
 
-    @property    
+    @property
     def strokeDasharray(self):
         return self.__strokeDasharray
 
@@ -4803,7 +4803,7 @@ class Style:
     def strokeDasharray(self, value=None, *args, **kwargs):
         self.__strokeDasharray = value
 
-    @property    
+    @property
     def strokeDashoffset(self):
         return self.__strokeDashoffset
 
@@ -4812,7 +4812,7 @@ class Style:
     def strokeDashoffset(self, value=None, *args, **kwargs):
         self.__strokeDashoffset = value
 
-    @property    
+    @property
     def strokeLinecap(self):
         return self.__strokeLinecap
 
@@ -4821,7 +4821,7 @@ class Style:
     def strokeLinecap(self, value=None, *args, **kwargs):
         self.__strokeLinecap = value
 
-    @property    
+    @property
     def strokeLinejoin(self):
         return self.__strokeLinejoin
 
@@ -4830,7 +4830,7 @@ class Style:
     def strokeLinejoin(self, value=None, *args, **kwargs):
         self.__strokeLinejoin = value
 
-    @property    
+    @property
     def strokeMiterlimit(self):
         return self.__strokeMiterlimit
 
@@ -4839,7 +4839,7 @@ class Style:
     def strokeMiterlimit(self, value=None, *args, **kwargs):
         self.__strokeMiterlimit = value
 
-    @property    
+    @property
     def strokeOpacity(self):
         return self.__strokeOpacity
 
@@ -4848,7 +4848,7 @@ class Style:
     def strokeOpacity(self, value=None, *args, **kwargs):
         self.__strokeOpacity = value
 
-    @property    
+    @property
     def strokeWidth(self):
         return self.__strokeWidth
 
@@ -4857,7 +4857,7 @@ class Style:
     def strokeWidth(self, value=None, *args, **kwargs):
         self.__strokeWidth = value
 
-    @property    
+    @property
     def syntax(self):
         return self.__syntax
 
@@ -4866,7 +4866,7 @@ class Style:
     def syntax(self, value=None, *args, **kwargs):
         self.__syntax = value
 
-    @property    
+    @property
     def textAnchor(self):
         return self.__textAnchor
 
@@ -4875,7 +4875,7 @@ class Style:
     def textAnchor(self, value=None, *args, **kwargs):
         self.__textAnchor = value
 
-    @property    
+    @property
     def textCombineUpright(self):
         return self.__textCombineUpright
 
@@ -4884,7 +4884,7 @@ class Style:
     def textCombineUpright(self, value=None, *args, **kwargs):
         self.__textCombineUpright = value
 
-    @property    
+    @property
     def textDecorationSkipInk(self):
         return self.__textDecorationSkipInk
 
@@ -4893,7 +4893,7 @@ class Style:
     def textDecorationSkipInk(self, value=None, *args, **kwargs):
         self.__textDecorationSkipInk = value
 
-    @property    
+    @property
     def textOrientation(self):
         return self.__textOrientation
 
@@ -4902,7 +4902,7 @@ class Style:
     def textOrientation(self, value=None, *args, **kwargs):
         self.__textOrientation = value
 
-    @property    
+    @property
     def textRendering(self):
         return self.__textRendering
 
@@ -4911,7 +4911,7 @@ class Style:
     def textRendering(self, value=None, *args, **kwargs):
         self.__textRendering = value
 
-    @property    
+    @property
     def textSizeAdjust(self):
         return self.__textSizeAdjust
 
@@ -4920,7 +4920,7 @@ class Style:
     def textSizeAdjust(self, value=None, *args, **kwargs):
         self.__textSizeAdjust = value
 
-    @property    
+    @property
     def textUnderlinePosition(self):
         return self.__textUnderlinePosition
 
@@ -4929,7 +4929,7 @@ class Style:
     def textUnderlinePosition(self, value=None, *args, **kwargs):
         self.__textUnderlinePosition = value
 
-    @property    
+    @property
     def touchAction(self):
         return self.__touchAction
 
@@ -4938,7 +4938,7 @@ class Style:
     def touchAction(self, value=None, *args, **kwargs):
         self.__touchAction = value
 
-    @property    
+    @property
     def transformBox(self):
         return self.__transformBox
 
@@ -4947,7 +4947,7 @@ class Style:
     def transformBox(self, value=None, *args, **kwargs):
         self.__transformBox = value
 
-    @property    
+    @property
     def unicodeRange(self):
         return self.__unicodeRange
 
@@ -4956,7 +4956,7 @@ class Style:
     def unicodeRange(self, value=None, *args, **kwargs):
         self.__unicodeRange = value
 
-    @property    
+    @property
     def userZoom(self):
         return self.__userZoom
 
@@ -4965,7 +4965,7 @@ class Style:
     def userZoom(self, value=None, *args, **kwargs):
         self.__userZoom = value
 
-    @property    
+    @property
     def vectorEffect(self):
         return self.__vectorEffect
 
@@ -4974,7 +4974,7 @@ class Style:
     def vectorEffect(self, value=None, *args, **kwargs):
         self.__vectorEffect = value
 
-    @property    
+    @property
     def willChange(self):
         return self.__willChange
 
@@ -4983,7 +4983,7 @@ class Style:
     def willChange(self, value=None, *args, **kwargs):
         self.__willChange = value
 
-    @property    
+    @property
     def writingMode(self):
         return self.__writingMode
 
@@ -4992,7 +4992,7 @@ class Style:
     def writingMode(self, value=None, *args, **kwargs):
         self.__writingMode = value
 
-    @property    
+    @property
     def x(self):
         return self.__x
 
@@ -5001,7 +5001,7 @@ class Style:
     def x(self, value=None, *args, **kwargs):
         self.__x = value
 
-    @property    
+    @property
     def y(self):
         return self.__y
 
@@ -5053,7 +5053,6 @@ class Style:
     # Modifies an existing CSS property or creates a new CSS property in the declaration block. """
     # def setProperty(self, property, value):
     # self[property] = value
-
 
 
 class CSSStyleDeclaration(Style):
@@ -5137,10 +5136,11 @@ class CSSStyleDeclaration(Style):
 
 COMMENT_REGEXP = r'/\/\*[^*]*\*\//gm'
 
+
 class CSSParser:
 
     @staticmethod
-    def parseFromString(parentStyleSheet: CSSStyleSheet, cssText: str): 
+    def parseFromString(parentStyleSheet: CSSStyleSheet, cssText: str):
         css = cssText.replace(COMMENT_REGEXP, '')
         cssRules = []
         stack = []
@@ -5150,14 +5150,18 @@ class CSSParser:
 
         def matches(s: str):
             regExp = r'{|}'
+
             class Match:
                 def __init__(self, index: int, match: str):
                     self.index = index
                     self.match = match
+
                 def __str__(self):
                     return f'{self.match}'
+
                 def __repr__(self):
                     return f'{self.match}'
+
                 def __getitem__(self, index):
                     return self.match[index]
 
@@ -5208,7 +5212,6 @@ class CSSParser:
             else:
                 if parentRule is not None:
                     cssText = css[lastIndex:match.index].strip()
-                    import re
                     cssText = re.sub(' +', ' ', cssText)
                     cssText = re.sub('\n', '', cssText)
                     if parentRule.type == CSSRule.FONT_FACE_RULE or parentRule.type == CSSRule.KEYFRAME_RULE or parentRule.type == CSSRule.STYLE_RULE:

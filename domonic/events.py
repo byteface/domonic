@@ -226,6 +226,14 @@ class Event:
     def stopImmediatePropagation(self):
         pass
 
+    # @property
+    # def currentTarget(self):
+    #     return self.__currentTarget
+
+    # @property
+    # def target(self):
+    #     return self.__target
+
 
 class UIEvent(Event):
     """UIEvent"""

@@ -28,13 +28,21 @@ The readme contains some tips on running tests.
 
 For dev you will need to install the requirements-dev.txt file.
 
-clone the repo an cd into it.
+Clone the repo an cd into it.
 
-setup a virtual environment
+Setup a virtual environment:
 
+**BASH**
 ```bash
 python3 -m venv venv
 . venv/bin/activate
+pip install -r requirements-dev.txt
+```
+
+**PowerShell**
+```powershell
+python3 -m venv winvenv
+. .\winvenv\Scripts\activate
 pip install -r requirements-dev.txt
 ```
 

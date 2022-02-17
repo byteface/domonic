@@ -17,6 +17,10 @@ class DataTransfer:
         self.dropEffect = ""
         self.effectAllowed = ""
 
+    @property
+    def length(self) -> int:
+        return len(self.data)
+
     def clearData(self, type):
         self.data[type] = ""
         self.types.remove(type)
