@@ -703,11 +703,11 @@ class Node(EventTarget):
         # TODO - not sure what's better this or overriding on every element
         # if isinstance(self, Text):
         #     return '#text'
-        if isinstance(self, Comment):
-            return '#comment'
+        # if isinstance(self, Comment):
+            # return '#comment'
         # elif isinstance(self, DocumentType):
         #     return '#doctype'
-        elif isinstance(self, Document):
+        if isinstance(self, Document):
             return '#document'
         elif isinstance(self, CDATASection):
             return '#cdata-section'
@@ -1001,6 +1001,10 @@ class Node(EventTarget):
         """ Returns the text content of the current node """
         return self.textContent
 
+    @property
+    def length(self) -> int:
+        return len(self)
+
 
 class ParentNode:
     """ not tested yet """
@@ -1012,17 +1016,26 @@ class ParentNode:
     # def childElementCount(self):
     #     return len(self.args)
 
-    # @property
-    # def children(self):
-    #     return self.args
+    @property
+    def children(self) -> 'NodeList':
+        """Return list of child nodes."""
+        return NodeList([e for e in self.childNodes if e.nodeType == Node.ELEMENT_NODE])
 
-    # @property
-    # def firstElementChild(self):
-    #     raise NotImplementedError
+    @property
+    def firstElementChild(self):
+        """First Element child node."""
+        for child in self.childNodes:
+            if child.nodeType == Node.ELEMENT_NODE:
+                return child
+        return None
 
-    # @property
-    # def lastElementChild(self):
-    #     raise NotImplementedError
+    @property
+    def lastElementChild(self):
+        """Last Element child node."""
+        for child in reversed(self.childNodes):  # type: ignore
+            if child.nodeType == Node.ELEMENT_NODE:
+                return child
+        return None
 
     def append(self, *args):
         self.args += (args)
@@ -1362,13 +1375,16 @@ class DocumentType(Node):
                 nnm.append(item)
         return nnm
 
-    # @property
-    # def nodeType(self):
-    #     return Node.DOCUMENT_TYPE_NODE
-
     def __str__(self) -> str:
-        return f"<!DOCTYPE {self.name} {self.publicId} {self.systemId}>"
-
+        # return f"<!DOCTYPE {self.name} {self.publicId} {self.systemId}>"
+        # TODO fix broken spacing when no publicId or systemId
+        full_str = f"<!DOCTYPE {self.name}"
+        if self.publicId:
+            full_str += f" PUBLIC {self.publicId}"
+        if self.systemId:
+            full_str += f" SYSTEM {self.systemId}"
+        full_str += ">"
+        return full_str
 
 """
 def AriaMixin():  #???
@@ -1738,7 +1754,7 @@ class NodeList(list):
         # An alternative to accessing nodeList[i] (which instead returns  undefined when i is out-of-bounds).
         # This is mostly useful for non-JavaScript DOM implementations.
         try:
-            return self[index]
+            return self[index] if 0 <= index < self.length else None
         except IndexError:
             return None
 
@@ -2072,7 +2088,7 @@ class Element(Node):
         if cl is None:
             return []
         else:
-            return cl.split(' ')
+            return cl.split(' ')  # TODO - DOMTokenList
 
     @classList.setter
     def classList(self, newname: str):
@@ -2299,27 +2315,40 @@ class Element(Node):
 
     def insertAdjacentHTML(self, position: str, html: str):
         """ Inserts raw HTML adjacent to the current element """
-        # if position == 'beforebegin':
-        #     self.insertAdjacentElement('beforebegin', html)
-        # elif position == 'afterbegin':
-        #     self.insertAdjacentElement('afterbegin', html)
-        # elif position == 'beforeend':
-        #     self.insertAdjacentElement('beforeend', html)
-        # elif position == 'afterend':
-        #     self.insertAdjacentElement('afterend', html)
-        pass
+        # df = self._parse_html(html)
+        content = html
+        pos = position.lower()
+        if pos == 'beforebegin':
+            self.before(content)
+        elif pos == 'afterbegin':
+            self.prepend(content)
+        elif pos == 'beforeend':
+            self.append(content)
+        elif pos == 'afterend':
+            self.after(content)
+        else:
+            raise ValueError(
+                f'The value provided ({position}) is not one of'
+                '"beforeBegin", "afterBegin", "beforeEnd", or "afterEnd".'
+            )
 
     def insertAdjacentText(self, position: str, text: str):
         """ Inserts text adjacent to the current element """
-        # if position == 'beforebegin':
-        #     self.insertAdjacentElement('beforebegin', text)
-        # elif position == 'afterbegin':
-        #     self.insertAdjacentElement('afterbegin', text)
-        # elif position == 'beforeend':
-        #     self.insertAdjacentElement('beforeend', text)
-        # elif position == 'afterend':
-        #     self.insertAdjacentElement('afterend', text)
-        pass
+        content = text
+        pos = position.lower()
+        if pos == 'beforebegin':
+            self.before(content)
+        elif pos == 'afterbegin':
+            self.prepend(content)
+        elif pos == 'beforeend':
+            self.append(content)
+        elif pos == 'afterend':
+            self.after(content)
+        else:
+            raise ValueError(
+                f'The value provided ({position}) is not one of'
+                '"beforeBegin", "afterBegin", "beforeEnd", or "afterEnd".'
+            )
 
     def isContentEditable(self) -> bool:
         """Returns true if the content of an element is editable, otherwise false"""
@@ -2677,6 +2706,7 @@ class ProcessingInstruction(Node):
 class Comment(Node):
 
     nodeType: int = Node.COMMENT_NODE
+    nodeName: str = '#comment'
     __slots__ = ('data')
 
     def __init__(self, data) -> None:
@@ -2686,6 +2716,14 @@ class Comment(Node):
     def toString(self) -> str:
         return f'<!--{self.data}-->'
     __str__ = toString
+
+    @property
+    def __len__(self) -> int:
+        return len(self.data)
+
+    @property
+    def length(self) -> int:
+        return len(self.data)
 
 
 class CDATASection(Node):
@@ -2699,6 +2737,14 @@ class CDATASection(Node):
     def toString(self) -> str:
         return f'<![CDATA[{self.data}]]>'
     __str__ = toString
+
+    @property
+    def __len__(self) -> int:
+        return len(self.data)
+
+    @property
+    def length(self) -> int:
+        return len(self.data)
 
 
 class AbastractRange:
