@@ -15,7 +15,7 @@ from domonic.components import Modal
 # from domonic.constants.color import *
 # from domonic.constants.entities import Char
 
-app = Sanic(name='📅 Life Calendar')
+app = Sanic(name='LifeCalendar')
 app.static('/assets', './assets')
 
 MARGIN = 3

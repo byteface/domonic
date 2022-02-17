@@ -10,7 +10,7 @@
 import time
 
 
-class EventTarget(object):
+class EventTarget:
     """EventTarget is a class you can extend to give your obj event dispatching abilities"""
 
     def __init__(self, *args, **kwargs) -> None:
@@ -116,7 +116,7 @@ EventDispatcher = EventTarget  #: legacy alias
 #         pass
 
 
-class Event(object):
+class Event:
     """event"""
 
     EMPTIED: str = "emptied"  #:

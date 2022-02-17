@@ -254,7 +254,8 @@ class URLSearchParams:
         elif hasattr(paramString, '__iter__'):
             self.params = [item for sublist in paramString for item in sublist]
         elif isinstance(paramString, dict):
-            self.params = dict([(key, item) for key, item in paramString.iteritems()])
+            # self.params = dict([(key, item) for key, item in paramString.iteritems()])
+            self.params = {key: item for key, item in paramString.iteritems()}
         else:
             raise TypeError("Malformed paramString.  Must be a string or a dict with dict like items. Got: %s" % paramString)
 

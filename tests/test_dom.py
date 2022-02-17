@@ -183,6 +183,11 @@ class TestCase(unittest.TestCase):
             )
         )
 
+    def test_evaluate(self):
+        # headings = self.page.evaluate("/html/body//h2", self.page)  #, None, XPathResult.ANY_TYPE, None);
+        headings = self.page.evaluate("//h1", self.page)  #, None, XPathResult.ANY_TYPE, None);
+        assert len(headings) == 1, '"%s" != "%s"' % (len(headings), 1)
+
     def test_NodeList(self):
         nlist = self.page.body.childNodes
         assert isinstance(nlist, NodeList)
@@ -637,7 +642,7 @@ class TestCase(unittest.TestCase):
 
         result = self.page.querySelectorAll("li[class='nav-item']")
         expected = ["About", "Services", "Team", "Contact"]
-        print('yabadabadooooooo', result)
+        # print('yabadabadooooooo', result)
         for i, r in enumerate(result):
             assert r.textContent == expected[i]
         assert len(result) == 4

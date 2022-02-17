@@ -15,8 +15,6 @@ from domonic.html import *
 # from mock import patch
 
 
-
-
 class TestCase(unittest.TestCase):
 
     SOMEJSON = '''
