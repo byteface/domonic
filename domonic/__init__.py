@@ -17,7 +17,7 @@ import re
 
 import requests
 
-from domonic.components import Input
+# from domonic.components import Input
 from domonic.html import *
 from domonic.html import html_attributes as attributes
 from domonic.javascript import *

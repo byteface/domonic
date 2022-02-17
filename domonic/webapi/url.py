@@ -11,7 +11,7 @@
 import urllib
 
 
-class URL(object):
+class URL:
     """ a-tag extends from URL """
 
     def __update__(self):

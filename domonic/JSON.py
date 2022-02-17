@@ -144,7 +144,7 @@ def csv2json(csv_filepath, json_filepath=None):
         return json.dumps(items)
 
     with open(json_filepath, 'w', encoding='utf-8') as f:
-        f.write(json.dumps(items, indent=4))
+        json.dump(items, f, indent=4)
         return json.dumps(items)
 
 

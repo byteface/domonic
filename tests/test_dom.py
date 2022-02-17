@@ -1170,7 +1170,7 @@ class NodeTest(TestCase):
                 assert item.nextSibling is None, \
                        'nextSibling in position %s should be None' % i
             else:
-                assert item.nextSibling is node[i+1], \
+                assert item.nextSibling is node[i + 1], \
                        'nextSibling in position %s is incorrect (%s)' % \
                        (i, item.nextSibling)
 
@@ -1181,7 +1181,7 @@ class NodeTest(TestCase):
                        'previousSibling in position %s should be None' % i
             else:
                 # print('HERE::::', item, item.previousSibling, node[i-1])
-                assert item.previousSibling is node[i-1], \
+                assert item.previousSibling is node[i - 1], \
                        'previousSibling in position %s is incorrect (%s)' % \
                        (i, item.previousSibling)
 

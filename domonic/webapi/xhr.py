@@ -31,7 +31,7 @@ from domonic.javascript import Global
 #         self.status = None
 
 
-class FormData(object):
+class FormData:
 
     def __init__(self, form):
         """ creates a new FormData object. """

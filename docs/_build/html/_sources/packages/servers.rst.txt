@@ -47,7 +47,7 @@ now create a file called app.py
     import cherrypy
     from domonic.html import *
 
-    class HelloWorld(object):
+    class HelloWorld:
 
         @cherrypy.expose
         def index(self):

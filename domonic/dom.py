@@ -1387,7 +1387,7 @@ class DocumentType(Node):
         return full_str
 
 """
-def AriaMixin():  #???
+def AriaMixin():  # ???
 
     @property
     def ariaAtomic(self):
