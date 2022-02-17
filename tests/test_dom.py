@@ -16,7 +16,6 @@ from domonic.style import *
 # from mock import patch
 
 
-
 class TestCase(unittest.TestCase):
     """ Tests for the dom package """
 
@@ -894,7 +893,6 @@ class TestCase(unittest.TestCase):
                 # print('The ' + bird.textContent + ' is endangered!')
                 assert 'The ' + bird.textContent + ' is endangered!' == 'The Philippine eagle is endangered!'
 
-
     def test_getElementsByTagName(self):
         content = ul(_id="birds").html(
             li("Orange-winged parrot"),
@@ -1689,7 +1687,6 @@ class TestNodeList(TestCase):
         self.assertEqual(self.nl.index(0), 0)
         self.assertEqual(self.nl.index(1), 1)
         self.assertEqual(self.nl.index(2), 2)
-
 
 
 if __name__ == '__main__':

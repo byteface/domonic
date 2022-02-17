@@ -2,31 +2,16 @@
     domonic
     ====================================
 
-    API for creating and loading .pyml
+    A library for creating html
 
 """
 
-__version__ = "0.9.3"
+__version__ = "0.9.4"
 __license__ = 'MIT'
 __author__ = "@byteface"
 
-'''
-__uri__ = "https://github.com/byteface/domonic"
-# https://domonic.readthedocs.io/
-__title__ = 'domonic'
-__description__ = 'Generate HTML with python 3'
-
-__all__ = (
-    '__version__',
-    '__license__',
-    '__uri__',
-    '__title__',
-    '__description__'
-)
-'''
-# TITLE = __title__
 VERSION = __version__
-# LICENSE = __license__
+
 
 import re
 
