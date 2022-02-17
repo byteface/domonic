@@ -44,7 +44,6 @@ def polygonCentroid(polygon):
     k *= 3
     return [x / k, y / k]
 
-
 def cross(a, b, c):
     """[Returns the 2D cross product of AB and AC vectors, i.e., the z-component of
         the 3D cross product in a quadrant I Cartesian coordinate system (+x is
@@ -61,73 +60,34 @@ def cross(a, b, c):
     """
     return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
 
-
-def lexicographicOrder(a, b, *args):
-    return a[0] - b[0] or a[1] - b[1]
-
-
-def computeUpperHullIndexes(points):
-    """[Computes the upper convex hull per the monotone chain algorithm.
-        Assumes points.length >= 3, is sorted by x, unique in y.
-        Returns an array of indices into points in left-to-right order.]
-
-    Args:
-        points ([type]): [description]
-    """
-    n = len(points)
-    indexes = [0, 1]
-    size = 2
-    for i in range(2, n):
-        while (size > 1 and cross(points[indexes[size - 2]], points[indexes[size - 1]], points[i]) <= 0):
-            size -= 1
-        size += 1
-        indexes[size] = i
-
-    return Array(indexes).slice(0, size)  # remove popped points
-
-
 def polygonHull(points):
 
     n = len(points)
     if n < 3:
         return None
 
-    sortedPoints = []
-    flippedPoints = []
+    # Convert list to tuples and remove duplicates
+    points = [t for t in (set(tuple(i) for i in points))]
 
-    print(points)
+    # Sort lexicographically 
+    points = sorted(points)
 
-    for i in range(0, n):
-        print( points[i][0], points[i][1], i)
-        sortedPoints.append([points[i][0], points[i][1], i])
+    # Build hulls according to Andrew's monotone chain algorithm
+    lowerHull = []
+    for p in points:
+        while len(lowerHull) >= 2 and cross(lowerHull[-2], lowerHull[-1], p) <=0 :
+            lowerHull.pop()
+        lowerHull.append(p)
 
-    print(sortedPoints)
-
-    sortedPoints = Array(sortedPoints).sort(lexicographicOrder)
-
-    for i in range(0, n):
-        flippedPoints[i] = [sortedPoints[i][0], -sortedPoints[i][1]]
-
-    upperIndexes = computeUpperHullIndexes(sortedPoints)
-    lowerIndexes = computeUpperHullIndexes(flippedPoints)
-
-    # Construct the hull polygon, removing possible duplicate endpoints.
-    skipLeft = lowerIndexes[0] == upperIndexes[0]
-    skipRight = lowerIndexes[len(lowerIndexes) - 1] == upperIndexes[len(upperIndexes) - 1]
-    hull = []
-
-    # Add upper hull in right-to-l order.
-    # Then add lower hull in left-to-right order.
-    i = len(upperIndexes)
-    while i >= 0:
-        hull.append(points[sortedPoints[upperIndexes[i]][2]])
-        i -= 1
-
-    i = skipLeft
-    while i < len(lowerIndexes) - skipRight:
-        hull.append(points[sortedPoints[lowerIndexes[i]][2]])
-        i += 1
-
+    upperHull = []
+    for p in reversed(points):
+        while len(upperHull) >= 2 and cross(upperHull[-2], upperHull[-1], p) <= 0:
+            upperHull.pop()
+        upperHull.append(p)
+    
+    # Build polygon hull from upper/lower hulls and return to list form
+    hull = sorted([list(i) for i in lowerHull[:-1] + upperHull[:-1]])
+    
     return hull
 
 
