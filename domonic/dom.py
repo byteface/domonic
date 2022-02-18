@@ -77,7 +77,7 @@ class Node(EventTarget):
 
         try:
             self.content = ''.join([each.__str__() for each in args])
-            self.__attributes__ = ''.join([''' %s="%s"''' % (key.split('_', 1)[1], value) for key, value in self.kwargs.items()])
+            self.__attributes__ = ''.join([f''' {key.split('_', 1)[1]}="{value}"''' for key, value in self.kwargs.items()])
         except IndexError as e:
             from domonic.html import TemplateError
             raise TemplateError(e)

@@ -13,9 +13,10 @@ class TestCase(unittest.TestCase):
 
     def test_bash_ls(self):
         files = ls()
-        print(files)
+        # print(files)
+        assert 'domonic' in files
         # return
-        self.assertTrue('domonic' in ls())
+        self.assertIn('domonic', ls())
         print(ls("-al"))
         print(ls("../"))
         for line in ls():
@@ -29,8 +30,8 @@ class TestCase(unittest.TestCase):
 
     def test_bash_pwd(self):
         thedir = pwd()
-        print("OYI::", thedir)
-        self.assertTrue('domonic' in thedir)
+        # print("OYI::", thedir)
+        self.assertIn('domonic', thedir)
 
     def test_bash_cd(self):
         pass  # TODO - need to change github action
@@ -46,7 +47,7 @@ class TestCase(unittest.TestCase):
     def test_bash_mkdir(self):
         try:
             mkdir('somedir')
-            self.assertTrue('somedir' in ls())
+            self.assertIn('somedir', ls())
         except Exception as e:
             print(e)
         finally:
@@ -88,8 +89,8 @@ class TestCase(unittest.TestCase):
 
     @silence
     def test_bash_git(self):
-        print(git('status'))
-        self.assertTrue('master' in git('status'))
+        # print(git('status'))
+        self.assertIn('master', git('status'))
 
     def test_bash_general(self):
         print(man("ls"))

@@ -125,7 +125,7 @@ def _parse_ns_name(builder, name):
     if len(parts) == 3:
         uri, localname, prefix = parts
         prefix = intern(prefix, prefix)
-        qname = "%s:%s" % (prefix, localname)
+        qname = f"{prefix}:{localname}"
         qname = intern(qname, qname)
         localname = intern(localname, localname)
     elif len(parts) == 2:
@@ -561,6 +561,7 @@ class FilterCrutch:
         parser.StartElementHandler = self.start_element_handler
         parser.EndElementHandler = self.end_element_handler
 
+
 class Rejecter(FilterCrutch):
     __slots__ = ()
 
@@ -935,6 +936,7 @@ class FragmentBuilderNS(Namespaces, FragmentBuilder):
 class ParseEscape(Exception):
     """Exception raised to short-circuit parsing in InternalSubsetExtractor."""
     pass
+
 
 class InternalSubsetExtractor(ExpatBuilder):
     """XML processor which can rip out the internal document type subset."""
