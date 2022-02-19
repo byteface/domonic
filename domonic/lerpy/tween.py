@@ -4,13 +4,13 @@ from domonic.lerpy import get_timer
 from domonic.lerpy.easing import *
 
 
-class TweenEquation(object):
+class TweenEquation:
     def __init__(self, ease, extra=None):
         self.ease = ease
         self.extra = extra
 
 
-class TweenData(object):
+class TweenData:
     def __init__(self, prop, target, equation=None):
         self.prop = prop
         self.target = target

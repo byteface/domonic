@@ -28,7 +28,7 @@ Here is another template. This one is larger and uses a Class. It can take conte
 
 .. code-block :: python
 
-	class Webpage(object):
+	class Webpage:
 
 	    def __init__(self, content=None):
 	        self.content = content
@@ -189,7 +189,7 @@ A component 'might' look something like this...
 	from domonic.javascript import Math
 	from domonic.terminal import ifconfig
 
-	class My_Component(object):
+	class My_Component:
 	    
 	    def __init__(self, request, *args, **kwargs):
 	        self.id = 'launcher'

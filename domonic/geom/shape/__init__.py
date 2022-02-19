@@ -195,10 +195,7 @@ class Line(Shape):
         self.y = self.p1[1] - self.p2[1]
 
     def __str__(self):
-        return "Line(%s, %s)" % (self.p1, self.p2)
-
-    # def __repr__(self):
-    #     return "Line(%s, %s)" % (self.p1, self.p2)
+        return f"Line({self.p1}, {self.p2})"
 
     def __eq__(self, other):
         return self.p1 == other.p1 and self.p2 == other.p2
@@ -322,10 +319,7 @@ class Plane:
         self.color = color
 
     def __str__(self):
-        return "Plane(%s, %s)" % (self.normal, self.distance)
-
-    # def __repr__(self):
-    #     return "Plane(%s, %s)" % (self.normal, self.distance)
+        return f"Plane({self.normal}, {self.distance})"
 
     def __eq__(self, other):
         return self.normal == other.normal and self.distance == other.distance
@@ -416,10 +410,7 @@ class Rect(Shape):
         return self.height
 
     def __str__(self):
-        return "Rect(%s, %s, %s, %s)" % (self.x, self.y, self.width, self.height)
-
-    # def __repr__(self):
-    #     return "Rect(%s, %s, %s, %s)" % (self.x, self.y, self.width, self.height)
+        return f"Rect({self.x}, {self.y}, {self.width}, {self.height})"
 
     def __eq__(self, other):
         return (
@@ -605,10 +596,7 @@ class Square(Rect):
         self.height = size
 
     def __str__(self):
-        return "Square(%s, %s, %s)" % (self.x, self.y, self.width)
-
-    # def __repr__(self):
-    #     return "Square(%s, %s, %s)" % (self.x, self.y, self.width)
+        return f"Square({self.x}, {self.y}, {self.width})"
 
     # def __getstate__(self):
     #     return {'x': self.x, 'y': self.y, 'size': self.width, 'color': self.color}
@@ -662,13 +650,7 @@ class Square(Rect):
             x = self.x
         if y is None:
             y = self.y
-        return '<rect x="%s" y="%s" width="%s" height="%s" fill="%s"/>' % (
-            x,
-            y,
-            self.width,
-            self.height,
-            self.color,
-        )
+        return f'<rect x="{x}" y="{y}" width="{self.width}" height="{self.height}" fill="{self.color}"/>'
 
     # def draw_to_canvas(self, canvas):
     #     canvas.draw_rect(self.x, self.y, self.width, self.height, self.color)
@@ -686,11 +668,7 @@ class Polygon(Shape):
         self.points = points
 
     def __str__(self):
-        return "Polygon(%s)" % (self.points)
-
-    # def __repr__(self):
-    #     return "Polygon(%s)" % (self.points)
-
+        return f"Polygon({(self.points)})"
 
 class Polyline(Shape):
     def __init__(self, points):
@@ -704,10 +682,7 @@ class Polyline(Shape):
         self.points = points
 
     def __str__(self):
-        return "Polyline(%s)" % (self.points)
-
-    # def __repr__(self):
-    #     return "Polyline(%s)" % (self.points)
+        return f"Polyline({(self.points)})"
 
     def __getstate__(self):
         return {"points": self.points}

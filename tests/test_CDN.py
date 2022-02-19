@@ -1,18 +1,13 @@
 """
     test_domonic
     ~~~~~~~~~~~~
-    unit tests for css
+    unit tests for CDN
 """
 
 import unittest
 
 from domonic.CDN import CDN_CSS, CDN_IMG, CDN_JS
 from domonic.html import img, link, script
-
-# import json
-# import requests
-# from mock import patch
-
 
 
 class TestCase(unittest.TestCase):

@@ -71,7 +71,7 @@ _scripts = script("""
 //alert('yo world!')
 """)
 
-class World(object):
+class World:
 
 	def __init__(self, request, *args, **kwargs):
 		pass

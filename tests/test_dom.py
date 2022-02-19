@@ -186,7 +186,7 @@ class TestCase(unittest.TestCase):
     def test_evaluate(self):
         # headings = self.page.evaluate("/html/body//h2", self.page)  #, None, XPathResult.ANY_TYPE, None);
         headings = self.page.evaluate("//h1", self.page)  #, None, XPathResult.ANY_TYPE, None);
-        assert len(headings) == 1, '"%s" != "%s"' % (len(headings), 1)
+        assert len(headings) == 1, f'"{len(headings)}" != "{1}"'
 
     def test_NodeList(self):
         nlist = self.page.body.childNodes
@@ -692,7 +692,6 @@ class TestCase(unittest.TestCase):
         # return
         # assert result.className == 'test this thing'
 
-
     def test_getElementsBySelector(self):
         dom1 = html(div(div(div(div(div(div(div(div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
 
@@ -1168,51 +1167,49 @@ class NodeTest(TestCase):
         for i, item in enumerate(node):
             if i == maxidx:
                 assert item.nextSibling is None, \
-                       'nextSibling in position %s should be None' % i
+                    f'nextSibling in position {i} should be None'
             else:
-                assert item.nextSibling is node[i+1], \
-                       'nextSibling in position %s is incorrect (%s)' % \
-                       (i, item.nextSibling)
+                assert item.nextSibling is node[i + 1], \
+                       f'nextSibling in position {i} is incorrect ({item.nextSibling})'
 
         # Check previousSibling
         for i, item in enumerate(node):
             if i == 0:
                 assert item.previousSibling is None, \
-                       'previousSibling in position %s should be None' % i
+                       f'previousSibling in position {i} should be None'
             else:
                 # print('HERE::::', item, item.previousSibling, node[i-1])
-                assert item.previousSibling is node[i-1], \
-                       'previousSibling in position %s is incorrect (%s)' % \
-                       (i, item.previousSibling)
+                assert item.previousSibling is node[i - 1], \
+                       f'previousSibling in position {i} is incorrect ({item.previousSibling})'
 
         # Check parentNode
         for i, item in enumerate(node):
             assert item.parentNode is node, \
-                   'parentNode in position %s is incorrect' % i
+                   f'parentNode in position {i} is incorrect'
 
         # Check ownerDocument
         for i, item in enumerate(node):
             assert item.ownerDocument is node.ownerDocument, \
-                   'ownerDocument in position %s (%s) is incorrect: %s' % (i, item.ownerDocument, node.ownerDocument)
+                   f'ownerDocument in position {i} ({item.ownerDocument}) is incorrect: {node.ownerDocument}'
 
         # Check attributes
         if node.attributes:
             for key, value in node.attributes.items():
                 if isinstance(value, Node):
                     assert value.parentNode is node, \
-                           'parentNode is incorrect (%s)' % value.parentNode
+                           f'parentNode is incorrect ({value.parentNode})'
                     self._checkPositions(value)
 
                 elif isinstance(value, list):
                     for item in value:
                         assert getattr(item, 'parentNode', node) is node, \
-                               'parentNode is incorrect (%s)' % item.parentNode
+                               f'parentNode is incorrect ({item.parentNode})'
                         self._checkPositions(item)
 
                 elif isinstance(value, dict):
                     for item in value.values():
                         assert getattr(item, 'parentNode', node) is node, \
-                               'parentNode is incorrect (%s)' % item.parentNode
+                               f'parentNode is incorrect ({item.parentNode})'
                         self._checkPositions(item)
 
     def test_Document(self):
@@ -1226,30 +1223,30 @@ class NodeTest(TestCase):
         node += [one, two, three]
         expected = [one, two, three]
         for i, item in enumerate(node):
-            assert item is expected[i], '"%s" != "%s"' % (item, expected[i])
+            assert item is expected[i], f'"{item}" != "{expected[i]}"'
         self._checkPositions(node)
 
     def test_firstChild(self):
         node = Document.createElement('node')
         one = Document.createElement('one')
         two = Document.createElement('two')
-        assert node.firstChild is None, '"%s" != None' % node.firstChild
+        assert node.firstChild is None, f'"{node.firstChild}" != None'
         node.append(one)
-        assert node.firstChild is one, '"%s" != "%s"' % (node.firstChild, one)
+        assert node.firstChild is one, f'"{node.firstChild}" != "{one}"'
         # node.insert(0, two)
         node.prepend(two)
-        assert node.firstChild is two, '"%s" != "%s"' % (node.firstChild, two)
+        assert node.firstChild is two, f'"{node.firstChild}" != "{two}"'
         self._checkPositions(node)
 
     def test_lastChild(self):
         node = Document.createElement('node')
         one = Document.createElement('one')
         two = Document.createElement('two')
-        assert node.lastChild is None, '"%s" != None' % node.lastChild
+        assert node.lastChild is None, f'"{node.lastChild}" != None'
         node.append(one)
-        assert node.lastChild is one, '"%s" != "%s"' % (node.lastChild, one)
+        assert node.lastChild is one, f'"{node.lastChild}" != "{one}"'
         node.append(two)
-        assert node.lastChild is two, '"%s" != "%s"' % (node.lastChild, two)
+        assert node.lastChild is two, f'"{node.lastChild}" != "{two}"'
         self._checkPositions(node)
 
     def test_childNodes(self):
@@ -1260,12 +1257,12 @@ class NodeTest(TestCase):
         node.append(one)
         node.append(two)
         node.append(three)
-        assert node[0] is one, '"%s" != "%s"' % (node[0], one)
-        assert node[1] is two, '"%s" != "%s"' % (node[1], two)
-        assert node[2] is three, '"%s" != "%s"' % (node[2], three)
-        assert node.childNodes[0] is one, '"%s" != "%s"' % (node.childNodes[0], one)
-        assert node.childNodes[1] is two, '"%s" != "%s"' % (node.childNodes[1], two)
-        assert node.childNodes[2] is three, '"%s" != "%s"' % (node.childNodes[2], three)
+        assert node[0] is one, f'"{node[0]}" != "{one}"'
+        assert node[1] is two, f'"{node[1]}" != "{two}"'
+        assert node[2] is three, f'"{node[2]}" != "{three}"'
+        assert node.childNodes[0] is one, f'"{node.childNodes[0]}" != "{one}"'
+        assert node.childNodes[1] is two, f'"{node.childNodes[1]}" != "{two}"'
+        assert node.childNodes[2] is three, f'"{node.childNodes[2]}" != "{three}"'
         self._checkPositions(node)
 
     def test_previousSibling(self):
@@ -1276,9 +1273,9 @@ class NodeTest(TestCase):
         node.append(one)
         node.append(two)
         node.append(three)
-        assert None is one.previousSibling, 'None != "%s"' % one.previousSibling
-        assert one is two.previousSibling, '"%s" != "%s"' % (one, two.previousSibling)
-        assert two is three.previousSibling, '"%s" != "%s"' % (two, three.previousSibling)
+        assert None is one.previousSibling, f'None != "{one.previousSibling}"'
+        assert one is two.previousSibling, f'"{one}" != "{two.previousSibling}"'
+        assert two is three.previousSibling, f'"{two}" != "{three.previousSibling}"'
 
     def test_nextSibling(self):
         node = Document.createElement('node')
@@ -1352,7 +1349,7 @@ class NodeTest(TestCase):
         node.append(one)
         node.append(two)
         node.replaceChild(three, two)
-        assert node[0] is one, '"%s" != "%s"' % (node[0], one)
+        assert node[0] is one, f'"{node[0]}" != "{one}"'
         assert node[1] is three, '"%s" != "%s"' % (node[1], three)
         assert len(node) == 2, '%s != %s' % (len(node), 2)
         self._checkPositions(node)
@@ -1385,8 +1382,8 @@ class NodeTest(TestCase):
         frag.appendChild(three)
         node.appendChild(frag)
         # print(node)
-        assert node[0] is one, '"%s" != "%s"' % (node[0], one)
-        assert node[1] is two, '"%s" != "%s"' % (node[1], two)
+        assert node[0] is one, f'"{node[0]}" != "{one}"'
+        assert node[1] is two, f'"{node[1]}" != "{two}"'
         assert node[2] is three, '"%s" != "%s"' % (node[2], three)
         self._checkPositions(node)
 
@@ -1455,7 +1452,7 @@ class NodeTest(TestCase):
         # print(node)
         print("TODO.test_Element_prepend")
         return
-        assert node[0] is one, '"%s" != "%s"' % (node[0], one)
+        assert node[0] is one, f'"{node[0]}" != "{one}"'
         assert node[1] is three, '"%s" != "%s"' % (node[1], three)
         assert node[2] is four, '"%s" != "%s"' % (node[2], four)
         assert node[3] is two, '"%s" != "%s"' % (node[3], two)
@@ -1498,15 +1495,15 @@ class NodeTest(TestCase):
         node.appendChild(one)
         # node.extend([two, three])
         node += [two, three]
-        assert node[0] is one, '"%s" != "%s"' % (node[0], one)
-        assert node[1] is two, '"%s" != "%s"' % (node[1], two)
-        assert node[2] is three, '"%s" != "%s"' % (node[2], three)
-        assert len(node) == 3, '%s != %s' % (len(node), 3)
+        assert node[0] is one, f'"{node[0]}" != "{one}"'
+        assert node[1] is two, f'"{node[1]}" != "{two}"'
+        assert node[2] is three, f'"{node[2]}" != "{three}"'
+        assert len(node) == 3, f'{len(node)} != {3}'
         self._checkPositions(node)
         node += [four, five]
-        assert node[3] is four, '"%s" != "%s"' % (node[3], four)
-        assert node[4] is five, '"%s" != "%s"' % (node[4], five)
-        assert len(node) == 5, '%s != %s' % (len(node), 5)
+        assert node[3] is four, f'"{node[3]}" != "{four}"'
+        assert node[4] is five, f'"{node[4]}" != "{five}"'
+        assert len(node) == 5, f'{len(node)} != {5}'
         self._checkPositions(node)
 
     def test_hasChildNodes(self):
@@ -1525,7 +1522,7 @@ class NodeTest(TestCase):
         two.append(three)
         one.append(two)
         res = one.cloneNode(1)
-        assert type(res) is type(one), '"%s" != "%s"' % (type(res), type(one))
+        assert type(res) is type(one), f'"{type(res)}" != "{type(one)}"'
         assert type(res[0]) is type(one[0])
         # print(one, res)
         # print(type(one), type(res))
@@ -1547,8 +1544,8 @@ class NodeTest(TestCase):
         # print(node)
         node.normalize()
         # print(node)
-        assert len(node) == 2, '"%s" != "%s"' % (len(node), 2)
-        assert node[1] == 'twothreefour', '"%s" != "%s"' % (node[1], 'twothreefour')
+        assert len(node) == 2, f'"{len(node)}" != "{2}"'
+        assert node[1] == 'twothreefour', f'"{node[1]}" != "{"twothreefour"}"'
 
     def test_hasAttributes(self):
         node = Document.createElement('node')
@@ -1582,7 +1579,7 @@ class NodeTest(TestCase):
         two.append(four)
         res = node.textContent
         expected = 'onethreefour'
-        assert res == expected, '"%s" != "%s"' % (res, expected)
+        assert res == expected, f'"{res}" != "{expected}"'
 
     def test_isSameNode(self):
         node = Document.createElement('node')
@@ -1672,8 +1669,8 @@ class TestNodeList(TestCase):
             self.nl.item(slice(1, 2))
 
     def test_contains(self):
-        self.assertTrue(1 in self.nl)
-        self.assertFalse(5 in self.nl)
+        self.assertIn(1, self.nl)
+        self.assertNotIn(5, self.nl)
 
     def test_iteration(self):
         l1 = [0, 1, 2]

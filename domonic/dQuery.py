@@ -105,7 +105,7 @@ class dQuery_el():
 
     @dom.setter
     def dom(self, dom):
-        if isinstance(dom, html) or isinstance(dom, Document):
+        if isinstance(dom, (html, Document)):
             dQuery_el.DOM = dom
 
     def init(self, q=''):
@@ -120,7 +120,7 @@ class dQuery_el():
             self.elements = domonic.load(self.q)
             # print(self.elements)
             # print(type(self.elements))
-            if isinstance(self.elements, html) or isinstance(self.elements, Document):
+            if isinstance(self.elements, (html, Document)):
                 self.dom = self.elements
         else:
             try:
@@ -635,7 +635,7 @@ class dQuery_el():
 
     def last(self):
         """ Reduce the set of matched elements to the final one in the set."""
-        if isinstance(self.elements, list) or isinstance(self.elements, tuple):
+        if isinstance(self.elements, (list, tuple)):
             self.elements = self.elements[len(self.elements) - 1]
         return self
 

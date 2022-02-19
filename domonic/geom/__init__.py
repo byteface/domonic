@@ -45,7 +45,7 @@ from domonic.geom.vec2 import vec2
 # __all__ # TODO - i think this is i need to use
 
 
-class matrix(object):
+class matrix:
     """[matrixs]"""
 
     def __init__(self, m):
@@ -73,7 +73,7 @@ class Quaternion:
         self.q = [w, x, y, z]
 
 
-class Plotter(object):
+class Plotter:
     def __init__(self, canvas=None):
         self.canvas = canvas  # or canvas.Canvas('Example Plotter', 500, 500)
         self.points = []
@@ -92,7 +92,7 @@ class Plotter(object):
     #         self.canvas.draw_point(p)
 
 
-class Path(object):
+class Path:
     def __init__(self, points=None):
         self.points = points or []
 
@@ -109,10 +109,10 @@ class Path(object):
     #     return mat3(self.points)
 
 
-# class Cursor(object):
+# class Cursor:
 
 
-class Group(object):
+class Group:
     def __init__(self, shapes=None):
         self.shapes = shapes or []
 
@@ -123,7 +123,7 @@ class Group(object):
         return self.shapes
 
 
-class Layer(object):
+class Layer:
     def __init__(self, name=None):
         self.name = name
         self.shapes = []
@@ -261,7 +261,7 @@ class Layer(object):
         return self
 
 
-class Timeline(object):
+class Timeline:
     def __init__(self):
         self.layers = []
         # self.current_layer = None
@@ -285,7 +285,7 @@ class Timeline(object):
         self.is_playing = False
 
 
-# class Interactive(object):#??
+# class Interactive:#??
 # def handle_click_event(self):
 
 # onFrame

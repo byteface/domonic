@@ -53,10 +53,7 @@ class Circle(Shape):
         self._center = center
 
     def __str__(self):
-        return "Circle(%s, %s, %s)" % (self.center, self.radius, self.color)
-
-    # def __repr__(self):
-    #     return "Circle(%s, %s, %s)" % (self.center, self.radius, self.color)
+        return f"Circle({self.center}, {self.radius}, {self.color})"
 
     def __getstate__(self):
         return {"center": self.center, "radius": self.radius}

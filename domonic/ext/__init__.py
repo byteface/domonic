@@ -131,7 +131,7 @@ HELLO_CHERRYPY: str = """
 import cherrypy
 from domonic.html import *
 
-class HelloWorld(object):
+class HelloWorld:
 
     @cherrypy.expose
     def index(self):
