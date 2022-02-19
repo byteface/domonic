@@ -113,6 +113,35 @@ polygonHull() takes a 2D array of points and determines the polygon hull using a
         self.assertEqual(polygonHull(points_0), hull_0)
         self.assertEqual(polygonHull(points_1), hull_1)
 
+polygonContains() takes a polygon and a point, it returns true if the point is inside the polygon, false otherwise.
+
+.. code-block :: python
+
+    def test_polygonContains(self):
+        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]
+        square = [[0,4],[4,4],[4,0],[0,0]]
+        triangle = [[-4,0],[0,4],[2,0]]
+
+        self.assertTrue(polygonContains(irreg_0, [6,8]))
+        self.assertFalse(polygonContains(irreg_0, [0,0]))
+        self.assertTrue(polygonContains(square, [2,2]))
+        self.assertFalse(polygonContains(square, [-2,-2]))
+        self.assertTrue(polygonContains(triangle, [0,1]))
+        self.assertFalse(polygonContains(triangle, [0,-1]))
+
+polygonLength() take a polygon and retursn the sum of the length of the polygon's sides.
+
+.. code-block :: python
+
+    def test_polygonLength(self):
+        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]   # length = 31.863
+        square = [[0,4],[4,4],[4,0],[0,0]]      # length = 16
+        triangle = [[-4,0],[0,4],[2,0]]         # length ~ 16.129
+
+        self.assertEqual(round(polygonLength(irreg_0), 3), 31.863)
+        self.assertEqual(polygonLength(square), 16)
+        self.assertEqual(round(polygonLength(triangle), 3), 16.129)
+
 .. automodule:: domonic.d3
     :members:
     :noindex:

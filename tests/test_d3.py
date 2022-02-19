@@ -1575,7 +1575,7 @@ class TestCase(unittest.TestCase):
     def test_polygonLength(self):
         irreg_0 = [[5,11],[12,4],[7,7],[6,1]]   # length = 31.863
         square = [[0,4],[4,4],[4,0],[0,0]]      # length = 16
-        triangle = [[-4,0],[0,4],[2,0]]         # length ~ 16.1289
+        triangle = [[-4,0],[0,4],[2,0]]         # length ~ 16.129
 
         self.assertEqual(round(polygonLength(irreg_0), 3), 31.863)
         self.assertEqual(polygonLength(square), 16)
