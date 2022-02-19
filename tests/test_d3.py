@@ -1560,9 +1560,26 @@ class TestCase(unittest.TestCase):
         self.assertEqual(polygonHull(points_0), hull_0)
         self.assertEqual(polygonHull(points_1), hull_1)
 
+    def test_polygonContains(self):
+        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]
+        square = [[0,4],[4,4],[4,0],[0,0]]
+        triangle = [[-4,0],[0,4],[2,0]]
 
-    # def test_polygonContains():
-    # def test_polygonLength():
+        self.assertTrue(polygonContains(irreg_0, [6,8]))
+        self.assertFalse(polygonContains(irreg_0, [0,0]))
+        self.assertTrue(polygonContains(square, [2,2]))
+        self.assertFalse(polygonContains(square, [-2,-2]))
+        self.assertTrue(polygonContains(triangle, [0,1]))
+        self.assertFalse(polygonContains(triangle, [0,-1]))
+
+    def test_polygonLength(self):
+        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]   # length = 31.863
+        square = [[0,4],[4,4],[4,0],[0,0]]      # length = 16
+        triangle = [[-4,0],[0,4],[2,0]]         # length ~ 16.1289
+
+        self.assertEqual(round(polygonLength(irreg_0), 3), 31.863)
+        self.assertEqual(polygonLength(square), 16)
+        self.assertEqual(round(polygonLength(triangle), 3), 16.129)
         
 
 if __name__ == '__main__':
