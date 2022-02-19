@@ -129,7 +129,7 @@ polygonContains() takes a polygon and a point, it returns true if the point is i
         self.assertTrue(polygonContains(triangle, [0,1]))
         self.assertFalse(polygonContains(triangle, [0,-1]))
 
-polygonLength() take a polygon and retursn the sum of the length of the polygon's sides.
+polygonLength() takes a polygon and returns the sum of the length of the polygon's sides.
 
 .. code-block :: python
 
