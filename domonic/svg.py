@@ -8,8 +8,7 @@
     # https://www.w3.org/TR/SVG2/eltindex.html
 
 """
-
-# from domonic.html import tag
+from domonic.html import a, audio, canvas, video, script, style, iframe
 from domonic.dom import Element
 
 svg_tags = [
@@ -176,6 +175,7 @@ font = type('font', (Element,), {'name': 'font'})
 hkern = type('hkern', (Element,), {'name': 'hkern'})
 vkern = type('vkern', (Element,), {'name': 'vkern'})
 animateColor = type('animateColor', (Element,), {'name': 'animateColor'})
+metadata = type('metadata', (Element,), {'name': 'metadata'})
 
 # TODO --
 # _filter # builtin
@@ -196,12 +196,3 @@ animateColor = type('animateColor', (Element,), {'name': 'animateColor'})
 # font-face-src
 # font-face-uri
 
-# NOTE - already tags in HTML package
-# a
-# audio
-# canvas
-# video
-# metadata
-# script
-# style
-# iframe
