@@ -17,7 +17,7 @@ import re
 
 import requests
 
-from domonic.components import Input
+# from domonic.components import Input
 from domonic.html import *
 from domonic.html import html_attributes as attributes
 from domonic.javascript import *
@@ -595,7 +595,7 @@ class domonic:
             line = ', '.join(params)
             line = line.replace('" _', '", _')
 
-            if( line[len(line) - 1] in ["'", '"', ")", "$QUOTE$", "}", "e"]):  # TODO 'e' is the last letter of True. crap check
+            if(line[len(line) - 1] in ["'", '"', ")", "$QUOTE$", "}", "e"]):  # TODO 'e' is the last letter of True. crap check
                 line = line + ","
 
             return line
@@ -954,7 +954,6 @@ class domonic:
         #     print('<<',len(page))
 
         return page
-
 
     parseString_prev_error = None
     @staticmethod

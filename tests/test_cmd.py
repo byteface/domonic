@@ -19,7 +19,7 @@ class TestCase(unittest.TestCase):
         files = dir()
         print(files)
         # return
-        self.assertTrue('domonic' in str(dir()))
+        self.assertIn('domonic', str(dir()))
 
         try:
             print(dir("..\\"))  # notice requires 2 backslashes

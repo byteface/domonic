@@ -81,7 +81,7 @@ class CDN_IMG:
     PLACEHOLDER_SERVICE: str = "loremflickr.com"
 
     @staticmethod
-    def PLACEHOLDER(width: int=100, height: int=100, HTTP: str="", seperator: str='/') -> str:
+    def PLACEHOLDER(width: int = 100, height: int = 100, HTTP: str = "", seperator: str = '/') -> str:
         """
         to update do CDN_IMG.PLACEHOLDER_SERVICE = "placebear.com/g"
         usage : img(_src=CDN_IMG.PLACEHOLDER(300,100))
@@ -104,9 +104,9 @@ class CDN_FONT:
     #     return f"https://use.fontawesome.com/releases/v{version}/css/all.css"
 
 
-# class CDN_TEXT(object):
+# class CDN_TEXT:
 # lorem ipusm generator
 # fake names, addresses
 
-# class CDN_VIDEO(object):
-# class CDN_AUDIO(object):
+# class CDN_VIDEO:
+# class CDN_AUDIO:

@@ -57,7 +57,7 @@ def display_hangman(tries):
     "  +---+\n  |   |\n  O   |\n  |   |\n      |\n      |\n=========",
     "  +---+\n  |   |\n  O   |\n      |\n      |\n      |\n=========",
     "  +---+\n  |   |\n      |\n      |\n      |\n      |\n========="
-    ] 
+    ]
     return stages[tries]
 
 
@@ -70,7 +70,7 @@ class GameData:
     tries : int = 6
 
 
-class Game(object):
+class Game:
     """ Hangman. The data is stored on a session """
     def __init__(self, request=None):
         self.state = GameData()

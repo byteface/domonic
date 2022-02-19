@@ -69,7 +69,7 @@ _scripts = script("""
 """)
 
 
-class World(object):
+class World:
     def __init__(self, request, age, *args, **kwargs):
 
         weeks = div(_style="margin-left:-14px;")

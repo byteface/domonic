@@ -11,7 +11,7 @@
 import urllib
 
 
-class URL(object):
+class URL:
     """ a-tag extends from URL """
 
     def __update__(self):
@@ -257,7 +257,7 @@ class URLSearchParams:
             # self.params = dict([(key, item) for key, item in paramString.iteritems()])
             self.params = {key: item for key, item in paramString.iteritems()}
         else:
-            raise TypeError("Malformed paramString.  Must be a string or a dict with dict like items. Got: %s" % paramString)
+            raise TypeError(f"Malformed paramString.  Must be a string or a dict with dict like items. Got: {paramString}")
 
     def __iter__(self):
         for attr in self.params.items():  # dir(self.params.items()):

@@ -5,7 +5,7 @@
 """
 
 
-class Console(object):
+class Console:
 
     @staticmethod
     def log(msg: str, substitute=None, *args):  # -> None:

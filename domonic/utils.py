@@ -68,7 +68,7 @@ class Utils:
         Returns:
             [dict]: [a new dict where the list items are now the keys]
         """
-        return dict().fromkeys(arr, 0)
+        return {}.fromkeys(arr, 0)
 
     @staticmethod
     def is_empty(some_str: str) -> bool:

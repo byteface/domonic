@@ -49,10 +49,9 @@ from domonic.dom import DOMImplementation, Node
 # from .._utils import moduleFactoryFactory
 
 
-
-
 # def getDomBuilder(DomImplementation):
 #     Dom = DomImplementation
+
 
 def getDomBuilder(ignore):
     # Dom = DomImplementation

@@ -32,7 +32,7 @@ class XPathException:
         pass
 
 
-class XPathExpression(object):
+class XPathExpression:
 
     def __init__(self, expr: str):  #, resolver):
 
