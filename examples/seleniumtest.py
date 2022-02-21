@@ -13,6 +13,12 @@ browser=webdriver.Chrome()
 browser.get('http://google.com')
 page = domonic.parseString(browser.page_source)
 
+
+# test xpath
+print(page.evaluate('//a/@href', page))
+
+
+# test css
 for link in page.querySelectorAll('a'):
     # print(link)
     print(link.href)
