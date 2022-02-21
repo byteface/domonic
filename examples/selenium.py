@@ -1,0 +1,18 @@
+import sys
+sys.path.insert(0, '..')
+
+# mac:
+# brew install chromedriver
+# xattr -d com.apple.quarantine /usr/local/bin/chromedriver
+# pip install selenium
+
+from domonic import domonic
+from selenium import webdriver
+
+browser=webdriver.Chrome()
+browser.get('http://google.com')
+page = domonic.parseString(browser.page_source)
+
+for link in page.querySelectorAll('a'):
+    # print(link)
+    print(link.href)
