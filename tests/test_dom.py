@@ -1009,7 +1009,7 @@ class TestCase(unittest.TestCase):
         # this may have been due to that
         # TODO - mulitple arguments to comment
 
-    def test_body(self):
+    def test_body_two(self):
         print('im running1')
         aNewBodyElement = document.createElement("body")
         aNewBodyElement.id = "newBodyElement"

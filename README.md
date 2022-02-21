@@ -380,7 +380,7 @@ more to come...
 
 ### SVG
 
-All tags extend 'Node' and 'tag'. So will have DOM and magic methods available to them. see the docs.
+All tags extend 'Element'. So will have DOM and magic methods available to them. see the [docs](https://domonic.readthedocs.io/).
 
 ```python
 circ = svg(
