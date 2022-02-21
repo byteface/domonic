@@ -1335,9 +1335,9 @@ class NodeTest(TestCase):
         node.insertBefore(three, one)
         # print(node)
         # print(node[2], two)
-        assert node[0] is three, '"%s" != "%s"' % (node[0], three)
-        assert node[1] is one, '"%s" != "%s"' % (node[1], one)
-        assert node[2] is two, '"%s" != "%s"' % (node[2], two)
+        assert node[0] is three, f'"{node[0]}" != "{three}"'
+        assert node[1] is one, f'"{node[1]}" != "{one}"'
+        assert node[2] is two, f'"{node[2]}" != "{two}"'
         # print(node)
         self._checkPositions(node)
 
@@ -1350,8 +1350,8 @@ class NodeTest(TestCase):
         node.append(two)
         node.replaceChild(three, two)
         assert node[0] is one, f'"{node[0]}" != "{one}"'
-        assert node[1] is three, '"%s" != "%s"' % (node[1], three)
-        assert len(node) == 2, '%s != %s' % (len(node), 2)
+        assert node[1] is three, f'"{node[1]}" != "{three}"'
+        assert len(node) == 2, f'{len(node)} != {2}'
         self._checkPositions(node)
 
     def test_removeChild(self):
@@ -1362,13 +1362,13 @@ class NodeTest(TestCase):
         node.append(one)
         node.append(two)
         res = node.removeChild(one)
-        assert res is one, '"%s" != "%s"' % (res, one)
-        assert len(node) == 1, '%s != %s' % (len(node), 1)
-        assert node[0] is two, '"%s" != "%s"' % (node[0], two)
+        assert res is one, f'"{res}" != "{one}"'
+        assert len(node) == 1, f'{len(node)} != {1}'
+        assert node[0] is two, f'"{node[0]}" != "{two}"'
         self._checkPositions(node)
         res = node.removeChild(two)
-        assert res is two, '"%s" != "%s"' % (res, two)
-        assert len(node) == 0, '%s != %s' % (len(node), 0)
+        assert res is two, f'"{res}" != "{two}"'
+        assert len(node) == 0, f'{len(node)} != {0}'
 
     def test_appendChild(self):
         node = Document.createElement('node')
@@ -1384,7 +1384,7 @@ class NodeTest(TestCase):
         # print(node)
         assert node[0] is one, f'"{node[0]}" != "{one}"'
         assert node[1] is two, f'"{node[1]}" != "{two}"'
-        assert node[2] is three, '"%s" != "%s"' % (node[2], three)
+        assert node[2] is three, f'"{node[2]}" != "{three}"'
         self._checkPositions(node)
 
     def test_insert(self):
@@ -1405,7 +1405,7 @@ class NodeTest(TestCase):
         # print(node)
         expected = [one, two, three]
         for i, item in enumerate(node):
-            assert item is expected[i], '"%s" != "%s"' % (item, expected[i])
+            assert item is expected[i], f'"{item}" != "{expected[i]}"'
         self._checkPositions(node)
 
     def test_insert2(self):
@@ -1428,7 +1428,7 @@ class NodeTest(TestCase):
         # print("cool2?", node)
         expected = [i0, one, two, i3, three]
         for i, item in enumerate(node):
-            assert item is expected[i], '"%s" != "%s"' % (item, expected[i])
+            assert item is expected[i], f'"{item}" != "{expected[i]}"'
         self._checkPositions(node)
 
     def test_Element_prepend(self):
@@ -1453,9 +1453,9 @@ class NodeTest(TestCase):
         print("TODO.test_Element_prepend")
         return
         assert node[0] is one, f'"{node[0]}" != "{one}"'
-        assert node[1] is three, '"%s" != "%s"' % (node[1], three)
-        assert node[2] is four, '"%s" != "%s"' % (node[2], four)
-        assert node[3] is two, '"%s" != "%s"' % (node[3], two)
+        assert node[1] is three, f'"{node[1]}" != "{three}"'
+        assert node[2] is four, f'"{node[2]}" != "{four}"'
+        assert node[3] is two, f'"{node[3]}" != "{two}"'
         self._checkPositions(node)
 
     # TODO - item assignment - bring dunders over from tag now? - or we bringing all over for v8?
