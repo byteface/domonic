@@ -15,8 +15,6 @@ from domonic.html import *
 # from mock import patch
 
 
-
-
 class TestCase(unittest.TestCase):
 
     def test_hello_world(self):
@@ -833,8 +831,8 @@ class TestCase(unittest.TestCase):
         'https://www.example.com/?stuff'
         ]
         for url in urls:
-            print( 'zz',url)
-            print( 'zz2',render(a(_href=url)) )
+            # print( 'zz',url)
+            # print( 'zz2',render(a(_href=url)) )
             assert f'''{render(a(_href=url))}''' == f'''<a href="{url}"></a>'''
 
         # a tag no href TODO
@@ -869,18 +867,18 @@ class TestCase(unittest.TestCase):
 
         with d:
             with head():
-                print('a!')
+                # print('a!')
                 p()
-                print('b!')
-            print('c!')
+                # print('b!')
+            # print('c!')
             div()
-            print('d!')
+            # print('d!')
             with body():
-                print('e!')
+                # print('e!')
                 p()
-                print('f!')    
+                # print('f!')    
 
-            print('DONE!')
+            # print('DONE!')
             
         # print(d)
         # d()
@@ -980,7 +978,7 @@ class TestCase(unittest.TestCase):
     def test_boolean_attributes(self):
         # https://github.com/byteface/domonic/issues/40
         s = script(_src="foo.js", _async="async")
-        print(s)
+        # print(s)
         assert '<script src="foo.js" async></script>' == str(s)
 
         s = script(_src="foo.js", _async='')
@@ -988,11 +986,11 @@ class TestCase(unittest.TestCase):
         # assert '<script src="foo.js"></script>' == str(s)
 
         s = script(_src="foo.js", _async='', _hidden='', _checked='')
-        print(s)
+        # print(s)
         assert '<script src="foo.js" async hidden checked></script>' == str(s)
 
         s = script(_src="foo.js", _async=True, _hidden=False, _checked=True)
-        print(s)
+        # print(s)
         assert '<script src="foo.js" async="true" hidden="false" checked="true"></script>' == str(s)
 
 
