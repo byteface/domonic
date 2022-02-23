@@ -8,13 +8,12 @@
 [![Build status](https://travis-ci.com/byteface/domonic.svg?branch=master)](https://travis-ci.com/byteface/domonic.svg?branch=master)
 [![Python package](https://github.com/byteface/domonic/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/byteface/domonic/actions/workflows/python-package.yml)
 
-#### Create html with python 3! (and much more)
+#### A DOM for making HTML with python 3! (and more)
 
-### install
+### Install
 
 ```bash
 python3 -m pip install domonic
-# If you had it before upgrade:
 # python3 -m pip install domonic --upgrade 
 ```
 
@@ -43,7 +42,7 @@ print(f"{mydom}")
 </html>
 ```
 
-## parsing html
+### parsing html
 
 Basic useage...
 
@@ -66,7 +65,7 @@ Also try the xpath or css selectors on command line...
 domonic -x https://google.com '//a' | uniq | sort
 ```
 
-#### More
+### More
 
 - [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎
 - [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲
@@ -116,11 +115,11 @@ page = div(span('Hello World'))
 render(f"{page}", 'index.html')  # notice use of f-string to pretty print the html
 ```
 
-### DOM
+## DOM
 
 DOM manipulation with python.
 
-#### createElement
+### createElement
 
 to create your own elements use the DOM API
 
@@ -527,7 +526,7 @@ print(dir())
 print(dir("..\\")) 
 ```
 
-## DOCS
+### DOCS
 
 [https://domonic.readthedocs.io/](https://domonic.readthedocs.io/)
 
@@ -589,7 +588,7 @@ There's also several useage examples in the repo so pull and have a look.
 
 Feel free to contribute if you find it useful. (I'd be grateful for help on all fronts)
 
-Email me, message me directly if you like or create a discussion on here. Or join the discord.
+Email me, message me directly if you like or create a discussion on here. Or join the [discord](https://discord.gg/a9pSZv4V5f).
 
 If there are any methods you want that are missing or not complete yet or you think you can help make it better just update the code and send a pull request. I'll merge and releaese asap.
 
