@@ -3249,10 +3249,12 @@ class Document(Element):
         """ Returns the topmost element at the specified coordinates. """
         raise NotImplementedError
 
-    def evaluate(self, xpathExpression: str, contextNode: 'Node', namespaceResolver=None, resultType=XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, result=None):
+    def evaluate(self, xpathExpression: str, contextNode: 'Node' = None, namespaceResolver=None, resultType=XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, result=None):
         """ Evaluates an XPath expression and returns the result. """
         if not isinstance(xpathExpression, str):
             raise TypeError("xpathExpression must be a string")
+        if contextNode is None:
+            contextNode = self
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression(xpathExpression)
         result = expression.evaluate(contextNode, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)

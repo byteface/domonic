@@ -4,64 +4,72 @@
     https://developer.mozilla.org/en-US/docs/Web/API/History
 """
 
-# class History():
-    # def __init__():
-        # pass
-    # def back():
-    #     """ Loads the previous URL in the history list """
-    #     raise NotImplementedError
-    # def forward():
-    #     """ Loads the next URL in the history list """
-    #     raise NotImplementedError
-    # def go():
-    #     """ Loads a specific URL from the history list """
-    #     raise NotImplementedError
+# from domonic.events import Event, EventTarget
 
 
-# from domonic.html import *
-# from domonic.js import *
-# from domonic.css import *
-# from domonic.events import *
-# from domonic.internal import _get_window
-# from domonic.internal import _get_document
-# from domonic.internal import _get_location
-# from domonic.internal import _get_history
-# from domonic.internal import _get_navigator
-# from domonic.internal import _get_screen
-# from domonic.internal import _get_screen_left
-# from domonic.internal import _get_screen_top
-# from domonic.internal import _get_screen_width
-# from domonic.internal import _get_screen_height
-# from domonic.internal import _get_screen_avail_width
-# from domonic.internal import _get_screen_avail_height
-# from domonic.internal import _get_screen_pixel_ratio
+class History:  # (EventTarget):
 
-# nice ideas from copilot
+    def __init__(self, window=None):
+        self.window = window
+        self.states = []
+        self.index = 0
+        self.skip_update = False
+        try:
+            if self.window is not None:
+                self.states.append(self.window.location.href)
+                self.index = 1
+        except Exception as e:
+            print('History is empty:', e)
 
-# but it also cheats... this will not work
+    def _update(self, url: str):
+        """ Updates the current history state """
+        if self.skip_update:
+            self.skip_update = False
+            return
+        self.states.append(url)
+        self.index = len(self.states) - 1
+        # self.dispatchEvent(Event('popstate'))
 
-# class History:
+    def back(self):
+        """ Loads the previous URL in the history list """
+        self.go(-1)
+        self.skip_update = True
+        if self.window:
+            self.window.location = self.states[self.index]
+        # self.dispatchEvent(Event('popstate'))
 
-#     def __init__(self, window):
-#         self._window = window
+    def forward(self):
+        """ Loads the next URL in the history list """
+        self.go(1)
+        self.skip_update = True
+        if self.window:
+            self.window.location = self.state  # s[self.index]
 
-#     def back(self):
-#         self._window.history.back()
+    def go(self, n: int):
+        """ Loads a specific URL from the history list """
+        self.index += n
+        if self.index < 1:
+            self.index = 1
+        if self.index > self.length:
+            self.index = self.length
+        return self.index
 
-#     def forward(self):
-#         self._window.history.forward()
+    @property
+    def length(self):
+        """ Returns the number of URLs in the history list """
+        return len(self.states)
 
-#     def go(self, steps):
-#         self._window.history.go(steps)
+    # def pushState(self, data, title, url):
+    #     return self.replaceState(data, title, url)
 
-#     def pushState(self, data, title, url):
-#         self._window.history.pushState(data, title, url)
+    # def replaceState(self, data, title, url):
+    #     self.states[self.index] = url
 
-#     def replaceState(self, data, title, url):
-#         self._window.history.replaceState(data, title, url)
+    @property
+    def state(self):
+        return self.states[self.index]
 
-#     def state(self):
-#         return self._window.history.state()
-
-#     def length(self):
-#         return self._window.history.length()
+    def __repr__(self) -> str:
+        # show the full history
+        from pprint import pformat
+        return pformat(self.states)

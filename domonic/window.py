@@ -24,6 +24,7 @@ from domonic.webapi.credentials import CredentialsContainer
 from domonic.webapi.geo import Geolocation
 from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.webstorage import Storage
+from domonic.webapi.history import History
 
 # from domonic.webapi.mediacapabilities import MediaCapabilities
 # from domonic.webapi.mediasession import MediaSession
@@ -257,8 +258,14 @@ class Window(Window):
         self._navigator: Navigator = Navigator()
         self._location: Location = Location('eventual.technology')
         self._console: Console = Console()
+        self._history: History = History(self)
         # personalbar?
         super(Window, Window).__init__(self)
+
+    @property
+    def history(self) -> History:
+        """ Returns the history object """
+        return self._history
 
     @property
     def console(self) -> Console:
@@ -310,6 +317,9 @@ class Window(Window):
         # NOTE - not documented. still unverified
         # self._location = value
         # TODO - load the content of the location using requests
+
+        # self._history.pushState(None, None, value)
+        self._history._update(value)  #pushState(None, None, value)
 
         try:
             import html5lib
@@ -405,11 +415,12 @@ class Window(Window):
         """ Returns a Selection object representing the range of text selected by the user """
         raise NotImplementedError
 
-    def history(self):
-        """ Returns the History object for the window """
-        raise NotImplementedError
+    # def history(self):
+        # """ Returns the History object for the window """
+        # raise NotImplementedError
         # from domonic.webapi.history import History
         # return History()
+        # return self._history
 
     def innerHeight(self):
         """[Returns the height of the window's content area (viewport) including scrollbars]

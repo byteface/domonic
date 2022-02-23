@@ -1,29 +1,24 @@
 <h1 align="center">
     <br>𖤐 domonic 𖤐<br>
-    <sup><sub><sup>Generate html with python 3! (and much more)</sup></sub></sup>
+    <sup><sub><sup>Create html with python 3! (and much more)</sup></sub></sup>
     <br>
 </h1>
 
-[![PyPI version](https://badge.fury.io/py/domonic.svg)](https://badge.fury.io/py/domonic.svg) 
+[![PyPI version](https://badge.fury.io/py/domonic.svg)](https://badge.fury.io/py/domonic.svg)
 [![Downloads](https://pepy.tech/badge/domonic)](https://pepy.tech/project/domonic)
 [![Python version](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)
 [![Build status](https://travis-ci.com/byteface/domonic.svg?branch=master)](https://travis-ci.com/byteface/domonic.svg?branch=master)
 [![Python package](https://github.com/byteface/domonic/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/byteface/domonic/actions/workflows/python-package.yml)
 
-#### Contains several evolving packages:
+### install
 
-- [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎
-- [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲
-- [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), [d3](https://domonic.readthedocs.io/packages/d3.html))
-- JSON : utils for loading / decorating / transforming
-- SVG || mathml || aframe || x3d tags - generators for popular tags
-- terminal || cmd : call terminal commands with python3 😱
+```bash
+python3 -m pip install domonic
+# or if you had it before upgrade:
+# python3 -m pip install domonic --upgrade 
+```
 
-See the [docs/code](https://domonic.readthedocs.io/) for more features...
-
-or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
-
-## HTML Templating with Python 3
+## Creating HTML with Python 3
 
 ```python
 from domonic.html import *
@@ -31,7 +26,7 @@ print(html(body(h1('Hello, World!'))))
 # <html><body><h1>Hello, World!</h1></body></html>
 ```
 
-or to format it and insert the doctype use an f-string:
+or to pretty format and insert the doctype, use an f-string:
 
 ```python
 mydom = html(body(h1('Hello, World!'), a("somelink", _href="somepage.html")))
@@ -48,19 +43,30 @@ print(f"{mydom}")
 </html>
 ```
 
-### install
+## parsing
+
+Basic useage...
 
 ```bash
-python3 -m pip install domonic
+from domonic import domonic
+domonic.parseString('<somehtml...')
 ```
 
-or if you had it before upgrade:
+For a quick parse try the window module...
 
 ```bash
-python3 -m pip install domonic --upgrade
+from domonic.window import window
+window.location = "http://www.google.com"
+print(window.document.title)
 ```
 
-### attributes
+also try the xpath or css selectors on command line...
+
+```bash
+domonic -x https://google.com '//a' | uniq | sort
+```
+
+### html attributes
 
 prepend attributes with an underscore ( avoids clashing with python keywords )
 
@@ -73,9 +79,9 @@ print(test)
 <label class="classname" for="someinput"></label>
 ```
 
-### rendering
+### rendering DOM objects
 
-A domonic tree is composed of objects. i.e
+domonic is a pure python dom and its tree is composed of objects. i.e
 
 ```python
 div()
@@ -122,7 +128,6 @@ And check the code/docs to see what's currently been implemented.
 
 ```python
 mysite.querySelectorAll('button') 
-
 mysite.querySelectorAll("a[rel=nofollow]")
 mysite.querySelectorAll("a[href='#services']")
 mysite.querySelectorAll("a[href$='technology']")
@@ -131,7 +136,6 @@ mysite.querySelectorAll('.fa-twitter')
 somelinks = mysite.querySelectorAll("a[href*='twitter']")
 for l in somelinks:
     print(l.href)
-
 ```
 
 To use the DOM either reference your root 'html' node or import the dom modules global 'document'
@@ -520,119 +524,9 @@ print(dir())
 print(dir("..\\")) 
 ```
 
-## parsing
-
-domonic can work with other Treebuilders
-
-There's a builtin ext to tap into html5lib. And also fork of the c++ htmlparser (see parsing ticket)
-
-If it isn't already. You may need to install it...
-
-```bash
-pip install html5lib
-```
-
-Then use the domonic treebuilder instead of any of the html5lib treebuilders.
-
-```python
-import requests
-import html5lib
-from domonic.ext.html5lib_ import getTreeBuilder
-
-
-r = requests.get("https://google.com")
-parser = html5lib.HTMLParser(tree=getTreeBuilder())
-page = parser.parse(r.content.decode("utf-8"))
-
-# print the page with formatting
-# print(f'{page}')
-
-'''
-links = page.getElementsByTagName('a')
-for l in links:
-    try:
-        print(l.href)
-    except Exception as e:
-        # no href on this tag
-        pass
-'''
-
-# turn the downloaded site into .pyml ;)
-print(page.__pyml__())
-```
-
-For a quick parse try the window module...
-
-```python
-from domonic.window import *
-window.location = "http://www.google.com"
-print(window.document.title)
-```
-
 ## DOCS
 
 [https://domonic.readthedocs.io/](https://domonic.readthedocs.io/)
-
-### notes on templating
-
-while you can create a div with content like :
-
-```python
-    div("some content")
-```
-
-python doesn't allow named params before unamed ones. So you can't do this:
-
-```python
-    div(_class="container", p("Some content") )
-```
-
-or it will complain the params are in the wrong order. You have to instead put content before attributes:
-
-```python
-    div( p("Some content"), _class="container")
-```
-
-which is annoying when a div gets long.
-
-You can get around this by using 'html' which is available on every Element:
-
-```python
-    div( _class="container" ).html("Some content")
-```
-
-This is NOT like jQuery html func that returns just the inner content. use innerHTML for that.
-
-It is used specifically for rendering.
-
-### Common Errors
-
-If templates are typed incorrectly they will not work.
-
-There's a small learning curve getting .pyml templates correct. Usually (1) a missing comma between tags, (2) an underscore missing on an attribute or (3) params in the wrong order. Use this reference when starting out as a reminder when you get an error.
-
-Here are the 4 solutions to those common errors when creating large templates...
-( i.e. see bootstrap5 examples in test_domonic.py )
-
-```python
-IndexError: list index out of range
-# - You most likely didn't put a underscore on an attribute.
-```  
-
-```python
-SyntaxError: invalid syntax
-# - You are Missing a comma between attributes
-```
-
-```python
-SyntaxError: positional argument follows keyword argument
-# - You have to pass attributes LAST. and strings and objects first. *see notes on templating above*
-```
-
-```python
-TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
-# - You are Missing a comma between attributes. before the **{}
-```
 
 ### CLI
 
@@ -676,23 +570,15 @@ domonic -q https://google.com 'a'
 
 ### EXAMPLE PROJECTS
 
-A browser based file browser. Working example of how components can work:
-[Blueberry](https://github.com/byteface/Blueberry/)
+[Blueberry](https://github.com/byteface/Blueberry/) : A browser based file OS. Working example of how components can work.
 
-A cron viewer:
-[ezcron](https://github.com/byteface/ezcron/)
+[ezcron](https://github.com/byteface/ezcron/) : A cron viewer
 
-A basic game:
-[bombdisposer](https://github.com/byteface/bombdisposer/)
+[bombdisposer](https://github.com/byteface/bombdisposer/) : A basic game
 
-A lightweight version of domonic:
-[htmlx](https://github.com/byteface/htmlx/tree/master/htmlx)
+[htmlx](https://github.com/byteface/htmlx/tree/master/htmlx) : A low dependency lightweight (DOM only) version of domonic
 
-checkout [the docs](https://domonic.readthedocs.io/) for examples on how to easily make sitemaps with python.
-or for example how to use domonic with flask, django, sanic and other server frameworks.
-
-docs:
-[https://domonic.readthedocs.io/](https://domonic.readthedocs.io/)
+Checkout [the docs](https://domonic.readthedocs.io/) for more examples i.e. generating sitemaps or using domonic with server frameworks like flask, django, sanic, fastapi and others.
 
 There's also several useage examples in the repo so pull and have a look.
 
@@ -702,13 +588,13 @@ Feel free to contribute if you find it useful. (I'd be grateful for help on all 
 
 Email me, message me directly if you like or create a discussion on here. Or join the discord.
 
-If there are any methods you want that are missing or not complete yet or you think you can help make it better just update the code and send a pull request.
-
-I'll merge and releaese asap.
+If there are any methods you want that are missing or not complete yet or you think you can help make it better just update the code and send a pull request. I'll merge and releaese asap.
 
 In the repo there's a requirements-dev.txt which is mostly the libs used in the examples.
 
 requirements.txt are the libs used for packaging just the lib.
+
+See also the CONTRIBUTING.md
 
 ### running examples
 
@@ -735,9 +621,7 @@ or to test a single function:
 python -m unittest tests.test_javascript.TestCase.test_javascript_array
 python -m unittest tests.test_dQuery.TestCase.test_addClass
 python -m unittest tests.test_geom.TestCase.test_vec2
-
 python3 -m unittest tests.test_cmd.TestCase.test_cmd_dir  # only windows
-
 ```
 
 or to test a whole module
@@ -770,6 +654,19 @@ See Makefile:
 cd docs
 make html
 ```
+
+#### Contains several evolving packages:
+
+- [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎
+- [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲
+- [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), [d3](https://domonic.readthedocs.io/packages/d3.html))
+- JSON : utils for loading / decorating / transforming
+- SVG || mathml || aframe || x3d tags - generators for popular tags
+- terminal || cmd : call terminal commands with python3 😱
+
+See the [docs/code](https://domonic.readthedocs.io/) for more features...
+
+or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
 
 ### Disclaimer
 

@@ -422,45 +422,119 @@ this example loads a template and passing params for rendering
 * warning loads also is very basic and can only convert simple html as the parser is still in development
 
 
-parsing
+Notes on templating
 --------------------------------
 
-You can hook domonic to the super fast html5 c++ parser. As mentioned in this ticket
+while you can create a div with content like :
 
-https://github.com/byteface/domonic/issues/28
+.. code-block :: python
 
-you just have to use my fork instead.
+    div("some content")
 
-https://github.com/byteface/html5-parser/commit/fa83bf1a5e225f6934a1ad38d092fc6baf3c4934
+python doesn't allow named params before unamed ones. So you can't do this:
+
+.. code-block :: python
+
+    div(_class="container", p("Some content") )
+
+or it will complain the params are in the wrong order. You have to instead put content before attributes:
+
+.. code-block :: python
+
+    div( p("Some content"), _class="container")
+
+which is annoying when a div gets long.
+
+You can get around this by using 'html' which is available on every Element:
+
+.. code-block :: python
+
+    div( _class="container" ).html("Some content")
+
+This is NOT like jQuery html func that returns just the inner content. use innerHTML for that.
+
+It is used specifically for rendering.
 
 
 Common Errors
 --------------------------------
 
-If templates are typed incorrectly they will not work.
+If a templates syntax is incorrect it will not work.
 
-There's a small learning curve getting .pyml templates correct. Usually 
+There's a small learning curve in getting .pyml templates correct. Usually...
 
 - (1) a missing comma between tags, 
 - (2) an underscore missing on an attribute or 
 - (3) params in the wrong order.
 
-Use this reference when starting out as a reminder when you get an error.
+Use this reference when starting out to help when you get an error.
 
-Here are the 4 solutions to those common errors when creating large templates...
-( i.e. see bootstrap5 examples in test_domonic.py )
 
-IndexError: list index out of range
-    - You most likely didn't put a underscore on an attribute.
+.. code-block :: python
 
-SyntaxError: invalid syntax
-    - You are Missing a comma between attributes
+    IndexError: list index out of range
+    # You most likely didn't put a underscore on an attribute.
 
-SyntaxError: positional argument follows keyword argument
-    - You have to pass attributes LAST. and strings and objects first. *see notes on templating above*
+    SyntaxError: invalid syntax
+    # You are Missing a comma between attributes
 
-TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
-    - You are Missing a comma between attributes. before the **{}
+    SyntaxError: positional argument follows keyword argument
+    # You have to pass attributes LAST. and strings and objects first. *see notes on templating above*
+
+    TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
+    # You are Missing a comma between attributes. before the **{}
+
+
+parsing
+--------------------------------
+
+https://github.com/byteface/domonic/issues/28
+
+
+Basic useage...
+
+.. code-block :: python
+    from domonic import domonic
+    domonic.parseString('<somehtml...')
+
+
+An examples of using the parser...
+
+.. code-block :: python
+
+    import requests
+    import html5lib
+    from domonic.ext.html5lib_ import getTreeBuilder
+
+
+    r = requests.get("https://google.com")
+    parser = html5lib.HTMLParser(tree=getTreeBuilder())
+    page = parser.parse(r.content.decode("utf-8"))
+
+    # print the page with formatting
+    # print(f'{page}')
+
+    '''
+    links = page.getElementsByTagName('a')
+    for l in links:
+        try:
+            print(l.href)
+        except Exception as e:
+            # no href on this tag
+            pass
+    '''
+
+    # turn the downloaded site into .pyml ;)
+    print(page.__pyml__())
+
+
+For a quick parse try the window module...
+
+.. code-block :: python
+
+    from domonic.window import *
+    window.location = "http://www.google.com"
+    print(window.document.title)
 
 
 .. automodule:: domonic.html

@@ -72,7 +72,35 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_history(self):
-        pass
+
+        from domonic.window import window
+
+        window.location = 'https://www.google.com'
+        window.location = 'https://www.facebook.com'
+        window.location = 'https://www.linkedin.com'
+
+        # print(window.history.length)
+        # print(window.history.state)
+        window.history.back()
+        # print(window.history.state, window.location.href)
+        assert window.location.href == 'https://www.facebook.com'
+        # print(window.history.length)
+        # print(window.history.state)
+        window.history.back()
+        # print(window.history.state)
+        assert window.location.href == 'https://www.google.com'
+        assert 'Google' in window.document.querySelector('title').text
+        # print(window.history.length)
+        # print(window.history.state)
+        window.history.forward()
+        assert window.location.href == 'https://www.facebook.com'
+        assert 'Facebook' in window.document.querySelector('title').text
+        # print(window.history.state)
+        window.history.forward()
+        # print(window.document.querySelector('title').text)
+        assert 'LinkedIn' in window.document.querySelector('title').text
+
+        print(window.history)
 
     def test_gl(self):
         pass
