@@ -1,7 +1,5 @@
 <h1 align="center">
     <br>𖤐 domonic 𖤐<br>
-    <sup><sub><sup>Create html with python 3! (and much more)</sup></sub></sup>
-    <br>
 </h1>
 
 [![PyPI version](https://badge.fury.io/py/domonic.svg)](https://badge.fury.io/py/domonic.svg)
@@ -10,11 +8,13 @@
 [![Build status](https://travis-ci.com/byteface/domonic.svg?branch=master)](https://travis-ci.com/byteface/domonic.svg?branch=master)
 [![Python package](https://github.com/byteface/domonic/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/byteface/domonic/actions/workflows/python-package.yml)
 
+#### Create html with python 3! (and much more)
+
 ### install
 
 ```bash
 python3 -m pip install domonic
-# or if you had it before upgrade:
+# If you had it before upgrade:
 # python3 -m pip install domonic --upgrade 
 ```
 
@@ -43,7 +43,7 @@ print(f"{mydom}")
 </html>
 ```
 
-## parsing
+## parsing html
 
 Basic useage...
 
@@ -52,7 +52,7 @@ from domonic import domonic
 domonic.parseString('<somehtml...')
 ```
 
-For a quick parse try the window module...
+To quickly parse a webapge try the window module...
 
 ```bash
 from domonic.window import window
@@ -60,11 +60,24 @@ window.location = "http://www.google.com"
 print(window.document.title)
 ```
 
-also try the xpath or css selectors on command line...
+Also try the xpath or css selectors on command line...
 
 ```bash
 domonic -x https://google.com '//a' | uniq | sort
 ```
+
+#### More
+
+- [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎
+- [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲
+- [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), [d3](https://domonic.readthedocs.io/packages/d3.html))
+- JSON : utils for loading / decorating / transforming
+- SVG || mathml || aframe || x3d tags - generators for popular tags
+- terminal || cmd : call terminal commands with python3 😱
+
+See the [docs/code](https://domonic.readthedocs.io/) for more features...
+
+or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
 
 ### html attributes
 
@@ -81,7 +94,7 @@ print(test)
 
 ### rendering DOM objects
 
-domonic is a pure python dom and its tree is composed of objects. i.e
+domonic is a pure python dom whos tree is composed of objects. i.e
 
 ```python
 div()
@@ -124,7 +137,7 @@ print(site)
 
 There's an evolving DOM API. To learn more about the webAPI [click here](https://developer.mozilla.org/en-US/docs/Web/API).
 
-And check the code/docs to see what's currently been implemented.
+And check the [code/docs](https://domonic.readthedocs.io/) to see what's currently been implemented.
 
 ```python
 mysite.querySelectorAll('button') 
@@ -150,7 +163,6 @@ mydom = html()
 from domonic.dom import document
 # document.createElement...
 print(document)
-
 ```
 
 ### javascript
@@ -186,7 +198,6 @@ print(url.hash)  # #some-hash
 Use setInterval and clearInterval with params
 
 ```python
-
 from domonic.javascript import setInterval, clearInterval
 
 x=0
@@ -201,20 +212,16 @@ import time
 time.sleep(5)
 clearInterval(test)
 print(f"Final value of x:{x}")
-
 ```
 
 Or for a single delayed function call use setTimeout, clearTimeout
 
 ```python
-
 from domonic.javascript import setTimeout, clearTimeout
-
 timeoutID = setTimeout(hi, 1000)
-
 ```
 
-call ```()``` on a stringvar to transform it into a Node
+You can call ```()``` on a stringvar to transform it into a Node
 
 ```python
 from domonic.javascript import String
@@ -224,8 +231,6 @@ test('div', _style="font-color:red;")
 str(test('div', _style="font-color:red;"))
 # <div style="font-color:red;">Hi there!</div>
 ```
-
-passing it the tag and attributes...
 
 a-tags inherit URL:
 
@@ -250,6 +255,7 @@ For writing and using regular javascript, load from a src...
 
 ```python
 script(_src="/docs/5.0/dist/js/bootstrap.bundle.min.js", _integrity="sha384-1234", _crossorigin="anonymous"),
+# <script src="/docs/5.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-1234" crossorigin="anonymous"></script>
 ```
 
 or do inline js by opening triple quotes...
@@ -319,6 +325,7 @@ python doesn't allow hyphens in parameter names. so use variable keyword argumen
 
 ```python
 div("test", **{"_data-test":"test"} )
+# <div data-test="test">test</div>
 ```
 
 or for example a colon...
@@ -326,6 +333,7 @@ or for example a colon...
 ```python
 t = div( **{"_:test":"something"} )
 str(t)
+# <div :test="something"></div>
 ```
 
 ### JSON (utils)
@@ -357,7 +365,6 @@ import domonic.JSON as JSON
 json_data = JSON.parse_file('somefile.json')
 mytable = JSON.tablify(json_data)
 print(mytable)
-
 ```
 
 convert json arrays into csv files...
@@ -367,7 +374,6 @@ import domonic.JSON as JSON
 
 json_data = JSON.parse_file('somefile.json')
 JSON.csvify(json_data, 'data.csv')
-
 ```
 
 convert csv files to json...
@@ -377,14 +383,13 @@ import domonic.JSON as JSON
 
 json_data =JSON.csv2json("data.csv")
 print(json_data)
-
 ```
 
 more to come...
 
 ### SVG
 
-All tags extend 'Element'. So will have DOM and magic methods available to them. see the [docs](https://domonic.readthedocs.io/).
+All tags extend 'Element'. So will have DOM and magic methods available to them. See the [docs](https://domonic.readthedocs.io/).
 
 ```python
 circ = svg(
@@ -440,23 +445,21 @@ render( _webpage, 'hello.html' )
 dQuery uses the º symbol (alt+0).
 
 ```python
+from domonic.html import *
+from domonic.dQuery import º
 
-    from domonic.html import *
-    from domonic.dQuery import º
+d = html(head(body(li(_class='things'), div(_id="test"))))
 
-    d = html(head(body(li(_class='things'), div(_id="test"))))
+print( º('#test') )
+# <div id="test">
+print( º('.things') )
+# <li class="things">
+mydiv = º('<div class="test2"></div>')
+# <domonic.dQuery.o object at 0x107d5c9a0>
 
-    print( º('#test') )
-    # <div id="test">
-    print( º('.things') )
-    # <li class="things">
-    mydiv = º('<div class="test2"></div>')
-    # <domonic.dQuery.o object at 0x107d5c9a0>
-
-    b = º('#test').append(mydiv)
-    print(b)
-    # <div id="test"><div class="test2"></div></div>
-
+b = º('#test').append(mydiv)
+print(b)
+# <div id="test"><div class="test2"></div></div>
 ```
 
 Only recently started so check to see what's implemented.
@@ -645,28 +648,6 @@ pip install pytest
 pytest tests
 ```
 
-### rebuild docs
-
-See Makefile:
-
-```bash
-. venv/bin/activate
-cd docs
-make html
-```
-
-#### Contains several evolving packages:
-
-- [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎
-- [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲
-- [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), [d3](https://domonic.readthedocs.io/packages/d3.html))
-- JSON : utils for loading / decorating / transforming
-- SVG || mathml || aframe || x3d tags - generators for popular tags
-- terminal || cmd : call terminal commands with python3 😱
-
-See the [docs/code](https://domonic.readthedocs.io/) for more features...
-
-or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
 
 ### Disclaimer
 
