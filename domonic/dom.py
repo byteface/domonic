@@ -11,6 +11,7 @@ import os
 import copy
 import re
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+from xml.dom.pulldom import END_ELEMENT
 
 from domonic.events import (Event, EventTarget, MouseEvent)
 from domonic.geom.vec3 import vec3
@@ -1266,37 +1267,41 @@ class DOMStringMap:
     #     return [item.value for item in self.args]
 
 
-class DOMTokenList:
-    """ TODO - not tested yet """
+class DOMTokenList(list):
+    """DOMTokenList represents a set of space-separated tokens."""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, element: 'Node'):
+        self.el = element
+        # trim and split on whitespace
+        # classes = element.className.replace(r'^\s+|\s+$/g', '').split(r'\s+/')
+        self.classes = element.className.split(' ')
+        self.classes = [x.strip() for x in self.classes]
+        super().__init__(self.classes)
 
-    def add(self, *args) -> bool:
+    def add(self, *args):
         """ Adds the given tokens to the list """
         for item in args:
-            if item not in self.args:
-                self.args.append(item)
-                return True
-        return False
+            if item not in self:
+                self.append(item)
+                self.el.className = self.toString()
 
-    def remove(self, *args) -> bool:
+    def remove(self, *args):
         """ Removes the given tokens from the list """
+        print(self, len(self))
         for item in args:
-            if item in self.args:
-                self.args.remove(item)
-                return True
-        return False
+            if item in self:
+                super().remove(item)
+                self.el.className = self.toString()
 
-    def toggle(self, token, force):
+    def toggle(self, token, force=None):
         """ If force is not given, removes token from list if present,
         otherwise adds token to list. If force is true, adds token to list,
         and if force is false, removes token from list if present. """
         if force is None:
             if token in self.args:
-                self.args.remove(token)
+                self.remove(token)
             else:
-                self.args.append(token)
+                self.append(token)
         elif force is True:
             self.add(token)
         elif force is False:
@@ -1306,17 +1311,19 @@ class DOMTokenList:
 
     def contains(self, token) -> bool:
         """ Returns true if the token is in the list, and false otherwise """
-        if token in self.args:
-            return True
-        return False
+        # return token in self.el.className
+        return token in self.classes
 
     def item(self, index: int):
         """ Returns the token at the specified index """
-        return self.args[index]
+        return self[index]  # or None
 
     def toString(self) -> str:
         """ Returns a string containing all tokens in the list, with spaces separating each token """
-        return " ".join(self.args)
+        return " ".join(self)
+
+    def __str__(self):
+        return self.toString()
 
 
 class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the args/kwargs
@@ -2086,14 +2093,14 @@ class Element(Node):
         """ Returns the value of the classList attribute of an element """
         cl = self.getAttribute('class')
         if cl is None:
-            return []
+            return []  #TODO - fix this
         else:
-            return cl.split(' ')  # TODO - DOMTokenList
+            return DOMTokenList(self)
 
     @classList.setter
-    def classList(self, newname: str):
+    def classList(self, newlist):
         """ Sets or returns the value of the classList attribute of an element """
-        self.setAttribute('class', newname)
+        self.setAttribute('class', newlist)
         # raise NotImplementedError
 
     @property

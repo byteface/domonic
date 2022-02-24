@@ -1686,5 +1686,27 @@ class TestNodeList(TestCase):
         self.assertEqual(self.nl.index(2), 2)
 
 
+class TestDomTokenList(TestCase):
+    def setUp(self):
+        super().setUp()
+
+    def test_classList(self):
+        sample = div(_class='theclass theclass2 theclass3')
+        # print(sample.classList)
+        assert sample.classList.contains('theclass')
+        # print(sample.classList.contains('theclass'))
+        sample.classList.add('theclass4')
+        # print(sample.classList)
+        assert sample.classList.contains('theclass4')
+        # print(type(sample.classList))
+        # sample.classList += 'theclass5' # TODO - dunders
+        # print(sample.classList)
+        sample.classList.remove('theclass')
+        # print(sample.classList)
+        assert not sample.classList.contains('theclass')
+        # print(len(sample.classList))
+        assert len(sample.classList) == 3
+
+
 if __name__ == '__main__':
     unittest.main()
