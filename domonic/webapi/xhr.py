@@ -17,18 +17,33 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 from domonic.javascript import Global
 
-# class XMLHttpRequest():
-#     def __init__(self, url=None, responseType=None, withCredentials=False, timeout=0, onload=None, onerror=None, onprogress=None, ontimeout=None):
-#         self.url = url
-#         self.responseType = responseType
-#         self.withCredentials = withCredentials
-#         self.timeout = timeout
-#         self.onload = onload
-#         self.onerror = onerror
-#         self.onprogress = onprogress
-#         self.ontimeout = ontimeout
-#         self.response = None
-#         self.status = None
+
+class XMLHttpRequest():
+
+    UNSENT = 0
+    OPENED = 1
+    HEADERS_RECEIVED = 2
+    LOADING = 3
+    DONE = 4
+
+    # def open(self, method, url, async=True, user=None, password=None):
+    #     self.method = method
+    #     self.url = url
+    #     self.async = async
+    #     self.user = user
+    #     self.password = password
+
+    def __init__(self, url=None, responseType=None, withCredentials=False, timeout=0, onload=None, onerror=None, onprogress=None, ontimeout=None):
+        self.url = url
+        self.responseType = responseType
+        self.withCredentials = withCredentials
+        self.timeout = timeout
+        self.onload = onload
+        self.onerror = onerror
+        self.onprogress = onprogress
+        self.ontimeout = ontimeout
+        self.response = None
+        self.status = None
 
 
 class FormData:

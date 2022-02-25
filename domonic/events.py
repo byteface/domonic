@@ -69,52 +69,6 @@ class EventTarget:
 
 EventDispatcher = EventTarget  #: legacy alias
 
-# https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
-# class EventSource(EventTarget):
-#     """ Baseclass for Node """
-#     def __init__(self, *args, **kwargs):
-#         self._readyState = "2"
-#         self._url = ""
-#         self._withCredentials = False
-#         super(EventSource, self).__init__(*args, **kwargs)
-#     @property
-#     def readyState(self):
-#         """ A number representing the state of the connection.
-#         Possible values are CONNECTING (0), OPEN (1), or CLOSED (2). """
-#         return self._readyState
-#     @property
-#     def url(self):
-#         """ A DOMString representing the URL of the source. """
-#         return self._url
-#     @property
-#     def withCredentials(self):
-#         """ A boolean value indicating whether the EventSource object was
-#           instantiated with cross-origin (CORS) credentials
-#         set (true), or not (false, the default). """
-#         return self._withCredentials
-#     def close(self):
-#         """ Closes the connection to the EventSource. """
-#         self._readyState = "0"
-#     def onreadystatechange(self, event):
-#         """ Called when the state of the connection changes. """
-#         if event.target.readyState == "0":
-#             self._readyState = "0"
-#         elif event.target.readyState == "1":
-#             self._readyState = "1"
-#         elif event.target.readyState == "2":
-#             self._readyState = "2"
-#         else:
-#             self._readyState = "2"
-#     def onmessage(self, event):
-#         """ Called when a message is received. """
-#         pass
-#     def onerror(self, event):
-#         """ Called when an error occurs. """
-#         pass
-#     def onopen(self, event):
-#         """ Called when the connection is established. """
-#         pass
-
 
 class Event:
     """event"""
@@ -1041,6 +995,28 @@ class PromiseRejectionEvent(Event):  # TODO - put with the promise?
         """ Returns the reason of the rejection """
         self.isRejected = None
         """ Returns whether the promise was rejected or not """
+        super().__init__(_type, options, *args, **kwargs)
+
+
+class MessageEvent(Event):
+    """MessageEvent"""
+
+    MESSAGE: str = "message"  #:
+    CONNECT: str = "connect"  #:
+    DISCONNECT: str = "disconnect"  #:
+
+    def __init__(self, _type, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs  # if options is none use kwargs
+        self.data = options.get("data", None)
+        """ Returns the data of the message """
+        self.origin = options.get("origin", None)
+        """ Returns the origin of the message """
+        self.lastEventId = options.get("lastEventId", None)
+        """ Returns the last event id of the message """
+        self.source = options.get("source", None)
+        """ Returns the source of the message """
+        self.ports = options.get("ports", None)
+        """ Returns the ports of the message """
         super().__init__(_type, options, *args, **kwargs)
 
 

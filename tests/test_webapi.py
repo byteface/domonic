@@ -129,6 +129,20 @@ class TestCase(unittest.TestCase):
     def test_permissions(self):
         pass
 
+    def test_serversentevents(self):
+        # from domonic.webapi.sse import EventSource
+        # es = EventSource('/sse')
+        # es.onmessage = lambda event: print(event.data)
+        # es.onopen = lambda event: print('open')
+        # es.onclose = lambda event: print('close')
+        # es.onerror = lambda event: print('error')
+        # es.send('Hello')
+        
+        # TESTING - useage example... clone this and point at the stream
+        # https://github.com/byteface/SSELoggerDemo
+        pass
+
+
     def test_xhr(self):
         from domonic.html import br, button, div, form, hr, input
         from domonic.javascript import Global

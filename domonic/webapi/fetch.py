@@ -4,8 +4,40 @@
     https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
 """
 
+# import array
+# import datetime
+# import gc
+# import json
+# import math
+# import multiprocessing
+# import os
+# import random
+# import re
+# import signal
+# import struct
+# import sys
+import threading
+from multiprocessing.pool import ThreadPool as Pool
+
+from domonic.window import window
+from domonic.javascript import Promise
 # TODO - untested. moving these over from javascript module
 # TODO - check if promise also needs to come to this package
+
+
+class FetchedSet:  # not a promise
+    def __init__(self, *args, **kwargs):
+        self.results = []
+
+    def __getitem__(self, index):
+        return self.results[index]
+
+    def oncomplete(self, func):  # runs once all results are back
+        func(self.results)
+        return
+
+    # def __call__(self, func):
+    #     self.results.append(func)
 
 # @staticmethod
 def fetch(url: str, **kwargs):
@@ -78,16 +110,25 @@ def fetch_pooled(urls: list, callback_function=None, error_handler=None, **kwarg
 
 
 class Headers():
-    def __init__(self, headers=None):
-        self.headers = headers
 
-    def get(self, name):
-        return self.headers[name]
+    def __init__(self, all=None):
+        # https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders#Example
+        self.headers = {}  #Object.create(None)
+        arr = all.split("\r\n")
+        for each in arr:
+            line = arr
+            parts = line.split(": ")
+            name = parts.shift()
+            value = parts.join(": ")
+            self.headers[name.lower()] = value
 
-    def set(self, name, value):
-        self.headers[name] = value
+    def get(self, name: str):
+        return self.headers[name.lower()]
 
-    def has(self, name):
+    def set(self, name: str, value: str):
+        self.headers[name.lower()] = value
+
+    def has(self, name: str):
         return name in self.headers
 
     def keys(self):
