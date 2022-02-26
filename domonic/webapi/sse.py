@@ -15,7 +15,7 @@
 """
 
 from domonic.events import MessageEvent, EventTarget
-
+from domonic.ext.sseclient import SSEClient
 
 class EventSource(EventTarget):
     # https://developer.mozilla.org/en-US/docs/Web/API/EventSource
@@ -48,18 +48,18 @@ class EventSource(EventTarget):
         #     print(msg)
         # self._readyState = EventSource.CLOSED
 
-        def _do_stuff():
-            from sseclient import SSEClient
-            messages = SSEClient(url)
-            self._readyState = EventSource.OPEN
-            # self.onopen(MessageEvent(messages))
-            for msg in messages:
-                self.onmessage(MessageEvent(msg))
-                # print(msg)
-            self._readyState = EventSource.CLOSED
+        # def _do_stuff():
+        # from sseclient import SSEClient
+        messages = SSEClient(url)
+        self._readyState = EventSource.OPEN
+        # self.onopen(MessageEvent(messages))
+        for msg in messages:
+            # self.onmessage(MessageEvent(msg))
+            print(msg)
+        self._readyState = EventSource.CLOSED
 
         # TODO - use a thread or it will block the main thread
-        import threading
+        # import threading
 
         # def _on_message(msg):
         #     self.onmessage(MessageEvent(msg))
@@ -82,8 +82,8 @@ class EventSource(EventTarget):
         #     self.onclose(msg)
         #     self._readyState = EventSource.CLOSED
 
-        self._thread = threading.Thread(target=_do_stuff)
-        self._thread.start()
+        # self._thread = threading.Thread(target=_do_stuff)
+        # self._thread.start()
 
         # print('this is so cool!')
 
