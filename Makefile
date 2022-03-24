@@ -4,6 +4,7 @@ test:
 	python3 -m unittest tests.test_dom
 	python3 -m unittest tests.test_style
 	python3 -m unittest tests.test_javascript
+	python3 -m unittest tests.test_javascript_date
 	python3 -m unittest tests.test_terminal
 	python3 -m unittest tests.test_CDN
 	python3 -m unittest tests.test_JSON
@@ -23,6 +24,7 @@ testpc:
 	python3 -m unittest tests.test_dom
 	python3 -m unittest tests.test_style
 	python3 -m unittest tests.test_javascript
+	python3 -m unittest tests.test_javascript_date
 	python3 -m unittest tests.test_cmd
 	python3 -m unittest tests.test_CDN
 	python3 -m unittest tests.test_JSON
@@ -42,6 +44,7 @@ test_domonic:
 
 test_javascript:
 	python3 -m unittest tests.test_javascript
+	python3 -m unittest tests.test_javascript_date
 
 test_html:
 	python3 -m unittest tests.test_html

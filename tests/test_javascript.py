@@ -17,10 +17,6 @@ from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
 # from mock import patch
 
 
-
-
-
-
 class TestCase(unittest.TestCase):
 
     # domonic.javascript.Math
@@ -374,71 +370,6 @@ class TestCase(unittest.TestCase):
         # print("=",window.document.baseURI)
         pass
 
-    def test_javascript_date(self):
-        print("test_javascript_date::::::::::::::::::")
-        d = Date()
-        print(d.getDate())
-        print(d.getDay())
-        print(d.getFullYear())
-        print(d.getHours())
-        print(d.getMilliseconds())
-        print(d.getMinutes())
-        print(d.getMonth())
-        print(d.getSeconds())
-        print(d.getTime())
-        # print( d.getTimezoneOffset() )
-        print(d.getUTCDate())
-        print(d.getUTCDay())
-        print(d.getUTCFullYear())
-        print(d.getUTCHours())
-        print(d.getUTCMilliseconds())
-        print(d.getUTCMinutes())
-        print(d.getUTCMonth())
-        print(d.getUTCSeconds())
-        print(d.getYear())
-        print(d.now())
-        # print( d.onstorage() )
-        # print( d.ontimeupdate() )
-        print(d.parse("July 1981"))
-        print(d.setDate(1))
-        print(d.setFullYear('1982'))
-        print(d.setHours(2))
-        # print( d.setItem() )
-        print(d.setMilliseconds(12345))
-        print(d.setMinutes(10))
-        print(d.setMonth(10))
-        print(d.setSeconds(10))
-        print(d.setTime(1000))
-        print(d.setUTCDate(1))
-        print(d.setUTCFullYear(1928))
-        print(d.setUTCHours(3))
-        print(d.setUTCMilliseconds(54321))
-        print(d.setUTCMinutes(50))
-        print(d.setUTCMonth(3))
-        print(d.setUTCSeconds(11))
-        print(d.setYear(1987))
-        print(d.toDateString())
-        print(d.toGMTString())
-        print(d.toJSON())
-        print(d.toISOString())
-        print(d.toLocaleDateString())
-        print(d.toLocaleString())
-        print(d.toLocaleTimeString())
-        print(d.toTimeString())
-        print(d.toUTCString())
-        print(d.UTC())
-
-        print(Date(1415988000))
-
-    # def test_domonic_parse(self):
-        # page = domonic.parse("<html><body>'some content'</body></html>")
-        # page = domonic.parse("<html><body></body></html>")
-        # print(page)
-
-    # def test_domonic_get(self):
-    #     print("test_domonic_get-----------=-----------=-----------=-----------=-----------=-----------=-----------=")
-    #     page = eval(domonic.get("http://eventual.technology"))
-    #     dir(page)
 
     # TODO - this was move to webapi. tests are working by proxy
     def test_javascript_url(self):
@@ -1233,7 +1164,6 @@ class TestCase(unittest.TestCase):
         assert intArray.byteLength == 4000000
         # print(intArray.byteOffset)  # 0
         assert intArray.byteOffset == 0
-
 
         size = 100
         intArray = Int8Array(4 * size)

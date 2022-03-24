@@ -7,6 +7,7 @@
 """
 
 import array
+import chunk
 import datetime
 import gc
 import json
@@ -1223,14 +1224,277 @@ class Performance():
 
 performance = Performance()
 
+'''
+# TODO - test rebuilding the Date Obj to use time instead of datetime
+import time
+class Date(Object):
+    """ javascript date """
+
+    def __init__(self, date=None, formatter='python'):
+        """_summary_
+
+        Args:
+            date (_type_, optional): _description_. Defaults to None.
+            formatter (str, optional): _description_. Defaults to 'python'.
+        """
+        self.formatter = formatter
+        # use struct_time so we can handle dates larger than 10000
+        if date is None:
+            self.date = time.localtime()
+        elif isinstance(date, str):
+            self.date = time.strptime(date, '%Y-%m-%d %H:%M:%S')
+        elif isinstance(date, (list, tuple)):
+            self.date = time.struct_time(date)
+        elif isinstance(date, time.struct_time):
+            self.date = date
+        elif isinstance(date, int):
+            # self.date = Date.parse(date)
+            d = Date()
+            self.date = d.parse_date(str(date))
+            # return int(d.getTime())
+        else:
+            raise TypeError("Date must be a string, list, tuple or struct_time")
+
+    @staticmethod
+    def now():
+        """ Returns the number of milliseconds since midnight Jan 1, 1970 """
+        return round(time.time() * 1000)
+
+    @staticmethod
+    def parse(date_string):
+        """ Parses a date string and returns the number of milliseconds since January 1, 1970 """
+        d = Date()
+        d.parse_date(str(date_string))
+        return int(d.getTime())
+
+    def parse_date(self, date_string):
+        from dateutil.parser._parser import ParserError
+        try:
+            self.date = parse(date_string)
+            return self.date
+        except ParserError:
+            print('parse failed. doing something else')
+            if int(date_string) > 9999:
+                millis = int(date_string)
+                print(millis)
+                self.date = time.localtime(millis / 1000)
+                print('date is::', self.date)
+                return self.date
+                # self.date = time.strptime(date_string, '%Y%m%d%H%M%S')
+            # raise ValueError("Invalid date string")
+
+    def getTime(self):
+        """ Returns the number of milliseconds since midnight Jan 1, 1970 """
+        # return int(time.mktime(self.date)) * 1000
+        if isinstance(self.date, time.struct_time):
+            return int(time.mktime(self.date)) * 1000
+        elif isinstance(self.date, datetime.datetime):
+            return int(self.date.timestamp()) * 1000
+
+    # def setTime(self, milliseconds):
+    #     """ Sets the date and time given the number of milliseconds since midnight Jan 1, 1970 """
+    #     self.date = time.localtime(milliseconds / 1000)
+
+    def getDate(self):
+        """ Returns the day as a number between 1 and 31 """
+        return self.date.tm_mday
+
+    def getDay(self):
+        """ Returns the day of the week as a number between 0 and 6 """
+        return self.date.tm_wday
+
+    def getFullYear(self):
+        """ Returns the year as a number (e.g. 2003) """
+        print('im a fucking:::',self.date)
+        return self.date.tm_year
+
+    def getHours(self):
+        """ Returns the hour as a number between 0 and 23 """
+        return self.date.tm_hour
+
+    def getMinutes(self):
+        """ Returns the minutes as a number between 0 and 59 """
+        return self.date.tm_min
+
+    def getSeconds(self):
+        """ Returns the seconds as a number between 0 and 59 """
+        return self.date.tm_sec
+
+    def getMilliseconds(self):
+        """ Returns the milliseconds as a number between 0 and 999 """
+        return 0
+
+    def getMonth(self):
+        """ Returns the month as a number between 0 and 11 """
+        print('getMonth::', self.date.tm_mon)
+        return self.date.tm_mon # - 1
+
+    def getYear(self):
+        """ Returns the year as a number between 0 and 99 """
+        return self.date.tm_year
+
+    def setDate(self, day):
+        """ Sets the day of the month to the specified value """
+        # self.date.tm_mday = day
+        # cant set the struct_time directly so we have to recreate it
+        self.date = time.struct_time((self.date.tm_year, day, self.date.tm_wday, self.date.tm_hour, self.date.tm_min, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+        # return self.date
+        # returns the date as milliseconds since midnight Jan 1, 1970?? doesnt it?
+        # return self.getTime()
+
+    def setFullYear(self, year):
+        """ Sets the year """
+        # self.date.tm_year = year
+        self.date = time.struct_time((year, self.date.tm_mon, self.date.tm_mday, self.date.tm_hour, self.date.tm_min, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setHours(self, hours):
+        """ Sets the hour """
+        # self.date.tm_hour = hours
+        self.date = time.struct_time((self.date.tm_year, self.date.tm_mon, self.date.tm_mday, hours, self.date.tm_min, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setMinutes(self, minutes):
+        """ Sets the minutes """
+        # self.date.tm_min = minutes
+        self.date = time.struct_time((self.date.tm_year, self.date.tm_mon, self.date.tm_mday, self.date.tm_hour, minutes, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setMonth(self, month: int):
+        """ Sets the month """
+        # self.date.tm_mon = month
+        if month < 0 or month > 11:
+            raise ValueError("Invalid month")
+        if month > 0:
+            month = month - 1
+        self.date = time.struct_time((self.date.tm_year, month, self.date.tm_mday, self.date.tm_hour, self.date.tm_min, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setSeconds(self, seconds):
+        """ Sets the seconds """
+        # self.date.tm_sec = seconds
+        self.date = time.struct_time((self.date.tm_year, self.date.tm_mon, self.date.tm_mday, self.date.tm_hour, self.date.tm_min, seconds, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setMilliseconds(self, milliseconds):
+        """ Sets the milliseconds """
+        pass
+
+    def setTime(self, milliseconds):
+        """ Sets the date and time given the number of milliseconds since midnight Jan 1, 1970 """
+        self.date = time.localtime(milliseconds / 1000)
+        # self.date = time.struct_time((milliseconds / 1000, self.date.tm_mon, self.date.tm_mday, self.date.tm_hour, self.date.tm_min, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setYear(self, year):
+        """ Sets the year """
+        # self.date.tm_year = year
+        self.date = time.struct_time((year, self.date.tm_mon, self.date.tm_mday, self.date.tm_hour, self.date.tm_min, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def toDateString(self):
+        """ Returns a string representation of the date in the form 'Mon Sep 30' """
+        return time.strftime("%a %b %d", self.date)
+
+    def setUTCDate(self, day):
+        """ Sets the day of the month to the specified value """
+        self.date = time.struct_time((self.date.tm_year, day, self.date.tm_wday, self.date.tm_hour, self.date.tm_min, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setUTCFullYear(self, year):
+        """ Sets the year """
+        self.date = time.struct_time((year, self.date.tm_mon, self.date.tm_mday, self.date.tm_hour, self.date.tm_min, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setUTCHours(self, hours):
+        """ Sets the hour """
+        self.date = time.struct_time((self.date.tm_year, self.date.tm_mon, self.date.tm_mday, hours, self.date.tm_min, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setUTCMinutes(self, minutes):
+        """ Sets the minutes """
+        self.date = time.struct_time((self.date.tm_year, self.date.tm_mon, self.date.tm_mday, self.date.tm_hour, minutes, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setUTCSeconds(self, seconds):
+        """ Sets the seconds """
+        self.date = time.struct_time((self.date.tm_year, self.date.tm_mon, self.date.tm_mday, self.date.tm_hour, self.date.tm_min, seconds, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def setUTCMilliseconds(self, milliseconds):
+        """ Sets the milliseconds """
+        pass    
+
+    def setUTCMonth(self, month):
+        """ Sets the month """
+        self.date = time.struct_time((self.date.tm_year, month, self.date.tm_mday, self.date.tm_hour, self.date.tm_min, self.date.tm_sec, self.date.tm_wday, self.date.tm_yday, self.date.tm_isdst))
+
+    def toGMTString(self):
+        """ Returns a string representation of the date in the form 'Mon Sep 30' """
+        return time.strftime("%a %b %d %H:%M:%S %Y", self.date)
+
+    def toJSON(self):
+        """ Returns a string representation of the date in the form 'Mon Sep 30' """
+        return time.strftime("%a %b %d %H:%M:%S %Y", self.date)
+
+    def toISOString(self):
+        """ Returns a string representation of the date in the form 'Mon Sep 30' """
+        return time.strftime("%a %b %d %H:%M:%S %Y", self.date)
+
+    def toLocaleDateString(self):
+        """ Returns a string representation of the date in the form 'Mon Sep 30' """
+        return time.strftime("%a %b %d", self.date)
+
+    def toLocaleTimeString(self):
+        """ Returns a string representation of the date in the form 'Mon Sep 30' """
+        return time.strftime("%a %b %d %H:%M:%S %Y", self.date)
+
+    def toTimeString(self):
+        """ Returns a string representation of the date in the form 'Mon Sep 30' """
+        return time.strftime("%a %b %d %H:%M:%S %Y", self.date)
+
+    def toUTCString(self):
+        """ Returns a string representation of the date in the form 'Mon Sep 30' """
+        return time.strftime("%a %b %d %H:%M:%S %Y", self.date)
+
+    def UTC(self):
+        """ Returns a string representation of the date in the form 'Mon Sep 30' """
+        return time.strftime("%a %b %d %H:%M:%S %Y", self.date)
+
+    def getUTCDate(self):
+        """ Returns the day of the month """
+        return self.date.tm_mday
+
+    def getUTCDay(self):
+        """ Returns the day of the week """
+        return self.date.tm_wday
+
+    def getUTCFullYear(self):
+        """ Returns the year """
+        return self.date.tm_year
+
+    def getUTCHours(self):
+        """ Returns the hour """
+        return self.date.tm_hour
+
+    def getUTCMinutes(self):
+        """ Returns the minutes """
+        return self.date.tm_min
+
+    def getUTCMilliseconds(self):
+        """ Returns the milliseconds """
+        return self.date.tm_sec
+
+    def getUTCMonth(self):
+        """ Returns the month """
+        return self.date.tm_mon
+
+    def getUTCSeconds(self):
+        """ Returns the seconds """
+        return self.date.tm_sec
+'''
+
+
 
 class Date(Object):
     """ javascript date """
 
     def __init__(self, date=None, formatter='python'):
+        """_summary_
 
+        Args:
+            date (_type_, optional): _description_. Defaults to None.
+            formatter (str, optional): _description_. Defaults to 'python'.
+        """
         self.formatter = formatter
-
         if isinstance(date, int):
             self.date = datetime.datetime.fromtimestamp(date)
             return
@@ -1263,42 +1527,39 @@ class Date(Object):
     def getDate(self):
         """ Returns the day of the month (from 1-31) """
         return self.date.day
-        # TODO - do for a date object passed in. this only does today
 
     def getDay(self):
         """  Returns the day of the week (from 0-6) """
-        day = self.date.isoweekday()
+        day = self.date.weekday()
         return day if (day < 7) else 0
-        # TODO - do for a date object passed in. this only does today
 
     def getFullYear(self):
         """ Returns the year """
-        return self.date.now().year
+        return self.date.year
 
     def getHours(self):
         """  Returns the hour (from 0-23) """
-        return self.date.now().hour
+        return self.date.hour
 
     def getMilliseconds(self):
         """ Returns the milliseconds (from 0-999) """
-        return round(self.date.now().microsecond / 1000)
+        return round(self.date.microsecond / 1000)
 
     def getMinutes(self):
         """  Returns the minutes (from 0-59) """
-        return self.date.now().minute
+        return self.date.minute
 
     def getMonth(self):
         """ Returns the month (from 0-11) """
-        return self.date.now().month - 1
+        return self.date.month - 1
 
     def getSeconds(self):
         """  Returns the seconds (from 0-59) """
-        return self.date.now().second
+        return self.date.second
 
     def getTime(self):
-        """ Returns the number of milliseconds since midnight Jan 1 1970, and a specified date """
-        return int(str(time.time()).split('.')[0])
-        # TODO - whats difference between this and 'now()' ?
+        """ Returns the number of milliseconds since midnight Jan 1 1970, and self.date. """
+        return self.date.timestamp() * 1000
 
     def getTimezoneOffset(self):
         """ Returns the time difference between UTC time and local time, in minutes """
@@ -1338,32 +1599,35 @@ class Date(Object):
 
     def getYear(self):
         """ Deprecated. Use the getFullYear() method instead """
-        return self.date.now().year
+        return self.date.year
 
     @staticmethod
     def now():
         """ Returns the number of milliseconds since midnight Jan 1, 1970 """
         return round(time.time() * 1000)
 
-    # @staticmethod
-    def parse(self, date_string):
+    @staticmethod
+    def parse(date_string):
         """ Parses a date string and returns the number of milliseconds since January 1, 1970 """
-        self.date = self.parse_date(str(date_string))  #  TODO - huh?
-        # return self.date.getTime()
+        d = Date()
+        d.parse_date(str(date_string))
+        return int(d.getTime())
 
     def setDate(self, day):
         """ Sets the day of the month of a date object """
-        self.date.replace(day=int(day))
+        self.date = self.date.replace(day=int(day))
         # return self.date.getTime()
 
     def setFullYear(self, year):
         """ Sets the year of a date object """
-        self.date.replace(year=int(year))
+        self.date = self.date.replace(year=int(year))
+        # print(self.date)
+        # print(self.date.year)
         # return self.date.getTime()
 
     def setHours(self, hours):
         """ Sets the hour of a date object """
-        self.date.replace(hour=int(hours))
+        self.date = self.date.replace(hour=int(hours))
         # return self.date.getTime()
 
     def setMilliseconds(self, milliseconds):
@@ -1376,28 +1640,36 @@ class Date(Object):
     # TODO - , seconds = None, milliseconds = None):
     def setMinutes(self, minutes):
         """  Set the minutes of a date object """
-        self.date.replace(minute=int(minutes))
+        self.date = self.date.replace(minute=int(minutes))
         # return self.now()
 
-    def setMonth(self, month):
-        """ Sets the month of a date object """
-        self.date.replace(month=int(month))
-        # return self.now()
+    def setMonth(self, monthValue: int, dayValue: int = 1):  #-> int:
+        """Sets the month of a date object
+
+        Args:
+            monthValue (int): a number from 0 to 11 indicating the month.
+            dayValue (int, optional): an optional day of the month. Defaults to 0.
+
+        Returns:
+            int: milliseconds between epoch and updated date.
+        """
+        if monthValue == 0:
+            monthValue = 1
+        self.date = self.date.replace(month=int(monthValue), day=int(dayValue))
+        return self.date.now()
 
     def setSeconds(self, seconds):
         """ Sets the seconds of a date object """
-        self.date.replace(second=int(seconds))
+        self.date = self.date.replace(second=int(seconds))
         # return self.now()
 
-    # Sets a date to a specified number of milliseconds after/before January 1, 1970
     def setTime(self, milliseconds=None):
-        """ Sets the number of milliseconds since January 1, 1970 """
-        # test copilot
-        # self.date.replace(millisecond=int(milliseconds))
-        # return self.now() # TODO - is this right? - is this same as now()?
-        # print('TODO: setTime')
-        # raise NotImplementedErro
-        pass
+        """ Sets the date and time of a date object """
+        if milliseconds is None:
+            self.date = datetime.datetime.now()
+        else:
+            self.date = datetime.datetime.fromtimestamp(milliseconds / 1000)
+        return self.date
 
     def setUTCDate(self, day):
         """  Sets the day of the month of a date object, according to universal time """
