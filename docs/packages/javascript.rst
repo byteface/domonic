@@ -32,6 +32,17 @@ It's useful for things like quickly porting javascript code to python but also i
 As as all of the usual String and Numbers methods you may be familiar with.
 
 
+Date class
+----------------
+
+The Date class is available...
+
+.. code-block :: python
+
+	from domonic.javascript import Date
+	print(Date.now())
+
+
 Array methods
 ----------------
 
@@ -197,7 +208,6 @@ Object is useful for making dicts a bit more js-like...
 
 
 But also contains a growing list of methods you may know from javascript.
-
 
 
 setInterval
