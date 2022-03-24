@@ -21,7 +21,7 @@ forma = форма = form
 # label = label = label
 otpravit = отправить = submit
 # title = title = title
-# noscript = noscript = noscript
+netskript = нетскрипт = noscript
 razdel = раздел = section
 # nav = nav = nav
 # article = article = article
