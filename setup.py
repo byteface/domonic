@@ -29,7 +29,7 @@ setup(
     author_email="byteface@gmail.com",
     license="MIT",
     url="https://github.com/byteface/domonic",
-    download_url="https://github.com/byteface/domonic/archive/" + version + " .tar.gz",
+    download_url="https://github.com/byteface/domonic/archive/" + version + ".tar.gz",
     description="Generate html with python 3. DOM API, Javascript API and more...",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",

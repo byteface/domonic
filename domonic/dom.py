@@ -147,7 +147,8 @@ class Node(EventTarget):
             key = key.split('_', 1)[1]
             # lets us have boolean attributes  # TODO - should be optional by a global config
             if key in ['async', 'checked', 'autofocus', 'disabled', 'formnovalidate', 'hidden', 'multiple',
-                       'novalidate', 'readonly', 'required', 'selected', "open", "contenteditable"]:
+                       'novalidate', 'readonly', 'required', 'selected', "open", "contenteditable", "reversed",
+                       "download", "draggable", "spellcheck", "translate"]:
                 if value == '' or value == key:
                     return f''' {key}'''
             return f''' {key}="{value}"'''
@@ -2724,6 +2725,9 @@ class Comment(Node):
         return f'<!--{self.data}-->'
     __str__ = toString
 
+    def __format__(self, format_spec):
+        return str(self)
+
     @property
     def __len__(self) -> int:
         return len(self.data)
@@ -3795,6 +3799,9 @@ class Text(CharacterData):
     #     self.nodeValue = content
 
     def __str__(self) -> str:
+        return str(self.textContent)
+
+    def __format__(self, format_spec):
         return str(self.textContent)
 
     # def __repr__(self):

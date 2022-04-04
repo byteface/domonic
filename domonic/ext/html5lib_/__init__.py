@@ -115,6 +115,9 @@ def getDomBuilder(ignore):
             self.element.appendChild(node.element)
 
         def insertText(self, data, insertBefore=None):
+            # Dont create empty text nodes
+            if data.isspace():
+                return
             text = self.element.ownerDocument.createTextNode(data)
             if insertBefore:
                 self.element.insertBefore(text, insertBefore.element)
