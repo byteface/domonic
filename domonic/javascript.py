@@ -22,6 +22,7 @@ import struct
 import sys
 import threading
 import time
+import calendar
 import urllib.parse
 from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
@@ -1444,7 +1445,20 @@ class Date(Object):
         Returns:
             int: milliseconds between epoch and updated date.
         """
-        self.date = self.date.replace(day=int(day))
+        days_in_the_month = lambda d: calendar.monthrange(d.year, d.month)[1]
+
+        while day < 0:
+            current_month = self.date.month
+            self.setMonth(current_month - 1)
+            day += days_in_the_month(self.date)
+
+        while day > days_in_the_month(self.date):
+            day -= days_in_the_month(self.date)
+            self.date = self.date.replace(day=int(1))
+            self.setMonth(self.month + 1)
+
+        if day > 0:
+            self.date = self.date.replace(day=int(day))
         return self.getTime()
 
     def setFullYear(self, yearValue: int, monthValue: int = None, dateValue: int = None):
@@ -1477,6 +1491,16 @@ class Date(Object):
         Returns:
             int: milliseconds between epoch and updated date.
         """
+        while hoursValue > 23:
+            current_day = self.date.day
+            self.setDate(current_day + 1)
+            hoursValue -= 24
+
+        while hoursValue < 0:
+            current_day = self.date.day
+            self.setDate(current_day - 1)
+            hoursValue += 24
+
         self.date = self.date.replace(hour=int(hoursValue))
         if minutesValue is not None:
             self.setMinutes(minutesValue)
@@ -1507,6 +1531,16 @@ class Date(Object):
         Returns:
             int: milliseconds between epoch and updated date.
         """
+        while minutesValue > 59:
+            current_hour = self.date.hour
+            self.setHours(current_hour + 1)
+            minutesValue -= 59
+
+        while minutesValue < 0:
+            current_hour = self.date.hour
+            self.setHours(current_hour - 1)
+            minutesValue += 60
+
         self.date = self.date.replace(minute=int(minutesValue))
         if secondsValue is not None:
             self.setSeconds(secondsValue)
@@ -1524,9 +1558,37 @@ class Date(Object):
         Returns:
             int: milliseconds between epoch and updated date.
         """
-        if monthValue == 0:
-            monthValue = 1
-        self.date = self.date.replace(month=int(monthValue))
+        while monthValue < 0:
+            current_year = self.date.year
+            self.set_fullyear(current_year - 1)
+            monthValue += 11
+
+        while monthValue > 11:
+            current_year = self.date.year
+            self.set_fullyear(current_year + 1)
+            monthValue -= 12
+
+        if monthValue >= 0:
+            # if the new month is less days. it will affect the result. i.e
+            # js would progress to the next month and add the spare left over days
+            # So if the current day is 31st August 2016. and you setMonth(1), it would be 2nd March.
+            # as there's 29 days in February that year.
+            # in python it will error as the new month has less days.
+            # so we need to change it first.
+            next_month_total_days = calendar.monthrange(
+                self.date.year, monthValue + 1
+            )[1]
+            leftovers = next_month_total_days - self.getDate()
+            if leftovers < 0:
+                leftovers = abs(leftovers)
+                self.date = self.date.replace(
+                    day=int(leftovers)
+                )  # reset the day for now to not error
+                self.date = self.date.replace(month=int(monthValue + 1))
+                self.date = self.date.replace(day=leftovers)
+            else:
+                self.date = self.date.replace(month=int(monthValue + 1))
+
         if dayValue is not None:
             self.setDate(dayValue)
         return self.getTime()
