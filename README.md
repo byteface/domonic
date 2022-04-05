@@ -48,7 +48,7 @@ Basic useage...
 
 ```bash
 from domonic import domonic
-domonic.parseString('<somehtml...')
+mydom = domonic.parseString('<somehtml...')
 ```
 
 To quickly parse a webapge try the window module...
@@ -77,6 +77,28 @@ domonic -x https://google.com '//a' | uniq | sort
 See the [docs/code](https://domonic.readthedocs.io/) for more features...
 
 or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
+
+
+### Namespace
+
+Use the tags packaage if you want a namespace. i.e.
+
+```python
+import domonic.tags
+print(domonic.tags.h1)
+# or
+import domonic.tags as tags
+str(tags.div)
+# or 
+import domonic.tags as html
+print(html.span)
+```
+
+or just import what you need...
+
+```python
+from domonic import div, span, input as myinput, html as root
+```
 
 ### html attributes
 

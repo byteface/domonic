@@ -25,6 +25,8 @@ from domonic.webapi.xpath import (XPathEvaluator, XPathExpression, XPathResult, 
 class Node(EventTarget):
     """ An abstract base class upon which many other DOM API objects are based """
 
+    GLOBAL_AUTOESCAPE = False
+
     ELEMENT_NODE: int = 1
     TEXT_NODE: int = 3
     CDATA_SECTION_NODE: int = 4
@@ -171,6 +173,9 @@ class Node(EventTarget):
             # print(e)
 
     def __str__(self):
+        if Node.GLOBAL_AUTOESCAPE:
+            import html
+            content = html.escape(content)
         return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
 
     def __mul__(self, other):
@@ -430,6 +435,10 @@ class Node(EventTarget):
         from domonic.html import closed_tag
         if isinstance(self, closed_tag):
             return f"\n{dent}<{self.name}{self.__attributes__} />"
+
+        if Node.GLOBAL_AUTOESCAPE:
+            import html
+            content = html.escape(content)
 
         size = len(str(content))
         if size < 150 and wrap:
