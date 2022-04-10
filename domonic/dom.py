@@ -22,10 +22,23 @@ from domonic.webapi.url import URL
 from domonic.webapi.xpath import (XPathEvaluator, XPathExpression, XPathResult, XPathException)
 
 
+class DOMConfig:
+    """ DOMConfig: Not to be confused with the obsolete DOMConfiguration.
+
+    This class is used to set some global rules for our dom.
+
+    GLOBAL_AUTOESCAPE - If this is set to True, then all text nodes will be automatically escaped.
+    HTML5_MODE - doesn't render close tags on certain elements
+    HTMX_ENABLED - inludes htmx attributes into domonic for quicker notation
+    """
+    GLOBAL_AUTOESCAPE: bool = False  # Default is False
+    RENDER_OPTIONAL_CLOSING_TAGS: bool = True  # Default is True
+    HTMX_ENABLED: bool = False  # Default is false
+    # NO_REPR: bool = True  # objects always render?
+
+
 class Node(EventTarget):
     """ An abstract base class upon which many other DOM API objects are based """
-
-    GLOBAL_AUTOESCAPE = False
 
     ELEMENT_NODE: int = 1
     TEXT_NODE: int = 3
@@ -142,11 +155,26 @@ class Node(EventTarget):
     @property
     def __attributes__(self):
         def format_attr(key, value):
+
+            print('KEY:', key)
+            print('VALUE:', value)
+
             if value is True:
                 value = 'true'
             if value is False:
                 value = 'false'
             key = key.split('_', 1)[1]
+
+            if DOMConfig.HTMX_ENABLED:
+                # if htmx is enabld
+                htmx_attributes = ["boost", "confirm", "delete", "disable", "disinherit", "encoding", "ext", "get", "headers",
+                                "history_elt", "include", "indicator", "params", "patch", "post", "preserve", "prompt",
+                                "push_url", "put", "request", "select", "sse", "swap", "swap_oob", "sync", "target", "trigger",
+                                "vals", "vars", "ws"]
+
+                if key in htmx_attributes:
+                    return f''' data-hx-{key}="{value}"'''
+
             # lets us have boolean attributes  # TODO - should be optional by a global config
             if key in ['async', 'checked', 'autofocus', 'disabled', 'formnovalidate', 'hidden', 'multiple',
                        'novalidate', 'readonly', 'required', 'selected', "open", "contenteditable", "reversed",
@@ -173,9 +201,9 @@ class Node(EventTarget):
             # print(e)
 
     def __str__(self):
-        if Node.GLOBAL_AUTOESCAPE:
+        if DOMConfig.GLOBAL_AUTOESCAPE:
             import html
-            content = html.escape(content)
+            self.content = html.escape(self.content)
         return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
 
     def __mul__(self, other):
@@ -436,15 +464,32 @@ class Node(EventTarget):
         if isinstance(self, closed_tag):
             return f"\n{dent}<{self.name}{self.__attributes__} />"
 
-        if Node.GLOBAL_AUTOESCAPE:
+        if DOMConfig.GLOBAL_AUTOESCAPE:
             import html
             content = html.escape(content)
 
+        # in html5 the following tags are optional closing tags
+        # html, head, body, p, dt, dd, li, option, thead, th, tbody, tr, td, tfoot, colgroup
         size = len(str(content))
-        if size < 150 and wrap:
-            return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
+
+        if DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS:
+            if size < 150 and wrap:
+                return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
+            else:
+                return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n{dent}</{self.name}>"
         else:
-            return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n{dent}</{self.name}>"
+            if self.name in ['html', 'head', 'body', 'p', 'dt', 'dd', 'li', 'option', 'thead',
+                             'th', 'tbody', 'tr', 'td', 'tfoot', 'colgroup']:
+                if size < 150 and wrap:
+                    return f"\n{dent}<{self.name}{self.__attributes__}>{content}"
+                else:
+                    return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n"
+            else:
+                if size < 150 and wrap:
+                    return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
+                else:
+                    return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n{dent}</{self.name}>"
+
 
     # def __call__(self, *args, **kwargs):
     #     """
@@ -718,9 +763,9 @@ class Node(EventTarget):
             # return '#comment'
         # elif isinstance(self, DocumentType):
         #     return '#doctype'
-        if isinstance(self, Document):
+        if isinstance(self, Document):  # NOTE - having this one on breaks parser. as it expects 'html'?
             return '#document'
-        elif isinstance(self, CDATASection):
+        if isinstance(self, CDATASection):
             return '#cdata-section'
         elif isinstance(self, DocumentFragment):
             return '#document-fragment'
@@ -991,6 +1036,7 @@ class Node(EventTarget):
     def tag(self):
         """ Returns the tag name of the current node """
         return self.nodeName
+        # return self.tagName  # not sure current is correct as would return #nodeName
 
     @property
     def text(self):
@@ -2672,8 +2718,9 @@ class DOMImplementation:
         if doctype is None:
             doctype = ''
         # d = Document()
-        from domonic.html import html
-        d = html()
+        # from domonic.html import html
+        d = HTMLDocument()  #html()
+        # d = Document()
         d.createElementNS(namespaceURI, qualifiedName)
         d.doctype = doctype
         return d
@@ -3127,9 +3174,12 @@ class Document(Element):
     @staticmethod
     def createElementNS(namespaceURI, qualifiedName, options=None):
         """ Creates an element with the specified namespace URI and qualified name."""
-        el = type(qualifiedName, (Element,), {'name': qualifiedName})
+        # el = type(qualifiedName, (Element,), {'name': qualifiedName})
+        from domonic.html import create_element
+        el = create_element(qualifiedName)  #, *args, **kwargs)
         el.namespaceURI = namespaceURI
-        return el()
+        # el["name"] = qualifiedName
+        return el
 
     @staticmethod
     def createEvent(event_type=None):
@@ -5335,7 +5385,6 @@ class HTMLVideoElement(HTMLElement):
 global document
 document = Document()  # TODO - shouldn't this be an instance not class to start?
 console = Console  # legacy. should access via window
-
 
 # Considered obsolete dom classes ----
 # DOMConfiguration

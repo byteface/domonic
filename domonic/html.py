@@ -572,7 +572,7 @@ th = type("th", (Element,), {"name": "th"})
 fieldset = HTMLFieldSetElement  #type("fieldset", (Element,), {"name": "fieldset"})
 legend = type("legend", (Element,), {"name": "legend"})
 button = HTMLButtonElement  #type("button", (Element,), {"name": "button"})
-select = type("select", (Element,), {"name": "select"})
+select = HTMLSelectElement  #type("select", (Element,), {"name": "select"})
 datalist = HTMLDataListElement
 optgroup = HTMLOptGroupElement
 option = HTMLOptionElement
@@ -644,9 +644,13 @@ def create_element(name="custom_tag", *args, **kwargs):
     i.e. hypenated tags <some-custom-tag></some-custom-tag>
     """
     # checks if already exists
+    # print(name)
+    # print("args, and kwargs::::", *args, **kwargs)
     if name in html_tags:
+        # print(globals()[name])
         return globals()[name](*args, **kwargs)
 
+    # custom_tag = type(name, (Element,), {"name": name})
     custom_tag = type("custom_tag", (Element,), {"name": name})
     new_tag = custom_tag(*args, **kwargs)
     new_tag.name = name
