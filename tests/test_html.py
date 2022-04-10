@@ -1081,7 +1081,10 @@ class TestCase(unittest.TestCase):
         assert str(progress()) == '<progress></progress>'
         assert str(meter()) == '<meter></meter>'
         assert str(details()) == '<details></details>'
-        
+        assert str(data()) == '<data></data>'
+        # assert str(time()) == '<time></time>'
+
+
 
     # TODO - unit tests the tags of other the markups i.e. mathml, svg etc
 

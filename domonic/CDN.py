@@ -10,15 +10,18 @@
 
 class CDN_JS:
     """
-    Preferably use version numbers if available.
+    js libs
     """
     JQUERY_3_5_1: str = "https://code.jquery.com/jquery-3.5.1.min.js"  #:
+    JQUERY: str = "https://code.jquery.com/jquery-3.6.0.min.js"  #: latest
     JQUERY_UI: str = "https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"  #:
     UNDERSCORE: str = "https://cdn.jsdelivr.net/npm/underscore@1.11.0/underscore-min.js"  #:
     BOOTSTRAP_4: str = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"  #:
     POPPER_1_16_1: str = "https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"  #:
     BOOTSTRAP_5_ALPHA: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"  #:
+    BOOTSTRAP_5 = "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"  #: latest
     D3_6_1_0: str = "https://cdnjs.cloudflare.com/ajax/libs/d3/6.1.0/d3.min.js"  #:
+    D3: str = "https://cdnjs.cloudflare.com/ajax/libs/d3/7.4.3/d3.min.js"  #: latest
     MODERNIZER_2_8_3: str = "https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"  #:
     MOMENT_2_27_0: str = "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"  #:
     PIXI_5_3_3: str = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"  #:
@@ -27,7 +30,7 @@ class CDN_JS:
     AFRAME_1_2: str = "https://aframe.io/releases/1.2.0/aframe.min.js"  #:
     BRYTHON_3_9_5: str = "https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js"  #:
     MATHML: str = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=MML_HTMLorMML"  #:
-    HTMX: str = "https://unpkg.com/htmx.org@1.5.0"  #:
+    HTMX: str = "https://unpkg.com/htmx.org@1.7.0"  #: latest
 
 
 class CDN_CSS:

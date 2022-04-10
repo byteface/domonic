@@ -100,6 +100,7 @@ html_tags = [
     "template",
     "picture",
     "dialog",
+    "data",
     "time",
     "span",
     "samp",
@@ -531,7 +532,7 @@ article = type("article", (Element,), {"name": "article"})
 aside = type("aside", (Element,), {"name": "aside"})
 hgroup = type("hgroup", (Element,), {"name": "hgroup"})
 address = type("address", (Element,), {"name": "address"})
-pre = HTMLPreElement  #type("pre", (Element,), {"name": "pre"})
+pre = HTMLPreElement  # type("pre", (Element,), {"name": "pre"})
 dl = type("dl", (Element,), {"name": "dl"})
 dt = type("dt", (Element,), {"name": "dt"})
 dd = type("dd", (Element,), {"name": "dd"})
@@ -569,10 +570,10 @@ tbody = type("tbody", (Element,), {"name": "tbody"})
 thead = type("thead", (Element,), {"name": "thead"})
 tfoot = type("tfoot", (Element,), {"name": "tfoot"})
 th = type("th", (Element,), {"name": "th"})
-fieldset = HTMLFieldSetElement  #type("fieldset", (Element,), {"name": "fieldset"})
+fieldset = HTMLFieldSetElement  # type("fieldset", (Element,), {"name": "fieldset"})
 legend = type("legend", (Element,), {"name": "legend"})
-button = HTMLButtonElement  #type("button", (Element,), {"name": "button"})
-select = HTMLSelectElement  #type("select", (Element,), {"name": "select"})
+button = HTMLButtonElement  # type("button", (Element,), {"name": "button"})
+select = HTMLSelectElement  # type("select", (Element,), {"name": "select"})
 datalist = HTMLDataListElement
 optgroup = HTMLOptGroupElement
 option = HTMLOptionElement
@@ -590,13 +591,16 @@ footer = type("footer", (Element,), {"name": "footer"})
 # map_ = type('map_', (tag,), {'name': 'map_'})
 # object_ = type('object_', (tag,), {'name': 'object_'})
 # del_ = type('del_', (tag,), {'name': 'del_'})
-# time_ = type('time_', (tag,), {'name': 'time_'})
+
+# time = HTMLTimeElement  # type('time', (tag,), {'name': 'time'})
+data = HTMLDataElement
+samp = type("samp", (Element,), {"name": "samp"})
 
 base = HTMLBaseElement
 link = type("link", (closed_tag, Element), {"name": "link"})  # HTMLLinkElement TODO - closed tags
 meta = type("meta", (closed_tag, Element), {"name": "meta"})  # HTMLMetaElement TODO - closed tags
 hr = type("hr", (closed_tag, Element), {"name": "hr"})
-br = type("br", (closed_tag, Element), {"name": "br"})
+br = HTMLBRElement  # type("br", (closed_tag, Element), {"name": "br"})
 wbr = type("wbr", (closed_tag, Element), {"name": "wbr"})
 img = type("img", (closed_tag, Element), {"name": "img"})  # HTMLImageElement TODO - closed tags
 param = type("param", (closed_tag, Element), {"name": "param"})
@@ -644,13 +648,10 @@ def create_element(name="custom_tag", *args, **kwargs):
     i.e. hypenated tags <some-custom-tag></some-custom-tag>
     """
     # checks if already exists
-    # print(name)
-    # print("args, and kwargs::::", *args, **kwargs)
     if name in html_tags:
-        # print(globals()[name])
         return globals()[name](*args, **kwargs)
 
-    # custom_tag = type(name, (Element,), {"name": name})
+    # NOTE: we care calling it custom_tag because it can't have hyphens
     custom_tag = type("custom_tag", (Element,), {"name": name})
     new_tag = custom_tag(*args, **kwargs)
     new_tag.name = name

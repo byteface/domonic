@@ -11,7 +11,7 @@ import os
 import copy
 import re
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
-from xml.dom.pulldom import END_ELEMENT
+# from xml.dom.pulldom import END_ELEMENT
 
 from domonic.events import (Event, EventTarget, MouseEvent)
 from domonic.geom.vec3 import vec3
@@ -155,10 +155,6 @@ class Node(EventTarget):
     @property
     def __attributes__(self):
         def format_attr(key, value):
-
-            print('KEY:', key)
-            print('VALUE:', value)
-
             if value is True:
                 value = 'true'
             if value is False:
@@ -374,7 +370,7 @@ class Node(EventTarget):
         for arg in self.args:
             try:
                 if isinstance(arg, Text):
-                    params += str(arg) + ", "
+                    params += '"' + str(arg) + '"' + ", "
                 else:
                     params += f"{arg.__pyml__()}, "
             except Exception as e:
@@ -489,7 +485,6 @@ class Node(EventTarget):
                     return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
                 else:
                     return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n{dent}</{self.name}>"
-
 
     # def __call__(self, *args, **kwargs):
     #     """
@@ -1448,6 +1443,7 @@ class DocumentType(Node):
             full_str += f" SYSTEM {self.systemId}"
         full_str += ">"
         return full_str
+
 
 """
 def AriaMixin():  # ???

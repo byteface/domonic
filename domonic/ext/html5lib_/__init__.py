@@ -104,9 +104,10 @@ def getDomBuilder(ignore):
 
     class NodeBuilder(base.Node):
         def __init__(self, element):
-            # print('I was called!!!', element.nodeName)
+            # NOTE requires tagname to be correct as it checks that against keys in namespaces.
+            # i.e '#document' needs to be converted to 'html'.
             # base.Node.__init__(self, element.nodeName)
-            base.Node.__init__(self, element.name)  # requires tagname to be correct as it checks that against keys in namespaces. i.e '#document' needs to be converted to 'html'. This is kinda a bug in html5lib
+            base.Node.__init__(self, element.name)
             self.element = element
 
         namespace = property(lambda self: hasattr(self.element, "namespaceURI") and
@@ -207,17 +208,10 @@ def getDomBuilder(ignore):
             return NodeBuilder(self.dom.createDocumentFragment())
 
         def appendChild(self, node):
-            # print('appendChild', node, dir(node.element))
-            # print('self.dom', self.dom.nodeType, self.dom.nodeName)
-            # print('???')
-            # print(type(self.dom), type(node.element))
-            # print('>>',self.dom.nodeType, node.element.nodeType)
-            # breakpoint()
             from domonic.dom import HTMLDocument
-            # print(isinstance(self.dom, HTMLDocument), isinstance(node.element, HTMLDocument))
-            print('self.dom', node.element.nodeName, self.dom.nodeName)
             if isinstance(self.dom, HTMLDocument) and isinstance(node.element, HTMLDocument):
-                print('HERE IS THE PROBLEM!!!!')
+                # print('HERE IS THE PROBLEM!!!!')
+                # TODO - this can't be the final solution as a nested html would replace the outer
                 self.dom = node.element
                 # transfer all props from node.element to self.dom
                 # self.dom.__dict__.update(node.element.__dict__)

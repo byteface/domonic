@@ -10,7 +10,7 @@ from domonic.CDN import *
 # from app import *
 # from app.components import *
 
-app = Sanic(name='Long poll grid test')
+app = Sanic(name='Long_poll_grid_test')
 app.static('/assets', './assets')
 
 MARGIN = 1

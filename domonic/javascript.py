@@ -1248,7 +1248,7 @@ class Intl:
 
     @staticmethod
     def supportedValuesOf(locales, property):
-        """Returns a sorted array containing the supported unique calendar, 
+        """Returns a sorted array containing the supported unique calendar,
         collation, currency, numbering systems, or unit values supported by the implementation."""
         pass
 
@@ -1261,7 +1261,7 @@ class Intl:
     class _DateTimeFormat:
         @staticmethod
         def supportedLocalesOf():
-            raise NotImplementedError            
+            raise NotImplementedError
     DateTimeFormat = _DateTimeFormat
 
     class _NumberFormat:
@@ -1707,19 +1707,19 @@ class Date(Object):
     # TODO - add all dunders and test
     # def __eq__(self, other):
     #     return self.date == other.date
-    
+
     # def __ne__(self, other):
     #     return self.date != other.date
-    
+
     # def __lt__(self, other):
     #     return self.date < other.date
-    
+
     # def __le__(self, other):
     #     return self.date <= other.date
-    
+
     # def __gt__(self, other):
     #     return self.date > other.date
-    
+
     # def __ge__(self, other):
     #     return self.date >= other.date
 
