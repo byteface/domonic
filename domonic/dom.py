@@ -34,6 +34,8 @@ class DOMConfig:
     """
     GLOBAL_AUTOESCAPE: bool = False  # Default is False
     RENDER_OPTIONAL_CLOSING_TAGS: bool = True  # Default is True
+    RENDER_OPTIONAL_CLOSING_SLASH: bool = True  # on emtpy nodes should the last slash be rendered
+    SPACE_BEFORE_OPTIONAL_CLOSING_SLASH: bool = False  # on emtpy nodes should there be a space before the closing slash?
     HTMX_ENABLED: bool = False  # Default is false
     # NO_REPR: bool = True  # objects always render?
 
@@ -63,6 +65,7 @@ class Node(EventTarget):
     ENTITY_NODE: int = 6
     NOTATION_NODE: int = 12
 
+    __isempty: bool = False  # tells us if the node is empty i.e. has no content aka 'self closing'. in html that would be: area, base, br, col, embed, hr, img, input, link, meta, param, source, track, True
     __context: list = None  # private. tags will append to last item in context on creation.
 
     # __slots__ = ['____attributes__',
@@ -5150,6 +5153,14 @@ class HTMLAudioElement(HTMLElement):
 
 class HTMLBRElement(HTMLElement):
     name = 'br'
+    __isempty = True
+    def __str__(self):
+        if DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH:
+            if DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH:
+                return f"<{self.name}{self.__attributes__} />"
+            else:
+                return f"<{self.name}{self.__attributes__}/>"
+        return f"<{self.name}{self.__attributes__} >"
 
 
 class HTMLBaseElement(HTMLElement):
@@ -5422,6 +5433,7 @@ class HTMLIFrameElement(HTMLElement):
 
 class HTMLImageElement(HTMLElement):
     name = 'img'
+    __isempty = True
 
     def __init__(self, *args, alt=None, src=None, crossorigin=None, height=None, ismap=None, longdesc=None, sizes=None, srcset=None, usemap=None, width=None, **kwargs):
         """HTMLImageElement
@@ -5463,6 +5475,7 @@ class HTMLImageElement(HTMLElement):
 
 class HTMLInputElement(HTMLElement):
     name = 'input'
+    __isempty = True
 
     def __init__(self, *args, accept=None, alt=None, autocomplete=None, autofocus=None, checked=None, dirname=None, disabled=None, form=None, formaction=None, formenctype=None, formmethod=None, formnovalidate=None, formtarget=None, height=None, _list=None, _max=None, maxlength=None, _min=None, multiple=None, name=None, pattern=None, placeholder=None, readonly=None, required=None, size=None, src=None, step=None, type=None, value=None, width=None, **kwargs):
         """HTMLInputElement
@@ -5568,6 +5581,7 @@ class HTMLIsIndexElement(HTMLElement):  # TODO - check
 
 class HTMLKeygenElement(HTMLElement):
     name = 'keygen'
+    __isempty = True
 
 
 class HTMLLIElement(HTMLElement):
@@ -5606,6 +5620,7 @@ class HTMLMediaElement(HTMLElement):  # TODO - check
 
 class HTMLMetaElement(HTMLElement):
     name = 'meta'
+    __isempty = True
 
     def __init__(self, *args, charset=None, content=None, http_equiv=None, name=None, **kwargs):
         """HTMLMetaElement
@@ -5710,6 +5725,7 @@ class HTMLParagraphElement(HTMLElement):
 
 class HTMLParamElement(HTMLElement):  # TODO - check
     name = 'param'
+    __isempty = True
 
 
 class HTMLPictureElement(HTMLElement):
@@ -5792,6 +5808,7 @@ class HTMLShadowElement(HTMLElement):  # TODO - check
 
 class HTMLSourceElement(HTMLElement):  # TODO - check
     name = 'source'
+    __isempty = True
 
 
 class HTMLSpanElement(HTMLElement):
@@ -5812,6 +5829,7 @@ class HTMLTableCellElement(HTMLElement):  # TODO - check
 
 class HTMLTableColElement(HTMLElement):
     name = 'col'
+    __isempty = True
 
 
 class HTMLTableDataCellElement(HTMLElement):  # TODO - check
@@ -6009,3 +6027,24 @@ console = Console  # legacy. should access via window
 '''
 # self.screen = type('screen', (DOM,), {'name':'screen'})
 '''
+
+
+# https://developer.mozilla.org/en-US/docs/Glossary/Empty_element
+# def is_empty(node):
+     # if its a class, 
+     # if its an instance
+     # if its a string
+
+# meta = HTMLMetaElement
+# br = HTMLBRElement
+# img = HTMLImageElement
+# input = HTMLInputElement
+# param = HTMLParamElement
+# source = HTMLSourceElement
+# track = HTMLTrackElement
+# col = HTMLTableColElement
+# keygen = HTMLKeygenElement
+
+# hr = type("hr", (closed_tag, Element), {"name": "hr"})
+# wbr = type("wbr", (closed_tag, Element), {"name": "wbr"})
+# command = type("command", (closed_tag, Element), {"name": "command"})

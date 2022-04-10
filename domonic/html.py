@@ -5,7 +5,7 @@
     Generate HTML using python.
 
 """
-from domonic.dom import (Comment, Document,  # HTMLOptionsCollection,
+from domonic.dom import (DOMConfig, Comment, Document,  # HTMLOptionsCollection,
                          DocumentType, Element, HTMLAnchorElement,
                          HTMLAreaElement, HTMLAudioElement, HTMLBaseElement,
                          HTMLBaseFontElement, HTMLBodyElement, HTMLBRElement,
@@ -420,7 +420,12 @@ tag = Node  # legacy support?. TODO - remove in future? 0.0.9
 
 class closed_tag(Node):
     def __str__(self):
-        return f"<{self.name}{self.__attributes__}/>"
+        if DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH:
+            if DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH:
+                return f"<{self.name}{self.__attributes__} />"
+            else:
+                return f"<{self.name}{self.__attributes__}/>"
+        return f"<{self.name}{self.__attributes__}>"
 
 
 html = HTMLDocument
@@ -597,19 +602,19 @@ data = HTMLDataElement
 samp = type("samp", (Element,), {"name": "samp"})
 
 base = HTMLBaseElement
-link = type("link", (closed_tag, Element), {"name": "link"})  # HTMLLinkElement TODO - closed tags
-meta = type("meta", (closed_tag, Element), {"name": "meta"})  # HTMLMetaElement TODO - closed tags
+link = type("link", (closed_tag, HTMLLinkElement), {"name": "link"})  # HTMLLinkElement TODO - closed tags
+meta = type("meta", (closed_tag, HTMLMetaElement), {"name": "meta"})  # HTMLMetaElement TODO - closed tags
 hr = type("hr", (closed_tag, Element), {"name": "hr"})
 br = HTMLBRElement  # type("br", (closed_tag, Element), {"name": "br"})
 wbr = type("wbr", (closed_tag, Element), {"name": "wbr"})
-img = type("img", (closed_tag, Element), {"name": "img"})  # HTMLImageElement TODO - closed tags
-param = type("param", (closed_tag, Element), {"name": "param"})
-source = type("source", (closed_tag, Element), {"name": "source"})
-track = type("track", (closed_tag, Element), {"name": "track"})
+img = type("img", (closed_tag, HTMLImageElement), {"name": "img"})  # HTMLImageElement TODO - closed tags
+param = type("param", (closed_tag, HTMLParamElement), {"name": "param"})  # HTMLParamElement
+source = type("source", (closed_tag, HTMLSourceElement), {"name": "source"})  # HTMLSourceElement
+track = type("track", (closed_tag, HTMLTrackElement), {"name": "track"})  # HTMLTrackElement
 area = HTMLAreaElement
-col = type("col", (closed_tag, Element), {"name": "col"})
-input = type("input", (closed_tag, Element), {"name": "input"})
-keygen = type("keygen", (closed_tag, Element), {"name": "keygen"})
+col = type("col", (closed_tag, HTMLTableColElement), {"name": "col"})  # HTMLTableColElement
+input = type("input", (closed_tag, HTMLInputElement), {"name": "input"})  # HTMLInputElement  # TODO - closed tags
+keygen = type("keygen", (closed_tag, HTMLKeygenElement), {"name": "keygen"})  # HTMLKeygenElement
 command = type("command", (closed_tag, Element), {"name": "command"})
 
 main = type("main", (Element,), {"name": "main"})

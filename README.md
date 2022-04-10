@@ -137,6 +137,16 @@ page = div(span('Hello World'))
 render(f"{page}", 'index.html')  # notice use of f-string to pretty print the html
 ```
 
+There's a few new rendering options. See DOMConfig.
+
+```python
+from domonic.dom import DOMConfig
+print(DOMConfig.GLOBAL_AUTOESCAPE)  # Default False
+print(DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS)  # Default True
+print(DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH)  # Defaults True
+print(DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH)  # Default False
+```
+
 ## DOM
 
 DOM manipulation with python.
