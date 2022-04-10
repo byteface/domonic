@@ -93,6 +93,25 @@ Remember python globals are only to that module (unlike other langs). So you wil
 See the examples folder for other uses of a python virtual DOM.
 
 
+
+DOMConfig
+----------------
+
+DOMConfig is for setting some render options on the dom.
+
+i.e. here's we set all the current flags to be opposite their default...
+
+.. code-block :: python
+
+	from domonic.html import *
+	from domonic.dom import DOMConfig
+	DOMConfig.GLOBAL_AUTOESCAPE = True
+	DOMConfig.HTMX_ENABLED = True
+	DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = False
+	print(html(head(),body(div(h1('heading'),div(button('hi & hack',_get='/get_hi'))))))
+	# <html><head></head><body><div><h1>heading</h1><div><button data-hx-get="/get_hi">hi & hack</button></div></div></body></html>
+
+
 The full list of available DOM methods are listed below...
 
 

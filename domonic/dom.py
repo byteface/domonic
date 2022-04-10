@@ -22,6 +22,7 @@ from domonic.webapi.url import URL
 from domonic.webapi.xpath import (XPathEvaluator, XPathExpression, XPathResult, XPathException)
 
 
+# TODO - unit tests
 class DOMConfig:
     """ DOMConfig: Not to be confused with the obsolete DOMConfiguration.
 
@@ -138,6 +139,7 @@ class Node(EventTarget):
     @property
     def content(self):  # TODO - test
         # return ''.join([each.__str__() for each in self.args])
+
         # if any child are lists by mistake, loop and call __str__ on each first
         cnt = self.args
         for i, arg in enumerate(cnt):
@@ -145,6 +147,17 @@ class Node(EventTarget):
                 cnt = list(cnt)
                 cnt[i] = ''.join([each.__str__() for each in arg])
                 cnt = tuple(cnt)
+
+        if DOMConfig.GLOBAL_AUTOESCAPE:  # TODO - unit tests
+            import html as fix
+            cnt = list(cnt)
+            for each, child in enumerate(cnt):
+                if isinstance(child, str) or isinstance(child, Text):
+                    child = fix.escape(child)
+                    cnt[each] = child
+            cnt = tuple(cnt)
+            return ''.join([each.__str__() for each in cnt])
+        # else:
         return ''.join([each.__str__() for each in cnt])
 
     @content.setter
@@ -161,6 +174,8 @@ class Node(EventTarget):
                 value = 'false'
             key = key.split('_', 1)[1]
 
+            # note - consider making this an attributes handler for any custom attributes
+            # so on config user can add a handler function for the attribute
             if DOMConfig.HTMX_ENABLED:
                 # if htmx is enabld
                 htmx_attributes = ["boost", "confirm", "delete", "disable", "disinherit", "encoding", "ext", "get", "headers",
@@ -197,9 +212,10 @@ class Node(EventTarget):
             # print(e)
 
     def __str__(self):
-        if DOMConfig.GLOBAL_AUTOESCAPE:
-            import html
-            self.content = html.escape(self.content)
+        if not DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS:
+            if self.name in ['html', 'head', 'body', 'p', 'dt', 'dd', 'li', 'option', 'thead',
+                                'th', 'tbody', 'tr', 'td', 'tfoot', 'colgroup']:
+                return f"<{self.name}{self.__attributes__}>{self.content}"
         return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
 
     def __mul__(self, other):
@@ -438,6 +454,15 @@ class Node(EventTarget):
 
         self._update_parents()
 
+        if DOMConfig.GLOBAL_AUTOESCAPE:  # TODO - unit tests
+            import html as fix
+            self.args = list(self.args)
+            for each, child in enumerate(self.args):
+                if isinstance(child, str) or isinstance(child, Text):
+                    child = fix.escape(child)
+                    self.args[each] = child
+            self.args = tuple(self.args)
+
         content = ''.join([each.__format__(format_spec) for each in self.args])
         # from concurrent.futures import ThreadPoolExecutor
         # content = ''
@@ -459,10 +484,6 @@ class Node(EventTarget):
         from domonic.html import closed_tag
         if isinstance(self, closed_tag):
             return f"\n{dent}<{self.name}{self.__attributes__} />"
-
-        if DOMConfig.GLOBAL_AUTOESCAPE:
-            import html
-            content = html.escape(content)
 
         # in html5 the following tags are optional closing tags
         # html, head, body, p, dt, dd, li, option, thead, th, tbody, tr, td, tfoot, colgroup
@@ -3307,9 +3328,9 @@ class Document(Element):
         ''' Returns the domain name of the server that loaded the document'''
         return
 
-    # def domConfig(self):
-        '''Obsolete. Returns the DOM configuration of the document'''
-        # return
+    def domConfig(self):
+        """ Returns the DOMConfig which has settings for how html content is rendered """
+        return DOMConfig
 
     def elementFromPoint(self, x, y):
         """ Returns the topmost element at the specified coordinates. """
