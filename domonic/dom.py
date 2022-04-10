@@ -1362,7 +1362,6 @@ class DOMTokenList(list):
 
     def remove(self, *args):
         """ Removes the given tokens from the list """
-        print(self, len(self))
         for item in args:
             if item in self:
                 super().remove(item)

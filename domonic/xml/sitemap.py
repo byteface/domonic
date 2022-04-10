@@ -15,49 +15,77 @@ from domonic.dom import Document, Element
 
 # __all__ = ['sitemap', 'url', 'lastmod']
 
-sitemap_tags = ["sitemapindex", "sitemap", "urlset", "url", "loc", "lastmod", "changefreq", "priority",
-                "image:image", "image:loc"]
+sitemap_tags = [
+    "sitemapindex",
+    "sitemap",
+    "urlset",
+    "url",
+    "loc",
+    "lastmod",
+    "changefreq",
+    "priority",
+    "image:image",
+    "image:loc",
+]
 
-sitemap_attributes = ["xmlns", "xmlns:xsi", "xsi:schemaLocation",
-                      "xmlns:xhtml", "xmlns:xlink", "xmlns:atom", "xmlns:geo"]
+sitemap_attributes = [
+    "xmlns",
+    "xmlns:xsi",
+    "xsi:schemaLocation",
+    "xmlns:xhtml",
+    "xmlns:xlink",
+    "xmlns:atom",
+    "xmlns:geo",
+]
 # sitemap_change_frequencies = ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never']
 
-XMLNS: str = 'http://www.sitemaps.org/schemas/sitemap/0.9'
-XMLNS_XSI: str = 'http://www.w3.org/2001/XMLSchema-instance'
-SCHEMA_SITEINDEX: str = 'http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd'
-SCHEMA_SITEMAP: str = 'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd'
+XMLNS: str = "http://www.sitemaps.org/schemas/sitemap/0.9"
+XMLNS_XSI: str = "http://www.w3.org/2001/XMLSchema-instance"
+SCHEMA_SITEINDEX: str = "http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd"
+SCHEMA_SITEMAP: str = "http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
 #     xmlns="http://www.google.com/schemas/sitemap-image/1.1"
 #     xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 
 
 def sitemap_format(self, *args, **kwargs):
-    """ attempts to prettify the output of the sitemap. """
+    """attempts to prettify the output of the sitemap."""
     outp = f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
     from domonic.xml import prettify
+
     return prettify(outp)
 
 
-sitemapindex = type('sitemapindex', (Document,), {
-    'name': 'sitemapindex',
-    'xmlns': XMLNS,
-    'xmlns:xsi': XMLNS_XSI,
-    'xsi:schemaLocation': SCHEMA_SITEINDEX,
-    '__format__': sitemap_format})
+sitemapindex = type(
+    "sitemapindex",
+    (Document,),
+    {
+        "name": "sitemapindex",
+        "xmlns": XMLNS,
+        "xmlns:xsi": XMLNS_XSI,
+        "xsi:schemaLocation": SCHEMA_SITEINDEX,
+        "__format__": sitemap_format,
+    },
+)
 
-sitemap = type('sitemap', (Element,), {'name': 'sitemap'})
+sitemap = type("sitemap", (Element,), {"name": "sitemap"})
 
-urlset = type('urlset', (Element,), {
-    'name': 'urlset',
-    'xmlns:xsi': XMLNS_XSI,
-    'xsi:schemaLocation': SCHEMA_SITEMAP,
-    'xmlns': XMLNS})
+urlset = type(
+    "urlset",
+    (Element,),
+    {
+        "name": "urlset",
+        "xmlns:xsi": XMLNS_XSI,
+        "xsi:schemaLocation": SCHEMA_SITEMAP,
+        "xmlns": XMLNS,
+    },
+)
 
 
-url = type('url', (Element,), {'name': 'url'})
-loc = type('loc', (Element,), {'name': 'loc'})
-lastmod = type('lastmod', (Element,), {'name': 'lastmod'})
-changefreq = type('changefreq', (Element,), {'name': 'changefreq'})
-priority = type('priority', (Element,), {'name': 'priority'})
+url = type("url", (Element,), {"name": "url"})
+loc = type("loc", (Element,), {"name": "loc"})
+lastmod = type("lastmod", (Element,), {"name": "lastmod"})
+changefreq = type("changefreq", (Element,), {"name": "changefreq"})
+priority = type("priority", (Element,), {"name": "priority"})
 
 
 def sitemapindex_from_urls(urls):
@@ -105,16 +133,16 @@ def sitemap_from_urls(urls):
 def get_sitemap(path: str, *args, **kwargs):
     # use requests to downlaod a sitemap
     import requests
+
     r = requests.get(path)
     import domonic
+
     some_sitemap = domonic.domonic.parseString(r.text)
     return some_sitemap
 
 
-globals()['image:image'] = type('image:image', (Element,), {
-    'name': 'image',
-    'ns': 'image'})
+globals()["image:image"] = type(
+    "image:image", (Element,), {"name": "image", "ns": "image"}
+)
 
-globals()['image:loc'] = type('image:loc', (Element,), {
-    'name': 'loc',
-    'ns': 'image'})
+globals()["image:loc"] = type("image:loc", (Element,), {"name": "loc", "ns": "image"})
