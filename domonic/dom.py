@@ -2299,18 +2299,14 @@ class Element(Node):
             if attribute[0:1] != '_':
                 attribute = '_' + attribute
             return self.kwargs[attribute]
-        except Exception as e:
-            # print('attribute does not exist', e)  # TODO - something about this
-            # print(e)
+        except KeyError:
             return None
 
     def getAttributeNode(self, attribute: str) -> str:
         """ Returns the specified attribute node """
         try:
             return f"{attribute}={self.kwargs[attribute]}"  # TODO - Attr
-        except Exception as e:
-            # print('failed to get attribute')
-            # print(e)
+        except KeyError:
             return ''
 
     def getBoundingClientRect(self):
@@ -2348,14 +2344,19 @@ class Element(Node):
         return elements
 
     def hasAttribute(self, attribute: str) -> bool:
-        """ Returns true if an element has the specified attribute, otherwise false """
+        """Returns True if an element has the specified attribute, otherwise False
+
+        Args:
+            attribute (str): [the attribute to test for]
+
+        Returns:
+            bool: [True if an element has the specified attribute, otherwise False]
+        """
         try:
             if attribute[0:1] != '_':
                 attribute = '_' + attribute
             return attribute in self.kwargs.keys()
-        except Exception as e:
-            # print('failed to get attribute')
-            # print(e)
+        except AttributeError:
             return False
 
     def hasAttributes(self) -> bool:
@@ -5121,6 +5122,31 @@ class HTMLAreaElement(HTMLElement):  # TODO - check
 class HTMLAudioElement(HTMLElement):
     name = 'audio'
 
+    def __init__(self, *args, autoplay: bool = None, controls=None, loop=None, muted=None, preload=None, src=None, **kwargs):
+        """HTMLAudioElement
+
+        Args:
+            autoplay (bool, optional): if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading
+            controls (_type_, optional): _description_. Defaults to None.
+            loop (_type_, optional): _description_. Defaults to None.
+            muted (_type_, optional): _description_. Defaults to None.
+            preload (_type_, optional): _description_. Defaults to None.
+            src (_type_, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if autoplay is not None:
+            self.setAttribute('autoplay', autoplay)
+        if controls is not None:
+            self.setAttribute('controls', controls)
+        if loop is not None:
+            self.setAttribute('loop', loop)
+        if muted is not None:
+            self.setAttribute('muted', muted)
+        if preload is not None:
+            self.setAttribute('preload', preload)
+        if src is not None:
+            self.setAttribute('src', src)
+
 
 class HTMLBRElement(HTMLElement):
     name = 'br'
@@ -5129,21 +5155,135 @@ class HTMLBRElement(HTMLElement):
 class HTMLBaseElement(HTMLElement):
     name = 'base'
 
+    def __init__(self, *args, href=None, target=None, **kwargs):
+        """HTMLBaseElement
 
-class HTMLBaseFontElement(HTMLElement):  # TODO - check
+        Args:
+            href (str, optional): The base URL to be used throughout the document for relative URLs. Absolute and relative URLs are allowed.
+            target (str, optional): A keyword or author-defined name of the default browsing context...
+        """
+        super().__init__(*args, **kwargs)
+        if href is not None:
+            self.setAttribute('href', href)
+        if target is not None:
+            self.setAttribute('target', target)
+
+
+class HTMLBaseFontElement(HTMLElement):  # TODO - check - think it's dropped.
     name = 'basefont'
+
+    # def __init__(self, *args, color=None, face=None, size=None, **kwargs):
+    #     """HTMLBaseFontElement
+
+    #     Args:
+    #         color (str, optional): The color of the text.
+    #         face (str, optional): The name of the font to use.
+    #         size (str, optional): The size of the text.
+    #     """
+    #     super().__init__(*args, **kwargs)
+    #     if color is not None:
+    #         self.setAttribute('color', color)
+    #     if face is not None:
+    #         self.setAttribute('face', face)
+    #     if size is not None:
+    #         self.setAttribute('size', size)
 
 
 class HTMLBodyElement(HTMLElement):
     name = 'body'
 
+    def __init__(self, *args, aLink=None, background=None, bgColor=None, link=None, onload=None, onunload=None, text=None, vLink=None, **kwargs):
+        """HTMLBodyElement
+
+        Appears docs are telling you not to use many of the props you can pass and to use css instead.
+
+        Args:
+            aLink (str, optional): Color of text for hyperlinks when selected. Do not use this attribute! Use the CSS color property in conjunction with the :active pseudo-class instead.
+            background (str, optional): URI of a image to use as a background. Do not use this attribute! Use the CSS background property on the element instead.
+            bgColor (str, optional): Background color for the document. Do not use this attribute! Use the CSS background-color property on the element instead.
+            bgProperties (str, optional): The size of the text.
+            link (str, optional): Color of text for unvisited hypertext links. Do not use this attribute! Use the CSS color property in conjunction with the :link pseudo-class instead.
+            onload (str, optional): Function to call when the document is going away.
+            onunload (str, optional): Function to call when the document has finished loading.
+            text (str, optional): Foreground color of text. Do not use this attribute! Use CSS color property on the element instead.
+            vLink (str, optional): Color of text for visited hypertext links. Do not use this attribute! Use the CSS color property in conjunction with the :visited pseudo-class instead.
+        """
+        super().__init__(*args, **kwargs)
+        if aLink is not None:
+            self.setAttribute('aLink', aLink)
+        if background is not None:
+            self.setAttribute('background', background)
+        if bgColor is not None:
+            self.setAttribute('bgColor', bgColor)
+        if link is not None:
+            self.setAttribute('link', link)
+        if onload is not None:
+            self.setAttribute('onload', onload)
+        if onunload is not None:
+            self.setAttribute('onunload', onunload)
+        if text is not None:
+            self.setAttribute('text', text)
+        if vLink is not None:
+            self.setAttribute('vLink', vLink)
+
 
 class HTMLButtonElement(HTMLElement):
     name = 'button'
 
+    # autofocus?
+    def __init__(self, *args, disabled: bool = None, form=None, formaction: str = None, formenctype=None, formmethod=None, formnovalidate=None, formtarget=None, name=None, type=None, value=None, **kwargs):
+        """HTMLButtonElement
+
+        Args:
+            disabled (bool, optional): prevents the user from interacting with the button: it cannot be pressed or focused.
+            form (_type_, optional): The <form> element to associate the button with (its form owner). The value of this attribute must be the id of a <form> in the same document.
+            formaction (str, optional): The URL that processes the information submitted by the button. Overrides the action attribute of the button's form owner. Does nothing if there is no form owner.
+            formenctype (_type_, optional): _description_. Defaults to None.
+            formmethod (_type_, optional): _description_. Defaults to None.
+            formnovalidate (_type_, optional): _description_. Defaults to None.
+            formtarget (_type_, optional): _description_. Defaults to None.
+            name (_type_, optional): _description_. Defaults to None.
+            type (_type_, optional): _description_. Defaults to None.
+            value (_type_, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if disabled is not None:
+            self.setAttribute('disabled', disabled)
+        if form is not None:
+            self.setAttribute('form', form)
+        if formaction is not None:
+            self.setAttribute('formaction', formaction)
+        if formenctype is not None:
+            self.setAttribute('formenctype', formenctype)
+        if formmethod is not None:
+            self.setAttribute('formmethod', formmethod)
+        if formnovalidate is not None:
+            self.setAttribute('formnovalidate', formnovalidate)
+        if formtarget is not None:
+            self.setAttribute('formtarget', formtarget)
+        if name is not None:
+            self.setAttribute('name', name)
+        if type is not None:
+            self.setAttribute('type', type)
+        if value is not None:
+            self.setAttribute('value', value)
+
 
 class HTMLCanvasElement(HTMLElement):
     name = 'canvas'
+
+    def __init__(self, *args, width: int = None, height: int = None, **kwargs):
+        """HTMLCanvasElement
+
+        Args:
+            width (int, optional): The height of the coordinate space in CSS pixels. Defaults to 150.
+            height (int, optional): The width of the coordinate space in CSS pixels. Defaults to 300.
+        """
+        super().__init__(*args, **kwargs)
+        if width is not None:
+            self.setAttribute('width', width)
+        if height is not None:
+            self.setAttribute('height', height)
 
 
 class HTMLContentElement(HTMLElement):  # TODO - check
@@ -5164,6 +5304,16 @@ class HTMLDataListElement(HTMLElement):
 
 class HTMLDialogElement(HTMLElement):
     name = 'dialog'
+
+    def __init__(self, *args, open=None, **kwargs):
+        """HTMLDialogElement
+
+        Args:
+            open (bool, optional): Whether the dialog is open or closed.
+        """
+        super().__init__(*args, **kwargs)
+        if open is not None:
+            self.setAttribute('open', open)
 
 
 class HTMLDivElement(HTMLElement):
@@ -5189,10 +5339,51 @@ class HTMLFormControlsCollection(HTMLElement):  # TODO - check
 class HTMLFormElement(HTMLElement):
     name = 'form'
 
+    #accept-charset??
+    def __init__(self, *args, action: str = None, autocomplete=None, enctype: str = None, method: str = None, name: str = None, novalidate: bool = None, target=None, **kwargs):
+        """HTMLFormElement
 
-class HTMLFrameSetElement(HTMLElement):  # TODO - check
+        Args:
+            action (str, optional): The URL that processes the form submission.
+            autocomplete (str, optional): off/on.
+            enctype (str, optional): If the value of the method attribute is post, enctype is the MIME type of the form submission
+            method (str, optional): The HTTP method to submit the form with. GET and POST
+            name (str, optional): _description_. Defaults to None.
+            novalidate (bool, optional): _description_. Defaults to None.
+            target (str, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if action is not None:
+            self.setAttribute('action', action)
+        if autocomplete is not None:
+            self.setAttribute('autocomplete', autocomplete)
+        if enctype is not None:
+            self.setAttribute('enctype', enctype)
+        if method is not None:
+            self.setAttribute('method', method)
+        if name is not None:
+            self.setAttribute('name', name)
+        if novalidate is not None:
+            self.setAttribute('novalidate', novalidate)
+        if target is not None:
+            self.setAttribute('target', target)
+
+
+class HTMLFrameSetElement(HTMLElement):  # TODO - check - appears deprecated
     name = 'frameset'
 
+    # def __init__(self, *args, cols=None, rows=None, **kwargs):
+    #     """HTMLFrameSetElement
+
+    #     Args:
+    #         cols (str, optional): _description_. Defaults to None.
+    #         rows (str, optional): _description_. Defaults to None.
+    #     """
+    #     super().__init__(*args, **kwargs)
+    #     if cols is not None:
+    #         self.setAttribute('cols', cols)
+    #     if rows is not None:
+    #         self.setAttribute('rows', rows)
 
 class HTMLHRElement(HTMLElement):
     name = 'hr'
@@ -5209,13 +5400,166 @@ class HTMLHeadingElement(HTMLElement):
 class HTMLIFrameElement(HTMLElement):
     name = 'iframe'
 
+    def __init__(self, *args, src=None, name=None, sandbox=None, allowfullscreen=None, **kwargs):
+        """HTMLIFrameElement
+
+        Args:
+            src (str, optional): _description_. Defaults to None.
+            name (str, optional): _description_. Defaults to None.
+            sandbox (str, optional): _description_. Defaults to None.
+            allowfullscreen (str, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if src is not None:
+            self.setAttribute('src', src)
+        if name is not None:
+            self.setAttribute('name', name)
+        if sandbox is not None:
+            self.setAttribute('sandbox', sandbox)
+        if allowfullscreen is not None:
+            self.setAttribute('allowfullscreen', allowfullscreen)
+
 
 class HTMLImageElement(HTMLElement):
     name = 'img'
 
+    def __init__(self, *args, alt=None, src=None, crossorigin=None, height=None, ismap=None, longdesc=None, sizes=None, srcset=None, usemap=None, width=None, **kwargs):
+        """HTMLImageElement
+
+        Args:
+            alt (str, optional): _description_. Defaults to None.
+            src (str, optional): _description_. Defaults to None.
+            crossorigin (str, optional): _description_. Defaults to None.
+            height (str, optional): _description_. Defaults to None.
+            ismap (str, optional): _description_. Defaults to None.
+            longdesc (str, optional): _description_. Defaults to None.
+            sizes (str, optional): _description_. Defaults to None.
+            srcset (str, optional): _description_. Defaults to None.
+            usemap (str, optional): _description_. Defaults to None.
+            width (str, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if alt is not None:
+            self.setAttribute('alt', alt)
+        if src is not None:
+            self.setAttribute('src', src)
+        if crossorigin is not None:
+            self.setAttribute('crossorigin', crossorigin)
+        if height is not None:
+            self.setAttribute('height', height)
+        if ismap is not None:
+            self.setAttribute('ismap', ismap)
+        if longdesc is not None:
+            self.setAttribute('longdesc', longdesc)
+        if sizes is not None:
+            self.setAttribute('sizes', sizes)
+        if srcset is not None:
+            self.setAttribute('srcset', srcset)
+        if usemap is not None:
+            self.setAttribute('usemap', usemap)
+        if width is not None:
+            self.setAttribute('width', width)
+
 
 class HTMLInputElement(HTMLElement):
     name = 'input'
+
+    def __init__(self, *args, accept=None, alt=None, autocomplete=None, autofocus=None, checked=None, dirname=None, disabled=None, form=None, formaction=None, formenctype=None, formmethod=None, formnovalidate=None, formtarget=None, height=None, _list=None, _max=None, maxlength=None, _min=None, multiple=None, name=None, pattern=None, placeholder=None, readonly=None, required=None, size=None, src=None, step=None, type=None, value=None, width=None, **kwargs):
+        """HTMLInputElement
+
+        Args:
+            accept (_type_, optional): _description_. Defaults to None.
+            alt (_type_, optional): _description_. Defaults to None.
+            autocomplete (_type_, optional): _description_. Defaults to None.
+            autofocus (_type_, optional): _description_. Defaults to None.
+            checked (_type_, optional): _description_. Defaults to None.
+            dirname (_type_, optional): _description_. Defaults to None.
+            disabled (_type_, optional): _description_. Defaults to None.
+            form (_type_, optional): _description_. Defaults to None.
+            formaction (_type_, optional): _description_. Defaults to None.
+            formenctype (_type_, optional): _description_. Defaults to None.
+            formmethod (_type_, optional): _description_. Defaults to None.
+            formnovalidate (_type_, optional): _description_. Defaults to None.
+            formtarget (_type_, optional): _description_. Defaults to None.
+            height (_type_, optional): _description_. Defaults to None.
+            _list (_type_, optional): _description_. Defaults to None.
+            _max (_type_, optional): _description_. Defaults to None.
+            maxlength (_type_, optional): _description_. Defaults to None.
+            _min (_type_, optional): _description_. Defaults to None.
+            multiple (_type_, optional): _description_. Defaults to None.
+            name (_type_, optional): _description_. Defaults to None.
+            pattern (_type_, optional): _description_. Defaults to None.
+            placeholder (_type_, optional): _description_. Defaults to None.
+            readonly (_type_, optional): _description_. Defaults to None.
+            required (_type_, optional): _description_. Defaults to None.
+            size (_type_, optional): _description_. Defaults to None.
+            src (_type_, optional): _description_. Defaults to None.
+            step (_type_, optional): _description_. Defaults to None.
+            type (_type_, optional): _description_. Defaults to None.
+            value (_type_, optional): _description_. Defaults to None.
+            width (_type_, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if accept is not None:
+            self.setAttribute('accept', accept)
+        if alt is not None:
+            self.setAttribute('alt', alt)
+        if autocomplete is not None:
+            self.setAttribute('autocomplete', autocomplete)
+        if autofocus is not None:
+            self.setAttribute('autofocus', autofocus)
+        if checked is not None:
+            self.setAttribute('checked', checked)
+        if dirname is not None:
+            self.setAttribute('dirname', dirname)
+        if disabled is not None:
+            self.setAttribute('disabled', disabled)
+        if form is not None:
+            self.setAttribute('form', form)
+        if formaction is not None:
+            self.setAttribute('formaction', formaction)
+        if formenctype is not None:
+            self.setAttribute('formenctype', formenctype)
+        if formmethod is not None:
+            self.setAttribute('formmethod', formmethod)
+        if formnovalidate is not None:
+            self.setAttribute('formnovalidate', formnovalidate)
+        if formtarget is not None:
+            self.setAttribute('formtarget', formtarget)
+        if height is not None:
+            self.setAttribute('height', height)
+        # if _list is not None:
+        #     self.setAttribute('list', _list)
+        # if _max is not None:
+        #     self.setAttribute('max', _max)
+        if maxlength is not None:
+            self.setAttribute('maxlength', maxlength)
+        # if _min is not None:
+        #     self.setAttribute('min', _min)
+        if multiple is not None:
+            self.setAttribute('multiple', multiple)
+        if name is not None:
+            self.setAttribute('name', name)
+        if pattern is not None:
+            self.setAttribute('pattern', pattern)
+        if placeholder is not None:
+            self.setAttribute('placeholder', placeholder)
+        if readonly is not None:
+            self.setAttribute('readonly', readonly)
+        if required is not None:
+            self.setAttribute('required', required)
+        if size is not None:
+            self.setAttribute('size', size)
+        if src is not None:
+            self.setAttribute('src', src)
+        if step is not None:
+            self.setAttribute('step', step)
+        if type is not None:
+            self.setAttribute('type', type)
+        if value is not None:
+            self.setAttribute('value', value)
+        if width is not None:
+            self.setAttribute('width', width)
 
 
 class HTMLIsIndexElement(HTMLElement):  # TODO - check
@@ -5232,6 +5576,16 @@ class HTMLLIElement(HTMLElement):
 
 class HTMLLabelElement(HTMLElement):
     name = 'label'
+
+    # def __init__(self, *args, _for=None, **kwargs):
+    #     """_summary_
+
+    #     Args:
+    #         _for (_type_, optional): the id of the element that this label is for. Defaults to None.
+    #     """
+        # super().__init__(*args, **kwargs)
+        # if _for is not None:
+        #     self.setAttribute('for', _for)
 
 
 class HTMLLegendElement(HTMLElement):
@@ -5253,10 +5607,55 @@ class HTMLMediaElement(HTMLElement):  # TODO - check
 class HTMLMetaElement(HTMLElement):
     name = 'meta'
 
+    def __init__(self, *args, charset=None, content=None, http_equiv=None, name=None, **kwargs):
+        """HTMLMetaElement
+
+        Args:
+            charset (_type_, optional): _description_. Defaults to None.
+            content (_type_, optional): _description_. Defaults to None.
+            http_equiv (_type_, optional): _description_. Defaults to None.
+            name (_type_, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if charset is not None:
+            self.setAttribute('charset', charset)
+        if content is not None:
+            self.setAttribute('content', content)
+        if http_equiv is not None:
+            self.setAttribute('http-equiv', http_equiv)
+        if name is not None:
+            self.setAttribute('name', name)
+
 
 class HTMLMeterElement(HTMLElement):
     name = 'meter'
 
+    def __init__(self, *args, value=None, _min=None, _max=None, low=None, high=None, optimum=None, **kwargs):
+        """HTMLMeterElement
+
+        The <meter> HTML element represents either a scalar value within a known range or a fractional value.
+
+        Args:
+            value (_type_, optional): The current numeric value. This must be between the minimum and maximum values (min attribute and max attribute) if they are specified.
+            min (_type_, optional): The lower numeric bound of the measured range. This must be less than the maximum value (max attribute), if specified. If unspecified, the minimum value is 0.
+            max (_type_, optional): The upper numeric bound of the measured range. This must be greater than the minimum value (min attribute), if specified. If unspecified, the maximum value is 1.
+            low (_type_, optional): _description_. Defaults to None.
+            high (_type_, optional): _description_. Defaults to None.
+            optimum (_type_, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if value is not None:
+            self.setAttribute('value', value)
+        if _min is not None:
+            self.setAttribute('_min', _min)
+        if _max is not None:
+            self.setAttribute('_max', _max)
+        if low is not None:
+            self.setAttribute('low', low)
+        if high is not None:
+            self.setAttribute('high', high)
+        if optimum is not None:
+            self.setAttribute('optimum', optimum)
 
 class HTMLModElement(HTMLElement):  # TODO - check
     name = 'mod'
@@ -5276,6 +5675,25 @@ class HTMLOptGroupElement(HTMLElement):
 
 class HTMLOptionElement(HTMLElement):
     name = 'option'
+
+    def __init__(self, *args, disabled=None, label=None, selected=None, value=None, **kwargs):
+        """HTMLOptionElement
+
+        Args:
+            disabled (_type_, optional): _description_. Defaults to None.
+            label (_type_, optional): _description_. Defaults to None.
+            selected (_type_, optional): _description_. Defaults to None.
+            value (_type_, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if disabled is not None:
+            self.setAttribute('disabled', disabled)
+        if label is not None:
+            self.setAttribute('label', label)
+        if selected is not None:
+            self.setAttribute('selected', selected)
+        if value is not None:
+            self.setAttribute('value', value)
 
 
 # class HTMLOptionsCollection(HTMLElement):   # TODO - check
@@ -5313,9 +5731,59 @@ class HTMLQuoteElement(HTMLElement):  # TODO - check
 class HTMLScriptElement(HTMLElement):
     name = 'script'
 
+    # def __init__(self, *args, _async=None, charset=None, crossorigin=None, defer=None, src=None, type=None, **kwargs):
+    #     """HTMLScriptElement
+
+    #     Args:
+    #         async (_type_, optional): _description_. Defaults to None.
+    #         charset (_type_, optional): _description_. Defaults to None.
+    #         crossorigin (_type_, optional): _description_. Defaults to None.
+    #         defer (_type_, optional): _description_. Defaults to None.
+    #         src (_type_, optional): _description_. Defaults to None.
+    #         type (_type_, optional): _description_. Defaults to None.
+    #     """
+    #     super().__init__(*args, **kwargs)
+    #     # if _async is not None:
+    #         # self.setAttribute('async', _async)
+    #     if charset is not None:
+    #         self.setAttribute('charset', charset)
+    #     if crossorigin is not None:
+    #         self.setAttribute('crossorigin', crossorigin)
+    #     if defer is not None:
+    #         self.setAttribute('defer', defer)
+    #     if src is not None:
+    #         self.setAttribute('src', src)
+    #     if type is not None:
+    #         self.setAttribute('type', type)
+
 
 class HTMLSelectElement(HTMLElement):
     name = 'select'
+
+    def __init__(self, *args, autofocus: bool = None, disabled: bool = None, multiple: bool = None, name: str = None, required: bool = None, size: int = None, **kwargs):
+        """HTMLSelectElement
+
+        Args:
+            autofocus (bool, optional): lets you specify that a form control should have input focus when the page loads. 
+            disabled (bool, optional): toggles if user can interact
+            multiple (bool, optional): If multiple options can be selected in the list.
+            name (str, optional): This attribute is used to specify the name of the control.
+            required (bool, optional): indicating that an option with a non-empty string value must be selected.
+            size (int, optional): the number of rows in the list that should be visible at one time.
+        """
+        super().__init__(*args, **kwargs)
+        if autofocus is not None:
+            self.setAttribute('autofocus', autofocus)
+        if disabled is not None:
+            self.setAttribute('disabled', disabled)
+        if multiple is not None:
+            self.setAttribute('multiple', multiple)
+        if name is not None:
+            self.setAttribute('name', name)
+        if required is not None:
+            self.setAttribute('required', required)
+        if size is not None:
+            self.setAttribute('size', size)
 
 
 class HTMLShadowElement(HTMLElement):  # TODO - check
@@ -5353,6 +5821,42 @@ class HTMLTableDataCellElement(HTMLElement):  # TODO - check
 class HTMLTableElement(HTMLElement):
     name = 'table'
 
+    def __init__(self, *args, align: str = None, bgcolor=None, border=None, cellpadding=None, cellspacing=None, frame=None, rules=None, summary=None, width=None, **kwargs):
+        """HTMLTableElement
+
+        - in most cases it seems docs are advising to use css instead
+
+        Args:
+            align (str, optional): This enumerated attribute indicates how the table must be aligned inside the containing document.
+            bgcolor (str, optional): The background color of the table. It is a 6-digit hexadecimal RGB code, prefixed by a '#'. One of the predefined color keywords can also be used.
+            border (int, optional): The size of the frame surrounding the table. If set to 0, the frame attribute is set to void.
+            cellpadding (int, optional): This attribute defines the space between the content of a cell and its border, displayed or not. If the cellpadding's length is defined in pixels, this pixel-sized space will be applied to all four sides of the cell's content. If the length is defined using a percentage value, the content will be centered and the total vertical space (top and bottom) will represent this value.
+            cellspacing (int, optional): This attribute defines the size of the space between two cells in a percentage value or pixels. The attribute is applied both horizontally and vertically, to the space between the top of the table and the cells of the first row, the left of the table and the first column, the right of the table and the last column and the bottom of the table and the last row.
+            frame (str, optional): This enumerated attribute defines which side of the frame surrounding the table must be displayed.
+            rules (str, optional): This enumerated attribute defines where rules, i.e. lines, should appear in a table. It can have the following values
+            summary (str, optional): This attribute defines an alternative text that summarizes the content of the table. Use the <caption> element instead.
+            width (str, optional): This attribute defines the width of the table. Use the CSS width property instead.
+        """
+        super().__init__(*args, **kwargs)
+        if align is not None:
+            self.setAttribute('align', align)
+        if bgcolor is not None:
+            self.setAttribute('bgcolor', bgcolor)
+        if border is not None:
+            self.setAttribute('border', border)
+        if cellpadding is not None:
+            self.setAttribute('cellpadding', cellpadding)
+        if cellspacing is not None:
+            self.setAttribute('cellspacing', cellspacing)
+        if frame is not None:
+            self.setAttribute('frame', frame)
+        if rules is not None:
+            self.setAttribute('rules', rules)
+        if summary is not None:
+            self.setAttribute('summary', summary)
+        if width is not None:
+            self.setAttribute('width', width)
+
 
 class HTMLTableHeaderCellElement(HTMLElement):
     name = 'th'
@@ -5372,6 +5876,47 @@ class HTMLTemplateElement(HTMLElement):  # TODO - check
 
 class HTMLTextAreaElement(HTMLElement):
     name = 'textarea'
+
+    def __init__(self, *args, autofocus=None, cols=None, disabled=None, form=None, maxlength=None, name=None,
+                 placeholder=None, readonly=None, required=None, rows=None, wrap=None, **kwargs):
+        """HTMLTextAreaElement
+
+        Args:
+            autofocus (_type_, optional): _description_. Defaults to None.
+            cols (_type_, optional): _description_. Defaults to None.
+            disabled (_type_, optional): _description_. Defaults to None.
+            form (_type_, optional): _description_. Defaults to None.
+            maxlength (_type_, optional): _description_. Defaults to None.
+            name (_type_, optional): _description_. Defaults to None.
+            placeholder (_type_, optional): _description_. Defaults to None.
+            readonly (_type_, optional): _description_. Defaults to None.
+            required (_type_, optional): _description_. Defaults to None.
+            rows (_type_, optional): _description_. Defaults to None.
+            wrap (_type_, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if autofocus is not None:
+            self.setAttribute('autofocus', autofocus)
+        if cols is not None:
+            self.setAttribute('cols', cols)
+        if disabled is not None:
+            self.setAttribute('disabled', disabled)
+        if form is not None:
+            self.setAttribute('form', form)
+        if maxlength is not None:
+            self.setAttribute('maxlength', maxlength)
+        if name is not None:
+            self.setAttribute('name', name)
+        if placeholder is not None:
+            self.setAttribute('placeholder', placeholder)
+        if readonly is not None:
+            self.setAttribute('readonly', readonly)
+        if required is not None:
+            self.setAttribute('required', required)
+        if rows is not None:
+            self.setAttribute('rows', rows)
+        if wrap is not None:
+            self.setAttribute('wrap', wrap)
 
 
 class HTMLTimeElement(HTMLElement):
@@ -5397,14 +5942,53 @@ class HTMLUnknownElement(HTMLElement):
 class HTMLVideoElement(HTMLElement):
     name = 'video'
 
+    def __init__(self, *args, autoplay=None, controls=None, height=None, loop=None, muted=None, poster=None,
+                 preload=None, src=None, width=None, **kwargs):
+        """HTMLVideoElement
+
+        Args:
+            autoplay (_type_, optional): _description_. Defaults to None.
+            controls (_type_, optional): _description_. Defaults to None.
+            height (_type_, optional): _description_. Defaults to None.
+            loop (_type_, optional): _description_. Defaults to None.
+            muted (_type_, optional): _description_. Defaults to None.
+            poster (_type_, optional): _description_. Defaults to None.
+            preload (_type_, optional): _description_. Defaults to None.
+            src (_type_, optional): _description_. Defaults to None.
+            width (_type_, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        if autoplay is not None:
+            self.setAttribute('autoplay', autoplay)
+        if controls is not None:
+            self.setAttribute('controls', controls)
+        if height is not None:
+            self.setAttribute('height', height)
+        if loop is not None:
+            self.setAttribute('loop', loop)
+        if muted is not None:
+            self.setAttribute('muted', muted)
+        if poster is not None:
+            self.setAttribute('poster', poster)
+        if preload is not None:
+            self.setAttribute('preload', preload)
+        if src is not None:
+            self.setAttribute('src', src)
+        if width is not None:
+            self.setAttribute('width', width)
+
+
+class HTMLPortalElement(HTMLElement):
+    name = 'portal'
+
 
 # document can be set manually but will get set each time a new Document is created.
 global document
-document = Document()  # TODO - shouldn't this be an instance not class to start?
+document = Document()
 console = Console  # legacy. should access via window
 
 # Considered obsolete dom classes ----
-# DOMConfiguration
+# DOMConfiguration - we now use a variation of this name DOMConfig for render settings
 # DOMErrorHandler
 # DOMImplementationList
 # DOMImplementationRegistry
