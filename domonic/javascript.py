@@ -46,8 +46,10 @@ def function(python_str: str) -> str:
     Args:
         python_str ([str]): [some valid python code as a string]
     """
+
     def anon():
         return eval(python_str)
+
     return anon
 
 
@@ -62,16 +64,16 @@ undefined: object = None
 #     return type(v).__name__
 
 
-class Boolean():
+class Boolean:
     """[Creates a Boolean Object.
-        Warning this is NOT a boolean type. for that use Global.Boolean()]
+    Warning this is NOT a boolean type. for that use Global.Boolean()]
     """
+
     def __init__(self, value=False) -> None:
         self.value: bool = Global.Boolean(value)
 
 
 class Object:
-
     def __init__(self, obj=None, *args, **kwargs) -> None:
         """[Creates a Javascript-like Object in python]
 
@@ -112,12 +114,12 @@ class Object:
                 print("Object.__init__() failed to set attribs", e)
 
     def __str__(self):
-        """ Returns a string representation of the object """
+        """Returns a string representation of the object"""
         d = self.__dict__.copy()
         for k, v in list(d.items()):
-            if '__' in k:
+            if "__" in k:
                 del d[k]
-            if 'prototype' in k:
+            if "prototype" in k:
                 del d[k]
         return str(d)
 
@@ -140,7 +142,7 @@ class Object:
 
     @staticmethod
     def assign(target, source):
-        """ Copies the values of all enumerable own properties from one or more source objects to a target object. """
+        """Copies the values of all enumerable own properties from one or more source objects to a target object."""
         if isinstance(target, dict):
             if isinstance(source, dict):
                 for k, v in source.items():
@@ -164,7 +166,7 @@ class Object:
 
     @staticmethod
     def create(proto, propertiesObject=None):
-        """ Creates a new object with the specified prototype object and properties. """
+        """Creates a new object with the specified prototype object and properties."""
         if propertiesObject is None:
             return Object(proto)
 
@@ -178,6 +180,7 @@ class Object:
             return propertiesObject
 
         # return Object(propertiesObject)
+
     #     obj = {}
     #     for key in proto.keys():
     #         obj[key] = propertiesObject[key]
@@ -185,7 +188,7 @@ class Object:
 
     @staticmethod
     def defineProperty(obj, prop, descriptor):
-        """ Adds the named property described by a given descriptor to an object. """
+        """Adds the named property described by a given descriptor to an object."""
         obj[prop] = descriptor
 
     # @staticmethod
@@ -196,7 +199,7 @@ class Object:
 
     @staticmethod
     def entries(obj):
-        """ Returns an array containing all of the [key, value] pairs in the object. """
+        """Returns an array containing all of the [key, value] pairs in the object."""
         if isinstance(obj, dict):
             return [[k, v] for k, v in obj.items()]
         if isinstance(obj, (float, int)):
@@ -204,17 +207,17 @@ class Object:
 
     @staticmethod
     def keys(obj):
-        """ Returns an array containing the names of all of the given object's own enumerable string properties."""
+        """Returns an array containing the names of all of the given object's own enumerable string properties."""
         if isinstance(obj, dict):
             return obj.keys()
         if isinstance(obj, (float, int)):
             return []
-        return obj.__dict__.keys()   # TODO - this is probably wrong
+        return obj.__dict__.keys()  # TODO - this is probably wrong
 
     @staticmethod
     def values(obj):
-        """ Returns an array containing the values that correspond to
-        all of a given object's own enumerable string properties. """
+        """Returns an array containing the values that correspond to
+        all of a given object's own enumerable string properties."""
         if isinstance(obj, dict):
             return obj.values()
         if isinstance(obj, (float, int)):
@@ -223,21 +226,21 @@ class Object:
 
     @staticmethod
     def getOwnPropertyDescriptor(obj, prop):
-        """ Returns a property descriptor for a named property on an object. """
+        """Returns a property descriptor for a named property on an object."""
         if isinstance(obj, dict):
             return obj[prop]
         return obj.__dict__[prop]
 
     @staticmethod
     def getOwnPropertyNames(obj):
-        """ Returns an array containing the names of all of the given object's
-        own enumerable and non-enumerable properties. """
+        """Returns an array containing the names of all of the given object's
+        own enumerable and non-enumerable properties."""
         if isinstance(obj, dict):
             return obj.keys()
         elif isinstance(obj, Object):
             return obj.__dict__.keys()
         elif isinstance(obj, object):
-            return [prop for prop in dir(obj) if not prop.startswith('__')]
+            return [prop for prop in dir(obj) if not prop.startswith("__")]
         return obj.__dict__.keys()
 
     # @staticmethod
@@ -249,14 +252,14 @@ class Object:
 
     @staticmethod
     def getOwnPropertySymbols(obj):
-        """ Returns an array of all symbol properties found directly upon a given object. """
+        """Returns an array of all symbol properties found directly upon a given object."""
         if isinstance(obj, dict):
             return []
-        return [prop for prop in dir(obj) if not prop.startswith('__')]
+        return [prop for prop in dir(obj) if not prop.startswith("__")]
 
     @staticmethod
     def getPrototypeOf(obj):
-        """ Returns the prototype (internal [[Prototype]] property) of the specified object. """
+        """Returns the prototype (internal [[Prototype]] property) of the specified object."""
         if isinstance(obj, dict):
             return obj
         elif isinstance(obj, Object):
@@ -313,12 +316,12 @@ class Object:
 
     @property  # TODO - static or prop?
     def isFrozen(self, obj):
-        """ Determines if an object was frozen. """
+        """Determines if an object was frozen."""
         return self.__isFrozen
 
     @staticmethod  # TODO - static or prop?
     def freeze(obj):
-        """ Freezes an object. Other code cannot delete or change its properties. """
+        """Freezes an object. Other code cannot delete or change its properties."""
         obj.__isFrozen = True
 
     # def prototype(self, obj):
@@ -335,12 +338,12 @@ class Object:
     #     return False
 
     def __defineGetter__(self, prop, func):
-        """ Adds a getter function for the specified property. """
+        """Adds a getter function for the specified property."""
         self.__dict__[prop] = property(func)
         return self
 
     def __defineSetter__(self, prop, func):
-        """ Associates a function with a property that, when set, calls the function. """
+        """Associates a function with a property that, when set, calls the function."""
         self.__dict__[prop] = property(func)
         return self
 
@@ -351,18 +354,18 @@ class Object:
         return self.__dict__[prop]
 
     def __lookupSetter__(self, prop):
-        """ Returns the function associated with the specified property by the __defineSetter__() method. """
+        """Returns the function associated with the specified property by the __defineSetter__() method."""
         return self.__dict__[prop]
 
     def hasOwnProperty(self, prop):
-        """ Returns a boolean indicating whether an object contains the specified property
-        as a direct property of that object and not inherited through the prototype chain. """
+        """Returns a boolean indicating whether an object contains the specified property
+        as a direct property of that object and not inherited through the prototype chain."""
         # raise NotImplementedError
         # return hasattr(self, prop)
         return self.__dict__.get(prop, None) != None
 
     def isPrototypeOf(self, obj):
-        """ Returns a boolean indicating whether an object is a copy of this object. """
+        """Returns a boolean indicating whether an object is a copy of this object."""
         if isinstance(obj, Object):
             return obj.prototype == self
         elif isinstance(obj, dict):
@@ -376,19 +379,19 @@ class Object:
     #     pass
 
     def toLocaleString(self):
-        """ Calls toString()"""
+        """Calls toString()"""
         return self.toString()
 
     def toString(self):
-        """ Returns a string representation of the object."""
-        return '[' + self.__class__.__name__ + ': ' + str(self.__dict__) + ']'
+        """Returns a string representation of the object."""
+        return "[" + self.__class__.__name__ + ": " + str(self.__dict__) + "]"
 
     def valueOf(self):
-        """ Returns the value of the object. """
+        """Returns the value of the object."""
         return self
 
     def __iter__(self):
-        """ Iterates over object's properties. """
+        """Iterates over object's properties."""
         for prop in self.__dict__:
             yield prop
         for key in self.__dict__:
@@ -397,54 +400,54 @@ class Object:
         # return self.__dict__.__iter__()
 
     def __hash__(self):
-        """ Returns the hash of the object. """
+        """Returns the hash of the object."""
         return hash(self.toString())
 
     def __eq__(self, other):
-        """ Compares two objects. """
+        """Compares two objects."""
         if isinstance(other, Object):
             return self.toString() == other.toString()
         return False
 
     def __ne__(self, other):
-        """ Compares two objects. """
+        """Compares two objects."""
         if isinstance(other, Object):
             return self.toString() != other.toString()
         return True
 
     def __nonzero__(self):
-        """ Returns whether the object is false. """
-        return self.toString() != ''
+        """Returns whether the object is false."""
+        return self.toString() != ""
 
     def __bool__(self):
-        """ Returns whether the object is false. """
-        return self.toString() != ''
+        """Returns whether the object is false."""
+        return self.toString() != ""
 
     # def __dict__(self):
     #     """ Returns the object's attributes as a dictionary. """
     #     return self.__dict__
 
     def __getitem__(self, key):
-        """ Returns the value of the specified property. """
+        """Returns the value of the specified property."""
         # return self.__dict__[key]
         # return self.__dict__.get(key, None)
         return self.__dict__.get(key)
 
     def __deepcopy__(self, memo):
-        """ Makes a deep copy of the object. """
+        """Makes a deep copy of the object."""
         return self.__class__(self.__dict__)
 
     def __setitem__(self, key, value):
-        """ Sets the value of the specified property. """
+        """Sets the value of the specified property."""
         # self.__dict__[key] = value
         return self.__dict__.__setitem__(key, value)
 
     def __delitem__(self, key):
-        """ Deletes the specified property. """
+        """Deletes the specified property."""
         del self.__dict__[key]
 
     def __len__(self):
-        """ Returns the number of properties. """
+        """Returns the number of properties."""
         return len(self.__dict__)
 
     def __contains__(self, key):
@@ -498,7 +501,7 @@ class Object:
 
 
 class Function(Object):
-    """ a Function object """
+    """a Function object"""
 
     def __init__(self, func, *args, **kwargs):
         self.func = func
@@ -543,6 +546,7 @@ class Function(Object):
             [type]: [A copy of the given function with the specified this value, and initial arguments (if provided).]
         """
         from functools import partial
+
         bound_f = partial(self.func, *args, *kwargs)
         return bound_f
         # raise NotImplementedError
@@ -570,14 +574,12 @@ class Function(Object):
             return self.func()
 
     def toString(self):
-        """[Returns a string representing the source code of the function. Overrides the]
-        """
+        """[Returns a string representing the source code of the function. Overrides the]"""
         raise NotImplementedError
 
 
 class Map:
-    """ Map holds key-value pairs and remembers the original insertion order of the keys.
-    """
+    """Map holds key-value pairs and remembers the original insertion order of the keys."""
 
     def __init__(self, collection):
         """[Pass a list or collection to make a Map object]
@@ -615,13 +617,13 @@ class Map:
         del self._dict[key]
 
     def clear(self):
-        """ Removes all key-value pairs from the Map object. """
+        """Removes all key-value pairs from the Map object."""
         self._data = {}
         self._order = []
 
     def delete(self, key: str) -> bool:
-        """ Returns true if an element in the Map object existed and has been removed,
-        or false if the element does not exist. Map.prototype.has(key) will return false afterwards. """
+        """Returns true if an element in the Map object existed and has been removed,
+        or false if the element does not exist. Map.prototype.has(key) will return false afterwards."""
         try:
             self._order.remove(key)
             del self._dict[key]
@@ -630,15 +632,15 @@ class Map:
             return False
 
     def get(self, key: str, default=None):
-        """ Returns the value associated to the key, or undefined if there is none. """
+        """Returns the value associated to the key, or undefined if there is none."""
         return self._dict.get(key, default)
 
     def has(self, key: str) -> bool:
-        """ Returns a boolean asserting whether a value has been associated to the key in the Map object or not."""
+        """Returns a boolean asserting whether a value has been associated to the key in the Map object or not."""
         return key in self._dict
 
     def set(self, key: str, value):
-        """ Sets the value for the key in the Map object. Returns the Map object. """
+        """Sets the value for the key in the Map object. Returns the Map object."""
         if key not in self._dict:
             self._order.append(key)
             self._dict[key] = value
@@ -652,25 +654,25 @@ class Map:
             yield key, self._dict[key]
 
     def keys(self):
-        """ Returns a new Iterator object that contains the keys
-        for each element in the Map object in insertion order. """
+        """Returns a new Iterator object that contains the keys
+        for each element in the Map object in insertion order."""
         return list(self.iterkeys())
 
     def values(self):
-        """ Returns a new Iterator object that contains the values
-        for each element in the Map object in insertion order. """
+        """Returns a new Iterator object that contains the values
+        for each element in the Map object in insertion order."""
         return list(self.iteritems())
 
     def entries(self):
-        """ Returns a new Iterator object that contains an array of [key, value]
-        for each element in the Map object in insertion order. """
+        """Returns a new Iterator object that contains an array of [key, value]
+        for each element in the Map object in insertion order."""
         return [(x, self._dict[x]) for x in self._order]
 
     # def forEach(self, callbackFn[, thisArg]):
     #     raise NotImplementedError
-            # TODO - is this supposed to pass count like Node list? i.e.
-        # for i in range(len(self.args)):
-            # func(self.args[i], i, self.args)
+    # TODO - is this supposed to pass count like Node list? i.e.
+    # for i in range(len(self.args)):
+    # func(self.args[i], i, self.args)
 
     def update(self, ordered_dict):
         for key, value in ordered_dict.iteritems():
@@ -745,21 +747,21 @@ class Worker:
     """
 
     def __init__(self, script):
-        """ creates a new Worker object. """
+        """creates a new Worker object."""
         raise NotImplementedError
 
     def postMessage(self):
-        """ Sends a message — consisting of any object — to the worker's inner scope. """
+        """Sends a message — consisting of any object — to the worker's inner scope."""
         raise NotImplementedError
 
     def terminate(self):
-        """ Immediately terminates the worker. This does not let worker finish its operations; it is halted at once.
-        ServiceWorker instances do not support this method. """
+        """Immediately terminates the worker. This does not let worker finish its operations; it is halted at once.
+        ServiceWorker instances do not support this method."""
         raise NotImplementedError
 
 
 class Math(Object):
-    """ Math class that mirrors javascript implementation.
+    """Math class that mirrors javascript implementation.
 
     i.e. you can pass strings and it will also work, Math.abs('-1')
 
@@ -775,8 +777,8 @@ class Math(Object):
     SQRT2: float = 1.4142135623730951
 
     def _force_number(func):
-        """[private decorator to make Math behave like javascript and turn strings, bools and None into numbers]]
-        """
+        """[private decorator to make Math behave like javascript and turn strings, bools and None into numbers]]"""
+
         def validation_decorator(*args, **kwargs):
             params = list(args)
             for i, n in enumerate(params):
@@ -798,7 +800,7 @@ class Math(Object):
 
                 if type(n) != float and type(n) != int:
                     try:
-                        if '.' in n:
+                        if "." in n:
                             params[i] = float(n)
                         else:
                             params[i] = int(n)
@@ -844,79 +846,79 @@ class Math(Object):
     @staticmethod
     @_force_number
     def acosh(x: float) -> float:
-        """ Returns the hyperbolic arccosine of a number. """
+        """Returns the hyperbolic arccosine of a number."""
         return math.acosh(x)
 
     @staticmethod
     @_force_number
     def asin(x: float) -> float:
-        """ Returns the arcsine (in radians) of a number. """
+        """Returns the arcsine (in radians) of a number."""
         return math.asin(x)
 
     @staticmethod
     @_force_number
     def asinh(x: float) -> float:
-        """ Returns the hyperbolic arcsine of a number. """
+        """Returns the hyperbolic arcsine of a number."""
         return math.asinh(x)
 
     @staticmethod
     @_force_number
     def atan(x: float) -> float:
-        """ Returns the arctangent (in radians) of a number. """
+        """Returns the arctangent (in radians) of a number."""
         return math.atan(x)
 
     @staticmethod
     @_force_number
     def atan2(x: float, y: float) -> float:
-        """ Returns the arctangent of the quotient of its arguments. """
+        """Returns the arctangent of the quotient of its arguments."""
         return math.atan2(x, y)
 
     @staticmethod
     @_force_number
     def atanh(x: float) -> float:
-        """ Returns the hyperbolic arctangent of a number. """
+        """Returns the hyperbolic arctangent of a number."""
         return math.atanh(x)
 
     @staticmethod
     @_force_number
     def cbrt(x: float) -> float:
-        """ Returns the cube root of a number. """
+        """Returns the cube root of a number."""
         return math.cbrt(x)
 
     @staticmethod
     @_force_number
     def ceil(x: float) -> float:
-        """ Returns the smallest integer greater than or equal to a number. """
+        """Returns the smallest integer greater than or equal to a number."""
         return math.ceil(x)
 
     @staticmethod
     @_force_number
     def cos(x: float) -> float:
-        """ Returns the cosine of a number. (x is in radians) """
+        """Returns the cosine of a number. (x is in radians)"""
         return math.cos(x)
 
     @staticmethod
     @_force_number
     def cosh(x: float) -> float:
-        """ Returns the hyperbolic cosine of a number. """
+        """Returns the hyperbolic cosine of a number."""
         return math.cosh(x)
 
     @staticmethod
     @_force_number
     def exp(x: float) -> float:
-        """ Returns the value of E^x. """
+        """Returns the value of E^x."""
         return math.exp(x)
 
     @staticmethod
     @_force_number
     def floor(x: float) -> float:
-        """ Returns the largest integer less than or equal to a number. """
+        """Returns the largest integer less than or equal to a number."""
         return math.floor(x)
 
     @staticmethod
     @_force_number
     def log(x: float, base: float = None) -> float:
-        """ Returns the natural logarithm (base E) of a number. """
+        """Returns the natural logarithm (base E) of a number."""
         if base is None:
             return math.log(x)
         else:
@@ -925,102 +927,102 @@ class Math(Object):
     @staticmethod
     @_force_number
     def max(x: float, y: float) -> float:
-        """ Returns the largest of two numbers. """
+        """Returns the largest of two numbers."""
         return max(x, y)
 
     @staticmethod
     @_force_number
     def min(x: float, y: float) -> float:
-        """ Returns the smallest of two numbers. """
+        """Returns the smallest of two numbers."""
         return min(x, y)
 
     @staticmethod
     @_force_number
     def random() -> float:
-        """ Returns a random number between 0 and 1. """
+        """Returns a random number between 0 and 1."""
         return random.random()
 
     @staticmethod
     @_force_number
     def round(x: float) -> float:
-        """ Returns the value of a number rounded to its nearest integer. """
+        """Returns the value of a number rounded to its nearest integer."""
         return round(x)
 
     @staticmethod
     @_force_number
     def pow(x: float, y: float) -> float:
-        """ Returns the value of a number raised to a power. """
+        """Returns the value of a number raised to a power."""
         return math.pow(x, y)
 
     @staticmethod
     @_force_number
     def sin(x: float) -> float:
-        """ Returns the sine of a number. (x is in radians) """
+        """Returns the sine of a number. (x is in radians)"""
         return math.sin(x)
 
     @staticmethod
     @_force_number
     def sinh(x: float) -> float:
-        """ Returns the hyperbolic sine of a number. """
+        """Returns the hyperbolic sine of a number."""
         return math.sinh(x)
 
     @staticmethod
     @_force_number
     def sqrt(x: float) -> float:
-        """ Returns the square root of a number. """
+        """Returns the square root of a number."""
         return math.sqrt(x)
 
     @staticmethod
     @_force_number
     def tan(x: float) -> float:
-        """ Returns the tangent of a number. (x is in radians) """
+        """Returns the tangent of a number. (x is in radians)"""
         return math.tan(x)
 
     @staticmethod
     @_force_number
     def tanh(x: float) -> float:
-        """ Returns the hyperbolic tangent of a number. """
+        """Returns the hyperbolic tangent of a number."""
         return math.tanh(x)
 
     @staticmethod
     @_force_number
     def trunc(x: float) -> float:
-        """ Returns the integer part of a number. """
+        """Returns the integer part of a number."""
         return math.trunc(x)
 
     # TODO - test
     @staticmethod
     # @_force_number
     def hypot(*args):
-        """ returns the square root of the sum of squares of its arguments """
+        """returns the square root of the sum of squares of its arguments"""
         return math.hypot(*args)
 
     # TODO - test
     @staticmethod
     # @_force_number
     def log2(*args):
-        """ returns the square root of the sum of squares of its arguments """
+        """returns the square root of the sum of squares of its arguments"""
         return math.log2(*args)
 
     # TODO - test
     @staticmethod
     # @_force_number
     def loglp(*args):
-        """ returns the natural logarithm (base e) of 1 + a number, that is """
+        """returns the natural logarithm (base e) of 1 + a number, that is"""
         return math.loglp(*args)
 
     # TODO - test
     @staticmethod
     @_force_number
     def log10(x):
-        """ function returns the base 10 logarithm of a number, that is """
+        """function returns the base 10 logarithm of a number, that is"""
         return math.log10(x)
 
     # TODO - test
     @staticmethod
     @_force_number
     def fround(x):
-        """ returns the nearest 32-bit single precision float representation of a Number """
+        """returns the nearest 32-bit single precision float representation of a Number"""
         # return math.log10(x)
         raise NotImplementedError
 
@@ -1028,7 +1030,7 @@ class Math(Object):
     @staticmethod
     @_force_number
     def clz32(x):
-        """ returns the number of leading zero bits in the 32-bit binary representation of a number. """
+        """returns the number of leading zero bits in the 32-bit binary representation of a number."""
         raise NotImplementedError
 
 
@@ -1036,7 +1038,7 @@ class Math(Object):
 
 
 class Global:
-    """ javascript global methods """
+    """javascript global methods"""
 
     NaN = "NaN"
     Infinity = float("inf")
@@ -1047,61 +1049,61 @@ class Global:
 
     @staticmethod
     def decodeURI(x):
-        """ Decodes a URI """
+        """Decodes a URI"""
         return unquote(x)
 
     @staticmethod
     def decodeURIComponent(x):
-        """ Decodes a URI component """
+        """Decodes a URI component"""
         return unquote(x, encoding="utf-8")
 
     @staticmethod
     def encodeURI(x):
-        """ Encodes a URI """
-        return quote(str(x), safe='~@#$&()*!+=:;,.?/\'')
+        """Encodes a URI"""
+        return quote(str(x), safe="~@#$&()*!+=:;,.?/'")
 
     @staticmethod
     def encodeURIComponent(x):
-        """ Encodes a URI component """
-        return quote(str(x), safe='~()*!.\'')
+        """Encodes a URI component"""
+        return quote(str(x), safe="~()*!.'")
 
-    # @staticmethod
-    # def escape():
+        # @staticmethod
+        # def escape():
         """ Deprecated in version 1.5. Use encodeURI() or encodeURIComponent() """
         # pass
 
     @staticmethod
     def eval(pythonstring):
-        """ Evaluates a string and executes it as if it was script code """
+        """Evaluates a string and executes it as if it was script code"""
         eval(pythonstring)
 
     @staticmethod
     def isFinite(x) -> bool:  # TODO - test
-        """ Returns true if x is a finite number """
+        """Returns true if x is a finite number"""
         return math.isfinite(x)
 
     @staticmethod
     def isNaN(x):
-        """ Determines whether a value is an illegal number """
+        """Determines whether a value is an illegal number"""
         try:
             return math.isnan(x)
         except TypeError:
             return True
 
     def NaN(self):
-        """ "Not-a-Number" value """
+        """ "Not-a-Number" value"""
         # return self.NaN
         return "NaN"
 
     @staticmethod
     def Number(x):
-        """ Converts an object's value to a number """
+        """Converts an object's value to a number"""
         try:
             if type(x) == float or type(x) == int:  # or type(x) == long:
                 return x
 
             if type(x) == str:
-                if '.' in x:
+                if "." in x:
                     return float(x)
                 else:
                     return int(x)
@@ -1114,11 +1116,11 @@ class Global:
         if isinstance(x, int):
             return bool(x)
         elif isinstance(x, str):
-            if x.lower() == 'true':
+            if x.lower() == "true":
                 return True
-            elif x.lower() == 'false':
+            elif x.lower() == "false":
                 return False
-            elif x == '':
+            elif x == "":
                 return False
             else:
                 return True
@@ -1133,35 +1135,37 @@ class Global:
 
     @staticmethod
     def parseFloat(x: str):
-        """ Parses a string and returns a floating point number """
+        """Parses a string and returns a floating point number"""
         # return float(x)
         import ast
+
         return float(ast.literal_eval(x))
 
     @staticmethod
     def parseInt(x: str):
-        """ Parses a string and returns an integer """
+        """Parses a string and returns an integer"""
         # return int(x)
         import ast
+
         return int(ast.literal_eval(x))
 
     @staticmethod
     def String(x):
-        """ Converts an object's value to a string """
+        """Converts an object's value to a string"""
         return str(x)
 
     def undefined(self):
-        """ Indicates that a variable has not been assigned a value """
+        """Indicates that a variable has not been assigned a value"""
         return None
 
-    # @staticmethod
-    # def unescape():
+        # @staticmethod
+        # def unescape():
         """ Deprecated in version 1.5. Use decodeURI() or decodeURIComponent() instead """
         # pass
 
     @staticmethod
     def require(path: str):
-        """ Loads a script from a file """
+        """Loads a script from a file"""
         # '.'.join(path.split('/'))
         # module = __import__(path)  # app.components.{component}
         # my_class = getattr(module, component.title())
@@ -1190,7 +1194,7 @@ class Global:
 
     @staticmethod
     def clearTimeout(timeoutID):
-        """ [cancels a timer set with setTimeout()]
+        """[cancels a timer set with setTimeout()]
 
         Args:
             timeoutID ([str]): [the identifier returned by setTimeout()]
@@ -1209,7 +1213,7 @@ setTimeout = Global.setTimeout
 clearTimeout = Global.clearTimeout
 
 
-class Performance():
+class Performance:
 
     _start = time.time()
 
@@ -1228,20 +1232,19 @@ performance = Performance()
 
 
 class Intl:
-
     def __init__(self):
         pass
 
     @staticmethod
     def getCanonicalLocales(locales):
-        """ Returns the canonicalized locales. """
+        """Returns the canonicalized locales."""
         if isinstance(locales, str):
             locales = [locales]
         for locale in locales:
-            if locale.find('-') != -1:
-                locale = locale.split('-')[0].lower() + '-' + locale.split('-')[1].upper()
-            elif locale.find('_') != -1:
-                locale = locale.split('_')[0].lower() + '_' + locale.split('_')[1].upper()
+            if locale.find("-") != -1:
+                locale = locale.split("-")[0].lower() + "-" + locale.split("-")[1].upper()
+            elif locale.find("_") != -1:
+                locale = locale.split("_")[0].lower() + "_" + locale.split("_")[1].upper()
             else:
                 locale = locale.lower()
         return locales
@@ -1256,31 +1259,34 @@ class Intl:
         def __init__(self, locale):
             self.locale = locale
             print("Intl._Collator.__init__", locale)
+
     Collator = _Collator
 
     class _DateTimeFormat:
         @staticmethod
         def supportedLocalesOf():
             raise NotImplementedError
+
     DateTimeFormat = _DateTimeFormat
 
     class _NumberFormat:
         def __init__(self, locales, options):
             pass
+
     NumberFormat = _NumberFormat
 
 
 class Date(Object):
-    """ javascript date """
+    """javascript date"""
 
     @staticmethod
     def parse(date_string):
-        """ Parses a date string and returns the number of milliseconds since January 1, 1970 """
+        """Parses a date string and returns the number of milliseconds since January 1, 1970"""
         d = Date()
         d.parse_date(str(date_string))
         return int(d.date.timestamp() * 1000)
 
-    def __init__(self, date=None, *args, formatter='python', **kwargs):
+    def __init__(self, date=None, *args, formatter="python", **kwargs):
         """A date object that tries to behave like the Javascript one.
 
         TODO - js allowed dates are larger than pythons(mysql) datetime 99999 limit
@@ -1294,14 +1300,14 @@ class Date(Object):
         if len(args) > 0:
             # parses dates passed in like: Date(1994, 12, 10)
             if date is None:
-                date = ''
+                date = ""
             else:
                 date = str(date)
             for arg in args:
-                date += ' ' + str(arg)
+                date += " " + str(arg)
             # print("date is:::::::::::::::::::::::::::::::::::::", date)
             date = date.strip()
-            if date == '':
+            if date == "":
                 date = None
 
         self.formatter = formatter
@@ -1324,11 +1330,11 @@ class Date(Object):
         return self.toString()
 
     def toString(self):
-        """ Returns a string representation of the date """
-        if self.formatter == 'python':
-            return self.date.strftime('%Y-%m-%d %H:%M:%S')
+        """Returns a string representation of the date"""
+        if self.formatter == "python":
+            return self.date.strftime("%Y-%m-%d %H:%M:%S")
         else:
-            return self.date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')  # js
+            return self.date.strftime("%Y-%m-%dT%H:%M:%S.%fZ")  # js
 
     def parse_date(self, date_string):
         class MyParserInfo(parserinfo):
@@ -1337,11 +1343,12 @@ class Date(Object):
                 if year < 100 and year > 30:
                     year += 1900
                 return year
+
         self.date = parse(date_string, MyParserInfo())
         return self.date
 
     def getDate(self):
-        """ Returns the day of the month (from 1-31) """
+        """Returns the day of the month (from 1-31)"""
         return self.date.day
 
     def getDay(self):
@@ -1355,39 +1362,39 @@ class Date(Object):
         return pyweekday if pyweekday < 6 else 0
 
     def getFullYear(self):
-        """ Returns the year """
+        """Returns the year"""
         return self.date.year
 
     def getHours(self):
-        """ Returns the hour (from 0-23) """
+        """Returns the hour (from 0-23)"""
         return self.date.hour
 
     def getMilliseconds(self):
-        """ Returns the milliseconds (from 0-999) """
+        """Returns the milliseconds (from 0-999)"""
         return round(self.date.microsecond / 1000)
 
     def getMinutes(self):
-        """ Returns the minutes (from 0-59) """
+        """Returns the minutes (from 0-59)"""
         return self.date.minute
 
     def getMonth(self):
-        """ Returns the month (from 0-11) """
+        """Returns the month (from 0-11)"""
         return self.date.month - 1
 
     def getSeconds(self):
-        """ Returns the seconds (from 0-59) """
+        """Returns the seconds (from 0-59)"""
         return self.date.second
 
     def getTime(self):
-        """ Returns A number representing the milliseconds elapsed between 1 January 1970 00:00:00 UTC and self.date """
+        """Returns A number representing the milliseconds elapsed between 1 January 1970 00:00:00 UTC and self.date"""
         epoch = datetime.datetime(1970, 1, 1)
         self.date = self.date.replace(tzinfo=timezone.utc)
         epoch = epoch.replace(tzinfo=timezone.utc)
         return int((self.date - epoch).total_seconds() * 1000)
 
     def getTimezoneOffset(self):
-        """ Returns the difference, in minutes, between a date as evaluated in the UTC time zone,
-        and the same date as evaluated in the local time zone """
+        """Returns the difference, in minutes, between a date as evaluated in the UTC time zone,
+        and the same date as evaluated in the local time zone"""
         # return self.date.now().utcoffset().total_seconds() / 60  # TODO - TEST
         # date1 = self.date.astimezone()
         # date1.replace(tzinfo = timezone.utc)
@@ -1396,44 +1403,44 @@ class Date(Object):
         raise NotImplementedError()
 
     def getUTCDate(self):
-        """ Returns the day of the month, according to universal time (from 1-31) """
+        """Returns the day of the month, according to universal time (from 1-31)"""
         return self.date.utcnow().month
 
     def getUTCDay(self):
-        """ Returns the day of the week, according to universal time (from 0-6) """
+        """Returns the day of the week, according to universal time (from 0-6)"""
         return self.date.utcnow().day
 
     def getUTCFullYear(self):
-        """ Returns the year, according to universal time """
+        """Returns the year, according to universal time"""
         return self.date.utcnow().year
 
     def getUTCHours(self):
-        """ Returns the hour, according to universal time (from 0-23) """
+        """Returns the hour, according to universal time (from 0-23)"""
         return self.date.utcnow().hour
 
     def getUTCMilliseconds(self):
-        """ Returns the milliseconds, according to universal time (from 0-999) """
+        """Returns the milliseconds, according to universal time (from 0-999)"""
         return round(self.date.utcnow().microsecond / 1000)
 
     def getUTCMinutes(self):
-        """ Returns the minutes, according to universal time (from 0-59) """
+        """Returns the minutes, according to universal time (from 0-59)"""
         return self.date.utcnow().minute
 
     def getUTCMonth(self):
-        """ Returns the month, according to universal time (from 0-11) """
+        """Returns the month, according to universal time (from 0-11)"""
         return self.date.utcnow().month - 1
 
     def getUTCSeconds(self):
-        """ Returns the seconds, according to universal time (from 0-59) """
+        """Returns the seconds, according to universal time (from 0-59)"""
         return self.date.utcnow().second
 
     def getYear(self):
-        """ Deprecated. Use the getFullYear() method instead """
+        """Deprecated. Use the getFullYear() method instead"""
         return self.date.year
 
     @staticmethod
     def now():
-        """ Returns the number of milliseconds since midnight Jan 1, 1970 """
+        """Returns the number of milliseconds since midnight Jan 1, 1970"""
         return round(time.time() * 1000)
 
     def setDate(self, day: int):
@@ -1548,7 +1555,7 @@ class Date(Object):
             self.setMilliseconds(msValue)
         return self.getTime()
 
-    def setMonth(self, monthValue: int, dayValue: int = None):  #-> int:
+    def setMonth(self, monthValue: int, dayValue: int = None):  # -> int:
         """Sets the month of a date object
 
         Args:
@@ -1575,15 +1582,11 @@ class Date(Object):
             # as there's 29 days in February that year.
             # in python it will error as the new month has less days.
             # so we need to change it first.
-            next_month_total_days = calendar.monthrange(
-                self.date.year, monthValue + 1
-            )[1]
+            next_month_total_days = calendar.monthrange(self.date.year, monthValue + 1)[1]
             leftovers = next_month_total_days - self.getDate()
             if leftovers < 0:
                 leftovers = abs(leftovers)
-                self.date = self.date.replace(
-                    day=int(leftovers)
-                )  # reset the day for now to not error
+                self.date = self.date.replace(day=int(leftovers))  # reset the day for now to not error
                 self.date = self.date.replace(month=int(monthValue + 1))
                 self.date = self.date.replace(day=leftovers)
             else:
@@ -1624,84 +1627,84 @@ class Date(Object):
         return milliseconds
 
     def setUTCDate(self, day):
-        """ Sets the day of the month of a date object, according to universal time """
+        """Sets the day of the month of a date object, according to universal time"""
         self.setDate(day)
         return self.getTime()
 
     def setUTCFullYear(self, year):
-        """ Sets the year of a date object, according to universal time """
+        """Sets the year of a date object, according to universal time"""
         self.setFullYear(year)
         return self.getTime()
 
     def setUTCHours(self, hour):
-        """ Sets the hour of a date object, according to universal time """
+        """Sets the hour of a date object, according to universal time"""
         self.setHours(hour)
         return self.getTime()
 
     def setUTCMilliseconds(self, milliseconds):
-        """ Sets the milliseconds of a date object, according to universal time """
+        """Sets the milliseconds of a date object, according to universal time"""
         self.setMilliseconds(milliseconds)
         return self.getTime()
 
     def setUTCMinutes(self, minutes):
-        """ Set the minutes of a date object, according to universal time """
+        """Set the minutes of a date object, according to universal time"""
         self.setMinutes(minutes)
         return self.getTime()
 
     def setUTCMonth(self, month):
-        """ Sets the month of a date object, according to universal time """
+        """Sets the month of a date object, according to universal time"""
         self.setMonth(month)
         return self.getTime()
 
     def setUTCSeconds(self, seconds):
-        """ Set the seconds of a date object, according to universal time """
+        """Set the seconds of a date object, according to universal time"""
         self.setSeconds(seconds)
         return self.getTime()
 
     def setYear(self, year):
-        """ Deprecated. Use the setFullYear() method instead """
+        """Deprecated. Use the setFullYear() method instead"""
         self.date.replace(year=int(year))
         return self.getTime()
         # TODO - there may not be a date object already?
 
     def toDateString(self):
-        """ Converts the date portion of a Date object into a readable string """
-        return self.date.strftime('%Y-%m-%d')
+        """Converts the date portion of a Date object into a readable string"""
+        return self.date.strftime("%Y-%m-%d")
 
     def toUTCString(self):
-        """ Converts a Date object to a string, according to universal time """
-        return self.date.strftime('%Y-%m-%d %H:%M:%S')
+        """Converts a Date object to a string, according to universal time"""
+        return self.date.strftime("%Y-%m-%d %H:%M:%S")
 
     def toGMTString(self):
-        """ Deprecated. Use the toUTCString() method instead """
+        """Deprecated. Use the toUTCString() method instead"""
         return self.toUTCString()
 
     def toJSON(self):
-        """ Returns the date as a string, formatted as a JSON date """
-        return json.dumps(self.date.strftime('%Y-%m-%d'))
+        """Returns the date as a string, formatted as a JSON date"""
+        return json.dumps(self.date.strftime("%Y-%m-%d"))
 
     def toISOString(self):
-        """ Returns the date as a string, using the ISO standard """
-        return self.date.strftime('%Y-%m-%d')
+        """Returns the date as a string, using the ISO standard"""
+        return self.date.strftime("%Y-%m-%d")
 
     def toLocaleDateString(self):
-        """ Returns the date portion of a Date object as a string, using locale conventions """
-        return self.date.strftime('%x')
+        """Returns the date portion of a Date object as a string, using locale conventions"""
+        return self.date.strftime("%x")
 
     def toLocaleString(self):
-        """ Converts a Date object to a string, using locale conventions """
-        return self.date.strftime('%x')
+        """Converts a Date object to a string, using locale conventions"""
+        return self.date.strftime("%x")
 
     def toLocaleTimeString(self):
-        """ Returns the time portion of a Date object as a string, using locale conventions """
-        return self.date.strftime('%X')
+        """Returns the time portion of a Date object as a string, using locale conventions"""
+        return self.date.strftime("%X")
 
     def toTimeString(self):
-        """ Converts the time portion of a Date object to a string """
-        return self.date.strftime('%X')
+        """Converts the time portion of a Date object to a string"""
+        return self.date.strftime("%X")
 
     def UTC(self):
-        """ Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time """
+        """Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time"""
         return self.date.utcnow()
 
     # TODO - add all dunders and test
@@ -1725,7 +1728,7 @@ class Date(Object):
 
 
 class Screen:
-    """ screen """
+    """screen"""
 
     # wrap a lib?
     # https://github.com/rr-/screeninfo?
@@ -1752,28 +1755,28 @@ class Screen:
         pass
 
     def availHeight(self):
-        ''' Returns the height of the screen (excluding the Windows Taskbar) '''
+        """Returns the height of the screen (excluding the Windows Taskbar)"""
         # return self.height
         raise NotImplementedError
 
     def availWidth(self):
-        ''' Returns the width of the screen (excluding the Windows Taskbar) '''
+        """Returns the width of the screen (excluding the Windows Taskbar)"""
         raise NotImplementedError
 
     def colorDepth(self):
-        ''' Returns the colorDepth '''
+        """Returns the colorDepth"""
         raise NotImplementedError
 
     def height(self):
-        ''' Returns the total height of the screen '''
+        """Returns the total height of the screen"""
         raise NotImplementedError
 
     def pixelDepth(self):
-        ''' Returns the pixelDepth '''
+        """Returns the pixelDepth"""
         raise NotImplementedError
 
     def width(self):
-        ''' Returns the total width of the screen  '''
+        """Returns the total width of the screen"""
         raise NotImplementedError
 
 
@@ -1782,7 +1785,6 @@ class ProgramKilled(Exception):
 
 
 class Job(threading.Thread):
-
     def __init__(self, interval, execute, *args, **kwargs):
         threading.Thread.__init__(self)
         self.daemon = False
@@ -1805,7 +1807,6 @@ class Job(threading.Thread):
 
 
 class SetInterval:
-
     def signal_handler(self, signum, frame):
         raise ProgramKilled
 
@@ -1824,7 +1825,7 @@ class Promise:
     def __init__(self, func=None, *args, **kwargs):
         # print('init')
         self.data = None
-        self.state = 'pending'  # fullfilled, rejected
+        self.state = "pending"  # fullfilled, rejected
         if func is not None:
             func(self.resolve, self.reject)
 
@@ -1850,6 +1851,7 @@ class Promise:
         self.data = data
         self.state = "rejected"
         return self
+
     # def __str__(self):
     #     try:
     #         return self.data.text
@@ -1874,10 +1876,10 @@ class FetchedSet:  # not a promise
 
 
 class Window:
-    """ window """
+    """window"""
 
     localStorage = Storage()
-    location = 'eventual.technology'
+    location = "eventual.technology"
 
     def __init__(self, *args, **kwargs):
         # self.console = dom.console
@@ -1891,13 +1893,13 @@ class Window:
 
     @staticmethod
     def alert(msg):
-        """ Displays an alert box with a message and an OK button """
+        """Displays an alert box with a message and an OK button"""
         print(msg)
         return
 
     @staticmethod
     def prompt(msg, default_text=""):
-        """ Displays a dialog box that prompts the visitor for input """
+        """Displays a dialog box that prompts the visitor for input"""
         print(msg)
         data = input()
         return data
@@ -1943,7 +1945,7 @@ class Window:
 
             return r
         except Exception as e:
-            print(f'Request Failed for URL: {url}', e)
+            print(f"Request Failed for URL: {url}", e)
             return None
 
     @staticmethod
@@ -1951,7 +1953,7 @@ class Window:
         # undocumented - warning. use at own risk
         # note - kinda pointless atm. just use requests directly and you wont have to muck about with a Promise
         if type(url) is not str:
-            raise ValueError('fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled')
+            raise ValueError("fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled")
         f = Promise()
         r = window._do_request(url, f, *kwargs)
         return f.resolve(r)
@@ -1998,36 +2000,38 @@ class Window:
         f = FetchedSet()
 
         def _do_request_wrapper(obj):
-            url = obj['url']
-            f = obj['f']
-            kwargs = obj['k']
-            kwargs['callback_function'] = obj['c']
-            kwargs['error_handler'] = obj['e']
+            url = obj["url"]
+            f = obj["f"]
+            kwargs = obj["k"]
+            kwargs["callback_function"] = obj["c"]
+            kwargs["error_handler"] = obj["e"]
             window._do_request(url, f, **kwargs)
 
         jobs = []
         p = Pool()
-        urls = [{'url': url, 'f': f, 'c': callback_function, 'e': error_handler, 'k': kwargs} for url in urls]
+        urls = [{"url": url, "f": f, "c": callback_function, "e": error_handler, "k": kwargs} for url in urls]
         results = p.map(_do_request_wrapper, urls)
         p.close()
         p.join()
         return f
 
     # def fetch_aysnc( urls: list, options={}, type="async" ):
-        # TODO - a version using async/await
+    # TODO - a version using async/await
 
     @staticmethod
     def btoa(dataString):
-        """ Encodes a string in base-64 """
+        """Encodes a string in base-64"""
         import base64
+
         dataBytes = dataString.encode("utf-8")
         encoded = base64.b64encode(dataBytes)
         return encoded
 
     @staticmethod
     def atob(dataString):
-        """ Decodes a base-64 encoded string """
+        """Decodes a base-64 encoded string"""
         import base64
+
         return base64.b64decode(dataString).decode()
 
     @staticmethod
@@ -2055,11 +2059,11 @@ window = Window
 
 
 class Array:
-    """ javascript array """
+    """javascript array"""
 
     @staticmethod
     def from_(obj):  # TODO - test
-        """ Creates a new Array instance from an array-like or iterable object. """
+        """Creates a new Array instance from an array-like or iterable object."""
         # return Array(object)
         if isinstance(obj, Array):
             return obj
@@ -2072,7 +2076,7 @@ class Array:
             items = list(obj.items())
             return Array(*items)
         # if it is iterable unpack it
-        elif hasattr(obj, '__iter__'):
+        elif hasattr(obj, "__iter__"):
             items = list(obj)
             return Array(*items)
         else:
@@ -2080,13 +2084,12 @@ class Array:
 
     @staticmethod
     def of(*args):  # TODO - test
-        """ Creates a new Array instance with a variable number of arguments,
-        regardless of number or type of the arguments. """
+        """Creates a new Array instance with a variable number of arguments,
+        regardless of number or type of the arguments."""
         return Array(args)
 
     def __init__(self, *args):
-        """[An Array that behaves like a js array]
-        """
+        """[An Array that behaves like a js array]"""
         # casting
         if len(args) == 1:
             if isinstance(args[0], list):
@@ -2116,7 +2119,7 @@ class Array:
 
     def __add__(self, value):
         if isinstance(value, int):
-            raise ValueError('int not supported')
+            raise ValueError("int not supported")
         if isinstance(value, Array):
             self.args = self.args + value.args
         if isinstance(value, list):
@@ -2146,7 +2149,7 @@ class Array:
 
     def __sub__(self, value):
         if isinstance(value, int):
-            raise ValueError('int not supported')
+            raise ValueError("int not supported")
         if isinstance(value, Array):
             self.args = self.args - value.args
         if isinstance(value, list):
@@ -2154,7 +2157,7 @@ class Array:
         return self.args
 
     def toString(self):
-        ''' Converts an array to a string, and returns the result '''
+        """Converts an array to a string, and returns the result"""
         return str(self.args)  # TODO - check what js does
 
     def toSource(self):
@@ -2165,7 +2168,7 @@ class Array:
 
     @property
     def length(self):
-        """ Sets or returns the number of elements in an array """
+        """Sets or returns the number of elements in an array"""
         return len(self.args)
 
     def concat(self, *args):
@@ -2179,10 +2182,9 @@ class Array:
         return self.args
 
     def flat(self, depth=1):  # TODO - test
-        """[Flattens an array into a single-dimensional array or a depth of arrays]
-        """
+        """[Flattens an array into a single-dimensional array or a depth of arrays]"""
         if depth < 1:
-            raise ValueError('depth must be greater than 0')
+            raise ValueError("depth must be greater than 0")
         if depth == 1:
             return self.args
         flat = []
@@ -2191,13 +2193,11 @@ class Array:
         return flat
 
     def flatMap(self, fn):  # TODO - test
-        """[Maps a function over an array and flattens the result]
-        """
+        """[Maps a function over an array and flattens the result]"""
         return Array(fn(i) for i in self.args)
 
     def fill(self, value=None, start=None, end=None):
-        """[Fills elements of an array from a start index to an end index with a static value]
-        """
+        """[Fills elements of an array from a start index to an end index with a static value]"""
         if start is None:
             start = 0
         if end is None:
@@ -2237,16 +2237,14 @@ class Array:
     #     return Map(groups)
 
     def findLast(self, callback):
-        """[Returns the last element in an array that passes a test]
-        """
+        """[Returns the last element in an array that passes a test]"""
         for i in range(len(self.args) - 1, -1, -1):
             if callback(self.args[i], i, self.args):
                 return self.args[i]
         return None
 
     def findLastIndex(self, callback):
-        """[Returns the last index of an element in an array that passes a test]
-        """
+        """[Returns the last index of an element in an array that passes a test]"""
         for i in range(len(self.args) - 1, -1, -1):
             if callback(self.args[i], i, self.args):
                 return i
@@ -2267,7 +2265,7 @@ class Array:
             return False
 
     def indexOf(self, value):
-        """ Search the array for an element and returns its position """
+        """Search the array for an element and returns its position"""
         # for count, each in enumerate(self.args):
         #     if each == value:
         #         return count
@@ -2295,12 +2293,12 @@ class Array:
             return False
 
     def join(self, value):
-        """ Joins all elements of an array into a string  """
+        """Joins all elements of an array into a string"""
         # TODO - get passed param names
         return value.join([str(x) for x in self.args])
 
     def lastIndexOf(self, value):
-        """ Search the array for an element, starting at the end, and returns its position """
+        """Search the array for an element, starting at the end, and returns its position"""
         try:
             return len(self.args) - self.args[::-1].index(value) - 1
         except Exception as e:
@@ -2308,18 +2306,18 @@ class Array:
             return None
 
     def pop(self):
-        """ Removes the last element of an array, and returns that element """
+        """Removes the last element of an array, and returns that element"""
         # item = self.args[len(self.args)-1]
         # del self.args[len(self.args)-1]
         return self.args.pop()
 
     def push(self, value):
-        """ Adds new elements to the end of an array, and returns the new length """
+        """Adds new elements to the end of an array, and returns the new length"""
         self.args.append(value)
         return len(self.args)
 
     def reverse(self):
-        """ Reverses the order of the elements in an array """
+        """Reverses the order of the elements in an array"""
         self.args = self.args[::-1]
         return self.args
 
@@ -2339,7 +2337,7 @@ class Array:
         return self.args[slice(start, stop, step)]
 
     def splice(self, start, delete_count=None, *items):
-        """ Selects a part of an array, and returns the new array """
+        """Selects a part of an array, and returns the new array"""
         if delete_count is None:
             delete_count = len(self.args) - start
 
@@ -2383,11 +2381,11 @@ class Array:
         # return map(self.args, func)
 
     def some(self, func):
-        """ Checks if any of the elements in an array pass a test """
+        """Checks if any of the elements in an array pass a test"""
         return any(func(value) for value in self.args)
 
     def sort(self, func=None):  # , *args, **kwargs):
-        """ Sorts the elements of an array """
+        """Sorts the elements of an array"""
 
         if func is not None:
             return self.args.sort(key=func(*self.args))
@@ -2403,8 +2401,8 @@ class Array:
         return self.args
 
     def reduce(self, callback, initialValue=None):
-        """ Reduces the array to a single value (going left-to-right)
-            callback recieve theses parameters: previousValue, currentValue, currentIndex, array
+        """Reduces the array to a single value (going left-to-right)
+        callback recieve theses parameters: previousValue, currentValue, currentIndex, array
         """
         arguments = self.args
         if initialValue is None:
@@ -2413,6 +2411,7 @@ class Array:
 
         for i, value in enumerate(arguments):
             import inspect
+
             if len(inspect.signature(callback).parameters) == 4:
                 initialValue = callback(initialValue, value, i, arguments)
             elif len(inspect.signature(callback).parameters) == 3:
@@ -2426,8 +2425,8 @@ class Array:
         return initialValue
 
     def reduceRight(self, callback, initialValue=None):
-        """ Reduces the array to a single value (going right-to-left)
-            callback recieve theses parameters: previousValue, currentValue, currentIndex, array
+        """Reduces the array to a single value (going right-to-left)
+        callback recieve theses parameters: previousValue, currentValue, currentIndex, array
         """
         arguments = self.args
         if initialValue is None:
@@ -2436,6 +2435,7 @@ class Array:
 
         for i, value in enumerate(reversed(arguments)):
             import inspect
+
             if len(inspect.signature(callback).parameters) == 4:
                 initialValue = callback(initialValue, value, i, arguments)
             elif len(inspect.signature(callback).parameters) == 3:
@@ -2462,13 +2462,13 @@ class Array:
         return list(filter(func, self.args))
 
     def find(self, func):
-        """ Returns the value of the first element in an array that pass a test """
+        """Returns the value of the first element in an array that pass a test"""
         for each in self.args:
             if func(each):
                 return each
 
     def findIndex(self, value):
-        """ Returns the index of the first element in an array that pass a test """
+        """Returns the index of the first element in an array that pass a test"""
         # written by .ai (https://6b.eleuther.ai/)
         for i, value in enumerate(self.args):
             if value == value:
@@ -2476,21 +2476,21 @@ class Array:
         return -1
 
     def forEach(self, func):
-        """ Calls a function for each array element """
+        """Calls a function for each array element"""
         # written by .ai (https://6b.eleuther.ai/)
         for value in self.args:
             func(value)
         # TODO - is this supposed to pass count like Node list? i.e.
         # for i in range(len(self.args)):
-            # func(self.args[i], i, self.args)
+        # func(self.args[i], i, self.args)
 
     def keys(self):
-        """ Returns a Array Iteration Object, containing the keys of the original array """
+        """Returns a Array Iteration Object, containing the keys of the original array"""
         for i in self.args:
             yield i
 
     def copyWithin(self, target, start=0, end=None):
-        """ Copies array elements within the array, from start to end """
+        """Copies array elements within the array, from start to end"""
         if end is None:
             end = len(target)
         for i in range(start, end):
@@ -2533,8 +2533,7 @@ class Array:
 Array.prototype = Array
 
 
-class Set():
-
+class Set:
     def __init__(self, *args):
         """[The Set object lets you store unique values of any type, whether primitive values or object references.
 
@@ -2562,44 +2561,44 @@ class Set():
 
     @property
     def species(self):
-        """ The constructor function that is used to create derived objects. """
+        """The constructor function that is used to create derived objects."""
         # return self.args
         raise NotImplementedError
 
     @property
     def size(self):
-        """ Returns the number of values in the Set object. """
+        """Returns the number of values in the Set object."""
         return len(self.args)
 
     def add(self, value):
-        """ Appends value to the Set object. Returns the Set object with added value. """
+        """Appends value to the Set object. Returns the Set object with added value."""
         # print(type(self.args), value)
         self.args.add(value)
         return self.args
 
     def clear(self):
-        """ Removes all elements from the Set object. """
+        """Removes all elements from the Set object."""
         self.args.clear()
 
     def delete(self, value):
-        """ Removes the element associated to the value
-        returns a boolean asserting whether an element was successfully removed or not. """
+        """Removes the element associated to the value
+        returns a boolean asserting whether an element was successfully removed or not."""
         return self.args.remove(value)
 
     def has(self, value):
-        """ Returns a boolean asserting whether an element is present with the given value in the Set object or not. """
+        """Returns a boolean asserting whether an element is present with the given value in the Set object or not."""
         return value in self.args
 
     def contains(self, value):
-        """ Returns a boolean asserting whether an element is present with the given value in the Set object or not. """
+        """Returns a boolean asserting whether an element is present with the given value in the Set object or not."""
         return value in self.args
 
     # Set.prototype[@@iterator]()
     # Returns a new iterator object that yields the values for each element in the Set object in insertion order.
 
     def values(self):
-        """ Returns a new iterator object that yields the values for each element
-        in the Set object in insertion order. """
+        """Returns a new iterator object that yields the values for each element
+        in the Set object in insertion order."""
         return iter(self.args)
 
     # def keys(self):
@@ -2607,13 +2606,13 @@ class Set():
     #     return self.values()
 
     def entries(self):
-        """ Returns a new iterator object that contains an array of [value, value] for each element in the Set object,
-        in insertion order. """
+        """Returns a new iterator object that contains an array of [value, value] for each element in the Set object,
+        in insertion order."""
         return iter([[i, self.args[i]] for i in self.args])
         # This is similar to the Map object, so that each entry's key is the same as its value for a Set.
 
     def forEach(self, callbackFn, thisArg=None):
-        """ Calls callbackFn once for each value present in the Set object, in insertion order.
+        """Calls callbackFn once for each value present in the Set object, in insertion order.
         If a thisArg parameter is provided, it will be used as the this value for each invocation of callbackFn.
         """
         for i in self.args:
@@ -2621,11 +2620,11 @@ class Set():
 
 
 class Number(float):
-    """ javascript Number methods """
+    """javascript Number methods"""
 
     # print(sys.float_info)
     MAX_VALUE = list(sys.float_info)[0]
-    MIN_VALUE = 5E-324  # CHANGE no longer >  list(sys.float_info)[3]
+    MIN_VALUE = 5e-324  # CHANGE no longer >  list(sys.float_info)[3]
 
     NEGATIVE_INFINITY = float("inf")  #: Represents negative infinity (returned on overflow) Number
     POSITIVE_INFINITY = float("-inf")  #: Represents infinity (returned on overflow)  Number
@@ -2753,36 +2752,36 @@ class Number(float):
         return other % self.x
 
     def isInteger(self):
-        """ Checks whether a value is an integer """
-        return (type(self.x) == int)
+        """Checks whether a value is an integer"""
+        return type(self.x) == int
 
     def isSafeInteger(self):
-        """ Checks whether a value is a safe integer """
+        """Checks whether a value is a safe integer"""
         raise NotImplementedError
 
     def toExponential(self, num=None):
-        """ Converts a number into an exponential notation """
+        """Converts a number into an exponential notation"""
         if num is not None:
-            exp = '{:e}'.format(Number(Number(self.x).toFixed(num)))
+            exp = "{:e}".format(Number(Number(self.x).toFixed(num)))
         else:
-            exp = '{:e}'.format(self.x)
+            exp = "{:e}".format(self.x)
 
-        if 'e' in str(self.x):
+        if "e" in str(self.x):
             exp = str(self.x)  # python already converts.
 
-        n = exp.split('e')[0].rstrip("0")
-        e = exp.split('e')[1].replace('00', '0')
+        n = exp.split("e")[0].rstrip("0")
+        e = exp.split("e")[1].replace("00", "0")
 
         if n == "0.":
             n = "0"
 
         if int(e) != 0:
             if int(e) < 10 and int(e) > -10:  # TODO - not correct. lazy way to strip left 0s only
-                e = e.replace('0', '')
+                e = e.replace("0", "")
 
         # print(  "AND:", n, "e" , e )
-        if n.endswith('.'):
-            n = n.strip('.')
+        if n.endswith("."):
+            n = n.strip(".")
 
         return n + "e" + e
 
@@ -2831,6 +2830,7 @@ class Number(float):
             return str(self.x)
 
         import string
+
         digs = string.digits + string.ascii_letters
 
         if self.x < 0:
@@ -2848,30 +2848,31 @@ class Number(float):
             self.x = int(self.x / base)
 
         if sign < 0:
-            digits.append('-')
+            digits.append("-")
 
         digits.reverse()
 
-        return ''.join(digits)
+        return "".join(digits)
 
 
 class String:
-    """ javascript String methods """
+    """javascript String methods"""
 
     @staticmethod
     def fromCodePoint(codePoint: int):
-        """ Converts a Unicode code point into a string """
+        """Converts a Unicode code point into a string"""
         return chr(codePoint)
 
     @staticmethod
     def toCodePoint(char: str):
-        """ Converts a Unicode string into a code point """
+        """Converts a Unicode string into a code point"""
         return ord(char)
 
     @staticmethod
     def raw(string):
-        """ Returns the string as-is """
+        """Returns the string as-is"""
         import re
+
         return re.escape(string)
 
     # @staticmethod
@@ -2881,7 +2882,7 @@ class String:
 
     @staticmethod
     def toCharCode(char: str):
-        """ Converts a Unicode string into a code point """
+        """Converts a Unicode string into a code point"""
         return ord(char)
 
     def __init__(self, x="", *args, **kwargs):
@@ -2975,12 +2976,12 @@ class String:
 
     # @staticmethod
     def charCodeAt(self, index: int) -> int:
-        """ Returns the Unicode of the character at the specified index """
+        """Returns the Unicode of the character at the specified index"""
         return ord(self.x[index])
 
     # @staticmethod
     def fromCharCode(self, *codes) -> str:
-        """ returns a string created from the specified sequence of UTF-16 code units """
+        """returns a string created from the specified sequence of UTF-16 code units"""
         return "".join([str(chr(x)) for x in codes])
 
     @property
@@ -2988,11 +2989,11 @@ class String:
         return len(self.x)
 
     def repeat(self, count: int) -> str:
-        """ Returns a new string with a specified number of copies of an existing string """
+        """Returns a new string with a specified number of copies of an existing string"""
         return self.x * count
 
     def startsWith(self, x: str, start: int = None, end: int = None) -> bool:
-        """ Checks whether a string begins with specified characters """
+        """Checks whether a string begins with specified characters"""
         if start is None:
             start = 0
         if end is None:
@@ -3001,7 +3002,7 @@ class String:
         return self.x.startswith(x, start, end)
 
     def substring(self, start: int, end: int = None) -> str:
-        """ Extracts the characters from a string, between two specified indices """
+        """Extracts the characters from a string, between two specified indices"""
         if start < 0:
             start = 0
         if end is None:
@@ -3009,7 +3010,7 @@ class String:
         return self.x[start:end]
 
     def endsWith(self, x: str, start: int = None, end: int = None) -> bool:
-        """ Checks whether a string ends with specified string/characters """
+        """Checks whether a string ends with specified string/characters"""
         if start is None:
             start = 0
         if end is None:
@@ -3017,21 +3018,21 @@ class String:
         return self.x.endswith(x, start, end)
 
     def toLowerCase(self) -> str:
-        """ Converts a string to lowercase letters """
+        """Converts a string to lowercase letters"""
         return self.x.lower()
 
     def toUpperCase(self) -> str:
-        """ Converts a string to uppercase letters """
+        """Converts a string to uppercase letters"""
         return self.x.upper()
 
     def slice(self, start: int = 0, end: int = None) -> str:
-        """ Selects a part of an string, and returns the new string """
+        """Selects a part of an string, and returns the new string"""
         if end is None:
             end = len(self.x)
         return self.x[start:end]
 
     def trim(self):
-        """ Removes whitespace from both ends of a string """
+        """Removes whitespace from both ends of a string"""
         return self.x.strip()
 
     def charAt(self, index: int) -> str:
@@ -3079,19 +3080,19 @@ class String:
     # pass
 
     def substr(self, start: int = 0, end: int = None):
-        """ Extracts the characters from a string, beginning at a specified start position,
-        and through the specified number of character """
+        """Extracts the characters from a string, beginning at a specified start position,
+        and through the specified number of character"""
         if end is None:
             end = len(self.x)
-        return self.x[start:start + end]
+        return self.x[start : start + end]
 
     def toLocaleLowerCase(self) -> str:
-        """ Converts a string to lowercase letters, according to the host's locale """
+        """Converts a string to lowercase letters, according to the host's locale"""
         # locale.setlocale()
         return self.x.lower()
 
     def toLocaleUpperCase(self) -> str:
-        """ Converts a string to uppercase letters, according to the host's locale """
+        """Converts a string to uppercase letters, according to the host's locale"""
         # locale.setlocale()
         return self.x.upper()
 
@@ -3149,8 +3150,8 @@ class String:
         return padChar * (length - len(self.x)) + self.x
 
     def localeCompare(self, comparisonString: str, locale: str = None, *args) -> int:
-        """ method returns a number indicating whether a reference string comes before,
-            or after, or is the same as the given string in sort order """
+        """method returns a number indicating whether a reference string comes before,
+        or after, or is the same as the given string in sort order"""
         # if locale is None:
         #     locale = self.locale
         # return locale.strcoll(self.x, comparisonString, *args)
@@ -3354,6 +3355,7 @@ class String:
             [str]: [the string in a div tag]
         """
         from domonic.html import div
+
         return div(self.x, *args, **kwargs)
 
     def webpage(self):
@@ -3362,8 +3364,8 @@ class String:
         Returns:
             [str]: [the string as a webpage]
         """
-        from domonic.html import (body, h1, head, html, link, meta, script,
-                                  style, title)
+        from domonic.html import body, h1, head, html, link, meta, script, style, title
+
         content = html(
             head(
                 title(self.x),
@@ -3392,11 +3394,11 @@ class String:
 
         """
         from domonic.dom import Document
+
         return Document.createElement(tag, self.x, **kwargs)
 
 
-class RegExp():
-
+class RegExp:
     def __init__(self, expression, flags=""):
         self.expression = expression
         self.flags = flags.lower()  #: A string that contains the flags of the RegExp object.
@@ -3420,7 +3422,7 @@ class RegExp():
         Args:
             value (bool): [True if dot matches newlines, False otherwise]
         """
-        if 's' not in self.flags:
+        if "s" not in self.flags:
             self.flags += "s" if value else ""
 
     @property
@@ -3437,7 +3439,7 @@ class RegExp():
         Args:
             value (bool): [True if dot matches newlines, False otherwise]
         """
-        if 'm' not in self.flags:
+        if "m" not in self.flags:
             self.flags += "m" if value else ""
 
     @property
@@ -3465,7 +3467,7 @@ class RegExp():
         Args:
             value (bool): [True if global, False otherwise]
         """
-        if 'g' not in self.flags:
+        if "g" not in self.flags:
             self.flags += "g" if value else ""
 
     @property
@@ -3483,7 +3485,7 @@ class RegExp():
         Args:
             value (bool): [True if hasIndices, False otherwise]
         """
-        if 'd' not in self.flags:
+        if "d" not in self.flags:
             self.flags += "d" if value else ""
 
     @property
@@ -3501,7 +3503,7 @@ class RegExp():
         Args:
             value (bool): [True if ignoreCase, False otherwise]
         """
-        if 'i' not in self.flags:
+        if "i" not in self.flags:
             self.flags += "i" if value else ""
 
     @property
@@ -3519,11 +3521,11 @@ class RegExp():
         Args:
             value (bool): [True if unicode, False otherwise]
         """
-        if 'u' not in self.flags:
+        if "u" not in self.flags:
             self.flags += "u" if value else ""
 
     def compile(self):
-        """ (Re-)compiles a regular expression during execution of a script. """
+        """(Re-)compiles a regular expression during execution of a script."""
         pass
 
     # def exec(self, s: str):  # TODO - test
@@ -3544,11 +3546,11 @@ class RegExp():
     # TODO - wanted to change this to be like above. but d3 required me to rollback.
     # need to check if i modifed that implementation to fit my needs at the time.
     def exec(self, s: str):
-        """ Executes a search for a match in its string parameter. """
+        """Executes a search for a match in its string parameter."""
         # print("exec:", self.expression, s)
         m = re.search(self.expression, s)
         # print(m)
-        if (m):
+        if m:
             return [s for s in m.groups()]
 
     def test(self, s: str):
@@ -3562,18 +3564,18 @@ class RegExp():
         """
         m = re.match(self.expression, s)
         # print(m)
-        if (m):
+        if m:
             return True
         else:
             return False
 
     def toString(self):
-        """ Returns a string representation of the RegExp object. """
+        """Returns a string representation of the RegExp object."""
         return self.__str__()
 
     def __str__(self):
-        """" Returns a string representing the specified object.
-        Overrides the Object.prototype.toString() method. """
+        """ " Returns a string representing the specified object.
+        Overrides the Object.prototype.toString() method."""
         return self.expression
 
     # def [@@match]()
@@ -3597,10 +3599,9 @@ def ToUint32(v):
 
 
 class ArrayBuffer:
-
     def __init__(self, length):
         # self.length = length
-        self.buffer = array.array('B', [0] * length)
+        self.buffer = array.array("B", [0] * length)
         # self.byteLength = length
         self.isView = False
 
@@ -3707,7 +3708,7 @@ class TypedArray:
         # self.BYTES_PER_ELEMENT = Int8Array.BYTES_PER_ELEMENT
 
         if len(args) == 0:
-            self.buffer = array.array('B', [0] * 0)
+            self.buffer = array.array("B", [0] * 0)
             self.length = 0
             self.byteLength = self.length * self.BYTES_PER_ELEMENT
             self.isView = False
@@ -3746,10 +3747,10 @@ class TypedArray:
                 # raise RangeError("ArrayBuffer length minus the byteOffset is not a multiple of the element size.")
                 raise Exception("ArrayBuffer length minus the byteOffset is not a multiple of the element size.")
 
-            if (len(args) < 3):
+            if len(args) < 3:
                 self.byteLength = self.buffer.byteLength - self.byteOffset
 
-                if (self.byteLength % self.BYTES_PER_ELEMENT):
+                if self.byteLength % self.BYTES_PER_ELEMENT:
                     # raise RangeError("length of buffer minus byteOffset not a multiple of the element size");
                     raise Exception("length of buffer minus byteOffset not a multiple of the element size")
 
@@ -3757,7 +3758,7 @@ class TypedArray:
             else:
                 self.length = ToUint32(args[2])
                 self.byteLength = self.length * self.BYTES_PER_ELEMENT
-            if ((self.byteOffset + self.byteLength) > self.buffer.byteLength):
+            if (self.byteOffset + self.byteLength) > self.buffer.byteLength:
                 # raise RangeError("byteOffset and length reference an area beyond the end of the buffer");
                 raise Exception("byteOffset and length reference an area beyond the end of the buffer")
 
@@ -3775,7 +3776,7 @@ class TypedArray:
         #         self.length = args[2]
         #     return
         elif isinstance(arg, dict):
-            self.buffer = array.array('B', [0] * 0)
+            self.buffer = array.array("B", [0] * 0)
             self.byteLength = 0
             # self.length = 0
             self.isView = False
@@ -3783,7 +3784,7 @@ class TypedArray:
             return
         elif isinstance(arg, int):
             # self.buffer = array.array('B', [0] * arg)
-            print('a!')
+            print("a!")
             # self.buffer = ArrayBuffer(arg)
             # self.byteLength = arg
             # self.length = arg
@@ -3791,8 +3792,8 @@ class TypedArray:
 
             # // Constructor(unsigned long length)
             self.length = ToInt32(args[0])
-            if (self.length < 0):
-                raise Exception('ArrayBufferView size is not a small enough positive integer')
+            if self.length < 0:
+                raise Exception("ArrayBufferView size is not a small enough positive integer")
 
             self.byteLength = self.length * self.BYTES_PER_ELEMENT
             self.buffer = ArrayBuffer(self.byteLength)
@@ -3857,7 +3858,7 @@ class TypedArray:
             raise SyntaxError("Not enough arguments")
 
         index = ToUint32(index)
-        if (index >= self.length):
+        if index >= self.length:
             return undefined
 
         b = []
@@ -3874,11 +3875,11 @@ class TypedArray:
     # // setter void (unsigned long index, type value);
     def __setitem__(self, index, value):
         # print('set', index, value)
-        if (index is None and value is None):
+        if index is None and value is None:
             raise SyntaxError("Not enough arguments")
 
         index = ToUint32(index)
-        if (index >= self.length):
+        if index >= self.length:
             return undefined
 
         b = self._pack(value)
@@ -3894,7 +3895,7 @@ class TypedArray:
     # // void set(TypedArray array, optional unsigned long offset);
     # // void set(sequence<type> array, optional unsigned long offset);
     def set(self, index, value):
-        if (index is None):
+        if index is None:
             raise SyntaxError("Not enough arguments")
 
         # arr = None
@@ -3908,19 +3909,19 @@ class TypedArray:
         # byteLength = None
         # tmp = None
 
-        if (type(index, object) and index == self):
+        if type(index, object) and index == self:
             # void set(TypedArray arr, optional unsigned long offset)
             arr = index
             offset = ToUint32(value)
 
-            if (offset + arr.length > self.length):
+            if offset + arr.length > self.length:
                 # raise RangeError("Offset plus length of array is out of range")
                 raise Exception("Offset plus length of array is out of range")
 
             byteOffset = self.byteOffset + offset * self.BYTES_PER_ELEMENT
             byteLength = arr.length * self.BYTES_PER_ELEMENT
 
-            if (arr.buffer == self.buffer):
+            if arr.buffer == self.buffer:
                 tmp = []
                 s = arr.byteOffset
                 for i in range(0, byteLength):
@@ -3937,13 +3938,13 @@ class TypedArray:
                     self.buffer[d] = arr.buffer[s]
                     s += 1
                     d += 1
-        elif (type(index, object) and index != self):
+        elif type(index, object) and index != self:
             # void set(sequence<type> arr, optional unsigned long offset);
             sequence = index
             nlen = ToUint32(sequence.length)
             offset = ToUint32(value)
 
-            if (offset + nlen > self.length):
+            if offset + nlen > self.length:
                 # raise RangeError("Offset plus length of arr is out of range")
                 raise Exception("Offset plus length of arr is out of range")
 
@@ -3956,7 +3957,6 @@ class TypedArray:
     # // TypedArray subarray(long begin, optional long end);
 
     def subarray(self, start, end):
-
         def clamp(v, min, max):
             m1 = max if v > max else v
             return min if v < min else m1
@@ -3969,23 +3969,23 @@ class TypedArray:
         start = ToInt32(start)
         end = ToInt32(end)
 
-        if (start < 0):
+        if start < 0:
             start = self.length + start
-        if (end < 0):
+        if end < 0:
             end = self.length + end
 
         start = clamp(start, 0, self.length)
         end = clamp(end, 0, self.length)
 
         nlen = end - start
-        if (nlen < 0):
+        if nlen < 0:
             nlen = 0
 
         return self.__init__(self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, nlen)
 
 
 def as_signed(value, bits):
-    """ Converts an unsigned integer to a signed integer. """
+    """Converts an unsigned integer to a signed integer."""
     s = 32 - bits
     mask = (1 << s) - 1
     return (value & mask) - (value & (mask << s))
@@ -3997,10 +3997,9 @@ def as_unsigned(value, bits):
     return value & mask
 
 
-class __byteutils__():
-
+class __byteutils__:
     def packI8(self, n):
-        return [n & 0xff]
+        return [n & 0xFF]
         # return struct.pack('B', n)
 
     def unpackI8(self, b):
@@ -4008,7 +4007,7 @@ class __byteutils__():
         # return struct.unpack('B', b)[0]
 
     def packU8(self, n):
-        return [n & 0xff]
+        return [n & 0xFF]
         # return struct.pack('B', n)
 
     def unpackU8(self, bytes):
@@ -4018,16 +4017,16 @@ class __byteutils__():
     def packU8Clamped(self, n):
         n = Math.round(Number(n))
         # return [n < 0 ? 0 : n > 0xff ? 0xff : n & 0xff]
-        if (n < 0):
+        if n < 0:
             return [0]
-        elif (n > 0xff):
-            return [0xff]
+        elif n > 0xFF:
+            return [0xFF]
         else:
-            return [n & 0xff]
+            return [n & 0xFF]
         # return struct.pack('B', n)
 
     def packI16(self, n):
-        return [(n >> 8) & 0xff, n & 0xff]
+        return [(n >> 8) & 0xFF, n & 0xFF]
         # return struct.pack('>H', n)
 
     def unpackI16(self, bytes):
@@ -4035,7 +4034,7 @@ class __byteutils__():
         # return struct.unpack('>H', bytes)[0]
 
     def packU16(self, n):
-        return [(n >> 8) & 0xff, n & 0xff]
+        return [(n >> 8) & 0xFF, n & 0xFF]
         # return struct.pack('>H', n)
 
     def unpackU16(self, bytes):
@@ -4043,7 +4042,7 @@ class __byteutils__():
         # return struct.unpack('>H', bytes)[0]
 
     def packI32(self, n):
-        return [(n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]
+        return [(n >> 24) & 0xFF, (n >> 16) & 0xFF, (n >> 8) & 0xFF, n & 0xFF]
         # return struct.pack('>I', n)
 
     def unpackI32(self, bytes):
@@ -4051,7 +4050,7 @@ class __byteutils__():
         # return struct.unpack('>I', bytes)[0]
 
     def packU32(self, n):
-        return [(n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]
+        return [(n >> 24) & 0xFF, (n >> 16) & 0xFF, (n >> 8) & 0xFF, n & 0xFF]
         # return struct.pack('>I', n)
 
     def unpackU32(self, bytes):
@@ -4065,26 +4064,26 @@ class __byteutils__():
         def roundToEven(n):
             w = Math.floor(n)
             f = n - w
-            if (f < 0.5):
+            if f < 0.5:
                 return w
-            if (f > 0.5):
+            if f > 0.5:
                 return w + 1
             # return w % 2 ? w + 1 : w
             return w if (w % 2) else w + 1
 
         # Compute sign, exponent, fraction
-        if (v != v):
+        if v != v:
             # NaN
             # http://dev.w3.org/2006/webapi/WebIDL/#es-type-mapping
             e = (1 << ebits) - 1
             f = pow(2, fbits - 1)
             s = 0
-        elif (v == Global.Infinity or v == -Global.Infinity):
+        elif v == Global.Infinity or v == -Global.Infinity:
             e = (1 << ebits) - 1
             f = 0
             # s = (v < 0) ? 1 : 0
             s = 1 if (v < 0) else 0
-        elif (v == 0):
+        elif v == 0:
             e = 0
             f = 0
             s = 1 if (1 / v == -Global.Infinity) else 0
@@ -4092,15 +4091,15 @@ class __byteutils__():
             s = v < 0
             v = abs(v)
 
-            if (v >= pow(2, 1 - bias)):
+            if v >= pow(2, 1 - bias):
 
                 e = min(Math.floor(Math.log(v) / Math.LN2), 1023)
                 f = roundToEven(v / pow(2, e) * pow(2, fbits))
 
-                if (f / pow(2, fbits) >= 2):
+                if f / pow(2, fbits) >= 2:
                     e = e + 1
                     f = 1
-                if (e > bias):
+                if e > bias:
                     # Overflow
                     e = (1 << ebits) - 1
                     f = 0
@@ -4123,11 +4122,11 @@ class __byteutils__():
             e = Math.floor(e / 2)
         bits.append(s)
         bits.reverse()
-        mystr = bits.join('')
+        mystr = bits.join("")
 
         # Bits to bytes
         b = []
-        while (mystr.length):
+        while mystr.length:
             b.push(parseInt(mystr.substring(0, 8), 2))
             mystr = mystr.substring(8)
         return b
@@ -4143,27 +4142,27 @@ class __byteutils__():
                 b = b >> 1
 
         bits.reverse()
-        mystr = bits.join('')
+        mystr = bits.join("")
 
         # Unpack sign, exponent, fraction
         bias = (1 << (ebits - 1)) - 1
         # s = parseInt(str.substring(0, 1), 2) ? -1 : 1
-        s = -1 if (mystr[0] == '1') else 1
+        s = -1 if (mystr[0] == "1") else 1
 
         e = parseInt(mystr.substring(1, 1 + ebits), 2)
         f = parseInt(mystr.substring(1 + ebits), 2)
 
         # // Produce number
-        if (e == (1 << ebits) - 1):
+        if e == (1 << ebits) - 1:
             # return f !== 0 ? NaN : s * Infinity
-            if (f != 0):
+            if f != 0:
                 return Global.NaN
             else:
                 return s * Global.InfInfinity
-        elif (e > 0):
+        elif e > 0:
             # Normalized
             return s * pow(2, e - bias) * (1 + f / pow(2, fbits))
-        elif (f != 0):
+        elif f != 0:
             # Denormalized
             return s * pow(2, -(bias - 1)) * (f / pow(2, fbits))
         else:
@@ -4186,50 +4185,65 @@ class __byteutils__():
         # return struct.pack('>f', v)
 
 
-Int8Array = type('Int8Array',
-                 (TypedArray,),
-                 {'name': 'Int8Array', '_pack': __byteutils__.packI8, '_unpack': __byteutils__.unpackI8})
+Int8Array = type(
+    "Int8Array", (TypedArray,), {"name": "Int8Array", "_pack": __byteutils__.packI8, "_unpack": __byteutils__.unpackI8}
+)
 Int8Array.BYTES_PER_ELEMENT = 1
 
-Uint8Array = type('Uint8Array',
-                  (TypedArray,),
-                  {'name': 'Uint8Array', '_pack': __byteutils__.packU8, '_unpack': __byteutils__.unpackU8})
+Uint8Array = type(
+    "Uint8Array",
+    (TypedArray,),
+    {"name": "Uint8Array", "_pack": __byteutils__.packU8, "_unpack": __byteutils__.unpackU8},
+)
 Uint8Array.BYTES_PER_ELEMENT = 1
 
-Uint8ClampedArray = type('Uint8ClampedArray',
-                         (TypedArray,),
-                         {'name': 'Uint8ClampedArray', '_pack': __byteutils__.packU8Clamped, '_unpack': __byteutils__.unpackU8})
+Uint8ClampedArray = type(
+    "Uint8ClampedArray",
+    (TypedArray,),
+    {"name": "Uint8ClampedArray", "_pack": __byteutils__.packU8Clamped, "_unpack": __byteutils__.unpackU8},
+)
 Uint8ClampedArray.BYTES_PER_ELEMENT = 1
 
-Int16Array = type('Int16Array',
-                  (TypedArray,),
-                  {'name': 'Int16Array', '_pack': __byteutils__.packI16, '_unpack': __byteutils__.unpackI16})
+Int16Array = type(
+    "Int16Array",
+    (TypedArray,),
+    {"name": "Int16Array", "_pack": __byteutils__.packI16, "_unpack": __byteutils__.unpackI16},
+)
 Int16Array.BYTES_PER_ELEMENT = 2
 
-Uint16Array = type('Uint16Array',
-                   (TypedArray,),
-                   {'name': 'Uint16Array', '_pack': __byteutils__.packU16, '_unpack': __byteutils__.unpackU16})
+Uint16Array = type(
+    "Uint16Array",
+    (TypedArray,),
+    {"name": "Uint16Array", "_pack": __byteutils__.packU16, "_unpack": __byteutils__.unpackU16},
+)
 Uint16Array.BYTES_PER_ELEMENT = 2
 
-Int32Array = type('Int32Array',
-                  (TypedArray,),
-                  {'name': 'Int32Array', '_pack': __byteutils__.packI32, '_unpack': __byteutils__.unpackI32}
-                  )
+Int32Array = type(
+    "Int32Array",
+    (TypedArray,),
+    {"name": "Int32Array", "_pack": __byteutils__.packI32, "_unpack": __byteutils__.unpackI32},
+)
 Int32Array.BYTES_PER_ELEMENT = 4
 
-Uint32Array = type('Uint32Array',
-                   (TypedArray,),
-                   {'name': 'Uint32Array', '_pack': __byteutils__.packU32, '_unpack': __byteutils__.unpackU32})
+Uint32Array = type(
+    "Uint32Array",
+    (TypedArray,),
+    {"name": "Uint32Array", "_pack": __byteutils__.packU32, "_unpack": __byteutils__.unpackU32},
+)
 Uint32Array.BYTES_PER_ELEMENT = 4
 
-Float32Array = type('Float32Array',
-                    (TypedArray,),
-                    {'name': 'Float32Array', '_pack': __byteutils__.packF32, '_unpack': __byteutils__.unpackF32})
+Float32Array = type(
+    "Float32Array",
+    (TypedArray,),
+    {"name": "Float32Array", "_pack": __byteutils__.packF32, "_unpack": __byteutils__.unpackF32},
+)
 Float32Array.BYTES_PER_ELEMENT = 4
 
-Float64Array = type('Float64Array',
-                    (TypedArray,),
-                    {'name': 'Float64Array', '_pack': __byteutils__.packF64, '_unpack': __byteutils__.unpackF64})
+Float64Array = type(
+    "Float64Array",
+    (TypedArray,),
+    {"name": "Float64Array", "_pack": __byteutils__.packF64, "_unpack": __byteutils__.unpackF64},
+)
 Float64Array.BYTES_PER_ELEMENT = 8
 
 # BigInt64Array = type('BigInt64Array',
@@ -4243,12 +4257,15 @@ Float64Array.BYTES_PER_ELEMENT = 8
 
 # TODO - test
 class Error(Exception):
-    ''' Raise Errors '''
+    """Raise Errors"""
+
     def __init__(self, message, *args, **kwargs):
         self.message = message
         super(Error, self).__init__(message)
+
     # def __str__(self):
     #     return self.message
+
 
 # Error
 # AggregateError
@@ -4263,7 +4280,8 @@ class Error(Exception):
 
 # ---- STUBBING OUT SOME NEW ONES TO WORK ON ----
 
-class Reflect():
+
+class Reflect:
     """
     The Reflect object provides the following static functions which have the same names as the proxy handler methods.
     Some of these methods are also the same as corresponding methods on Object,
@@ -4272,43 +4290,43 @@ class Reflect():
 
     @staticmethod
     def ownKeys(target):
-        """ Returns an array of the target object's own (not inherited) property keys. """
+        """Returns an array of the target object's own (not inherited) property keys."""
         return target.keys()
         # return target.__dict__.keys()
 
     @staticmethod
     def apply(target, thisArgument, argumentsList):
-        """ Calls a target function with arguments as specified by the argumentsList parameter.
-        See also Function.prototype.apply(). """
+        """Calls a target function with arguments as specified by the argumentsList parameter.
+        See also Function.prototype.apply()."""
         return target(*argumentsList)
 
     @staticmethod
     def construct(target, argumentsList, newTarget):
-        """ The new operator as a function. Equivalent to calling new target(...argumentsList).
-        Also provides the option to specify a different prototype. """
+        """The new operator as a function. Equivalent to calling new target(...argumentsList).
+        Also provides the option to specify a different prototype."""
         raise NotImplementedError
 
     @staticmethod
     def defineProperty(target, propertyKey, attributes):
-        """ Similar to Object.defineProperty().
-        Returns a Boolean that is true if the property was successfully defined. """
+        """Similar to Object.defineProperty().
+        Returns a Boolean that is true if the property was successfully defined."""
         raise NotImplementedError
 
     @staticmethod
     def deleteProperty(target, propertyKey):
-        """ The delete operator as a function. Equivalent to calling delete target[propertyKey]. """
+        """The delete operator as a function. Equivalent to calling delete target[propertyKey]."""
         raise NotImplementedError
 
     @staticmethod
     def get(target, propertyKey, receiver):
-        """ Returns the value of the property.
-        Works like getting a property from an object (target[propertyKey]) as a function. """
+        """Returns the value of the property.
+        Works like getting a property from an object (target[propertyKey]) as a function."""
         raise NotImplementedError
 
     @staticmethod
     def getOwnPropertyDescriptor(target, propertyKey):
-        """ Similar to Object.getOwnPropertyDescriptor().
-        Returns a property descriptor of the given property if it exists on the object,  undefined otherwise. """
+        """Similar to Object.getOwnPropertyDescriptor().
+        Returns a property descriptor of the given property if it exists on the object,  undefined otherwise."""
         raise NotImplementedError
 
     getPrototypeOf = Object.getPrototypeOf
@@ -4316,28 +4334,28 @@ class Reflect():
 
     @staticmethod
     def has(target, propertyKey):
-        """ Returns a Boolean indicating whether the target has the property.
-        Either as own or inherited. Works like the in operator as a function. """
+        """Returns a Boolean indicating whether the target has the property.
+        Either as own or inherited. Works like the in operator as a function."""
         raise NotImplementedError
 
     @staticmethod
     def preventExtensions(target):
-        """ Similar to Object.preventExtensions(). Returns a Boolean that is true if the update was successful. """
+        """Similar to Object.preventExtensions(). Returns a Boolean that is true if the update was successful."""
         raise NotImplementedError
 
     @staticmethod
     def set(target, propertyKey, value, receiver):
-        """ A function that assigns values to properties.
-        Returns a Boolean that is true if the update was successful. """
+        """A function that assigns values to properties.
+        Returns a Boolean that is true if the update was successful."""
         raise NotImplementedError
 
     @staticmethod
     def setPrototypeOf(target, prototype):
-        """ A function that sets the prototype of an object. Returns a Boolean that is true if the update was successful. """
+        """A function that sets the prototype of an object. Returns a Boolean that is true if the update was successful."""
         raise NotImplementedError
 
 
-class Symbol():
+class Symbol:
 
     # a global registry for symbols
     registry = []
@@ -4361,22 +4379,22 @@ class Symbol():
         return self.symbol == obj.symbol
 
     def isConcatSpreadable(self):
-        """ A Boolean value indicating if an object should be flattened to its array elements.
+        """A Boolean value indicating if an object should be flattened to its array elements.
         Used by Array.prototype.concat()."""
         return False
 
     def iterator(self, obj):
-        """ A method returning the default iterator for an object. Used by for...of. """
+        """A method returning the default iterator for an object. Used by for...of."""
         return iter(obj)
 
     def asyncIterator(self, obj):
-        """ A method that returns the default AsyncIterator for an object. Used by for await...of. """
+        """A method that returns the default AsyncIterator for an object. Used by for await...of."""
         return iter(obj)
 
     # A method that matches against a string, also used to determine if an object may be used as a regular expression.
     def match(self, item):
-        """ A method that matches the symbol against a string,
-        also used to determine if an object may be used as a regular expression. """
+        """A method that matches the symbol against a string,
+        also used to determine if an object may be used as a regular expression."""
         raise NotImplementedError
 
     # A method that returns an iterator, that yields matches of the regular expression against a string.
@@ -4427,16 +4445,16 @@ class Symbol():
     #     raise NotImplementedError
 
     def toSource(self):
-        """ Returns a string containing the source of the Symbol. Overrides the Object.prototype.toSource() method. """
+        """Returns a string containing the source of the Symbol. Overrides the Object.prototype.toSource() method."""
         raise NotImplementedError
 
     def toString(self):
-        """ Returns a string containing the description of the Symbol.
-        Overrides the Object.prototype.toString() method. """
+        """Returns a string containing the description of the Symbol.
+        Overrides the Object.prototype.toString() method."""
         raise NotImplementedError
 
     def valueOf(self):
-        """ Returns the Symbol. Overrides the Object.prototype.valueOf() method. """
+        """Returns the Symbol. Overrides the Object.prototype.valueOf() method."""
         raise NotImplementedError
 
 

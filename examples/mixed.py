@@ -1,11 +1,12 @@
 import sys
-sys.path.insert(0, '..')
+
+sys.path.insert(0, "..")
 
 from domonic.javascript import *
 from domonic.JSON import *
 
 # running a loop
-'''
+"""
 x=0
 
 def hi(inc):
@@ -18,19 +19,19 @@ import time
 time.sleep(5)
 window.clearInterval(test)
 print(f"Final value of x:{x}")
-'''
+"""
 
 # parsing data
-'''
+"""
 jsons = '[{"id":"01","name": "some item"},{"id":"02","name": "some other item"}]'
 json_data = JSON.parse(jsons)
 mytable = JSON.tablify(json_data)
 print(mytable)
-'''
+"""
 
 
 # rendering with vapory
-'''
+"""
 from vapory import *
 
 camera = Camera( 'location', [0,2,-10], 'look_at', [0,1,2] )
@@ -60,4 +61,4 @@ test = window.setInterval(animate, 0.0001) # max_iterations
 import time
 time.sleep(10)
 window.clearInterval(test)
-'''
+"""

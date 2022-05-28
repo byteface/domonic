@@ -121,7 +121,7 @@ class Tween(EventDispatcher):
                 if callable(e[i]):
                     p = TweenEquation(e[i])
                 else:
-                    p = TweenEquation(e[i].fn, {'a': e[i].a, 'b': e[i].b})
+                    p = TweenEquation(e[i].fn, {"a": e[i].a, "b": e[i].b})
                 v.equation = p
                 i += 1
 
@@ -139,11 +139,11 @@ class Tween(EventDispatcher):
 
     @loop.setter
     def loop(self, loop):
-        """ Set to True if you want it to loop """
+        """Set to True if you want it to loop"""
         self._loop = loop
 
     def start(self):
-        self._timeStart = get_timer()   # TODO!! ---
+        self._timeStart = get_timer()  # TODO!! ---
         self._timePaused = 0
         self._timePrevious = self._timeStart
         self._position = 0
@@ -167,14 +167,14 @@ class Tween(EventDispatcher):
         self._intID.stopped.set()  # call stopped on the thread so program exits
 
     def pause(self):
-        """ Pauses the tween from changing the values  """
+        """Pauses the tween from changing the values"""
         # TODO - pause should modify timer so it DOESNT jump frames. at mo does the opposite.
         # seems to not increment. then suddenly jumps to catch up with where it should be
         self._paused = True
         self.dispatchEvent(TweenEvent(TweenEvent.PAUSE if self._paused else TweenEvent.UNPAUSE, self))
 
     def unpause(self):
-        """ unpauses the tween """
+        """unpauses the tween"""
         self._paused = False
         self.dispatchEvent(TweenEvent(TweenEvent.UNPAUSE, self))
 
@@ -224,7 +224,7 @@ class Tween(EventDispatcher):
                 self.dispatchEvent(TweenEvent(TweenEvent.UPDATE_END, self))
 
             else:
-                self._timePaused += (timeCurrent - self._timePrevious)
+                self._timePaused += timeCurrent - self._timePrevious
 
             self._timePrevious = timeCurrent
 

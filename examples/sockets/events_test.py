@@ -1,9 +1,10 @@
 import asyncio
-import websockets # you gotta 'pip3 install websockets' for this example.
+import websockets  # you gotta 'pip3 install websockets' for this example.
 import json
 
 import sys
-sys.path.insert(0, '../..')
+
+sys.path.insert(0, "../..")
 
 from domonic.javascript import *
 from domonic.html import *
@@ -19,18 +20,18 @@ page = html(
     body(
         Websocket(drag_events=True, hashchange_events=True, wheel_events=True, clipboard_events=True),
         # canvas(_id="canvas", _width="500", _height="500"),
-
         div(_class="dropzone",).html(
-            div(_id="draggable", _draggable="true", _ondragstart="event.dataTransfer.setData('text/plain',null)",).html(
-                "This div is draggable"
-            )
+            div(
+                _id="draggable",
+                _draggable="true",
+                _ondragstart="event.dataTransfer.setData('text/plain',null)",
+            ).html("This div is draggable")
         ),
         div(_class="dropzone"),
-
-    )
+    ),
 )
 # render the page you need to visit while the socket server is running
-render(page, 'events.html')
+render(page, "events.html")
 
 
 # run an update loop from here.
@@ -41,7 +42,6 @@ somedata = {}
 
 
 class BrowserEventHandler(EventDispatcher, GlobalEventHandler):
-
     def __init__(self):
         super().__init__(self)
         self.addEventListener(KeyboardEvent.KEYDOWN, self.on_keydown)
@@ -83,7 +83,6 @@ class BrowserEventHandler(EventDispatcher, GlobalEventHandler):
         else:
             print("scrolling down")
 
-
     def onhashchange(self, event):
         print("The url used to be:", event.oldURL)
         print("Now the url is:", event.newURL)
@@ -121,11 +120,11 @@ class BrowserEventHandler(EventDispatcher, GlobalEventHandler):
         pass
 
     def on_keydown(self, event):
-        print('a key was pressed', event)
+        print("a key was pressed", event)
         print(event.key)
 
     def on_keyup(self, event):
-        print('a key was released')
+        print("a key was released")
         print(event.key)
 
     def on_mousemove(self, event):
@@ -133,10 +132,10 @@ class BrowserEventHandler(EventDispatcher, GlobalEventHandler):
         pass
 
     def on_mousedown(self, event):
-        print('mousedown', event, event.x, event.y)
+        print("mousedown", event, event.x, event.y)
 
     def on_mouseup(self, event):
-        print('on_mouseup', event, event.x, event.y)
+        print("on_mouseup", event, event.x, event.y)
 
 
 # create a handler for the browser events
@@ -154,6 +153,6 @@ async def update(websocket, path):
         await websocket.send(json.dumps(somedata, default=vars))
 
 
-server = websockets.serve(update, '0.0.0.0', 5555)
+server = websockets.serve(update, "0.0.0.0", 5555)
 asyncio.get_event_loop().run_until_complete(server)
 asyncio.get_event_loop().run_forever()

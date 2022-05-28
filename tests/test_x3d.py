@@ -16,13 +16,13 @@ class TestCase(unittest.TestCase):
 
     # @silence
     def test_domonic_x3dom(self):
-    	x3dom_test = html(
-			head(
-			    meta(**{"_http-equiv": "X-UA-Compatible"}, _content="IE=edge"),
-			    title("My first X3DOM page"),
-			    script(_type='text/javascript', _src='https://www.x3dom.org/download/x3dom.js'),
-			    script(
-		    	"""
+        x3dom_test = html(
+            head(
+                meta(**{"_http-equiv": "X-UA-Compatible"}, _content="IE=edge"),
+                title("My first X3DOM page"),
+                script(_type="text/javascript", _src="https://www.x3dom.org/download/x3dom.js"),
+                script(
+                    """
 				$(document).ready(function(){
 				    var screenshotCount = 0;
 
@@ -49,37 +49,30 @@ class TestCase(unittest.TestCase):
 				    });
 				});
 		    	"""
-			    ),
-			    link(_rel='stylesheet', _type='text/css', _href='https://www.x3dom.org/download/x3dom.css')
-			),
-			body(
-				h1("Animate Objects with X3DOM!"),
-				p("Learn how to animate objects."),
-				x3d(_width='500px', _height='400px').append(
-			    	scene(
-				        transform(_DEF="ball").append(
-					        shape(
-					            appearance(
-					                material(_diffuseColor='1 0 0')
-					            ),
-					            sphere()
-					        )
-				        ),
-			        	timeSensor(_DEF="time", _cycleInterval="2", _loop="true"),
-			        	PositionInterpolator(_DEF="move", _key="0 0.5 1", _keyValue="0 0 0  0 3 0  0 0 0"),
-			        	Route(_fromNode="time", _fromField ="fraction_changed", _toNode="move", _toField="set_fraction"),
-			        	Route(_fromNode="move", _fromField ="value_changed", _toNode="ball", _toField="translation")
-			        )
-			    )
-			)
-		)
+                ),
+                link(_rel="stylesheet", _type="text/css", _href="https://www.x3dom.org/download/x3dom.css"),
+            ),
+            body(
+                h1("Animate Objects with X3DOM!"),
+                p("Learn how to animate objects."),
+                x3d(_width="500px", _height="400px").append(
+                    scene(
+                        transform(_DEF="ball").append(shape(appearance(material(_diffuseColor="1 0 0")), sphere())),
+                        timeSensor(_DEF="time", _cycleInterval="2", _loop="true"),
+                        PositionInterpolator(_DEF="move", _key="0 0.5 1", _keyValue="0 0 0  0 3 0  0 0 0"),
+                        Route(_fromNode="time", _fromField="fraction_changed", _toNode="move", _toField="set_fraction"),
+                        Route(_fromNode="move", _fromField="value_changed", _toNode="ball", _toField="translation"),
+                    )
+                ),
+            ),
+        )
 
-    	render( str(x3dom_test) )#, "sphere_test.html" )
+        render(str(x3dom_test))  # , "sphere_test.html" )
 
 
-	# def test_aframe(self):
-    # 		pass
+# def test_aframe(self):
+# 		pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

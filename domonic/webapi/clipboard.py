@@ -5,7 +5,6 @@
 """
 
 
-class ClipboardData():
-
+class ClipboardData:
     def __init__(self):
         self.data = None

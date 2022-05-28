@@ -8,7 +8,6 @@
 
 
 class History:  # (EventTarget):
-
     def __init__(self, window=None):
         self.window = window
         self.states = []
@@ -19,10 +18,10 @@ class History:  # (EventTarget):
                 self.states.append(self.window.location.href)
                 self.index = 1
         except Exception as e:
-            print('History is empty:', e)
+            print("History is empty:", e)
 
     def _update(self, url: str):
-        """ Updates the current history state """
+        """Updates the current history state"""
         if self.skip_update:
             self.skip_update = False
             return
@@ -31,7 +30,7 @@ class History:  # (EventTarget):
         # self.dispatchEvent(Event('popstate'))
 
     def back(self):
-        """ Loads the previous URL in the history list """
+        """Loads the previous URL in the history list"""
         self.go(-1)
         self.skip_update = True
         if self.window:
@@ -39,14 +38,14 @@ class History:  # (EventTarget):
         # self.dispatchEvent(Event('popstate'))
 
     def forward(self):
-        """ Loads the next URL in the history list """
+        """Loads the next URL in the history list"""
         self.go(1)
         self.skip_update = True
         if self.window:
             self.window.location = self.state  # s[self.index]
 
     def go(self, n: int):
-        """ Loads a specific URL from the history list """
+        """Loads a specific URL from the history list"""
         self.index += n
         if self.index < 1:
             self.index = 1
@@ -56,7 +55,7 @@ class History:  # (EventTarget):
 
     @property
     def length(self):
-        """ Returns the number of URLs in the history list """
+        """Returns the number of URLs in the history list"""
         return len(self.states)
 
     # def pushState(self, data, title, url):
@@ -72,4 +71,5 @@ class History:  # (EventTarget):
     def __repr__(self) -> str:
         # show the full history
         from pprint import pformat
+
         return pformat(self.states)

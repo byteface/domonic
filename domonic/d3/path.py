@@ -12,8 +12,7 @@ epsilon = 1e-6
 tauEpsilon = tau - epsilon
 
 
-class Path():
-
+class Path:
     def __init__(self):
         self._x0 = None
         self._y0 = None
@@ -96,12 +95,23 @@ class Path():
             t21 = l / l21
 
         # If the start tangent is not coincident with (x0,y0), line to.
-        if (Math.abs(t01 - 1) > epsilon):
+        if Math.abs(t01 - 1) > epsilon:
             self._ += "L" + str(x1 + t01 * x01) + "," + str(y1 + t01 * y01)
 
         self._x1 = x1 + t21 * x21
         self._y1 = y1 + t21 * y21
-        self._ += "A" + str(r) + "," + str(r) + ",0,0," + str(y01 * x20 > x01 * y20) + "," + str(x1 + t21 * x21) + "," + str(y1 + t21 * y21)
+        self._ += (
+            "A"
+            + str(r)
+            + ","
+            + str(r)
+            + ",0,0,"
+            + str(y01 * x20 > x01 * y20)
+            + ","
+            + str(x1 + t21 * x21)
+            + ","
+            + str(y1 + t21 * y21)
+        )
 
     def arc(self, x, y, r, a0, a1, ccw):
         x = x
@@ -116,15 +126,15 @@ class Path():
         da = a0 - a1 if ccw else a1 - a0
 
         # Is the radius negative? Exception.
-        if (r < 0):
+        if r < 0:
             raise Exception("negative radius: " + r)
 
         # Is self path empty? Move to (x0,y0).
-        if (self._x1 == None):
+        if self._x1 == None:
             self._ += "M" + str(x0) + "," + str(y0)
 
         # Or, is (x0,y0) not coincident with the previous point? Line to (x0,y0).
-        elif (Math.abs(self._x1 - x0) > epsilon or Math.abs(self._y1 - y0) > epsilon):
+        elif Math.abs(self._x1 - x0) > epsilon or Math.abs(self._y1 - y0) > epsilon:
             self._ += "L" + str(x0) + "," + str(y0)
 
         # Is self arc empty? We’re done.
@@ -136,16 +146,50 @@ class Path():
             da = da % tau + tau
 
         # Is self a complete circle? Draw two arcs to complete the circle.
-        if (da > tauEpsilon):
+        if da > tauEpsilon:
             self._x1 = x0
             self._y1 = y0
-            self._ += "A" + str(r) + "," + str(r) + ",0,1," + str(cw) + "," + str(x - dx) + "," + str(y - dy) + "A" + str(r) + "," + r + ",0,1," + str(cw) + "," + str(x0) + "," + str(y0)
+            self._ += (
+                "A"
+                + str(r)
+                + ","
+                + str(r)
+                + ",0,1,"
+                + str(cw)
+                + ","
+                + str(x - dx)
+                + ","
+                + str(y - dy)
+                + "A"
+                + str(r)
+                + ","
+                + r
+                + ",0,1,"
+                + str(cw)
+                + ","
+                + str(x0)
+                + ","
+                + str(y0)
+            )
 
         # Is self arc non-empty? Draw an arc!
         elif da > epsilon:
             self._x1 = x + r * Math.cos(a1)
             self._y1 = y + r * Math.sin(a1)
-            self._ += "A" + r + "," + r + ",0," + (da >= pi) + "," + cw + "," + (x + r * Math.cos(a1)) + "," + (y + r * Math.sin(a1))
+            self._ += (
+                "A"
+                + r
+                + ","
+                + r
+                + ",0,"
+                + (da >= pi)
+                + ","
+                + cw
+                + ","
+                + (x + r * Math.cos(a1))
+                + ","
+                + (y + r * Math.sin(a1))
+            )
 
     def rect(self, x, y, w, h):
         self._x0 = self._x1 = x

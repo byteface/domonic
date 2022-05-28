@@ -12,8 +12,7 @@ from domonic.javascript import *
 noabort = {}
 
 
-class Queue():
-
+class Queue:
     def __init__(self, size):
         self._size = size
         self._call = None
@@ -28,9 +27,9 @@ class Queue():
     def defer(self, callback, *args):
         if not type(callback, callable):
             raise Error("invalid callback")
-        if (self._call):
+        if self._call:
             raise Error("defer after await")
-        if (self._error != None):
+        if self._error != None:
             return self
 
         t = slice.call(args, 1)
@@ -48,7 +47,7 @@ class Queue():
     def await(self, callback):
         if not type(callback, callable):
             raise Error("invalid callback")
-        if (self._call):
+        if self._call:
             raise Error("multiple await")
 
         def _call(error, results):
@@ -62,7 +61,7 @@ class Queue():
     def awaitAll(self, callback):
         if not type(callback, callable):
             raise Error("invalid callback")
-        if (self._call):
+        if self._call:
             raise Error("multiple await")
         self._call = callback
         maybeNotify(self)
@@ -74,7 +73,7 @@ def poke(q):
         try:
             start(q)  # let the current task complete
         except Exception as e:
-            if (q._tasks[q._ended + q._active - 1]):
+            if q._tasks[q._ended + q._active - 1]:
                 abort(q, e)  # task errored synchronously
             elif not q._data:
                 raise e  # await callback errored synchronously
@@ -82,7 +81,7 @@ def poke(q):
 
 def start(q):
     q._start = q._waiting
-    while (q._start and q._active < q._size):
+    while q._start and q._active < q._size:
         i = q._ended + q._active
         t = q._tasks[i]
         j = len(t) - 1
@@ -97,7 +96,6 @@ def start(q):
 
 
 def end(q, i):
-
     def _end(e, r):
         nonlocal q
         nonlocal i

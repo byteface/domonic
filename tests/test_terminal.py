@@ -10,13 +10,12 @@ from domonic.terminal import *
 
 
 class TestCase(unittest.TestCase):
-
     def test_bash_ls(self):
         files = ls()
         # print(files)
-        assert 'domonic' in files
+        assert "domonic" in files
         # return
-        self.assertIn('domonic', ls())
+        self.assertIn("domonic", ls())
         print(ls("-al"))
         print(ls("../"))
         for line in ls():
@@ -31,7 +30,7 @@ class TestCase(unittest.TestCase):
     def test_bash_pwd(self):
         thedir = pwd()
         # print("OYI::", thedir)
-        self.assertIn('domonic', thedir)
+        self.assertIn("domonic", thedir)
 
     def test_bash_cd(self):
         pass  # TODO - need to change github action
@@ -46,55 +45,55 @@ class TestCase(unittest.TestCase):
 
     def test_bash_mkdir(self):
         try:
-            mkdir('somedir')
-            self.assertIn('somedir', ls())
+            mkdir("somedir")
+            self.assertIn("somedir", ls())
         except Exception as e:
             print(e)
         finally:
             # rm('-r somedir')
-            rmdir('somedir')
-            self.assertTrue('somedir' not in ls())
+            rmdir("somedir")
+            self.assertTrue("somedir" not in ls())
 
     def test_bash_touch(self):
         try:
-            touch('somefile')
-            self.assertTrue('somefile' in ls())
+            touch("somefile")
+            self.assertTrue("somefile" in ls())
         except Exception as e:
             print(e)
         finally:
-            rm('somefile')
-            self.assertTrue('somefile' not in ls())
+            rm("somefile")
+            self.assertTrue("somefile" not in ls())
 
     def test_bash_mv(self):
         try:
-            touch('somefile')
-            mv('somefile temp')
+            touch("somefile")
+            mv("somefile temp")
         except Exception as e:
             print(e)
         finally:
-            self.assertTrue('somefile' not in ls())
-            self.assertTrue('temp' in ls())
-            rm('temp')
+            self.assertTrue("somefile" not in ls())
+            self.assertTrue("temp" in ls())
+            rm("temp")
 
     def test_bash_cp(self):
         try:
-            touch('somefile')
-            cp('somefile temp')
+            touch("somefile")
+            cp("somefile temp")
         except Exception as e:
             print(e)
         finally:
-            self.assertTrue('temp' in ls())
-            rm('somefile')
-            rm('temp')
+            self.assertTrue("temp" in ls())
+            rm("somefile")
+            rm("temp")
 
     @silence
     def test_bash_git(self):
         # print(git('status'))
-        self.assertIn('master', git('status'))
+        self.assertIn("master", git("status"))
 
     def test_bash_general(self):
         print(man("ls"))
-        print(echo('test'))
+        print(echo("test"))
         print(df())
         print(du())
         print(ps())
@@ -114,9 +113,9 @@ class TestCase(unittest.TestCase):
     @silence
     def test_bash(self):
         print("ran")
-        print(ping('http://eventual.technology'))  # < TODO - need to strean output
+        print(ping("http://eventual.technology"))  # < TODO - need to strean output
         # print(wget('eventual.technology'))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

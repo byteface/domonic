@@ -19,8 +19,8 @@ from domonic.geom.vec4 import vec4
 # function hsv
 
 
-class Color():
-    """ Color Functions """
+class Color:
+    """Color Functions"""
 
     # BLACK = Color(0, 0, 0)
     # WHITE = Color(255, 255, 255)
@@ -36,8 +36,9 @@ class Color():
 
         def r():
             return random.randint(0, 255)
+
         # r = lambda: random.randint(0, 255)
-        return '#%02X%02X%02X' % (r(), r(), r())
+        return "#%02X%02X%02X" % (r(), r(), r())
         # import secrets
         # rgba = '#'+secrets.token_hex(4)
 
@@ -51,9 +52,9 @@ class Color():
         Returns:
             [tuple]: [rgb tuple i.e. (255, 255, 255)]
         """
-        if h[0] == '#':
-            h = h.lstrip('#')
-        return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+        if h[0] == "#":
+            h = h.lstrip("#")
+        return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
 
     # rgb = hex2rgb  # TODO - as static. but can also check if instance has value? so can get/set.
 
@@ -112,11 +113,11 @@ class Color():
         #  TODO - pass tuples or
         # if isinstance(a, (int, float)):
         # elif isinstance(a, (tuple, list)):
-        return '#%02x%02x%02x' % (r, g, b)
+        return "#%02x%02x%02x" % (r, g, b)
 
     # deprecated
     @staticmethod
-    def fromRGBA(r: int, g: int, b: int, a: int = 255) -> 'Color':
+    def fromRGBA(r: int, g: int, b: int, a: int = 255) -> "Color":
         """[creates a Color from rgba values]
 
         Args:
@@ -136,8 +137,8 @@ class Color():
 
     # deprecated
     @staticmethod
-    def fromHex(hex: str) -> 'Color':
-        """ create a Color from a hex string i.e. #ffffff """
+    def fromHex(hex: str) -> "Color":
+        """create a Color from a hex string i.e. #ffffff"""
         return Color(hex)
 
     def __init__(self, *args, **kwargs) -> None:
@@ -154,7 +155,7 @@ class Color():
             self.g = args[0][1]
             self.b = args[0][2]
         if isinstance(args[0], str):
-            if args[0].startswith('#'):
+            if args[0].startswith("#"):
                 self.r, self.g, self.b = Color.hex2rgb(args[0])
         if isinstance(args[0], (int, float)):
             if len(args) == 3:
@@ -167,15 +168,15 @@ class Color():
         # self.green = kwargs.get('g', self.g)
         # self.blue = kwargs.get('b', self.b)
 
-        self.alpha = kwargs.get('alpha', 1.0)  # TODO - props instead?
-        self.red = kwargs.get('red', self.r)
-        self.green = kwargs.get('green', self.g)
-        self.blue = kwargs.get('blue', self.b)
+        self.alpha = kwargs.get("alpha", 1.0)  # TODO - props instead?
+        self.red = kwargs.get("red", self.r)
+        self.green = kwargs.get("green", self.g)
+        self.blue = kwargs.get("blue", self.b)
         # self.gray = kwargs.get('gray', self.r)
-        self.hue = kwargs.get('hue', 0.0)
-        self.saturation = kwargs.get('saturation', 1.0)
-        self.brightness = kwargs.get('brightness', 1.0)
-        self.lightness = kwargs.get('lightness', 1.0)
+        self.hue = kwargs.get("hue", 0.0)
+        self.saturation = kwargs.get("saturation", 1.0)
+        self.brightness = kwargs.get("brightness", 1.0)
+        self.lightness = kwargs.get("lightness", 1.0)
 
         # print(self.r, self.g, self.b)
 
@@ -220,11 +221,11 @@ class Color():
         return (self.r, self.g, self.b)
 
     def toHsl(self):
-        """ returns the hsl for the color """
+        """returns the hsl for the color"""
         return (self.hue, self.saturation, self.brightness)
 
     # def toString(self):
-        # return str(self)
+    # return str(self)
 
     def __str__(self) -> str:
         return Color.rgb2hex(self.r, self.g, self.b)
@@ -233,12 +234,12 @@ class Color():
     #     return str(self)
 
     def toHsv(self):
-        """ get the hsv for the color """
+        """get the hsv for the color"""
         return (self.hue, self.saturation, self.brightness)
 
     def toCSS(self) -> str:
-        """ return the color as a CSS string """
-        return '#%02x%02x%02x' % (self.r, self.g, self.b)
+        """return the color as a CSS string"""
+        return "#%02x%02x%02x" % (self.r, self.g, self.b)
 
     def toHex(self) -> str:
         return str(self)
@@ -247,7 +248,7 @@ class Color():
         return (self.r, self.g, self.b, self.a)
 
     def toSVG(self, shape="circle", size=10):
-        """ returns the color as an svg string
+        """returns the color as an svg string
         Args:
             shape ([str]): [can be circle or square]
             size ([int]): [size in pixels]
@@ -268,20 +269,20 @@ class Color():
     #     return img
 
     def convert(self, to: str):
-        """ convert the color to a different color space
+        """convert the color to a different color space
 
         Args:
             to ([str]): [can be one of the following: 'rgb', 'hsl', 'hsv', 'hex']
         """
-        if to == 'rgb':
+        if to == "rgb":
             return self.toRGB()
-        if to == 'hsl':
+        if to == "hsl":
             return self.toHsl()
-        if to == 'hsv':
+        if to == "hsv":
             return self.toHsv()
-        if to == 'hex':
+        if to == "hex":
             return self.toHex()
-        if to == 'css':
+        if to == "css":
             return self.toCSS()
 
     # set(*args)
@@ -298,27 +299,27 @@ class Color():
         return self.r == color.r and self.g == color.g and self.b == color.b
 
     def __eq__(self, other):
-        """ check if two colors are equal """
+        """check if two colors are equal"""
         return self.r == other.r and self.g == other.g and self.b == other.b
 
     def __add__(self, other):
-        """ add two colors together """
+        """add two colors together"""
         return Color(self.r + other.r, self.g + other.g, self.b + other.b)
 
     def __sub__(self, color):
-        """ subtract a color from this color """
+        """subtract a color from this color"""
         return Color(self.r - color.r, self.g - color.g, self.b - color.b)
 
     def __mul__(self, color):
-        """ multiply a color with this color """
+        """multiply a color with this color"""
         return Color(self.r * color.r, self.g * color.g, self.b * color.b)
 
     def __div__(self, color):
-        """ divide a color with this color """
+        """divide a color with this color"""
         return Color(self.r / color.r, self.g / color.g, self.b / color.b)
 
     # web
-    Black: str = '#000000'  #:
+    Black: str = "#000000"  #:
     Navy: str = "#000080"  #:
     DarkBlue: str = "#00008B"  #:
     MediumBlue: str = "#0000CD"  #:

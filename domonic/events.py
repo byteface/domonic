@@ -43,9 +43,7 @@ class EventTarget:
 
         stack = self.listeners[event.type]
         # .slice()
-        event.target = (
-            self  # TODO/NOTE - is this correct? - cant think where else would set it
-        )
+        event.target = self  # TODO/NOTE - is this correct? - cant think where else would set it
 
         for thing in stack:
             try:
@@ -134,9 +132,7 @@ class Event:
         self.currentTarget: object = options.get("currentTarget", None)
         self.defaultPrevented: bool = options.get("defaultPrevented", False)
         self.eventPhase: int = options.get("eventPhase", None)
-        self.explicitOriginalTarget: object = options.get(
-            "explicitOriginalTarget", None
-        )
+        self.explicitOriginalTarget: object = options.get("explicitOriginalTarget", None)
         self.isTrusted: bool = options.get("isTrusted", False)
         self.originalTarget: object = options.get("originalTarget", None)
         self.returnValue: bool = options.get("returnValue", True)
@@ -203,9 +199,7 @@ class UIEvent(Event):
         self.sourceCapabilities = options.get("sourceCapabilities", None)
         super().__init__(_type, options, *args, **kwargs)
 
-    def initUIEvent(
-        self, _type: str, canBubble: bool, cancelable: bool, view, detail
-    ) -> "UIEvent":
+    def initUIEvent(self, _type: str, canBubble: bool, cancelable: bool, view, detail) -> "UIEvent":
         self._type = _type
         self.canBubble = canBubble
         self.cancelable = cancelable

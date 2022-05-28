@@ -4,8 +4,8 @@
     https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Image_Capture_API
 """
 
-class MediaSession:
 
+class MediaSession:
     def __init__(self):
         self.metadata = {}
         self.playbackState = {}

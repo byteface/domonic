@@ -14,7 +14,7 @@ from domonic.style import *
 
 
 class TestCase(unittest.TestCase):
-    """ Tests for the dom package """
+    """Tests for the dom package"""
 
     @classmethod
     def setUpClass(cls):
@@ -23,20 +23,24 @@ class TestCase(unittest.TestCase):
             head(
                 meta(_charset="utf-8"),
                 meta(**{"_http-equiv": "X-UA-Compatible"}, _content="IE=edge"),
-                title('website.com'),
+                title("website.com"),
                 meta(_name="description", _content=""),
                 meta(_name="viewport", _content="width=device-width, initial-scale=1"),
                 meta(_name="robots", _content="all,follow"),
                 link(_rel="stylesheet", _href="static/css/bootstrap.min.css"),
-                link(_rel="shortcut icon", _href="favicon.png")
+                link(_rel="shortcut icon", _href="favicon.png"),
             ),
             body(
                 div(_class="overlay").html(
                     div(_class="content h-100 d-flex align-items-center").html(
                         div(_class="container text-center text-black").html(
                             p("Welcome to the information age", _class="headings-font-family text-uppercase lead"),
-                            h1("We are", span("COMPANY", _class="font-weight-bold d-block"), _class="text-uppercase hero-text text-black"),
-                            p("And this is our company website", _class="headings-font-family text-uppercase lead")
+                            h1(
+                                "We are",
+                                span("COMPANY", _class="font-weight-bold d-block"),
+                                _class="text-uppercase hero-text text-black",
+                            ),
+                            p("And this is our company website", _class="headings-font-family text-uppercase lead"),
                         )
                     )
                 ),
@@ -46,13 +50,28 @@ class TestCase(unittest.TestCase):
                             h6("website.com"),
                             div(_id="navbarSupportedContent", _class="collapse navbar-collapse").html(
                                 ul(_class="navbar-nav ml-auto px-3").html(
-                                    li(a("Home", _href="", _class="nav-link text-uppercase link-scroll"), _class="nav-item active"),
-                                    li(a("About", _href="#about", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
-                                    li(a("Services", _href="#services", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
-                                    li(a("Team", _href="#team", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
-                                    li(a("Contact", _href="#contact", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
+                                    li(
+                                        a("Home", _href="", _class="nav-link text-uppercase link-scroll"),
+                                        _class="nav-item active",
+                                    ),
+                                    li(
+                                        a("About", _href="#about", _class="nav-link text-uppercase link-scroll"),
+                                        _class="nav-item",
+                                    ),
+                                    li(
+                                        a("Services", _href="#services", _class="nav-link text-uppercase link-scroll"),
+                                        _class="nav-item",
+                                    ),
+                                    li(
+                                        a("Team", _href="#team", _class="nav-link text-uppercase link-scroll"),
+                                        _class="nav-item",
+                                    ),
+                                    li(
+                                        a("Contact", _href="#contact", _class="nav-link text-uppercase link-scroll"),
+                                        _class="nav-item",
+                                    ),
                                 )
-                            )
+                            ),
                         )
                     )
                 ),
@@ -79,24 +98,33 @@ class TestCase(unittest.TestCase):
                                             li("2"),
                                             li("3"),
                                         )
-                                    )
-                                )
+                                    ),
+                                ),
                             )
                         )
                     )
                 ),
-                div(_class="row text-white text-center", _style="background: url(static/img/header.jpg); padding:20px;").html(
+                div(
+                    _class="row text-white text-center", _style="background: url(static/img/header.jpg); padding:20px;"
+                ).html(
                     div(_class="col-lg-12").html(
                         h5(_class="text-uppercase font-weight-bold").html(
-                            i(_class="far fa-image mr-2", ), "Headline."),
+                            i(
+                                _class="far fa-image mr-2",
+                            ),
+                            "Headline.",
+                        ),
                         p("Lorem ipsum."),
                     ),
                     div(_class="col-lg-12").html(
                         h5(_class="text-uppercase font-weight-bold").html(
-                            i(_class="far fa-image mr-2", ), "Headline."),
+                            i(
+                                _class="far fa-image mr-2",
+                            ),
+                            "Headline.",
+                        ),
                         p("Lorem ipsum."),
                     ),
-
                 ),
                 section(_id="services", _class="bg-gray").html(
                     div(_class="container").html(
@@ -125,7 +153,7 @@ class TestCase(unittest.TestCase):
                                     p("Lorem ipsum.", _class="small text-gray"),
                                 )
                             ),
-                        )
+                        ),
                     ),
                     section(_id="team").html(
                         div(_class="container").html(
@@ -135,13 +163,19 @@ class TestCase(unittest.TestCase):
                             div(_class="row text-center").html(
                                 # div(_class="col-lg-3 col-md-6 mb-4").html(
                                 div(_class="col-lg-12").html(
-                                    img(_src="static/img/gol.gif", _alt="Username", _class="img-fluid mb-4", _width="300px;", _height="300px;"),
+                                    img(
+                                        _src="static/img/gol.gif",
+                                        _alt="Username",
+                                        _class="img-fluid mb-4",
+                                        _width="300px;",
+                                        _height="300px;",
+                                    ),
                                     h4(_class="font-weight-bold text-uppercase").html(
                                         a("Username", _href="#", _class="no-anchor-style")
                                     ),
                                     p("Director", _class="small text-gray text-uppercase"),
                                 ),
-                            )
+                            ),
                         )
                     ),
                     section(_id="contact").html(
@@ -156,15 +190,37 @@ class TestCase(unittest.TestCase):
                                         a("user@website.com", _href="mailto:user@website.com"),
                                         br(),
                                         "or Call us on : ",
-                                        a("123456789", _href="tel:123456789")
+                                        a("123456789", _href="tel:123456789"),
                                     ),
                                     ul(_class="mb-0 list-inline text-center").html(
-                                        li(a(i(_class="fab fa-twitter"), _href="https://twitter.com/user", _class="social-link social-link-twitter"), _class="list-inline-item"),
-                                        li(a(i(_class="fab fa-linkedin"), _rel="nofollow", _href="https://www.linkedin.com/in/user/", _class="social-link social-link-instagram"), _class="list-inline-item"),
-                                        li(a(i(_class="fas fa-envelope"), _href="mailto:user@website.com", _class="social-link social-link-email"), _class="list-inline-item")
-                                    )
+                                        li(
+                                            a(
+                                                i(_class="fab fa-twitter"),
+                                                _href="https://twitter.com/user",
+                                                _class="social-link social-link-twitter",
+                                            ),
+                                            _class="list-inline-item",
+                                        ),
+                                        li(
+                                            a(
+                                                i(_class="fab fa-linkedin"),
+                                                _rel="nofollow",
+                                                _href="https://www.linkedin.com/in/user/",
+                                                _class="social-link social-link-instagram",
+                                            ),
+                                            _class="list-inline-item",
+                                        ),
+                                        li(
+                                            a(
+                                                i(_class="fas fa-envelope"),
+                                                _href="mailto:user@website.com",
+                                                _class="social-link social-link-email",
+                                            ),
+                                            _class="list-inline-item",
+                                        ),
+                                    ),
                                 )
-                            )
+                            ),
                         )
                     ),
                     footer(_style="padding:20px;").html(
@@ -175,14 +231,19 @@ class TestCase(unittest.TestCase):
                         )
                     ),
                     script(_src="static/js/jquery.min.js"),
-                    link(_rel="stylesheet", _href="https://use.fontawesome.com/releases/v5.7.1/css/all.css", _integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr", _crossorigin="anonymous")
-                )
-            )
+                    link(
+                        _rel="stylesheet",
+                        _href="https://use.fontawesome.com/releases/v5.7.1/css/all.css",
+                        _integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr",
+                        _crossorigin="anonymous",
+                    ),
+                ),
+            ),
         )
 
     def test_evaluate(self):
         # headings = self.page.evaluate("/html/body//h2", self.page)  #, None, XPathResult.ANY_TYPE, None);
-        headings = self.page.evaluate("//h1", self.page)  #, None, XPathResult.ANY_TYPE, None);
+        headings = self.page.evaluate("//h1", self.page)  # , None, XPathResult.ANY_TYPE, None);
         assert len(headings) == 1, f'"{len(headings)}" != "{1}"'
 
     def test_NodeList(self):
@@ -208,8 +269,7 @@ class TestCase(unittest.TestCase):
         for each in somelist.keys():
             print(each)
         somelist.forEach(
-            lambda currentValue, currentIndex, listObj, **kwargs: print(currentValue, currentIndex, kwargs),
-            'myThisArg'
+            lambda currentValue, currentIndex, listObj, **kwargs: print(currentValue, currentIndex, kwargs), "myThisArg"
         )
         for each in somelist.entries():
             print(each)
@@ -333,14 +393,19 @@ class TestCase(unittest.TestCase):
 
         # print("NOW>>>>")
         mylist = li() / 10
-        assert str(mylist) == '<li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>'
+        assert (
+            str(mylist) == "<li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>"
+        )
 
         myobj = domonic.load(mylist)
         print(myobj)
 
         myorderedlist = ol()
         myorderedlist += str(li() / 10)
-        assert str(myorderedlist) == '<ol><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>'
+        assert (
+            str(myorderedlist)
+            == "<ol><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>"
+        )
 
         # TODO - tests
         # compareDocumentPosition()
@@ -355,10 +420,13 @@ class TestCase(unittest.TestCase):
 
     def test_node(self):
         sometag = div("asdfasdf", div(), div("yo"), _id="test", _thingy="test22")
-        somenewdiv = div('im new')
+        somenewdiv = div("im new")
         sometag.appendChild(somenewdiv)
 
-        assert str(somenewdiv.parentNode) == '<div id="test" thingy="test22">asdfasdf<div></div><div>yo</div><div>im new</div></div>'
+        assert (
+            str(somenewdiv.parentNode)
+            == '<div id="test" thingy="test22">asdfasdf<div></div><div>yo</div><div>im new</div></div>'
+        )
         assert isinstance(somenewdiv.parentNode, div)
         assert somenewdiv.parentNode.id == "test"
         # print(somenewdiv.parentElement)
@@ -370,23 +438,23 @@ class TestCase(unittest.TestCase):
 
         mylist = ul(li(), li(), li())
         # print(*mylist)
-        assert str(mylist) == '<ul><li></li><li></li><li></li></ul>'
+        assert str(mylist) == "<ul><li></li><li></li><li></li></ul>"
 
         a1, b1, c1 = ul(li(1), li(2), li(3))
         # print(a1)
-        assert str(a1) == '<li>1</li>'
+        assert str(a1) == "<li>1</li>"
 
         a1, b1, c1, d1, e1 = button() * 5
         # print(a1, b1, c1, d1, e1)
-        assert str(a1) == '<button></button>'
-        assert str(b1) == '<button></button>'
-        assert str(c1) == '<button></button>'
-        assert str(d1) == '<button></button>'
-        assert str(e1) == '<button></button>'
+        assert str(a1) == "<button></button>"
+        assert str(b1) == "<button></button>"
+        assert str(c1) == "<button></button>"
+        assert str(d1) == "<button></button>"
+        assert str(e1) == "<button></button>"
 
         # print(mylist[1] != mylist[1])
         a1 = img()
-        a1 >> {'_src': "http://www.someurl.com"}
+        a1 >> {"_src": "http://www.someurl.com"}
         # print(a1)
         assert str(a1) == '<img src="http://www.someurl.com"/>'
 
@@ -401,10 +469,10 @@ class TestCase(unittest.TestCase):
 
         # print(div(_test="1", **{"_data-test": ""}))
 
-        assert sometag.id == 'test'
+        assert sometag.id == "test"
         # print(sometag.style.color)  # TODO - get on style
-        assert sometag._thingy == 'test22'
-        assert sometag.thingy == 'test22'
+        assert sometag._thingy == "test22"
+        assert sometag.thingy == "test22"
 
         # print(10/sometag)
         # print('>>>>', sometag.args[0])
@@ -430,11 +498,11 @@ class TestCase(unittest.TestCase):
     def test_dom(self):
         # test div html and innerhtml update content
         sometag = div("asdfasdf", div(), div("yo"), _id="someid")
-        self.assertEqual(sometag.tagName, 'div')
+        self.assertEqual(sometag.tagName, "div")
         self.assertEqual(str(sometag), '<div id="someid">asdfasdf<div></div><div>yo</div></div>')
-        sometag.html('test')
+        sometag.html("test")
         self.assertEqual(str(sometag), '<div id="someid">test</div>')
-        sometag.innerHTML = 'test2'
+        sometag.innerHTML = "test2"
         self.assertEqual(str(sometag), '<div id="someid">test2</div>')
 
         # same test on body tag
@@ -448,11 +516,11 @@ class TestCase(unittest.TestCase):
 
         # sometag.innerText()
         # print(sometag.getAttribute('_id'))
-        self.assertEqual(sometag.getAttribute('_id'), 'someid')
+        self.assertEqual(sometag.getAttribute("_id"), "someid")
         # print(sometag.getAttribute('id'))
         # self.assertEqual(sometag.getAttribute('_id'), 'someid')
 
-        mydiv = div("I like cake", div(_class='myclass').html(div("1"), div("2"), div("3")))
+        mydiv = div("I like cake", div(_class="myclass").html(div("1"), div("2"), div("3")))
         # print(mydiv)
         assert str(mydiv) == '<div>I like cake<div class="myclass"><div>1</div><div>2</div><div>3</div></div></div>'
 
@@ -462,30 +530,30 @@ class TestCase(unittest.TestCase):
         # print(sometag.nodeName)
         # assert(sometag.nodeName, 'DIV') # TODO - i checked one site in chrome, was upper case. not sure if a standard?
 
-        sometag.setAttribute('id', 'newid')
-        assert sometag.getAttribute('id') == 'newid'
+        sometag.setAttribute("id", "newid")
+        assert sometag.getAttribute("id") == "newid"
         assert str(sometag) == '<div id="newid"></div>'
         assert sometag.lastChild == sometag.firstChild
         assert sometag.hasChildNodes() == False
 
-        sometag.removeAttribute('id')
-        assert str(sometag) == '<div></div>'
+        sometag.removeAttribute("id")
+        assert str(sometag) == "<div></div>"
 
-        sometag.appendChild(footer('test'))
-        assert str(sometag) == '<div><footer>test</footer></div>'
+        sometag.appendChild(footer("test"))
+        assert str(sometag) == "<div><footer>test</footer></div>"
 
-        assert sometag.children[0].tagName == 'footer'
-        assert str(sometag.children[0]) == '<footer>test</footer>'
+        assert sometag.children[0].tagName == "footer"
+        assert str(sometag.children[0]) == "<footer>test</footer>"
 
         # print(sometag.firstChild)
-        assert str(sometag.firstChild) == '<footer>test</footer>'
+        assert str(sometag.firstChild) == "<footer>test</footer>"
 
         htmltag = html()
-        assert htmltag.tagName == 'html'
-        assert str(htmltag) == '<html></html>'
-        htmltag.write('sup!')
+        assert htmltag.tagName == "html"
+        assert str(htmltag) == "<html></html>"
+        htmltag.write("sup!")
         # print("?????", htmltag)
-        assert str(htmltag) == '<html>sup!</html>'
+        assert str(htmltag) == "<html>sup!</html>"
         htmltag.className = "my_cool_css"
         # print(htmltag)
         assert str(htmltag) == '<html class="my_cool_css">sup!</html>'
@@ -495,26 +563,26 @@ class TestCase(unittest.TestCase):
     def test_create(self):
         # print(html().documentElement)
         # print(html().URL)
-        somebody = document.createElement('sometag')
+        somebody = document.createElement("sometag")
         # print(str(somebody))
-        assert str(somebody) == '<sometag></sometag>'
-        comm = document.createComment('hi there here is a comment')
+        assert str(somebody) == "<sometag></sometag>"
+        comm = document.createComment("hi there here is a comment")
         # print(comm)
-        assert str(comm) == '<!--hi there here is a comment-->'
+        assert str(comm) == "<!--hi there here is a comment-->"
 
         # print(html().createElement('sometag'))
         # somebody = document.createElement('sometag')
         # print(str(somebody()))
-        assert str(somebody) == '<sometag></sometag>'
+        assert str(somebody) == "<sometag></sometag>"
 
     def test_events(self):
         # print(html().documentElement)
         # print(html().URL)
         site = html()
-        somebody = document.createElement('div')
+        somebody = document.createElement("div")
         site.appendChild(somebody)
         # print(site)
-        assert str(site) == '<html><div></div></html>'
+        assert str(site) == "<html><div></div></html>"
 
         def test(evt, *args, **kwargs):
             # print('test ran!')
@@ -522,15 +590,15 @@ class TestCase(unittest.TestCase):
             # print(evt.target)
             assert evt.target == somebody or evt.target == site
 
-        site.addEventListener('click', test)
-        somebody.addEventListener('anything', test)
+        site.addEventListener("click", test)
+        somebody.addEventListener("anything", test)
         # print(site.listeners)
-        assert site.listeners['click'] == [test]
+        assert site.listeners["click"] == [test]
         # site.removeEventListener('click', test)
         # print( site.listeners )
 
-        site.dispatchEvent(Event('click'))
-        somebody.dispatchEvent(Event('anything'))
+        site.dispatchEvent(Event("click"))
+        somebody.dispatchEvent(Event("anything"))
 
         # document.getElementById("myBtn").addEventListener("click", function(){
         #   document.getElementById("demo").innerHTML = "Hello World";
@@ -538,23 +606,23 @@ class TestCase(unittest.TestCase):
 
     def test_contains(self):
         site = html()
-        somebody = document.createElement('div')
+        somebody = document.createElement("div")
         site.appendChild(somebody)
         # print(site)
-        assert str(site) == '<html><div></div></html>'
+        assert str(site) == "<html><div></div></html>"
         another_div = div()
         # print(site.contains(somebody))
         assert site.contains(somebody)
         another_div = div()
         # print(site.contains(another_div))
         assert not site.contains(another_div)
-        another_div = document.createElement('div')
+        another_div = document.createElement("div")
         # print(site.contains(another_div))
         assert not site.contains(another_div)
-        third_div = document.createElement('div')
+        third_div = document.createElement("div")
         another_div.appendChild(third_div)
         assert another_div.contains(third_div)
-        assert not site.contains(document.createElement('div'))
+        assert not site.contains(document.createElement("div"))
         site.appendChild(another_div)
         assert site.contains(third_div)
         # print(site.contains(third_div))
@@ -562,15 +630,15 @@ class TestCase(unittest.TestCase):
 
     def test_getElementById(self):
         dom1 = html(div(div(div(div(div(div(div(article("asdfasdf", div(), div("yo"), _id="test")))))))))
-        result = dom1.getElementById('test')
-        assert result.tagName == 'article'
+        result = dom1.getElementById("test")
+        assert result.tagName == "article"
         # print(result)
         # print(len(result.children))
         # assert len(result.children) == 3  # TODO - does a text node count?
 
     def test_remove(self):
         dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _id="test")))))))))
-        result = dom1.getElementById('test')
+        result = dom1.getElementById("test")
         # print("owner:", result.ownerDocument)
         assert result.ownerDocument == dom1
         result.remove()
@@ -598,39 +666,57 @@ class TestCase(unittest.TestCase):
         wrapper.normalize()
         assert len(wrapper.childNodes) == 1
         # print(wrapper)
-        assert str(wrapper) == '<div>Part 1 Part 2 Part 3</div>'
+        assert str(wrapper) == "<div>Part 1 Part 2 Part 3</div>"
         pass
 
     # def test_Node():
-        # TODO - tests all below
-        # contains - probably need more recursive testing
-        # replaceChild
-        # anchors
+    # TODO - tests all below
+    # contains - probably need more recursive testing
+    # replaceChild
+    # anchors
 
     def test_querySelector(self):
-        dom1 = html(div(div(div(div(div(div(div(div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
+        dom1 = html(
+            div(
+                div(
+                    div(
+                        div(
+                            div(
+                                div(
+                                    div(
+                                        div(_id="thing"),
+                                        span(_id="fun"),
+                                        div("asdfasdf", div(), div("yo"), _class="test this thing"),
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
 
-        result = dom1.querySelector('#thing')
+        result = dom1.querySelector("#thing")
         # print('--')
         # print("RESULT>>>>>", result)
         # print('--')
-        assert result.id == 'thing'
+        assert result.id == "thing"
 
-        result = dom1.querySelector('span')
+        result = dom1.querySelector("span")
         # print('--')
         # print("RESULT>>>>>", result)
-        assert result.id == 'fun'
+        assert result.id == "fun"
 
-        result = dom1.querySelector('.test')
+        result = dom1.querySelector(".test")
         # print('--')
         # print("RESULT>>>>>", result)
-        assert result.className == 'test this thing'
+        assert result.className == "test this thing"
 
-        result = dom1.getElementsByClassName('this')
+        result = dom1.getElementsByClassName("this")
         # print('--')
         # print("RESULT>>>>>", result)
         assert len(result) == 1
-        assert result[0].className == 'test this thing'
+        assert result[0].className == "test this thing"
 
         links = self.page.querySelectorAll("a[rel=nofollow]")
         for linky in links:
@@ -648,60 +734,78 @@ class TestCase(unittest.TestCase):
         # print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>')  # fails
+        print(">>>>>>>>>")  # fails
 
         result = self.page.querySelectorAll("li.nav-item")
         # print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
         result = self.page.querySelectorAll("a[href='#services']")
         # print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
         result = self.page.querySelectorAll("p.text-gray")
         # print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
         result = self.page.querySelectorAll("a[href$='technology']")
         # print(result)
         for r in result:
             print(r)
 
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
         result = self.page.querySelectorAll("a[href*='twitter']")
         # print(result)
         for r in result:
             print(r)
 
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
-        result = dom1.querySelectorAll('.fa-twitter')
-        print('--')
+        result = dom1.querySelectorAll(".fa-twitter")
+        print("--")
         print("z RESULT>>>>>", result)
         # TODO - failing. however this is now running through qselectorall
         # return
         # assert result.className == 'test this thing'
 
     def test_getElementsBySelector(self):
-        dom1 = html(div(div(div(div(div(div(div(div(_id="thing"), span(_id="fun"), div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
+        dom1 = html(
+            div(
+                div(
+                    div(
+                        div(
+                            div(
+                                div(
+                                    div(
+                                        div(_id="thing"),
+                                        span(_id="fun"),
+                                        div("asdfasdf", div(), div("yo"), _class="test this thing"),
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
 
-        result = dom1.getElementsBySelector('#thing', dom1)[0]
+        result = dom1.getElementsBySelector("#thing", dom1)[0]
         # print("RESULT>>>>>", result)
         # print('--')
         # return
-        assert result.id == 'thing'
+        assert result.id == "thing"
 
-        result = dom1.getElementsBySelector('span', dom1)[0]
+        result = dom1.getElementsBySelector("span", dom1)[0]
         # print('--')
         # print("RESULT>>>>>", result)
-        assert result.id == 'fun'
+        assert result.id == "fun"
 
         # result = dom1.getElementsBySelector('.test', dom1)#[0]  # [0] #?? no class called test?
         # print('--')
@@ -717,6 +821,7 @@ class TestCase(unittest.TestCase):
         # assert result[0].className == 'test this thing'
 
         from domonic.dQuery import º
+
         º(self.page)
 
         # print(º('a'))
@@ -724,7 +829,7 @@ class TestCase(unittest.TestCase):
         # print(str(page.getElementsBySelector("a", page)))
 
         # print(º('#team'))
-        print('xxxxxxxxxxxxxxxxxxxxxxxx')
+        print("xxxxxxxxxxxxxxxxxxxxxxxx")
         node = str(self.page.getElementsBySelector("#team", self.page)[0])
         assert node.startswith('<section id="team"')
 
@@ -752,51 +857,51 @@ class TestCase(unittest.TestCase):
         links = self.page.getElementsBySelector("a[rel=nofollow]", self.page)
         for linky in links:
             print(linky.getAttribute("href"))
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
         result = self.page.getElementsBySelector("li[class='nav-item']", self.page)
         # print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
         result = self.page.getElementsBySelector("h4[class='font-weight-bold text-uppercase']", self.page)
         # print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>')  # fails
+        print(">>>>>>>>>")  # fails
 
         result = self.page.getElementsBySelector("li.nav-item", self.page)
         # print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
         result = self.page.getElementsBySelector("a[href='#services']", self.page)
         # print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
         result = self.page.getElementsBySelector("p.text-gray", self.page)
         # print(result)
         for r in result:
             print(r)
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
         result = self.page.getElementsBySelector("a[href$='technology']", self.page)
         # print(result)
         for r in result:
             print(r)
 
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
         result = self.page.getElementsBySelector("a[href*='twitter']", self.page)
         # print(result)
         for r in result:
             print(r)
 
-        print('>>>>>>>>>')  # works
+        print(">>>>>>>>>")  # works
 
     def test_decorators(self):
         from domonic.decorators import el
@@ -805,36 +910,40 @@ class TestCase(unittest.TestCase):
         @el(body)
         @el(div)
         def test():
-            return 'hi!'
+            return "hi!"
+
         # print(test())
-        assert str(test()) == '<html><body><div>hi!</div></body></html>'
+        assert str(test()) == "<html><body><div>hi!</div></body></html>"
         # print('decorators work!')
 
         @el(html, True)
         @el(body, True)
         @el(div, True)
         def test():
-            return 'hi!'
-        assert test() == '<html><body><div>hi!</div></body></html>'
+            return "hi!"
+
+        assert test() == "<html><body><div>hi!</div></body></html>"
         # print('decorators work2!')
 
-        @el('html')
-        @el('body')
-        @el('div')
+        @el("html")
+        @el("body")
+        @el("div")
         def test():
-            return 'hi!'
+            return "hi!"
+
         # print(test())
-        assert str(test()) == '<html><body><div>hi!</div></body></html>'
+        assert str(test()) == "<html><body><div>hi!</div></body></html>"
         # print('decorators work3!')
 
         @el(html, True)
         @el(body)
-        @el('div')
+        @el("div")
         def test():
-            return 'hi!'
+            return "hi!"
+
         print(test())
         # print('decorators work4!')
-        assert str(test()) == '<html><body><div>hi!</div></body></html>'
+        assert str(test()) == "<html><body><div>hi!</div></body></html>"
 
     def test_domonic_window_console_log(self):
         # note originally dom had everything from document
@@ -853,61 +962,56 @@ class TestCase(unittest.TestCase):
         # [09:27:13.475] ({str:"Some text", id:5})
 
         count = 5
-        Console.log('--count: %d', count)
-        assert Console.log('count: %d', count) == "count: 5"
-        Console.log('--count:', count)
-        assert Console.log('count:', count) == "count: 5"
+        Console.log("--count: %d", count)
+        assert Console.log("count: %d", count) == "count: 5"
+        Console.log("--count:", count)
+        assert Console.log("count:", count) == "count: 5"
 
         console.time("answer time")
         console.timeLog("answer time")
         console.timeEnd("answer time")
 
-        errorMsg = 'the # is not even'
+        errorMsg = "the # is not even"
         for number in range(2, 5):
-            console.log('the # is ' + str(number))
-            console.assert_(number % 2 == 0, {'number': number, 'errorMsg': errorMsg})
+            console.log("the # is " + str(number))
+            console.assert_(number % 2 == 0, {"number": number, "errorMsg": errorMsg})
 
-        console.info('test2')
-        console.warn('test3')
+        console.info("test2")
+        console.warn("test3")
         pass
-
 
     def test_domonic_matches(self):
         content = ul(_id="birds").html(
-            li("Orange-winged parrot"),
-            li("Philippine eagle", _class="endangered"),
-            li("Great white pelican")
+            li("Orange-winged parrot"), li("Philippine eagle", _class="endangered"), li("Great white pelican")
         )
-        birds = content.getElementsByTagName('li')
+        birds = content.getElementsByTagName("li")
         # print(type(birds))
         assert len(birds) == 3
-        assert birds[1] == content.getElementsBySelector('li.endangered', content)[0]
-        assert birds[1].className == 'endangered'
-        assert birds[1].classList == ['endangered']
+        assert birds[1] == content.getElementsBySelector("li.endangered", content)[0]
+        assert birds[1].className == "endangered"
+        assert birds[1].classList == ["endangered"]
         for bird in birds:
-            if bird.matches('.endangered'):
+            if bird.matches(".endangered"):
                 # print('The ' + bird.textContent + ' is endangered!')
-                assert 'The ' + bird.textContent + ' is endangered!' == 'The Philippine eagle is endangered!'
+                assert "The " + bird.textContent + " is endangered!" == "The Philippine eagle is endangered!"
 
     def test_getElementsByTagName(self):
         content = ul(_id="birds").html(
-            li("Orange-winged parrot"),
-            li("Philippine eagle", _class="endangered"),
-            li("Great white pelican")
+            li("Orange-winged parrot"), li("Philippine eagle", _class="endangered"), li("Great white pelican")
         )
-        birds = content.getElementsByTagName('li')
+        birds = content.getElementsByTagName("li")
         assert len(birds) == 3
-        assert birds[1] == content.getElementsBySelector('li.endangered', content)[0]
-        assert birds[1].className == 'endangered'
-        assert birds[1].classList == ['endangered']
+        assert birds[1] == content.getElementsBySelector("li.endangered", content)[0]
+        assert birds[1].className == "endangered"
+        assert birds[1].classList == ["endangered"]
 
-        a = self.page.getElementsByTagName('a')
+        a = self.page.getElementsByTagName("a")
         assert len(a) == 11
         # print(a)
         assert a[1].href == "#about"
         assert a[1].textContent == "About"
 
-        titletag = self.page.getElementsByTagName('h1')
+        titletag = self.page.getElementsByTagName("h1")
         assert len(titletag) == 1
         # print(titletag[0].textContent)
         assert titletag[0].textContent == "We areCOMPANY"
@@ -930,30 +1034,30 @@ class TestCase(unittest.TestCase):
         # sample = '<div style="cool"><span id="span1" class="theclass" style="font-weight: bold">hello</span></div>'
 
         # Allow only <span style>: <span style='font-weight: bold'>...</span>
-        s1 = Sanitizer({'allowAttributes': {"style": ["span"]}}).sanitize(sample)
+        s1 = Sanitizer({"allowAttributes": {"style": ["span"]}}).sanitize(sample)
         # print(type(s1))
         # print(s1)
         assert str(s1) == '<div><span style="font-weight: bold">hello</span></div>'
 
         # Allow style, but not on span: <span>...</span>
-        s2 = Sanitizer({'allowAttributes': {"style": ["div"]}}).sanitize(sample)
+        s2 = Sanitizer({"allowAttributes": {"style": ["div"]}}).sanitize(sample)
         # print(s2)
         assert str(s2) == '<div style="cool"><span>hello</span></div>'
 
         # Allow style on any elements: <span style='font-weight: bold'>...</span>
-        s3 = Sanitizer({'allowAttributes': {"style": ["*"]}}).sanitize(sample)
+        s3 = Sanitizer({"allowAttributes": {"style": ["*"]}}).sanitize(sample)
         # print("3::::", s3)
         # print(str(s3))
         # Note - check why is id/class not a default config?
         assert str(s3) == '<div style="cool"><span style="font-weight: bold">hello</span></div>'
 
         # Drop <span id>: <span class='theclass' style='font-weight: bold'>...</span>
-        s4 = Sanitizer({'dropAttributes': {"id": ["span"]}}).sanitize(sample)
+        s4 = Sanitizer({"dropAttributes": {"id": ["span"]}}).sanitize(sample)
         # print("4::::", s4)
         assert str(s4) == '<div style="cool"><span class="theclass" style="font-weight: bold">hello</span></div>'
 
         # Drop id, everywhere: <span class='theclass' style='font-weight: bold'>...</span>
-        s5 = Sanitizer({'dropAttributes': {"id": ["*"]}}).sanitize(sample)
+        s5 = Sanitizer({"dropAttributes": {"id": ["*"]}}).sanitize(sample)
         print("5::::", s5)
         print(s5)
         assert str(s5) == '<div style="cool"><span class="theclass" style="font-weight: bold">hello</span></div>'
@@ -994,25 +1098,25 @@ class TestCase(unittest.TestCase):
         # https://github.com/byteface/domonic/issues/38
         com = f"{html(head(),body(comment('foo')))}"
         # print(com)
-        com = comment('foo')
+        com = comment("foo")
         # print(f'{com}')
-        assert str(com) == '<!--foo-->'
+        assert str(com) == "<!--foo-->"
         from domonic.dom import Comment
 
         # https://github.com/byteface/domonic/issues/38
         com = f"{html(head(),body(Comment('foo')))}"
         print(com)
-        # not able to recreate. Comment was updated to a Node in 6.1
+        # not able to recreate. Comment was updated to a Node in 6.1
         # this may have been due to that
         # TODO - mulitple arguments to comment
 
     def test_body_two(self):
-        print('im running1')
+        print("im running1")
         aNewBodyElement = document.createElement("body")
         aNewBodyElement.id = "newBodyElement"
         page = html()
         page.body = aNewBodyElement
-        print('im running2')
+        print("im running2")
         assert page.body.id == "newBodyElement"
 
     def test_head(self):
@@ -1032,22 +1136,17 @@ class TestCase(unittest.TestCase):
         assert page.title == "newTitleElement"
 
     def test_anchors(self):
-        mydoc = html(body('test'))
-        mydoc.body.append(a(name='foo'))
-        mydoc.body.append(a(name='bar'))
-        mydoc.body.append(a(href='#test'))
+        mydoc = html(body("test"))
+        mydoc.body.append(a(name="foo"))
+        mydoc.body.append(a(name="bar"))
+        mydoc.body.append(a(href="#test"))
         assert len(mydoc.anchors) == 2
 
     def test_treewalker(self):
 
         from domonic.dom import Comment, TreeWalker
 
-        doc = html(
-            div(_id="contentarea").html(
-            p("Some ", span("text")),
-            b("Bold text")
-        )
-        )
+        doc = html(div(_id="contentarea").html(p("Some ", span("text")), b("Bold text")))
 
         rootnode = doc.getElementById("contentarea")
         # print(rootnode)
@@ -1066,28 +1165,22 @@ class TestCase(unittest.TestCase):
 
         # Step through and alert all child nodes
         # for n in walker.nextNode():
-        print('---')
+        print("---")
         while walker.nextNode():
             # print('+++', walker.nextNode())
             window.alert(walker.currentNode)  # //alerts P, SPAN, and B.
-        print('---')
+        print("---")
 
         # //Go back to the first child node of the collection and alert it
         walker.currentNode = rootnode  # //reset TreeWalker pointer to point to root node
         print(walker.currentNode)
         # print('>>', walker.firstChild()) # calling it breaks it cos it moves it?. is it like an iterator then?
-        assert walker.firstChild().tagName.lower() == 'p'   # //alerts P
+        assert walker.firstChild().tagName.lower() == "p"  # //alerts P
 
         return
 
         # test 2
-        doc = html(
-            ul(_id="mylist").html(
-                    li("List 1"),
-                    li("List 2"),
-                    li("List 3")
-                )
-            )
+        doc = html(ul(_id="mylist").html(li("List 1"), li("List 2"), li("List 3")))
 
         rootnode = doc.getElementById("mylist")
         walker = doc.createTreeWalker(rootnode, NodeFilter.SHOW_ELEMENT, None, False)
@@ -1096,12 +1189,7 @@ class TestCase(unittest.TestCase):
         window.alert(len(walker.currentNode.getElementsByTagName("*")))  # //alerts 3
 
         # test 3
-        doc = html(
-            div(_id="main").html(
-            p("This is a ", span("paragraph")),
-            b("Bold text")
-        )
-        )
+        doc = html(div(_id="main").html(p("This is a ", span("paragraph")), b("Bold text")))
         mainDiv = doc.getElementById("main")
         walker = doc.createTreeWalker(mainDiv, NodeFilter.SHOW_ELEMENT, None, False)
         console.log(walker)
@@ -1109,16 +1197,18 @@ class TestCase(unittest.TestCase):
         treeWalker = document.createTreeWalker(
             mainDiv,
             NodeFilter.SHOW_TEXT,
-            lambda node: NodeFilter.FILTER_ACCEPT if (String(node.nodeValue).trim() != "") else NodeFilter.FILTER_REJECT,
-            False
-            )
+            lambda node: NodeFilter.FILTER_ACCEPT
+            if (String(node.nodeValue).trim() != "")
+            else NodeFilter.FILTER_REJECT,
+            False,
+        )
 
         # //Alert the starting node Tree Walker currently points to (root node)
         # //displays DIV (with id=main)
         console.log(walker.currentNode.tagName)
 
         # //Step through and alert all child nodes
-        while (walker.nextNode()):
+        while walker.nextNode():
             # //displays P, SPAN, and B.
             console.log(walker.currentNode.tagName)
 
@@ -1146,76 +1236,71 @@ class NodeTest(TestCase):
     # looks like the actual project is here. still supported... https://github.com/plastex/plastex
 
     def _checkPositions(self, node):
-        """ Check the postions of all contained nodes """
+        """Check the postions of all contained nodes"""
         if isinstance(node, CharacterData):
             return
 
-        if not(isinstance(node, Node)):
+        if not (isinstance(node, Node)):
             return
 
         maxidx = len(node) - 1
 
         # Check firstChild and lastChild
         if node.childNodes:
-            assert node.firstChild is node[0], 'firstChild is incorrect'
-            assert node.lastChild is node[maxidx], 'lastChild is incorrect'
+            assert node.firstChild is node[0], "firstChild is incorrect"
+            assert node.lastChild is node[maxidx], "lastChild is incorrect"
 
         # Check nextSibling
         for i, item in enumerate(node):
             if i == maxidx:
-                assert item.nextSibling is None, \
-                    f'nextSibling in position {i} should be None'
+                assert item.nextSibling is None, f"nextSibling in position {i} should be None"
             else:
-                assert item.nextSibling is node[i + 1], \
-                       f'nextSibling in position {i} is incorrect ({item.nextSibling})'
+                assert item.nextSibling is node[i + 1], f"nextSibling in position {i} is incorrect ({item.nextSibling})"
 
         # Check previousSibling
         for i, item in enumerate(node):
             if i == 0:
-                assert item.previousSibling is None, \
-                       f'previousSibling in position {i} should be None'
+                assert item.previousSibling is None, f"previousSibling in position {i} should be None"
             else:
                 # print('HERE::::', item, item.previousSibling, node[i-1])
-                assert item.previousSibling is node[i - 1], \
-                       f'previousSibling in position {i} is incorrect ({item.previousSibling})'
+                assert (
+                    item.previousSibling is node[i - 1]
+                ), f"previousSibling in position {i} is incorrect ({item.previousSibling})"
 
         # Check parentNode
         for i, item in enumerate(node):
-            assert item.parentNode is node, \
-                   f'parentNode in position {i} is incorrect'
+            assert item.parentNode is node, f"parentNode in position {i} is incorrect"
 
         # Check ownerDocument
         for i, item in enumerate(node):
-            assert item.ownerDocument is node.ownerDocument, \
-                   f'ownerDocument in position {i} ({item.ownerDocument}) is incorrect: {node.ownerDocument}'
+            assert (
+                item.ownerDocument is node.ownerDocument
+            ), f"ownerDocument in position {i} ({item.ownerDocument}) is incorrect: {node.ownerDocument}"
 
         # Check attributes
         if node.attributes:
             for key, value in node.attributes.items():
                 if isinstance(value, Node):
-                    assert value.parentNode is node, \
-                           f'parentNode is incorrect ({value.parentNode})'
+                    assert value.parentNode is node, f"parentNode is incorrect ({value.parentNode})"
                     self._checkPositions(value)
 
                 elif isinstance(value, list):
                     for item in value:
-                        assert getattr(item, 'parentNode', node) is node, \
-                               f'parentNode is incorrect ({item.parentNode})'
+                        assert getattr(item, "parentNode", node) is node, f"parentNode is incorrect ({item.parentNode})"
                         self._checkPositions(item)
 
                 elif isinstance(value, dict):
                     for item in value.values():
-                        assert getattr(item, 'parentNode', node) is node, \
-                               f'parentNode is incorrect ({item.parentNode})'
+                        assert getattr(item, "parentNode", node) is node, f"parentNode is incorrect ({item.parentNode})"
                         self._checkPositions(item)
 
     def test_Document(self):
         # There should be one-- and preferably only one --obvious way to do it.
         doc = Document()
-        one = doc.createElement('one')
-        two = document.createElement('two')
-        three = Document.createElement('three')
-        node = Document().createElement('top')
+        one = doc.createElement("one")
+        two = document.createElement("two")
+        three = Document.createElement("three")
+        node = Document().createElement("top")
         # node.extend([one, two, three])
         node += [one, two, three]
         expected = [one, two, three]
@@ -1224,9 +1309,9 @@ class NodeTest(TestCase):
         self._checkPositions(node)
 
     def test_firstChild(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createElement('two')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createElement("two")
         assert node.firstChild is None, f'"{node.firstChild}" != None'
         node.append(one)
         assert node.firstChild is one, f'"{node.firstChild}" != "{one}"'
@@ -1236,9 +1321,9 @@ class NodeTest(TestCase):
         self._checkPositions(node)
 
     def test_lastChild(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createElement('two')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createElement("two")
         assert node.lastChild is None, f'"{node.lastChild}" != None'
         node.append(one)
         assert node.lastChild is one, f'"{node.lastChild}" != "{one}"'
@@ -1247,10 +1332,10 @@ class NodeTest(TestCase):
         self._checkPositions(node)
 
     def test_childNodes(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createElement('three')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createElement("three")
         node.append(one)
         node.append(two)
         node.append(three)
@@ -1263,10 +1348,10 @@ class NodeTest(TestCase):
         self._checkPositions(node)
 
     def test_previousSibling(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createElement('three')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createElement("three")
         node.append(one)
         node.append(two)
         node.append(three)
@@ -1275,10 +1360,10 @@ class NodeTest(TestCase):
         assert two is three.previousSibling, f'"{two}" != "{three.previousSibling}"'
 
     def test_nextSibling(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createElement('three')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createElement("three")
         node.append(one)
         node.append(two)
         node.append(three)
@@ -1287,16 +1372,16 @@ class NodeTest(TestCase):
         assert None is three.nextSibling, 'None != "%s"' % three.nextSibling
 
     def test_compareDocumentPosition(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createElement('three')
-        four = Document.createElement('four')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createElement("three")
+        four = Document.createElement("four")
         node.append(one)
         node.append(two)
         node.append(three)
         three.append(four)
-        five = Document.createElement('five')
+        five = Document.createElement("five")
 
         expected = Node.DOCUMENT_POSITION_FOLLOWING
         rc = one.compareDocumentPosition(four)
@@ -1320,10 +1405,10 @@ class NodeTest(TestCase):
         assert rc == expected, '"%s" != "%s"' % (rc, expected)
 
     def test_insertBefore(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createElement('three')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createElement("three")
         node.append(one)
         node.append(two)
         node.insertBefore(three, two)
@@ -1339,39 +1424,39 @@ class NodeTest(TestCase):
         self._checkPositions(node)
 
     def test_replaceChild(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createElement('three')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createElement("three")
         node.append(one)
         node.append(two)
         node.replaceChild(three, two)
         assert node[0] is one, f'"{node[0]}" != "{one}"'
         assert node[1] is three, f'"{node[1]}" != "{three}"'
-        assert len(node) == 2, f'{len(node)} != {2}'
+        assert len(node) == 2, f"{len(node)} != {2}"
         self._checkPositions(node)
 
     def test_removeChild(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createElement('three')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createElement("three")
         node.append(one)
         node.append(two)
         res = node.removeChild(one)
         assert res is one, f'"{res}" != "{one}"'
-        assert len(node) == 1, f'{len(node)} != {1}'
+        assert len(node) == 1, f"{len(node)} != {1}"
         assert node[0] is two, f'"{node[0]}" != "{two}"'
         self._checkPositions(node)
         res = node.removeChild(two)
         assert res is two, f'"{res}" != "{two}"'
-        assert len(node) == 0, f'{len(node)} != {0}'
+        assert len(node) == 0, f"{len(node)} != {0}"
 
     def test_appendChild(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createElement('three')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createElement("three")
         node.appendChild(one)
         # print(node)
         frag = Document.createDocumentFragment()
@@ -1385,11 +1470,11 @@ class NodeTest(TestCase):
         self._checkPositions(node)
 
     def test_insert(self):
-        """ Insert into empty node """
-        one = Document.createElement('one')
-        two = Document.createElement('two')
-        three = Document.createElement('three')
-        node = Document.createElement('top')
+        """Insert into empty node"""
+        one = Document.createElement("one")
+        two = Document.createElement("two")
+        three = Document.createElement("three")
+        node = Document.createElement("top")
         # node.insert(0, one)
         # node.insert(1, two)
         # node.insert(2, three)
@@ -1406,18 +1491,18 @@ class NodeTest(TestCase):
         self._checkPositions(node)
 
     def test_insert2(self):
-        """ Insert into populated node """
-        one = Document.createElement('one')
-        two = Document.createElement('two')
-        three = Document.createElement('three')
-        node = Document.createElement('top')
+        """Insert into populated node"""
+        one = Document.createElement("one")
+        two = Document.createElement("two")
+        three = Document.createElement("three")
+        node = Document.createElement("top")
         # node.extend([one, two, three])
         node += [one, two, three]
         # print("cool?", node)
         # node += 2
         # node += 3
-        i0 = Document.createElement('i0')
-        i3 = Document.createTextNode('i3')
+        i0 = Document.createElement("i0")
+        i3 = Document.createTextNode("i3")
         # node.insert(0, i0)
         node.prepend(i0)
         # node.insert(3, i3) # TODO - consider an insertAt non standard addition to node? (although then where do you stop. grep/moveTo/find_at/every list method?. etc)
@@ -1429,12 +1514,12 @@ class NodeTest(TestCase):
         self._checkPositions(node)
 
     def test_Element_prepend(self):
-        """ Insert document fragment """
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createElement('three')
-        four = Document.createElement('four')
+        """Insert document fragment"""
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createElement("three")
+        four = Document.createElement("four")
         node.appendChild(one)
         node.appendChild(two)
         frag = Document.createDocumentFragment()
@@ -1483,39 +1568,39 @@ class NodeTest(TestCase):
     #     self._checkPositions(node)
 
     def test_extend(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createElement('three')
-        four = Document.createElement('four')
-        five = Document.createElement('five')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createElement("three")
+        four = Document.createElement("four")
+        five = Document.createElement("five")
         node.appendChild(one)
         # node.extend([two, three])
         node += [two, three]
         assert node[0] is one, f'"{node[0]}" != "{one}"'
         assert node[1] is two, f'"{node[1]}" != "{two}"'
         assert node[2] is three, f'"{node[2]}" != "{three}"'
-        assert len(node) == 3, f'{len(node)} != {3}'
+        assert len(node) == 3, f"{len(node)} != {3}"
         self._checkPositions(node)
         node += [four, five]
         assert node[3] is four, f'"{node[3]}" != "{four}"'
         assert node[4] is five, f'"{node[4]}" != "{five}"'
-        assert len(node) == 5, f'{len(node)} != {5}'
+        assert len(node) == 5, f"{len(node)} != {5}"
         self._checkPositions(node)
 
     def test_hasChildNodes(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
         assert not node.hasChildNodes()
         node.appendChild(one)
         node.appendChild(two)
         assert node.hasChildNodes()
 
     def test_cloneNode(self):
-        one = Document.createElement('one')
-        two = Document.createElement('two')
-        three = Document.createTextNode('three')
+        one = Document.createElement("one")
+        two = Document.createElement("two")
+        three = Document.createTextNode("three")
         two.append(three)
         one.append(two)
         res = one.cloneNode(1)
@@ -1528,11 +1613,11 @@ class NodeTest(TestCase):
         assert one[0] is not res[0]
 
     def test_normalize(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createTextNode('two')
-        three = Document.createTextNode('three')
-        four = Document.createTextNode('four')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createTextNode("two")
+        three = Document.createTextNode("three")
+        four = Document.createTextNode("four")
         node.appendChild(one)
         node.appendChild(two)
         node.appendChild(three)
@@ -1542,11 +1627,11 @@ class NodeTest(TestCase):
         node.normalize()
         # print(node)
         assert len(node) == 2, f'"{len(node)}" != "{2}"'
-        assert node[1] == 'twothreefour', f'"{node[1]}" != "{"twothreefour"}"'
+        assert node[1] == "twothreefour", f'"{node[1]}" != "{"twothreefour"}"'
 
     def test_hasAttributes(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
         assert not node.hasAttributes()
         # node.attributes['one'] = one
         # print(str(node.attributes))
@@ -1554,7 +1639,7 @@ class NodeTest(TestCase):
         # node._test2 = 'test1'  # TODO - still need to sort
         # node.test2 = 'test2'  # TODO - still need to sort
         # node['test'] = 'test3' # TODO - auto-underscore?. (problem is expectation on getters. think back to the broken branch)
-        node['_test4'] = 'test4'
+        node["_test4"] = "test4"
         # node >> {"_test":'test'}
         # print(node)
         # print(node.attributes)
@@ -1564,30 +1649,30 @@ class NodeTest(TestCase):
         assert node.hasAttributes()
 
     def test_textContent(self):
-        node = Document.createElement('node')
-        one = Document.createTextNode('one')
-        two = Document.createElement('two')
-        three = Document.createTextNode('three')
-        four = Document.createTextNode('four')
+        node = Document.createElement("node")
+        one = Document.createTextNode("one")
+        two = Document.createElement("two")
+        three = Document.createTextNode("three")
+        four = Document.createTextNode("four")
         node.append(one)
         node.append(two)
         # two.extend([three, four])
         two.append(three)
         two.append(four)
         res = node.textContent
-        expected = 'onethreefour'
+        expected = "onethreefour"
         assert res == expected, f'"{res}" != "{expected}"'
 
     def test_isSameNode(self):
-        node = Document.createElement('node')
+        node = Document.createElement("node")
         assert node.isSameNode(node)
         clone = node.cloneNode()
         assert not node.isSameNode(clone)
 
     def test_isEqualNode(self):
-        node = Document.createElement('node')
-        one = Document.createElement('one')
-        two = Document.createElement('two')
+        node = Document.createElement("node")
+        one = Document.createElement("one")
+        two = Document.createElement("two")
         # node.extend([one, two])
         node += 1
         node += 2
@@ -1605,24 +1690,24 @@ class NodeTest(TestCase):
 
 class CommentTest(TestCase):
     def setUp(self):
-        self.c = Comment('comment')
+        self.c = Comment("comment")
         self.elm = p()
 
     def test_node_type(self):
         self.assertEqual(self.c.nodeType, self.c.COMMENT_NODE)
-        self.assertEqual(self.c.nodeName, '#comment')
+        self.assertEqual(self.c.nodeName, "#comment")
 
     def test_length(self):
         self.assertEqual(self.c.length, 7)
 
     def test_html(self):
-        self.assertEqual('<!--comment-->', str(self.c))
+        self.assertEqual("<!--comment-->", str(self.c))
 
     def test_append_comment(self):
         self.elm.appendChild(self.c)
         self.assertTrue(self.elm.hasChildNodes())
         self.assertEqual(self.elm.length, 1)
-        self.assertEqual('<!--comment-->', str(self.elm.firstChild))
+        self.assertEqual("<!--comment-->", str(self.elm.firstChild))
 
 
 class TestDocumentType(TestCase):
@@ -1631,15 +1716,15 @@ class TestDocumentType(TestCase):
         self.node = Node()
 
     def test_nodename(self):
-        self.assertEqual(self.dtype.nodeName, 'html')
-        self.assertEqual(self.dtype.name, 'html')
+        self.assertEqual(self.dtype.nodeName, "html")
+        self.assertEqual(self.dtype.name, "html")
 
     def test_parent(self):
         self.node.appendChild(self.dtype)
         self.assertIs(self.node, self.dtype.parentNode)
 
     def test_html(self):
-        self.assertEqual(str(self.dtype), '<!DOCTYPE html>')
+        self.assertEqual(str(self.dtype), "<!DOCTYPE html>")
 
 
 class TestNodeList(TestCase):
@@ -1688,22 +1773,22 @@ class TestDomTokenList(TestCase):
         super().setUp()
 
     def test_classList(self):
-        sample = div(_class='theclass theclass2 theclass3')
+        sample = div(_class="theclass theclass2 theclass3")
         # print(sample.classList)
-        assert sample.classList.contains('theclass')
+        assert sample.classList.contains("theclass")
         # print(sample.classList.contains('theclass'))
-        sample.classList.add('theclass4')
+        sample.classList.add("theclass4")
         # print(sample.classList)
-        assert sample.classList.contains('theclass4')
+        assert sample.classList.contains("theclass4")
         # print(type(sample.classList))
         # sample.classList += 'theclass5' # TODO - dunders
         # print(sample.classList)
-        sample.classList.remove('theclass')
+        sample.classList.remove("theclass")
         # print(sample.classList)
-        assert not sample.classList.contains('theclass')
+        assert not sample.classList.contains("theclass")
         # print(len(sample.classList))
         assert len(sample.classList) == 3
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

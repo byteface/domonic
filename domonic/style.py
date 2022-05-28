@@ -61,8 +61,7 @@ class StyleSheetList(list):
     """
 
     def _populate_stylesheets_from_document(self, doc):
-        """ parse the document to find all the stylesheets and add them to the list.
-        """
+        """parse the document to find all the stylesheets and add them to the list."""
         # print('this runs')
         # get loaded styles
         # from domonic.dom import document
@@ -74,7 +73,7 @@ class StyleSheetList(list):
             # TODO - sheet.href # make absolute
             # TODO - download and parse
             # self.styleSheets.append(StyleSheet(sheet))
-            print('external:', sheet)
+            print("external:", sheet)
             ss = StyleSheet()
             # print('whats going on?')
             ss.href = sheet.href
@@ -84,10 +83,10 @@ class StyleSheetList(list):
             self.append(ss)
 
         # get inline styles
-        styles = doc.querySelectorAll('style')
+        styles = doc.querySelectorAll("style")
         for style in styles:
             # self.styleSheets.append(StyleSheet(style))
-            print('inline:', style)
+            print("inline:", style)
             ss = StyleSheet()
             ss.href = doc.URL
             # ss.disabled = False
@@ -137,8 +136,8 @@ class CSSRule:
     def __init__(self):
         self.parentStyleSheet = None
         # self._type = None
-        self.parentRule: 'CSSRule' = None
-        self.parentStyleSheet: 'CSSStyleSheet' = None
+        self.parentRule: "CSSRule" = None
+        self.parentStyleSheet: "CSSStyleSheet" = None
         self.type: int = None
         self.__cssText: str = None
 
@@ -171,8 +170,8 @@ class CSSImportRule(CSSRule):
     def __init__(self):
         super().__init__()
         self.href: str = None
-        self.media: 'MediaList' = None
-        self.styleSheet: 'CSSStyleSheet' = None
+        self.media: "MediaList" = None
+        self.styleSheet: "CSSStyleSheet" = None
         self.type = CSSRule.IMPORT_RULE
 
     # @property
@@ -197,7 +196,7 @@ class CSSStyleRule(CSSRule):
     def __init__(self):
         super().__init__()
         self.selectorText: str = None
-        self.style: 'CSSStyleDeclaration' = None
+        self.style: "CSSStyleDeclaration" = None
         self.type = CSSRule.STYLE_RULE
 
     # @property
@@ -213,7 +212,7 @@ class CSSStyleRule(CSSRule):
     @property
     def cssText(self):
         """Returns the textual representation of the rule."""
-        return self.selectorText + '{' + self.style.cssText + '}'
+        return self.selectorText + "{" + self.style.cssText + "}"
 
     # @cssText.setter
     # def cssText(self, value):
@@ -226,7 +225,7 @@ class CSSFontFaceRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.style: 'CSSStyleDeclaration' = None
+        self.style: "CSSStyleDeclaration" = None
         self.type = CSSRule.FONT_FACE_RULE
 
     # @property
@@ -241,7 +240,7 @@ class CSSPageRule(CSSRule):
     def __init__(self):
         super().__init__()
         self.selectorText: str = None
-        self.style: 'CSSStyleDeclaration' = None
+        self.style: "CSSStyleDeclaration" = None
         self.type = CSSRule.PAGE_RULE
 
     # @property
@@ -280,7 +279,7 @@ class CSSKeyframesRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.cssRules: 'CSSRuleList' = CSSRuleList()
+        self.cssRules: "CSSRuleList" = CSSRuleList()
         self.name: str = None
         self.type = CSSRule.KEYFRAMES_RULE
 
@@ -300,9 +299,9 @@ class CSSKeyframeRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.cssRules: 'CSSRuleList' = CSSRuleList()
+        self.cssRules: "CSSRuleList" = CSSRuleList()
         self.keyText: str = None
-        self.style: 'CSSStyleDeclaration' = None
+        self.style: "CSSStyleDeclaration" = None
         self.type = CSSRule.KEYFRAME_RULE
 
     # @property
@@ -346,7 +345,7 @@ class CSSDocumentRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.cssRules: 'CSSRuleList' = None
+        self.cssRules: "CSSRuleList" = None
         self.type = CSSRule.DOCUMENT_RULE
 
     # @property
@@ -360,6 +359,7 @@ class CSSDocumentRule(CSSRule):
 
 # class CSSRuleList(DOMObject):
 # class CSSRuleList(list):
+
 
 class CSSColorProfileRule(CSSRule):
     """The CSSColorProfileRule interface represents an @color-profile rule."""
@@ -380,7 +380,7 @@ class CSSFontFeatureValuesRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.cssRules: 'CSSRuleList' = None
+        self.cssRules: "CSSRuleList" = None
         self.type = CSSRule.FONT_FEATURE_VALUES_RULE
 
     # @property
@@ -394,7 +394,7 @@ class CSSGroupingRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.cssRules: 'CSSRuleList' = None
+        self.cssRules: "CSSRuleList" = None
         # self.type = CSSRule.GROUPING_RULE
 
     # @property
@@ -409,7 +409,7 @@ class CSSConditionRule(CSSGroupingRule):
     def __init__(self):
         super().__init__()
         self.conditionText: str = None
-        self.cssRules: 'CSSRuleList' = None
+        self.cssRules: "CSSRuleList" = None
         # self.type = CSSRule.CONDITIONAL_RULE
 
     # @property
@@ -429,7 +429,7 @@ class CSSSupportsRule(CSSConditionRule):
     def __init__(self):
         super().__init__()
         self.conditionText: str = None
-        self.cssRules: 'CSSRuleList' = None
+        self.cssRules: "CSSRuleList" = None
         self.type = CSSRule.SUPPORTS_RULE
 
 
@@ -438,8 +438,8 @@ class CSSMediaRule(CSSConditionRule):
 
     def __init__(self):
         super().__init__()
-        self.media: 'MediaList' = MediaList()
-        self.cssRules: 'CSSRuleList' = CSSRuleList()
+        self.media: "MediaList" = MediaList()
+        self.cssRules: "CSSRuleList" = CSSRuleList()
         self.type = CSSRule.MEDIA_RULE
 
     # @property
@@ -464,7 +464,7 @@ class MediaList(list):
     @property
     def mediaText(self) -> str:
         """Returns a string containing the text of the media query."""
-        return ','.join(self)
+        return ",".join(self)
 
     def item(self, index: int) -> str:
         """Returns the media at the given index in the MediaList."""
@@ -490,7 +490,7 @@ class CSSRuleList(list):
         """Returns an integer representing the number of CSSRule objects in the collection."""
         return len(self)
 
-    def item(self, index: int) -> 'CSSRule':
+    def item(self, index: int) -> "CSSRule":
         """Gets a single CSSRule."""
         return self[index]
 
@@ -525,23 +525,15 @@ class CSSStyleSheet(StyleSheet):
         """Inserts a new rule at the specified position in the stylesheet,
         given the textual representation of the rule."""
         from domonic.dom import DOMException
+
         rules = CSSParser.parseFromString(self, rule)
         if len(rules) == 0:
-            raise DOMException(
-                DOMException.HIERARCHY_REQUEST_ERR,
-                'Invalid CSS rule.'
-            )
+            raise DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Invalid CSS rule.")
         if len(rules) > 1:
-            raise DOMException(
-                DOMException.HIERARCHY_REQUEST_ERR,
-                'Only one rule is allowed.'
-            )
+            raise DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Only one rule is allowed.")
         if index is not None:
             if index > len(self.cssRules):
-                raise DOMException(
-                    DOMException.INDEX_SIZE_ERR,
-                    'Index is out of range.'
-                )
+                raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
             self.cssRules.insert(index, rules[0])
             return index
         new_index = len(self.cssRules)
@@ -579,7 +571,7 @@ class CSSStyleSheet(StyleSheet):
 
     def __str__(self):
         # converts the rules to css code
-        return ''.join([str(rule) for rule in self.rules])
+        return "".join([str(rule) for rule in self.rules])
 
 
 class Style:
@@ -1382,7 +1374,7 @@ class Style:
                     # if key not in styles:
                     styles = styles + s
                     # else:
-                        # styles = styles.replace(f"{key}:{self.__dict__[key]}", s)
+                    # styles = styles.replace(f"{key}:{self.__dict__[key]}", s)
                 else:
                     styles = s
                 # print(styles)
@@ -5129,19 +5121,18 @@ class CSSStyleDeclaration(Style):
         setattr(self, property, value)
 
     def getPropertyCSSValue(self):
-        """ Only supported via getComputedStyle in Firefox. Returns the property value as a
+        """Only supported via getComputedStyle in Firefox. Returns the property value as a
         CSSPrimitiveValue or null for shorthand properties."""
         raise NotImplementedError
 
 
-COMMENT_REGEXP = r'/\/\*[^*]*\*\//gm'
+COMMENT_REGEXP = r"/\/\*[^*]*\*\//gm"
 
 
 class CSSParser:
-
     @staticmethod
     def parseFromString(parentStyleSheet: CSSStyleSheet, cssText: str):
-        css = cssText.replace(COMMENT_REGEXP, '')
+        css = cssText.replace(COMMENT_REGEXP, "")
         cssRules = []
         stack = []
         parentRule: CSSRule = None
@@ -5149,7 +5140,7 @@ class CSSParser:
         match = None
 
         def matches(s: str):
-            regExp = r'{|}'
+            regExp = r"{|}"
 
             class Match:
                 def __init__(self, index: int, match: str):
@@ -5157,29 +5148,30 @@ class CSSParser:
                     self.match = match
 
                 def __str__(self):
-                    return f'{self.match}'
+                    return f"{self.match}"
 
                 def __repr__(self):
-                    return f'{self.match}'
+                    return f"{self.match}"
 
                 def __getitem__(self, index):
                     return self.match[index]
 
             import re
+
             matches = re.finditer(regExp, s, flags=re.MULTILINE)
             return [Match(m.start(), m.group(0)) for m in matches]
 
         for count, match in enumerate(matches(css)):
-            if (match[0] == '{'):
-                selectorText = css[lastIndex:match.index].strip()
-                if selectorText.startswith('@keyframes'):
+            if match[0] == "{":
+                selectorText = css[lastIndex : match.index].strip()
+                if selectorText.startswith("@keyframes"):
                     newRule = CSSKeyframesRule()
-                    newRule.name = selectorText.replace('@keyframes ', '')
+                    newRule.name = selectorText.replace("@keyframes ", "")
                     newRule.parentStyleSheet = parentStyleSheet
                     cssRules.append(newRule)
                     parentRule = newRule
-                elif selectorText.startswith('@media'):
-                    mediums = selectorText.replace('@media', '').split(',')
+                elif selectorText.startswith("@media"):
+                    mediums = selectorText.replace("@media", "").split(",")
                     newRule = CSSMediaRule()
                     for medium in mediums:
                         newRule.media.appendMedium(medium.strip())
@@ -5211,15 +5203,19 @@ class CSSParser:
                 stack.append(parentRule)
             else:
                 if parentRule is not None:
-                    cssText = css[lastIndex:match.index].strip()
-                    cssText = re.sub(' +', ' ', cssText)
-                    cssText = re.sub('\n', '', cssText)
-                    if parentRule.type == CSSRule.FONT_FACE_RULE or parentRule.type == CSSRule.KEYFRAME_RULE or parentRule.type == CSSRule.STYLE_RULE:
-                            style = CSSStyleDeclaration()
-                            style.cssText = cssText
-                            style.parentRule = parentRule
-                            parentRule.style = style
-                            # print('break')
+                    cssText = css[lastIndex : match.index].strip()
+                    cssText = re.sub(" +", " ", cssText)
+                    cssText = re.sub("\n", "", cssText)
+                    if (
+                        parentRule.type == CSSRule.FONT_FACE_RULE
+                        or parentRule.type == CSSRule.KEYFRAME_RULE
+                        or parentRule.type == CSSRule.STYLE_RULE
+                    ):
+                        style = CSSStyleDeclaration()
+                        style.cssText = cssText
+                        style.parentRule = parentRule
+                        parentRule.style = style
+                        # print('break')
 
                 stack.pop()
                 parentRule = stack[-1] if stack else None

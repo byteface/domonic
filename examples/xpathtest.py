@@ -1,5 +1,6 @@
 import sys
-sys.path.insert(0, '..')
+
+sys.path.insert(0, "..")
 
 from domonic.dom import Text
 from domonic.i18n.sw import *
@@ -32,6 +33,7 @@ import elementpath  # requires elementpath package
 import requests
 from domonic import domonic
 from domonic.html import *
+
 # sites = ["bankofamerica.com","amazon.com","news.ycombinator.com","en.wikipedia.org","youtube.com","facebook.com","twitter.com","fandom.com","pinterest.com","imdb.com","reddit.com","craigslist.org","google.com","instagram.com","walmart.com","apple.com","mail.yahoo.com","indeed.com","steampowered.com","britannica.com","zillow.com","investopedia.com","speedtest.net","spotify.com","cdc.gov","dictionary.com","weather.com","ups.com","verizon.com","wowhead.com","macys.com","ign.com","cbssports.com","webmd.com","genius.com","expedia.com","yelp.com","tripadvisor.com","netflix.com","cnn.com","target.com","glassdoor.com","bulbagarden.net","paypal.com","realtor.com","macys.com","ebay.com","urbandictionary.com","nbcnews.com","microsoft.com","mayoclinic.org","nih.gov","live.com","quora.com","fedex.com","finance.yahoo.com","msn.com","att.com","bbc.com","khanacademy.org","linkedin.com","foxnews.com","ebay.com","healthline.com","yahoo.com","espn.com","gamepedia.com","irs.gov","steampowered.com","mapquest.com","allrecipes.com","aol.com","rottentomatoes.com","ca.gov","play.google.com","cnet.com","roblox.com","businessinsider.com","usatoday.com","medicalnewstoday.com","washingtonpost.com","cdc.gov","chase.com","hulu.com","xfinity.com","forbes.com","nbcnews.com","capitalone.com","ny.gov","adobe.com","irs.gov","nytimes.com","etsy.com","yahoo.com"]
 
 r = requests.get("https://news.ycombinator.com")
@@ -53,4 +55,4 @@ page = domonic.parseString(r.content.decode("utf-8"))
 
 # print("results:", str(elementpath.select(page, '//*//@_class')))  # cool!
 
-print("results:", str(page.evaluate('//*//@_class', page)))  # cool!
+print("results:", str(page.evaluate("//*//@_class", page)))  # cool!

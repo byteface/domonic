@@ -1,17 +1,24 @@
-"""domonic - Generate html with python 3. DOM API, Javascript API and more..."""
+"""domonic - python 3 DOM API"""
 
 from setuptools import find_packages, setup
 
 from domonic import __version__ as version
 
 
-def read(filename):
-    """Returns the contents of a file."""
-    with open(filename, encoding='utf-8') as file:
+def read(filename: str) -> str:
+    """Returns the contents of a file.
+
+    Args:
+        filename (str): The name of the file to read.
+
+    Returns:
+        str: content of the file
+    """
+    with open(filename, encoding="utf-8") as file:
         return file.read()
 
 
-def get_requirements(filename="requirements.txt"):
+def get_requirements(filename: str = "requirements.txt"):
     """returns a list of all requirements"""
     requirements = read(filename)
     return list(

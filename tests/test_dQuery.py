@@ -17,21 +17,21 @@ class TestCase(unittest.TestCase):
 
     # domonic.dQuery.º
     def test_hello(self):
-        d = html(head(body(li(_class='things'), div(_id="test"))))
+        d = html(head(body(li(_class="things"), div(_id="test"))))
         º(d)
-        print('---** -')
-        print(º('#test'))
-        print('---** -')
-        print(º('.things'))
-        print('---** -')
+        print("---** -")
+        print(º("#test"))
+        print("---** -")
+        print(º(".things"))
+        print("---** -")
 
-        print('a::')
+        print("a::")
         a = º('<div class="test2"></div>')
         print(a)
 
-        print('b::')
-        print(º('#test'))
-        b = º('#test').append(a)
+        print("b::")
+        print(º("#test"))
+        b = º("#test").append(a)
         print(b)
 
         print(d)
@@ -49,13 +49,15 @@ class TestCase(unittest.TestCase):
     def test_addClass(self):
         a = º('<div id="test2"></div><div id="test3"></div>')
         assert str(a) == '<div id="test2"></div><div id="test3"></div>'
-        a.addClass('one')
+        a.addClass("one")
         assert str(a) == '<div id="test2" class="one"></div><div id="test3" class="one"></div>'
         # print("1:",a)
         # print("2:",str(a))
         # print(str(a))
-        a.addClass('one').addClass('two').addClass('three')
-        assert str(a) == '<div id="test2" class="one one two three"></div><div id="test3" class="one one two three"></div>'
+        a.addClass("one").addClass("two").addClass("three")
+        assert (
+            str(a) == '<div id="test2" class="one one two three"></div><div id="test3" class="one one two three"></div>'
+        )
         # for el in a.elements:
         # print(el.getAttribute("class"))
 
@@ -66,7 +68,7 @@ class TestCase(unittest.TestCase):
         app = html(head(), body(div(span(), _id="test")))
         º(app)  # TODO _str is none?
         # print( 'wtf:??:', º('#test1') ) # TODO - better errors when passing wrong id name
-        º('#test').after(p('hi'))
+        º("#test").after(p("hi"))
         print(app)
         # pass
 
@@ -109,11 +111,11 @@ class TestCase(unittest.TestCase):
 
     def test_attr(self):
         a = º('<div id="test2"></div>')
-        a.addClass('one')
+        a.addClass("one")
         assert str(a) == '<div id="test2" class="one"></div>'
-        assert a.attr('id') == 'test2'
-        assert a.attr('class') == 'one'
-        a.attr('id', 'somethingelse')
+        assert a.attr("id") == "test2"
+        assert a.attr("class") == "one"
+        a.attr("id", "somethingelse")
         assert str(a) == '<div id="somethingelse" class="one"></div>'
         # print(a.elements[0])
 
@@ -236,9 +238,9 @@ class TestCase(unittest.TestCase):
 
     def test_hasClass(self):
         a = º('<div id="test2"></div>')
-        a.addClass('one').addClass('two').addClass('three')
-        assert a.hasClass('one') == True
-        assert a.hasClass('five') == False
+        a.addClass("one").addClass("two").addClass("three")
+        assert a.hasClass("one") == True
+        assert a.hasClass("five") == False
 
     def test_height(self):
         pass
@@ -268,7 +270,7 @@ class TestCase(unittest.TestCase):
         pass
 
     # def test_is(self):
-        # pass
+    # pass
 
     def test_keydown(self):
         pass
@@ -326,7 +328,7 @@ class TestCase(unittest.TestCase):
         pass
 
     # def test_not(self):
-        # pass
+    # pass
 
     def test_odd(self):
         pass
@@ -402,10 +404,10 @@ class TestCase(unittest.TestCase):
 
     def test_removeClass(self):
         a = º('<div id="test2"></div>')
-        a.addClass('one').addClass('two').addClass('three')
-        assert a.hasClass('one') == True
-        a.removeClass('one')
-        assert a.hasClass('one') == False
+        a.addClass("one").addClass("two").addClass("three")
+        assert a.hasClass("one") == True
+        a.removeClass("one")
+        assert a.hasClass("one") == False
 
     def test_removeData(self):
         pass
@@ -435,21 +437,22 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_serialize(self):
-        page = html(form(
-            select(_name="single",).html(
-                option("Single", _selected=True),
-                option("Single2")
-            ),
-            br(),
-            select(_name="multiple", _multiple="multiple").html(
-                option("Multiple", _selected="selected"),
-                option("Multiple2"),
-                option("Multiple3", _selected="selected")
-            ),
-            input(_type="text", _id="lname", _name="lname")
-        ))
+        page = html(
+            form(
+                select(
+                    _name="single",
+                ).html(option("Single", _selected=True), option("Single2")),
+                br(),
+                select(_name="multiple", _multiple="multiple").html(
+                    option("Multiple", _selected="selected"),
+                    option("Multiple2"),
+                    option("Multiple3", _selected="selected"),
+                ),
+                input(_type="text", _id="lname", _name="lname"),
+            )
+        )
         º(page)
-        print(º('form').serialize())
+        print(º("form").serialize())
 
     def test_serializeArray(self):
         pass
@@ -482,20 +485,23 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_text(self):
-        page = html(form(
-                select(_name="single",).html(
-                    option("a", _selected=True),
-                    option("b")
-                ),
+        page = html(
+            form(
+                select(
+                    _name="single",
+                ).html(option("a", _selected=True), option("b")),
             ),
-            div('hi'),
-            div(span('there'))
+            div("hi"),
+            div(span("there")),
         )
         º(page)
-        assert º('div').text() == ['hi', 'there']
-        º('div').text('test')
-        assert º('div').text() == ['test', 'test']
-        assert str(page) == '<html><form><select name="single"><option selected="true">a</option><option>b</option></select></form><div>test</div><div>test</div></html>'
+        assert º("div").text() == ["hi", "there"]
+        º("div").text("test")
+        assert º("div").text() == ["test", "test"]
+        assert (
+            str(page)
+            == '<html><form><select name="single"><option selected="true">a</option><option>b</option></select></form><div>test</div><div>test</div></html>'
+        )
 
     def test_toArray(self):
         pass
@@ -589,8 +595,8 @@ class TestCase(unittest.TestCase):
         # º.error()
         # º.escapeSelector()
 
-        obj1 = {'a': 1, 'b': 2}
-        obj2 = {'c': 1, 'b': 5}
+        obj1 = {"a": 1, "b": 2}
+        obj2 = {"c": 1, "b": 5}
         print(º.extend(obj1, obj2))
 
         test = lambda x: x
@@ -652,5 +658,5 @@ class TestCase(unittest.TestCase):
         # º.when()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

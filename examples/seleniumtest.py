@@ -1,5 +1,6 @@
 import sys
-sys.path.insert(0, '..')
+
+sys.path.insert(0, "..")
 
 # mac:
 # brew install chromedriver
@@ -9,16 +10,16 @@ sys.path.insert(0, '..')
 from domonic import domonic
 from selenium import webdriver
 
-browser=webdriver.Chrome()
-browser.get('http://google.com')
+browser = webdriver.Chrome()
+browser.get("http://google.com")
 page = domonic.parseString(browser.page_source)
 
 
 # test xpath
-print(page.evaluate('//a/@href', page))
+print(page.evaluate("//a/@href", page))
 
 
 # test css
-for link in page.querySelectorAll('a'):
+for link in page.querySelectorAll("a"):
     # print(link)
     print(link.href)

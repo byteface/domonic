@@ -231,15 +231,15 @@ if __name__ == '__main__':
 
 def get_hello_world(server):
     hello_words = {
-        'flask': HELLO_FLASK,
-        'cherrypy': HELLO_CHERRYPY,
-        'sanic': HELLO_SANIC,
-        'bottle': HELLO_BOTTLE,
-        'aiohttp': HELLO_AIOHTTP,
-        'tornado': HELLO_TORNADO,
-        'werkzeug': HELLO_WERKZEUG,
-        'fastapi': HELLO_FAST_API,
-        'blacksheep': HELLO_BLACKSHEEP,
+        "flask": HELLO_FLASK,
+        "cherrypy": HELLO_CHERRYPY,
+        "sanic": HELLO_SANIC,
+        "bottle": HELLO_BOTTLE,
+        "aiohttp": HELLO_AIOHTTP,
+        "tornado": HELLO_TORNADO,
+        "werkzeug": HELLO_WERKZEUG,
+        "fastapi": HELLO_FAST_API,
+        "blacksheep": HELLO_BLACKSHEEP,
     }
     if server in hello_words:
         return hello_words[server]

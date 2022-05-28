@@ -14,7 +14,6 @@ from domonic.webapi import *
 
 
 class TestCase(unittest.TestCase):
-
     def test_encodingAPI(self):
         # utf8decoder = TextDecoder()  # default 'utf-8' or 'utf8'
 
@@ -75,30 +74,30 @@ class TestCase(unittest.TestCase):
 
         from domonic.window import window
 
-        window.location = 'https://www.google.com'
-        window.location = 'https://www.facebook.com'
-        window.location = 'https://www.linkedin.com'
+        window.location = "https://www.google.com"
+        window.location = "https://www.facebook.com"
+        window.location = "https://www.linkedin.com"
 
         # print(window.history.length)
         # print(window.history.state)
         window.history.back()
         # print(window.history.state, window.location.href)
-        assert window.location.href == 'https://www.facebook.com'
+        assert window.location.href == "https://www.facebook.com"
         # print(window.history.length)
         # print(window.history.state)
         window.history.back()
         # print(window.history.state)
-        assert window.location.href == 'https://www.google.com'
-        assert 'Google' in window.document.querySelector('title').text
+        assert window.location.href == "https://www.google.com"
+        assert "Google" in window.document.querySelector("title").text
         # print(window.history.length)
         # print(window.history.state)
         window.history.forward()
-        assert window.location.href == 'https://www.facebook.com'
-        assert 'Facebook' in window.document.querySelector('title').text
+        assert window.location.href == "https://www.facebook.com"
+        assert "Facebook" in window.document.querySelector("title").text
         # print(window.history.state)
         window.history.forward()
         # print(window.document.querySelector('title').text)
-        assert 'LinkedIn' in window.document.querySelector('title').text
+        assert "LinkedIn" in window.document.querySelector("title").text
 
         print(window.history)
 
@@ -137,15 +136,15 @@ class TestCase(unittest.TestCase):
         # es.onclose = lambda event: print('close')
         # es.onerror = lambda event: print('error')
         # es.send('Hello')
-        
+
         # TESTING - useage example... clone this and point at the stream
         # https://github.com/byteface/SSELoggerDemo
         pass
 
-
     def test_xhr(self):
         from domonic.html import br, button, div, form, hr, input
         from domonic.javascript import Global
+
         # def on_submit(event):
         #     event.preventDefault()
         #     alert("Form submitted")
@@ -157,11 +156,11 @@ class TestCase(unittest.TestCase):
         #     alert("Page error")
         from domonic.webapi.xhr import FormData
 
-        myform = form(action='/', method='post')
-        myform += input(type='text', name='name', placeholder='Name')
-        myform += input(type='text', name='email', placeholder='Email')
-        myform += input(type='text', name='phone', placeholder='Phone')
-        myform += input(type='text', name='message', placeholder='Message')
+        myform = form(action="/", method="post")
+        myform += input(type="text", name="name", placeholder="Name")
+        myform += input(type="text", name="email", placeholder="Email")
+        myform += input(type="text", name="phone", placeholder="Phone")
+        myform += input(type="text", name="message", placeholder="Message")
         # myform += button(type='submit', value='Submit')
 
         f = FormData(myform)
@@ -171,7 +170,7 @@ class TestCase(unittest.TestCase):
         # f.append('age', '25')
         # f.append('email', '
 
-        print('***')
+        print("***")
 
         # myform = """
         # <form action="/">
@@ -184,7 +183,6 @@ class TestCase(unittest.TestCase):
         # f = FormData(myform)
         # print(f)
 
-
     def test_xpath(self):
 
         from domonic import domonic
@@ -193,10 +191,10 @@ class TestCase(unittest.TestCase):
         # api unit test based on mdn example
         # https://developer.mozilla.org/en-US/docs/Web/API/XPathEvaluator
 
-        somehtml = '''
+        somehtml = """
         <div>XPath example</div>
         <div>Number of &lt;div&gt;s: <output></output></div>
-        '''
+        """
         page = domonic.parseString(somehtml)  # NOTE - probably requries html5lib install
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression("//div")
@@ -205,19 +203,26 @@ class TestCase(unittest.TestCase):
         # print(result.nodes)
 
         import requests
+
         r = requests.get("http://eventual.technology")
         page = domonic.parseString(r.content.decode("utf-8"))
 
-        ## Selectors
+        # Selectors
 
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression("//h1")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        assert str(result.nodes[0]) == '<h1 class="text-uppercase hero-text text-black">We are<span class="font-weight-bold d-block">Eventual Technology</span></h1>'
+        assert (
+            str(result.nodes[0])
+            == '<h1 class="text-uppercase hero-text text-black">We are<span class="font-weight-bold d-block">Eventual Technology</span></h1>'
+        )
 
         expression = evaluator.createExpression("//div//p")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        assert str(result.nodes[0]) == '<p class="headings-font-family text-uppercase lead">Welcome to the information age</p>'
+        assert (
+            str(result.nodes[0])
+            == '<p class="headings-font-family text-uppercase lead">Welcome to the information age</p>'
+        )
 
         expression = evaluator.createExpression("//ul/li")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
@@ -253,7 +258,9 @@ class TestCase(unittest.TestCase):
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         print(str(result.nodes))
 
-        expression = evaluator.createExpression('//*[@_class="social-link social-link-instagram"]')  # NOTE - requires all classes to match
+        expression = evaluator.createExpression(
+            '//*[@_class="social-link social-link-instagram"]'
+        )  # NOTE - requires all classes to match
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         print(str(result.nodes))
 
@@ -275,25 +282,17 @@ class TestCase(unittest.TestCase):
         print(str(result.nodes[0]))
         # so cool this all works out of the box!
 
-        expression = evaluator.createExpression('//span/text()')
+        expression = evaluator.createExpression("//span/text()")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         print(str(result.nodes[0]))
 
-        somepage = html(head(),
-                        body(
-                            h1("some title"),
-                            p("some text"),
-                            div("some more text")
-                        )
-                    )
+        somepage = html(head(), body(h1("some title"), p("some text"), div("some more text")))
 
-        expression = evaluator.createExpression('//div/text()')
+        expression = evaluator.createExpression("//div/text()")
         result = expression.evaluate(somepage, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         print(str(result.nodes[0]))
 
-
-
-        '''
+        """
         TODO - unit tests for the following so i know what works
 
         Descendant selectors
@@ -520,8 +519,8 @@ class TestCase(unittest.TestCase):
 
         Attributes
         //item[@price > 2*@discount]
-        '''
+        """
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

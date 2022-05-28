@@ -9,7 +9,6 @@ from domonic.javascript import Error
 
 
 class Geolocation:
-
     @staticmethod
     def getCurrentPosition(successCallback, errorCallback, options):
         pass
@@ -23,12 +22,12 @@ class Geolocation:
         pass
 
 
-class GeolocationPosition():
+class GeolocationPosition:
     coords = None
     timestamp = None
 
 
-class GeolocationCoordinates():
+class GeolocationCoordinates:
     latitude = None
     longitude = None
     altitude = None
@@ -46,5 +45,5 @@ class GeolocationError(Error):
 
     # def __init__(self, code, message,):
     #     self.code = code
-        # self.message = message
-        # super().__init__(message)
+    # self.message = message
+    # super().__init__(message)

@@ -1,5 +1,6 @@
 import sys
-sys.path.insert(0, '../..')
+
+sys.path.insert(0, "../..")
 
 from domonic.html import *
 from domonic.CDN import CDN_CSS
@@ -8,14 +9,14 @@ MARGIN = 3
 
 # set some data
 keyboard = [
-    ['q','w','e','r','t','y','u','i','o','p'],
-    ['a','s','d','f','g','h','j','k','l'],
-    ['shift','z','x','c','v','b','n','m','backspace'],
-    ['numerals','comma','space','period','enter']
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+    ["shift", "z", "x", "c", "v", "b", "n", "m", "backspace"],
+    ["numerals", "comma", "space", "period", "enter"],
 ]
 
 # create a template
-key_tmpl = lambda key: div( _style=f"display:inline;margin:{MARGIN}px;").html(
+key_tmpl = lambda key: div(_style=f"display:inline;margin:{MARGIN}px;").html(
     button(key, _style="background-color:white;color:black;")
 )
 

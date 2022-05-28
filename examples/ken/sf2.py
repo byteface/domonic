@@ -1,5 +1,6 @@
 import sys, os
-sys.path.insert(0,'../..')
+
+sys.path.insert(0, "../..")
 
 from domonic.javascript import Math
 from domonic.html import *
@@ -10,16 +11,18 @@ classless_css = link(_rel="stylesheet", _href="https://unpkg.com/marx-css/css/ma
 jquery = script(_src="https://code.jquery.com/jquery-3.5.1.min.js")
 
 code = div(
-		audio(_id="myAudio", _autoplay="true").html(
-			source("Your browser does not support the audio element.",
-				_src="ken.mp3",
-				# dl the mp3, call it ken.mp3. then click on ken
-				# http://www.gamethemesongs.com/Hyper_Street_Fighter_II_-_CPS2_-_Ken_Stage.html
-				# be nice to convert this one.. https://www.youtube.com/watch?v=zFYK8sL5BHI&t
-				_type="audio/mp3")
-		),
-    	script(_type="text/javascript").html(
-	    '''    
+    audio(_id="myAudio", _autoplay="true").html(
+        source(
+            "Your browser does not support the audio element.",
+            _src="ken.mp3",
+            # dl the mp3, call it ken.mp3. then click on ken
+            # http://www.gamethemesongs.com/Hyper_Street_Fighter_II_-_CPS2_-_Ken_Stage.html
+            # be nice to convert this one.. https://www.youtube.com/watch?v=zFYK8sL5BHI&t
+            _type="audio/mp3",
+        )
+    ),
+    script(_type="text/javascript").html(
+        """    
 	    $( document ).ready(function() {
 	        $( '.ken' ).on('click', function() {
 	            let sound = document.getElementById("myAudio");
@@ -29,11 +32,13 @@ code = div(
 	            // goFullScreen();
 	        });
 	    });
-	    '''
-	))
+	    """
+    ),
+)
 
 level = div(
-	style("""
+    style(
+        """
 	.bg {
 	  background-image: url("bg.png");
 	  height: 100%;
@@ -41,17 +46,22 @@ level = div(
 	  background-repeat: no-repeat;
 	  background-size: cover;
 	}
-	"""),
-	div(_class="bg")
+	"""
+    ),
+    div(_class="bg"),
 )
 
 game = article(
-  div( 
-  	level,
-  	span(SpriteCSS('ken', 70, 80, 'ken.png', 0.8, 4, True, 80), _style="position:absolute; top:70%; left:10%;", _id="moveMe")
-  ),
-
-  script("""
+    div(
+        level,
+        span(
+            SpriteCSS("ken", 70, 80, "ken.png", 0.8, 4, True, 80),
+            _style="position:absolute; top:70%; left:10%;",
+            _id="moveMe",
+        ),
+    ),
+    script(
+        """
 
 		var p1 = document.getElementById('moveMe'),
 		keyCodes = { left: 37, up: 38, right: 39, down: 40 },
@@ -92,8 +102,8 @@ game = article(
 		}, 1/30);
 
 
-		""")
-
+		"""
+    ),
 )
 
-render( html(head(classless_css, jquery, code), body(game)), 'sf2.html' )
+render(html(head(classless_css, jquery, code), body(game)), "sf2.html")

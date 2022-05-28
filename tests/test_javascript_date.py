@@ -10,19 +10,17 @@ from inspect import stack
 from unittest.mock import Mock
 
 from domonic.javascript import *
-from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
-                                Window)
+from domonic.javascript import URL, Array, Date, Global, Math, Object, String, Window
 
 
 class TestCase(unittest.TestCase):
-
     def test_javascript_date(self):
 
         print(Date.now())
 
-        unixTimeZero = Date.parse('01 Jan 1970 00:00:00 GMT')
+        unixTimeZero = Date.parse("01 Jan 1970 00:00:00 GMT")
         assert unixTimeZero == 0
-        javaScriptRelease = Date.parse('04 Dec 1995 00:12:00 GMT')
+        javaScriptRelease = Date.parse("04 Dec 1995 00:12:00 GMT")
         assert javaScriptRelease == 818035920000
 
         d = Date()
@@ -64,19 +62,19 @@ class TestCase(unittest.TestCase):
             # print(d.getFullYear(), year)
             assert d.getFullYear() == year
 
-        d.setHours(2)  # TODO - returns?
+        d.setHours(2)  # TODO - returns?
         assert d.getHours() == 2
 
         # print( d.setItem() )
         print(d.setMilliseconds(123))
 
-        d.setMinutes(10)  # TODO - returns?
+        d.setMinutes(10)  # TODO - returns?
         assert d.getMinutes() == 10
 
-        d.setMonth(0)  # TODO - returns?
+        d.setMonth(0)  # TODO - returns?
         assert d.getMonth() == 0
 
-        d.setSeconds(10)  # TODO - returns?
+        d.setSeconds(10)  # TODO - returns?
         assert d.getSeconds() == 10
 
         # print(d.setTime(1000))  # TODO - more dates
@@ -124,12 +122,12 @@ class TestCase(unittest.TestCase):
         # print(d.getFullYear())
 
     def test_getDate(self):
-        Xmas95 = Date('December 25, 1995 23:15:30')
+        Xmas95 = Date("December 25, 1995 23:15:30")
         day = Xmas95.getDate()
         assert day == 25
 
     def test_getDay(self):
-        birthday = Date('August 19, 1975 23:15:30')
+        birthday = Date("August 19, 1975 23:15:30")
         day1 = birthday.getDay()
         # Sunday - Saturday : 0 - 6
         assert day1 == 2
@@ -140,36 +138,36 @@ class TestCase(unittest.TestCase):
         assert isinstance(year, int)
 
     def test_getHours(self):
-        birthday = Date('March 13, 08 04:20')
+        birthday = Date("March 13, 08 04:20")
         assert birthday.getHours() == 4
 
     def test_getMilliseconds(self):
-        moonLanding = Date('July 20, 69 00:20:18')
+        moonLanding = Date("July 20, 69 00:20:18")
         moonLanding.setMilliseconds(123)
         # print("moonLanding.getMilliseconds():",moonLanding.getMilliseconds())
         assert moonLanding.getMilliseconds() == 123
 
     def test_getMinutes(self):
-        birthday = Date('March 13, 08 04:20')
+        birthday = Date("March 13, 08 04:20")
         assert birthday.getMinutes() == 20
 
     def test_getMonth(self):
-        moonLanding = Date('July 20, 69 00:20:18')
+        moonLanding = Date("July 20, 69 00:20:18")
         assert moonLanding.getMonth() == 6
-        Xmas95 = Date('December 25, 1995 23:15:30')
+        Xmas95 = Date("December 25, 1995 23:15:30")
         assert Xmas95.getMonth() == 11
 
     def test_getSeconds(self):
-        moonLanding = Date('July 20, 69 00:20:18')
+        moonLanding = Date("July 20, 69 00:20:18")
         assert moonLanding.getSeconds() == 18
-        Xmas95 = Date('December 25, 1995 23:15:30')
+        Xmas95 = Date("December 25, 1995 23:15:30")
         assert Xmas95.getSeconds() == 30
 
     def test_getTime(self):
         # if no century is supplied the browser guesses with anything under 1950 being in the 21st century
         # python datetuil was ticking over at 50 years. so that's been reduced with parserinfo to 30 years to mirror js
         # https://stackoverflow.com/questions/38577076/customize-dateutil-parser-century-inference-logic
-        moonLanding = Date('July 20, 69 20:17:40 GMT+00:00')
+        moonLanding = Date("July 20, 69 20:17:40 GMT+00:00")
         assert moonLanding.getTime() == -14182940000
 
         # // Since month is zero based, birthday will be January 10, 1995
@@ -188,21 +186,21 @@ class TestCase(unittest.TestCase):
     #     assert date1.getTimezoneOffset() == date2.getTimezoneOffset()
 
     def setMinutes(self):
-        event = Date('August 19, 1975 23:15:30')
+        event = Date("August 19, 1975 23:15:30")
         event.setMinutes(45)
         assert event.getMinutes() == 45
         print(event)
         # // expected output: Tue Aug 19 1975 23:45:30 GMT+0200 (CEST)
 
     def setSeconds(self):
-        event = Date('August 19, 1975 23:15:30')
+        event = Date("August 19, 1975 23:15:30")
         event.setSeconds(42)
         assert event.getSeconds() == 42
         print(event)
         # // Sat Apr 19 1975 23:15:42 GMT+0100 (CET)
 
     def setTime(self):
-        event1 = Date('July 1, 1999')
+        event1 = Date("July 1, 1999")
         event2 = Date()
         event2.setTime(event1.getTime())
         print(event1)
@@ -211,7 +209,7 @@ class TestCase(unittest.TestCase):
         # // expected output: Thu Jul 01 1999 00:00:00 GMT+0200 (CEST)
 
     def setDate(self):
-        event = Date('August 19, 1975 23:15:30')
+        event = Date("August 19, 1975 23:15:30")
         event.setDate(24)
         print(event.getDate())
         assert event.getDate() == 24
@@ -232,7 +230,7 @@ class TestCase(unittest.TestCase):
         # theBigDay7 = Date(theBigDay).setDate(-50)  # 1962-05-11 (11th of May 1962)
 
     def setHours(self):
-        event = Date('August 19, 1975 23:15:30')
+        event = Date("August 19, 1975 23:15:30")
         event.setHours(20)
         print(event)
         assert event.getHours() == 20
@@ -242,11 +240,11 @@ class TestCase(unittest.TestCase):
         assert event.getHours() == 20
         # // expected output: Tue Aug 19 1975 20:21:22 GMT+0200 (CEST)
 
-
     def test_Intl(self):
         from domonic.javascript import Intl
+
         mydtf = Intl.DateTimeFormat()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

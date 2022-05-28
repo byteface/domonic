@@ -12,15 +12,14 @@ from domonic.style import *
 
 
 class TestCase(unittest.TestCase):
-
     def test_domonic_css(self):
 
         test = div("huh?", _style="alignContent: center;")  # TODO - should be parsing these styles
         print(test.style.alignContent)
-        test.style.alignContent = 'flex-start'
+        test.style.alignContent = "flex-start"
         print(test.style.alignContent)
         print(str(test))
-        assert test.style.alignContent == 'flex-start'
+        assert test.style.alignContent == "flex-start"
         # assert str(test) == '<div style="align-content: flex-start;">huh?</div>'
 
         atag = a("linky", _href="https://eventual.technology", _style="alignContent: center;")
@@ -49,22 +48,22 @@ class TestCase(unittest.TestCase):
     # create some failing tests
 
     # def test_css_style_declaration(self):
-        # styleObj = document.styleSheets[0].cssRules[0].style
-        # print(styleObj.cssText)
+    # styleObj = document.styleSheets[0].cssRules[0].style
+    # print(styleObj.cssText)
 
     # def test_css_style_rules(self):
-        # myRules = document.styleSheets[0].cssRules # Returns a CSSRuleList
-        # print(myRules)
+    # myRules = document.styleSheets[0].cssRules # Returns a CSSRuleList
+    # print(myRules)
 
-        # myRules = document.styleSheets[0].cssRules
-        # print(myRules[0]); # a CSSStyleRule representing the h1.
+    # myRules = document.styleSheets[0].cssRules
+    # print(myRules[0]); # a CSSStyleRule representing the h1.
 
-    #def test_css_styledpropertymap(self):
-        # pass
+    # def test_css_styledpropertymap(self):
+    # pass
 
     def test_paser(self):
 
-        somecss = '''
+        somecss = """
             :host {
                 display: block;
             }
@@ -88,7 +87,7 @@ class TestCase(unittest.TestCase):
             [attr1=\"value1\"] {
                 color: yellow;
             }
-        '''
+        """
 
         from domonic.style import CSSParser
 
@@ -105,21 +104,21 @@ class TestCase(unittest.TestCase):
             # print(r.parentRule)
 
         cssStyleSheet: CSSStyleSheet = CSSStyleSheet()
-        cssStyleSheet.insertRule('div { background-color: green }')
-        cssStyleSheet.insertRule('span { background-color: green }')
-        cssStyleSheet.insertRule('div { background-color: green }')
+        cssStyleSheet.insertRule("div { background-color: green }")
+        cssStyleSheet.insertRule("span { background-color: green }")
+        cssStyleSheet.insertRule("div { background-color: green }")
 
         # print(cssStyleSheet.cssRules)
         # print(cssStyleSheet.cssRules.length)
         # print(cssStyleSheet.cssRules[0].selectorText)
         # print(cssStyleSheet.cssRules[0].style.cssText)
         assert cssStyleSheet.cssRules.length == 3
-        assert cssStyleSheet.cssRules[0].selectorText == 'div'
-        assert cssStyleSheet.cssRules[0].style.cssText == 'background-color: green'
+        assert cssStyleSheet.cssRules[0].selectorText == "div"
+        assert cssStyleSheet.cssRules[0].style.cssText == "background-color: green"
 
         # cssStyleSheet.insertRule('background-color: green');
         # DOMException('Invalid CSS rule.', DOMExceptionNameEnum.hierarchyRequestError)
-        somecss = '''
+        somecss = """
             :host {
                 display: flex;
                 overflow: hidden;
@@ -153,7 +152,7 @@ class TestCase(unittest.TestCase):
                     transform: rotate(360deg);
                 }
             }
-        '''
+        """
 
         cssStyleSheet = CSSStyleSheet()
         cssRules = CSSParser.parseFromString(cssStyleSheet, somecss)
@@ -163,8 +162,8 @@ class TestCase(unittest.TestCase):
         # CSSStyleRule
         assert cssRules[0].parentRule == None
         assert cssRules[0].parentStyleSheet == cssStyleSheet
-        assert cssRules[0].selectorText == ':host'
-        print('>>>>>>>>>>>>>>>>>>>>>', cssRules[0].cssText)
+        assert cssRules[0].selectorText == ":host"
+        print(">>>>>>>>>>>>>>>>>>>>>", cssRules[0].cssText)
         # assert cssRules[0].cssText == ':host { display: flex; overflow: hidden; width: 100%; }'
         assert cssRules[0].style.parentRule == cssRules[0]
         # assert cssRules[0].style.length == 3
@@ -174,12 +173,12 @@ class TestCase(unittest.TestCase):
         # assert cssRules[0].style['display'] == 'flex'
         # assert cssRules[0].style['overflow'] == 'hidden'
         # assert cssRules[0].style['width'] == '100%'
-        assert cssRules[0].style.cssText == 'display: flex; overflow: hidden; width: 100%;'
+        assert cssRules[0].style.cssText == "display: flex; overflow: hidden; width: 100%;"
 
         # CSSStyleRule
         assert cssRules[1].parentRule == None
         assert cssRules[1].parentStyleSheet == cssStyleSheet
-        assert cssRules[1].selectorText == '.container'
+        assert cssRules[1].selectorText == ".container"
         # assert cssRules[1].cssText == '.container { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }'
         # assert cssRules[1].style.length == 4
         assert cssRules[1].style.parentRule == cssRules[1]
@@ -191,20 +190,20 @@ class TestCase(unittest.TestCase):
         # assert cssRules[1].style['display'] == 'flex'
         # assert cssRules[1].style['flexDirection'] == 'column'
         # assert cssRules[1].style['overflow'] == 'hidden'
-        assert cssRules[1].style.cssText == 'flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;'
+        assert cssRules[1].style.cssText == "flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;"
 
         # CSSMediaRule
         assert cssRules[2].parentRule == None
         assert cssRules[2].parentStyleSheet == cssStyleSheet
         assert cssRules[2].media.length == 1
-        assert cssRules[2].media[0] == 'screen and (max-width: 36rem)'
-        assert cssRules[2].media.mediaText == 'screen and (max-width: 36rem)'
+        assert cssRules[2].media[0] == "screen and (max-width: 36rem)"
+        assert cssRules[2].media.mediaText == "screen and (max-width: 36rem)"
         # assert cssRules[2].cssText == '@media screen and (max-width: 36rem) { .container { height: 0.5rem; animation: keyframes2 2s linear infinite; } }'
         # assert cssRules[2].cssRules.length == 1
         children1 = cssRules[2].cssRules
         assert children1[0].parentRule == cssRules[2]
         assert children1[0].parentStyleSheet == cssStyleSheet
-        assert children1[0].selectorText == '.container'
+        assert children1[0].selectorText == ".container"
         # assert children1[0].style.length == 2
         assert children1[0].style.parentRule == children1[0]
         # assert children1[0].style[0] == 'height'
@@ -216,14 +215,14 @@ class TestCase(unittest.TestCase):
         # CSSKeyframesRule
         assert cssRules[3].parentRule == None
         assert cssRules[3].parentStyleSheet == cssStyleSheet
-        assert cssRules[3].name == 'keyframes1'
+        assert cssRules[3].name == "keyframes1"
         print(cssRules[3].cssText)
         # assert cssRules[3].cssText == '@keyframes keyframes1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }'
         # assert cssRules[3].cssRules.length == 2
         children2 = cssRules[3].cssRules
         assert children2[0].parentRule == cssRules[3]
         assert children2[0].parentStyleSheet == cssStyleSheet
-        assert children2[0].keyText == 'from'
+        assert children2[0].keyText == "from"
         # assert children2[0].style.length == 1
         assert children2[0].style.parentRule == children2[0]
         # assert children2[0].style[0] == 'transform'
@@ -232,7 +231,7 @@ class TestCase(unittest.TestCase):
         # assert children2[0].cssText == 'from { transform: rotate(0deg); }'
         assert children2[1].parentRule == cssRules[3]
         assert children2[1].parentStyleSheet == cssStyleSheet
-        assert children2[1].keyText == 'to'
+        assert children2[1].keyText == "to"
         # assert children2[1].style.length == 1
         # assert children2[1].style[0] == 'transform'
         # assert children2[1].style['transform'] == 'rotate(360deg)'
@@ -241,13 +240,13 @@ class TestCase(unittest.TestCase):
         # CSSKeyframesRule
         assert cssRules[4].parentRule == None
         assert cssRules[4].parentStyleSheet == cssStyleSheet
-        assert cssRules[4].name == 'keyframes2'
+        assert cssRules[4].name == "keyframes2"
         # assert cssRules[4].cssText == '@keyframes keyframes2 { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }'
         # assert cssRules[4].cssRules.length == 2
         children3 = cssRules[4].cssRules
         assert children3[0].parentRule == cssRules[4]
         assert children3[0].parentStyleSheet == cssStyleSheet
-        assert children3[0].keyText == '0%'
+        assert children3[0].keyText == "0%"
         # assert children3[0].style.length == 1
         assert children3[0].style.parentRule == children3[0]
         # assert children3[0].style[0] == 'transform'
@@ -256,30 +255,29 @@ class TestCase(unittest.TestCase):
         # assert children3[0].cssText == '0% { transform: rotate(0deg); }'
         assert children3[1].parentRule == cssRules[4]
         assert children3[1].parentStyleSheet == cssStyleSheet
-        assert children3[1].keyText == '100%'
+        assert children3[1].keyText == "100%"
         # assert children3[1].style.length == 1
         # assert children3[1].style[0] == 'transform'
         # assert children3[1].style['transform'] == 'rotate(360deg)'
         # assert children3[1].cssText == '100% { transform: rotate(360deg); }'
 
-
     def test_new_props(self):
 
         s = Style()
-        s.all = 'border: 1px solid black;'
-        assert s.all == 'border: 1px solid black;'
+        s.all = "border: 1px solid black;"
+        assert s.all == "border: 1px solid black;"
 
-        s.alignmentBaseline = 'baseline'
-        s.appearance = 'none'
-        s.backdropFilter = 'blur(2px)'
-        s.backgroundBlendMode = 'normal'
-        s.backgroundPositionX = '0'
-        s.backgroundPositionY = '0'
+        s.alignmentBaseline = "baseline"
+        s.appearance = "none"
+        s.backdropFilter = "blur(2px)"
+        s.backgroundBlendMode = "normal"
+        s.backgroundPositionX = "0"
+        s.backgroundPositionY = "0"
         s.backgroundRepeatX = 0
         s.backgroundRepeatY = 0
-        s.baselineShift = '0'
-        s.blockSize = '0'
-        s.borderBlockEnd = '0'
+        s.baselineShift = "0"
+        s.blockSize = "0"
+        s.borderBlockEnd = "0"
         # s.borderBlockEndColor = None
         # s.borderBlockEndStyle = None
         # s.borderBlockEndWidth = None
@@ -467,12 +465,5 @@ class TestCase(unittest.TestCase):
         # s.y = None
 
 
-
-
-
-
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

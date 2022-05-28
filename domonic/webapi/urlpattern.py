@@ -6,7 +6,6 @@
 
 
 class URLPattern:
-
     def __init__(self, pattern):
         """[matches URLs or parts of URLs against a pattern.
         The pattern can contain capturing groups that extract parts of the matched URL.]
@@ -15,15 +14,15 @@ class URLPattern:
             pattern (str): [The pattern to match against.]
         """
         self.pattern = pattern
-        self.hash = ''
-        self.hostname = ''
-        self.href = ''
-        self.origin = ''
-        self.pathname = ''
-        self.port = ''
-        self.protocol = ''
-        self.search = ''
-        self.username = ''
+        self.hash = ""
+        self.hostname = ""
+        self.href = ""
+        self.origin = ""
+        self.pathname = ""
+        self.port = ""
+        self.protocol = ""
+        self.search = ""
+        self.username = ""
 
     def __str__(self):
         return self.pattern

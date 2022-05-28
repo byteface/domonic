@@ -12,6 +12,7 @@ class CDN_JS:
     """
     js libs
     """
+
     JQUERY_3_5_1: str = "https://code.jquery.com/jquery-3.5.1.min.js"  #:
     JQUERY: str = "https://code.jquery.com/jquery-3.6.0.min.js"  #: latest
     JQUERY_UI: str = "https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"  #:
@@ -38,6 +39,7 @@ class CDN_CSS:
     Preferably use version numbers if available.
     use LATEST if it always gets the latest
     """
+
     BOOTSTRAP_5_ALPHA: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"  #:
     BOOTSTRAP_4: str = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"  #:
     MARX: str = "https://unpkg.com/marx-css/css/marx.min.css"  #:
@@ -54,11 +56,12 @@ class CDN_CSS:
 
 
 class CDN_IMG:
-    """ CDN images """
+    """CDN images"""
+
     # - icons
     # - UI - emojis
 
-    '''
+    """
     # SOME EXAMPLES. NOT ALL ARE HTTPS:
     http://placehold.it/350x150
     http://unsplash.it/200/300
@@ -80,11 +83,11 @@ class CDN_IMG:
     https://via.placeholder.com/420x320/ff7f7f/333333?text=Sample
     https://keywordimg.com/420x320/random
     http://www.dummysrc.com/430x320.png/22c5fc/17202A
-    '''
+    """
     PLACEHOLDER_SERVICE: str = "loremflickr.com"
 
     @staticmethod
-    def PLACEHOLDER(width: int = 100, height: int = 100, HTTP: str = "", seperator: str = '/') -> str:
+    def PLACEHOLDER(width: int = 100, height: int = 100, HTTP: str = "", seperator: str = "/") -> str:
         """
         to update do CDN_IMG.PLACEHOLDER_SERVICE = "placebear.com/g"
         usage : img(_src=CDN_IMG.PLACEHOLDER(300,100))
@@ -96,11 +99,10 @@ class CDN_IMG:
 
 
 class CDN_FONT:
-
     @staticmethod
     def google(family: str) -> str:
-        """ pass a font family name and returns the url """
-        return "https://fonts.googleapis.com/css?family=" + '+'.join(family)
+        """pass a font family name and returns the url"""
+        return "https://fonts.googleapis.com/css?family=" + "+".join(family)
 
     # @staticmethod
     # def font_awesome(version='5.7.1'):

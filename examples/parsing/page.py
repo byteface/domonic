@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.insert(0, '../..')
+
+sys.path.insert(0, "../..")
 
 import requests
 
@@ -10,7 +11,102 @@ from domonic.utils import Utils
 from domonic.html import *
 from domonic.terminal import *
 
-sites = ["bankofamerica.com","amazon.com","news.ycombinator.com","en.wikipedia.org","youtube.com","facebook.com","twitter.com","fandom.com","pinterest.com","imdb.com","reddit.com","craigslist.org","google.com","instagram.com","walmart.com","apple.com","mail.yahoo.com","indeed.com","steampowered.com","britannica.com","zillow.com","investopedia.com","speedtest.net","spotify.com","cdc.gov","dictionary.com","weather.com","ups.com","verizon.com","wowhead.com","macys.com","ign.com","cbssports.com","webmd.com","genius.com","expedia.com","yelp.com","tripadvisor.com","netflix.com","cnn.com","target.com","glassdoor.com","bulbagarden.net","paypal.com","realtor.com","macys.com","ebay.com","urbandictionary.com","nbcnews.com","microsoft.com","mayoclinic.org","nih.gov","live.com","quora.com","fedex.com","finance.yahoo.com","msn.com","att.com","bbc.com","khanacademy.org","linkedin.com","foxnews.com","ebay.com","healthline.com","yahoo.com","espn.com","gamepedia.com","irs.gov","steampowered.com","mapquest.com","allrecipes.com","aol.com","rottentomatoes.com","ca.gov","play.google.com","cnet.com","roblox.com","businessinsider.com","usatoday.com","medicalnewstoday.com","washingtonpost.com","cdc.gov","chase.com","hulu.com","xfinity.com","forbes.com","nbcnews.com","capitalone.com","ny.gov","adobe.com","irs.gov","nytimes.com","etsy.com","yahoo.com"]
+sites = [
+    "bankofamerica.com",
+    "amazon.com",
+    "news.ycombinator.com",
+    "en.wikipedia.org",
+    "youtube.com",
+    "facebook.com",
+    "twitter.com",
+    "fandom.com",
+    "pinterest.com",
+    "imdb.com",
+    "reddit.com",
+    "craigslist.org",
+    "google.com",
+    "instagram.com",
+    "walmart.com",
+    "apple.com",
+    "mail.yahoo.com",
+    "indeed.com",
+    "steampowered.com",
+    "britannica.com",
+    "zillow.com",
+    "investopedia.com",
+    "speedtest.net",
+    "spotify.com",
+    "cdc.gov",
+    "dictionary.com",
+    "weather.com",
+    "ups.com",
+    "verizon.com",
+    "wowhead.com",
+    "macys.com",
+    "ign.com",
+    "cbssports.com",
+    "webmd.com",
+    "genius.com",
+    "expedia.com",
+    "yelp.com",
+    "tripadvisor.com",
+    "netflix.com",
+    "cnn.com",
+    "target.com",
+    "glassdoor.com",
+    "bulbagarden.net",
+    "paypal.com",
+    "realtor.com",
+    "macys.com",
+    "ebay.com",
+    "urbandictionary.com",
+    "nbcnews.com",
+    "microsoft.com",
+    "mayoclinic.org",
+    "nih.gov",
+    "live.com",
+    "quora.com",
+    "fedex.com",
+    "finance.yahoo.com",
+    "msn.com",
+    "att.com",
+    "bbc.com",
+    "khanacademy.org",
+    "linkedin.com",
+    "foxnews.com",
+    "ebay.com",
+    "healthline.com",
+    "yahoo.com",
+    "espn.com",
+    "gamepedia.com",
+    "irs.gov",
+    "steampowered.com",
+    "mapquest.com",
+    "allrecipes.com",
+    "aol.com",
+    "rottentomatoes.com",
+    "ca.gov",
+    "play.google.com",
+    "cnet.com",
+    "roblox.com",
+    "businessinsider.com",
+    "usatoday.com",
+    "medicalnewstoday.com",
+    "washingtonpost.com",
+    "cdc.gov",
+    "chase.com",
+    "hulu.com",
+    "xfinity.com",
+    "forbes.com",
+    "nbcnews.com",
+    "capitalone.com",
+    "ny.gov",
+    "adobe.com",
+    "irs.gov",
+    "nytimes.com",
+    "etsy.com",
+    "yahoo.com",
+]
 
 # sites = ["bankofamerica.com"] ??
 # sites = ["amazon.com"]
@@ -130,11 +226,12 @@ sites = ["bankofamerica.com","amazon.com","news.ycombinator.com","en.wikipedia.o
 
 
 # NOTE - nesting level limits in python
-# https://bugs.python.org/issue33149 
+# https://bugs.python.org/issue33149
 # https://bugs.python.org/issue3971
 
 import sys
-sys.setrecursionlimit(5000) # beefs the recursion limit for big pages (not a solution for DEEP pages)
+
+sys.setrecursionlimit(5000)  # beefs the recursion limit for big pages (not a solution for DEEP pages)
 
 from sys import exc_info
 from traceback import format_exception
@@ -147,34 +244,33 @@ for SITE in sites:
     # page = domonic.get("https://"+SITE)
 
     try:
-        r = requests.get("https://"+SITE)
+        r = requests.get("https://" + SITE)
         # print(r.text.decode("utf-8"))
         page = domonic.parse(r.content.decode("utf-8"), remove_broken_lines=True)
-    except Exception as e:    
-        print('Failed to dl page')
+    except Exception as e:
+        print("Failed to dl page")
 
     if page is None:
-        print('NO PAGE')
+        print("NO PAGE")
         continue
 
-    render(page, 'tmp/'+Utils.url2file(SITE)) # render the one before the eval    
+    render(page, "tmp/" + Utils.url2file(SITE))  # render the one before the eval
 
-    page = domonic.evaluate(page) # eval - tell us if we failed
-    render(page, 'tmp/'+Utils.url2file(SITE)+'.pyml') # write evaulated
+    page = domonic.evaluate(page)  # eval - tell us if we failed
+    render(page, "tmp/" + Utils.url2file(SITE) + ".pyml")  # write evaulated
 
     try:
         outp = domonic.domonify(page)
         if type(outp) is tuple:
             outp = outp[0]
-        render(outp, 'tmp/'+Utils.url2file(SITE)+'.html')  # output rendered html
-        print('Success! html file generated')
-    except Exception as e:    
-        print('Failed to create html. you will have to manually fix the pyml')
+        render(outp, "tmp/" + Utils.url2file(SITE) + ".html")  # output rendered html
+        print("Success! html file generated")
+    except Exception as e:
+        print("Failed to create html. you will have to manually fix the pyml")
 
 
-
-print(domonic.parse('<div></div>'))
-print(domonic.parse('<div><ul><li><li></ul></div>'))
+print(domonic.parse("<div></div>"))
+print(domonic.parse("<div><ul><li><li></ul></div>"))
 
 # <------------------------------ should compile. i.e
 # page = '''html(

@@ -10,8 +10,7 @@ from inspect import stack
 from unittest.mock import Mock
 
 from domonic.javascript import *
-from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
-                                Window)
+from domonic.javascript import URL, Array, Date, Global, Math, Object, String, Window
 
 # import requests
 # from mock import patch
@@ -28,35 +27,35 @@ class TestCase(unittest.TestCase):
         print(type(o))
 
         myObj = Object()
-        string = 'myString'
+        string = "myString"
         rand = Math.random()
         obj1 = Object()
-        myObj.type = 'Dot syntax'
-        myObj['date created'] = 'String with space'
-        myObj[string] = 'String value'
-        myObj[rand] = 'Random Number'
-        myObj[obj1] = 'Object'
-        myObj[''] = 'Even an empty string'
+        myObj.type = "Dot syntax"
+        myObj["date created"] = "String with space"
+        myObj[string] = "String value"
+        myObj[rand] = "Random Number"
+        myObj[obj1] = "Object"
+        myObj[""] = "Even an empty string"
 
-        assert myObj.type == 'Dot syntax'
-        assert myObj['date created'] == 'String with space'
-        assert myObj[string] == 'String value'
-        assert myObj[rand] == 'Random Number'
+        assert myObj.type == "Dot syntax"
+        assert myObj["date created"] == "String with space"
+        assert myObj[string] == "String value"
+        assert myObj[rand] == "Random Number"
         # assert myObj[obj1] == 'Object' # TODO - does js do this?
-        assert myObj[''] == 'Even an empty string'
+        assert myObj[""] == "Even an empty string"
 
         assert o is not myObj
 
         myCar = Object()
-        propertyName = 'make'
-        myCar[propertyName] = 'Ford'
-        assert myCar[propertyName] == 'Ford'
-        propertyName = 'model'
-        myCar[propertyName] = 'Mustang'
-        assert myCar[propertyName] == 'Mustang'
+        propertyName = "make"
+        myCar[propertyName] = "Ford"
+        assert myCar[propertyName] == "Ford"
+        propertyName = "model"
+        myCar[propertyName] = "Mustang"
+        assert myCar[propertyName] == "Mustang"
 
         def showProps(obj, objName):
-            result = ''
+            result = ""
             for i in obj:
                 if obj.hasOwnProperty(i):
                     result += objName + "." + str(i) + "= " + str(obj[i]) + "\n"
@@ -65,23 +64,23 @@ class TestCase(unittest.TestCase):
         showProps(myCar, "myCar")
         # print(showProps(myCar, "myCar"))
 
-        obj = {'a': 1}
+        obj = {"a": 1}
         copy = Object.assign({}, obj)
-        assert copy == {'a': 1}
+        assert copy == {"a": 1}
 
         # print(Object().fromEntries())
-        arr = [['0', 'a'], ['1', 'b'], ['2', 'c']]
+        arr = [["0", "a"], ["1", "b"], ["2", "c"]]
         obj = Object.fromEntries(arr)
         print(obj)
-        assert obj == {'0': "a", '1': "b", '2': "c"}
+        assert obj == {"0": "a", "1": "b", "2": "c"}
 
-        obj = {'foo': 'bar', 'baz': 42}
+        obj = {"foo": "bar", "baz": 42}
         print(Object.entries(obj))
-        assert Object.entries(obj) == [['foo', 'bar'], ['baz', 42]]
+        assert Object.entries(obj) == [["foo", "bar"], ["baz", 42]]
 
         # array like object
-        obj = {'0': 'a', '1': 'b', '2': 'c'}
-        assert Object.entries(obj) == [['0', 'a'], ['1', 'b'], ['2', 'c']]
+        obj = {"0": "a", "1": "b", "2": "c"}
+        assert Object.entries(obj) == [["0", "a"], ["1", "b"], ["2", "c"]]
 
         # def listAllProperties(o):
         #     result = []
@@ -94,7 +93,6 @@ class TestCase(unittest.TestCase):
         #     return result
         # print(listAllProperties(myCar))
 
-
         # array like object with random key ordering
         # anObj = {'100': 'a', '2': 'b', '7': 'c'}
         # print(anObj)
@@ -105,9 +103,9 @@ class TestCase(unittest.TestCase):
         assert Object.entries(100) == []
 
         # iterate through key-value gracefully
-        obj = {'a': 5, 'b': 7, 'c': 9}
+        obj = {"a": 5, "b": 7, "c": 9}
         for key, value in Object.entries(obj):
-            print(f'{key} {value}')  # "a 5", "b 7", "c 9"
+            print(f"{key} {value}")  # "a 5", "b 7", "c 9"
 
         # class Car(Object):
         #     def __init__(self, make, model, year):
@@ -124,12 +122,11 @@ class TestCase(unittest.TestCase):
 
     # Animal properties and method encapsulation
 
-
     # TODO - to get reference back to self. in a dict it needs to readd the method and pass self
     Animal = {
-        'type': 'Invertebrates',  # Default value of properties
+        "type": "Invertebrates",  # Default value of properties
         # 'displayType': lambda self: print("STACK!!!!!",stack()[1].function)  # Method which will display type of Animal
-        'displayType': lambda self: print(self.type)
+        "displayType": lambda self: print(self.type),
     }
     animal1 = Object.create(Animal)
     print(animal1)
@@ -138,23 +135,21 @@ class TestCase(unittest.TestCase):
     animal1.displayType(animal1)  # Output:Invertebrates #TODO - need to work without passing self
 
     fish = Object.create(Animal)
-    fish.type = 'Fishes'
+    fish.type = "Fishes"
     fish.displayType(animal1)  # Output:Fishes
-
-
 
     def test_domonic_abs(self):
         # python -m unittest tests.test_javascript.TestCase.test_domonic_abs
 
-        self.assertEqual(Math.abs('-1'), 1)
+        self.assertEqual(Math.abs("-1"), 1)
         self.assertEqual(Math.abs(-2), 2)
         self.assertEqual(Math.abs(None), 0)
-        self.assertEqual(Math.abs(''), 0)
+        self.assertEqual(Math.abs(""), 0)
         self.assertEqual(Math.abs([]), 0)
         self.assertEqual(Math.abs([2]), 2)
         self.assertEqual(Math.abs([1, 2]), None)
         self.assertEqual(Math.abs({}), None)
-        self.assertEqual(Math.abs('string'), None)
+        self.assertEqual(Math.abs("string"), None)
         self.assertEqual(Math.abs(), None)
 
         self.assertEqual(100, Math.abs(-100.0))
@@ -340,7 +335,7 @@ class TestCase(unittest.TestCase):
 
         pass
 
-    '''
+    """
     def test_domonic_window_location(self):
         # Window().alert("test this 2")
         window = Window()
@@ -352,7 +347,7 @@ class TestCase(unittest.TestCase):
         print(window.location)
         print(str(window.location))
         print(window.location.href)
-    '''
+    """
 
     def test_domonic_global_encodeURIComponent(self):
 
@@ -370,27 +365,26 @@ class TestCase(unittest.TestCase):
         # print("=",window.document.baseURI)
         pass
 
-
     # TODO - this was move to webapi. tests are working by proxy
     def test_javascript_url(self):
-        url = URL('https://somesite.com/blog/article-one#some-hash')
+        url = URL("https://somesite.com/blog/article-one#some-hash")
         # print('TESTS:')
         # print(url)
-        assert url.href == 'https://somesite.com/blog/article-one#some-hash'
-        assert url.protocol == 'https'
-        assert url.host == 'somesite.com'
-        assert url.hostname == 'somesite.com'
+        assert url.href == "https://somesite.com/blog/article-one#some-hash"
+        assert url.protocol == "https"
+        assert url.host == "somesite.com"
+        assert url.hostname == "somesite.com"
         # assert url.port == ''  # TODO - check js none or empty
-        assert url.pathname == '/blog/article-one'
-        assert url.hash == '#some-hash'
-        assert url.toString() == 'https://somesite.com/blog/article-one#some-hash'
+        assert url.pathname == "/blog/article-one"
+        assert url.hash == "#some-hash"
+        assert url.toString() == "https://somesite.com/blog/article-one#some-hash"
         # print(url.protocol)
         url.protocol = "http"
         # print(url.protocol)
         assert url.protocol == "http"
         assert url.href == "http://somesite.com/blog/article-one#some-hash"
 
-        url.host = 'test.com'
+        url.host = "test.com"
         assert url.href == "http://test.com/blog/article-one#some-hash"
         assert url.host == "test.com"
         assert url.hostname == "test.com"
@@ -400,13 +394,13 @@ class TestCase(unittest.TestCase):
         # print(url.toString())
 
     # def test_javascript_window(self):
-        # print('asdf')
-        # print(window)
-        # print(window.location)
+    # print('asdf')
+    # print(window)
+    # print(window.location)
 
-        # window.location = "https://google.com"
-        # print(window.location.href)
-        # pass
+    # window.location = "https://google.com"
+    # print(window.location.href)
+    # pass
 
     def test_javascript_array(self):
         myarr = Array("1", "2", 3, {"4": "four"}, 5, [6])
@@ -423,17 +417,19 @@ class TestCase(unittest.TestCase):
         assert myarr == Array("1", "2", 3, {"4": "four"}, 5, [6])
         # print(myarr.join('---'))  #  TODO - test some js ones
         # assert myarr.join('---') == "1---2---3---[object Object]---5---6"
-        assert myarr.join('---') == "1---2---3---{'4': 'four'}---5---[6]"
+        assert myarr.join("---") == "1---2---3---{'4': 'four'}---5---[6]"
         # print(myarr.lastIndexOf("1"))
         assert myarr.lastIndexOf("1") == 0
         assert myarr.lastIndexOf(3) == 2
-        print('fails to assert:', myarr.reverse())  # TODO - not passing but looks right? - also not fixed by equality update
+        print(
+            "fails to assert:", myarr.reverse()
+        )  # TODO - not passing but looks right? - also not fixed by equality update
         # assert myarr.reverse() == [[6], 5, {'4': 'four'}, 3, '2', '1']
-        myarr = Array([[6], 5, {'4': 'four'}, 3, '2', '1'])
+        myarr = Array([[6], 5, {"4": "four"}, 3, "2", "1"])
         assert myarr.slice(0, 1) == [[6]]
-        assert myarr == Array([[6], 5, {'4': 'four'}, 3, '2', '1'])
+        assert myarr == Array([[6], 5, {"4": "four"}, 3, "2", "1"])
         # print(myarr.splice(1))  # TODO - not passing but looks right?
-        assert myarr.splice(1) == [5, {'4': 'four'}, 3, '2', '1']
+        assert myarr.splice(1) == [5, {"4": "four"}, 3, "2", "1"]
         assert myarr[0][0] == 6
         # tests equality. Array == list
         assert myarr == [[6]]
@@ -442,26 +438,26 @@ class TestCase(unittest.TestCase):
         assert myarr == [[6]]
         # test casting
         myarr = ["1", "a", "b", "c"]
-        assert Array(myarr).splice(1, 1) == ['a']
+        assert Array(myarr).splice(1, 1) == ["a"]
         assert myarr == ["1", "b", "c"]
         myarr = Array(["1", "a", "b", "c"])
         assert myarr.pop() == "c"
         assert myarr == ["1", "a", "b"]
         myarr.push(7)
         assert myarr == ["1", "a", "b", 7]
-        assert myarr.unshift('z') == 5
+        assert myarr.unshift("z") == 5
         assert myarr == ["z", "1", "a", "b", 7]
         assert myarr.shift() == "z"
         assert myarr == ["1", "a", "b", 7]
         assert myarr.concat() == ["1", "a", "b", 7]
         # assert myarr.concat(['a', 'b', 'c']) == ["1", "a", "b", 7, "a", "b", "c"]
-        assert myarr.concat(['a', 'b', 'c'], ['d', 'e', 'f']) == ["1", "a", "b", 7, "a", "b", "c", "d", "e", "f"]
+        assert myarr.concat(["a", "b", "c"], ["d", "e", "f"]) == ["1", "a", "b", 7, "a", "b", "c", "d", "e", "f"]
         # make array do both python and javascript methods.
         myarr = Array("1", "2", 3, {"4": "four"}, 5, [6])
-        myarr.append('test')
-        myarr = Array([2, 3, 1, 'a', 'b', 5, '2'])
-        assert myarr.sort() == [1, 2, '2', 3, 5, 'a', 'b']
-        assert myarr.reverse() == ['b', 'a', 5, 3, '2', 2, 1]
+        myarr.append("test")
+        myarr = Array([2, 3, 1, "a", "b", 5, "2"])
+        assert myarr.sort() == [1, 2, "2", 3, 5, "a", "b"]
+        assert myarr.reverse() == ["b", "a", 5, 3, "2", 2, 1]
         # print(myarr.fill()) # note - js returns list of undefined
         assert myarr.fill() == [None, None, None, None, None, None, None]
         # print(myarr.fill(1))
@@ -472,9 +468,9 @@ class TestCase(unittest.TestCase):
         # print(myarr.isArray()) # fails as it should as its a static method.
         assert Array.isArray(myarr) == True
 
-        myarr = Array([3, 4, 2, 'b', 'c', 6, 3])
+        myarr = Array([3, 4, 2, "b", "c", 6, 3])
         # print(myarr.map(lambda x: x + 1 if type(x) == int else chr(ord(x) + 1)))
-        assert myarr.map(lambda x: x + 1 if type(x) == int else chr(ord(x) + 1)) == [4, 5, 3, 'c', 'd', 7, 4]
+        assert myarr.map(lambda x: x + 1 if type(x) == int else chr(ord(x) + 1)) == [4, 5, 3, "c", "d", 7, 4]
         # print(myarr.filter()) # passing nothing fails like javascript
         with self.assertRaises(TypeError):
             myarr.filter()
@@ -510,7 +506,7 @@ class TestCase(unittest.TestCase):
         # print(myarr.every(lambda x: x == 3))
         assert myarr.every(lambda x: x == 3) == True
 
-        myarr = Array([3, 4, 2, 'b', 'c', 6, 3])
+        myarr = Array([3, 4, 2, "b", "c", 6, 3])
         with self.assertRaises(TypeError):
             myarr.some()
         # print(myarr.some(lambda x: x == "a"))
@@ -527,11 +523,10 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_javascript_interval(self):
-
         def hi():
             # print('hi')
             spin = ["|", "/", "-", "\\"]
-            print('    ' + spin[int(time.time() * 4) % 4], end="\r")
+            print("    " + spin[int(time.time() * 4) % 4], end="\r")
 
         test = window.setInterval(hi, 1)
         print("2 secs. I'm just going to do some stuff in the background")
@@ -539,23 +534,23 @@ class TestCase(unittest.TestCase):
         # keep the test open to see if the intervals fire
         time.sleep(2)
 
-        print('running again')
+        print("running again")
         window.clearInterval(test)
-        print('ran')
+        print("ran")
 
     def test_javascript_Number(self):
         # print(Number.MAX_VALUE)
-        assert Number.MAX_VALUE == 1.7976931348623157e+308
+        assert Number.MAX_VALUE == 1.7976931348623157e308
 
     def test_javascript_fetch(self):
 
-        TEST_DOMAIN = 'https://google.com'
-        urls = ['http://google.com', 'http://linkedin.com', 'http://eventual.technology']  # use your own domains
+        TEST_DOMAIN = "https://google.com"
+        urls = ["http://google.com", "http://linkedin.com", "http://eventual.technology"]  # use your own domains
 
-        print('run 1')
+        print("run 1")
         results = window.fetch(TEST_DOMAIN)
         results.then(lambda r: print(r.text))
-        print('run 1 FINISHED')
+        print("run 1 FINISHED")
 
         def somefunc(response):
             print("I'm a callback", response.ok)
@@ -566,7 +561,7 @@ class TestCase(unittest.TestCase):
         print(mydata.data)
         print(mydata.data.text)
 
-        print('run 1111')
+        print("run 1111")
         results = window.fetch_set(urls)
         print(results)
         print(list(results))
@@ -575,7 +570,7 @@ class TestCase(unittest.TestCase):
                 print(r.ok)
                 # print(r.text)
 
-        print('run 2')
+        print("run 2")
         results = window.fetch_threaded(urls)
         print(results)
         print(list(results))
@@ -584,7 +579,7 @@ class TestCase(unittest.TestCase):
                 print(r.ok)
                 # print(r.text)
 
-        print('run 3')
+        print("run 3")
         results = window.fetch_pooled(urls, timeout=2)
         print(results)
         for r in results:
@@ -592,12 +587,12 @@ class TestCase(unittest.TestCase):
                 print(r.ok)
                 # print(r.text)
 
-        print('run 4')
+        print("run 4")
         results = window.fetch(urls[0])
         print(results)
         results.then(lambda r: print(r.text) if r is not None else None)
 
-        print('ran ===')
+        print("ran ===")
         # return
 
         # TEST REGULAR
@@ -607,17 +602,17 @@ class TestCase(unittest.TestCase):
         def get_things():
             global _results
             _results = window.fetch(urls[0])
-            print('sup::', _results)
+            print("sup::", _results)
 
-        print('BEFORE')
+        print("BEFORE")
         test = window.setInterval(get_things, 2000)
-        print('AFTER')
+        print("AFTER")
         print(_results)
         time.sleep(4)
-        print('LATER')
+        print("LATER")
         print(_results)
 
-        print('MAKE SURE TO CLEAR INTERVAL AND RESET RESULTS!')
+        print("MAKE SURE TO CLEAR INTERVAL AND RESET RESULTS!")
         window.clearInterval(test)
         _results = []
 
@@ -625,9 +620,9 @@ class TestCase(unittest.TestCase):
         def get_things():
             global _results
             _results = window.fetch_pooled(urls)
-            print('sup::', _results)
+            print("sup::", _results)
 
-        print('Are you ready')
+        print("Are you ready")
         test = window.setInterval(get_things, 1000)
         print("wait, where my results?")
         print(_results)
@@ -645,8 +640,9 @@ class TestCase(unittest.TestCase):
     def test_javascript_promise(self):
         def do_test(resolve, reject):
             global _intID
-            _intID = window.setInterval(resolve, 2000, 'amazing!')
+            _intID = window.setInterval(resolve, 2000, "amazing!")
             resolve("once!")
+
         myPromise = Promise(lambda resolve, reject: do_test(resolve, reject))
         myPromise.then(lambda successMessage: str(successMessage))
         time.sleep(3)
@@ -657,44 +653,44 @@ class TestCase(unittest.TestCase):
         print("test_javascript_string")
         mystr = String("Some String")
 
-        assert(mystr.toLowerCase() == "some string")
-        assert(mystr.toUpperCase() == "SOME STRING")
+        assert mystr.toLowerCase() == "some string"
+        assert mystr.toUpperCase() == "SOME STRING"
 
         # print(type(mystr))
         # print(mystr.length)
-        assert(mystr.length == 11)
+        assert mystr.length == 11
 
-        assert(mystr.repeat(2) == "Some StringSome String")
+        assert mystr.repeat(2) == "Some StringSome String"
         # print(mystr)
         # print(mystr)
         # print(mystr)
-        assert(mystr.startsWith('S'))
+        assert mystr.startsWith("S")
         # assert(mystr.endsWith('g'))
 
         # print(">>", mystr.substr(1))
-        assert(mystr.substr(1) == 'ome String')
+        assert mystr.substr(1) == "ome String"
 
-        #substring
+        # substring
         # print(mystr)
         # print(mystr.substring(1, 3))
-        assert(mystr.substring(1, 3) == 'om')
+        assert mystr.substring(1, 3) == "om"
 
         # slice
         # print(mystr.slice(1, 3))
-        assert(mystr.slice(1, 3) == 'om')
+        assert mystr.slice(1, 3) == "om"
 
         # test trim
         mystr = String("   Some String   ")
-        assert(mystr.trim() == "Some String")
+        assert mystr.trim() == "Some String"
 
         # charAt
         mystr = String("Some String")
-        assert(mystr.charAt(1) == 'o')
-        assert(mystr.charAt(5) == 'S')
+        assert mystr.charAt(1) == "o"
+        assert mystr.charAt(5) == "S"
 
         # charCodeAt
-        assert(mystr.charCodeAt(1) == 111)
-        assert(mystr.fromCharCode(111) == 'o')
+        assert mystr.charCodeAt(1) == 111
+        assert mystr.fromCharCode(111) == "o"
 
         # test
         # assert(mystr.test('a') == True)
@@ -702,9 +698,9 @@ class TestCase(unittest.TestCase):
 
         # replace
         # print(mystr.replace('S', 'X'))
-        assert(mystr.replace('S', 'X') == "Xome String")
-        assert(mystr.replace(' ', 'X') == "SomeXString")
-        assert(mystr.replace('S', 'X') != "Xome Xtring")
+        assert mystr.replace("S", "X") == "Xome String"
+        assert mystr.replace(" ", "X") == "SomeXString"
+        assert mystr.replace("S", "X") != "Xome Xtring"
 
         # localeCompare
         # assert(mystr.localeCompare('a', 'b') == -1)
@@ -715,26 +711,25 @@ class TestCase(unittest.TestCase):
 
         # search
         mystr = String("Some String")
-        assert(mystr.search('a') == False)
-        assert(mystr.search('o') == True)
+        assert mystr.search("a") == False
+        assert mystr.search("o") == True
 
         # substr
         print(mystr.substr(1, 2))
-        assert(mystr.substr(1, 2) == 'om')
-        assert(mystr.substr(1, 3) == 'ome')
-        assert(mystr.substr(1, 4) == 'ome ')
-        assert(mystr.substr(1, 5) == 'ome S')
-
+        assert mystr.substr(1, 2) == "om"
+        assert mystr.substr(1, 3) == "ome"
+        assert mystr.substr(1, 4) == "ome "
+        assert mystr.substr(1, 5) == "ome S"
 
         # toLocaleLowerCase
         # print(mystr.toLocaleLowerCase())
-        assert(mystr.toLocaleLowerCase() == 'some string')
+        assert mystr.toLocaleLowerCase() == "some string"
         # print(mystr.toLocaleLowerCase())
-        assert(mystr.toLocaleLowerCase() == 'some string')
+        assert mystr.toLocaleLowerCase() == "some string"
 
         # toLocaleUpperCase
         # print(mystr.toLocaleUpperCase())
-        assert(mystr.toLocaleUpperCase() == 'SOME STRING')
+        assert mystr.toLocaleUpperCase() == "SOME STRING"
 
         # compile
         # print(mystr.compile())
@@ -742,7 +737,7 @@ class TestCase(unittest.TestCase):
 
         # lastIndex
         # print(mystr.lastIndexOf('o'))
-        assert(mystr.lastIndexOf('o') == 1)
+        assert mystr.lastIndexOf("o") == 1
 
         # replace
         assert mystr.codePointAt(1) == 111
@@ -751,16 +746,15 @@ class TestCase(unittest.TestCase):
         print(f"---{mystr.padEnd(13)}-")
         assert mystr.padEnd(13) == "Some String  "
         assert mystr.padStart(13) == "  Some String"
-        assert mystr.padStart(13, '-') == "--Some String"
+        assert mystr.padStart(13, "-") == "--Some String"
         # assert mystr.localeCompare('a', 'a') == 0
 
-        assert mystr.includes('a') == False
-        assert mystr.includes('Some') == True
+        assert mystr.includes("a") == False
+        assert mystr.includes("Some") == True
         # assert mystr.matchAll(['a', 'b']) == False # TODO - dont think this is supposed to take lists?
         # assert mystr.match('a', 'b') == False # TODO
         # assert mystr.trimStart(1) == "Some" # TODO
         # assert mystr.trimEnd(1) == "String" # TODO
-
 
     def test_javascript_URLSearchParams(self):
         print("test_javascript_URLSearchParams")
@@ -842,24 +836,22 @@ class TestCase(unittest.TestCase):
 
     def test_javascript_at(self):
         print("test_javascript_at")
-        myarr = Array(['a', 'b', 'c', 'd'])
-        assert myarr.at(-1) == 'd'
-        myarr = ['a', 'b', 'c', 'd']
+        myarr = Array(["a", "b", "c", "d"])
+        assert myarr.at(-1) == "d"
+        myarr = ["a", "b", "c", "d"]
         myarr = Array(myarr)
-        assert myarr.at(-1) == 'd'
-        myarr = Array('a', 'b', 'c', 'd')
-        assert myarr.at(-1) == 'd'
-
+        assert myarr.at(-1) == "d"
+        myarr = Array("a", "b", "c", "d")
+        assert myarr.at(-1) == "d"
 
     # def test_javascript_Node(self):
-        # url = require('url');
-        # console.log(url.domainToASCII('español.com'))
-        # console.log(url.domainToASCII('??.com'))
-        # console.log(url.domainToASCII('xn--iñvalid.com'))
-        # console.log(url.domainToUnicode('español.com'))
-        # console.log(url.domainToUnicode('??.com'))
-        # console.log(url.domainToUnicode('xn--iñvalid.com'))
-
+    # url = require('url');
+    # console.log(url.domainToASCII('español.com'))
+    # console.log(url.domainToASCII('??.com'))
+    # console.log(url.domainToASCII('xn--iñvalid.com'))
+    # console.log(url.domainToUnicode('español.com'))
+    # console.log(url.domainToUnicode('??.com'))
+    # console.log(url.domainToUnicode('xn--iñvalid.com'))
 
     # def test_javascript_call(self):
 
@@ -900,9 +892,7 @@ class TestCase(unittest.TestCase):
         #     print("func you")
         #     print(data)
 
-        @called(
-            lambda: º.ajax('https://www.google.com'),
-            lambda err: print('error:', err))
+        @called(lambda: º.ajax("https://www.google.com"), lambda err: print("error:", err))
         def success(data=None):
             print("sweet!")
             print(data.text)
@@ -914,7 +904,6 @@ class TestCase(unittest.TestCase):
             print("sup!")
             return True
 
-
     def test_javascript_numbersandstrings(self):
         print("test_javascript_numbersnstrings")
 
@@ -922,8 +911,8 @@ class TestCase(unittest.TestCase):
         n2 = Number(2)
         print(n + n2)
 
-        s = String('a')
-        s2 = String('b')
+        s = String("a")
+        s2 = String("b")
         print(s + s2)
         print(s * n2)
 
@@ -937,35 +926,34 @@ class TestCase(unittest.TestCase):
         print(test.toLocaleLowerCase())
         print(test.toLocaleUpperCase())
 
-
     def test_set(self):
 
         mySet1 = Set()
 
-        mySet1.add(1)           # Set [ 1 ]
+        mySet1.add(1)  # Set [ 1 ]
         assert mySet1.size == 1
         assert mySet1.contains(1) == True
         assert mySet1.contains(2) == False
 
-        mySet1.add(5)           # Set [ 1, 5 ]
+        mySet1.add(5)  # Set [ 1, 5 ]
         assert mySet1.size == 2
         assert mySet1.contains(1) == True
         assert mySet1.contains(2) == False
         assert mySet1.contains(5) == True
 
-        mySet1.add(5)           # Set [ 1, 5 ]
+        mySet1.add(5)  # Set [ 1, 5 ]
         assert mySet1.size == 2
         assert mySet1.contains(1) == True
 
-        mySet1.add('some text') # Set [ 1, 5, 'some text' ]
+        mySet1.add("some text")  # Set [ 1, 5, 'some text' ]
         assert mySet1.size == 3
         assert mySet1.contains(1) == True
         assert mySet1.contains(2) == False
         assert mySet1.contains(5) == True
-        assert mySet1.contains('some text') == True
-        assert mySet1.contains('text') == False
+        assert mySet1.contains("some text") == True
+        assert mySet1.contains("text") == False
 
-        '''
+        """
         # TODO - make the following work. js sets can have dictionaries in them
         o = {'a': 1, 'b': 2}
         mySet1.add(o)  # TODO - ok. so we learned something. i nearly never use sets so this is a nice example of difference between python and javascript sets.
@@ -991,10 +979,10 @@ class TestCase(unittest.TestCase):
         console.log(mySet1)
         # logs Set(4) [ 1, "some text", {…}, {…} ] in Firefox
         # logs Set(4) { 1, "some text", {…}, {…} } in Chrome
-        '''
+        """
 
     def test_setTimeout(self):
-        """ Test the Global.setTimeout function calls the callback. """
+        """Test the Global.setTimeout function calls the callback."""
 
         callback = Mock()
 
@@ -1012,7 +1000,7 @@ class TestCase(unittest.TestCase):
         callback.assert_called_with(*args, **kwargs)
 
     def test_clearTimeout(self):
-        """ Test that Global.clearTimeout function can cancel a timeout. """
+        """Test that Global.clearTimeout function can cancel a timeout."""
 
         callback = Mock()
 
@@ -1032,6 +1020,7 @@ class TestCase(unittest.TestCase):
     def test_timeouts(self):
         def somefunc():
             print("hi!")
+
         someID = Global.setTimeout(somefunc, 2000)
         Global.clearTimeout(someID)
         time.sleep(2.5)
@@ -1043,7 +1032,7 @@ class TestCase(unittest.TestCase):
 
         # from domonic.javascript import setInterval, clearInterval
         # def somefunc2():
-            # print("testing interval")
+        # print("testing interval")
         # interval_id = setInterval(somefunc2, 2000)
         # time.sleep(10)
         # clearInterval(interval_id)
@@ -1198,8 +1187,8 @@ class TestCase(unittest.TestCase):
         # var x3 = performance.now();
         x3 = time.time()
         # // Results.
-        print("TIME 1: " , (x2 - x1))
-        print("TIME 2: " , (x3 - x2))
+        print("TIME 1: ", (x2 - x1))
+        print("TIME 2: ", (x3 - x2))
 
         # test uint8array in various ways
         arr = Uint8Array()
@@ -1291,7 +1280,6 @@ class TestCase(unittest.TestCase):
     #     assert myObj2.name == 'John'
     #     assert myObj2.age == 30
 
-
     # def test_reflect(self):
     #     print("test_reflect")
     #     myObj = {'name': 'John', 'age': 30, 'address': '123 Main St'}
@@ -1301,7 +1289,6 @@ class TestCase(unittest.TestCase):
     #     assert myObj2.age == 30
     #     assert myObj2.address == '123 Main St'
     #     assert myObj2.toString() == '{"name": "John", "age": 30, "address": "123 Main St"}'
-
 
     # def test_symbol(self):
     #     print("test_symbol")
@@ -1318,5 +1305,5 @@ _intID = None
 _results = []
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -10,11 +10,12 @@ from functools import wraps
 from typing import Callable
 
 
-def el(element='div', string: bool = False):
+def el(element="div", string: bool = False):
     """[wraps the results of a function in an element]"""
 
     if isinstance(element, str):
         from domonic.dom import Document
+
         element = Document.createElement(element).__class__
 
     def decorator(function):
@@ -24,8 +25,12 @@ def el(element='div', string: bool = False):
                 return element(result)
             else:
                 return str(element(result))
+
         return wrapper
+
     return decorator
+
+
 # @el(div)
 # @el(span)
 
@@ -47,6 +52,7 @@ def called(before=None, error: Callable[[Exception], None] = None):
     """
     Decorator to call a function before and after a function call.
     """
+
     def decorator(f):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
@@ -62,7 +68,9 @@ def called(before=None, error: Callable[[Exception], None] = None):
             finally:
                 if before:
                     before()
+
         return wrapper
+
     return decorator
     """[calls before() passing the response as args to the decorated function.
         optional error handler. run the decorated function immediately.
@@ -78,6 +86,7 @@ def called(before=None, error: Callable[[Exception], None] = None):
             print(data)
 
         """
+
     def decorator(function):
         nonlocal before
         nonlocal error
@@ -115,12 +124,15 @@ def accepts(*types):
 
         def new_f(*args, **kwds):
             for (a, t) in zip(args, types):
-                assert isinstance(a, t), \
-                       "arg %r does not match %s" % (a, t)
+                assert isinstance(a, t), "arg %r does not match %s" % (a, t)
             return f(*args, **kwds)
+
         new_f.__name__ = f.__name__
         return new_f
+
     return check_accepts
+
+
 # @accepts(int)
 
 
@@ -148,43 +160,58 @@ def accepts(*types):
 
 
 def silence(*args, **kwargs):
-    """ stop a function from doing anything """
+    """stop a function from doing anything"""
+
     def dont_do_it(f):
         return None
+
     return dont_do_it
+
+
 # @silence
 
 
 def check(f):
-    """ Prints entry and exit of a function to the console """
+    """Prints entry and exit of a function to the console"""
+
     def new_f(*args, **kwargs):
         print("Entering", f.__name__)
         f(*args, **kwargs)
         print("Exited", f.__name__)
+
     return new_f
+
+
 # @check()
 
 
-def log(logger, level='info'):
-    """ @log(logging.getLogger('main'), level='warning') """
+def log(logger, level="info"):
+    """@log(logging.getLogger('main'), level='warning')"""
+
     def log_decorator(fn):
         @functools.wraps(fn)
         def wrapper(*a, **kwa):
             getattr(logger, level)(fn.__name__)
             return fn(*a, **kwa)
+
         return wrapper
+
     return log_decorator
 
 
 def instead(f, somethingelse):
-    """ what to return if it fails """
+    """what to return if it fails"""
+
     def new_f():
         try:
             return f()
         except Exception as e:
-            print('failed', e)
+            print("failed", e)
         return somethingelse
+
     return new_f
+
+
 # @instead("something else instead of what was supposed to happen")
 
 
@@ -192,23 +219,31 @@ def deprecated(func):
     """
     marks a function as deprecated.
     """
+
     @functools.wraps(func)
     def new_func(*args, **kwargs):
-        warnings.simplefilter('always', DeprecationWarning)
-        warnings.warn("Call to deprecated function {}.".format(func.__name__), category=DeprecationWarning, stacklevel=2)
-        warnings.simplefilter('default', DeprecationWarning)
+        warnings.simplefilter("always", DeprecationWarning)
+        warnings.warn(
+            "Call to deprecated function {}.".format(func.__name__), category=DeprecationWarning, stacklevel=2
+        )
+        warnings.simplefilter("default", DeprecationWarning)
         return func(*args, **kwargs)
+
     return new_func
 
 
 def as_json(func):
-    """ decorate any function to return json instead of a python obj
-        note - used by JSON.py
+    """decorate any function to return json instead of a python obj
+    note - used by JSON.py
     """
+
     def JSON_decorator(*args, **kwargs):
         import json
+
         return json.dumps(func(*args, **kwargs))
+
     return JSON_decorator
+
 
 # def evt(event, *args, **kwargs):  #TODO
 #     """
@@ -218,7 +253,7 @@ def as_json(func):
 #         def wrapper(*args, **kwargs):
 #             return f(*args, **kwargs)
 #         return wrapper
-    # return decorator
+# return decorator
 # @evt('event', 'args', 'kwargs')
 
 
@@ -235,9 +270,9 @@ def as_json(func):
 
 # def lenient(*args, **kwargs):
 # """ can try to remap args if passed incorrectly.
-    # i.e. if expecting array but gets string, puts string in arr
-    # should never switch order probably. just re-type
-    # prints warning and runs
+# i.e. if expecting array but gets string, puts string in arr
+# should never switch order probably. just re-type
+# prints warning and runs
 # """
 
 '''

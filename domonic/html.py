@@ -5,38 +5,87 @@
     Generate HTML using python.
 
 """
-from domonic.dom import (DOMConfig, Comment, Document,  # HTMLOptionsCollection,
-                         DocumentType, Element, HTMLAnchorElement,
-                         HTMLAreaElement, HTMLAudioElement, HTMLBaseElement,
-                         HTMLBaseFontElement, HTMLBodyElement, HTMLBRElement,
-                         HTMLButtonElement, HTMLCanvasElement,
-                         HTMLContentElement, HTMLDataElement,
-                         HTMLDataListElement, HTMLDialogElement,
-                         HTMLDivElement, HTMLDListElement, HTMLDocument,
-                         HTMLElement, HTMLEmbedElement, HTMLFieldSetElement,
-                         HTMLFormControlsCollection, HTMLFormElement,
-                         HTMLFrameSetElement, HTMLHeadElement,
-                         HTMLHeadingElement, HTMLHRElement, HTMLIFrameElement,
-                         HTMLImageElement, HTMLInputElement,
-                         HTMLIsIndexElement, HTMLKeygenElement,
-                         HTMLLabelElement, HTMLLegendElement, HTMLLIElement,
-                         HTMLLinkElement, HTMLMapElement, HTMLMediaElement,
-                         HTMLMetaElement, HTMLMeterElement, HTMLModElement,
-                         HTMLObjectElement, HTMLOListElement,
-                         HTMLOptGroupElement, HTMLOptionElement,
-                         HTMLOutputElement, HTMLParagraphElement,
-                         HTMLParamElement, HTMLPictureElement, HTMLPreElement,
-                         HTMLProgressElement, HTMLQuoteElement,
-                         HTMLScriptElement, HTMLSelectElement,
-                         HTMLShadowElement, HTMLSourceElement, HTMLSpanElement,
-                         HTMLStyleElement, HTMLTableCaptionElement,
-                         HTMLTableCellElement, HTMLTableColElement,
-                         HTMLTableDataCellElement, HTMLTableElement,
-                         HTMLTableHeaderCellElement, HTMLTableRowElement,
-                         HTMLTableSectionElement, HTMLTemplateElement,
-                         HTMLTextAreaElement, HTMLTimeElement,
-                         HTMLTitleElement, HTMLTrackElement, HTMLUListElement,
-                         HTMLUnknownElement, HTMLVideoElement, Node, Text)
+from domonic.dom import (
+    DOMConfig,
+    Comment,
+    Document,  # HTMLOptionsCollection,
+    DocumentType,
+    Element,
+    HTMLAnchorElement,
+    HTMLAreaElement,
+    HTMLAudioElement,
+    HTMLBaseElement,
+    HTMLBaseFontElement,
+    HTMLBodyElement,
+    HTMLBRElement,
+    HTMLButtonElement,
+    HTMLCanvasElement,
+    HTMLContentElement,
+    HTMLDataElement,
+    HTMLDataListElement,
+    HTMLDialogElement,
+    HTMLDivElement,
+    HTMLDListElement,
+    HTMLDocument,
+    HTMLElement,
+    HTMLEmbedElement,
+    HTMLFieldSetElement,
+    HTMLFormControlsCollection,
+    HTMLFormElement,
+    HTMLFrameSetElement,
+    HTMLHeadElement,
+    HTMLHeadingElement,
+    HTMLHRElement,
+    HTMLIFrameElement,
+    HTMLImageElement,
+    HTMLInputElement,
+    HTMLIsIndexElement,
+    HTMLKeygenElement,
+    HTMLLabelElement,
+    HTMLLegendElement,
+    HTMLLIElement,
+    HTMLLinkElement,
+    HTMLMapElement,
+    HTMLMediaElement,
+    HTMLMetaElement,
+    HTMLMeterElement,
+    HTMLModElement,
+    HTMLObjectElement,
+    HTMLOListElement,
+    HTMLOptGroupElement,
+    HTMLOptionElement,
+    HTMLOutputElement,
+    HTMLParagraphElement,
+    HTMLParamElement,
+    HTMLPictureElement,
+    HTMLPreElement,
+    HTMLProgressElement,
+    HTMLQuoteElement,
+    HTMLScriptElement,
+    HTMLSelectElement,
+    HTMLShadowElement,
+    HTMLSourceElement,
+    HTMLSpanElement,
+    HTMLStyleElement,
+    HTMLTableCaptionElement,
+    HTMLTableCellElement,
+    HTMLTableColElement,
+    HTMLTableDataCellElement,
+    HTMLTableElement,
+    HTMLTableHeaderCellElement,
+    HTMLTableRowElement,
+    HTMLTableSectionElement,
+    HTMLTemplateElement,
+    HTMLTextAreaElement,
+    HTMLTimeElement,
+    HTMLTitleElement,
+    HTMLTrackElement,
+    HTMLUListElement,
+    HTMLUnknownElement,
+    HTMLVideoElement,
+    Node,
+    Text,
+)
 from domonic.webapi.url import URL
 
 html_tags = [
@@ -428,18 +477,18 @@ class closed_tag(Node):
         return f"<{self.name}{self.__attributes__}>"
 
 
-html = HTMLDocument
-body = HTMLBodyElement
-head = HTMLHeadElement
-script = HTMLScriptElement
-style = HTMLStyleElement
+html = type("html", (HTMLDocument,), {"name": "html"})
+body = type("body", (HTMLBodyElement,), {"name": "body"})
+head = type("head", (HTMLHeadElement,), {"name": "head"})
+script = type("script", (HTMLScriptElement,), {"name": "script"})
+style = type("style", (HTMLStyleElement,), {"name": "style"})
 h1 = type("h1", (HTMLHeadingElement,), {"name": "h1"})
 h2 = type("h2", (HTMLHeadingElement,), {"name": "h2"})
 h3 = type("h3", (HTMLHeadingElement,), {"name": "h3"})
 h4 = type("h4", (HTMLHeadingElement,), {"name": "h4"})
 h5 = type("h5", (HTMLHeadingElement,), {"name": "h5"})
 h6 = type("h6", (HTMLHeadingElement,), {"name": "h6"})
-p = HTMLParagraphElement
+p = type("p", (HTMLParagraphElement,), {"name": "p"})
 
 i = type("i", (Element,), {"name": "i"})  # TODO - check which?
 b = type("b", (Element,), {"name": "b"})  # TODO - check which?
@@ -477,16 +526,15 @@ def __update__(
     URL.__init__(self, *args, **kwargs)
 
 
-a = type(
-    "a", (Element, URL), {"name": "a", "__init__": Atag}
-)  # , "__update__": __update__})
-ul = HTMLUListElement
-ol = HTMLOListElement
-li = HTMLLIElement
-div = HTMLDivElement
+a = type("a", (Element, URL), {"name": "a", "__init__": Atag})  # , "__update__": __update__})
+ul = type("ul", (HTMLUListElement,), {"name": "ul"})
+ol = type("ol", (HTMLOListElement,), {"name": "ol"})
+li = type("li", (HTMLLIElement,), {"name": "li"})
+div = type("div", (HTMLDivElement,), {"name": "div"})
+
 strong = type("strong", (Element,), {"name": "strong"})  # TODO - check
 blockquote = type("blockquote", (Element,), {"name": "blockquote"})  # TODO - check
-table = HTMLTableElement
+table = type("table", (HTMLTableElement,), {"name": "table"})
 tr = type("tr", (Element,), {"name": "tr"})
 td = type("td", (Element,), {"name": "td"})
 # form = type('form', (Element,), {'name': 'form'})
@@ -511,9 +559,7 @@ class form(Element):
     def elements(self):
         kids = []
         for child in self.children:
-            if isinstance(
-                child, (button, fieldset, input, object, output, select, textarea)
-            ):
+            if isinstance(child, (button, fieldset, input, object, output, select, textarea)):
                 kids.append(child)
         return kids
 
@@ -529,7 +575,7 @@ label = type("label", (Element,), {"name": "label"})
 #                 '''
 
 submit = type("submit", (Element,), {"name": "submit"})
-title = HTMLTitleElement
+title = type("title", (HTMLTitleElement,), {"name": "title"})
 noscript = type("noscript", (Element,), {"name": "noscript"})
 section = type("section", (Element,), {"name": "section"})
 nav = type("nav", (Element,), {"name": "nav"})
@@ -563,29 +609,29 @@ rt = type("rt", (Element,), {"name": "rt"})
 rp = type("rp", (Element,), {"name": "rp"})
 bdi = type("bdi", (Element,), {"name": "bdi"})
 bdo = type("bdo", (Element,), {"name": "bdo"})
-span = HTMLSpanElement
+span = type("span", (HTMLSpanElement,), {"name": "span"})
 ins = type("ins", (Element,), {"name": "ins"})
 iframe = type("iframe", (Element,), {"name": "iframe"})
-video = HTMLVideoElement
-audio = HTMLAudioElement
-canvas = HTMLCanvasElement
+video = type("video", (HTMLVideoElement,), {"name": "video"})
+audio = type("audio", (HTMLAudioElement,), {"name": "audio"})
+canvas = type("canvas", (HTMLCanvasElement,), {"name": "canvas"})
 caption = type("caption", (Element,), {"name": "caption"})
 colgroup = type("colgroup", (Element,), {"name": "colgroup"})
 tbody = type("tbody", (Element,), {"name": "tbody"})
 thead = type("thead", (Element,), {"name": "thead"})
 tfoot = type("tfoot", (Element,), {"name": "tfoot"})
 th = type("th", (Element,), {"name": "th"})
-fieldset = HTMLFieldSetElement  # type("fieldset", (Element,), {"name": "fieldset"})
+fieldset = type("fieldset", (HTMLFieldSetElement,), {"name": "fieldset"})  # type("fieldset", (Element,), {"name": "fieldset"})
 legend = type("legend", (Element,), {"name": "legend"})
-button = HTMLButtonElement  # type("button", (Element,), {"name": "button"})
-select = HTMLSelectElement  # type("select", (Element,), {"name": "select"})
-datalist = HTMLDataListElement
-optgroup = HTMLOptGroupElement
-option = HTMLOptionElement
-textarea = HTMLTextAreaElement
-output = HTMLOutputElement
-progress = HTMLProgressElement
-meter = HTMLMeterElement
+button = type("button", (HTMLButtonElement,), {"name": "button"})  # type("button", (Element,), {"name": "button"})
+select = type("select", (HTMLSelectElement,), {"name": "select"})  # type("select", (Element,), {"name": "select"})
+datalist = type("datalist", (HTMLDataListElement,), {"name": "datalist"})
+optgroup = type("optgroup", (HTMLOptGroupElement,), {"name": "optgroup"})
+option = type("option", (HTMLOptionElement,), {"name": "option"})
+textarea = type("textarea", (HTMLTextAreaElement,), {"name": "textarea"})
+output = type("output", (HTMLOutputElement,), {"name": "output"})
+progress = type("progress", (HTMLProgressElement,), {"name": "progress"})
+meter = type("meter", (HTMLMeterElement,), {"name": "meter"})
 details = type("details", (Element,), {"name": "details"})
 summary = type("summary", (Element,), {"name": "summary"})
 menu = type("menu", (Element,), {"name": "menu"})
@@ -598,20 +644,20 @@ footer = type("footer", (Element,), {"name": "footer"})
 # del_ = type('del_', (tag,), {'name': 'del_'})
 
 # time = HTMLTimeElement  # type('time', (tag,), {'name': 'time'})
-data = HTMLDataElement
+data = type("data", (HTMLDataElement,), {"name": "data"})
 samp = type("samp", (Element,), {"name": "samp"})
 
-base = HTMLBaseElement
+base = type("base", (HTMLBaseElement,), {"name": "base"})
 link = type("link", (closed_tag, HTMLLinkElement), {"name": "link"})  # HTMLLinkElement TODO - closed tags
 meta = type("meta", (closed_tag, HTMLMetaElement), {"name": "meta"})  # HTMLMetaElement TODO - closed tags
-hr = type("hr", (closed_tag, Element), {"name": "hr"})
-br = HTMLBRElement  # type("br", (closed_tag, Element), {"name": "br"})
+hr = type("hr", (closed_tag, HTMLHRElement), {"name": "hr"})
+br = type("br", (closed_tag, HTMLBRElement,), {"name": "br"})
 wbr = type("wbr", (closed_tag, Element), {"name": "wbr"})
 img = type("img", (closed_tag, HTMLImageElement), {"name": "img"})  # HTMLImageElement TODO - closed tags
 param = type("param", (closed_tag, HTMLParamElement), {"name": "param"})  # HTMLParamElement
 source = type("source", (closed_tag, HTMLSourceElement), {"name": "source"})  # HTMLSourceElement
 track = type("track", (closed_tag, HTMLTrackElement), {"name": "track"})  # HTMLTrackElement
-area = HTMLAreaElement
+area = type("area", (HTMLAreaElement,), {"name": "area"})
 col = type("col", (closed_tag, HTMLTableColElement), {"name": "col"})  # HTMLTableColElement
 input = type("input", (closed_tag, HTMLInputElement), {"name": "input"})  # HTMLInputElement  # TODO - closed tags
 keygen = type("keygen", (closed_tag, HTMLKeygenElement), {"name": "keygen"})  # HTMLKeygenElement
@@ -625,7 +671,7 @@ applet = type("applet", (Element,), {"name": "applet"})
 basefont = type("basefont", (Element,), {"name": "basefont"})
 center = type("center", (Element,), {"name": "center"})
 # dir = type('dir', (Element,), {'name': 'dir'})
-embed = HTMLEmbedElement
+embed = type("embed", (HTMLEmbedElement,), {"name": "embed"})
 isindex = type("isindex", (Element,), {"name": "isindex"})
 listing = type("listing", (Element,), {"name": "listing"})
 plaintext = type("plaintext", (Element,), {"name": "plaintext"})
@@ -636,13 +682,13 @@ xmp = type("xmp", (Element,), {"name": "xmp"})
 
 template = type("template", (Element,), {"name": "template"})
 
-picture = HTMLPictureElement
-dialog = HTMLDialogElement
+picture = type("picture", (HTMLPictureElement,), {"name": "picture"})
+dialog = type("dialog", (HTMLDialogElement,), {"name": "dialog"})
 
 
 # legacy.
-doctype = DocumentType
-comment = Comment
+doctype = type("doctype", (DocumentType,), {"name": "doctype"})
+comment = type("comment", (Comment,), {"name": "comment"})
 
 
 def create_element(name="custom_tag", *args, **kwargs):

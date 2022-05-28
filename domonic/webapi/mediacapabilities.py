@@ -6,7 +6,6 @@
 
 
 class MediaCapabilities:
-
     @staticmethod
     def encodingInfo(mediaEncodingConfiguration):
         pass

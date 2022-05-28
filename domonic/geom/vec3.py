@@ -19,46 +19,30 @@ class vec3:
 
     def __add__(self, other):
         if isinstance(other, vec3):
-            return self.__class__(
-                (self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w)
-            )
+            return self.__class__((self.x + other.x, self.y + other.y, self.z + other.z, self.w + other.w))
         else:
-            return self.__class__(
-                (self.x + other, self.y + other, self.z + other, self.w + other)
-            )
+            return self.__class__((self.x + other, self.y + other, self.z + other, self.w + other))
 
     def __sub__(self, other):
         if isinstance(other, vec3):
-            return self.__class__(
-                (self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w)
-            )
+            return self.__class__((self.x - other.x, self.y - other.y, self.z - other.z, self.w - other.w))
         else:
-            return self.__class__(
-                (self.x - other, self.y - other, self.z - other, self.w - other)
-            )
+            return self.__class__((self.x - other, self.y - other, self.z - other, self.w - other))
 
     def __mul__(self, other):
         if isinstance(other, vec3):
-            return self.__class__(
-                (self.x * other.x, self.y * other.y, self.z * other.z, self.w * other.w)
-            )
+            return self.__class__((self.x * other.x, self.y * other.y, self.z * other.z, self.w * other.w))
         else:
-            return self.__class__(
-                (self.x * other, self.y * other, self.z * other, self.w * other)
-            )
+            return self.__class__((self.x * other, self.y * other, self.z * other, self.w * other))
 
     # def __rmul__(self, other):
     #     return vec3(other.x * self.x, other.y * self.y, other.z * self.z, other.w * self.w)
 
     def __truediv__(self, other):
         if isinstance(other, vec3):
-            return self.__class__(
-                self.x / other.x, self.y / other.y, self.z / other.z, self.w / other.w
-            )
+            return self.__class__(self.x / other.x, self.y / other.y, self.z / other.z, self.w / other.w)
         else:
-            return self.__class__(
-                self.x / other, self.y / other, self.z / other, self.w / other
-            )
+            return self.__class__(self.x / other, self.y / other, self.z / other, self.w / other)
 
     # def __pow__(self, other):
     #     return vec3(self.x ** other.x, self.y ** other.y, self.z ** other.z, self.w ** other.w)
@@ -129,28 +113,16 @@ class vec3:
         return math.sqrt(dx * dx + dy * dy + dz * dz)
 
     def length(self):
-        return math.sqrt(
-            self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w
-        )
+        return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w)
 
     def distance(self, other):
         """Returns the distance between this point and another vector3."""
-        return (
-            (self.x - other.x) ** 2
-            + (self.y - other.y) ** 2
-            + (self.z - other.z) ** 2
-            + (self.w - other.w) ** 2
-        )
+        return (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2 + (self.w - other.w) ** 2
         # return sqrt(pow(self.x - other.x, 2) + pow(self.y - other.y, 2) + pow(self.z - other.z, 2) + pow(self.w - other.w, 2))
 
     def equals(self, other):
         """Determine whether two objects are identical."""
-        return (
-            self.x == other.x
-            and self.y == other.y
-            and self.z == other.z
-            and self.w == other.w
-        )
+        return self.x == other.x and self.y == other.y and self.z == other.z and self.w == other.w
 
     def intersects(self, other):
         dx = self.x - other.x

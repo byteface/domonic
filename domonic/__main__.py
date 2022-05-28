@@ -182,7 +182,16 @@ run:
             f.write("python3 -m pip install requests\n")
             if server_choice != "none":
                 f.write(f"python3 -m pip install {server_choice}\n")
-                if server_choice in ['fastapi', 'starlette', 'blacksheep', 'muffin', 'falcon', 'baize', 'emmett', 'quart']:
+                if server_choice in [
+                    "fastapi",
+                    "starlette",
+                    "blacksheep",
+                    "muffin",
+                    "falcon",
+                    "baize",
+                    "emmett",
+                    "quart",
+                ]:
                     # need to install uvicorn
                     f.write("python3 -m pip install uvicorn\n")
             f.write("python3 -m pip install domonic\n")
@@ -199,7 +208,16 @@ run:
             f.write("python3 -m pip install requests\n")
             if server_choice != "none":
                 f.write(f"python3 -m pip install {server_choice}\n")
-                if server_choice in ['fastapi', 'starlette', 'blacksheep', 'muffin', 'falcon', 'baize', 'emmett', 'quart']:
+                if server_choice in [
+                    "fastapi",
+                    "starlette",
+                    "blacksheep",
+                    "muffin",
+                    "falcon",
+                    "baize",
+                    "emmett",
+                    "quart",
+                ]:
                     # need to install uvicorn
                     f.write("python3 -m pip install uvicorn\n")
             f.write("python3 -m pip install domonic\n")
@@ -401,6 +419,7 @@ def do_things(arguments):
     if arguments.query is not None:
         url, query = arguments.query
         from domonic.window import window
+
         window.location = url
         results = window.document.querySelectorAll(query)
         for result in results:

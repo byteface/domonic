@@ -12,14 +12,13 @@ noop = {"value": lambda *args: {}}
 def dispatch(*args):
     _ = {}
     for arg in args:
-        if ((not isinstance(arg, str)) or (arg in _) or RegExp(r'[s.]').test(arg)):
+        if (not isinstance(arg, str)) or (arg in _) or RegExp(r"[s.]").test(arg):
             raise Exception("illegal type: " + arg)
         _[arg] = []
     return Dispatch(_)
 
 
 def parseTypenames(typenames, types):
-
     def anon(t):
         name = ""
         i = String(t).indexOf(".")
@@ -31,11 +30,11 @@ def parseTypenames(typenames, types):
         return {"type": t, "name": name}
 
     import re
-    return Array(re.split(r'/^|\s+/', String(typenames).trim())).map(anon)
+
+    return Array(re.split(r"/^|\s+/", String(typenames).trim())).map(anon)
 
 
-class Dispatch():
-
+class Dispatch:
     def __init__(self, _) -> None:
         self._ = _
 
@@ -50,7 +49,7 @@ class Dispatch():
         if callback is None:
             while i < n:
                 typename = T[i]
-                t = self.get(_[typename['type']], typename['name'])
+                t = self.get(_[typename["type"]], typename["name"])
                 if t is not None:
                     return t
                 i += 1
@@ -62,11 +61,11 @@ class Dispatch():
             raise Exception("invalid callback: " + callback)
         while i < n:
             typename = T[i]
-            if typename['type'] is not None:
-                _[typename['type']] = self.set(_[typename['type']], typename['name'], callback)
+            if typename["type"] is not None:
+                _[typename["type"]] = self.set(_[typename["type"]], typename["name"], callback)
             elif callback == None:
                 for t in _:
-                    _[typename['type']] = self.set(_[typename['type']], typename['name'], None)
+                    _[typename["type"]] = self.set(_[typename["type"]], typename["name"], None)
             i += 1
 
         return self
@@ -91,25 +90,25 @@ class Dispatch():
 
         t = self._[type]
         for i in t:
-            Function(i['value']).apply(that, arguments)
+            Function(i["value"]).apply(that, arguments)
 
     def apply(self, type, that, *args):
         if not self._.hasOwnProperty(type):
             raise Exception("unknown type: " + type)
         t = self._[type]
         for i in t:
-            Function(i['value']).apply(that, args)
+            Function(i["value"]).apply(that, args)
 
     def get(self, type, name):
         n = len(type)
         for i in range(0, n):
             c = type[i]
-            if c['name'] == name:
-                return c['value']
+            if c["name"] == name:
+                return c["value"]
 
     def set(self, type, name, callback):
         for i, t in enumerate(type):
-            if t['name'] == name:
+            if t["name"] == name:
                 t = noop
                 type = Array(Array(type).slice(0, i)).concat(Array(type).slice(i + 1))
                 if type is None:

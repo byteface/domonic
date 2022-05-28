@@ -38,9 +38,7 @@ def formatDecimalParts(x, p=None):
     # The string returned by toExponential either has the form \d\.\d+e[-+]\d+
     # (e.g., 1.2e+3) or the form \de[-+]\d+ (e.g., 1e+3).
     return [
-        coefficient[0] + String(coefficient).slice(2)
-        if len(coefficient) > 1
-        else coefficient,
+        coefficient[0] + String(coefficient).slice(2) if len(coefficient) > 1 else coefficient,
         String(x).slice(i + 1),  # .lstrip('+')
     ]
 
@@ -77,15 +75,9 @@ def formatPrefixAuto(x, p):
             return coefficient + "0".join(Array(i - n + 1))
         else:
             if i > 0:
-                return (
-                    String(coefficient).slice(0, i) + "." + String(coefficient).slice(i)
-                )
+                return String(coefficient).slice(0, i) + "." + String(coefficient).slice(i)
             else:
-                return (
-                    "0."
-                    + str("0".join(Array(1 - i)))
-                    + formatDecimalParts(x, Math.max(0, p + i - 1))[0]
-                )
+                return "0." + str("0".join(Array(1 - i))) + formatDecimalParts(x, Math.max(0, p + i - 1))[0]
 
 
 def formatRounded(x, p):
@@ -103,11 +95,7 @@ def formatRounded(x, p):
         return "0." + Array(-exponent).join("0") + coefficient
     else:
         if len(coefficient) > (exponent + 1):
-            return (
-                String(coefficient).slice(0, exponent + 1)
-                + "."
-                + String(coefficient).slice(exponent + 1)
-            )
+            return String(coefficient).slice(0, exponent + 1) + "." + String(coefficient).slice(exponent + 1)
         else:
             return coefficient + "0".join(Array(exponent - len(coefficient) + 2))
 
@@ -197,57 +185,24 @@ def formatSpecifier(specifier):
 
 class FormatSpecifier:
     def __init__(self, specifier):
-        self.fill = (
-            " " if specifier.get("fill", None) == None else str(specifier.get("fill"))
-        )
-        self.align = (
-            ">" if specifier.get("align", None) == None else str(specifier.get("align"))
-        )
-        self.sign = (
-            "-" if specifier.get("sign", None) == None else str(specifier.get("sign"))
-        )
-        self.symbol = (
-            ""
-            if specifier.get("symbol", None) == None
-            else str(specifier.get("symbol"))
-        )
+        self.fill = " " if specifier.get("fill", None) == None else str(specifier.get("fill"))
+        self.align = ">" if specifier.get("align", None) == None else str(specifier.get("align"))
+        self.sign = "-" if specifier.get("sign", None) == None else str(specifier.get("sign"))
+        self.symbol = "" if specifier.get("symbol", None) == None else str(specifier.get("symbol"))
         self.zero = bool(specifier.get("zero", False))
-        self.width = (
-            None if specifier.get("width", None) == None else specifier.get("width")
-        )
+        self.width = None if specifier.get("width", None) == None else specifier.get("width")
         self.comma = bool(specifier.get("comma", None))
-        self.precision = (
-            None
-            if specifier.get("precision", None) == None
-            else specifier.get("precision")
-        )
+        self.precision = None if specifier.get("precision", None) == None else specifier.get("precision")
         self.trim = bool(specifier.get("trim", None))
-        self.type = (
-            "" if specifier.get("type", None) == None else str(specifier.get("type"))
-        )
+        self.type = "" if specifier.get("type", None) == None else str(specifier.get("type"))
 
     def toString(self):
         z = "0" if self.zero else ""
         w = "" if self.width == None else Math.max(1, int(self.width) | 0)
         c = "," if self.comma else ""
-        p = (
-            ""
-            if self.precision == None
-            else "." + str(Math.max(0, int(self.precision) | 0))
-        )
+        p = "" if self.precision == None else "." + str(Math.max(0, int(self.precision) | 0))
         t = "~" if self.trim else ""
-        return (
-            self.fill
-            + self.align
-            + self.sign
-            + self.symbol
-            + str(z)
-            + str(w)
-            + str(c)
-            + str(p)
-            + str(t)
-            + self.type
-        )
+        return self.fill + self.align + self.sign + self.symbol + str(z) + str(w) + str(c) + str(p) + str(t) + self.type
 
     def __str__(self):
         return self.toString()
@@ -332,25 +287,13 @@ class formatLocale:
                 str(locale.get("thousands")),
             )
         )
-        self.currencyPrefix = (
-            ""
-            if locale.get("currency", None) == None
-            else str(locale.get("currency")[0])
-        )
-        self.currencySuffix = (
-            "" if locale.get("currency") == None else str(locale.get("currency")[1])
-        )
-        self.decimal = (
-            "." if locale.get("decimal", None) == None else str(locale.get("decimal"))
-        )
+        self.currencyPrefix = "" if locale.get("currency", None) == None else str(locale.get("currency")[0])
+        self.currencySuffix = "" if locale.get("currency") == None else str(locale.get("currency")[1])
+        self.decimal = "." if locale.get("decimal", None) == None else str(locale.get("decimal"))
         self.numerals = (
-            identity
-            if locale.get("numerals", None) == None
-            else formatNumerals([str(n) for n in locale["numerals"]])
+            identity if locale.get("numerals", None) == None else formatNumerals([str(n) for n in locale["numerals"]])
         )
-        self.percent = (
-            "%" if locale.get("percent", None) == None else str(locale["percent"])
-        )
+        self.percent = "%" if locale.get("percent", None) == None else str(locale["percent"])
         self.minus = "−" if locale.get("minus", None) == None else str(locale["minus"])
         self.nan = "NaN" if locale.get("nan", None) == None else str(locale["nan"])
 
@@ -444,11 +387,7 @@ class formatLocale:
                     valueNegative = False
 
                 # Perform the initial formatting.
-                value = (
-                    self.nan
-                    if Global.isNaN(value)
-                    else formatType(Math.abs(value), precision)
-                )
+                value = self.nan if Global.isNaN(value) else formatType(Math.abs(value), precision)
 
                 # Trim insignificant zeros.
                 if trim:
@@ -482,11 +421,7 @@ class formatLocale:
                     while i < n:
                         c = String(value).charCodeAt(i)
                         if 48 > c or c > 57:
-                            suff = (
-                                self.decimal + String(value).slice(i + 1)
-                                if c == 46
-                                else String(value).slice(i)
-                            )
+                            suff = self.decimal + String(value).slice(i + 1) if c == 46 else String(value).slice(i)
                             valueSuffix = suff + valueSuffix
                             value = String(value).slice(0, i)
                             break
@@ -503,16 +438,11 @@ class formatLocale:
             if width == "" or width == None:
                 width = 0
             width = int(width)
-            padding = (
-                fill.join(Array(width - length + 1)) if length < int(width) else ""
-            )
+            padding = fill.join(Array(width - length + 1)) if length < int(width) else ""
 
             # If the fill character is "0", grouping is applied after padding.
             if comma and zero:
-                value = self.group(
-                    padding + str(value),
-                    width - len(valueSuffix) if len(padding) else Global.Infinity
-                )
+                value = self.group(padding + str(value), width - len(valueSuffix) if len(padding) else Global.Infinity)
                 padding = ""
 
             # Reconstruct the final output based on the desired alignment.
@@ -523,11 +453,7 @@ class formatLocale:
             elif align == "^":
                 length = len(padding) >> 1
                 value = (
-                    String(padding).slice(0, length)
-                    + valuePrefix
-                    + value
-                    + valueSuffix
-                    + String(padding).slice(length)
+                    String(padding).slice(0, length) + valuePrefix + value + valueSuffix + String(padding).slice(length)
                 )
             else:
                 value = padding + valuePrefix + str(value) + valueSuffix

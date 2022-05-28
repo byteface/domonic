@@ -67,6 +67,7 @@ def tablify(arr):
     Returns:
         str: a html table
     """
+
     def _get_headings(arr, t):
         headings = []
         row = tr()
@@ -131,11 +132,11 @@ def csvify(arr, outfile="data.csv"):
 
 
 def csv2json(csv_filepath, json_filepath=None):
-    '''
+    """
     convert a CSV to JSON.
-    '''
+    """
     items = []
-    with open(csv_filepath, encoding='utf-8') as csvf:
+    with open(csv_filepath, encoding="utf-8") as csvf:
         csvReader = csv.DictReader(csvf)
         for row in csvReader:
             items.append(row)
@@ -143,12 +144,12 @@ def csv2json(csv_filepath, json_filepath=None):
     if json_filepath is None:
         return json.dumps(items)
 
-    with open(json_filepath, 'w', encoding='utf-8') as f:
+    with open(json_filepath, "w", encoding="utf-8") as f:
         json.dump(items, f, indent=4)
         return json.dumps(items)
 
 
-'''
+"""
 def csv2json_hugefile(arr, infile="data.csv", start_row=0):
 
     def _load_data(csv_fname):
@@ -164,13 +165,13 @@ def csv2json_hugefile(arr, infile="data.csv", start_row=0):
 
     for item in items:
         # TODO - streamwrite to json file.
-'''
+"""
 
 
 def flatten(b, delim="__"):
-    '''
+    """
     # i.e. input = map( lambda x: JSON.flatten( x, "__" ), input )
-    '''
+    """
     val = {}
     for i in b.keys():
         if isinstance(b[i], dict):
@@ -187,10 +188,10 @@ def is_json(json: str) -> bool:
     if type(json) != str:
         return False
 
-    if json.startswith('{') and json.endswith('}'):
+    if json.startswith("{") and json.endswith("}"):
         return True
 
-    if json.startswith('[') and json.endswith(']'):
+    if json.startswith("[") and json.endswith("]"):
         return True
 
     return False

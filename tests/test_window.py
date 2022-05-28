@@ -6,6 +6,7 @@
 import unittest
 
 from domonic.decorators import *
+
 # from domonic.dom import *
 # from domonic.javascript import *
 # from domonic.webapi import *
@@ -13,7 +14,6 @@ from domonic.window import *
 
 
 class TestCase(unittest.TestCase):
-
     @silence
     def test_window(self):
         window.location = "http://www.google.com"
@@ -21,5 +21,5 @@ class TestCase(unittest.TestCase):
         print(window.document.title)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

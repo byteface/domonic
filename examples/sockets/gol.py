@@ -1,9 +1,10 @@
 import asyncio
-import websockets # you gotta 'pip3 install websockets' for this example.
+import websockets  # you gotta 'pip3 install websockets' for this example.
 import json
 
 import sys
-sys.path.insert(0, '../..')
+
+sys.path.insert(0, "../..")
 
 from domonic.javascript import *
 from domonic.html import *
@@ -11,7 +12,7 @@ from domonic.html import *
 WIDTH = 75
 HEIGHT = 75
 
-randboo = lambda : 1 if Math.round(Math.random() * 2) == 1 else 0
+randboo = lambda: 1 if Math.round(Math.random() * 2) == 1 else 0
 
 gridOld = [[randboo()] * WIDTH for n in range(HEIGHT)]
 gridNew = [[randboo()] * WIDTH for n in range(HEIGHT)]
@@ -24,29 +25,30 @@ def update_cell(grid, x, y):  # apply the rules
     score = 0
     for ny in range(y - 1, y + 2):
         for nx in range(x - 1, x + 2):
-            if(ny >= 0 and nx >= 0 and ny < WIDTH and nx < HEIGHT and (ny != y or nx != x)):
-                if(grid[ny][nx] == 1):
+            if ny >= 0 and nx >= 0 and ny < WIDTH and nx < HEIGHT and (ny != y or nx != x):
+                if grid[ny][nx] == 1:
                     score += 1
-    if(grid[y][x] == 1):
+    if grid[y][x] == 1:
         return 1 if (score == 2 or score == 3) else 0
     return 1 if (score == 3) else 0
 
 
 def update_grid():
-    yPos=-1  # Putting the new squares in girdNew based off of gridOld
+    yPos = -1  # Putting the new squares in girdNew based off of gridOld
     for y in gridOld:
-        yPos+=1
-        xPos=-1
+        yPos += 1
+        xPos = -1
         for x in y:
-            xPos+=1
+            xPos += 1
             gridNew[yPos][xPos] = update_cell(gridOld, xPos, yPos)
-    yPos=-1
+    yPos = -1
     for y in gridNew:
         yPos += 1
-        xPos =- 1
+        xPos = -1
         for x in y:
-            xPos+=1
+            xPos += 1
             gridOld[yPos][xPos] = gridNew[yPos][xPos]
+
 
 # run the update loop from here.
 # loop = window.setInterval(update_grid, 15)  # update on own clock. clients see state if request via animfram
@@ -54,28 +56,29 @@ def update_grid():
 
 # create webpage with a socket connection back to our server so it can get the atom data
 page = html(
-head(title("Conway's Game of Life")),
-style('''
+    head(title("Conway's Game of Life")),
+    style(
+        """
     canvas {
         display:block; position:absolute;
         top:0; left:0; right:0; bottom:0;
     }
-    ''',
-    _type="text/css"
-),
-
-body(
-    canvas(_id="canvas", _width="500", _height="500"),
-
-# listen on the socket and call draw when we get a message
-script('''
+    """,
+        _type="text/css",
+    ),
+    body(
+        canvas(_id="canvas", _width="500", _height="500"),
+        # listen on the socket and call draw when we get a message
+        script(
+            """
 const socket = new WebSocket('ws://0.0.0.0:5555');
 socket.onmessage = function(event) { grid = JSON.parse(event.data); draw(); };
 socket.send('!');
-'''),
-
-# draw the grid
-script('''
+"""
+        ),
+        # draw the grid
+        script(
+            """
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     var WIDTH=canvas.width;
@@ -153,13 +156,13 @@ script('''
     resizeCanvas();
     */
 
-''')
-
-)
+"""
+        ),
+    ),
 )
 
 # render the page you need to visit while the socket server is running
-render(page, 'gol.html')
+render(page, "gol.html")
 
 # run the socket server
 async def update(websocket, path):
@@ -169,6 +172,7 @@ async def update(websocket, path):
         msg = await websocket.recv()
         await websocket.send(json.dumps(gridNew, default=vars))
 
-server = websockets.serve(update, '0.0.0.0', 5555)
+
+server = websockets.serve(update, "0.0.0.0", 5555)
 asyncio.get_event_loop().run_until_complete(server)
 asyncio.get_event_loop().run_forever()

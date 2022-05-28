@@ -19,17 +19,17 @@ except AttributeError:
 
 def elem_name_parts(elem):
     tag = elem.tag
-    if tag.startswith('{'):
-        uri, _, name = tag.rpartition('}')
+    if tag.startswith("{"):
+        uri, _, name = tag.rpartition("}")
         if elem.prefix:
-            name = elem.prefix + ':' + name
+            name = elem.prefix + ":" + name
         return uri[1:], name
     return None, tag
 
 
 def attr_name_parts(name, elem, val):
-    if name.startswith('{'):
-        uri, _, name = name.rpartition('}')
+    if name.startswith("{"):
+        uri, _, name = name.rpartition("}")
         uri = uri[1:]
         for prefix, quri in dict_items(elem.nsmap):
             if quri == uri:
@@ -37,7 +37,7 @@ def attr_name_parts(name, elem, val):
         else:
             prefix = None
         if prefix:
-            name = prefix + ':' + name
+            name = prefix + ":" + name
         return uri, name, val
     return None, name, val
 
@@ -51,8 +51,8 @@ def add_namespace_declarations(src, dest):
             p = p.nsmap or {}
             changed = {k: v for k, v in dict_items(changed) if v != p.get(k)}
         for prefix, uri in dict_items(changed):
-            attr = ('xmlns:' + prefix) if prefix else 'xmlns'
-            dest.setAttributeNS('xmlns', attr, uri)
+            attr = ("xmlns:" + prefix) if prefix else "xmlns"
+            dest.setAttributeNS("xmlns", attr, uri)
 
 
 def adapt(source_tree, return_root=True, **kw):
@@ -71,7 +71,7 @@ def adapt(source_tree, return_root=True, **kw):
             dest.setAttributeNS(*attr_name_parts(name, src, val))
         for child in src.iterchildren():
             if isinstance(child, _Comment):
-                dchild = dest_tree.createComment((child.text or '').replace('--', '—'))
+                dchild = dest_tree.createComment((child.text or "").replace("--", "—"))
             else:
                 dchild = dest_tree.createElementNS(*elem_name_parts(child))
                 stack.append((child, dchild))

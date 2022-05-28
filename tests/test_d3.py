@@ -30,7 +30,6 @@ from domonic.decorators import silence
 from domonic.svg import *  # lowercase path is in here
 
 
-
 class TestCase(unittest.TestCase):
 
     # domonic.d3.d3
@@ -79,7 +78,7 @@ class TestCase(unittest.TestCase):
         # assert format(".0%")(0.123) == "12%"
 
         # localized fixed-point currency
-        print(format("($.2f")(-3.5)) #  , "(£3.50)"
+        print(format("($.2f")(-3.5))  #  , "(£3.50)"
 
         # space-filled and signed
         assert format("+20")(42) == "                 +42"
@@ -101,12 +100,12 @@ class TestCase(unittest.TestCase):
 
         # invalid format: foo/);
         with self.assertRaises(Exception):
-            format('foo')
+            format("foo")
 
         # /invalid format: \.-2s/);
         # format('.-2s')
         with self.assertRaises(Exception):
-            format('.-2s')
+            format(".-2s")
 
         # /invalid format: \.f/);
         # format(".f")
@@ -138,18 +137,20 @@ class TestCase(unittest.TestCase):
         assert s.trim == False
         assert s.type == ""
 
-        s = FormatSpecifier({
-            'fill': 1,
-            'align': 2,
-            'sign': 3,
-            'symbol': 4,
-            'zero': 5,
-            'width': 6,
-            'comma': 7,
-            'precision': 8,
-            'trim': 9,
-            'type': 10
-        })
+        s = FormatSpecifier(
+            {
+                "fill": 1,
+                "align": 2,
+                "sign": 3,
+                "symbol": 4,
+                "zero": 5,
+                "width": 6,
+                "comma": 7,
+                "precision": 8,
+                "trim": 9,
+                "type": 10,
+            }
+        )
         assert s.fill == "1"
         assert s.align == "2"
         assert s.sign == "3"
@@ -160,7 +161,6 @@ class TestCase(unittest.TestCase):
         assert s.precision == 8
         assert s.trim == True
         assert s.type == "10"
-
 
         s = formatSpecifier("")
         s.fill = "_"
@@ -189,13 +189,13 @@ class TestCase(unittest.TestCase):
         # assert str(format(s)(42)) == "+$0,000,000,042"
 
         # print("AA::",formatPrefix(",.0s", 1e-6)(.00042))
-        assert formatPrefix(",.0s", 1e-6)(.00042) == "420µ"
+        assert formatPrefix(",.0s", 1e-6)(0.00042) == "420µ"
 
         # print( formatPrefix(",.0s", 1e-6)(.0042) )
-        assert formatPrefix(",.0s", 1e-6)(.0042) == "4,200µ"
+        assert formatPrefix(",.0s", 1e-6)(0.0042) == "4,200µ"
 
         # print( '?', formatPrefix(",.3s", 1e-3)(.00042) )
-        assert formatPrefix(",.3s", 1e-3)(.00042) == "0.420m"
+        assert formatPrefix(",.3s", 1e-3)(0.00042) == "0.420m"
 
         # print( formatPrefix(",.0s", 1e-27)(1e-24) )
         assert formatPrefix(",.0s", 1e-27)(1e-24) == "1y"
@@ -286,10 +286,9 @@ class TestCase(unittest.TestCase):
         assert f(1e15) == "1P"
 
         assert format("c")("☃") == "☃"
-        assert format("020c")("☃") ==  "0000000000000000000☃"
+        assert format("020c")("☃") == "0000000000000000000☃"
         assert format(" ^20c")("☃") == "         ☃          "
         assert format("$c")("☃") == "$☃"
-
 
         f = format("~%")
         # assert f(0) == "0%"
@@ -311,13 +310,13 @@ class TestCase(unittest.TestCase):
         assert format(".2f")(0.449) == "0.45"
         assert format(".3f")(0.4449) == "0.445"
         assert format(".5f")(0.444449) == "0.44445"
-        print( format(".1f")(100) )
+        print(format(".1f")(100))
         assert format(".1f")(100) == "100.0"
         assert format(".2f")(100) == "100.00"
         assert format(".3f")(100) == "100.000"
         assert format(".5f")(100) == "100.00000"
 
-        f = format("+$,.2f");
+        f = format("+$,.2f")
         assert f(0) == "+$0.00"
         assert f(0.429) == "+$0.43"
         assert f(-0.429) == "−$0.43"
@@ -345,7 +344,7 @@ class TestCase(unittest.TestCase):
         assert format("+f")(+1e-12) == "+0.000000"
 
         # assert formatLocale({"decimal": "|"}).format("06.2f")(2) == "002|00"
-        print( formatLocale({"decimal": "/"}).format("06.2f")(2) )
+        print(formatLocale({"decimal": "/"}).format("06.2f")(2))
         assert formatLocale({"decimal": "/"}).format("06.2f")(2) == "002/00"
         # return
         assert formatLocale({"decimal": ".", "currency": ["฿", ""]}).format("$06.2f")(2) == "฿02.00"
@@ -354,8 +353,13 @@ class TestCase(unittest.TestCase):
         # assert formatLocale({"decimal": "."}).format("012,.2f")(2) == "000000002.00" # TODO - bug
         assert formatLocale({"decimal": ".", "grouping": [3], "thousands": ","}).format("012,.2f")(2) == "0,000,002.00"
         assert formatLocale({"decimal": ".", "grouping": [2], "thousands": ","}).format("012,.2f")(2) == "0,00,00,02.00"
-        assert formatLocale({"decimal": ".", "grouping": [2, 3], "thousands": ","}).format("012,.2f")(2) == "00,000,02.00"
-        assert formatLocale({"decimal": ".", "grouping": [3, 2, 2, 2, 2, 2, 2], "thousands": ","}).format(",d")(1e12) == "10,00,00,00,00,000"
+        assert (
+            formatLocale({"decimal": ".", "grouping": [2, 3], "thousands": ","}).format("012,.2f")(2) == "00,000,02.00"
+        )
+        assert (
+            formatLocale({"decimal": ".", "grouping": [3, 2, 2, 2, 2, 2, 2], "thousands": ","}).format(",d")(1e12)
+            == "10,00,00,00,00,000"
+        )
 
         # f = locale("en-IN").format(",")
         # f = format(",")
@@ -408,7 +412,7 @@ class TestCase(unittest.TestCase):
         # print(format("#b")(10))
         assert format("#b")(10) == "0b1010"
         # print( format("x")(0xdeadbeef) )
-        assert format("x")(0xdeadbeef) == "deadbeef"
+        assert format("x")(0xDEADBEEF) == "deadbeef"
 
         f = format("08d")
         assert f(0) == "00000000"
@@ -471,8 +475,7 @@ class TestCase(unittest.TestCase):
         assert format("012")(123.456) == "00000123.456"
         # assert format("0=12")(123.456) == "00000123.456"
 
-        print('PASSED ALL TESTS1 ====')
-
+        print("PASSED ALL TESTS1 ====")
 
     def test_d3_dispatch(self):
 
@@ -502,7 +505,6 @@ class TestCase(unittest.TestCase):
         # with self.assertRaises(Exception):
         #     dispatch("foo\tbar")
 
-
         # throws an error if a specified type name is a duplicate"
         with self.assertRaises(Exception):
             dispatch("foo", "foo")
@@ -531,7 +533,7 @@ class TestCase(unittest.TestCase):
         d = dispatch("foo")
         assert d.call("foo") == None
 
-        '''
+        """
         # scope?
         results = []
         foo = {}
@@ -553,7 +555,7 @@ class TestCase(unittest.TestCase):
 
         # d.call("foo", bar, foo, 42, "baz")
         # assert results == [{this: foo, arguments: [bar]}, {this: bar, arguments: [foo, 42, "baz"]}])
-        '''
+        """
         results = []
         d = dispatch("foo")
         d.on("foo.a", lambda: results.append("A"))
@@ -603,11 +605,11 @@ class TestCase(unittest.TestCase):
         d.call("foo")
         assert foo == 2
 
-
         # is equivalent to dispatch(type).on(type, …)
         d = dispatch("foo")
         foos = 0
         bars = 0
+
         def _foo():
             nonlocal foos
             foos += 1
@@ -648,11 +650,11 @@ class TestCase(unittest.TestCase):
         # print(foo)
         # assert foo == 1 # TODO - fails
 
-
     def test_select(self):
 
         # document is a global so has to be implicitely imported
         from domonic.dom import document
+
         print(document)
 
         # page = html(body())
@@ -667,7 +669,7 @@ class TestCase(unittest.TestCase):
         # select("body").append("svg").attr("width", 960)
         # select("body").append("svg").attr("width", 960).attr("height", 500).attr("byte", "face")
 
-        select("body").append("svg").attr("width", 960).attr("height", 500)  #.append("g")
+        select("body").append("svg").attr("width", 960).attr("height", 500)  # .append("g")
 
         b = select("svg").append("g")
 
@@ -680,7 +682,7 @@ class TestCase(unittest.TestCase):
         # select("body").append("svg")
         # print(select("body").append("svg"))
         c = d3.select("svg")
-        print('gubbins:', *c)
+        print("gubbins:", *c)
         # return
 
         print(select("svg").append("g"))
@@ -704,20 +706,24 @@ class TestCase(unittest.TestCase):
             head(
                 meta(_charset="utf-8"),
                 meta(**{"_http-equiv": "X-UA-Compatible"}, _content="IE=edge"),
-                title('website.com'),
+                title("website.com"),
                 meta(_name="description", _content=""),
                 meta(_name="viewport", _content="width=device-width, initial-scale=1"),
                 meta(_name="robots", _content="all,follow"),
                 link(_rel="stylesheet", _href="static/css/bootstrap.min.css"),
-                link(_rel="shortcut icon", _href="favicon.png")
+                link(_rel="shortcut icon", _href="favicon.png"),
             ),
             body(
                 div(_class="overlay").html(
                     div(_class="content h-100 d-flex align-items-center").html(
                         div(_class="container text-center text-black").html(
                             p("Welcome to the information age", _class="headings-font-family text-uppercase lead"),
-                            h1("We are", span("COMPANY", _class="font-weight-bold d-block"), _class="text-uppercase hero-text text-black"),
-                            p("And this is our company website", _class="headings-font-family text-uppercase lead")
+                            h1(
+                                "We are",
+                                span("COMPANY", _class="font-weight-bold d-block"),
+                                _class="text-uppercase hero-text text-black",
+                            ),
+                            p("And this is our company website", _class="headings-font-family text-uppercase lead"),
                         )
                     )
                 ),
@@ -727,13 +733,28 @@ class TestCase(unittest.TestCase):
                             h6("website.com"),
                             div(_id="navbarSupportedContent", _class="collapse navbar-collapse").html(
                                 ul(_class="navbar-nav ml-auto px-3").html(
-                                    li(a("Home", _href="", _class="nav-link text-uppercase link-scroll"), _class="nav-item active"),
-                                    li(a("About", _href="#about", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
-                                    li(a("Services", _href="#services", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
-                                    li(a("Team", _href="#team", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
-                                    li(a("Contact", _href="#contact", _class="nav-link text-uppercase link-scroll"), _class="nav-item"),
+                                    li(
+                                        a("Home", _href="", _class="nav-link text-uppercase link-scroll"),
+                                        _class="nav-item active",
+                                    ),
+                                    li(
+                                        a("About", _href="#about", _class="nav-link text-uppercase link-scroll"),
+                                        _class="nav-item",
+                                    ),
+                                    li(
+                                        a("Services", _href="#services", _class="nav-link text-uppercase link-scroll"),
+                                        _class="nav-item",
+                                    ),
+                                    li(
+                                        a("Team", _href="#team", _class="nav-link text-uppercase link-scroll"),
+                                        _class="nav-item",
+                                    ),
+                                    li(
+                                        a("Contact", _href="#contact", _class="nav-link text-uppercase link-scroll"),
+                                        _class="nav-item",
+                                    ),
                                 )
-                            )
+                            ),
                         )
                     )
                 ),
@@ -760,24 +781,33 @@ class TestCase(unittest.TestCase):
                                             li("2"),
                                             li("3"),
                                         )
-                                    )
-                                )
+                                    ),
+                                ),
                             )
                         )
                     )
                 ),
-                div(_class="row text-white text-center", _style="background: url(static/img/header.jpg); padding:20px;").html(
+                div(
+                    _class="row text-white text-center", _style="background: url(static/img/header.jpg); padding:20px;"
+                ).html(
                     div(_class="col-lg-12").html(
                         h5(_class="text-uppercase font-weight-bold").html(
-                            i(_class="far fa-image mr-2", ), "Headline."),
+                            i(
+                                _class="far fa-image mr-2",
+                            ),
+                            "Headline.",
+                        ),
                         p("Lorem ipsum."),
                     ),
                     div(_class="col-lg-12").html(
                         h5(_class="text-uppercase font-weight-bold").html(
-                            i(_class="far fa-image mr-2", ), "Headline."),
+                            i(
+                                _class="far fa-image mr-2",
+                            ),
+                            "Headline.",
+                        ),
                         p("Lorem ipsum."),
                     ),
-
                 ),
                 section(_id="services", _class="bg-gray").html(
                     div(_class="container").html(
@@ -806,7 +836,7 @@ class TestCase(unittest.TestCase):
                                     p("Lorem ipsum.", _class="small text-gray"),
                                 )
                             ),
-                        )
+                        ),
                     ),
                     section(_id="team").html(
                         div(_class="container").html(
@@ -816,13 +846,19 @@ class TestCase(unittest.TestCase):
                             div(_class="row text-center").html(
                                 # div(_class="col-lg-3 col-md-6 mb-4").html(
                                 div(_class="col-lg-12").html(
-                                    img(_src="static/img/gol.gif", _alt="Username", _class="img-fluid mb-4", _width="300px;", _height="300px;"),
+                                    img(
+                                        _src="static/img/gol.gif",
+                                        _alt="Username",
+                                        _class="img-fluid mb-4",
+                                        _width="300px;",
+                                        _height="300px;",
+                                    ),
                                     h4(_class="font-weight-bold text-uppercase").html(
                                         a("Username", _href="#", _class="no-anchor-style")
                                     ),
                                     p("Director", _class="small text-gray text-uppercase"),
                                 ),
-                            )
+                            ),
                         )
                     ),
                     section(_id="contact").html(
@@ -837,15 +873,37 @@ class TestCase(unittest.TestCase):
                                         a("user@website.com", _href="mailto:user@website.com"),
                                         br(),
                                         "or Call us on : ",
-                                        a("123456789", _href="tel:123456789")
+                                        a("123456789", _href="tel:123456789"),
                                     ),
                                     ul(_class="mb-0 list-inline text-center").html(
-                                        li(a(i(_class="fab fa-twitter"), _href="https://twitter.com/user", _class="social-link social-link-twitter"), _class="list-inline-item"),
-                                        li(a(i(_class="fab fa-linkedin"), _rel="nofollow", _href="https://www.linkedin.com/in/user/", _class="social-link social-link-instagram"), _class="list-inline-item"),
-                                        li(a(i(_class="fas fa-envelope"), _href="mailto:user@website.com", _class="social-link social-link-email"), _class="list-inline-item")
-                                    )
+                                        li(
+                                            a(
+                                                i(_class="fab fa-twitter"),
+                                                _href="https://twitter.com/user",
+                                                _class="social-link social-link-twitter",
+                                            ),
+                                            _class="list-inline-item",
+                                        ),
+                                        li(
+                                            a(
+                                                i(_class="fab fa-linkedin"),
+                                                _rel="nofollow",
+                                                _href="https://www.linkedin.com/in/user/",
+                                                _class="social-link social-link-instagram",
+                                            ),
+                                            _class="list-inline-item",
+                                        ),
+                                        li(
+                                            a(
+                                                i(_class="fas fa-envelope"),
+                                                _href="mailto:user@website.com",
+                                                _class="social-link social-link-email",
+                                            ),
+                                            _class="list-inline-item",
+                                        ),
+                                    ),
                                 )
-                            )
+                            ),
                         )
                     ),
                     footer(_style="padding:20px;").html(
@@ -856,9 +914,14 @@ class TestCase(unittest.TestCase):
                         )
                     ),
                     script(_src="static/js/jquery.min.js"),
-                    link(_rel="stylesheet", _href="https://use.fontawesome.com/releases/v5.7.1/css/all.css", _integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr", _crossorigin="anonymous")
-                )
-            )
+                    link(
+                        _rel="stylesheet",
+                        _href="https://use.fontawesome.com/releases/v5.7.1/css/all.css",
+                        _integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr",
+                        _crossorigin="anonymous",
+                    ),
+                ),
+            ),
         )
 
         # selectAll("p").attr("class", "graf").style("color", "red")
@@ -877,7 +940,7 @@ class TestCase(unittest.TestCase):
         selection.text("CHANGE")
         print(page)
 
-        selection = d3.selectAll('p')
+        selection = d3.selectAll("p")
         print(selection)
         # print(*selection)
 
@@ -897,7 +960,6 @@ class TestCase(unittest.TestCase):
         print(page)
         # select("body").append("svg").attr("width", 960).attr("height", 500).append("g").attr("transform", "translate(20,20)").append("rect").attr("width", 920).attr("height", 460)
 
-
     def test_select2(self):
 
         # selectAll("p").attr("class", "graf").style("color", "red")
@@ -908,7 +970,6 @@ class TestCase(unittest.TestCase):
         test = d3.local()
         print(test)
 
-
     def test_select3(self):
 
         # selection.select(…) returns a selection"
@@ -916,7 +977,13 @@ class TestCase(unittest.TestCase):
         assert type(select(d).select("h1")) == Selection
 
         # selection.select(string) selects the first descendant that matches the selector string for each selected element
-        d = html(head(domonic.load("<h1><span id='one'></span><span id='two'></span></h1><h1><span id='three'></span><span id='four'></span></h1>")))
+        d = html(
+            head(
+                domonic.load(
+                    "<h1><span id='one'></span><span id='two'></span></h1><h1><span id='three'></span><span id='four'></span></h1>"
+                )
+            )
+        )
         one = d.querySelector("#one")
         three = d.querySelector("#three")
         # assertSelection(select(d).selectAll("h1").select("span"), {"groups": [[one, three]], "parents": [d]})
@@ -1013,7 +1080,11 @@ class TestCase(unittest.TestCase):
         assert type(select(d).selectAll("h1")) == Selection
 
         # selection.selectAll(string) selects all descendants that match the selector string for each selected element
-        d = html(head(domonic.load("<h1 id='one'><span></span><span></span></h1><h1 id='two'><span></span><span></span></h1>")))
+        d = html(
+            head(
+                domonic.load("<h1 id='one'><span></span><span></span></h1><h1 id='two'><span></span><span></span></h1>")
+            )
+        )
         one = document.querySelector("#one")
         two = document.querySelector("#two")
         # assertSelection(selectAll([one, two]).selectAll("span"), {groups: [one.querySelectorAll("span"), two.querySelectorAll("span")], parents: [one, two]})
@@ -1061,7 +1132,7 @@ class TestCase(unittest.TestCase):
         # assertSelection(select(document).selectAll("child"), {groups: [[three, four]], parents: [document]})
 
         # selection.selectAll(…) can select elements when the originating selection is nested
-        #"<parent id='one'><child id='three'><span id='five'></span></child></parent><parent id='two'><child id='four'><span id='six'></span></child></parent>", () => {
+        # "<parent id='one'><child id='three'><span id='five'></span></child></parent><parent id='two'><child id='four'><span id='six'></span></child></parent>", () => {
         one = document.querySelector("#one")
         two = document.querySelector("#two")
         three = document.querySelector("#three")
@@ -1099,12 +1170,12 @@ class TestCase(unittest.TestCase):
         # print(document)
         # import importlib
         # importlib.reload(domonic.dom)
-        print('body', d.doctype)
-        print('bodyx', domonic.dom.document.doctype)
-        print('body', document.doctype)
-        from domonic.dom import \
-            document  # re-import to get the updated document
-        print('body', document.doctype)
+        print("body", d.doctype)
+        print("bodyx", domonic.dom.document.doctype)
+        print("body", document.doctype)
+        from domonic.dom import document  # re-import to get the updated document
+
+        print("body", document.doctype)
         assert type(select(document.body).append("h1")) == Selection
 
         # selection.append(name) appends a new element of the specified name as the last child of each selected element
@@ -1117,8 +1188,8 @@ class TestCase(unittest.TestCase):
         # assertSelection(s, {groups: [[three, four]]});
 
         # selection.append(name) observes the specified namespace, if any",
-        d = html(body(div(_id='one'), div(_id='two')))
-        print('should work?::', d.querySelector("#one"))
+        d = html(body(div(_id="one"), div(_id="two")))
+        print("should work?::", d.querySelector("#one"))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
         # s = selectAll([one, two]).append("svg:g")
@@ -1133,7 +1204,7 @@ class TestCase(unittest.TestCase):
         # assertSelection(s, {groups: [[three, four]]})
 
         # selection.append(name) uses createElement, not createElementNS, if the implied namespace is the same as the document
-        d = html(body(div(_id='one'), div(_id='two')))
+        d = html(body(div(_id="one"), div(_id="two")))
         _pass = 0
         one = d.querySelector("#one")
         two = d.querySelector("#two")
@@ -1143,6 +1214,7 @@ class TestCase(unittest.TestCase):
             nonlocal _pass
             _pass += 1
             return createElement.apply(this, args)
+
         d.createElement = ce
 
         selection = selectAll([one, two]).append("P")
@@ -1152,7 +1224,7 @@ class TestCase(unittest.TestCase):
         # assertSelection(selection, {groups: [[three, four]]});
 
         # selection.append(name) observes the implicit namespace, if any
-        d = html(body(div(_id='one'), div(_id='two')))
+        d = html(body(div(_id="one"), div(_id="two")))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
         selection = selectAll([one, two]).append("svg")
@@ -1174,9 +1246,9 @@ class TestCase(unittest.TestCase):
         # assertSelection(selection, {groups: [[three, four]]})
 
         # selection.append(name) observes a custom namespace, if any
-        d = html(body(div(_id='one'), div(_id='two')))
+        d = html(body(div(_id="one"), div(_id="two")))
         try:
-            namespaces['d3js'] = "https://d3js.org/2016/namespace"
+            namespaces["d3js"] = "https://d3js.org/2016/namespace"
             one = d.querySelector("#one")
             two = d.querySelector("#two")
             selection = selectAll([one, two]).append("d3js")
@@ -1187,7 +1259,7 @@ class TestCase(unittest.TestCase):
             # assertSelection(selection, {groups: [[three, four]]});
         except Exception as e:
             print(e)
-            del namespaces['d3js']
+            del namespaces["d3js"]
 
         # selection.append(function) appends the returned element as the last child of each selected element
         # <div id='one'><span class='before'></span></div><div id='two'><span class='before'></span></div>", () => {
@@ -1227,14 +1299,13 @@ class TestCase(unittest.TestCase):
         # select(parent).append(function() { return child; })
         # assert child.__data__, 42)
 
-        # selection.append(…) propagates parents from the originating selection", 
+        # selection.append(…) propagates parents from the originating selection",
         # "<parent></parent><parent></parent>", () => {
         # parents = select(document).selectAll("parent");
         # childs = parents.append("child");
         # assertSelection(parents, {groups: [document.querySelectorAll("parent")], parents: [document]});
         # assertSelection(childs, {groups: [document.querySelectorAll("child")], parents: [document]});
         # assert parents.parents == childs.parents  # Not copied!
-
 
         # selection.append(…) can select elements when the originating selection is nested
         # "<parent id='one'><child></child></parent><parent id='two'><child></child></parent>", () => {
@@ -1382,7 +1453,6 @@ class TestCase(unittest.TestCase):
         two = d.querySelector("#two")
         assert selectAll([None, one, None, two]).size() == 2
 
-
     def test_empty(self):
         #  selection.empty() return false if the selection is not empty
         d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
@@ -1393,7 +1463,6 @@ class TestCase(unittest.TestCase):
         assert select(None).empty() == True
         assert selectAll([]).empty() == True
         assert selectAll([None, None]).empty() == True
-
 
     def call(self):
         # selection.call(function) calls the specified function, passing the selection", () => {
@@ -1411,10 +1480,8 @@ class TestCase(unittest.TestCase):
         # assert result == [s, foo, bar]
         pass
 
-
     def test_call(self):
-        
-        
+
         # selection.each(function) calls the specified function for each selected element in order
         d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         # result = []
@@ -1458,7 +1525,6 @@ class TestCase(unittest.TestCase):
         assert selectAll([]).node() == None
         assert selectAll([None, None, None]).node() == None
 
-
     def test_order(self):
         # selection.order() moves selected elements so that they are before their next sibling
         # d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
@@ -1485,7 +1551,7 @@ class TestCase(unittest.TestCase):
         d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
-        print( *selectAll([one, two]) )
+        print(*selectAll([one, two]))
         assert [*selectAll([one, two])] == [one, two]
 
         # selection iteration merges nodes from all groups into a single array
@@ -1507,7 +1573,7 @@ class TestCase(unittest.TestCase):
         print(d)
         one = d.querySelector("#one")
         two = d.querySelector("#two")
-        print( d3.selectAll([one, two]).nodes() )
+        print(d3.selectAll([one, two]).nodes())
         assert d3.selectAll([one, two]).nodes() == [one, two]
 
         # selection.nodes() merges nodes from all groups into a single array
@@ -1522,65 +1588,64 @@ class TestCase(unittest.TestCase):
         two = d.querySelector("#two")
         assert d3.selectAll([None, one, None, two]).nodes() == [one, two]
 
-
     # Polygon Tests
     # D3 expects a "polygon" is a 2D array of integers listed counterclockwise (clockwise works too)
     # This does not work with the polygon as defined by SVG, SVG polygons have a points method you can
     # parse into a 2D array and use here.
 
     def test_polygonArea(self):
-        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]       # area: 15
-        irreg_1 = [[-6,12],[23,2],[19,-8],[-7,-6]]  # area: 400
-        irreg_2 = [[0,4],[12,8],[23,-5],[-5,-3]]    # area: 203
-        square = [[0,4],[4,4],[4,0],[0,0]]          # area: 16
-        triangle = [[-4,0],[0,4],[2,0]]             # area: 12
+        irreg_0 = [[5, 11], [12, 4], [7, 7], [6, 1]]  # area: 15
+        irreg_1 = [[-6, 12], [23, 2], [19, -8], [-7, -6]]  # area: 400
+        irreg_2 = [[0, 4], [12, 8], [23, -5], [-5, -3]]  # area: 203
+        square = [[0, 4], [4, 4], [4, 0], [0, 0]]  # area: 16
+        triangle = [[-4, 0], [0, 4], [2, 0]]  # area: 12
 
         self.assertEqual(polygonArea(irreg_0), 15)
         self.assertEqual(polygonArea(irreg_1), 400)
         self.assertEqual(polygonArea(irreg_2), 203)
         self.assertEqual(polygonArea(square), 16)
         self.assertEqual(polygonArea(triangle), 12)
-        
-    def test_polygonCentroid(self): 
-        irreg = [[-4,0],[8,12],[4,8],[-4,-4],[0,0]] # centroid: [0, 4]
-        square = [[0,4],[4,4],[4,0],[0,0]]          # centroid: [2, 2]
-        triangle = [[-4,0],[0,4],[4,2]]             # centroid: [0, 2]
+
+    def test_polygonCentroid(self):
+        irreg = [[-4, 0], [8, 12], [4, 8], [-4, -4], [0, 0]]  # centroid: [0, 4]
+        square = [[0, 4], [4, 4], [4, 0], [0, 0]]  # centroid: [2, 2]
+        triangle = [[-4, 0], [0, 4], [4, 2]]  # centroid: [0, 2]
 
         self.assertEqual(polygonCentroid(irreg), [0, 4])
         self.assertEqual(polygonCentroid(square), [2, 2])
         self.assertEqual(polygonCentroid(triangle), [0, 2])
 
     def test_polygonHull(self):
-        points_0 = [[0,6],[12,8],[23,-5],[-5,-3],[5,11],[12,4],[7,7],[6,1]]
-        points_1 = [[-4,0],[8,12],[4,8],[-4,-4],[0,0],[-6,12],[23,2],[19,-8],[-7,-6]]
+        points_0 = [[0, 6], [12, 8], [23, -5], [-5, -3], [5, 11], [12, 4], [7, 7], [6, 1]]
+        points_1 = [[-4, 0], [8, 12], [4, 8], [-4, -4], [0, 0], [-6, 12], [23, 2], [19, -8], [-7, -6]]
 
-        hull_0 = [[-5,-3],[0,6],[5,11],[12,8],[23,-5]]
-        hull_1 = [[-7,-6],[-6,12],[8,12],[19,-8],[23,2]]
-        
+        hull_0 = [[-5, -3], [0, 6], [5, 11], [12, 8], [23, -5]]
+        hull_1 = [[-7, -6], [-6, 12], [8, 12], [19, -8], [23, 2]]
+
         self.assertEqual(polygonHull(points_0), hull_0)
         self.assertEqual(polygonHull(points_1), hull_1)
 
     def test_polygonContains(self):
-        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]
-        square = [[0,4],[4,4],[4,0],[0,0]]
-        triangle = [[-4,0],[0,4],[2,0]]
+        irreg_0 = [[5, 11], [12, 4], [7, 7], [6, 1]]
+        square = [[0, 4], [4, 4], [4, 0], [0, 0]]
+        triangle = [[-4, 0], [0, 4], [2, 0]]
 
-        self.assertTrue(polygonContains(irreg_0, [6,8]))
-        self.assertFalse(polygonContains(irreg_0, [0,0]))
-        self.assertTrue(polygonContains(square, [2,2]))
-        self.assertFalse(polygonContains(square, [-2,-2]))
-        self.assertTrue(polygonContains(triangle, [0,1]))
-        self.assertFalse(polygonContains(triangle, [0,-1]))
+        self.assertTrue(polygonContains(irreg_0, [6, 8]))
+        self.assertFalse(polygonContains(irreg_0, [0, 0]))
+        self.assertTrue(polygonContains(square, [2, 2]))
+        self.assertFalse(polygonContains(square, [-2, -2]))
+        self.assertTrue(polygonContains(triangle, [0, 1]))
+        self.assertFalse(polygonContains(triangle, [0, -1]))
 
     def test_polygonLength(self):
-        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]   # length = 31.863
-        square = [[0,4],[4,4],[4,0],[0,0]]      # length = 16
-        triangle = [[-4,0],[0,4],[2,0]]         # length ~ 16.129
+        irreg_0 = [[5, 11], [12, 4], [7, 7], [6, 1]]  # length = 31.863
+        square = [[0, 4], [4, 4], [4, 0], [0, 0]]  # length = 16
+        triangle = [[-4, 0], [0, 4], [2, 0]]  # length ~ 16.129
 
         self.assertEqual(round(polygonLength(irreg_0), 3), 31.863)
         self.assertEqual(polygonLength(square), 16)
         self.assertEqual(round(polygonLength(triangle), 3), 16.129)
-        
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

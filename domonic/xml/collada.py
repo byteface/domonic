@@ -34,12 +34,8 @@ library_cameras = type("library_cameras", (Element,), {"name": "library_cameras"
 library_lights = type("library_lights", (Element,), {"name": "library_lights"})
 library_materials = type("library_materials", (Element,), {"name": "library_materials"})
 library_effects = type("library_effects", (Element,), {"name": "library_effects"})
-library_geometries = type(
-    "library_geometries", (Element,), {"name": "library_geometries"}
-)
-library_visual_scenes = type(
-    "library_visual_scenes", (Element,), {"name": "library_visual_scenes"}
-)
+library_geometries = type("library_geometries", (Element,), {"name": "library_geometries"})
+library_visual_scenes = type("library_visual_scenes", (Element,), {"name": "library_visual_scenes"})
 scene = type("scene", (Element,), {"name": "scene"})
 extra = type("extra", (Element,), {"name": "extra"})
 author = type("author", (Element,), {"name": "author"})
@@ -50,15 +46,9 @@ technique = type("technique", (Element,), {"name": "technique"})
 technique_common = type("technique_common", (Element,), {"name": "technique_common"})
 aspect_ratio = type("aspect_ratio", (Element,), {"name": "aspect_ratio"})
 light = type("light", (Element,), {"name": "light"})
-constant_attenuation = type(
-    "constant_attenuation", (Element,), {"name": "constant_attenuation"}
-)
-linear_attenuation = type(
-    "linear_attenuation", (Element,), {"name": "linear_attenuation"}
-)
-quadratic_attenuation = type(
-    "quadratic_attenuation", (Element,), {"name": "quadratic_attenuation"}
-)
+constant_attenuation = type("constant_attenuation", (Element,), {"name": "constant_attenuation"})
+linear_attenuation = type("linear_attenuation", (Element,), {"name": "linear_attenuation"})
+quadratic_attenuation = type("quadratic_attenuation", (Element,), {"name": "quadratic_attenuation"})
 material = type("material", (Element,), {"name": "material"})
 effect = type("effect", (Element,), {"name": "effect"})
 profile_COMMON = type("profile_COMMON", (Element,), {"name": "profile_COMMON"})
@@ -71,14 +61,10 @@ vertices = type("vertices", (Element,), {"name": "vertices"})
 polylist = type("polylist", (Element,), {"name": "polylist"})
 vcount = type("vcount", (Element,), {"name": "vcount"})
 p = type("p", (Element,), {"name": "p"})
-library_visual_scenes = type(
-    "library_visual_scenes", (Element,), {"name": "library_visual_scenes"}
-)
+library_visual_scenes = type("library_visual_scenes", (Element,), {"name": "library_visual_scenes"})
 visual_scene = type("visual_scene", (Element,), {"name": "visual_scene"})
 node = type("node", (Element,), {"name": "node"})
-instance_visual_scene = type(
-    "instance_visual_scene", (Element,), {"name": "instance_visual_scene"}
-)
+instance_visual_scene = type("instance_visual_scene", (Element,), {"name": "instance_visual_scene"})
 test_element = type("test_element", (Element,), {"name": "test_element"})
 instance_effect = type("instance_effect", (closed_tag,), {"name": "instance_effect"})
 texture_unit = type("texture_unit", (closed_tag,), {"name": "texture_unit"})
@@ -104,9 +90,7 @@ animation = type("animation", (Element,), {"name": "animation"})
 annotate = type("annotate", (Element,), {"name": "annotate"})
 argument = type("argument", (Element,), {"name": "argument"})
 array = type("array", (Element,), {"name": "array"})
-articulated_system = type(
-    "articulated_system", (Element,), {"name": "articulated_system"}
-)
+articulated_system = type("articulated_system", (Element,), {"name": "articulated_system"})
 perspective = type("perspective", (Element,), {"name": "perspective"})
 asset = type("asset", (Element,), {"name": "asset"})
 se = type("se", (Element,), {"name": "se"})
@@ -118,9 +102,7 @@ author_email = type("author_email", (Element,), {"name": "author_email"})
 author_website = type("author_website", (Element,), {"name": "author_website"})
 author = type("author", (Element,), {"name": "author"})
 authoring_tool = type("authoring_tool", (Element,), {"name": "authoring_tool"})
-auto_normal_enable = type(
-    "auto_normal_enable", (Element,), {"name": "auto_normal_enable"}
-)
+auto_normal_enable = type("auto_normal_enable", (Element,), {"name": "auto_normal_enable"})
 axis_info = type("axis_info", (Element,), {"name": "axis_info"})
 axis = type("axis", (Element,), {"name": "axis"})
 prismatic = type("prismatic", (Element,), {"name": "prismatic"})
@@ -129,9 +111,7 @@ swept_surface = type("swept_surface", (Element,), {"name": "swept_surface"})
 binary = type("binary", (Element,), {"name": "binary"})
 bind_attribute = type("bind_attribute", (Element,), {"name": "bind_attribute"})
 bind_joint_axis = type("bind_joint_axis", (Element,), {"name": "bind_joint_axis"})
-bind_kinematics_model = type(
-    "bind_kinematics_model", (Element,), {"name": "bind_kinematics_model"}
-)
+bind_kinematics_model = type("bind_kinematics_model", (Element,), {"name": "bind_kinematics_model"})
 bind_shape_matrix = type("bind_shape_matrix", (Element,), {"name": "bind_shape_matrix"})
 bind_uniform = type("bind_uniform", (Element,), {"name": "bind_uniform"})
 bind_vertex_input = type("bind_vertex_input", (Element,), {"name": "bind_vertex_input"})
@@ -139,13 +119,9 @@ bind = type("bind", (Element,), {"name": "bind"})
 bind = type("bind", (Element,), {"name": "bind"})
 blend_color = type("blend_color", (Element,), {"name": "blend_color"})
 blend_enable = type("blend_enable", (Element,), {"name": "blend_enable"})
-blend_equation_separate = type(
-    "blend_equation_separate", (Element,), {"name": "blend_equation_separate"}
-)
+blend_equation_separate = type("blend_equation_separate", (Element,), {"name": "blend_equation_separate"})
 blend_equation = type("blend_equation", (Element,), {"name": "blend_equation"})
-blend_func_separate = type(
-    "blend_func_separate", (Element,), {"name": "blend_func_separate"}
-)
+blend_func_separate = type("blend_func_separate", (Element,), {"name": "blend_func_separate"})
 blend_func = type("blend_func", (Element,), {"name": "blend_func"})
 blinn = type("blinn", (Element,), {"name": "blinn"})
 bool_array = type("bool_array", (Element,), {"name": "bool_array"})
@@ -161,13 +137,9 @@ clip_plane_enable = type("clip_plane_enable", (Element,), {"name": "clip_plane_e
 clip_plane = type("clip_plane", (Element,), {"name": "clip_plane"})
 code = type("code", (Element,), {"name": "code"})
 color_clear = type("color_clear", (Element,), {"name": "color_clear"})
-color_logic_op_enable = type(
-    "color_logic_op_enable", (Element,), {"name": "color_logic_op_enable"}
-)
+color_logic_op_enable = type("color_logic_op_enable", (Element,), {"name": "color_logic_op_enable"})
 color_mask = type("color_mask", (Element,), {"name": "color_mask"})
-color_material_enable = type(
-    "color_material_enable", (Element,), {"name": "color_material_enable"}
-)
+color_material_enable = type("color_material_enable", (Element,), {"name": "color_material_enable"})
 color_material = type("color_material", (Element,), {"name": "color_material"})
 color_target = type("color_target", (Element,), {"name": "color_target"})
 color = type("color", (Element,), {"name": "color"})
@@ -200,13 +172,9 @@ deceleration = type("deceleration", (Element,), {"name": "deceleration"})
 axis_info = type("axis_info", (Element,), {"name": "axis_info"})
 effector_info = type("effector_info", (Element,), {"name": "effector_info"})
 density = type("density", (Element,), {"name": "density"})
-depth_bounds_enable = type(
-    "depth_bounds_enable", (Element,), {"name": "depth_bounds_enable"}
-)
+depth_bounds_enable = type("depth_bounds_enable", (Element,), {"name": "depth_bounds_enable"})
 depth_bounds = type("depth_bounds", (Element,), {"name": "depth_bounds"})
-depth_clamp_enable = type(
-    "depth_clamp_enable", (Element,), {"name": "depth_clamp_enable"}
-)
+depth_clamp_enable = type("depth_clamp_enable", (Element,), {"name": "depth_clamp_enable"})
 depth_clear = type("depth_clear", (Element,), {"name": "depth_clear"})
 depth_func = type("depth_func", (Element,), {"name": "depth_func"})
 depth_mask = type("depth_mask", (Element,), {"name": "depth_mask"})
@@ -253,9 +221,7 @@ frame_tcp = type("frame_tcp", (Element,), {"name": "frame_tcp"})
 frame_tip = type("frame_tip", (Element,), {"name": "frame_tip"})
 front_face = type("front_face", (Element,), {"name": "front_face"})
 func = type("func", (Element,), {"name": "func"})
-geographic_location = type(
-    "geographic_location", (Element,), {"name": "geographic_location"}
-)
+geographic_location = type("geographic_location", (Element,), {"name": "geographic_location"})
 geometry = type("geometry", (Element,), {"name": "geometry"})
 gravity = type("gravity", (Element,), {"name": "gravity"})
 h = type("h", (Element,), {"name": "h"})
@@ -270,64 +236,36 @@ IDREF_array = type("IDREF_array", (Element,), {"name": "IDREF_array"})
 image = type("image", (Element,), {"name": "image"})
 imager = type("imager", (Element,), {"name": "imager"})
 include = type("include", (Element,), {"name": "include"})
-index_of_refraction = type(
-    "index_of_refraction", (Element,), {"name": "index_of_refraction"}
-)
+index_of_refraction = type("index_of_refraction", (Element,), {"name": "index_of_refraction"})
 index = type("index", (Element,), {"name": "index"})
 inertia = type("inertia", (Element,), {"name": "inertia"})
-instance_rigid_body = type(
-    "instance_rigid_body", (Element,), {"name": "instance_rigid_body"}
-)
+instance_rigid_body = type("instance_rigid_body", (Element,), {"name": "instance_rigid_body"})
 init_from = type("init_from", (Element,), {"name": "init_from"})
 inline = type("inline", (Element,), {"name": "inline"})
 emantic = type("emantic", (Element,), {"name": "emantic"})
 emantics = type("emantics", (Element,), {"name": "emantics"})
-instance_animation = type(
-    "instance_animation", (Element,), {"name": "instance_animation"}
-)
-instance_articulated_system = type(
-    "instance_articulated_system", (Element,), {"name": "instance_articulated_system"}
-)
+instance_animation = type("instance_animation", (Element,), {"name": "instance_animation"})
+instance_articulated_system = type("instance_articulated_system", (Element,), {"name": "instance_articulated_system"})
 instance_camera = type("instance_camera", (Element,), {"name": "instance_camera"})
-instance_controller = type(
-    "instance_controller", (Element,), {"name": "instance_controller"}
-)
+instance_controller = type("instance_controller", (Element,), {"name": "instance_controller"})
 instance_effect = type("instance_effect", (Element,), {"name": "instance_effect"})
-instance_force_field = type(
-    "instance_force_field", (Element,), {"name": "instance_force_field"}
-)
+instance_force_field = type("instance_force_field", (Element,), {"name": "instance_force_field"})
 instance_formula = type("instance_formula", (Element,), {"name": "instance_formula"})
 instance_geometry = type("instance_geometry", (Element,), {"name": "instance_geometry"})
 instance_image = type("instance_image", (Element,), {"name": "instance_image"})
 instance_joint = type("instance_joint", (Element,), {"name": "instance_joint"})
-instance_kinematics_model = type(
-    "instance_kinematics_model", (Element,), {"name": "instance_kinematics_model"}
-)
-instance_kinematics_scene = type(
-    "instance_kinematics_scene", (Element,), {"name": "instance_kinematics_scene"}
-)
+instance_kinematics_model = type("instance_kinematics_model", (Element,), {"name": "instance_kinematics_model"})
+instance_kinematics_scene = type("instance_kinematics_scene", (Element,), {"name": "instance_kinematics_scene"})
 instance_light = type("instance_light", (Element,), {"name": "instance_light"})
 instance_material = type("instance_material", (Element,), {"name": "instance_material"})
 instance_material = type("instance_material", (Element,), {"name": "instance_material"})
 instance_node = type("instance_node", (Element,), {"name": "instance_node"})
-instance_physics_material = type(
-    "instance_physics_material", (Element,), {"name": "instance_physics_material"}
-)
-instance_physics_model = type(
-    "instance_physics_model", (Element,), {"name": "instance_physics_model"}
-)
-instance_physics_scene = type(
-    "instance_physics_scene", (Element,), {"name": "instance_physics_scene"}
-)
-instance_rigid_body = type(
-    "instance_rigid_body", (Element,), {"name": "instance_rigid_body"}
-)
-instance_rigid_constraint = type(
-    "instance_rigid_constraint", (Element,), {"name": "instance_rigid_constraint"}
-)
-instance_visual_scene = type(
-    "instance_visual_scene", (Element,), {"name": "instance_visual_scene"}
-)
+instance_physics_material = type("instance_physics_material", (Element,), {"name": "instance_physics_material"})
+instance_physics_model = type("instance_physics_model", (Element,), {"name": "instance_physics_model"})
+instance_physics_scene = type("instance_physics_scene", (Element,), {"name": "instance_physics_scene"})
+instance_rigid_body = type("instance_rigid_body", (Element,), {"name": "instance_rigid_body"})
+instance_rigid_constraint = type("instance_rigid_constraint", (Element,), {"name": "instance_rigid_constraint"})
+instance_visual_scene = type("instance_visual_scene", (Element,), {"name": "instance_visual_scene"})
 int_array = type("int_array", (Element,), {"name": "int_array"})
 interpenetrate = type("interpenetrate", (Element,), {"name": "interpenetrate"})
 jerk = type("jerk", (Element,), {"name": "jerk"})
@@ -341,101 +279,55 @@ kinematics = type("kinematics", (Element,), {"name": "kinematics"})
 lambert = type("lambert", (Element,), {"name": "lambert"})
 latitude = type("latitude", (Element,), {"name": "latitude"})
 layer = type("layer", (Element,), {"name": "layer"})
-library_animation_clips = type(
-    "library_animation_clips", (Element,), {"name": "library_animation_clips"}
-)
-library_animations = type(
-    "library_animations", (Element,), {"name": "library_animations"}
-)
-library_articulated_systems = type(
-    "library_articulated_systems", (Element,), {"name": "library_articulated_systems"}
-)
+library_animation_clips = type("library_animation_clips", (Element,), {"name": "library_animation_clips"})
+library_animations = type("library_animations", (Element,), {"name": "library_animations"})
+library_articulated_systems = type("library_articulated_systems", (Element,), {"name": "library_articulated_systems"})
 library_cameras = type("library_cameras", (Element,), {"name": "library_cameras"})
-library_controllers = type(
-    "library_controllers", (Element,), {"name": "library_controllers"}
-)
+library_controllers = type("library_controllers", (Element,), {"name": "library_controllers"})
 library_effects = type("library_effects", (Element,), {"name": "library_effects"})
-library_force_fields = type(
-    "library_force_fields", (Element,), {"name": "library_force_fields"}
-)
+library_force_fields = type("library_force_fields", (Element,), {"name": "library_force_fields"})
 library_formulas = type("library_formulas", (Element,), {"name": "library_formulas"})
-library_geometries = type(
-    "library_geometries", (Element,), {"name": "library_geometries"}
-)
+library_geometries = type("library_geometries", (Element,), {"name": "library_geometries"})
 library_images = type("library_images", (Element,), {"name": "library_images"})
 library_joints = type("library_joints", (Element,), {"name": "library_joints"})
-library_kinematics_models = type(
-    "library_kinematics_models", (Element,), {"name": "library_kinematics_models"}
-)
-library_kinematics_scenes = type(
-    "library_kinematics_scenes", (Element,), {"name": "library_kinematics_scenes"}
-)
+library_kinematics_models = type("library_kinematics_models", (Element,), {"name": "library_kinematics_models"})
+library_kinematics_scenes = type("library_kinematics_scenes", (Element,), {"name": "library_kinematics_scenes"})
 library_nodes = type("library_nodes", (Element,), {"name": "library_nodes"})
-library_physics_materials = type(
-    "library_physics_materials", (Element,), {"name": "library_physics_materials"}
-)
-library_physics_models = type(
-    "library_physics_models", (Element,), {"name": "library_physics_models"}
-)
-library_physics_scenes = type(
-    "library_physics_scenes", (Element,), {"name": "library_physics_scenes"}
-)
-library_visual_scenes = type(
-    "library_visual_scenes", (Element,), {"name": "library_visual_scenes"}
-)
+library_physics_materials = type("library_physics_materials", (Element,), {"name": "library_physics_materials"})
+library_physics_models = type("library_physics_models", (Element,), {"name": "library_physics_models"})
+library_physics_scenes = type("library_physics_scenes", (Element,), {"name": "library_physics_scenes"})
+library_visual_scenes = type("library_visual_scenes", (Element,), {"name": "library_visual_scenes"})
 light_ambient = type("light_ambient", (Element,), {"name": "light_ambient"})
-light_constant_attenuation = type(
-    "light_constant_attenuation", (Element,), {"name": "light_constant_attenuation"}
-)
+light_constant_attenuation = type("light_constant_attenuation", (Element,), {"name": "light_constant_attenuation"})
 light_diffuse = type("light_diffuse", (Element,), {"name": "light_diffuse"})
 light_enable = type("light_enable", (Element,), {"name": "light_enable"})
-light_linear_attenuation = type(
-    "light_linear_attenuation", (Element,), {"name": "light_linear_attenuation"}
-)
-light_model_ambient = type(
-    "light_model_ambient", (Element,), {"name": "light_model_ambient"}
-)
-light_model_color_control = type(
-    "light_model_color_control", (Element,), {"name": "light_model_color_control"}
-)
+light_linear_attenuation = type("light_linear_attenuation", (Element,), {"name": "light_linear_attenuation"})
+light_model_ambient = type("light_model_ambient", (Element,), {"name": "light_model_ambient"})
+light_model_color_control = type("light_model_color_control", (Element,), {"name": "light_model_color_control"})
 light_model_local_viewer_enable = type(
     "light_model_local_viewer_enable",
     (Element,),
     {"name": "light_model_local_viewer_enable"},
 )
-light_model_two_side_enable = type(
-    "light_model_two_side_enable", (Element,), {"name": "light_model_two_side_enable"}
-)
+light_model_two_side_enable = type("light_model_two_side_enable", (Element,), {"name": "light_model_two_side_enable"})
 light_position = type("light_position", (Element,), {"name": "light_position"})
-light_quadratic_attenuation = type(
-    "light_quadratic_attenuation", (Element,), {"name": "light_quadratic_attenuation"}
-)
+light_quadratic_attenuation = type("light_quadratic_attenuation", (Element,), {"name": "light_quadratic_attenuation"})
 light_specular = type("light_specular", (Element,), {"name": "light_specular"})
 light_spot_cutoff = type("light_spot_cutoff", (Element,), {"name": "light_spot_cutoff"})
-light_spot_direction = type(
-    "light_spot_direction", (Element,), {"name": "light_spot_direction"}
-)
-light_spot_exponent = type(
-    "light_spot_exponent", (Element,), {"name": "light_spot_exponent"}
-)
+light_spot_direction = type("light_spot_direction", (Element,), {"name": "light_spot_direction"})
+light_spot_exponent = type("light_spot_exponent", (Element,), {"name": "light_spot_exponent"})
 lighting_enable = type("lighting_enable", (Element,), {"name": "lighting_enable"})
 lights = type("lights", (Element,), {"name": "lights"})
 limits = type("limits", (Element,), {"name": "limits"})
 axis_info = type("axis_info", (Element,), {"name": "axis_info"})
 prismatic = type("prismatic", (Element,), {"name": "prismatic"})
 revolute = type("revolute", (Element,), {"name": "revolute"})
-line_smooth_enable = type(
-    "line_smooth_enable", (Element,), {"name": "line_smooth_enable"}
-)
-line_stipple_enable = type(
-    "line_stipple_enable", (Element,), {"name": "line_stipple_enable"}
-)
+line_smooth_enable = type("line_smooth_enable", (Element,), {"name": "line_smooth_enable"})
+line_stipple_enable = type("line_stipple_enable", (Element,), {"name": "line_stipple_enable"})
 line_stipple = type("line_stipple", (Element,), {"name": "line_stipple"})
 line_width = type("line_width", (Element,), {"name": "line_width"})
 line = type("line", (Element,), {"name": "line"})
-linear_attenuation = type(
-    "linear_attenuation", (Element,), {"name": "linear_attenuation"}
-)
+linear_attenuation = type("linear_attenuation", (Element,), {"name": "linear_attenuation"})
 spot = type("spot", (Element,), {"name": "spot"})
 linear = type("linear", (Element,), {"name": "linear"})
 lines = type("lines", (Element,), {"name": "lines"})
@@ -455,9 +347,7 @@ shape = type("shape", (Element,), {"name": "shape"})
 material_ambient = type("material_ambient", (Element,), {"name": "material_ambient"})
 material_diffuse = type("material_diffuse", (Element,), {"name": "material_diffuse"})
 material_emission = type("material_emission", (Element,), {"name": "material_emission"})
-material_shininess = type(
-    "material_shininess", (Element,), {"name": "material_shininess"}
-)
+material_shininess = type("material_shininess", (Element,), {"name": "material_shininess"})
 material_specular = type("material_specular", (Element,), {"name": "material_specular"})
 material = type("material", (Element,), {"name": "material"})
 matrix = type("matrix", (Element,), {"name": "matrix"})
@@ -477,9 +367,7 @@ modified = type("modified", (Element,), {"name": "modified"})
 modifier = type("modifier", (Element,), {"name": "modifier"})
 morph = type("morph", (Element,), {"name": "morph"})
 motion = type("motion", (Element,), {"name": "motion"})
-multisample_enable = type(
-    "multisample_enable", (Element,), {"name": "multisample_enable"}
-)
+multisample_enable = type("multisample_enable", (Element,), {"name": "multisample_enable"})
 Name_array = type("Name_array", (Element,), {"name": "Name_array"})
 emantic = type("emantic", (Element,), {"name": "emantic"})
 newparam = type("newparam", (Element,), {"name": "newparam"})
@@ -511,35 +399,19 @@ physics_material = type("physics_material", (Element,), {"name": "physics_materi
 physics_model = type("physics_model", (Element,), {"name": "physics_model"})
 physics_scene = type("physics_scene", (Element,), {"name": "physics_scene"})
 plane = type("plane", (Element,), {"name": "plane"})
-point_distance_attenuation = type(
-    "point_distance_attenuation", (Element,), {"name": "point_distance_attenuation"}
-)
-point_fade_threshold_size = type(
-    "point_fade_threshold_size", (Element,), {"name": "point_fade_threshold_size"}
-)
+point_distance_attenuation = type("point_distance_attenuation", (Element,), {"name": "point_distance_attenuation"})
+point_fade_threshold_size = type("point_fade_threshold_size", (Element,), {"name": "point_fade_threshold_size"})
 point_size_max = type("point_size_max", (Element,), {"name": "point_size_max"})
 point_size_min = type("point_size_min", (Element,), {"name": "point_size_min"})
 point_size = type("point_size", (Element,), {"name": "point_size"})
-point_smooth_enable = type(
-    "point_smooth_enable", (Element,), {"name": "point_smooth_enable"}
-)
+point_smooth_enable = type("point_smooth_enable", (Element,), {"name": "point_smooth_enable"})
 polygon_mode = type("polygon_mode", (Element,), {"name": "polygon_mode"})
-polygon_offset_fill_enable = type(
-    "polygon_offset_fill_enable", (Element,), {"name": "polygon_offset_fill_enable"}
-)
-polygon_offset_line_enable = type(
-    "polygon_offset_line_enable", (Element,), {"name": "polygon_offset_line_enable"}
-)
-polygon_offset_point_enable = type(
-    "polygon_offset_point_enable", (Element,), {"name": "polygon_offset_point_enable"}
-)
+polygon_offset_fill_enable = type("polygon_offset_fill_enable", (Element,), {"name": "polygon_offset_fill_enable"})
+polygon_offset_line_enable = type("polygon_offset_line_enable", (Element,), {"name": "polygon_offset_line_enable"})
+polygon_offset_point_enable = type("polygon_offset_point_enable", (Element,), {"name": "polygon_offset_point_enable"})
 polygon_offset = type("polygon_offset", (Element,), {"name": "polygon_offset"})
-polygon_smooth_enable = type(
-    "polygon_smooth_enable", (Element,), {"name": "polygon_smooth_enable"}
-)
-polygon_stipple_enable = type(
-    "polygon_stipple_enable", (Element,), {"name": "polygon_stipple_enable"}
-)
+polygon_smooth_enable = type("polygon_smooth_enable", (Element,), {"name": "polygon_smooth_enable"})
+polygon_stipple_enable = type("polygon_stipple_enable", (Element,), {"name": "polygon_stipple_enable"})
 polygons = type("polygons", (Element,), {"name": "polygons"})
 polylist = type("polylist", (Element,), {"name": "polylist"})
 prismatic = type("prismatic", (Element,), {"name": "prismatic"})
@@ -552,9 +424,7 @@ profile_GLES2 = type("profile_GLES2", (Element,), {"name": "profile_GLES2"})
 profile_GLSL = type("profile_GLSL", (Element,), {"name": "profile_GLSL"})
 program = type("program", (Element,), {"name": "program"})
 projection_matrix = type("projection_matrix", (Element,), {"name": "projection_matrix"})
-quadratic_attenuation = type(
-    "quadratic_attenuation", (Element,), {"name": "quadratic_attenuation"}
-)
+quadratic_attenuation = type("quadratic_attenuation", (Element,), {"name": "quadratic_attenuation"})
 point = type("point", (Element,), {"name": "point"})
 radius = type("radius", (Element,), {"name": "radius"})
 capsule = type("capsule", (Element,), {"name": "capsule"})
@@ -572,9 +442,7 @@ reflective = type("reflective", (Element,), {"name": "reflective"})
 reflectivity = type("reflectivity", (Element,), {"name": "reflectivity"})
 render = type("render", (Element,), {"name": "render"})
 renderable = type("renderable", (Element,), {"name": "renderable"})
-rescale_normal_enable = type(
-    "rescale_normal_enable", (Element,), {"name": "rescale_normal_enable"}
-)
+rescale_normal_enable = type("rescale_normal_enable", (Element,), {"name": "rescale_normal_enable"})
 restitution = type("restitution", (Element,), {"name": "restitution"})
 revision = type("revision", (Element,), {"name": "revision"})
 revolute = type("revolute", (Element,), {"name": "revolute"})
@@ -586,12 +454,8 @@ sample_alpha_to_coverage_enable = type(
     (Element,),
     {"name": "sample_alpha_to_coverage_enable"},
 )
-sample_alpha_to_one_enable = type(
-    "sample_alpha_to_one_enable", (Element,), {"name": "sample_alpha_to_one_enable"}
-)
-sample_coverage_enable = type(
-    "sample_coverage_enable", (Element,), {"name": "sample_coverage_enable"}
-)
+sample_alpha_to_one_enable = type("sample_alpha_to_one_enable", (Element,), {"name": "sample_alpha_to_one_enable"})
+sample_coverage_enable = type("sample_coverage_enable", (Element,), {"name": "sample_coverage_enable"})
 sample_coverage = type("sample_coverage", (Element,), {"name": "sample_coverage"})
 sampler_image = type("sampler_image", (Element,), {"name": "sampler_image"})
 sampler_states = type("sampler_states", (Element,), {"name": "sampler_states"})
@@ -605,9 +469,7 @@ samplerDEPTH = type("samplerDEPTH", (Element,), {"name": "samplerDEPTH"})
 samplerRECT = type("samplerRECT", (Element,), {"name": "samplerRECT"})
 scale = type("scale", (Element,), {"name": "scale"})
 scene = type("scene", (Element,), {"name": "scene"})
-scissor_test_enable = type(
-    "scissor_test_enable", (Element,), {"name": "scissor_test_enable"}
-)
+scissor_test_enable = type("scissor_test_enable", (Element,), {"name": "scissor_test_enable"})
 scissor = type("scissor", (Element,), {"name": "scissor"})
 semantic = type("semantic", (Element,), {"name": "semantic"})
 setparam = type("setparam", (Element,), {"name": "setparam"})
@@ -638,39 +500,27 @@ spring = type("spring", (Element,), {"name": "spring"})
 states = type("states", (Element,), {"name": "states"})
 static_friction = type("static_friction", (Element,), {"name": "static_friction"})
 stencil_clear = type("stencil_clear", (Element,), {"name": "stencil_clear"})
-stencil_func_separate = type(
-    "stencil_func_separate", (Element,), {"name": "stencil_func_separate"}
-)
+stencil_func_separate = type("stencil_func_separate", (Element,), {"name": "stencil_func_separate"})
 stencil_func = type("stencil_func", (Element,), {"name": "stencil_func"})
-stencil_mask_separate = type(
-    "stencil_mask_separate", (Element,), {"name": "stencil_mask_separate"}
-)
+stencil_mask_separate = type("stencil_mask_separate", (Element,), {"name": "stencil_mask_separate"})
 stencil_mask = type("stencil_mask", (Element,), {"name": "stencil_mask"})
-stencil_op_separate = type(
-    "stencil_op_separate", (Element,), {"name": "stencil_op_separate"}
-)
+stencil_op_separate = type("stencil_op_separate", (Element,), {"name": "stencil_op_separate"})
 stencil_op = type("stencil_op", (Element,), {"name": "stencil_op"})
 stencil_target = type("stencil_target", (Element,), {"name": "stencil_target"})
-stencil_test_enable = type(
-    "stencil_test_enable", (Element,), {"name": "stencil_test_enable"}
-)
+stencil_test_enable = type("stencil_test_enable", (Element,), {"name": "stencil_test_enable"})
 stiffness = type("stiffness", (Element,), {"name": "stiffness"})
 subject = type("subject", (Element,), {"name": "subject"})
 surface_curves = type("surface_curves", (Element,), {"name": "surface_curves"})
 surface = type("surface", (Element,), {"name": "surface"})
 surfaces = type("surfaces", (Element,), {"name": "surfaces"})
 swept_surface = type("swept_surface", (Element,), {"name": "swept_surface"})
-swing_cone_and_twist = type(
-    "swing_cone_and_twist", (Element,), {"name": "swing_cone_and_twist"}
-)
+swing_cone_and_twist = type("swing_cone_and_twist", (Element,), {"name": "swing_cone_and_twist"})
 target_value = type("target_value", (Element,), {"name": "target_value"})
 target = type("target", (Element,), {"name": "target"})
 targets = type("targets", (Element,), {"name": "targets"})
 bind_material = type("bind_material", (Element,), {"name": "bind_material"})
 formula = type("formula", (Element,), {"name": "formula"})
-instance_rigid_body = type(
-    "instance_rigid_body", (Element,), {"name": "instance_rigid_body"}
-)
+instance_rigid_body = type("instance_rigid_body", (Element,), {"name": "instance_rigid_body"})
 kinematics_model = type("kinematics_model", (Element,), {"name": "kinematics_model"})
 kinematics = type("kinematics", (Element,), {"name": "kinematics"})
 light = type("light", (Element,), {"name": "light"})
@@ -679,9 +529,7 @@ optics = type("optics", (Element,), {"name": "optics"})
 rigid_body = type("rigid_body", (Element,), {"name": "rigid_body"})
 verview = type("verview", (Element,), {"name": "verview"})
 technique_hint = type("technique_hint", (Element,), {"name": "technique_hint"})
-technique_override = type(
-    "technique_override", (Element,), {"name": "technique_override"}
-)
+technique_override = type("technique_override", (Element,), {"name": "technique_override"})
 texcombiner = type("texcombiner", (Element,), {"name": "texcombiner"})
 texcoord = type("texcoord", (Element,), {"name": "texcoord"})
 texenv = type("texenv", (Element,), {"name": "texenv"})
@@ -695,17 +543,11 @@ texture2D_enable = type("texture2D_enable", (Element,), {"name": "texture2D_enab
 texture2D = type("texture2D", (Element,), {"name": "texture2D"})
 texture3D_enable = type("texture3D_enable", (Element,), {"name": "texture3D_enable"})
 texture3D = type("texture3D", (Element,), {"name": "texture3D"})
-textureCUBE_enable = type(
-    "textureCUBE_enable", (Element,), {"name": "textureCUBE_enable"}
-)
+textureCUBE_enable = type("textureCUBE_enable", (Element,), {"name": "textureCUBE_enable"})
 textureCUBE = type("textureCUBE", (Element,), {"name": "textureCUBE"})
-textureDEPTH_enable = type(
-    "textureDEPTH_enable", (Element,), {"name": "textureDEPTH_enable"}
-)
+textureDEPTH_enable = type("textureDEPTH_enable", (Element,), {"name": "textureDEPTH_enable"})
 textureDEPTH = type("textureDEPTH", (Element,), {"name": "textureDEPTH"})
-textureRECT_enable = type(
-    "textureRECT_enable", (Element,), {"name": "textureRECT_enable"}
-)
+textureRECT_enable = type("textureRECT_enable", (Element,), {"name": "textureRECT_enable"})
 textureRECT = type("textureRECT", (Element,), {"name": "textureRECT"})
 time_step = type("time_step", (Element,), {"name": "time_step"})
 title = type("title", (Element,), {"name": "title"})

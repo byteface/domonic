@@ -8,7 +8,6 @@ from domonic.events import DragEvent
 
 
 class DataTransfer:
-
     def __init__(self):
         self.data = {}
         self.types = []

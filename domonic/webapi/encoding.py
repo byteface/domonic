@@ -4,10 +4,20 @@
     https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API
 """
 
-from domonic.javascript import (ArrayBuffer, DataView, Float32Array,
-                                Float64Array, Function, Int8Array, Int16Array,
-                                Int32Array, String, Uint8Array, Uint16Array,
-                                Uint32Array)
+from domonic.javascript import (
+    ArrayBuffer,
+    DataView,
+    Float32Array,
+    Float64Array,
+    Function,
+    Int8Array,
+    Int16Array,
+    Int32Array,
+    String,
+    Uint8Array,
+    Uint16Array,
+    Uint32Array,
+)
 from domonic.webapi.streams import ReadableStream
 
 # from domonic.javascript import ArrayBufferView
@@ -19,16 +29,29 @@ class TextDecoder:
 
     def decode(self, bytes_or_buffer):
         if self.encoding == "utf-8":
-            # get the bytes from the buffer
+            # get the bytes from the buffer
             if isinstance(bytes_or_buffer, ReadableStream):
                 bytes_or_buffer = bytes_or_buffer.read()
             if isinstance(bytes_or_buffer, ArrayBuffer):
                 bytes_or_buffer = bytes_or_buffer.buffer
-            if isinstance(bytes_or_buffer, (Uint8Array, Int8Array, Uint16Array, Int16Array, Int32Array, Uint32Array, Float32Array, Float64Array, DataView)):
+            if isinstance(
+                bytes_or_buffer,
+                (
+                    Uint8Array,
+                    Int8Array,
+                    Uint16Array,
+                    Int16Array,
+                    Int32Array,
+                    Uint32Array,
+                    Float32Array,
+                    Float64Array,
+                    DataView,
+                ),
+            ):
                 bytes_or_buffer = bytes_or_buffer.buffer
             # if isinstance(bytes_or_buffer, ArrayBufferView):
 
-            # convert the bytes to a string
+            # convert the bytes to a string
             # return bytes_or_buffer.decode("utf-8")
             # return "".join([b.decode('UTF-8') for b in bytes_or_buffer])
             b = bytearray(bytes_or_buffer)
@@ -61,7 +84,6 @@ class TextDecoderStream(ReadableStream):
         self.readable = True
         self.writable = False
         self.ignoreBOM = False
-
 
     def read(self, size=None):
         return self.decoder.decode(super().read(size))

@@ -25,7 +25,7 @@ equivelents_map = {
 
 
 class CmdException(Exception):
-    """ raised if cmd throws an exception """
+    """raised if cmd throws an exception"""
 
     def __init__(self, error, message: str = "An error message was recieved from cmd"):
         print(error, message)
@@ -33,8 +33,8 @@ class CmdException(Exception):
         super().__init__(self.message)
 
 
-class Cmdcommand():
-    """ wrapper class for all cmd commands """
+class Cmdcommand:
+    """wrapper class for all cmd commands"""
 
     @staticmethod
     def run(cmd: str) -> str:
@@ -52,10 +52,10 @@ class Cmdcommand():
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
-        self.params = ''.join([each.__str__() for each in args])
+        self.params = "".join([each.__str__() for each in args])
         self.result = ""
 
-        if not hasattr(self, 'first_run'):
+        if not hasattr(self, "first_run"):
             self.first_run = True
         else:
             self.first_run = False
@@ -76,7 +76,7 @@ class Cmdcommand():
         return self.result
 
     def run_command(self):
-        if hasattr(self, 'wait'):
+        if hasattr(self, "wait"):
             self.has_wait = True
             if self.first_run is True:
                 self.first_run = False
@@ -84,7 +84,7 @@ class Cmdcommand():
         else:
             self.has_wait = False
 
-        if hasattr(self, 'iterable'):
+        if hasattr(self, "iterable"):
             if self.first_run is True:
                 self.first_run = False
                 return
@@ -93,17 +93,17 @@ class Cmdcommand():
             cmd = f"{self.name} {self.params}"
             cmd = cmd.strip()
 
-            '''
+            """
             # TODO - after doing all this. think i may have decided to go for 2 base commands instead
             # one iterable and one normal. its still hidden from user as just a different inhereted command
             # but would keep both simpler and can have more types. so will have to refactor all this again
             # for now this behaves how i want despite the _new_ hack and double call on this command
-            '''
+            """
             if self.has_wait is not True:
                 returned_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
                 self.result = returned_output.decode("utf-8")
             else:
-                self.result = 'PING FAIL'
+                self.result = "PING FAIL"
 
                 def kill_switch(proc):
                     proc.kill()
@@ -128,7 +128,7 @@ class Cmdcommand():
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)
         instance.__init__(*args, **kwargs)
-        if hasattr(instance, 'iterable'):
+        if hasattr(instance, "iterable"):
             is_iterable = instance.iterable
             if is_iterable:
                 return instance
@@ -172,20 +172,21 @@ class cd(Cmdcommand):
     - cd is pointless as session opens and closes
     - so is overridden to change dirs via pure python
     """
+
     def run_command(self):
         os.chdir(self.params)
 
 
 # tested --
-dir = type('dir', (Cmdcommand,), {'name': 'dir', 'iterable': True})  #: list directory content
-erase = type('erase', (Cmdcommand,), {'name': 'erase'})
+dir = type("dir", (Cmdcommand,), {"name": "dir", "iterable": True})  #: list directory content
+erase = type("erase", (Cmdcommand,), {"name": "erase"})
 # del = type('del', (command,), {'name': 'del'})
-mkdir = type('mkdir', (Cmdcommand,), {'name': 'mkdir'})  #: create a new directory
-rmdir = type('rmdir', (Cmdcommand,), {'name': 'rmdir'})  #: delete directory
-copy = type('copy', (Cmdcommand,), {'name': 'copy'})  #: copy files
+mkdir = type("mkdir", (Cmdcommand,), {"name": "mkdir"})  #: create a new directory
+rmdir = type("rmdir", (Cmdcommand,), {"name": "rmdir"})  #: delete directory
+copy = type("copy", (Cmdcommand,), {"name": "copy"})  #: copy files
 
-fsutil = type('fsutil', (Cmdcommand,), {'name': 'fsutil'})
-fc = type('fc', (Cmdcommand,), {'name': 'fc'})  # compare files and display the differences
+fsutil = type("fsutil", (Cmdcommand,), {"name": "fsutil"})
+fc = type("fc", (Cmdcommand,), {"name": "fc"})  # compare files and display the differences
 
 
 class touch(Cmdcommand):
@@ -196,52 +197,60 @@ class touch(Cmdcommand):
             Cmdcommand.run(cmd)
         except Exception as e:
             # print('failed to touch:', e)
-            self.result = ''
+            self.result = ""
 
 
-getmac = type('getmac', (Cmdcommand,), {'name': 'getmac'})  #: display MAC address
-ipconfig = type('ipconfig', (Cmdcommand,), {'name': 'ipconfig'})  #: display IP network settings
-shutdown = type('shutdown', (Cmdcommand,), {'name': 'shutdown'})  #: shutdown the computer. (/s), triggers a restart (/r), or logs the user out (/l).
+getmac = type("getmac", (Cmdcommand,), {"name": "getmac"})  #: display MAC address
+ipconfig = type("ipconfig", (Cmdcommand,), {"name": "ipconfig"})  #: display IP network settings
+shutdown = type(
+    "shutdown", (Cmdcommand,), {"name": "shutdown"}
+)  #: shutdown the computer. (/s), triggers a restart (/r), or logs the user out (/l).
 # date = type('date', (Cmdcommand,), {'name': 'date'})  #: show/set date - TODO seemed to hang. needs a param
-echo = type('echo', (Cmdcommand,), {'name': 'echo'})  #: text output
-hostname = type('hostname', (Cmdcommand,), {'name': 'hostname'})  #: display host name
+echo = type("echo", (Cmdcommand,), {"name": "echo"})  #: text output
+hostname = type("hostname", (Cmdcommand,), {"name": "hostname"})  #: display host name
 # time = type('time', (Cmdcommand,), {'name': 'time'})  #: display/edit the system time - TODO seemed to hang
-ver = type('ver', (Cmdcommand,), {'name': 'ver'})  #: display operating system version - TODO seemed to hang
+ver = type("ver", (Cmdcommand,), {"name": "ver"})  #: display operating system version - TODO seemed to hang
 # netstat = type('netstat', (Cmdcommand,), {'name': 'netstat'})  #: display TCP/IP connections and status
-ping = type('ping', (Cmdcommand,), {'name': 'ping'})  #: pings the network
+ping = type("ping", (Cmdcommand,), {"name": "ping"})  #: pings the network
 # ping = type('ping', (Cmdcommand,), {'name': 'ping', 'wait': True, 'iterable': True})  # < TODO - need to stream feedback
 
-move = type('move', (Cmdcommand,), {'name': 'move'})  #: move/rename files
-rename = type('rename', (Cmdcommand,), {'name': 'rename'})  #: rename files
-replace = type('replace', (Cmdcommand,), {'name': 'replace'})  #: replace files
+move = type("move", (Cmdcommand,), {"name": "move"})  #: move/rename files
+rename = type("rename", (Cmdcommand,), {"name": "rename"})  #: rename files
+replace = type("replace", (Cmdcommand,), {"name": "replace"})  #: replace files
 
-systeminfo = type('systeminfo', (Cmdcommand,), {'name': 'systeminfo'})  #: displays computer-specific properties and configurations
+systeminfo = type(
+    "systeminfo", (Cmdcommand,), {"name": "systeminfo"}
+)  #: displays computer-specific properties and configurations
 
-attrib = type('attrib', (Cmdcommand,), {'name': 'attrib'})  #: display file attributes
+attrib = type("attrib", (Cmdcommand,), {"name": "attrib"})  #: display file attributes
 # tree = type('tree', (Cmdcommand,), {'name': 'tree'})  #: display folder structure graphically - TODO - return not utf-8
-type_ = type('type_', (Cmdcommand,), {'name': 'type'})  #: display content of text files
-comp = type('comp', (Cmdcommand,), {'name': 'comp'})  #: compare file contents
+type_ = type("type_", (Cmdcommand,), {"name": "type"})  #: display content of text files
+comp = type("comp", (Cmdcommand,), {"name": "comp"})  #: compare file contents
 
-chkdsk = type('chkdsk', (Cmdcommand,), {'name': 'chkdsk'})  #: check volumes
-driverquery = type('driverquery', (Cmdcommand,), {'name': 'driverquery'})  #: display installed devices and their properties
-vol = type('vol', (Cmdcommand,), {'name': 'vol'})  #: show volume description and serial numbers of the HDDs
-gpresult = type('gpresult', (Cmdcommand,), {'name': 'gpresult'})  #: display group policies
+chkdsk = type("chkdsk", (Cmdcommand,), {"name": "chkdsk"})  #: check volumes
+driverquery = type(
+    "driverquery", (Cmdcommand,), {"name": "driverquery"}
+)  #: display installed devices and their properties
+vol = type("vol", (Cmdcommand,), {"name": "vol"})  #: show volume description and serial numbers of the HDDs
+gpresult = type("gpresult", (Cmdcommand,), {"name": "gpresult"})  #: display group policies
 
 # ssh = type('ssh', (Cmdcommand,), {'name': 'ssh'})
 
-chdir = type('chdir', (Cmdcommand,), {'name': 'chdir'})  # : show current dir or can switch dir
+chdir = type("chdir", (Cmdcommand,), {"name": "chdir"})  # : show current dir or can switch dir
 # clip = type('clip', (Cmdcommand,), {'name': 'clip'})  # : Forwards the result of a command to the clipboard
 
 # find = type('find', (Cmdcommand,), {'name': 'find'})
-whoami = type('whoami', (Cmdcommand,), {'name': 'whoami'})  #: information about the current user. /GROUP parameter
+whoami = type("whoami", (Cmdcommand,), {"name": "whoami"})  #: information about the current user. /GROUP parameter
 
-logoff = type('logoff', (Cmdcommand,), {'name': 'logoff'})  #: Logs the user out of Windows.
-mrinfo = type('mrinfo', (Cmdcommand,), {'name': 'mrinfo'})  #: Provides information on the router
-tasklist = type('tasklist', (Cmdcommand,), {'name': 'tasklist'})  #: Lists all running processes
+logoff = type("logoff", (Cmdcommand,), {"name": "logoff"})  #: Logs the user out of Windows.
+mrinfo = type("mrinfo", (Cmdcommand,), {"name": "mrinfo"})  #: Provides information on the router
+tasklist = type("tasklist", (Cmdcommand,), {"name": "tasklist"})  #: Lists all running processes
 
 # cmd = type('cmd', (Cmdcommand,), {'name': 'cmd'})  #: start command prompt - NOTE hangs
-title = type('title', (Cmdcommand,), {'name': 'title'})  #: Changes the title of the command prompt
-tzutil = type('tzutil', (Cmdcommand,), {'name': 'tzutil'})  #: Displays the currently set time zone (/g) or changes it (/s)
+title = type("title", (Cmdcommand,), {"name": "title"})  #: Changes the title of the command prompt
+tzutil = type(
+    "tzutil", (Cmdcommand,), {"name": "tzutil"}
+)  #: Displays the currently set time zone (/g) or changes it (/s)
 
 # bitsadmin = type('bitsadmin', (Cmdcommand,), {'name': 'bitsadmin'})  #: Allows you to run commands on a remote computer
 # chcp = type('chcp', (Cmdcommand,), {'name': 'chcp'})  #: Change the locale of the command prompt
@@ -265,7 +274,7 @@ tzutil = type('tzutil', (Cmdcommand,), {'name': 'tzutil'})  #: Displays the curr
 
 
 # WINDOWS COMMANDS
-'''
+"""
 bitsadmin	Creates and monitors downloads and uploads
 chcp	Changes the current code page
 choice	Creates a selection list
@@ -530,4 +539,4 @@ wecutil	Creates and managements subscriptions for events.
 winrm	Manages secure connections between local and remote computers via the WS management protocol.
 winrs	Enables access to the command line of a remote computer via a secure connection to implement changes.
 wsmanhttpconfig	Manages functions of the Windows Remote Management (winrm).
-'''
+"""

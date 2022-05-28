@@ -31,9 +31,9 @@ from domonic.webapi.history import History
 
 
 # TODO - test
-class CustomElementRegistry():
-    """ The CustomElementRegistry interface provides methods for registering custom elements and querying registered elements.
-    To get an instance of it, use the window.customElements property. """
+class CustomElementRegistry:
+    """The CustomElementRegistry interface provides methods for registering custom elements and querying registered elements.
+    To get an instance of it, use the window.customElements property."""
 
     def __init__(self) -> None:
         self.store = {}
@@ -47,23 +47,24 @@ class CustomElementRegistry():
             constructor ([type]): [Constructor for the new custom element.]
             options ([dict]): [Object that controls how the element is defined. One option is currently supported: extends]
         """
-        if '-' not in name:
-            raise ValueError('Invalid custom element name. Must contain hypen: ' + name)
+        if "-" not in name:
+            raise ValueError("Invalid custom element name. Must contain hypen: " + name)
         # el = document.createElement(name)
         # el.constructor = constructor
         from domonic.dom import Element
         from domonic.html import tag
-        el = type(name, (tag, Element), {'name': name, '__init__': constructor})
+
+        el = type(name, (tag, Element), {"name": name, "__init__": constructor})
         if options is not None:
-            if 'extends' in options:
-                el.extends = options['extends']
+            if "extends" in options:
+                el.extends = options["extends"]
         self.store[name] = el
         return el
 
     def get(self, name):
         """
-            Returns the constructor for the named custom element,
-            or undefined if the custom element is not defined.
+        Returns the constructor for the named custom element,
+        or undefined if the custom element is not defined.
         """
         # see if its in the store or return none
         if name in self.store:
@@ -82,7 +83,7 @@ class CustomElementRegistry():
 
 
 class Navigator:
-    """ Navigator """
+    """Navigator"""
 
     # Determines whether cookies are enabled in the browser
     cookieEnabled = False
@@ -117,14 +118,14 @@ class Navigator:
         self.contacts = None
         self._screen = Screen()
 
-    # @property
-    # def appVersion():
+        # @property
+        # def appVersion():
         """ Returns the version information of the browser """
         # from domonic import __version__
         # return __version__
 
-    # @property
-    # def language():
+        # @property
+        # def language():
         """ Returns the language of the browser Navigator """
         # import locale
         # return locale.getdefaultlocale()
@@ -133,76 +134,76 @@ class Navigator:
 
     @property
     def platform(self) -> str:
-        """ Returns the platform """
-        if 'darwin' in sys.platform:
-            return 'mac'
-        elif 'linux' in sys.platform:
-            return 'linux'
-        elif 'win32' in sys.platform:
-            return 'windows'
+        """Returns the platform"""
+        if "darwin" in sys.platform:
+            return "mac"
+        elif "linux" in sys.platform:
+            return "linux"
+        elif "win32" in sys.platform:
+            return "windows"
         else:
-            return 'unknown'
+            return "unknown"
 
     @property
     def product(self) -> str:
-        """ Returns the product name """
+        """Returns the product name"""
         return self.appName
 
     @property
     def userAgent(self) -> str:
-        """ Returns the user-agent header sent by the browser to the server Navigator """
+        """Returns the user-agent header sent by the browser to the server Navigator"""
         raise NotImplementedError
 
     @property
     def deviceMemory(self) -> float:
-        """ Returns the amount of memory available on the device """
+        """Returns the amount of memory available on the device"""
         return 1
 
     @property
     def doNotTrack(self):
-        """ Returns the value of the doNotTrack attribute of the Navigator object """
+        """Returns the value of the doNotTrack attribute of the Navigator object"""
         # return False
-        return 'lol'
+        return "lol"
 
     @property
     def hardwareConcurrency(self):
-        """ Returns the number of logical processors available to the browser Navigator """
+        """Returns the number of logical processors available to the browser Navigator"""
         return 1
 
     @property
     def maxTouchPoints(self):
-        """ Returns the maximum number of touch points Navigator """
+        """Returns the maximum number of touch points Navigator"""
         return 1
 
     @staticmethod
     def registerProtocolHandler(scheme, url, title):
-        """ Registers a new protocol handler Navigator """
+        """Registers a new protocol handler Navigator"""
         raise NotImplementedError
 
     @staticmethod
     def requestMediaKeySystemAccess(keySystem, supportedConfigurations):
-        """ Requests a new MediaKeySystemAccess object Navigator """
+        """Requests a new MediaKeySystemAccess object Navigator"""
         raise NotImplementedError
 
     def canShare(self):
-        """ Returns whether the browser Navigator can share files """
+        """Returns whether the browser Navigator can share files"""
         return False
 
     def clearAppBadge(self):
-        """ Clears the app badge Navigator """
+        """Clears the app badge Navigator"""
         raise NotImplementedError
 
     def getBattery(self):
-        """ Returns the battery information Navigator """
+        """Returns the battery information Navigator"""
         raise NotImplementedError
 
     @property
     def javaEnabled(self):
-        """ Returns whether the browser Navigator supports Java """
+        """Returns whether the browser Navigator supports Java"""
         return False
 
     def vibrate(self, pattern):
-        """ Vibrates the device Navigator """
+        """Vibrates the device Navigator"""
         raise NotImplementedError
 
     # deprecated
@@ -227,7 +228,7 @@ class Screen(EventTarget):
     # https://developer.mozilla.org/en-US/docs/Web/API/Screen
 
     def __init__(self):
-        """ Screen. (you will need to set them) """
+        """Screen. (you will need to set them)"""
         self.availLeft = 0
         self.availTop = 0
         self.availHeight = 0
@@ -250,13 +251,12 @@ class Screen(EventTarget):
 
 
 class Window(Window):
-
     def __init__(self):
         self.customElements = CustomElementRegistry()
         self._localStorage: Storage = Storage()  # TODO - should persist across sessions
         self._sessionStorage: Storage = Storage()  # TODO - should reset on page refresh
         self._navigator: Navigator = Navigator()
-        self._location: Location = Location('eventual.technology')
+        self._location: Location = Location("eventual.technology")
         self._console: Console = Console()
         self._history: History = History(self)
         # personalbar?
@@ -264,27 +264,28 @@ class Window(Window):
 
     @property
     def history(self) -> History:
-        """ Returns the history object """
+        """Returns the history object"""
         return self._history
 
     @property
     def console(self) -> Console:
-        """ Returns the console object """
+        """Returns the console object"""
         return self._console
 
     @property
     def localStorage(self) -> Storage:
-        """ Returns the local storage object """
+        """Returns the local storage object"""
         return self._localStorage
 
     @property
     def sessionStorage(self) -> Storage:
-        """ Returns the session storage object """
+        """Returns the session storage object"""
         return self._sessionStorage
 
     @staticmethod
     def document(self) -> Document:
         from domonic.dom import document
+
         return document
 
     @property
@@ -301,8 +302,8 @@ class Window(Window):
 
         from domonic.ext.html5lib_ import getTreeBuilder
 
-        if 'http' not in url:
-            url = 'https://' + url
+        if "http" not in url:
+            url = "https://" + url
 
         r = requests.get(url)
         parser = HTMLParser(tree=getTreeBuilder())
@@ -319,11 +320,12 @@ class Window(Window):
         # TODO - load the content of the location using requests
 
         # self._history.pushState(None, None, value)
-        self._history._update(value)  #pushState(None, None, value)
+        self._history._update(value)  # pushState(None, None, value)
 
         try:
             import html5lib
-            if 'html5lib' in sys.modules:
+
+            if "html5lib" in sys.modules:
                 self.document = self._set_location_using_htm5lib(value)
                 self._location = Location(value)
                 self.document.URL = value
@@ -334,6 +336,7 @@ class Window(Window):
         if value is None:
             return
         import requests
+
         r = requests.get(value)
         content = r.text  # .encode('utf-8')
         # print(content)
@@ -343,7 +346,8 @@ class Window(Window):
         # content = content.replace('\r', '')
 
         from domonic.parsers import remove_doctype, remove_tags
-        content = remove_tags(content, ['js', 'css', '#'])
+
+        content = remove_tags(content, ["js", "css", "#"])
         content = remove_doctype(content)
 
         # from domonic.utils import Utils
@@ -352,7 +356,7 @@ class Window(Window):
         # content = domonic.parsers.remove_html_tag_by_name(content, 'body')
 
         # clean invalid html
-        content.replace('&', '&amp;')
+        content.replace("&", "&amp;")
         content = domonic.parsers.remove_whitespace(content)
         content = domonic.parsers.remove_newlines(content)
         content = domonic.parsers.remove_tabs(content)
@@ -367,17 +371,15 @@ class Window(Window):
         self._location = Location(value)
 
     def blur(self):
-        """ Removes focus from an element """
+        """Removes focus from an element"""
         raise NotImplementedError
 
     def closed(self):
-        """[Returns a Boolean value indicating whether a window has been closed or not]
-        """
+        """[Returns a Boolean value indicating whether a window has been closed or not]"""
         raise NotImplementedError
 
     def close(self):
-        """[Closes the output stream previously opened with document.open()]
-        """
+        """[Closes the output stream previously opened with document.open()]"""
         raise NotImplementedError
 
     def confirm(self, message: str):
@@ -391,16 +393,16 @@ class Window(Window):
 
     @property
     def defaultStatus(self):
-        """ Returns the default status message of the window """
+        """Returns the default status message of the window"""
         raise NotImplementedError
 
     @defaultStatus.setter
     def defaultStatus(self, value=None):
-        """ Sets the default text in the statusbar of a window """
+        """Sets the default text in the statusbar of a window"""
         raise NotImplementedError
 
     def focus(self):
-        """ Gives focus to an element """
+        """Gives focus to an element"""
         raise NotImplementedError
 
     def frameElement(self):
@@ -408,32 +410,30 @@ class Window(Window):
         raise NotImplementedError
 
     def getComputedStyle(self, el, pseudo=None):
-        """ Gets the current computed CSS styles applied to an element """
+        """Gets the current computed CSS styles applied to an element"""
         raise NotImplementedError
 
     def getSelection(self):
-        """ Returns a Selection object representing the range of text selected by the user """
+        """Returns a Selection object representing the range of text selected by the user"""
         raise NotImplementedError
 
     # def history(self):
-        # """ Returns the History object for the window """
-        # raise NotImplementedError
-        # from domonic.webapi.history import History
-        # return History()
-        # return self._history
+    # """ Returns the History object for the window """
+    # raise NotImplementedError
+    # from domonic.webapi.history import History
+    # return History()
+    # return self._history
 
     def innerHeight(self):
-        """[Returns the height of the window's content area (viewport) including scrollbars]
-        """
+        """[Returns the height of the window's content area (viewport) including scrollbars]"""
         raise NotImplementedError
 
     def innerWidth(self):
-        """[Returns the width of a window's content area (viewport) including scrollbars]
-        """
+        """[Returns the width of a window's content area (viewport) including scrollbars]"""
         raise NotImplementedError
 
     def matchMedia(self, media_query_list):
-        """ Returns a MediaQueryList object representing the specified CSS media query string """
+        """Returns a MediaQueryList object representing the specified CSS media query string"""
         raise NotImplementedError
 
     def moveBy(self, x: int, y: int):
@@ -455,12 +455,12 @@ class Window(Window):
         raise NotImplementedError
 
     def name(self):
-        """ Returns the name of the window """
+        """Returns the name of the window"""
         raise NotImplementedError
 
     @property
     def navigator(self):
-        """ Returns the Navigator object for the window """
+        """Returns the Navigator object for the window"""
         return self._navigator
 
     @property
@@ -478,7 +478,7 @@ class Window(Window):
         """Returns the vertical coordinate of the window relative to the screen"""
         return self._screen.screenTop
 
-    '''
+    """
     # # The event occurs when the window's history changes  PopStateEvent?
     # def onpopstate(self):
     #     raise NotImplementedError
@@ -558,7 +558,7 @@ class Window(Window):
     # the topmost browser window
     def top(self):
         raise NotImplementedError
-    '''
+    """
 
 
 # global window

@@ -17,22 +17,19 @@ class TestCase(unittest.TestCase):
     def test_sitemap(self):
 
         # a sitemap index contains a list of sitemaps .i.e
-        doc = sitemapindex(
-            sitemap(
-                loc('https://x.net/egypt/post-sitemap.xml'),
-                lastmod('2021-07-08T13:12:16+00:00')
-            )
-        )
+        doc = sitemapindex(sitemap(loc("https://x.net/egypt/post-sitemap.xml"), lastmod("2021-07-08T13:12:16+00:00")))
 
         print(doc)
         print(str(doc))
 
         doc = sitemap(
             url(
-                loc('https://xyz.net'),
-                lastmod('2021-07-08T13:12:16+00:00'),  # pass a date as string. if no data is passed the current date is used
-                changefreq('weekly'),
-                priority(0.5)
+                loc("https://xyz.net"),
+                lastmod(
+                    "2021-07-08T13:12:16+00:00"
+                ),  # pass a date as string. if no data is passed the current date is used
+                changefreq("weekly"),
+                priority(0.5),
             )
         )
 
@@ -51,9 +48,9 @@ class TestCase(unittest.TestCase):
         # print(f"{sm!r}")
 
         sm = sitemapindex()
-        sm += sitemap(loc('https://abd.net/sitemap1.xml'), lastmod(str(datetime.datetime.now())))
-        sm += sitemap(loc('https://abd.net/sitemap2.xml'), lastmod(str(datetime.datetime.now())))
-        sm += sitemap(loc('https://abd.net/sitemap3.xml'), lastmod(str(datetime.datetime.now())))
+        sm += sitemap(loc("https://abd.net/sitemap1.xml"), lastmod(str(datetime.datetime.now())))
+        sm += sitemap(loc("https://abd.net/sitemap2.xml"), lastmod(str(datetime.datetime.now())))
+        sm += sitemap(loc("https://abd.net/sitemap3.xml"), lastmod(str(datetime.datetime.now())))
 
         print(f"{sm!s}")
         print(f"{sm!r}")
@@ -65,7 +62,7 @@ class TestCase(unittest.TestCase):
         from domonic.xml.sitemap import get_sitemap
 
         # sm = get_sitemap('https://x.net/sitemap.xml')
-        sm = get_sitemap('https://x.net/merchants/ar/sitemap_index.xml')
+        sm = get_sitemap("https://x.net/merchants/ar/sitemap_index.xml")
         print(sm)
 
     @silence
@@ -73,7 +70,8 @@ class TestCase(unittest.TestCase):
         # pass
         # https://x.net/merchants/ar/page-sitemap.xml
         from domonic.xml.sitemap import get_sitemap
-        sm = get_sitemap('https://x.net/merchants/ar/page-sitemap.xml')
+
+        sm = get_sitemap("https://x.net/merchants/ar/page-sitemap.xml")
         print(sm)
         # pass
 
@@ -85,5 +83,5 @@ class TestCase(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

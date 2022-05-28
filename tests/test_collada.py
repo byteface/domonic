@@ -14,8 +14,8 @@ class TestCase(unittest.TestCase):
     def test_domonic_collada(self):
         col = COLLADA()
         print(col)
-        assert col.tag == 'COLLADA'
+        assert col.tag == "COLLADA"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

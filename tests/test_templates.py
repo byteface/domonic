@@ -11,7 +11,6 @@ from domonic.templates import status_page
 
 
 class TestCase(unittest.TestCase):
-
     def test_404(self):
         p = status_page(404)
         print(p)
@@ -24,5 +23,5 @@ class TestCase(unittest.TestCase):
         # self.assertEqual(p.status, 404)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

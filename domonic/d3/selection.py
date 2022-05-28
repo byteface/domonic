@@ -13,7 +13,13 @@ from domonic.javascript import *
 
 xhtml = "http://www.w3.org/1999/xhtml"
 
-namespaces = {"svg": "http://www.w3.org/2000/svg", "xhtml": xhtml, "xlink": "http://www.w3.org/1999/xlink", "xml": "http://www.w3.org/XML/1998/namespace", "xmlns": "http://www.w3.org/2000/xmlns/"}
+namespaces = {
+    "svg": "http://www.w3.org/2000/svg",
+    "xhtml": xhtml,
+    "xlink": "http://www.w3.org/1999/xlink",
+    "xml": "http://www.w3.org/XML/1998/namespace",
+    "xmlns": "http://www.w3.org/2000/xmlns/",
+}
 
 # export {default as namespace} from "./namespace.js";
 # export {default as namespaces} from "./namespaces.js";
@@ -25,7 +31,9 @@ def namespace(name):
         prefix = String(name).slice(0, i)
     if i >= 0 and prefix != "xmlns":
         name = String(name).slice(i + 1)
-    return {"space": namespaces[prefix], "local": name} if Object(namespaces).hasOwnProperty(prefix) else name  # eslint-disable-line no-prototype-builtins
+    return (
+        {"space": namespaces[prefix], "local": name} if Object(namespaces).hasOwnProperty(prefix) else name
+    )  # eslint-disable-line no-prototype-builtins
 
 
 def creatorInherit(name):
@@ -35,7 +43,12 @@ def creatorInherit(name):
 
         # uri = this.namespaceURI
         uri = document.namespaceURI
-        return document.createElement(name) if uri == xhtml and document.documentElement.namespaceURI == xhtml else document.createElementNS(uri, name)
+        return (
+            document.createElement(name)
+            if uri == xhtml and document.documentElement.namespaceURI == xhtml
+            else document.createElementNS(uri, name)
+        )
+
     return anon
 
 
@@ -44,7 +57,8 @@ def creatorFixed(fullname):
     # return lambda this: print(this[0] , "TESTESTESTE")
     # return lambda this: this.ownerDocument.createElementNS(fullname['space'], fullname['local'])
     from domonic.dom import document  # bring in the global document
-    return lambda *args: document.ownerDocument.createElementNS(fullname['space'], fullname['local'])
+
+    return lambda *args: document.ownerDocument.createElementNS(fullname["space"], fullname["local"])
 
 
 def creator(name):
@@ -60,6 +74,7 @@ def none():
 
 def selector(selector):
     return None if selector == None else lambda: document.querySelector(selector)
+
 
 # // Given something array like (or null), returns something that is strictly an
 # // array. This is used to ensure that array-like objects passed to d3.selectAll
@@ -90,8 +105,7 @@ def sparse(self, update):
     return Array(len(update))
 
 
-class EnterNode():
-
+class EnterNode:
     def __init__(self, parent, datum):
         self.ownerDocument = parent.ownerDocument
         self.namespaceURI = parent.namespaceURI
@@ -112,8 +126,7 @@ class EnterNode():
         return self._parent.querySelectorAll(selector)
 
 
-class ClassList():
-
+class ClassList:
     def __init__(self, node):
         # print('class list is in town')
         self._node = node
@@ -136,7 +149,7 @@ class ClassList():
 
 
 def classArray(string):
-    return String(string).trim().split(r'/^|\s+/')
+    return String(string).trim().split(r"/^|\s+/")
 
 
 def classList(node):
@@ -168,8 +181,7 @@ def classedRemove(node, names):
 root = [None]
 
 
-class Selection():
-
+class Selection:
     def __init__(self, groups, parents, this=None):
         self._groups = groups
         self._parents = parents
@@ -200,7 +212,7 @@ class Selection():
             for i in range(n):
                 node = group[i]
                 if node is None:
-                    print('NODE WAS NONE.err?')
+                    print("NODE WAS NONE.err?")
                     continue
                 try:
                     # print(node.__data__)
@@ -209,14 +221,14 @@ class Selection():
                     subnode = Function(select).call(node, node.__data__, i, group)
                 except Exception as e:
                     # print(e)
-                    print('failed. no __data__ on node')
+                    print("failed. no __data__ on node")
                     subnode = None
                 # if subnode is not None:
                 #     if "__data__" in subnode:
                 #         subnode.__data__ = subnode.__data__
                 #     subgroup[i] = subnode
-                    # subnode.__data__ = node.__data__
-                    # subgroup[i] = subnode
+                # subnode.__data__ = node.__data__
+                # subgroup[i] = subnode
                 # print('super::', node, subnode)
                 if "__data__" in node:
                     subnode.__data__ = node.__data__
@@ -250,7 +262,7 @@ class Selection():
             for i in range(n):
                 node = group[i]
                 if node is None:
-                    print('selectaAll : NODE WAS NONE.err?')
+                    print("selectaAll : NODE WAS NONE.err?")
                     continue
 
                 try:
@@ -260,7 +272,7 @@ class Selection():
                     parents.append(node)
                 except Exception as e:
                     # print(e)
-                    print('failed. no __data__ on node')
+                    print("failed. no __data__ on node")
 
                 # subgroups.append(Function(select).call(node, node.__data__, i, group))
                 # parents.append(node)
@@ -364,14 +376,14 @@ class Selection():
         exit = self.exit()
         if callable(onenter):
             enter = onenter(enter)
-            if (enter):
+            if enter:
                 enter = enter.selection()
         else:
             enter = enter.append(onenter + "")
 
         if onupdate != None:
             update = onupdate(update)
-            if (update):
+            if update:
                 update = update.selection()
         if onexit == None:
             exit.remove()
@@ -423,7 +435,6 @@ class Selection():
             j += 1
 
         return Selection(merges, self._parents, self.this)
-
 
     # def selection: selection_selection, # ---?? TODO - is this right?
 
@@ -564,15 +575,15 @@ class Selection():
             while i < n:
                 node = group[i]
                 if node is None:
-                    print('NODE WAS NONE.err?')
+                    print("NODE WAS NONE.err?")
                     continue
                 # try:
                 node.__data__ = None
                 Function(callback).call(node, node.__data__, i, group)
                 # print('worked on this one')
                 # except Exception as e:
-                    # print(e)
-                    # print('failed. no __data__ on node mate', e)
+                # print(e)
+                # print('failed. no __data__ on node mate', e)
 
                 i += 1
             j += 1
@@ -586,7 +597,7 @@ class Selection():
 
     def attrRemoveNS(self, fullname):
         # return lambda this: this.removeAttributeNS(fullname['space'], fullname['local'])
-        self.this.removeAttributeNS(fullname['space'], fullname['local'])
+        self.this.removeAttributeNS(fullname["space"], fullname["local"])
         return self
 
     def attrConstant(self, name, value):
@@ -606,7 +617,7 @@ class Selection():
 
     def attrConstantNS(self, fullname, value):
         # return lambda this: this.setAttributeNS(fullname['space'], fullname['local'], value)
-        self.this.setAttributeNS(fullname['space'], fullname['local'], value)
+        self.this.setAttributeNS(fullname["space"], fullname["local"], value)
         return self
 
     def attrFunction(self, name, value, *args):
@@ -629,9 +640,10 @@ class Selection():
             nonlocal args
             v = Object(value).apply(this, args)
             if v == None:
-                this.removeAttributeNS(fullname['space'], fullname['local'])
+                this.removeAttributeNS(fullname["space"], fullname["local"])
             else:
-                this.setAttributeNS(fullname['space'], fullname['local'], v)
+                this.setAttributeNS(fullname["space"], fullname["local"], v)
+
         return anon
 
     def attr(self, name, value, *args):
@@ -642,11 +654,15 @@ class Selection():
         if value is None:
             node = self.node()
             print(node)
-            return node.getAttributeNS(fullname['space'], fullname['local']) if isinstance(fullname, dict) else node.getAttribute(fullname)
+            return (
+                node.getAttributeNS(fullname["space"], fullname["local"])
+                if isinstance(fullname, dict)
+                else node.getAttribute(fullname)
+            )
 
-        a = self.attrRemoveNS if getattr(fullname, 'local', None) is not None else self.attrRemove
-        b = self.attrFunctionNS if getattr(fullname, 'local', None) is not None else self.attrFunction
-        c = self.attrConstantNS if getattr(fullname, 'local', None) is not None else self.attrConstant
+        a = self.attrRemoveNS if getattr(fullname, "local", None) is not None else self.attrRemove
+        b = self.attrFunctionNS if getattr(fullname, "local", None) is not None else self.attrFunction
+        c = self.attrConstantNS if getattr(fullname, "local", None) is not None else self.attrConstant
 
         if value is None:
             func = a
@@ -665,6 +681,7 @@ class Selection():
         def anon(this, *args):
             # print('_styleRemove :anon/name', name)
             this.style.removeProperty(name)
+
         return anon
 
     def _styleConstant(self, name, value, priority=None):
@@ -680,6 +697,7 @@ class Selection():
             # print('bbb',this.style)
             # print('ccc')
             this.style.setProperty(name, value, priority)
+
         return anon
 
     def _styleFunction(self, name, value, priority=None):
@@ -693,6 +711,7 @@ class Selection():
             else:
                 # print('how you doin')
                 this.style.setProperty(name, v, priority)
+
         return anon
 
     def style(self, name, value=None, priority=None, *args):
@@ -709,7 +728,6 @@ class Selection():
 
         p = "" if priority == None else priority
         return self.each(func(name, value, p))
-
 
     def append(self, name, *args):
         create = name if callable(name) else creator(name)
@@ -733,11 +751,13 @@ class Selection():
     def propertyRemove(self, name):
         def anon(this):
             del this[name]
+
         return anon
 
     def propertyConstant(self, name, value):
         def anon(this):
             this[name] = value
+
         return anon
 
     def propertyFunction(self, name, value):
@@ -747,17 +767,18 @@ class Selection():
                 del this[name]
             else:
                 this[name] = v
+
         return anon
 
     def property(self, name, value):
 
-    # TODO write this commented out javascript as python instead
-    # return arguments.length > 1
-    #     ? this.each((value == null
-    #         ? propertyRemove : typeof value === "function"
-    #         ? propertyFunction
-    #         : propertyConstant)(name, value))
-    #     : this.node()[name]
+        # TODO write this commented out javascript as python instead
+        # return arguments.length > 1
+        #     ? this.each((value == null
+        #         ? propertyRemove : typeof value === "function"
+        #         ? propertyFunction
+        #         : propertyConstant)(name, value))
+        #     : this.node()[name]
         if value == None:
             func = propertyRemove
         elif callable(value):
@@ -795,6 +816,7 @@ class Selection():
                 classedRemove(this, names)
             else:
                 classedAdd(this, names)
+
         return anon
 
     def classed(self, name, value, *args):
@@ -805,7 +827,7 @@ class Selection():
             list = classList(this.node())
             i = -1
             n = len(names)
-            while (i < n):
+            while i < n:
                 if not list.contains(names[i]):
                     return False
                 i += 1
@@ -828,7 +850,6 @@ class Selection():
 
         self.each(func(names, value))
 
-
     # def text: selection_text,
     def _textRemove(self):
         self.this.textContent = ""
@@ -836,12 +857,14 @@ class Selection():
     def _textConstant(self, value):
         def anon(this, *args):
             this.textContent = value
+
         return anon
 
     def _textFunction(self, value):
         def anon(this, *args):
             v = Function(value).apply(this, args)
             this.textContent = "" if v == None else v
+
         return anon
 
     def text(self, value=None):
@@ -869,16 +892,18 @@ class Selection():
     def htmlConstant(self, value):
         def anon(this):
             this.innerHTML = value
+
         return anon
 
     def htmlFunction(self, value):
         def anon(this, *args):
             v = Function(value).apply(this, args)
             this.innerHTML = "" if v == None else v
+
         return anon
 
     def html(self, value):
-        #TODO write this commented out javascript as python instead
+        # TODO write this commented out javascript as python instead
         # return arguments.length
         #     ? this.each(value == null
         #         ? htmlRemove : (typeof value === "function"
@@ -892,7 +917,6 @@ class Selection():
         else:
             func = htmlConstant
         return func(value)
-
 
     # import selection_raise from "./raise.js";
     # def _raise(self):
@@ -972,7 +996,7 @@ class Selection():
         #     if (i >= 0) name = t.slice(i + 1), t = t.slice(0, i)
         #     return {type: t, name: name}
         # });
-        return [{'type': t[0], 'name': t[1]} for t in re.findall(r'\.([^\.]+)', typenames)]
+        return [{"type": t[0], "name": t[1]} for t in re.findall(r"\.([^\.]+)", typenames)]
 
     def onRemove(self, typename):
         # TODO - write this as python
@@ -1007,6 +1031,7 @@ class Selection():
                     on[j] = o
             on.length = len(on)
             del this.__on
+
         return anon
 
     def onAdd(self, typename, value, options):
@@ -1037,13 +1062,19 @@ class Selection():
                         o.value = value
                         return
                 this.addEventListener(typename.type, value, options)
-                o = {'type': typename.type, 'name': typename.name, 'value': value, 'listener': value, 'options': options}
+                o = {
+                    "type": typename.type,
+                    "name": typename.name,
+                    "value": value,
+                    "listener": value,
+                    "options": options,
+                }
                 if not on:
                     this.__on = [o]
                 else:
                     on.push(o)
-        return anon
 
+        return anon
 
     def on(self, typename, value, options, *args):
         typenames = parseTypenames(str(typename))
@@ -1088,7 +1119,13 @@ class Selection():
                     o.value = value
                     return
         self.node().addEventListener(typenames[0].type, value, options)
-        o = {'type': typenames[0].type, 'name': typenames[0].name, 'value': value, 'listener': value, 'options': options}
+        o = {
+            "type": typenames[0].type,
+            "name": typenames[0].name,
+            "value": value,
+            "listener": value,
+            "options": options,
+        }
         self.node().__on.push(o)
         return self
 
@@ -1146,6 +1183,7 @@ def select(selector):
     # print(selector)
     # print(document)
     from domonic.dom import document  # bring in the global document
+
     if isinstance(selector, str):
         return Selection([[document.querySelector(selector)]], [document.documentElement])
     else:
@@ -1166,8 +1204,7 @@ def local():
     return Local
 
 
-class Local():
-
+class Local:
     def __init__(self):
         self.nextId = 0  # += 1
         self._ = "@" + String(self.nextId).toString(36)
@@ -1228,7 +1265,7 @@ def pointer(event, node):
         point = point.matrixTransform(node.getScreenCTM().inverse())
         return [point.x, point.y]
 
-    if (node.getBoundingClientRect):
+    if node.getBoundingClientRect:
         rect = node.getBoundingClientRect()
         return [event.clientX - rect.left - node.clientLeft, event.clientY - rect.top - node.clientTop]
 

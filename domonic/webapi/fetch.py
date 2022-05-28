@@ -21,6 +21,7 @@ from multiprocessing.pool import ThreadPool as Pool
 
 from domonic.window import window
 from domonic.javascript import Promise
+
 # TODO - untested. moving these over from javascript module
 # TODO - check if promise also needs to come to this package
 
@@ -39,15 +40,17 @@ class FetchedSet:  # not a promise
     # def __call__(self, func):
     #     self.results.append(func)
 
+
 # @staticmethod
 def fetch(url: str, **kwargs):
     # undocumented - warning. use at own risk
     # note - kinda pointless atm. just use requests directly and you wont have to muck about with a Promise
     if type(url) is not str:
-        raise ValueError('fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled')
+        raise ValueError("fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled")
     f = Promise()
     r = window._do_request(url, f, *kwargs)
     return f.resolve(r)
+
 
 # @staticmethod
 def fetch_set(urls: list, callback_function=None, error_handler=None, **kwargs):
@@ -61,6 +64,7 @@ def fetch_set(urls: list, callback_function=None, error_handler=None, **kwargs):
         r = window.fetch(url, **kwargs).then(callback_function)
         f.results.append(r.data)
     return f
+
 
 # @staticmethod
 def fetch_threaded(urls: list, callback_function=None, error_handler=None, **kwargs):
@@ -80,6 +84,7 @@ def fetch_threaded(urls: list, callback_function=None, error_handler=None, **kwa
     # f = FetchedSet()
     return f
 
+
 # @staticmethod
 def fetch_pooled(urls: list, callback_function=None, error_handler=None, **kwargs):
     # undocumented - warning. use at own risk
@@ -90,30 +95,30 @@ def fetch_pooled(urls: list, callback_function=None, error_handler=None, **kwarg
     f = FetchedSet()
 
     def _do_request_wrapper(obj):
-        url = obj['url']
-        f = obj['f']
-        kwargs = obj['k']
-        kwargs['callback_function'] = obj['c']
-        kwargs['error_handler'] = obj['e']
+        url = obj["url"]
+        f = obj["f"]
+        kwargs = obj["k"]
+        kwargs["callback_function"] = obj["c"]
+        kwargs["error_handler"] = obj["e"]
         window._do_request(url, f, **kwargs)
 
     jobs = []
     p = Pool()
-    urls = [{'url': url, 'f': f, 'c': callback_function, 'e': error_handler, 'k': kwargs} for url in urls]
+    urls = [{"url": url, "f": f, "c": callback_function, "e": error_handler, "k": kwargs} for url in urls]
     results = p.map(_do_request_wrapper, urls)
     p.close()
     p.join()
     return f
 
+
 # def fetch_aysnc( urls: list, options={}, type="async" ):
-    # TODO - a version using async/await
+# TODO - a version using async/await
 
 
-class Headers():
-
+class Headers:
     def __init__(self, all=None):
         # https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders#Example
-        self.headers = {}  #Object.create(None)
+        self.headers = {}  # Object.create(None)
         arr = all.split("\r\n")
         for each in arr:
             line = arr
@@ -190,7 +195,7 @@ class Headers():
         return key in self.headers
 
 
-class Response():
+class Response:
     def __init__(self, url=None, status=None, statusText=None, headers=None, body=None):
         self.url = url
         self.status = status
@@ -241,7 +246,7 @@ class Response():
         return key in self.body
 
 
-class Request():
+class Request:
     def __init__(self, url=None, method=None, headers=None, body=None, mode=None, credentials=None, cache=None):
         self.url = url
         self.method = method

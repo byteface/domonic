@@ -9,6 +9,7 @@ class PermissionStatus:
     """
     The PermissionStatus interface represents the current state of a permission.
     """
+
     def __init__(self, status):
         self.status = status
 
@@ -32,7 +33,6 @@ class PermissionStatus:
 
 
 class Permissions:
-
     @staticmethod
     def query(PermissionDescriptor):
         """
@@ -68,4 +68,3 @@ class Permissions:
     #     Revokes all permissions at once.
     #     """
     #     pass
-

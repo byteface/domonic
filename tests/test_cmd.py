@@ -7,11 +7,11 @@ import unittest
 
 from domonic.cmd import dir
 from domonic.utils import Utils
+
 # from domonic.decorators import silence
 
 
 class TestCase(unittest.TestCase):
-
     def test_cmd_dir(self):
         if not Utils.is_windows():
             return
@@ -19,7 +19,7 @@ class TestCase(unittest.TestCase):
         files = dir()
         print(files)
         # return
-        self.assertIn('domonic', str(dir()))
+        self.assertIn("domonic", str(dir()))
 
         try:
             print(dir("..\\"))  # notice requires 2 backslashes
@@ -31,5 +31,5 @@ class TestCase(unittest.TestCase):
             print("line:", line)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -17,6 +17,7 @@
 from domonic.events import MessageEvent, EventTarget
 from domonic.ext.sseclient import SSEClient
 
+
 class EventSource(EventTarget):
     # https://developer.mozilla.org/en-US/docs/Web/API/EventSource
 
@@ -32,13 +33,13 @@ class EventSource(EventTarget):
         super().__init__()
         self._url = url
         self._readyState = EventSource.CLOSED
-        self._withCredentials = eventSourceInitDict.get('withCredentials', False)
-        self._lastEventId = eventSourceInitDict.get('lastEventId', None)
+        self._withCredentials = eventSourceInitDict.get("withCredentials", False)
+        self._lastEventId = eventSourceInitDict.get("lastEventId", None)
 
-        self._onmessage = eventSourceInitDict.get('onmessage', None)
-        self._onerror = eventSourceInitDict.get('onerror', None)
-        self._onopen = eventSourceInitDict.get('onopen', None)
-        self._onreadystatechange = eventSourceInitDict.get('onreadystatechange', None)
+        self._onmessage = eventSourceInitDict.get("onmessage", None)
+        self._onerror = eventSourceInitDict.get("onerror", None)
+        self._onopen = eventSourceInitDict.get("onopen", None)
+        self._onreadystatechange = eventSourceInitDict.get("onreadystatechange", None)
 
         # from sseclient import SSEClient
         # messages = SSEClient(url)
@@ -89,44 +90,44 @@ class EventSource(EventTarget):
 
     @property
     def readyState(self):
-        """ A number representing the state of the connection.
-        Possible values are CONNECTING (0), OPEN (1), or CLOSED (2). """
+        """A number representing the state of the connection.
+        Possible values are CONNECTING (0), OPEN (1), or CLOSED (2)."""
         return self._readyState
 
     @property
     def url(self):
-        """ A DOMString representing the URL of the source. """
+        """A DOMString representing the URL of the source."""
         return self._url
 
     @property
     def withCredentials(self):
-        """ A boolean value indicating whether the EventSource object was
+        """A boolean value indicating whether the EventSource object was
           instantiated with cross-origin (CORS) credentials
-        set (true), or not (false, the default). """
+        set (true), or not (false, the default)."""
         return self._withCredentials
 
     def close(self):
-        """ Closes the connection to the EventSource. """
+        """Closes the connection to the EventSource."""
         self._readyState = EventSource.CLOSED
         # close the thread
         self._thread.join()
         self._thread = None
 
     def onreadystatechange(self, event):
-        """ Called when the state of the connection changes. """
+        """Called when the state of the connection changes."""
         pass
 
     def onmessage(self, event):
-        """ Called when a message is received. """
+        """Called when a message is received."""
         if self._onmessage is not None:
             self._onmessage(event)
 
     def onerror(self, event):
-        """ Called when an error occurs. """
+        """Called when an error occurs."""
         pass
 
     def onopen(self, event):
-        """ Called when the connection is established. """
+        """Called when the connection is established."""
         pass
 
     # '''

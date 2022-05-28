@@ -10,7 +10,7 @@ from domonic.constants.entities import Char
 from domonic.html import *
 
 
-class status_page():
+class status_page:
     DEBUG_MODE = False
 
     def __init__(self, code=404, wholepage=True):
@@ -37,10 +37,7 @@ class status_page():
         #         pre(traceback.format_exc())
         #     )
 
-        page = html(
-            head(title(f"{self.status_code}")),
-            body(self.status_node)
-        )
+        page = html(head(title(f"{self.status_code}")), body(self.status_node))
         self.content = self.wholepage and page or self.status_node
 
     # def __getattr__(self, name):
@@ -50,7 +47,7 @@ class status_page():
     #     setattr(self.status_node, name, value)
 
     def __str__(self):
-        return f'{self.content}'
+        return f"{self.content}"
 
     # @staticmethod
     # def to_html(output_dir):
@@ -60,7 +57,7 @@ class status_page():
     #             f.write(f'{page}')
 
 
-'''
+"""
 class d_b():
     def __init__(self):
         pass
@@ -73,7 +70,7 @@ class d_b():
     # def connect(self):
     # def query(self, query):
     # def close(self):
-'''
+"""
 
 # from domonic.templates import status_page
 

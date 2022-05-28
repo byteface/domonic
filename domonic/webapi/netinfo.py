@@ -8,7 +8,6 @@ from domonic.dom import EventTarget
 
 
 class NetworkInformation(EventTarget):
-
     def __init__(self):
         self.type = None
         self.downlinkMax = None
@@ -20,6 +19,13 @@ class NetworkInformation(EventTarget):
         self.rtt = None
 
     def __str__(self):
-        return 'type: {}, downlinkMax: {}, effectiveType: {}, rtt: {}, saveData: {}, downlink: {}, effectiveType: {}, rtt: {}'.format(
-            self.type, self.downlinkMax, self.effectiveType, self.rtt, self.saveData, self.downlink, self.effectiveType, self.rtt
+        return "type: {}, downlinkMax: {}, effectiveType: {}, rtt: {}, saveData: {}, downlink: {}, effectiveType: {}, rtt: {}".format(
+            self.type,
+            self.downlinkMax,
+            self.effectiveType,
+            self.rtt,
+            self.saveData,
+            self.downlink,
+            self.effectiveType,
+            self.rtt,
         )

@@ -141,8 +141,6 @@ def get_sitemap(path: str, *args, **kwargs):
     return some_sitemap
 
 
-globals()["image:image"] = type(
-    "image:image", (Element,), {"name": "image", "ns": "image"}
-)
+globals()["image:image"] = type("image:image", (Element,), {"name": "image", "ns": "image"})
 
 globals()["image:loc"] = type("image:loc", (Element,), {"name": "loc", "ns": "image"})

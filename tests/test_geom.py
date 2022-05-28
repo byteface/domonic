@@ -7,6 +7,7 @@ import unittest
 
 from domonic.constants.color import Color
 from domonic.geom.shape import Circle, Line, Rect, Shape
+
 # from domonic import domonic
 from domonic.geom.vec2 import vec2
 from domonic.geom.vec3 import vec3
@@ -26,7 +27,7 @@ class TestCase(unittest.TestCase):
         print(v / v)
         print(v - v)
         print(v[0], v[1])
-        print(v['x'], v['y'])
+        print(v["x"], v["y"])
         print(v.x, v.y)
 
     # @silence
@@ -75,15 +76,15 @@ class TestCase(unittest.TestCase):
 
     # @silence
     # def test_plotter(self):
-        # p = Plotter()
-        # print(p)
+    # p = Plotter()
+    # print(p)
 
     # @silence
     def test_color(self):
 
         from domonic.constants.color import Color
 
-        c1 = Color('#ff00ff')
+        c1 = Color("#ff00ff")
         print(c1)
         # c2 = Color('red')
         # print(c2)
@@ -93,5 +94,5 @@ class TestCase(unittest.TestCase):
         print(c4)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

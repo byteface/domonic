@@ -9,7 +9,7 @@
 from domonic.javascript import *
 
 frame = 0  # is an animation frame pending?
-timeout = None # 0  # is a timeout pending?
+timeout = None  # 0  # is a timeout pending?
 interval = 0  # are any timers active?
 pokeDelay = 1000  # how frequently we check for clock skew
 taskHead = None
@@ -20,9 +20,12 @@ clockSkew = 0
 clock = performance  # if isinstance(performance, object) and performance.now else Date
 # setFrame = window.requestAnimationFrame.bind(window)  # if isinstance( window, object) and window.requestAnimationFrame ?  : function(f) { setTimeout(f, 17); }
 
+
 def fr(f):
-    """ framerate """
+    """framerate"""
     setTimeout(f, 17)
+
+
 setFrame = fr
 
 
@@ -32,12 +35,13 @@ def now():
     clockNow = clock.now() + clockSkew
     return clockNow or (setFrame(clearNow), clockNow)
 
+
 def clearNow():
     global clockNow
     clockNow = 0
 
-class Timer():
 
+class Timer:
     def __init__(self):
         self._call = None
         self._time = None
@@ -67,7 +71,7 @@ class Timer():
         sleep()
 
     def stop(self):
-        if (self._call):
+        if self._call:
             self._call = None
             self._time = Infinity
         sleep()
@@ -127,7 +131,7 @@ def nap():
     # t2
     time = Infinity
     while t1:
-        if (t1._call):
+        if t1._call:
             if time > t1._time:
                 time = t1._time
                 t0 = t1
@@ -166,6 +170,7 @@ def sleep(time=0):
         frame = 1
         setFrame(wake)
 
+
 def timeout(callback, delay, time):
     t = Timer()
     delay = 0 if delay == None else delay
@@ -173,6 +178,7 @@ def timeout(callback, delay, time):
     def elapsed():
         t.stop()
         callback(elapsed + delay)
+
     t.restart(elapsed, delay, time)
     return t
 
@@ -196,6 +202,7 @@ def interval(callback, delay=None, time=None):
             total += delay
             t._restart(tick, total, time)
             callback(elapsed)
+
         t._restart(tick, delay, time)
 
     t.restart = r

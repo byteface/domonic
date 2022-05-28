@@ -13,11 +13,11 @@ from domonic.decorators import deprecated
 
 
 class Utils:
-    """ Utils """
+    """Utils"""
 
     @staticmethod
     def case_camel(s: str) -> str:
-        """ case_camel('camel-case') > 'camelCase' """
+        """case_camel('camel-case') > 'camelCase'"""
         s = sub(r"(_|-)+", " ", s).title().replace(" ", "")
         return s[0].lower() + s[1:]
 
@@ -26,20 +26,24 @@ class Utils:
         """
         snake('camelCase') # 'camel_case'
         """
-        return '_'.join(
-            sub('([A-Z][a-z]+)', r' \1',
-            sub('([A-Z]+)', r' \1',
-            s.replace('-', ' '))).split()).lower()
+        return "_".join(sub("([A-Z][a-z]+)", r" \1", sub("([A-Z]+)", r" \1", s.replace("-", " "))).split()).lower()
 
     @staticmethod
     def case_kebab(s: str) -> str:
         """
         kebab('camelCase') # 'camel-case'
         """
-        return '-'.join(
-            sub(r"(\s|_|-)+", " ",
-            sub(r"[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+",
-            lambda mo: ' ' + mo.group(0).lower(), s)).split())
+        return "-".join(
+            sub(
+                r"(\s|_|-)+",
+                " ",
+                sub(
+                    r"[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+",
+                    lambda mo: " " + mo.group(0).lower(),
+                    s,
+                ),
+            ).split()
+        )
 
     @staticmethod
     def squash(the_list: list) -> list:
@@ -55,8 +59,8 @@ class Utils:
 
     @staticmethod
     def chunk(list: list, size: int) -> list:
-        """ chunk a list into batches """
-        return [list[i:i + size] for i in range(0, len(list), size)]
+        """chunk a list into batches"""
+        return [list[i : i + size] for i in range(0, len(list), size)]
 
     @staticmethod
     def dictify(arr: list) -> dict:
@@ -72,7 +76,7 @@ class Utils:
 
     @staticmethod
     def is_empty(some_str: str) -> bool:
-        return (not some_str.strip())
+        return not some_str.strip()
 
     @staticmethod
     def unique(some_arr: list) -> list:
@@ -88,10 +92,11 @@ class Utils:
 
     @staticmethod
     def chunks(iterable, size: int, format=iter):
-        """ Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size """
+        """Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size"""
         it = iter(iterable)
         while True:
             yield format(chain((it.next(),), islice(it, size - 1)))
+
     # >>> l = ["a", "b", "c", "d", "e", "f", "g"]
     # >>> for chunk in chunks(l, 3, tuple):
     # ...         print chunk
@@ -118,7 +123,7 @@ class Utils:
         Returns:
             [list]: [a list of vowels]
         """
-        return [each for each in string if each in 'aeiou']
+        return [each for each in string if each in "aeiou"]
 
     @staticmethod
     def untitle(string: str) -> str:
@@ -205,13 +210,14 @@ class Utils:
         return freq
 
     @staticmethod
-    def init_assets(dir: str = 'assets') -> None:
+    def init_assets(dir: str = "assets") -> None:
         """[creates an assets directory with nested js/css/img dirs]
 
         Args:
             dir (str, optional): [default directory name]. Defaults to 'assets'.
         """
         from domonic.terminal import mkdir, touch
+
         mkdir(f"{dir}")
         mkdir(f"{dir}/js")
         mkdir(f"{dir}/css")
@@ -231,9 +237,10 @@ class Utils:
             [str]: [description]
         """
         import urllib
+
         url = "_".join(url.split("/"))
         url = "__".join(url.split(":"))
-        filename = urllib.parse.quote_plus(url, '')
+        filename = urllib.parse.quote_plus(url, "")
         return filename
 
     @staticmethod
@@ -247,12 +254,13 @@ class Utils:
             [list]: [a list of permutations]
         """
         from itertools import permutations
-        return [''.join(perm) for perm in list(permutations(word))]
+
+        return ["".join(perm) for perm in list(permutations(word))]
 
     @staticmethod  # TODO - remove as we have color class. (might be getting used in examples)
     def random_color(self):
         r = lambda: random.randint(0, 255)
-        return str('#%02X%02X%02X' % (r(), r(), r()))
+        return str("#%02X%02X%02X" % (r(), r(), r()))
 
     @staticmethod
     def escape(s: str) -> str:
@@ -264,13 +272,7 @@ class Utils:
         Returns:
             [str]: [the escaped string]
         """
-        chars = {
-            "&": "&amp;",
-            '"': "&quot;",
-            "'": "&apos;",
-            ">": "&gt;",
-            "<": "&lt;"
-        }
+        chars = {"&": "&amp;", '"': "&quot;", "'": "&apos;", ">": "&gt;", "<": "&lt;"}
         return "".join(chars.get(c, c) for c in s)
 
     @staticmethod
@@ -306,12 +308,12 @@ class Utils:
         """
         front = content[0:start]
         mid = content[start:end]
-        end = content[end:len(content)]
+        end = content[end : len(content)]
         mid = mid.replace(match, replacement)
         return front + mid + end
 
     @staticmethod
-    def truncate(text: str = '', length: int = 0) -> str:
+    def truncate(text: str = "", length: int = 0) -> str:
         """[truncates a string and appends 3 dots]
 
         Args:
@@ -327,7 +329,7 @@ class Utils:
             return text + "..."
 
     @staticmethod
-    def digits(text: str = '') -> str:
+    def digits(text: str = "") -> str:
         """[takes a string of mix of digits and letters and returns a string of digits]
 
         Args:
@@ -341,7 +343,7 @@ class Utils:
         elif isinstance(text, float):
             return str(int(text))
         elif isinstance(text, str):
-            return ''.join(i for i in text if i.isdigit())
+            return "".join(i for i in text if i.isdigit())
         else:
             try:
                 return str(text)
@@ -349,7 +351,7 @@ class Utils:
                 raise ValueError("text must be a string")
 
     @staticmethod
-    def has_internet(url: str = 'http://www.google.com/', timeout: int = 5) -> bool:
+    def has_internet(url: str = "http://www.google.com/", timeout: int = 5) -> bool:
         """[check if you have internet connection]
 
         Args:
@@ -360,6 +362,7 @@ class Utils:
             [bool]: [True if you have internet]
         """
         import requests
+
         try:
             _ = requests.head(url, timeout=timeout)
             return True
@@ -375,6 +378,7 @@ class Utils:
             [bool]: [True if it is a nix based system]
         """
         import os
+
         return os.name == "posix"
 
     @staticmethod
@@ -385,6 +389,7 @@ class Utils:
             [bool]: [True if the system is a mac]
         """
         import sys
+
         return sys.platform == "darwin"
 
     @staticmethod
@@ -395,6 +400,7 @@ class Utils:
             [bool]: [True if windows]
         """
         import os
+
         return os.name == "nt"
 
     @staticmethod
@@ -405,7 +411,8 @@ class Utils:
             [bool]: [description]
         """
         import sys
-        return sys.platform.startswith('linux')
+
+        return sys.platform.startswith("linux")
 
     # def convert_file(filepath, filetype=None):
     #     """

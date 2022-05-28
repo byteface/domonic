@@ -6,7 +6,6 @@
 
 
 class Console:
-
     @staticmethod
     def log(msg: str, substitute=None, *args):  # -> None:
         """prints a message to the console
@@ -18,12 +17,12 @@ class Console:
         msg = str(msg)
         argstring = str(*args)
         if substitute is not None:
-            if '%d' not in msg and '%s' not in msg:
+            if "%d" not in msg and "%s" not in msg:
                 argstring = argstring + " " + str(substitute)
             elif isinstance(substitute, (int, float)):
-                msg = str(substitute).join(msg.split('%d'))
+                msg = str(substitute).join(msg.split("%d"))
             elif isinstance(substitute, str):
-                msg = substitute.join(msg.split('%s'))
+                msg = substitute.join(msg.split("%s"))
 
         # print(args)
         print(msg + argstring)
@@ -39,9 +38,7 @@ class Console:
 
     @staticmethod
     def error(error):
-        """error
-
-        """
+        """error"""
         raise error
 
     _timers = {}
@@ -49,6 +46,7 @@ class Console:
     @staticmethod
     def _getTime():
         import time
+
         try:
             return time.time_ns() // 1000
         except Exception:
@@ -80,7 +78,7 @@ class Console:
             print(str(end - Console._timers[label]) + "ms")
             return str(end - Console._timers[label]) + "ms"
         except Exception:
-            print('Timer ' + label + ' does not exist')
+            print("Timer " + label + " does not exist")
 
     @staticmethod
     def timeEnd(label: str):
@@ -99,7 +97,7 @@ class Console:
             print(str(label) + ": " + str(fin) + "ms - timer ended")
             return str(label) + ": " + str(fin) + "ms - timer ended"
         except Exception:
-            print('Timer ' + label + ' does not exist')
+            print("Timer " + label + " does not exist")
 
     @staticmethod
     def assert_(assertion: bool, msg: str = None):

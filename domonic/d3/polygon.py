@@ -18,7 +18,7 @@ def polygonArea(polygon):
         a = b
         b = polygon[i]
         area += a[1] * b[0] - a[0] * b[1]
-        i+=1
+        i += 1
 
     return area / 2
 
@@ -39,10 +39,11 @@ def polygonCentroid(polygon):
         k += c
         x += (a[0] + b[0]) * c
         y += (a[1] + b[1]) * c
-        i+=1
+        i += 1
 
     k *= 3
     return [x / k, y / k]
+
 
 def cross(a, b, c):
     """[Returns the 2D cross product of AB and AC vectors, i.e., the z-component of
@@ -60,6 +61,7 @@ def cross(a, b, c):
     """
     return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
 
+
 def polygonHull(points):
 
     n = len(points)
@@ -69,13 +71,13 @@ def polygonHull(points):
     # Convert list to tuples and remove duplicates
     points = [t for t in (set(tuple(i) for i in points))]
 
-    # Sort lexicographically 
+    # Sort lexicographically
     points = sorted(points)
 
     # Build hulls according to Andrew's monotone chain algorithm
     lowerHull = []
     for p in points:
-        while len(lowerHull) >= 2 and cross(lowerHull[-2], lowerHull[-1], p) <=0 :
+        while len(lowerHull) >= 2 and cross(lowerHull[-2], lowerHull[-1], p) <= 0:
             lowerHull.pop()
         lowerHull.append(p)
 
@@ -84,10 +86,10 @@ def polygonHull(points):
         while len(upperHull) >= 2 and cross(upperHull[-2], upperHull[-1], p) <= 0:
             upperHull.pop()
         upperHull.append(p)
-    
+
     # Build polygon hull from upper/lower hulls and return to list form
     hull = sorted([list(i) for i in lowerHull[:-1] + upperHull[:-1]])
-    
+
     return hull
 
 
@@ -105,7 +107,7 @@ def polygonContains(polygon, point):
         p = polygon[i]
         x1 = p[0]
         y1 = p[1]
-        if (((y1 > y) != (y0 > y)) and (x < (x0 - x1) * (y - y1) / (y0 - y1) + x1)):
+        if ((y1 > y) != (y0 > y)) and (x < (x0 - x1) * (y - y1) / (y0 - y1) + x1):
             inside = not inside
         x0 = x1
         y0 = y1

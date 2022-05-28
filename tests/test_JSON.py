@@ -14,7 +14,7 @@ from domonic.html import *
 
 class TestCase(unittest.TestCase):
 
-    SOMEJSON = '''
+    SOMEJSON = """
     { "items": [
         {
             "id":"01",
@@ -29,8 +29,8 @@ class TestCase(unittest.TestCase):
             "list":[]
         }
     ]}
-    '''
-    SOMEJSON2 = '''
+    """
+    SOMEJSON2 = """
     [
         {
             "id":"01",
@@ -52,21 +52,21 @@ class TestCase(unittest.TestCase):
             "extra":23
         }
     ]
-    '''
+    """
 
     def test_domonic_JSON(self):
         t = JSON.tablify(TestCase.SOMEJSON2)
         assert isinstance(t, Element)
-        assert t.tagName == 'table'
-        t = JSON.tablify({'id': 1, 'name': 'test'})
+        assert t.tagName == "table"
+        t = JSON.tablify({"id": 1, "name": "test"})
         assert isinstance(t, Element)
-        assert t.tagName == 'table'
+        assert t.tagName == "table"
         t = JSON.tablify(JSON.parse(TestCase.SOMEJSON2))
         assert isinstance(t, Element)
-        assert t.tagName == 'table'
-        assert t.getElementsByTagName('td')[0].textContent == '01'
-        t = JSON.tablify(JSON.parse(TestCase.SOMEJSON)['items'])
-        assert t.getElementsByTagName('td')[0].textContent == '01'
+        assert t.tagName == "table"
+        assert t.getElementsByTagName("td")[0].textContent == "01"
+        t = JSON.tablify(JSON.parse(TestCase.SOMEJSON)["items"])
+        assert t.getElementsByTagName("td")[0].textContent == "01"
 
         # t = JSON.csvify(TestCase.SOMEJSON)
         # print(t)
@@ -78,6 +78,7 @@ class TestCase(unittest.TestCase):
         def yo():
             myObj = {"hi": [1, 2, 3]}
             return myObj
+
         assert yo() == '{"hi": [1, 2, 3]}'
 
         # json_data = JSON.parse_file('surveys.json')
@@ -95,5 +96,5 @@ class TestCase(unittest.TestCase):
         #     returns pyobj
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
