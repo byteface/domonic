@@ -9,11 +9,6 @@ import unittest
 from domonic.html import *
 from domonic.JSON import *
 
-# import json
-# import requests
-# from mock import patch
-
-
 
 # class TestCase(unittest.TestCase):
 

@@ -11,11 +11,6 @@ from domonic.dom import *
 from domonic.html import *
 from domonic.xml.x3d import *
 
-# import requests
-# from mock import patch
-
-
-
 
 class TestCase(unittest.TestCase):
 

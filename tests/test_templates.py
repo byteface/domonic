@@ -9,10 +9,6 @@ import unittest
 from domonic.html import *
 from domonic.templates import status_page
 
-# import json
-# import requests
-# from mock import patch
-
 
 class TestCase(unittest.TestCase):
 
@@ -26,8 +22,6 @@ class TestCase(unittest.TestCase):
         p = status_page(401, False)
         print(p)
         # self.assertEqual(p.status, 404)
-
-
 
 
 if __name__ == '__main__':

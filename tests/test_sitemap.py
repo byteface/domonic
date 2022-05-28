@@ -10,11 +10,6 @@ from domonic import domonic
 from domonic.decorators import silence
 from domonic.xml.sitemap import *
 
-# import requests
-# from mock import patch
-
-
-
 
 class TestCase(unittest.TestCase):
 

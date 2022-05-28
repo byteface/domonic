@@ -549,7 +549,7 @@ class TestCase(unittest.TestCase):
 
     def test_javascript_fetch(self):
 
-        TEST_DOMAIN = 'http://eventual.technology'
+        TEST_DOMAIN = 'https://google.com'
         urls = ['http://google.com', 'http://linkedin.com', 'http://eventual.technology']  # use your own domains
 
         print('run 1')

@@ -9,12 +9,7 @@
 
 import unittest
 
-# from domonic.dom import *
 from domonic import domonic
-
-# import requests
-# from mock import patch
-
 
 
 class TestCase(unittest.TestCase):
@@ -22,7 +17,7 @@ class TestCase(unittest.TestCase):
 
     def test_load(self):
         t1 = domonic.load('<html></html>')
-        print(t1)
+        print('test_load:::', t1, type(t1))
 
     def test_loads(self):
         # t1 = domonic.loads('<html></html>')
@@ -32,13 +27,6 @@ class TestCase(unittest.TestCase):
     def parse(self):
         t1 = domonic.parse('<html></html>')
         assert t1 == "html(),"  # hmm wondering if parse is correct term. as returns pyml strings
-
-        # t2 = domonic.parse('<html><body></body></html>')
-        # print(t2)
-        # t3 = domonic.parse('<html><body><p></p></body></html>')
-        # print(t3)
-
-        pass
 
     def evaluate(self):
         t1 = domonic.evaluate('<html></html>')

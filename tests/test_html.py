@@ -2,7 +2,6 @@
     test_domonic
     ~~~~~~~~~~~~
     - unit tests for domonic
-    # TODO - tests for all bs5 pages
 """
 
 import unittest
@@ -11,11 +10,82 @@ from domonic import domonic
 from domonic.decorators import silence
 from domonic.html import *
 
-# import requests
-# from mock import patch
-
 
 class TestCase(unittest.TestCase):
+
+    def test_every_tag(self):
+        assert str(html()) == '<html></html>'
+        assert str(head()) == '<head></head>'
+        assert str(body()) == '<body></body>'
+        assert str(title()) == '<title></title>'
+        # print(str(meta()))
+        assert str(meta()) == '<meta/>'
+        assert str(link()) == '<link/>'  # TODO - in html5 i think slash no longer required? (one for config when thats setup)
+        assert str(style()) == '<style></style>'
+        assert str(script()) == '<script></script>'
+        assert str(noscript()) == '<noscript></noscript>'
+        assert str(iframe()) == '<iframe></iframe>'
+        # assert str(frame()) == '<frame></frame>'
+        # assert str(frameset()) == '<frameset></frameset>'
+        # assert str(noframes()) == '<noframes></noframes>'
+        assert str(b()) == '<b></b>'
+        assert str(i()) == '<i></i>'
+        assert str(u()) == '<u></u>'
+        assert str(s()) == '<s></s>'
+        assert str(strike()) == '<strike></strike>'
+        assert str(strong()) == '<strong></strong>'
+        assert str(em()) == '<em></em>'
+        assert str(small()) == '<small></small>'
+        # assert str(big()) == '<big></big>'
+        assert str(sub()) == '<sub></sub>'
+        assert str(sup()) == '<sup></sup>'
+        # assert str(tt()) == '<tt></tt>'
+        assert str(code()) == '<code></code>'
+        assert str(pre()) == '<pre></pre>'
+        assert str(blockquote()) == '<blockquote></blockquote>'
+        assert str(address()) == '<address></address>'
+        assert str(div()) == '<div></div>'
+        assert str(span()) == '<span></span>'
+        assert str(a()) == '<a></a>'
+        assert str(p()) == '<p></p>'
+        assert str(h1()) == '<h1></h1>'
+        assert str(h2()) == '<h2></h2>'
+        assert str(h3()) == '<h3></h3>'
+        assert str(h4()) == '<h4></h4>'
+        assert str(h5()) == '<h5></h5>'
+        assert str(h6()) == '<h6></h6>'
+        assert str(ul()) == '<ul></ul>'
+        assert str(ol()) == '<ol></ol>'
+        assert str(li()) == '<li></li>'
+        assert str(dl()) == '<dl></dl>'
+        assert str(dt()) == '<dt></dt>'
+        assert str(dd()) == '<dd></dd>'
+        assert str(figure()) == '<figure></figure>'
+        assert str(figcaption()) == '<figcaption></figcaption>'
+        assert str(main()) == '<main></main>'
+        assert str(article()) == '<article></article>'
+        assert str(aside()) == '<aside></aside>'
+        assert str(header()) == '<header></header>'
+        assert str(footer()) == '<footer></footer>'
+        assert str(nav()) == '<nav></nav>'
+        assert str(section()) == '<section></section>'
+        assert str(dialog()) == '<dialog></dialog>'
+        assert str(details()) == '<details></details>'
+        assert str(summary()) == '<summary></summary>'
+        assert str(menu()) == '<menu></menu>'
+        assert str(menuitem()) == '<menuitem></menuitem>'
+        # assert str(command()) == '<command></command>'
+        assert str(output()) == '<output></output>'
+        assert str(progress()) == '<progress></progress>'
+        assert str(meter()) == '<meter></meter>'
+        # assert str(time()) == '<time></time>'
+        # assert str(keygen()) == '<keygen></keygen>'
+        assert str(output()) == '<output></output>'
+        assert str(progress()) == '<progress></progress>'
+        assert str(meter()) == '<meter></meter>'
+        assert str(details()) == '<details></details>'
+        assert str(data()) == '<data></data>'
+        # assert str(time()) == '<time></time>'
 
     def test_hello_world(self):
         assert str(html(body(h1('Hello World!')))) == \
@@ -24,23 +94,35 @@ class TestCase(unittest.TestCase):
     def test_html_attributes(self):
         assert str(div(_id='mydiv', _class='test', **{"_aria-label": True}, **{"_data-name": True}, _onclick="alert('hi');")) == \
             '''<div id="mydiv" class="test" aria-label="true" data-name="true" onclick="alert('hi');"></div>'''
-
-        myel = div(_id='mydiv', _class='test', **{"_aria-label": True}, **{"_data-name": True}, _onclick="alert('hi');")
+        myel = div(_id='mydiv',
+                   _class='test',
+                   **{"_aria-label": True},
+                   **{"_data-name": True},
+                   _onclick="alert('hi');"
+                   )
         assert myel.id == "mydiv"
         assert myel._id == "mydiv"
         assert myel._class == "test"
         assert myel.onclick == "alert('hi');"
 
     def test_create_element(self):
-        # print(create_element('custom_el', div('some content'), _id="test"))
         assert str(create_element('custom_el', div('some content'), _id="test")) == \
             '''<custom_el id="test"><div>some content</div></custom_el>'''
 
-    # @silence
     def test_domonic_parse(self):
-        page = domonic.parse("<html><body>'some content'</body></html>")  # TODO - single comma
         page = domonic.parse("<html><body></body></html>")
-        print(page)
+        assert page == """html(
+body(
+),
+),"""
+
+    def test_domonic_parse_with_single_quotes(self):
+        page = domonic.parse("<html><body>'some content'</body></html>")
+        assert page == """html(
+body(
+"'some content'"
+),
+),"""
 
     @silence
     def test_domonic_get(self):
@@ -55,7 +137,6 @@ class TestCase(unittest.TestCase):
         print(render(page))
         pass
 
-    @silence
     def test_domonic_render(self):
         test = html(
             head(
@@ -79,7 +160,7 @@ class TestCase(unittest.TestCase):
             body(
                 header(
                     h1(a(_href="mailto:mike@eventual.technology")),
-                    h2("07535784121")
+                    h2("12345")
                 ),
                 footer(
                     img(_class="logo", _src="static/img/logo.svg", _alt="eventual technology")
@@ -88,13 +169,14 @@ class TestCase(unittest.TestCase):
             )
         )
         # print(render(test))
-        pass
+        assert test.querySelector("title").text == "eventual.technology"
+        assert test.querySelector("h2").text == "12345"
 
     @silence
     def test_domonic_render_head(self):
         test = head(
             meta(_charset="utf-8"),
-            # meta(**{"http-equiv": "X-UA-Compatible"},, _content="IE=edge"),
+            # meta(**{"http-equiv": "X-UA-Compatible"}, _content="IE=edge"),
             title("byteface"),
             meta(_name="viewport", _content="width=device-width, initial-scale=1"),
             meta(_name="description", _content="eventual technology"),
@@ -822,7 +904,6 @@ class TestCase(unittest.TestCase):
 
 
     def test_domonic_render_a_tag_query_params(self):
-        # from domonic import a, render
         urls = [
         'example.com/stuff?things=morestuff',
         'https://example.com/stuff?things=morestuff',
@@ -831,16 +912,12 @@ class TestCase(unittest.TestCase):
         'https://www.example.com/?stuff'
         ]
         for url in urls:
-            # print( 'zz',url)
-            # print( 'zz2',render(a(_href=url)) )
             assert f'''{render(a(_href=url))}''' == f'''<a href="{url}"></a>'''
-
         # a tag no href TODO
         # print( render(a(_name="test")) )
 
 
     def test_with(self):
-
         # d = 
         # print(d.head)
         # with html() as d:
@@ -861,39 +938,19 @@ class TestCase(unittest.TestCase):
             #                 with div(cls="panel-body"):
             #                     p("This is a paragraph")
         # print(d)
-
-        print('------------')
+        # print('------------')
         d = html()
-
         with d:
             with head():
-                # print('a!')
                 p()
-                # print('b!')
-            # print('c!')
             div()
-            # print('d!')
             with body():
-                # print('e!')
                 p()
-                # print('f!')    
-
-            # print('DONE!')
-            
-        # print(d)
-        # d()
-        # print(d())
-        # with d():
-        #     div()
-        #     print('test')
-        # print(d)
         assert str(d) == '<html><head><p></p></head><div></div><body><p></p></body></html>'
-
 
     # def test_pyml(self):
         # root = html5_parser.parse(some_html, treebuilder='dom')
         # render(root, 'test.pyml', 'pyml')
-
 
     def test_with2(self):
         d = html()
@@ -911,14 +968,10 @@ class TestCase(unittest.TestCase):
                                     h1('Hello World')
                                 with div(_class="panel-body"):
                                     p('This is a paragraph')
-
-        # print(d)
-        print(f"{d}")
-        # d()
-
+        # print(f"{d}")
+        assert d.querySelector("h1").text == "Hello World"
 
     def test_partial(self):
-
         d = html()
         with d:
             with head():
@@ -942,8 +995,25 @@ class TestCase(unittest.TestCase):
                                 with div(_class="panel-body"):
                                     p('This is a paragraph')
 
-        print(f"{d}")
-
+        # print(f"{d}")
+        assert d.querySelector("h1").text == "Hello World"
+        # test parsing the form into the dom
+        d = html()
+        with d:
+            with head():
+                with title():
+                    pass
+            with body():
+                div(
+                domonic.parseString('''
+                <form>
+                <label for="fname">First name:</label><br>
+                <input type="text" id="fname" name="fname" value="John"><br>
+                <label for="lname">Last name:</label><br>
+                <input type="text" id="lname" name="lname" value="Doe">
+                </form>
+                '''))
+        assert len(d.forms) > 0
 
     def test_four_oh_four(self):
         # https://github.com/byteface/domonic/issues/37
@@ -980,110 +1050,37 @@ class TestCase(unittest.TestCase):
         s = script(_src="foo.js", _async="async")
         # print(s)
         assert '<script src="foo.js" async></script>' == str(s)
-
         s = script(_src="foo.js", _async='')
         print(s)
         # assert '<script src="foo.js"></script>' == str(s)
-
         s = script(_src="foo.js", _async='', _hidden='', _checked='')
         # print(s)
         assert '<script src="foo.js" async hidden checked></script>' == str(s)
-
         s = script(_src="foo.js", _async=True, _hidden=False, _checked=True)
         # print(s)
         assert '<script src="foo.js" async="true" hidden="false" checked="true"></script>' == str(s)
 
 
     def test_dialog(self):
-        
         d = html()
         with d:
             dialog("hello", _open="")
             form(button("close"), _method="dialog", _action="close")
-            
-        print(d)
-        
+        assert f"{d}" == """<!DOCTYPE html>
+<html>
+	<dialog open>hello</dialog>
+		<button>close</button>
+	<form method="dialog" action="close">
+		<button>close</button>
+	</form>
+	<form method="dialog" action="close">
+		<button>close</button>
+	</form>
+</html>"""
         # mydialog = HTMLDialogElement()
         # print(mydialog)
         # print(str(mydialog))
-            
         # assert str(d) == '<html><dialog open>hello<form method="dialog" action="close"><button>close</button></form></dialog></html>'
-
-
-    def test_every_tag(self):
-        assert str(html()) == '<html></html>'
-        assert str(head()) == '<head></head>'
-        assert str(body()) == '<body></body>'
-        assert str(title()) == '<title></title>'
-        # print(str(meta()))
-        assert str(meta()) == '<meta/>'
-        assert str(link()) == '<link/>'  # TODO - in html5 i think slash no longer required? (one for config when thats setup)
-        assert str(style()) == '<style></style>'
-        assert str(script()) == '<script></script>'
-        assert str(noscript()) == '<noscript></noscript>'
-        assert str(iframe()) == '<iframe></iframe>'
-        # assert str(frame()) == '<frame></frame>'
-        # assert str(frameset()) == '<frameset></frameset>'
-        # assert str(noframes()) == '<noframes></noframes>'
-        assert str(b()) == '<b></b>'
-        assert str(i()) == '<i></i>'
-        assert str(u()) == '<u></u>'
-        assert str(s()) == '<s></s>'
-        assert str(strike()) == '<strike></strike>'
-        assert str(strong()) == '<strong></strong>'
-        assert str(em()) == '<em></em>'
-        assert str(small()) == '<small></small>'
-        # assert str(big()) == '<big></big>'
-        assert str(sub()) == '<sub></sub>'
-        assert str(sup()) == '<sup></sup>'
-        # assert str(tt()) == '<tt></tt>'
-        assert str(code()) == '<code></code>'
-        assert str(pre()) == '<pre></pre>'
-        assert str(blockquote()) == '<blockquote></blockquote>'
-        assert str(address()) == '<address></address>'
-        assert str(div()) == '<div></div>'
-        assert str(span()) == '<span></span>'
-        assert str(a()) == '<a></a>'
-        assert str(p()) == '<p></p>'
-        assert str(h1()) == '<h1></h1>'
-        assert str(h2()) == '<h2></h2>'
-        assert str(h3()) == '<h3></h3>'
-        assert str(h4()) == '<h4></h4>'
-        assert str(h5()) == '<h5></h5>'
-        assert str(h6()) == '<h6></h6>'
-        assert str(ul()) == '<ul></ul>'
-        assert str(ol()) == '<ol></ol>'
-        assert str(li()) == '<li></li>'
-        assert str(dl()) == '<dl></dl>'
-        assert str(dt()) == '<dt></dt>'
-        assert str(dd()) == '<dd></dd>'
-        assert str(figure()) == '<figure></figure>'
-        assert str(figcaption()) == '<figcaption></figcaption>'
-        assert str(main()) == '<main></main>'
-        assert str(article()) == '<article></article>'
-        assert str(aside()) == '<aside></aside>'
-        assert str(header()) == '<header></header>'
-        assert str(footer()) == '<footer></footer>'
-        assert str(nav()) == '<nav></nav>'
-        assert str(section()) == '<section></section>'
-        assert str(dialog()) == '<dialog></dialog>'
-        assert str(details()) == '<details></details>'
-        assert str(summary()) == '<summary></summary>'
-        assert str(menu()) == '<menu></menu>'
-        assert str(menuitem()) == '<menuitem></menuitem>'
-        # assert str(command()) == '<command></command>'
-        assert str(output()) == '<output></output>'
-        assert str(progress()) == '<progress></progress>'
-        assert str(meter()) == '<meter></meter>'
-        # assert str(time()) == '<time></time>'
-        # assert str(keygen()) == '<keygen></keygen>'
-        assert str(output()) == '<output></output>'
-        assert str(progress()) == '<progress></progress>'
-        assert str(meter()) == '<meter></meter>'
-        assert str(details()) == '<details></details>'
-        assert str(data()) == '<data></data>'
-        # assert str(time()) == '<time></time>'
-
 
 
     # TODO - unit tests the tags of other the markups i.e. mathml, svg etc

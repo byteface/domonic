@@ -12,7 +12,7 @@ from domonic.dom import *
 from domonic.html import *
 
 import domonic.d3 as d3
-# import requests
+
 # from mock import patch
 # from domonic.javascript import Math
 from domonic import domonic

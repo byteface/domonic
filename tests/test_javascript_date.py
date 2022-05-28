@@ -13,9 +13,6 @@ from domonic.javascript import *
 from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
                                 Window)
 
-# import requests
-# from mock import patch
-
 
 class TestCase(unittest.TestCase):
 
