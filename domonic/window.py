@@ -13,7 +13,7 @@
 """
 import sys
 
-import requests
+import httpx
 
 from domonic import domonic
 from domonic.dom import *
@@ -293,18 +293,14 @@ class Window(Window):
         # return Location(self.window.location.href)
 
     def _set_location_using_htm5lib(self, url):
-        # from html5lib import parse
-        # return parse(html)
-        # import html5lib
-        # import requests
-        from html5lib import HTMLParser
 
+        from html5lib import HTMLParser
         from domonic.ext.html5lib_ import getTreeBuilder
 
         if 'http' not in url:
             url = 'https://' + url
 
-        r = requests.get(url)
+        r = httpx.get(url)
         parser = HTMLParser(tree=getTreeBuilder())
         page = parser.parse(r.text)
 
@@ -333,8 +329,7 @@ class Window(Window):
 
         if value is None:
             return
-        import requests
-        r = requests.get(value)
+        r = httpx.get(value)
         content = r.text  # .encode('utf-8')
         # print(content)
         # content = content.replace('\n', '')

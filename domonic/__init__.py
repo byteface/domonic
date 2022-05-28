@@ -15,7 +15,7 @@ VERSION = __version__
 
 import re
 
-import requests
+import httpx
 
 # from domonic.components import Input
 from domonic.html import *
@@ -33,7 +33,7 @@ class domonic:
     @staticmethod
     def get(url: str):
         """ downloads html and converts to domonic """
-        r = requests.get(url)
+        r = httpx.get(url)
         return domonic.parse(r.content.decode("utf-8"))
         # TODO - param to eval
 

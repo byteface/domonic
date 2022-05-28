@@ -8,7 +8,7 @@
 [![Build status](https://travis-ci.com/byteface/domonic.svg?branch=master)](https://travis-ci.com/byteface/domonic.svg?branch=master)
 [![Python package](https://github.com/byteface/domonic/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/byteface/domonic/actions/workflows/python-package.yml)
 
-#### A DOM for making HTML with python 3! (and more)
+#### A standard DOM API for python 3!
 
 ### Install
 
@@ -25,7 +25,7 @@ print(html(body(h1('Hello, World!'))))
 # <html><body><h1>Hello, World!</h1></body></html>
 ```
 
-or to pretty format and insert the doctype, use an f-string:
+To pretty format and insert the doctype, use an f-string:
 
 ```python
 mydom = html(body(h1('Hello, World!'), a("somelink", _href="somepage.html")))
@@ -42,16 +42,16 @@ print(f"{mydom}")
 </html>
 ```
 
-### parsing html
+### parsing HTML
 
 Basic useage...
 
 ```bash
 from domonic import domonic
-mydom = domonic.parseString('<somehtml...')
+mydom = domonic.parseString('<html...')
 ```
 
-To quickly parse a webapge try the window module...
+For quickly parsing a webapge try the window module...
 
 ```bash
 from domonic.window import window
@@ -59,7 +59,7 @@ window.location = "http://www.google.com"
 print(window.document.title)
 ```
 
-Also try the xpath or css selectors on command line...
+Or use xpath/css selectors on the command line...
 
 ```bash
 domonic -x https://google.com '//a' | uniq | sort
@@ -77,7 +77,6 @@ domonic -x https://google.com '//a' | uniq | sort
 See the [docs/code](https://domonic.readthedocs.io/) for more features...
 
 or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
-
 
 ### Namespace
 
@@ -652,20 +651,20 @@ make test  # default tests ubuntu. so will fail on window when terminal test run
 or to test a single function:
 
 ```bash
-python -m unittest tests.test_javascript.TestCase.test_javascript_array
-python -m unittest tests.test_dQuery.TestCase.test_addClass
-python -m unittest tests.test_geom.TestCase.test_vec2
-python3 -m unittest tests.test_cmd.TestCase.test_cmd_dir  # only windows
+python -m unittest -v tests.test_javascript.TestCase.test_javascript_array
+python -m unittest -v tests.test_dQuery.TestCase.test_addClass
+python -m unittest -v tests.test_geom.TestCase.test_vec2
+python3 -m unittest -v tests.test_cmd.TestCase.test_cmd_dir  # only windows
 ```
 
-or to test a whole module
+or to test a whole module:
 
 ```bash
-python -m unittest tests.test_html
-python -m unittest tests.test_CDN
+python -m unittest -v tests.test_html
+python -m unittest -v tests.test_CDN
 ```
 
-to see coverage
+to see coverage:
 
 ```bash
 coverage run -m unittest discover tests/
@@ -679,9 +678,9 @@ pip install pytest
 pytest tests
 ```
 
-
 ### Disclaimer
 
-There's several more widely supported libraries doing HTML generation, DOM reading/manipulation, terminal wrappers etc. Maybe use one of those for production due to strictness and support.
+There are more widely supported libraries doing HTML generation, DOM reading/manipulation, terminal wrappers etc.
+Consider using one of those for production due to strictness and support.
 
 This is more of a fast prototyping library.

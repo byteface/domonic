@@ -3,7 +3,7 @@
 import sys
 sys.path.insert(0, '../..')
 
-import requests
+import httpx
 
 from domonic import domonic
 from domonic.utils import Utils
@@ -24,7 +24,7 @@ from traceback import format_exception
 
 for SITE in sites:
     try:
-        r = requests.get("https://"+SITE)
+        r = httpx.get("https://"+SITE)
         page = domonic.parseString(r.content.decode("utf-8"))
         print(page)
     except Exception as e:    

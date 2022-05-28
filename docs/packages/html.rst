@@ -502,12 +502,12 @@ An examples of using the parser...
 
 .. code-block :: python
 
-    import requests
+    import httpx
     import html5lib
     from domonic.ext.html5lib_ import getTreeBuilder
 
 
-    r = requests.get("https://google.com")
+    r = httpx.get("https://google.com")
     parser = html5lib.HTMLParser(tree=getTreeBuilder())
     page = parser.parse(r.content.decode("utf-8"))
 

@@ -10,10 +10,6 @@ from domonic.dom import *
 from domonic.html import *
 from domonic.style import *
 
-# import requests
-# from mock import patch
-
-
 
 class TestCase(unittest.TestCase):
 

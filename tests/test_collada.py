@@ -7,13 +7,6 @@ import unittest
 
 from domonic.xml.collada import *
 
-# import requests
-# from mock import patch
-
-# from domonic import domonic
-
-# from domonic.decorators import silence
-
 
 class TestCase(unittest.TestCase):
 
@@ -21,6 +14,7 @@ class TestCase(unittest.TestCase):
     def test_domonic_collada(self):
         col = COLLADA()
         print(col)
+        assert col.tag == 'COLLADA'
 
 
 if __name__ == '__main__':

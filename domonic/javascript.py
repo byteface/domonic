@@ -28,7 +28,7 @@ from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import quote, unquote
 
-import requests
+import httpx
 from dateutil.parser import parse, parserinfo
 
 from domonic.webapi.url import URL, URLSearchParams
@@ -1919,7 +1919,7 @@ class Window:
         # private - don't use directly. use one of the fetch methods
         try:
             # r = requests.get(url, timeout=3)
-            from requests import Request, Session
+            from httpx import Client
 
             method = "GET"
             if "method" in kwargs:
@@ -1931,10 +1931,9 @@ class Window:
             if "error_handler" in kwargs:
                 del kwargs["error_handler"]
 
-            s = Session()
-            req = Request(method, url)
-            prepped = s.prepare_request(req)
-            r = s.send(prepped, **kwargs)
+            s = Client(**kwargs)
+            prepped = s.build_request(method, url)
+            r = s.send(prepped)
             # print(r.status_code)
             s.close()
 

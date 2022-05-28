@@ -17,6 +17,7 @@
 from domonic.events import MessageEvent, EventTarget
 from domonic.ext.sseclient import SSEClient
 
+
 class EventSource(EventTarget):
     # https://developer.mozilla.org/en-US/docs/Web/API/EventSource
 
@@ -145,7 +146,7 @@ class EventSource(EventTarget):
     #     if self._lastEventId != None:
     #         headers['Last-Event-ID'] = self._lastEventId
 
-    #     import requests
-    #     response = requests.get(url, stream=True, headers=headers)
+    #     import httpx
+    #     response = httpx.get(url, stream=True, headers=headers)
     #    # TODO - parse repsonse
     # '''

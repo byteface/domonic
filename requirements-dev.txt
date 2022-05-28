@@ -22,7 +22,6 @@ Pygments==2.11.2
 pyparsing==3.0.7
 python-dateutil==2.8.2
 pytz==2021.3
-requests==2.27.1
 sanic==21.12.1
 sanic-routing==21.12.0
 sanic-session==0.8.0

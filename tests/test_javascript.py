@@ -13,9 +13,6 @@ from domonic.javascript import *
 from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
                                 Window)
 
-# import requests
-# from mock import patch
-
 
 class TestCase(unittest.TestCase):
 
@@ -558,13 +555,12 @@ class TestCase(unittest.TestCase):
         print('run 1 FINISHED')
 
         def somefunc(response):
-            print("I'm a callback", response.ok)
-            return response
+            # print("I'm a callback", response.ok)
+            return response.status_code
 
         mydata = window.fetch(TEST_DOMAIN).then(somefunc)
-        print(mydata)
-        print(mydata.data)
-        print(mydata.data.text)
+        print('mydata:::', mydata)
+        assert mydata != None
 
         print('run 1111')
         results = window.fetch_set(urls)
@@ -572,7 +568,7 @@ class TestCase(unittest.TestCase):
         print(list(results))
         for r in results:
             if r is not None:
-                print(r.ok)
+                print(r.status_code)
                 # print(r.text)
 
         print('run 2')
@@ -581,7 +577,7 @@ class TestCase(unittest.TestCase):
         print(list(results))
         for r in results:
             if r is not None:
-                print(r.ok)
+                print(r.status_code)
                 # print(r.text)
 
         print('run 3')
@@ -589,7 +585,7 @@ class TestCase(unittest.TestCase):
         print(results)
         for r in results:
             if r is not None:
-                print(r.ok)
+                print(r.status_code)
                 # print(r.text)
 
         print('run 4')
@@ -635,11 +631,9 @@ class TestCase(unittest.TestCase):
         print("Ahhh nice")
         print(_results)
         for r in _results:
-            print(r.ok)
-            # print(r.text)
-
+            # print(r.ok)
+            print(r.status_code)
         window.clearInterval(test)
-
         # nice 😎
 
     def test_javascript_promise(self):

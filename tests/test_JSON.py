@@ -11,9 +11,6 @@ import domonic.JSON as JSON  # do this to use same way as previous versions of d
 from domonic.decorators import as_json
 from domonic.html import *
 
-# import requests
-# from mock import patch
-
 
 class TestCase(unittest.TestCase):
 

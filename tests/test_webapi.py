@@ -204,11 +204,11 @@ class TestCase(unittest.TestCase):
         assert result.snapshotLength == 2
         # print(result.nodes)
 
-        import requests
-        r = requests.get("http://eventual.technology")
+        import httpx
+        r = httpx.get("http://eventual.technology")
         page = domonic.parseString(r.content.decode("utf-8"))
 
-        ## Selectors
+        # Selectors
 
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression("//h1")

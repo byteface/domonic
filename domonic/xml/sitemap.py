@@ -13,6 +13,10 @@ import datetime
 
 from domonic.dom import Document, Element
 
+import httpx
+import domonic
+
+
 # __all__ = ['sitemap', 'url', 'lastmod']
 
 sitemap_tags = [
@@ -131,12 +135,7 @@ def sitemap_from_urls(urls):
 
 
 def get_sitemap(path: str, *args, **kwargs):
-    # use requests to downlaod a sitemap
-    import requests
-
-    r = requests.get(path)
-    import domonic
-
+    r = httpx.get(path)
     some_sitemap = domonic.domonic.parseString(r.text)
     return some_sitemap
 

@@ -3,7 +3,7 @@
 import sys
 sys.path.insert(0, '../..')
 
-import requests
+import httpx
 
 from domonic import domonic
 from domonic.utils import Utils
@@ -147,7 +147,7 @@ for SITE in sites:
     # page = domonic.get("https://"+SITE)
 
     try:
-        r = requests.get("https://"+SITE)
+        r = httpx.get("https://"+SITE)
         # print(r.text.decode("utf-8"))
         page = domonic.parse(r.content.decode("utf-8"), remove_broken_lines=True)
     except Exception as e:    

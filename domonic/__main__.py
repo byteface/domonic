@@ -385,9 +385,9 @@ def do_things(arguments):
 
         url, xpath = arguments.xpath
         # try:
-        import requests
+        import httpx
 
-        r = requests.get(url)
+        r = httpx.get(url)
         page = domonic.parseString(r.text)
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression(xpath)

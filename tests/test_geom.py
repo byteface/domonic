@@ -11,10 +11,6 @@ from domonic.geom.shape import Circle, Line, Rect, Shape
 from domonic.geom.vec2 import vec2
 from domonic.geom.vec3 import vec3
 
-# import requests
-# from mock import patch
-
-
 
 class TestCase(unittest.TestCase):
 

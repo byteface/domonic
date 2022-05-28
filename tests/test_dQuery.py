@@ -12,11 +12,6 @@ from domonic.dom import *
 from domonic.dQuery import *
 from domonic.html import *
 
-# import requests
-# from mock import patch
-# from domonic.javascript import Math
-
-
 
 class TestCase(unittest.TestCase):
 

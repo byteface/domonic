@@ -12,7 +12,7 @@ import warnings
 
 import six
 
-import requests
+import httpx
 
 __version__ = '0.0.27'
 
@@ -52,7 +52,7 @@ class SSEClient(object):
             self.requests_kwargs['headers']['Last-Event-ID'] = self.last_id
 
         # Use session if set.  Otherwise fall back to requests module.
-        requester = self.session or requests
+        requester = self.session or httpx
         self.resp = requester.get(self.url, stream=True, **self.requests_kwargs)
         self.resp_iterator = self.iter_content()
         encoding = self.resp.encoding or self.resp.apparent_encoding
@@ -94,7 +94,7 @@ class SSEClient(object):
                     raise EOFError()
                 self.buf += self.decoder.decode(next_chunk)
 
-            except (StopIteration, requests.RequestException, EOFError, six.moves.http_client.IncompleteRead) as e:
+            except (StopIteration, httpx.RequestError, EOFError, six.moves.http_client.IncompleteRead) as e:
                 print(e)
                 time.sleep(self.retry / 1000.0)
                 self._connect()

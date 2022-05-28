@@ -359,11 +359,11 @@ class Utils:
         Returns:
             [bool]: [True if you have internet]
         """
-        import requests
+        import httpx
         try:
-            _ = requests.head(url, timeout=timeout)
+            _ = httpx.head(url, timeout=timeout)
             return True
-        except requests.ConnectionError:
+        except httpx.RequestError:
             # print("No internet connection available.")
             return False
 

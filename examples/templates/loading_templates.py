@@ -3,8 +3,6 @@
 import sys
 sys.path.insert(0, '../..')
 
-import requests
-
 from domonic import *
 from domonic.html import *
 
