@@ -8,6 +8,10 @@
 import time
 import unittest
 
+from domonic.dom import *
+from domonic.html import *
+from domonic.svg import *  # lowercase path is in here
+
 import domonic.d3 as d3
 # from mock import patch
 # from domonic.javascript import Math
@@ -16,13 +20,11 @@ from domonic.d3 import *
 from domonic.d3.dispatch import Dispatch, dispatch
 from domonic.d3.format import *
 from domonic.d3.format import format
-from domonic.d3.path import Path
+# from domonic.d3.path import Path
 from domonic.d3.polygon import *
 from domonic.d3.selection import *
 from domonic.decorators import silence
-from domonic.dom import *
-from domonic.html import *
-from domonic.svg import *  # lowercase path is in here
+
 
 # from domonic.d3.timer import *
 
@@ -38,12 +40,15 @@ class TestCase(unittest.TestCase):
     #     print(doc)
 
     def test_d3_path(self):
+
+        from domonic.d3.path import Path
         p = Path()
         p.moveTo(1, 2)
         p.lineTo(3, 4)
         p.closePath()
         print(p)
 
+        from domonic.svg import path
         # context = d3.path()
         # drawCircle(context, 40);
         # mypath = path(_d="", _fill="red", _stroke="blue", **{"_stroke-width": "3"})
