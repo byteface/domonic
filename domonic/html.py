@@ -488,10 +488,10 @@ blockquote = type("blockquote", (Element,), {"name": "blockquote"})  # TODO - ch
 table = type("table", (HTMLTableElement,), {"name": "table"})
 tr = type("tr", (Element,), {"name": "tr"})
 td = type("td", (Element,), {"name": "td"})
-# form = type('form', (Element,), {'name': 'form'})
 
 
-class form(Element):
+class form(HTMLFormElement):
+
     def __init__(self, *args, **kwargs):
         new_kwargs = {}
         for k, v in kwargs.items():
@@ -628,7 +628,7 @@ main = type("main", (Element,), {"name": "main"})
 # obsolete
 applet = type("applet", (Element,), {"name": "applet"})
 # object = type('object', (Element,), {'name': 'object'})
-basefont = type("basefont", (Element,), {"name": "basefont"})
+basefont = type("basefont", (HTMLBaseFontElement,), {"name": "basefont"})
 center = type("center", (Element,), {"name": "center"})
 # dir = type('dir', (Element,), {'name': 'dir'})
 embed = type("embed", (HTMLEmbedElement,), {"name": "embed"})
