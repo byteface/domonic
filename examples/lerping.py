@@ -2,11 +2,10 @@ import sys
 
 sys.path.insert(0, "..")
 
+import time
+
 from domonic.lerpy.easing import *
 from domonic.lerpy.tween import *
-
-
-import time
 
 someObj = {"x": 0, "y": 0, "z": 0}
 

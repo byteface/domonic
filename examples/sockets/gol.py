@@ -1,13 +1,13 @@
 import asyncio
-import websockets  # you gotta 'pip3 install websockets' for this example.
 import json
-
 import sys
+
+import websockets  # you gotta 'pip3 install websockets' for this example.
 
 sys.path.insert(0, "../..")
 
-from domonic.javascript import *
 from domonic.html import *
+from domonic.javascript import *
 
 WIDTH = 75
 HEIGHT = 75

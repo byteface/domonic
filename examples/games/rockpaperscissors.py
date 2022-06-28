@@ -6,12 +6,13 @@ import sys
 sys.path.insert(0, "../..")
 
 import random
+
 from sanic import Sanic, response
 
-from domonic.html import *
 from domonic.CDN import *
-from domonic.utils import *
 from domonic.constants.entities import Char
+from domonic.html import *
+from domonic.utils import *
 
 #  To run this first:
 #  pip3 install sanic

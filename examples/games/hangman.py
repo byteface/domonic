@@ -4,14 +4,14 @@ sys.path.insert(0, "../..")
 
 import os
 import random
+from dataclasses import asdict, dataclass, field
 from json import load
-from dataclasses import dataclass, asdict, field
-from sanic import Sanic
-from sanic import response
-from sanic_session import Session, InMemorySessionInterface
 
-from domonic.html import *
+from sanic import Sanic, response
+from sanic_session import InMemorySessionInterface, Session
+
 from domonic.CDN import *
+from domonic.html import *
 
 #  TO run this :
 #  pip3 install sanic

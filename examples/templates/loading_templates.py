@@ -7,7 +7,6 @@ sys.path.insert(0, "../..")
 from domonic import *
 from domonic.html import *
 
-
 # 'loads' imports a pyml file and turns it into a program
 
 # the example loads a template and passing params for rendering

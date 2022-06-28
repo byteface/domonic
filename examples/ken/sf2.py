@@ -1,11 +1,11 @@
-import sys, os
+import os
+import sys
 
 sys.path.insert(0, "../..")
 
-from domonic.javascript import Math
-from domonic.html import *
 from domonic.components import SpriteCSS
-
+from domonic.html import *
+from domonic.javascript import Math
 
 classless_css = link(_rel="stylesheet", _href="https://unpkg.com/marx-css/css/marx.min.css")
 jquery = script(_src="https://code.jquery.com/jquery-3.5.1.min.js")

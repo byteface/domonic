@@ -3,10 +3,11 @@ import sys
 sys.path.insert(0, "..")
 
 import os
-from sanic import Sanic
-from sanic import response
-from domonic.html import *
+
+from sanic import Sanic, response
+
 from domonic.CDN import *
+from domonic.html import *
 
 # from app import *
 # from app.components import *

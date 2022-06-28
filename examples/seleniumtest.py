@@ -7,8 +7,9 @@ sys.path.insert(0, "..")
 # xattr -d com.apple.quarantine /usr/local/bin/chromedriver
 # pip install selenium
 
-from domonic import domonic
 from selenium import webdriver
+
+from domonic import domonic
 
 browser = webdriver.Chrome()
 browser.get("http://google.com")

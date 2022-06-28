@@ -6,7 +6,6 @@
 import unittest
 
 from domonic.decorators import *
-
 # from domonic.dom import *
 # from domonic.javascript import *
 # from domonic.webapi import *

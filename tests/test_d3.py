@@ -8,11 +8,7 @@
 import time
 import unittest
 
-from domonic.dom import *
-from domonic.html import *
-
 import domonic.d3 as d3
-
 # from mock import patch
 # from domonic.javascript import Math
 from domonic import domonic
@@ -24,10 +20,12 @@ from domonic.d3.path import Path
 from domonic.d3.polygon import *
 from domonic.d3.selection import *
 from domonic.decorators import silence
+from domonic.dom import *
+from domonic.html import *
+from domonic.svg import *  # lowercase path is in here
 
 # from domonic.d3.timer import *
 
-from domonic.svg import *  # lowercase path is in here
 
 
 class TestCase(unittest.TestCase):
@@ -1173,7 +1171,8 @@ class TestCase(unittest.TestCase):
         print("body", d.doctype)
         print("bodyx", domonic.dom.document.doctype)
         print("body", document.doctype)
-        from domonic.dom import document  # re-import to get the updated document
+        from domonic.dom import \
+            document  # re-import to get the updated document
 
         print("body", document.doctype)
         assert type(select(document.body).append("h1")) == Selection

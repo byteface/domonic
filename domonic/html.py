@@ -5,87 +5,38 @@
     Generate HTML using python.
 
 """
-from domonic.dom import (
-    DOMConfig,
-    Comment,
-    Document,  # HTMLOptionsCollection,
-    DocumentType,
-    Element,
-    HTMLAnchorElement,
-    HTMLAreaElement,
-    HTMLAudioElement,
-    HTMLBaseElement,
-    HTMLBaseFontElement,
-    HTMLBodyElement,
-    HTMLBRElement,
-    HTMLButtonElement,
-    HTMLCanvasElement,
-    HTMLContentElement,
-    HTMLDataElement,
-    HTMLDataListElement,
-    HTMLDialogElement,
-    HTMLDivElement,
-    HTMLDListElement,
-    HTMLDocument,
-    HTMLElement,
-    HTMLEmbedElement,
-    HTMLFieldSetElement,
-    HTMLFormControlsCollection,
-    HTMLFormElement,
-    HTMLFrameSetElement,
-    HTMLHeadElement,
-    HTMLHeadingElement,
-    HTMLHRElement,
-    HTMLIFrameElement,
-    HTMLImageElement,
-    HTMLInputElement,
-    HTMLIsIndexElement,
-    HTMLKeygenElement,
-    HTMLLabelElement,
-    HTMLLegendElement,
-    HTMLLIElement,
-    HTMLLinkElement,
-    HTMLMapElement,
-    HTMLMediaElement,
-    HTMLMetaElement,
-    HTMLMeterElement,
-    HTMLModElement,
-    HTMLObjectElement,
-    HTMLOListElement,
-    HTMLOptGroupElement,
-    HTMLOptionElement,
-    HTMLOutputElement,
-    HTMLParagraphElement,
-    HTMLParamElement,
-    HTMLPictureElement,
-    HTMLPreElement,
-    HTMLProgressElement,
-    HTMLQuoteElement,
-    HTMLScriptElement,
-    HTMLSelectElement,
-    HTMLShadowElement,
-    HTMLSourceElement,
-    HTMLSpanElement,
-    HTMLStyleElement,
-    HTMLTableCaptionElement,
-    HTMLTableCellElement,
-    HTMLTableColElement,
-    HTMLTableDataCellElement,
-    HTMLTableElement,
-    HTMLTableHeaderCellElement,
-    HTMLTableRowElement,
-    HTMLTableSectionElement,
-    HTMLTemplateElement,
-    HTMLTextAreaElement,
-    HTMLTimeElement,
-    HTMLTitleElement,
-    HTMLTrackElement,
-    HTMLUListElement,
-    HTMLUnknownElement,
-    HTMLVideoElement,
-    Node,
-    Text,
-)
+from domonic.dom import Document  # HTMLOptionsCollection,
+from domonic.dom import (Comment, DocumentType, DOMConfig, Element,
+                         HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement,
+                         HTMLBaseElement, HTMLBaseFontElement, HTMLBodyElement,
+                         HTMLBRElement, HTMLButtonElement, HTMLCanvasElement,
+                         HTMLContentElement, HTMLDataElement,
+                         HTMLDataListElement, HTMLDialogElement,
+                         HTMLDivElement, HTMLDListElement, HTMLDocument,
+                         HTMLElement, HTMLEmbedElement, HTMLFieldSetElement,
+                         HTMLFormControlsCollection, HTMLFormElement,
+                         HTMLFrameSetElement, HTMLHeadElement,
+                         HTMLHeadingElement, HTMLHRElement, HTMLIFrameElement,
+                         HTMLImageElement, HTMLInputElement,
+                         HTMLIsIndexElement, HTMLKeygenElement,
+                         HTMLLabelElement, HTMLLegendElement, HTMLLIElement,
+                         HTMLLinkElement, HTMLMapElement, HTMLMediaElement,
+                         HTMLMetaElement, HTMLMeterElement, HTMLModElement,
+                         HTMLObjectElement, HTMLOListElement,
+                         HTMLOptGroupElement, HTMLOptionElement,
+                         HTMLOutputElement, HTMLParagraphElement,
+                         HTMLParamElement, HTMLPictureElement, HTMLPreElement,
+                         HTMLProgressElement, HTMLQuoteElement,
+                         HTMLScriptElement, HTMLSelectElement,
+                         HTMLShadowElement, HTMLSourceElement, HTMLSpanElement,
+                         HTMLStyleElement, HTMLTableCaptionElement,
+                         HTMLTableCellElement, HTMLTableColElement,
+                         HTMLTableDataCellElement, HTMLTableElement,
+                         HTMLTableHeaderCellElement, HTMLTableRowElement,
+                         HTMLTableSectionElement, HTMLTemplateElement,
+                         HTMLTextAreaElement, HTMLTimeElement,
+                         HTMLTitleElement, HTMLTrackElement, HTMLUListElement,
+                         HTMLUnknownElement, HTMLVideoElement, Node, Text)
 from domonic.webapi.url import URL
 
 html_tags = [
@@ -583,7 +534,7 @@ article = type("article", (Element,), {"name": "article"})
 aside = type("aside", (Element,), {"name": "aside"})
 hgroup = type("hgroup", (Element,), {"name": "hgroup"})
 address = type("address", (Element,), {"name": "address"})
-pre = HTMLPreElement  # type("pre", (Element,), {"name": "pre"})
+pre = type("pre", (HTMLPreElement,), {"name": "pre"})
 dl = type("dl", (Element,), {"name": "dl"})
 dt = type("dt", (Element,), {"name": "dt"})
 dd = type("dd", (Element,), {"name": "dd"})
@@ -621,10 +572,12 @@ tbody = type("tbody", (Element,), {"name": "tbody"})
 thead = type("thead", (Element,), {"name": "thead"})
 tfoot = type("tfoot", (Element,), {"name": "tfoot"})
 th = type("th", (Element,), {"name": "th"})
-fieldset = type("fieldset", (HTMLFieldSetElement,), {"name": "fieldset"})  # type("fieldset", (Element,), {"name": "fieldset"})
+fieldset = type(
+    "fieldset", (HTMLFieldSetElement,), {"name": "fieldset"}
+)
 legend = type("legend", (Element,), {"name": "legend"})
-button = type("button", (HTMLButtonElement,), {"name": "button"})  # type("button", (Element,), {"name": "button"})
-select = type("select", (HTMLSelectElement,), {"name": "select"})  # type("select", (Element,), {"name": "select"})
+button = type("button", (HTMLButtonElement,), {"name": "button"})
+select = type("select", (HTMLSelectElement,), {"name": "select"})
 datalist = type("datalist", (HTMLDataListElement,), {"name": "datalist"})
 optgroup = type("optgroup", (HTMLOptGroupElement,), {"name": "optgroup"})
 option = type("option", (HTMLOptionElement,), {"name": "option"})
@@ -651,16 +604,23 @@ base = type("base", (HTMLBaseElement,), {"name": "base"})
 link = type("link", (closed_tag, HTMLLinkElement), {"name": "link"})  # HTMLLinkElement TODO - closed tags
 meta = type("meta", (closed_tag, HTMLMetaElement), {"name": "meta"})  # HTMLMetaElement TODO - closed tags
 hr = type("hr", (closed_tag, HTMLHRElement), {"name": "hr"})
-br = type("br", (closed_tag, HTMLBRElement,), {"name": "br"})
+br = type(
+    "br",
+    (
+        closed_tag,
+        HTMLBRElement,
+    ),
+    {"name": "br"},
+)
 wbr = type("wbr", (closed_tag, Element), {"name": "wbr"})
-img = type("img", (closed_tag, HTMLImageElement), {"name": "img"})  # HTMLImageElement TODO - closed tags
-param = type("param", (closed_tag, HTMLParamElement), {"name": "param"})  # HTMLParamElement
-source = type("source", (closed_tag, HTMLSourceElement), {"name": "source"})  # HTMLSourceElement
-track = type("track", (closed_tag, HTMLTrackElement), {"name": "track"})  # HTMLTrackElement
+img = type("img", (closed_tag, HTMLImageElement), {"name": "img"})
+param = type("param", (closed_tag, HTMLParamElement), {"name": "param"})
+source = type("source", (closed_tag, HTMLSourceElement), {"name": "source"})
+track = type("track", (closed_tag, HTMLTrackElement), {"name": "track"})
 area = type("area", (HTMLAreaElement,), {"name": "area"})
-col = type("col", (closed_tag, HTMLTableColElement), {"name": "col"})  # HTMLTableColElement
-input = type("input", (closed_tag, HTMLInputElement), {"name": "input"})  # HTMLInputElement  # TODO - closed tags
-keygen = type("keygen", (closed_tag, HTMLKeygenElement), {"name": "keygen"})  # HTMLKeygenElement
+col = type("col", (closed_tag, HTMLTableColElement), {"name": "col"})
+input = type("input", (closed_tag, HTMLInputElement), {"name": "input"})
+keygen = type("keygen", (closed_tag, HTMLKeygenElement), {"name": "keygen"})
 command = type("command", (closed_tag, Element), {"name": "command"})
 
 main = type("main", (Element,), {"name": "main"})

@@ -7,12 +7,10 @@
 
 """
 
-import os
 import copy
+import os
 import re
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
-
-# from xml.dom.pulldom import END_ELEMENT
 
 from domonic.events import Event, EventTarget, MouseEvent
 from domonic.geom.vec3 import vec3
@@ -20,7 +18,10 @@ from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
 from domonic.webapi.console import Console
 from domonic.webapi.url import URL
-from domonic.webapi.xpath import XPathEvaluator, XPathExpression, XPathResult, XPathException
+from domonic.webapi.xpath import (XPathEvaluator, XPathException,
+                                  XPathExpression, XPathResult)
+
+# from xml.dom.pulldom import END_ELEMENT
 
 
 # TODO - unit tests
@@ -103,8 +104,8 @@ class Node(EventTarget):
         try:
             self.content = "".join([each.__str__() for each in args])
             QM = DOMConfig.ATTRIBUTE_QUOTES
-            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == '':
-                QM = ''
+            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == "":
+                QM = ""
             elif DOMConfig.ATTRIBUTE_QUOTES is True or DOMConfig.ATTRIBUTE_QUOTES is None:
                 QM = '"'
             # elif DOMConfig.ATTRIBUTE_QUOTES == 'maybe':
@@ -114,7 +115,10 @@ class Node(EventTarget):
             #         QM = '"'
 
             self.__attributes__ = "".join(
-                [f''' {key.split('_', 1)[1]}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}''' for key, value in self.kwargs.items()]
+                [
+                    f""" {key.split('_', 1)[1]}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}"""
+                    for key, value in self.kwargs.items()
+                ]
             )
         except IndexError as e:
             from domonic.html import TemplateError
@@ -198,8 +202,8 @@ class Node(EventTarget):
             key = key.split("_", 1)[1]
 
             QM = DOMConfig.ATTRIBUTE_QUOTES
-            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == '':
-                QM = ''
+            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == "":
+                QM = ""
             elif DOMConfig.ATTRIBUTE_QUOTES is True or DOMConfig.ATTRIBUTE_QUOTES is None:
                 QM = '"'
 
@@ -241,7 +245,7 @@ class Node(EventTarget):
                 ]
 
                 if key in htmx_attributes:
-                    return f''' data-hx-{key}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}'''
+                    return f""" data-hx-{key}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}"""
 
             # lets us have boolean attributes  # TODO - should be optional by a global config
             if key in [
@@ -266,7 +270,7 @@ class Node(EventTarget):
             ]:
                 if value == "" or value == key:
                     return f""" {key}"""
-            return f''' {key}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}'''
+            return f""" {key}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}"""
 
         try:
             return "".join([format_attr(key, value) for key, value in self.kwargs.items()])
@@ -281,12 +285,15 @@ class Node(EventTarget):
     def __attributes__(self, ignore):
         try:
             QM = DOMConfig.ATTRIBUTE_QUOTES
-            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == '':
-                QM = ''
+            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == "":
+                QM = ""
             elif DOMConfig.ATTRIBUTE_QUOTES is True or DOMConfig.ATTRIBUTE_QUOTES is None:
                 QM = '"'
             self.__attributes = "".join(
-                [f''' {key.split('_', 1)[1]}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}''' for key, value in self.kwargs.items()]
+                [
+                    f""" {key.split('_', 1)[1]}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}"""
+                    for key, value in self.kwargs.items()
+                ]
             )
         except IndexError as e:
             from domonic.html import TemplateError
@@ -456,7 +463,7 @@ class Node(EventTarget):
         if retry in kwargs:
             return kwargs[retry]
 
-        retry = attr[1: len(attr)]
+        retry = attr[1 : len(attr)]
         if retry in kwargs:
             return kwargs[retry]
 
@@ -976,7 +983,7 @@ class Node(EventTarget):
             self.args = (
                 self.args[: self.args.index(reference_node)]
                 + (new_node,)
-                + self.args[self.args.index(reference_node):]
+                + self.args[self.args.index(reference_node) :]
             )
         return new_node
 
@@ -3875,7 +3882,7 @@ class CharacterData(Node):
     def deleteData(self, offset: int, count: int):
         """Removes the specified amount of characters, starting at the specified offset,
         from the CharacterData.data string; when this method returns, data contains the shortened DOMString."""
-        self.args[0] = self.args[0][:offset] + self.args[0][offset + count:]
+        self.args[0] = self.args[0][:offset] + self.args[0][offset + count :]
         return self.args[0]
 
     def insertData(self, offset: int, data):
@@ -3887,7 +3894,7 @@ class CharacterData(Node):
     def replaceData(self, offset: int, count: int, data):
         """Replaces the specified amount of characters, starting at the specified offset, with the specified DOMString;
         when this method returns, data contains the modified DOMString."""
-        self.args[0] = self.args[0][:offset] + data + self.args[0][offset + count:]
+        self.args[0] = self.args[0][:offset] + data + self.args[0][offset + count :]
         return self.args[0]
 
     # def replaceWith(self, newChildren):
@@ -3897,7 +3904,7 @@ class CharacterData(Node):
     def substringData(self, offset: int, length: int):
         """Returns a DOMString containing the part of CharacterData.data of the specified length and
         starting at the specified offset."""
-        self.args[0] = self.args[0][offset: offset + length]
+        self.args[0] = self.args[0][offset : offset + length]
         return self.args[0]
 
 

@@ -144,7 +144,6 @@ class TestCase(unittest.TestCase):
     def test_xhr(self):
         from domonic.html import br, button, div, form, hr, input
         from domonic.javascript import Global
-
         # def on_submit(event):
         #     event.preventDefault()
         #     alert("Form submitted")

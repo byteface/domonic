@@ -56,7 +56,7 @@ test_svg:
 	python3 -m unittest -v tests.test_svg
 
 format:
-	black . -l 120 && isort -rc .
+	black domonic -l 120 && isort domonic
 
 # release
 build:

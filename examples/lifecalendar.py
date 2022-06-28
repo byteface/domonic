@@ -2,17 +2,16 @@ import sys
 
 sys.path.insert(0, "..")
 
-import os
 import datetime
+import os
 
-from sanic import Sanic
-from sanic import response
+from sanic import Sanic, response
+
+from domonic.CDN import *
+from domonic.components import Modal
+from domonic.dQuery import º
 from domonic.html import *
 from domonic.javascript import *
-from domonic.CDN import *
-from domonic.dQuery import º
-
-from domonic.components import Modal
 
 # from domonic.constants.color import *
 # from domonic.constants.entities import Char

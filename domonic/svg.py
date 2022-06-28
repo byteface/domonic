@@ -8,8 +8,8 @@
     # https://www.w3.org/TR/SVG2/eltindex.html
 
 """
-from domonic.html import a, audio, canvas, video, script, style, iframe
 from domonic.dom import Element
+from domonic.html import a, audio, canvas, iframe, script, style, video
 
 svg_tags = [
     "svg",

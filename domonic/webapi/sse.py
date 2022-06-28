@@ -14,7 +14,7 @@
 
 """
 
-from domonic.events import MessageEvent, EventTarget
+from domonic.events import EventTarget, MessageEvent
 from domonic.ext.sseclient import SSEClient
 
 

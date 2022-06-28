@@ -1,14 +1,14 @@
 import asyncio
-import websockets  # you gotta 'pip3 install websockets' for this example.
 import json
-
 import sys
+
+import websockets  # you gotta 'pip3 install websockets' for this example.
 
 sys.path.insert(0, "../..")
 
-from domonic.javascript import *
-from domonic.html import *
 from domonic.geom.particles import *
+from domonic.html import *
+from domonic.javascript import *
 
 # run this first. python3 atoms.py
 # then open and look at atoms.html while the socket is running

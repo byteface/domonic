@@ -4,16 +4,16 @@ import sys
 
 sys.path.insert(0, "../..")
 
+import html5lib
 import requests
 
+from domonic.ext.html5lib_ import getTreeBuilder
 # from domonic import domonic
 # from domonic.utils import Utils
 from domonic.html import *
 
 # from domonic.terminal import *
 
-import html5lib
-from domonic.ext.html5lib_ import getTreeBuilder
 
 
 sites = [

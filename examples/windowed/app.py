@@ -5,9 +5,9 @@ import sys
 sys.path.insert(0, "../..")
 
 from domonic import *
-from domonic.html import *
-from domonic.dQuery import º
 from domonic.components import Input
+from domonic.dQuery import º
+from domonic.html import *
 
 # create some vars to pass into the templates
 APPNAME = "pixl"

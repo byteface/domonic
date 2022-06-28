@@ -19,8 +19,8 @@
 import threading
 from multiprocessing.pool import ThreadPool as Pool
 
-from domonic.window import window
 from domonic.javascript import Promise
+from domonic.window import window
 
 # TODO - untested. moving these over from javascript module
 # TODO - check if promise also needs to come to this package

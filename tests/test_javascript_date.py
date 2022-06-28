@@ -10,7 +10,8 @@ from inspect import stack
 from unittest.mock import Mock
 
 from domonic.javascript import *
-from domonic.javascript import URL, Array, Date, Global, Math, Object, String, Window
+from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
+                                Window)
 
 
 class TestCase(unittest.TestCase):

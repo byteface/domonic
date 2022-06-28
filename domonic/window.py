@@ -22,9 +22,9 @@ from domonic.javascript import Window
 from domonic.webapi.console import Console
 from domonic.webapi.credentials import CredentialsContainer
 from domonic.webapi.geo import Geolocation
+from domonic.webapi.history import History
 from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.webstorage import Storage
-from domonic.webapi.history import History
 
 # from domonic.webapi.mediacapabilities import MediaCapabilities
 # from domonic.webapi.mediasession import MediaSession

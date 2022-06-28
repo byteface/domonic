@@ -1,17 +1,16 @@
 import asyncio
-import websockets  # you gotta 'pip3 install websockets' for this example.
 import json
-
 import sys
+
+import websockets  # you gotta 'pip3 install websockets' for this example.
 
 sys.path.insert(0, "../..")
 
-from domonic.javascript import *
-from domonic.html import *
+from domonic.CDN import *
 from domonic.components import Websocket
 from domonic.events import *
-from domonic.CDN import *
-
+from domonic.html import *
+from domonic.javascript import *
 
 # generate the webpage that makes the socket connection back to our server
 page = html(

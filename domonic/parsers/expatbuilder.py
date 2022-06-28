@@ -27,15 +27,18 @@ This avoids all the overhead of SAX and pulldom to gain performance.
 #      calling any methods on the node object if it exists.  (A rather
 #      nice speedup is achieved this way as well!)
 
-from xml.dom import EMPTY_NAMESPACE, EMPTY_PREFIX, XMLNS_NAMESPACE, Node, minidom, xmlbuilder
+from xml.dom import (EMPTY_NAMESPACE, EMPTY_PREFIX, XMLNS_NAMESPACE, Node,
+                     minidom, xmlbuilder)
 from xml.dom.minidom import _append_child, _set_attribute_node
 from xml.dom.NodeFilter import NodeFilter
 from xml.parsers import expat
 
 from domonic.decorators import check
-from domonic.dom import Attr, Document, DocumentFragment, DOMImplementation, Element, Node, Text
+from domonic.dom import (Attr, Document, DocumentFragment, DOMImplementation,
+                         Element, Node, Text)
 from domonic.html import *
-from domonic.xml.sitemap import changefreq, lastmod, loc, priority, sitemap, sitemapindex, url, urlset
+from domonic.xml.sitemap import (changefreq, lastmod, loc, priority, sitemap,
+                                 sitemapindex, url, urlset)
 
 TEXT_NODE = Node.TEXT_NODE
 CDATA_SECTION_NODE = Node.CDATA_SECTION_NODE

@@ -2,8 +2,8 @@ import sys
 
 sys.path.insert(0, "../..")
 
-from domonic.html import *
 from domonic.CDN import CDN_CSS
+from domonic.html import *
 
 MARGIN = 3
 

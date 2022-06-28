@@ -695,7 +695,7 @@ class Polyline(Shape):
         return Polyline(divmod(self.points, other))
 
     def __pow__(self, other):
-        return Polyline(self.points ** other)
+        return Polyline(self.points**other)
 
     def __lshift__(self, other):
         return Polyline(self.points << other)

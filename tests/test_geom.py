@@ -7,7 +7,6 @@ import unittest
 
 from domonic.constants.color import Color
 from domonic.geom.shape import Circle, Line, Rect, Shape
-
 # from domonic import domonic
 from domonic.geom.vec2 import vec2
 from domonic.geom.vec3 import vec3

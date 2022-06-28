@@ -5,15 +5,12 @@ import sys
 sys.path.insert(0, "../..")
 
 import requests
-
-from domonic import domonic
-from domonic.utils import Utils
-from domonic.html import *
-
-from sanic import Sanic
-from sanic import response
+from sanic import Sanic, response
 from sanic.response import json
 
+from domonic import domonic
+from domonic.html import *
+from domonic.utils import Utils
 
 page = lambda content: html(_lang="en", _class="no-js", _dir="auto").html(
     head(

@@ -7,9 +7,9 @@
 """
 
 import array
+import calendar
 import chunk
 import datetime
-from datetime import timezone
 import gc
 import json
 import math
@@ -22,8 +22,8 @@ import struct
 import sys
 import threading
 import time
-import calendar
 import urllib.parse
+from datetime import timezone
 from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import quote, unquote
@@ -2650,7 +2650,7 @@ class Number(float):
         return self.x % other
 
     def __pow__(self, other):
-        return self.x ** other
+        return self.x**other
 
     def __neg__(self):
         return -self.x
@@ -2713,7 +2713,7 @@ class Number(float):
         return self.x % other
 
     def __ipow__(self, other):
-        return self.x ** other
+        return self.x**other
 
     def __ilshift__(self, other):
         return self.x << other
@@ -3364,7 +3364,8 @@ class String:
         Returns:
             [str]: [the string as a webpage]
         """
-        from domonic.html import body, h1, head, html, link, meta, script, style, title
+        from domonic.html import (body, h1, head, html, link, meta, script,
+                                  style, title)
 
         content = html(
             head(

@@ -1,4 +1,5 @@
 from time import sleep
+
 from domonic.javascript import Math
 
 ADD = Math.round(Math.random() * 5) * 2

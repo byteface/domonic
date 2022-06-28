@@ -3,9 +3,9 @@ import sys
 
 sys.path.insert(0, "..")
 
-from domonic.javascript import Math
-from domonic.html import *
 from domonic.dom import DOMConfig
+from domonic.html import *
+from domonic.javascript import Math
 
 # DOMConfig.GLOBAL_AUTOESCAPE = True  # TODO - script tags shouldn't be escaped?
 DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = False  # TODO - is it putting newlines instead?
@@ -21,11 +21,11 @@ page = lambda content: html(_lang="en", _class="no-js", _dir="auto").append(
         meta(_name="viewport", _content="width=device-width"),
         title("Unique page title - My Site"),
         script(
-        """
+            """
             document.documentElement.classList.remove('no-js');
             document.documentElement.classList.add('js');
     	""",
-        _type="module",
+            _type="module",
         ),
         link(_rel="stylesheet", _href="/assets/css/styles.css"),
         meta(_name="description", _content="Page description"),

@@ -7,9 +7,9 @@ sys.path.insert(0, "../..")
 import requests
 
 from domonic import domonic
-from domonic.utils import Utils
 from domonic.html import *
 from domonic.terminal import *
+from domonic.utils import Utils
 
 sites = [
     "bankofamerica.com",

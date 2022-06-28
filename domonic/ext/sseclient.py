@@ -10,9 +10,8 @@ import re
 import time
 import warnings
 
-import six
-
 import requests
+import six
 
 __version__ = "0.0.27"
 
