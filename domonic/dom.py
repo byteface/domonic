@@ -42,6 +42,7 @@ class DOMConfig:
     )
     HTMX_ENABLED: bool = False  # Default is false
     # NO_REPR: bool = True  # objects always render?
+    ATTRIBUTE_QUOTES = '"'  # i.e. <tag="">
 
 
 class Node(EventTarget):
@@ -101,8 +102,19 @@ class Node(EventTarget):
 
         try:
             self.content = "".join([each.__str__() for each in args])
+            QM = DOMConfig.ATTRIBUTE_QUOTES
+            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == '':
+                QM = ''
+            elif DOMConfig.ATTRIBUTE_QUOTES is True or DOMConfig.ATTRIBUTE_QUOTES is None:
+                QM = '"'
+            # elif DOMConfig.ATTRIBUTE_QUOTES == 'maybe':
+            #     if type(value) is not str:
+            #         QM = ''
+            #     else:
+            #         QM = '"'
+
             self.__attributes__ = "".join(
-                [f''' {key.split('_', 1)[1]}="{value}"''' for key, value in self.kwargs.items()]
+                [f''' {key.split('_', 1)[1]}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}''' for key, value in self.kwargs.items()]
             )
         except IndexError as e:
             from domonic.html import TemplateError
@@ -164,7 +176,7 @@ class Node(EventTarget):
             cnt = list(cnt)
             for each, child in enumerate(cnt):
                 if isinstance(child, str) or isinstance(child, Text):
-                    child = fix.escape(child)
+                    child = fix.escape(str(child))
                     cnt[each] = child
             cnt = tuple(cnt)
             return "".join([each.__str__() for each in cnt])
@@ -184,6 +196,12 @@ class Node(EventTarget):
             if value is False:
                 value = "false"
             key = key.split("_", 1)[1]
+
+            QM = DOMConfig.ATTRIBUTE_QUOTES
+            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == '':
+                QM = ''
+            elif DOMConfig.ATTRIBUTE_QUOTES is True or DOMConfig.ATTRIBUTE_QUOTES is None:
+                QM = '"'
 
             # note - consider making this an attributes handler for any custom attributes
             # so on config user can add a handler function for the attribute
@@ -223,7 +241,7 @@ class Node(EventTarget):
                 ]
 
                 if key in htmx_attributes:
-                    return f''' data-hx-{key}="{value}"'''
+                    return f''' data-hx-{key}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}'''
 
             # lets us have boolean attributes  # TODO - should be optional by a global config
             if key in [
@@ -248,7 +266,7 @@ class Node(EventTarget):
             ]:
                 if value == "" or value == key:
                     return f""" {key}"""
-            return f''' {key}="{value}"'''
+            return f''' {key}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}'''
 
         try:
             return "".join([format_attr(key, value) for key, value in self.kwargs.items()])
@@ -262,8 +280,13 @@ class Node(EventTarget):
     @__attributes__.setter
     def __attributes__(self, ignore):
         try:
+            QM = DOMConfig.ATTRIBUTE_QUOTES
+            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == '':
+                QM = ''
+            elif DOMConfig.ATTRIBUTE_QUOTES is True or DOMConfig.ATTRIBUTE_QUOTES is None:
+                QM = '"'
             self.__attributes = "".join(
-                [f''' {key.split('_', 1)[1]}="{value}"''' for key, value in self.kwargs.items()]
+                [f''' {key.split('_', 1)[1]}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}''' for key, value in self.kwargs.items()]
             )
         except IndexError as e:
             from domonic.html import TemplateError
@@ -536,7 +559,7 @@ class Node(EventTarget):
             self.args = list(self.args)
             for each, child in enumerate(self.args):
                 if isinstance(child, str) or isinstance(child, Text):
-                    child = fix.escape(child)
+                    child = fix.escape(str(child))
                     self.args[each] = child
             self.args = tuple(self.args)
 

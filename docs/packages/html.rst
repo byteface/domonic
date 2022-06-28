@@ -379,6 +379,48 @@ https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dicti
 
 
 
+Quotes around attributes
+--------------------------------
+
+The quotes around attributes can be finely controlled using the DOMConfig.ATTRIBUTE_QUOTES flag
+
+By default everything is double quoted on render.
+
+However a flag can be set to None which will not render quotes if the passed value is not a string.
+
+Alternatively it can be set to use a single quotation mark or even False to use None at all and control it yourself.
+
+Examples provided below.
+
+.. code-block:: python
+
+    >>> from domonic.html import *
+    >>> from domonic.dom import DOMConfig
+    >>> print(body(test="123"))
+    # <body test="123"></body>
+    >>> print(body(test=123))
+    # <body test="123"></body>
+    >>> DOMConfig.ATTRIBUTE_QUOTES = None
+    >>> print(body(test=123))
+    # <body test=123></body>
+    >>> print(body(test="123"))
+    # <body test="123"></body>
+    >>> DOMConfig.ATTRIBUTE_QUOTES = "'"
+    >>> print(body(test="123"))
+    # <body test='123'></body>
+    >>> DOMConfig.ATTRIBUTE_QUOTES = True
+    >>> print(body(test="123"))
+    # <body test="123"></body>
+    >>> print(body(test=123))
+    # <body test="123"></body>
+    >>> DOMConfig.ATTRIBUTE_QUOTES = False
+    >>> print(body(test="123"))
+    # <body test=123></body>
+    >>> print(body(test="TEXT"))
+    # <body test=TEXT></body>
+
+
+
 loading .pyml templates
 --------------------------------
 
