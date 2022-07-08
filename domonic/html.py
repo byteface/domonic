@@ -635,8 +635,6 @@ embed = type("embed", (HTMLEmbedElement,), {"name": "embed"})
 isindex = type("isindex", (Element,), {"name": "isindex"})
 listing = type("listing", (Element,), {"name": "listing"})
 plaintext = type("plaintext", (Element,), {"name": "plaintext"})
-s = type("s", (Element,), {"name": "s"})
-u = type("u", (Element,), {"name": "u"})
 strike = type("strike", (Element,), {"name": "strike"})
 xmp = type("xmp", (Element,), {"name": "xmp"})
 
