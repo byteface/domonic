@@ -598,7 +598,6 @@ footer = type("footer", (Element,), {"name": "footer"})
 
 # time = HTMLTimeElement  # type('time', (tag,), {'name': 'time'})
 data = type("data", (HTMLDataElement,), {"name": "data"})
-samp = type("samp", (Element,), {"name": "samp"})
 
 base = type("base", (HTMLBaseElement,), {"name": "base"})
 link = type("link", (closed_tag, HTMLLinkElement), {"name": "link"})  # HTMLLinkElement TODO - closed tags
