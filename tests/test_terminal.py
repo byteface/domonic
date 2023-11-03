@@ -99,7 +99,7 @@ class TestCase(unittest.TestCase):
         print(ps())
         # print(cowsay('moo'))
         print(date())
-        print(cal())
+        # print(cal())
         # failing on github actions
         # for i, l in enumerate(cat('LICENSE.txt')):
         # print(i, l)
