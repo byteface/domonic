@@ -127,7 +127,7 @@ class Node(EventTarget):
         # except Exception as e:
         # print(e)
 
-        self.baseURI: str = "eventual.technology"  # TODO - if ownerdocument has a basetag, use that
+        self.baseURI: str = ""  # TODO - if ownerdocument has a basetag, use that
         self.isConnected: bool = True
         self.namespaceURI: str = "http://www.w3.org/1999/xhtml"
         self.outerText: str = None

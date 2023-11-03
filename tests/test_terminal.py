@@ -113,7 +113,7 @@ class TestCase(unittest.TestCase):
     @silence
     def test_bash(self):
         print("ran")
-        print(ping("http://eventual.technology"))  # < TODO - need to strean output
+        print(ping("https://www.google.com"))  # < TODO - need to strean output
         # print(wget('eventual.technology'))
 
 

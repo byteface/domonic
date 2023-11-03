@@ -182,6 +182,9 @@ class TestCase(unittest.TestCase):
         # f = FormData(myform)
         # print(f)
 
+    from domonic.decorators import silence
+
+    @silence
     def test_xpath(self):
 
         from domonic import domonic
@@ -203,6 +206,7 @@ class TestCase(unittest.TestCase):
 
         import requests
 
+        # TODO - dont eventual.technology to parse against
         r = requests.get("http://eventual.technology")
         page = domonic.parseString(r.content.decode("utf-8"))
 

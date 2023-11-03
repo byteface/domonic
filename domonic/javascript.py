@@ -1879,7 +1879,7 @@ class Window:
     """window"""
 
     localStorage = Storage()
-    location = "eventual.technology"
+    location = ""
 
     def __init__(self, *args, **kwargs):
         # self.console = dom.console

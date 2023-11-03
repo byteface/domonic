@@ -136,7 +136,7 @@ body(
     @silence
     def test_domonic_get(self):
         print("test_domonic_get-----------=-----------=-----------=-----------=-----------=-----------=-----------=")
-        page = domonic.get("http://eventual.technology")
+        # page = domonic.get("http://eventual.technology")
         page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/checkout/")
         page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/carousel/?#")
         page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/dashboard/#")

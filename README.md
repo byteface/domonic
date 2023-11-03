@@ -536,7 +536,7 @@ for thing in du():
 print(find('.'))
 # print(ping('eventual.technology'))# < TODO - need to strean output
 print(cowsay('moo'))
-print(wget('eventual.technology'))
+# print(wget('eventual.technology'))
 print(date())
 print(cal())
 ```
