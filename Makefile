@@ -1,6 +1,7 @@
 # test all modules
 test:
 	python3 -m unittest -v tests.test_html
+	python3 -m unittest -v tests.test_events
 	python3 -m unittest -v tests.test_dom
 	python3 -m unittest -v tests.test_style
 	python3 -m unittest -v tests.test_javascript
@@ -21,6 +22,7 @@ test:
 
 testpc:
 	python3 -m unittest -v tests.test_html
+	python3 -m unittest -v tests.test_events
 	python3 -m unittest -v tests.test_dom
 	python3 -m unittest -v tests.test_style
 	python3 -m unittest -v tests.test_javascript

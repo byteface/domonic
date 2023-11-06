@@ -6,71 +6,151 @@
 
 """
 
-# from typing import *
+from typing import Dict, List, Any
 import time
 
-
 class EventTarget:
-    """EventTarget is a class you can extend to give your obj event dispatching abilities"""
+    """EventTarget is a class you can extend to give your object event dispatching abilities.
+
+    This class allows you to add, remove, and dispatch custom events, making it useful for creating
+    event-driven components in your Python application.
+
+    Usage:
+    To add an event listener:
+    - Use the addEventListener method.
+    
+    To remove an event listener:
+    - Use the removeEventListener method.
+    
+    To dispatch an event:
+    - Create an event object with the desired event type and optional event data.
+    - Use the dispatchEvent method to trigger the event.
+
+    Example:
+    ```python
+    target = EventTarget()
+    
+    def my_event_handler(event):
+        print("Event received:", event)
+    
+    target.addEventListener("custom_event", my_event_handler)
+    
+    event_data = {"message": "Hello, world!"}
+    custom_event = {"type": "custom_event", "data": event_data}
+    target.dispatchEvent(custom_event)
+    
+    # Output: Event received: {'type': 'custom_event', 'data': {'message': 'Hello, world!'}}
+    ```
+
+    Attributes:
+    - listeners (dict): A dictionary to store event listeners by event type.
+    """
 
     def __init__(self, *args, **kwargs) -> None:
-        self.listeners = {}
+        # Initialize a dictionary to store event listeners.
+        self.listeners: Dict[str, List] = {}
 
-    def hasEventListener(self, _type: str) -> bool:
-        return _type in self.listeners
+    def hasEventListener(self, eventType: str) -> bool:
+        """
+        Check if an event listener for the given event type exists.
 
-    # TODO - event: str, function, useCapture: bool
-    # def addEventListener(self, event: str, function, useCapture: bool) -> None:
-    def addEventListener(self, _type: str, callback, *args, **kwargs):
-        if _type not in self.listeners:
-            self.listeners[_type] = []
-        self.listeners[_type].append(callback)
+        Args:
+            eventType (str): The type of the event.
 
-    def removeEventListener(self, _type: str, callback):
-        if _type not in self.listeners:
-            return
+        Returns:
+            bool: True if listeners for the event type exist, otherwise False.
+        """
+        return eventType in self.listeners
 
-        stack = self.listeners[_type]
+    def addEventListener(self, eventType: str, callback, *args, **kwargs) -> None:
+        """
+        Add an event listener for the given event type.
 
-        for thing in stack:
-            if thing == callback:
-                stack.remove(thing)
-                return
+        Args:
+            eventType (str): The type of the event to listen for.
+            callback (Callable): The callback function to be executed when the event occurs.
+        """
+        if eventType not in self.listeners:
+            self.listeners[eventType] = []
+        self.listeners[eventType].append(callback)
 
-    def dispatchEvent(self, event):
-        if event.type not in self.listeners:
-            return True  # huh?. surely false?
+    def removeEventListener(self, eventType: str, callback) -> None:
+        """
+        Remove an event listener for the given event type.
 
-        stack = self.listeners[event.type]
-        # .slice()
-        event.target = self  # TODO/NOTE - is this correct? - cant think where else would set it
+        Args:
+            eventType (str): The type of the event.
+            callback (Callable): The callback function to be removed.
+        """
+        if eventType in self.listeners:
+            stack = self.listeners[eventType]
+            if callback in stack:
+                stack.remove(callback)
 
-        for thing in stack:
-            try:
-                thing(event)
-                # type(thing, (Event,), self)
-            except Exception as e:
-                print(e)
-                thing()  # try calling without params, user may not create param
+    def dispatchEvent(self, event: Dict[str, Any]) -> bool:
+        """
+        Dispatch the specified event to all registered event listeners.
 
-        return not event.defaultPrevented
+        Args:
+            event (Dict): The event object to be dispatched.
 
-    # async def dispatchEventAsync(self, event):
-    #     if event.type not in self.listeners:
-    #         return True
+        Returns:
+            bool: True if the event was successfully dispatched, otherwise False.
+        """
+        eventType = event.type
+        if eventType in self.listeners:
+            stack = self.listeners[eventType]
+            event.target = self
+            for callback in stack:
+                try:
+                    callback(event)
+                except Exception as e:
+                    print(e)
+            return not event.defaultPrevented
+        return True
 
-    #     stack = self.listeners[event.type]
-    #     event.target = self
-    #     for thing in stack:
-    #         await thing(event)
+    async def dispatchEventAsync(self, event: Dict[str, Any]) -> bool:
+        """
+        Dispatch the specified event asynchronously to all registered event listeners.
+
+        Args:
+            event (Dict): The event object to be dispatched.
+
+        Returns:
+            bool: True if the event was successfully dispatched, otherwise False.
+
+        Usage:
+        To dispatch an event asynchronously, use the 'await' keyword when calling this method.
+
+        Example:
+        ```python
+        event_data = {"message": "Hello, world!"}
+        async_event = {"type": "async_event", "data": event_data}
+        await target.dispatchEventAsync(async_event)
+        """
+        eventType = event.get("type", None)
+        if eventType in self.listeners:
+            stack = self.listeners[eventType]
+            event["target"] = self
+            for callback in stack:
+                try:
+                    if hasattr(callback, '__await__'):
+                        await callback(event)
+                    else:
+                        callback(event)
+                except Exception as e:
+                    print(e)
+            return not event.get("defaultPrevented", False)
+        return True
 
 
 EventDispatcher = EventTarget  #: legacy alias
 
 
 class Event:
-    """event"""
+    """Event class represents events and their properties."""
 
+    # Constants for event types
     EMPTIED: str = "emptied"  #:
     ABORT: str = "abort"  #:
     AFTERPRINT: str = "afterprint"  #:
@@ -131,7 +211,8 @@ class Event:
         self.composed: bool = options.get("composed", True)
         self.currentTarget: object = options.get("currentTarget", None)
         self.defaultPrevented: bool = options.get("defaultPrevented", False)
-        self.eventPhase: int = options.get("eventPhase", None)
+        # self.eventPhase: int = options.get("eventPhase", None)
+        self.eventPhase: int = options.get("eventPhase", Event.AT_TARGET)
         self.explicitOriginalTarget: object = options.get("explicitOriginalTarget", None)
         self.isTrusted: bool = options.get("isTrusted", False)
         self.originalTarget: object = options.get("originalTarget", None)
@@ -142,64 +223,109 @@ class Event:
         self.timeStamp: float = int(round(time.time() * 1000))
 
     def composedPath(self):
-        return self.type + ":" + str(self.timeStamp)
+        """
+        Returns a list of the event's path, from the root to the target.
+        """
+        path = []
+        current_target = self.target
+        while current_target is not None:
+            path.append(current_target)
+            if hasattr(current_target, "parentNode"):
+                current_target = current_target.parentNode
+            else:
+                break
+        # Include the window as the final item in the path.
+        if hasattr(self.target, "defaultView"):
+            path.append(self.target.defaultView)
+        return path
 
     def initEvent(self, _type: str = None, *args, **kwargs) -> "Event":
+        """Initialize the event."""
         self.__init__(_type, args, kwargs)
 
     def stopPropagation(self):
         """[prevents further propagation of the current event in the capturing and bubbling phases]"""
-        # self.defaultPrevented = True
-        # self.returnValue = None
-        # self.originalTarget = None
-        # self.explicitOriginalTarget = None
-        # self.target = None
-        # self.srcElement = None
-        # self.bubbles = None
-        # self.cancelable = None
-        # self.cancelBubble = None
-        # self.composed = None
-        # self.currentTarget = None
-        # self.eventPhase = None
-        # self.isTrusted = None
-        # self.returnValue = None
-        # self.timeStamp = int(round(time.time() * 1000))
-        # self.type = None
-        pass
+        self.cancelBubble = True  # Set the cancelBubble flag to stop propagation
 
-    def msConvertURL(self):
-        pass
+    def msConvertURL(self, url):
+        """
+        Converts the provided URL to a format recognized by Internet Explorer.
 
-    def preventDefault(self):
-        pass
+        Args:
+            url (str): The URL to be converted.
 
-    def stopImmediatePropagation(self):
-        pass
+        Returns:
+            str: The converted URL.
+        """
+        if url.startswith('http'):
+            # Example conversion for HTTP/HTTPS URLs in Internet Explorer
+            return f'javascript:window.open("{url}");'
+        else:
+            # Handle other URL formats as needed
+            return url
 
-    # @property
-    # def currentTarget(self):
-    #     return self.__currentTarget
+    def preventDefault(self) -> None:
+        """
+        Prevents the default action associated with the event, if cancelable.
 
-    # @property
-    # def target(self):
-    #     return self.__target
+        This method is used to signal that the event should not trigger its default behavior.
+
+        Returns:
+            None
+        """
+        self.defaultPrevented = True
+
+    def stopImmediatePropagation(self) -> None:
+        """
+        Prevents further propagation of the current event and immediately stops other event listeners in the same phase from being invoked.
+
+        This method is used to stop the event's propagation immediately and ensure that no other listeners in the same phase are invoked.
+
+        Returns:
+            None
+        """
+        self.cancelBubble = True
+        self.defaultPrevented = True
 
 
 class UIEvent(Event):
-    """UIEvent"""
+    """UIEvent is a specialized event class for user interface events."""
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
-        options = options or kwargs  # if options is none use kwargs
+        """
+        Initialize a UIEvent.
+
+        Args:
+            _type (str): The type of the UIEvent.
+            options (dict, optional): Additional options for the event. Defaults to None.
+
+        Returns:
+            None
+        """
+        options = options or kwargs  # If options is None, use kwargs
+        self.canBubble = options.get("canBubble", None)
+        self.cancelable = options.get("cancelable", None)
         self.detail = options.get("detail", None)
         self.view = options.get("view", None)
-        self.detail = options.get("detail", None)
         self.layerX = options.get("layerX", None)
         self.layerY = options.get("layerY", None)
-        # self.which = options.get("which", None)
         self.sourceCapabilities = options.get("sourceCapabilities", None)
         super().__init__(_type, options, *args, **kwargs)
 
     def initUIEvent(self, _type: str, canBubble: bool, cancelable: bool, view, detail) -> "UIEvent":
+        """
+        Initialize a UIEvent with specific parameters.
+
+        Args:
+            _type (str): The type of the UIEvent.
+            canBubble (bool): Specifies whether the event should bubble.
+            cancelable (bool): Specifies whether the event is cancelable.
+            view: The associated view or window.
+            detail: Additional event-specific detail.
+
+        Returns:
+            UIEvent: The initialized UIEvent object.
+        """
         self._type = _type
         self.canBubble = canBubble
         self.cancelable = cancelable
@@ -223,6 +349,8 @@ class MouseEvent(UIEvent):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs
+        self.canBubble = options.get("canBubble", None)
+        self.cancelable = options.get("cancelable", None)
         self.x = options.get("x", 0)
         self.y = options.get("y", 0)
         self._clientX = options.get("clientX", 0)
@@ -341,6 +469,8 @@ class KeyboardEvent(UIEvent):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
+        self.canBubble = options.get("canBubble", None)
+        self.cancelable = options.get("cancelable", None)
         self._altKey: bool = options.get("altKey", False)
         self._ctrlKey: bool = options.get("ctrlKey", False)
         self._shiftKey: bool = options.get("shiftKey", False)
