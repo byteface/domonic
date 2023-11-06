@@ -467,6 +467,13 @@ class Node(EventTarget):
         if retry in kwargs:
             return kwargs[retry]
 
+        # TODO - think of solution for other MIA attributes as when it would fail silently
+        # it was a nightmare. But having to catch the raised errors may also be sluggish
+        # maybe specific tags can override this method and provide default values when not present?
+        if self.__class__.__name__ == "a" and attr == "href":
+            print("    Warning: No 'href' attribute was defined for this 'a' tag.")
+            return ""
+
         try:
             # return getattr(super(), attr)
             # return getattr(self, attr)

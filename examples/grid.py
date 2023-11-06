@@ -1,50 +1,27 @@
 import sys
-
 sys.path.insert(0, "..")
 
-import os
-
-from sanic import Sanic, response
-
-from domonic.CDN import *
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import HTMLResponse
 from domonic.html import *
+from domonic.CDN import CDN_CSS
 
-# from app import *
-# from app.components import *
-
-app = Sanic(name="Long_poll_grid_test")
-app.static("/assets", "./assets")
+app = FastAPI()
 
 MARGIN = 1
 PADDING = 2
 
 # create a template
-cell = lambda x=None: div(_class=x if x else "", _style=f"display:inline;margin:{MARGIN}px;padding:{PADDING}px;").html(
-    # button(":)", _style="background-color:white;color:black;")
-)
+cell = lambda x=None: div(_class=x if x else "", _style=f"display:inline;margin:{MARGIN}px;padding:{PADDING}px;")
 
 row = lambda *x: div(*x, _class="row")
 
-# TODO - random color gen is required.
-# TODO - random face gen is required.
-
 # world grid
 _grid = div(
-    # row( cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d') ),
-    # row( cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d') ),
-    # row( cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d') ),
-    # row( cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d') ),
-    # row( cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d') ),
-    # row( cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d'),cell('d') ),
     row(cell("d") / 100) / 100,
     row(cell("d") / 100) / 100,
-    # _style="max-width:100px;",
     _class="container-fluid",
 )
-# print( str(cell()*10) )
-# cells = cell()*10
-# print(''.join([str(c) for c in cells]))
-
 
 _materials = style(
     """
@@ -86,18 +63,21 @@ class World:
         return str(div(_materials, _scripts, _grid))
 
 
-@app.route("/")
-@app.route("/world")
-async def world(request):
-    # check the diffs against our diff map
-    return response.html(
-        str(
+@app.get("/")
+@app.get("/world", response_class=HTMLResponse)
+async def world(request: Request):
+    return Response(
+        content=str(
             html(
-                head(), body(link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.BOOTSTRAP_4), str(World(request)))
+                head(),
+                body(
+                    link(rel="stylesheet", type="text/css", href=CDN_CSS.BOOTSTRAP_4),
+                    str(World(request)),
+                ),
             )
         )
     )
 
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

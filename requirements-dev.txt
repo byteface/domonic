@@ -3,6 +3,7 @@ flake8==4.0.1
 Jinja2==3.0.3
 Sphinx==5.0.2
 fastapi==0.104.1
+uvicorn==0.24.0.post1
 sanic==22.6.1
 sanic-session==0.8.0
 toml==0.10.2

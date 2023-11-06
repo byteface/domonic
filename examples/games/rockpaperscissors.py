@@ -5,20 +5,16 @@ import sys
 
 sys.path.insert(0, "../..")
 
-import random
-
-from sanic import Sanic, response
-
 from domonic.CDN import *
 from domonic.constants.entities import Char
 from domonic.html import *
 from domonic.utils import *
 
-#  To run this first:
-#  pip3 install sanic
+from fastapi import FastAPI, Request, Query
+from fastapi.responses import HTMLResponse
+import random
 
-app = Sanic(name="paper_scissors_rock")
-app.static("/assets", "./assets")
+app = FastAPI()
 
 # create a template
 page_wrapper = lambda content: html(
@@ -49,18 +45,14 @@ page_wrapper = lambda content: html(
     body(str(content)),
 )
 
-
 choices = ["✊", "✋", "✌"]
-
 
 def get_choice():
     choice = random.choice(choices)
     return choice
 
-
-@app.route("/move")
-async def move(request):
-    choice = Utils.escape(request.args["choice"][0])
+@app.get("/move", response_class=HTMLResponse)
+async def move(request: Request, choice: str = Query(...)):
     computer = get_choice()
 
     page = div()
@@ -95,20 +87,19 @@ async def move(request):
             result("✌", "✋", "I lose. You win!")
 
     page.appendChild(board)
-    return response.html(str(main(str(page), _id="game")))
+    return str(main(str(page), _id="game"))
 
-
-@app.route("/")
-@app.route("/play")
-async def play(request):
+@app.get("/", response_class=HTMLResponse)
+@app.get("/play", response_class=HTMLResponse)
+async def play(request: Request):
     intro = header(
         h1("✊✋✌!"),
         h2("Wanna play?"),
         div("type 'r' for Rock ✊", br(), "'p' for Paper ✋", br(), "Or 's' for Scissors ✌"),
         main(_id="game"),
     )
-    return response.html(str(page_wrapper(intro)))
-
+    return str(page_wrapper(intro))
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

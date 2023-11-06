@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
 import sys
-
 sys.path.insert(0, "../..")
 
 import requests
-from sanic import Sanic, response
-from sanic.response import json
 
+from domonic.utils import Utils
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import HTMLResponse, JSONResponse
 from domonic import domonic
 from domonic.html import *
-from domonic.utils import Utils
+
+app = FastAPI()
 
 page = lambda content: html(_lang="en", _class="no-js", _dir="auto").html(
     head(
         title("HTML 2 PYML CONVERTER"),
-        # link(_rel="stylesheet", _href="/assets/css/styles.css"),
         script(_src="https://code.jquery.com/jquery-3.5.1.min.js"),
         link(_rel="stylesheet", _href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.css"),
         script(
@@ -28,118 +28,65 @@ page = lambda content: html(_lang="en", _class="no-js", _dir="auto").html(
         link(_rel="stylesheet", _href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/monokai.min.css"),
         script(
             """
+            window.addEventListener('load', () => {
+                var inp = CodeMirror(document.querySelector('#input'), {
+                    lineNumbers: true,
+                    tabSize: 4,
+                    value: '<html></html>'
+                });
 
-        window.addEventListener('load', () => {
+                var outp = CodeMirror(document.querySelector('#output'), {
+                    lineNumbers: true,
+                    tabSize: 4,
+                    mode: 'python',
+                    theme: 'monokai',
+                    value: 'html()'
+                });
 
-        var inp = CodeMirror(document.querySelector('#input'), {
-            lineNumbers: true,
-            tabSize: 4,
-            value: '<html></html>'
-           });
+                function convert() {
+                    var input = inp.getValue();
+                    fetch("/convert", {
+                        method: "POST",
+                        body: JSON.stringify({ data: input }),
+                        headers: {"Content-Type": "application/json"}
+                    })
+                    .then(response => response.json())
+                    .then(data => outp.setValue(data.output))
+                    .catch(error => alert("ERROR!! " + error));
+                }
 
-        var outp = CodeMirror(document.querySelector('#output'), {
-                lineNumbers: true,
-                tabSize: 4,
-                mode: 'python',
-                theme: 'monokai',
-                value: 'html()'
+                $('#convert').on("click", function() {
+                    convert();
+                });
             });
-
-
-        function convert() {
-            // use jquery to get the textarea content from input and post it to API then puts result in output
-
-            //console.log(document.querySelector('#input').value);
-            //console.log(inp.getValue());
-
-            var input = inp.getValue(); //JSON.stringify(inp.getValue());
-            var output = document.querySelector('#output');
-            var data = input;
-
-
-            $.ajax({ url: "/convert",
-                type: "POST",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                data: data , // pass that text to the server as a correct JSON String
-                success: function (response) {     
-
-                    //console.log(response)
-                    //console.log(response.output)
-
-                    //output.innerHTML = response.output;
-                    outp.setValue(response.output);
-
-                },
-                error: function (type) { alert("ERROR!!" + type.responseText); }
-
-            });
-        }
-
-        $('#convert').on( "click", function() {
-            convert();
-        });
-
-
-
-
-
-        });
-
-
-
-        """,
+            """,
             _type="module",
         ),
     ),
-    body(
-        content,
-        #   script(_src="/assets/js/script.js", _type="module")
-    ),
+    body(content),
 )
-# )
 
 content = str(
     article(
         h1("HTML 2 PYML Converter!"),
-        p("You can use this tool to convert html into pyml"),
-        div(h5("html input:"), div(_id="input")),
-        div(h5("pyml output:"), div(_id="output")),
+        p("You can use this tool to convert HTML into PYML"),
+        div(h5("HTML input:"), div(_id="input")),
+        div(h5("PYML output:"), div(_id="output")),
         button("convert", _id="convert"),
     )
 )
 
-
-# render(page(content), "codemirror.html")
-
-app = Sanic(name="HTML 2 PYML converter")
-app.debug = True
-# app.static('/assets', './assets')
-
-
-@app.route("/")
-async def index(request):
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
     outp = render(page(str(content)))
-    return response.html(outp)
+    return HTMLResponse(content=outp)
 
-
-@app.route("/convert", methods=["GET", "POST"])
-async def convert(request):
-
-    data = request.body.decode("utf-8")
-    print(data)
-
-    code = data.strip('"').lstrip('"')
-
+@app.post("/convert", response_class=JSONResponse)
+async def convert(data: dict):
+    code = data.get("data").strip('"').lstrip('"')
     output = domonic.parse(code)
-
-    # output = domonic.evaluate(output)  # eval - should fix up params
-    # render(page, 'tmp/'+Utils.url2file(SITE)+'.pyml') # write evaulated
-    # outp = domonic.domonify(page)
-
-    # print(output)
-    return json({"output": output})
-
+    return {"output": output}
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

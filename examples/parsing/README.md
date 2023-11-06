@@ -1,6 +1,5 @@
 ## parsing
 
-
 You can hook domonic to the super fast html5 c++ parser. As mentioned in this ticket
 
 https://github.com/byteface/domonic/issues/28
