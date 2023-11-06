@@ -6,7 +6,7 @@ Sphinx==5.0.2
 fastapi==0.104.1
 uvicorn==0.24.0.post1
 toml==0.10.2
-ujson==5.2.0
+ujson==5.4.0
 websockets==10.1
 isort==5.10.1
 wheel
