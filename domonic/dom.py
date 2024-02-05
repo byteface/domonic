@@ -23,6 +23,19 @@ from domonic.webapi.xpath import (XPathEvaluator, XPathException,
 
 # from xml.dom.pulldom import END_ELEMENT
 
+from functools import wraps
+from threading import Thread
+
+def task(func, handler=Thread, *ta, **tkw):
+    @wraps(func)
+    def wrapper(*a, **kw):
+        thread = handler(*ta, target=func, args=a, kwargs=kw, **tkw)
+        thread.start()
+        return thread
+    return wrapper
+
+def daemon_task(func, *args, **kwargs):
+    return task(func, *args, handler=Thread, daemon=True, **kwargs)
 
 # TODO - unit tests
 class DOMConfig:
@@ -133,6 +146,7 @@ class Node(EventTarget):
         self.outerText: str = None
         self.parentNode = None
         self.prefix = None  # 🗑️
+        self.observerList = []
         # self.baseURIObject = None  # ?
         # self.nodePrincipal = None
         self._update_parents()
@@ -743,6 +757,66 @@ class Node(EventTarget):
     def __len__(self):
         return len(self.args)
 
+    def _add_mutation(
+        self, type=None, name=None, target=None,
+        addedNodes=None, removedNodes=None, previousSibling=None,
+        nextSibling=None, namespace=None, oldValue=None
+    ):
+        nodes = []
+        interestedObservers = {}
+
+        node = target
+
+        while node is not None and hasattr(node, "parentNode"):
+            nodes.append(node)
+            node = node.parentNode
+
+        for node in nodes:
+            for observer, options in node.observerList:
+                if ((
+                    node != target
+                    and options.get('subtree', False) is False
+                ) or (
+                    type == "attributes"
+                    and options.get('attributes', False) is False
+                ) or (
+                    type == "attributes" and (
+                        options.get("attributeFilter")
+                        and name not in options.get("attributeFilter")
+                        or namespace is not None
+                    )
+                ) or (
+                    type == "characterData"
+                    and options.get('characterData', False) is False
+                ) or (
+                    type == "childList"
+                    and options.get("childList", False) is False
+                )) is False:
+                    if not observer in interestedObservers:
+                        interestedObservers[observer] = None
+
+                    if (
+                        type == "attributes"
+                        and options.get("attributeOldValue") is True
+                    ) or (
+                        type == "characterData"
+                        and options.get("characterDataOldValue") is True
+                    ):
+                        interestedObservers[observer] = oldValue
+
+        for observer, mappedOldValue in interestedObservers.items():
+            observer: MutationObserver
+
+            record = MutationRecord(
+                type=type, target=target, addedNodes=addedNodes,
+                removedNodes=removedNodes, previousSibling=previousSibling,
+                nextSibling=nextSibling, attributeName=name,
+                attributeNamespace=namespace, oldValue=mappedOldValue
+            )
+
+            observer.append(record)
+
+
     def appendChild(self, aChild: "Node") -> "Node":
         """
         Adds a child to the current element.
@@ -754,11 +828,28 @@ class Node(EventTarget):
         if isinstance(aChild, DocumentFragment):
             items = aChild.args
             self.args = self.args + items
-            return DocumentFragment()
+            ret = DocumentFragment()
         else:
-            self.args = self.args + (aChild,)
+            if isinstance(aChild, Node):
+                self.args = self.args + (aChild,)
+            else:
+                self.args = self.args + (aChild,)
             # return aChild  # causes max recursion when called chained? then don't chain?
-            return aChild
+            ret = aChild
+
+        self._add_mutation(**{
+            "name": None,
+            "type": "childList",
+            "addedNodes": NodeList([aChild]),
+            "namespace": None,
+            "nextSibling": aChild.nextSibling,
+            "oldValue": None,
+            "previousSibling": aChild.previousSibling,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
+
+        return ret
 
     @property
     def childElementCount(self) -> int:
@@ -4086,17 +4177,133 @@ class HTMLCollection(list):
         else:
             return super().__getitem__(index)
 
+class MutationRecord:
+    """ MutationObserver Record Interface. """
 
-# TODO - is there a webapi module for this now?
-# from domonic.javascript import Object
-# MutationObserverInit = Object()
-# MutationObserverInit.subtree = False
-# MutationObserverInit.childList = False
-# MutationObserverInit.attributes = False
-# MutationObserverInit.attributeFilter = False
-# MutationObserverInit.attributeOldValue = False
-# MutationObserverInit.characterData = False
-# MutationObserverInit.characterDataOldValue = False
+    class Type:
+        ATTRIBUTES = "attributes"
+        CHILD_LIST = "childList"
+        CHARACTER_DATA = "characterData"
+    
+    target: Element
+    nextSibling: Element
+    previousSibling: Element
+
+    addedNodes: NodeList[Element]
+    removedNodes: NodeList[Element]
+
+    oldValue: str
+    attributeName: str
+    attributeNamespace: str
+
+    def __init__(
+        self, type=None, target=None, addedNodes=None,
+        removedNodes=None, previousSibling=None, nextSibling=None,
+        attributeName=None, attributeNamespace=None, oldValue=None
+    ):
+        self.type = type
+        self.target = target
+        self.addedNodes = addedNodes or NodeList()
+        self.removedNodes = removedNodes or NodeList()
+        self.previousSibling = previousSibling
+        self.nextSibling = nextSibling
+        self.attributeName = attributeName
+        self.attributeNamespace = attributeNamespace
+        self.oldValue = oldValue
+
+    def __setattr__(self, name, value):
+        if hasattr(self, name):
+            raise ValueError(f"Attribute '{name}' of {self.__class__.__name__} is read-only.")
+        super().__setattr__(name, value)
+
+    def __repr__(self):
+        return f"""{self.__class__.__name__}(
+    type={self.type !r}, target={self.target !r}, oldValue={self.oldValue !r},
+    addedNodes={self.addedNodes !r}, removedNodes={self.removedNodes !r},
+    previousSibling={self.previousSibling !r}, nextSibling={self.nextSibling !r},
+    attributeName={self.attributeName !r}, attributeNamespace={self.attributeNamespace !r}
+)"""
+
+class MutationObserver: # TODO - test
+    """ The MutationObserver interface provides the ability to watch for changes being made to the DOM tree. """
+
+    def __init__(
+        self, callback: t.Optional[t.Callable[[list[MutationRecord]], None]] = None,
+        interval=.5, append_callback: t.Optional[t.Callable[[MutationRecord], None]] = None
+    ):
+        self.is_connected = threading.Event()
+        self.callback = callback
+        self.append_callback = append_callback
+        self.interval = interval
+        self.mutations = []
+        self.nodeList = []
+
+    def disconnect(self):
+        """ Stops the MutationObserver instance from receiving further notifications until
+        and unless observe() is called again. """
+
+        for target in self.nodeList:
+            for item in target.observerList:
+                if item[0] == self:
+                    target.observerList.remove(item)
+        self.is_connected.clear()
+        return self
+
+    def observe(
+        self, target: Node, subtree=False,
+        childList=False, attributes=False,
+        attributeFilter=None, attributeOldValue=False,
+        characterData=False, characterDataOldValue=False
+    ):
+        """ Configures the MutationObserver to begin receiving notifications through
+        its callback function when DOM changes matching the given options occur. """
+
+        options = {
+            "subtree": subtree,
+            "childList": childList,
+            "attributes": attributes,
+            "characterData": characterData,
+            "attributeFilter": attributeFilter,
+            "attributeOldValue": attributeOldValue,
+            "characterDataOldValue": characterDataOldValue
+        }
+
+        for item in target.observerList:
+            if item[0] == self:
+                item[1] = options
+                return self
+
+        target.observerList.append([self, options])
+        self.nodeList.append(target)
+
+        self.watch_mutations()
+
+    def takeRecords(self):
+        """ Removes all pending notifications from the MutationObserver's notification queue
+        and returns them in a new Array of MutationRecord objects. """
+        records = self.mutations.copy()
+        self.mutations.clear()
+        return records
+    
+    def append(self, record: MutationRecord):
+        """ Append MutationRecord """
+        self.mutations.insert(0, record)
+        if self.append_callback:
+            self.append_callback(record)
+        # self.callback(self.takeRecords())
+
+    @daemon_task
+    def watch_mutations(self):
+        if not self.callback: return
+
+        self.is_connected.set()
+
+        while self.is_connected.is_set():
+            time.sleep(self.interval)
+
+            if len(self.mutations):
+                self.callback(self.takeRecords())
+
 
 # class MutationObserver(): # TODO - test
 #     """ The MutationObserver interface provides the ability to watch for changes being made to the DOM tree. """
