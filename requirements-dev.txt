@@ -3,7 +3,7 @@ flake8==4.0.1
 itsdangerous==2.1.2
 Jinja2==3.0.3
 Sphinx==5.0.2
-fastapi==0.104.1
+fastapi==0.109.1
 uvicorn==0.24.0.post1
 toml==0.10.2
 ujson==5.2.0
