@@ -23,8 +23,10 @@ from domonic.webapi.xpath import (XPathEvaluator, XPathException,
 
 # from xml.dom.pulldom import END_ELEMENT
 
+import time
+import typing as t
 from functools import wraps
-from threading import Thread
+from threading import Thread, Event
 
 def task(func, handler=Thread, *ta, **tkw):
     @wraps(func)
@@ -36,6 +38,79 @@ def task(func, handler=Thread, *ta, **tkw):
 
 def daemon_task(func, *args, **kwargs):
     return task(func, *args, handler=Thread, daemon=True, **kwargs)
+
+
+def generate_xpath(node):
+    if not node: return None
+
+    temp_one = get_element_index(
+      node,
+      node.parentNode.children if node.parentNode else []
+    )
+
+    try:
+        last_node_index = temp_one.index(node)
+    except ValueError:
+        last_node_index = 1
+
+    if len(temp_one) == 1:
+        path = "/" + node.name
+    elif len(temp_one) > 1:
+        last_node_index = last_node_index + 1
+        path = "/" + node.name + "[" + last_node_index + "]"
+    else:
+        path = ""
+
+    while node and node.name != "html" and node.parentNode != None:
+        node = node.parentNode
+
+        # When loop reaches the last element of the dom (body)*/
+        if (node.name == "body"):
+            current = "/body"
+            path = current + path
+            break
+
+        # if the node has id attribute and is not the last element */
+        if node.id  and node.id != "" and node.name != "body":
+            current = "/" + node.name + "[@id='" + node.id + "']"
+            path = current + path
+            break
+
+        # if the node has class attribute and has no id attribute or is not the last element */
+        if ((not node.id or node.id == "") and node.name != "body"):
+            if (node.parentNode != None):
+                temp = get_element_index(
+                  node, node.parentNode.children
+                )
+                try:
+                    node_index = temp_one.index(node)
+                except ValueError:
+                    node_index = 1
+
+                if len(temp) == 1:
+                    current = "/" + node.name
+                elif len(temp) > 1:
+                    node_index = node_index + 1
+                    current = "/" + node.name + "[" + node_index + "]"
+
+        path = current + path
+
+    return "/" + path
+
+
+def get_element_index(node, children):
+  if not node:
+    return
+
+  temp = []
+
+  for child in children:
+    if child and child.name == node.name:
+      temp.append(child)
+
+    return temp
+
+
 
 # TODO - unit tests
 class DOMConfig:
@@ -134,7 +209,7 @@ class Node(EventTarget):
                 ]
             )
         except IndexError as e:
-
+            from domonic.html import TemplateError
             raise TemplateError(e)
         # except Exception as e:
         # print(e)
@@ -290,7 +365,7 @@ class Node(EventTarget):
         try:
             return "".join([format_attr(key, value) for key, value in self.kwargs.items()])
         except IndexError as e:
-
+            from domonic.html import TemplateError
             raise TemplateError(e) from None
         # except Exception as e:
         # print(e)
@@ -310,7 +385,7 @@ class Node(EventTarget):
                 ]
             )
         except IndexError as e:
-
+            from domonic.html import TemplateError
             raise TemplateError(e) from None
         # except Exception as e:
         # print(e)
@@ -589,7 +664,7 @@ class Node(EventTarget):
             dtype = self.doctype
 
         # if self is a closed_tag, return the content
-
+        from domonic.html import closed_tag
         if isinstance(self, closed_tag):
             return f"\n{dent}<{self.name}{self.__attributes__} />"
 
@@ -2474,7 +2549,7 @@ class Element(Node):
             # TODO - will need the parser to work for this to work properly. for now shove all on first content node
             oldValue = [*self.args]
 
-            self.args = (eval(HtmlToPy(value), globals()),)
+            self.args = (value,)
             self._add_mutation(**{
                 "name": "innerHTML",
                 "type": "characterData",
@@ -2497,9 +2572,7 @@ class Element(Node):
         if isinstance(value, Element):
             self = value
         if isinstance(value, str):
-            node = eval(HtmlToPy(value), globals())
-            if self.parentNode:
-                self.parentNode.replaceChild(node, self)
+            pass
         return self
 
     def html(self, *args):
@@ -2591,11 +2664,12 @@ class Element(Node):
         # loop all attributes and return the ones that start with data-
         # return {key: value for key, value in self.kwargs.items() if key.startswith('data-')}
 
+        from domonic.utils import Utils
         dsmap = DOMStringMap()
         for key, value in self.kwargs.items():
             if key.startswith("data-"):
                 # remove data from the key and change case to lower
-                key = case_camel(key.replace("data-", ""))
+                key = Utils.case_camel(key.replace("data-", ""))
                 dsmap[key] = value
         return dsmap
 
@@ -4471,7 +4545,7 @@ class MutationObserver: # TODO - test
         self, callback: t.Optional[t.Callable[[list[MutationRecord]], None]] = None,
         interval=.5, append_callback: t.Optional[t.Callable[[MutationRecord], None]] = None
     ):
-        self.is_connected = threading.Event()
+        self.is_connected = Event()
         self.callback = callback
         self.append_callback = append_callback
         self.interval = interval
