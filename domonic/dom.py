@@ -43,6 +43,7 @@ def daemon_task(func, *args, **kwargs):
 def generate_xpath(node):
     if not node: return None
 
+    current = ""
     temp_one = get_element_index(
       node,
       node.parentNode.children if node.parentNode else []
