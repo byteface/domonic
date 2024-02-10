@@ -40,79 +40,6 @@ def daemon_task(func, *args, **kwargs):
     return task(func, *args, handler=Thread, daemon=True, **kwargs)
 
 
-def generate_xpath(node):
-    if not node: return None
-
-    current = ""
-    temp_one = get_element_index(
-      node,
-      node.parentNode.children if node.parentNode else []
-    )
-
-    try:
-        last_node_index = temp_one.index(node)
-    except ValueError:
-        last_node_index = 1
-
-    if len(temp_one) == 1:
-        path = "/" + node.name
-    elif len(temp_one) > 1:
-        last_node_index = last_node_index + 1
-        path = "/" + node.name + "[" + last_node_index + "]"
-    else:
-        path = ""
-
-    while node and node.name != "html" and node.parentNode != None:
-        node = node.parentNode
-
-        # When loop reaches the last element of the dom (body)*/
-        if (node.name == "body"):
-            current = "/body"
-            path = current + path
-            break
-
-        # if the node has id attribute and is not the last element */
-        if node.id  and node.id != "" and node.name != "body":
-            current = "/" + node.name + "[@id='" + node.id + "']"
-            path = current + path
-            break
-
-        # if the node has class attribute and has no id attribute or is not the last element */
-        if ((not node.id or node.id == "") and node.name != "body"):
-            if (node.parentNode != None):
-                temp = get_element_index(
-                  node, node.parentNode.children
-                )
-                try:
-                    node_index = temp_one.index(node)
-                except ValueError:
-                    node_index = 1
-
-                if len(temp) == 1:
-                    current = "/" + node.name
-                elif len(temp) > 1:
-                    node_index = node_index + 1
-                    current = "/" + node.name + "[" + node_index + "]"
-
-        path = current + path
-
-    return "/" + path
-
-
-def get_element_index(node, children):
-  if not node:
-    return
-
-  temp = []
-
-  for child in children:
-    if child and child.name == node.name:
-      temp.append(child)
-
-    return temp
-
-
-
 # TODO - unit tests
 class DOMConfig:
     """DOMConfig: Not to be confused with the obsolete DOMConfiguration.
@@ -1207,9 +1134,6 @@ class Node(EventTarget):
             if each == node:
                 n = node
 
-                # NOTE: Remove in main implementation
-                xpath = generate_xpath(node)
-
                 n.parentNode = None
                 replace_args = list(self.args)
                 replace_args.remove(node)
@@ -1223,7 +1147,7 @@ class Node(EventTarget):
                     "nextSibling": None,
                     "oldValue": None,
                     "previousSibling": None,
-                    "removedNodes": NodeList([(node, xpath)]),
+                    "removedNodes": NodeList([node]),
                     "target": self,
                 })
 
@@ -1246,8 +1170,6 @@ class Node(EventTarget):
         """
         for count, each in enumerate(self.args):
             if each == oldChild:
-                # NOTE: Remove in main implementation
-                xpath = generate_xpath(oldChild)
 
                 replace_args = list(self.args)
                 replace_args[count] = newChild
@@ -1260,7 +1182,7 @@ class Node(EventTarget):
                     "nextSibling": None,
                     "oldValue": None,
                     "previousSibling": None,
-                    "removedNodes": NodeList([(oldChild, xpath)]),
+                    "removedNodes": NodeList([oldChild]),
                     "target": self,
                 })
                 return oldChild
