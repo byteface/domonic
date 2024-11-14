@@ -23,6 +23,22 @@ from domonic.webapi.xpath import (XPathEvaluator, XPathException,
 
 # from xml.dom.pulldom import END_ELEMENT
 
+import time
+import typing as t
+from functools import wraps
+from threading import Thread, Event
+
+def task(func, handler=Thread, *ta, **tkw):
+    @wraps(func)
+    def wrapper(*a, **kw):
+        thread = handler(*ta, target=func, args=a, kwargs=kw, **tkw)
+        thread.start()
+        return thread
+    return wrapper
+
+def daemon_task(func, *args, **kwargs):
+    return task(func, *args, handler=Thread, daemon=True, **kwargs)
+
 
 # TODO - unit tests
 class DOMConfig:
@@ -122,17 +138,19 @@ class Node(EventTarget):
             )
         except IndexError as e:
             from domonic.html import TemplateError
-
             raise TemplateError(e)
         # except Exception as e:
         # print(e)
 
-        self.baseURI: str = ""  # TODO - if ownerdocument has a basetag, use that
-        self.isConnected: bool = True
-        self.namespaceURI: str = "http://www.w3.org/1999/xhtml"
-        self.outerText: str = None
+        self.prefix = None
         self.parentNode = None
-        self.prefix = None  # 🗑️
+        self.outerText: str = None
+        self.isConnected: bool = True
+        self.observerList = []
+
+        # TODO - if ownerdocument has a basetag, use that
+        self.baseURI: str = "eventual.technology" 
+        self.namespaceURI: str = "http://www.w3.org/1999/xhtml"
         # self.baseURIObject = None  # ?
         # self.nodePrincipal = None
         self._update_parents()
@@ -276,8 +294,7 @@ class Node(EventTarget):
             return "".join([format_attr(key, value) for key, value in self.kwargs.items()])
         except IndexError as e:
             from domonic.html import TemplateError
-
-            raise TemplateError(e)
+            raise TemplateError(e) from None
         # except Exception as e:
         # print(e)
 
@@ -297,12 +314,14 @@ class Node(EventTarget):
             )
         except IndexError as e:
             from domonic.html import TemplateError
-
-            raise TemplateError(e)
+            raise TemplateError(e) from None
         # except Exception as e:
         # print(e)
 
     def __str__(self):
+        if isinstance(self, Document) or not self.name:
+            return self.content
+
         if not DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS:
             if self.name in [
                 "html",
@@ -331,7 +350,7 @@ class Node(EventTarget):
         print(''.join([str(c) for c in cells]))
         """
         reproducer = []
-        for i in range(other):
+        for _ in range(other):
             reproducer.append(copy.deepcopy(self))
         return reproducer
 
@@ -341,42 +360,27 @@ class Node(EventTarget):
         cells = cell()*10
         print(''.join([str(c) for c in cells]))
         """
-        reproducer = []
-        for i in range(other):
-            reproducer.append(copy.deepcopy(self))
-        return reproducer
+        return self.__mul__(other)
 
     def __truediv__(self, other):
         """use to render clones without having to parse commas yourself"""
-        reproducer = []
-        for i in range(other):
-            reproducer.append(str(self))
-        return "".join(reproducer)
+        return "".join(self.__mul__(other))
 
     def __rtruediv__(self, other):
         """use to render clones without having to parse commas yourself"""
-        reproducer = []
-        for i in range(other):
-            reproducer.append(str(self))
-        return "".join(reproducer)
+        return "".join(self.__mul__(other))
 
     def __div__(self, other):
         """
         useful for prototyping as renders. to retain objects use multiply
         """
-        reproducer = []
-        for i in range(other):
-            reproducer.append(str(self))
-        return "".join(reproducer)
+        return "".join(self.__mul__(other))
 
     def __rdiv__(self, other):
         """
         useful for prototyping as renders. to retain objects use multiply
         """
-        reproducer = []
-        for i in range(other):
-            reproducer.append(str(self))
-        return "".join(reproducer)
+        return "".join(self.__mul__(other))
 
     def __or__(self, other):
         """return self unless other is something"""
@@ -454,7 +458,7 @@ class Node(EventTarget):
         allows dot notation for reading attributes
         *credit to the peeps on discord/python for this one*
         """
-        kwargs = super().__getattribute__("kwargs")
+        kwargs = self.kwargs
 
         if attr in kwargs:
             return kwargs[attr]
@@ -466,13 +470,6 @@ class Node(EventTarget):
         retry = attr[1 : len(attr)]
         if retry in kwargs:
             return kwargs[retry]
-
-        # TODO - think of solution for other MIA attributes as when it would fail silently
-        # it was a nightmare. But having to catch the raised errors may also be sluggish
-        # maybe specific tags can override this method and provide default values when not present?
-        if self.__class__.__name__ == "a" and attr == "href":
-            print("    Warning: No 'href' attribute was defined for this 'a' tag.")
-            return ""
 
         try:
             # return getattr(super(), attr)
@@ -596,7 +593,6 @@ class Node(EventTarget):
 
         # if self is a closed_tag, return the content
         from domonic.html import closed_tag
-
         if isinstance(self, closed_tag):
             return f"\n{dent}<{self.name}{self.__attributes__} />"
 
@@ -646,7 +642,7 @@ class Node(EventTarget):
     #     print(kwargs)
     #     print(self.name)
 
-    def __setattr__(self, name: str, value: Any) -> None:
+    def __setattr__(self, name: str, value: t.Any) -> None:
         try:
             if name == "args":
                 super().__setattr__(name, value)
@@ -707,10 +703,9 @@ class Node(EventTarget):
         so will have to call manually whenever self.args are ammended.
         """
         try:
-            # print(self.args)
             for el in self.args:
                 # if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
-                if isinstance(el, (Element, Node)):
+                if isinstance(el, Node):
                     el.parentNode = self
                     el._update_parents()
         except Exception as e:
@@ -724,24 +719,85 @@ class Node(EventTarget):
         """
         callback(element)  # TODO - this can block on failed attributes
         elements = []
+
         if isinstance(element, Node):
             elements = element.args
         elif isinstance(element, list):
             elements = element
+
         try:
             for el in elements:
-                if type(el) not in [str, list, dict, int, float, tuple, object, set]:
+                if isinstance(el, Node):
                     # callback(el)
                     el._iterate(el, callback)
                 elif isinstance(el, list):  # if someone is incorrectly using a list as a child
                     for e in el:
-                        if type(e) not in (str, list, dict, int, float, tuple, object, set):
+                        if isinstance(el, Node):
                             e._iterate(e, callback)
         except Exception as e:
             print("_iterate error", e)
 
     def __len__(self):
         return len(self.args)
+
+    def _add_mutation(
+        self, type=None, name=None, target=None,
+        addedNodes=None, removedNodes=None, previousSibling=None,
+        nextSibling=None, namespace=None, oldValue=None
+    ):
+        nodes = []
+        interestedObservers = {}
+
+        node = target
+
+        while node is not None and hasattr(node, "parentNode"):
+            nodes.append(node)
+            node = node.parentNode
+
+        for node in nodes:
+            for observer, options in node.observerList:
+                if ((
+                    node != target
+                    and options.get('subtree', False) is False
+                ) or (
+                    type == "attributes"
+                    and options.get('attributes', False) is False
+                ) or (
+                    type == "attributes" and (
+                        options.get("attributeFilter")
+                        and name not in options.get("attributeFilter")
+                        or namespace is not None
+                    )
+                ) or (
+                    type == "characterData"
+                    and options.get('characterData', False) is False
+                ) or (
+                    type == "childList"
+                    and options.get("childList", False) is False
+                )) is False:
+                    if not observer in interestedObservers:
+                        interestedObservers[observer] = None
+
+                    if (
+                        type == "attributes"
+                        and options.get("attributeOldValue") is True
+                    ) or (
+                        type == "characterData"
+                        and options.get("characterDataOldValue") is True
+                    ):
+                        interestedObservers[observer] = oldValue
+
+        for observer, mappedOldValue in interestedObservers.items():
+            observer: MutationObserver
+
+            record = MutationRecord(
+                type=type, target=target, addedNodes=addedNodes,
+                removedNodes=removedNodes, previousSibling=previousSibling,
+                nextSibling=nextSibling, attributeName=name,
+                attributeNamespace=namespace, oldValue=mappedOldValue
+            )
+
+            observer.append(record)
 
     def appendChild(self, aChild: "Node") -> "Node":
         """
@@ -754,11 +810,28 @@ class Node(EventTarget):
         if isinstance(aChild, DocumentFragment):
             items = aChild.args
             self.args = self.args + items
-            return DocumentFragment()
+            ret = DocumentFragment()
         else:
-            self.args = self.args + (aChild,)
+            if isinstance(aChild, Node):
+                self.args = self.args + (aChild,)
+            else:
+                self.args = self.args + (aChild,)
             # return aChild  # causes max recursion when called chained? then don't chain?
-            return aChild
+            ret = aChild
+
+        self._add_mutation(**{
+            "name": None,
+            "type": "childList",
+            "addedNodes": NodeList([aChild]),
+            "namespace": None,
+            "nextSibling": aChild.nextSibling,
+            "oldValue": None,
+            "previousSibling": aChild.previousSibling,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
+
+        return ret
 
     @property
     def childElementCount(self) -> int:
@@ -772,9 +845,9 @@ class Node(EventTarget):
         return NodeList(self.args)
 
     @property
-    def children(self):
+    def children(self) -> list["Element"]:
         """Returns a collection of an element's child element (excluding text and comment nodes)"""
-        newlist: list = []
+        newlist = []
         for each in self.args:
             if type(each) != str:
                 newlist.append(each)
@@ -849,7 +922,7 @@ class Node(EventTarget):
         else:
             return Node.DOCUMENT_POSITION_FOLLOWING
 
-    def contains(self, node):
+    def contains(self, node: "Node") -> bool:
         """Check whether a node is a descendant of a given node"""
         # this will go crunch on big stuff... need to consider best way
         for each in self.args:
@@ -864,7 +937,7 @@ class Node(EventTarget):
         return False
 
     @property
-    def firstChild(self):
+    def firstChild(self) -> t.Union["Element", None]:
         """Returns the first child node of an element"""
         try:
             return self.args[0]  # TODO - check if this means includes content
@@ -876,7 +949,7 @@ class Node(EventTarget):
         return len(self.args) > 0
 
     @property
-    def lastChild(self):
+    def lastChild(self) -> t.Union["Element", None]:
         """Returns the last child node of an element"""
         try:
             return self.args[len(self.args) - 1]
@@ -884,14 +957,14 @@ class Node(EventTarget):
             return None
 
     @property
-    def localName(self):
+    def localName(self) -> t.Union[str, None]:
         try:
             return self.tagName
         except Exception:
             return None
 
     @property
-    def nodeName(self):
+    def nodeName(self) -> t.Union[str, None]:
         """Returns the name of a node"""
         # TODO - not sure what's better this or overriding on every element
         # if isinstance(self, Text):
@@ -944,13 +1017,31 @@ class Node(EventTarget):
     @nodeValue.setter
     def nodeValue(self, content):
         """Sets or returns the value of a node"""
+        oldValue = str(self.args)
         self.args = (content,)
+        self._add_mutation(**{
+            "name": "nodeValue",
+            "type": "characterData",
+            "addedNodes": NodeList(),
+            "namespace": None,
+            "nextSibling": None,
+            "oldValue": oldValue,
+            "previousSibling": None,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
         return content
 
     @property
-    def ownerDocument(self):
+    def ownerDocument(self) -> "Document":
         """Returns the root element (document object) for an element"""
-        return self.rootNode
+
+        node = self
+        while node:
+            if isinstance(node, Document):
+                return node
+            node = node.parentNode
+        return None
 
     @ownerDocument.setter
     def ownerDocument(self, newOwner):  #: Element):
@@ -969,10 +1060,8 @@ class Node(EventTarget):
             return self
 
         node = self
-        nxt = self.parentNode
-        while nxt is not None:
-            node = nxt
-            nxt = nxt.parentNode
+        while node.parentNode is not None:
+            node = node.parentNode
         return node
 
     def insertBefore(self, new_node, reference_node=None):
@@ -987,11 +1076,53 @@ class Node(EventTarget):
             # remove new_node from its previous parent node
             if new_node.parentNode is not None:
                 new_node.parentNode.removeChild(new_node)
+
             self.args = (
                 self.args[: self.args.index(reference_node)]
                 + (new_node,)
-                + self.args[self.args.index(reference_node) :]
+                + self.args[self.args.index(reference_node):]
             )
+            self._add_mutation(**{
+                "name": None,
+                "type": "childList",
+                "addedNodes": NodeList(new_node),
+                "namespace": None,
+                "nextSibling": None,
+                "oldValue": None,
+                "previousSibling": None,
+                "removedNodes": NodeList(),
+                "target": self,
+            })
+        return new_node
+
+    def insertAfter(self, new_node, reference_node=None):
+        """inserts a node after a reference node as a child of a specified parent node.
+        this will remove the node from its previous parent node, if any.
+
+        # TODO - can throw value error if wrong ordered params. may be helpful to catch to say so.
+        """
+        if reference_node is None:
+            self.appendChild(new_node)
+        else:
+            # remove new_node from its previous parent node
+            if new_node.parentNode is not None:
+                new_node.parentNode.removeChild(new_node)
+            self.args = (
+                self.args[: self.args.index(reference_node) + 1]
+                + (new_node,)
+                + self.args[self.args.index(reference_node) + 1:]
+            )
+            self._add_mutation(**{
+                "name": None,
+                "type": "childList",
+                "addedNodes": NodeList([new_node]),
+                "namespace": None,
+                "nextSibling": None,
+                "oldValue": None,
+                "previousSibling": None,
+                "removedNodes": NodeList(),
+                "target": self,
+            })
         return new_node
 
     def removeChild(self, node):
@@ -1002,10 +1133,23 @@ class Node(EventTarget):
 
             if each == node:
                 n = node
+
                 n.parentNode = None
                 replace_args = list(self.args)
                 replace_args.remove(node)
                 self.args = tuple(replace_args)
+
+                self._add_mutation(**{
+                    "name": None,
+                    "type": "childList",
+                    "addedNodes": NodeList(),
+                    "namespace": None,
+                    "nextSibling": None,
+                    "oldValue": None,
+                    "previousSibling": None,
+                    "removedNodes": NodeList([node]),
+                    "target": self,
+                })
 
                 return n
             r = each.removeChild(node)
@@ -1026,11 +1170,24 @@ class Node(EventTarget):
         """
         for count, each in enumerate(self.args):
             if each == oldChild:
+
                 replace_args = list(self.args)
                 replace_args[count] = newChild
                 self.args = tuple(replace_args)
+                self._add_mutation(**{
+                    "name": None,
+                    "type": "childList",
+                    "addedNodes": NodeList([newChild]),
+                    "namespace": None,
+                    "nextSibling": None,
+                    "oldValue": None,
+                    "previousSibling": None,
+                    "removedNodes": NodeList([oldChild]),
+                    "target": self,
+                })
                 return oldChild
         return oldChild
+
         # for count, each in enumerate(self.args):
         #     if each == oldChild:
         #         n = oldChild
@@ -1132,7 +1289,7 @@ class Node(EventTarget):
         # nodevalue is lvl 1 spec. textcontent is lvl 3 spec.
         outp = ""
         for each in self.args:
-            if type(each) is str:
+            if isinstance(each, str):
                 outp = outp + each
             else:
                 val = each.textContent
@@ -1147,12 +1304,26 @@ class Node(EventTarget):
     @textContent.setter
     def textContent(self, content):
         """Sets the text content of a node and its descendants"""
+        oldValue = self.textContent
+        if oldValue == content: return
+
         self.args = (content,)
+        self._add_mutation(**{
+            "name": "textContent",
+            "type": "characterData",
+            "addedNodes": NodeList(),
+            "namespace": None,
+            "nextSibling": None,
+            "oldValue": oldValue,
+            "previousSibling": None,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
         return content
 
-    # def isSupported(self): return False #  🗑
-    # getUserData() 🗑️
-    # setUserData() 🗑️
+    # def isSupported(self): return False #  ðŸ—‘
+    # getUserData() ðŸ—‘ï¸
+    # setUserData() ðŸ—‘ï¸
 
     # non standard methods to be etree compatible
     # seems to make it work with https://github.com/sissaschool/elementpath
@@ -1204,7 +1375,7 @@ class Node(EventTarget):
         return len(self)
 
 
-class ParentNode:
+class ParentNode(Node):
     """not tested yet"""
 
     def __init__(self, *args, **kwargs):
@@ -1241,11 +1412,33 @@ class ParentNode:
 
     def prepend(self, *args):
         self.args = (args).extend(self.args)
+        self._add_mutation(**{
+            "name": None,
+            "type": "childList",
+            "addedNodes": NodeList(args),
+            "namespace": None,
+            "nextSibling": None,
+            "oldValue": None,
+            "previousSibling": None,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
         return self
 
     def replaceChildren(self, children):
+        removed = [x for x in self.args]
         self.args = children
-
+        self._add_mutation(**{
+            "name": None,
+            "type": "childList",
+            "addedNodes": NodeList(),
+            "namespace": None,
+            "nextSibling": None,
+            "oldValue": None,
+            "previousSibling": None,
+            "removedNodes": NodeList(removed),
+            "target": self,
+        })
 
 class ChildNode(Node):
     """not tested yet"""
@@ -2022,6 +2215,7 @@ class Element(Node):
     def __init__(self, *args, **kwargs):
         # self.content = None
         # self.attributes = None
+        self.kwargs = {}
         if self.hasAttribute("id"):
             self.id = self.id  # ''#None
 
@@ -2156,7 +2350,7 @@ class Element(Node):
                 found.extend(elements)
             return found
 
-        context = [document]
+        context = [self.ownerDocument]
         inheriters = all_selectors.split(" ")
 
         # Space
@@ -2169,7 +2363,7 @@ class Element(Node):
                 parts = str.split(element, "#")
                 tag = parts[0]
                 id = parts[1]
-                ele = document.getElementById(id)
+                ele = self.ownerDocument.getElementById(id)
                 context = [ele]  # [](ele)
                 continue
 
@@ -2179,7 +2373,7 @@ class Element(Node):
                 tag = parts[0]
                 class_name = parts[1]
                 found = getElements(context, tag)
-                # found = document.getElementsByClassName(class_name)
+                # found = self.ownerDocument.getElementsByClassName(class_name)
                 context = []
                 for fnd in found:
                     if fnd.getAttribute("class") and re.search(
@@ -2234,6 +2428,17 @@ class Element(Node):
     def append(self, *args):
         """Inserts a set of Node objects or DOMString objects after the last child of the Element."""
         self.args += args
+        self._add_mutation(**{
+            "name": None,
+            "type": "childList",
+            "addedNodes": NodeList(args),
+            "namespace": None,
+            "nextSibling": None,
+            "oldValue": None,
+            "previousSibling": None,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
         return self
 
     # elem.attachShadow({mode: open|closed})
@@ -2265,7 +2470,20 @@ class Element(Node):
     def innerHTML(self, value):
         if value is not None:
             # TODO - will need the parser to work for this to work properly. for now shove all on first content node
+            oldValue = [*self.args]
+
             self.args = (value,)
+            self._add_mutation(**{
+                "name": "innerHTML",
+                "type": "characterData",
+                "addedNodes": NodeList(),
+                "namespace": None,
+                "nextSibling": None,
+                "oldValue": oldValue,
+                "previousSibling": None,
+                "removedNodes": NodeList(),
+                "target": self,
+            })
         return self.content
 
     @property
@@ -2277,14 +2495,23 @@ class Element(Node):
         if isinstance(value, Element):
             self = value
         if isinstance(value, str):
-            # self = value
-            # TODO - parse
-            # TODO - will need the parser to work for this to work properly
             pass
         return self
 
     def html(self, *args):
+        oldValue = [*self.args]
         self.args = args
+        self._add_mutation(**{
+            "name": "html",
+            "type": "characterData",
+            "addedNodes": NodeList(),
+            "namespace": None,
+            "nextSibling": None,
+            "oldValue": oldValue,
+            "previousSibling": None,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
         return self
 
     def blur(self):
@@ -2359,13 +2586,13 @@ class Element(Node):
         # return self.getAttribute('data-*')  # TODO - copilot suggested a star. is that supposed to work?
         # loop all attributes and return the ones that start with data-
         # return {key: value for key, value in self.kwargs.items() if key.startswith('data-')}
-        from domonic.utils import Utils
 
+        from domonic.utils import Utils
         dsmap = DOMStringMap()
         for key, value in self.kwargs.items():
             if key.startswith("data-"):
                 # remove data from the key and change case to lower
-                key = Utils.camel_case(key.replace("data-", ""))
+                key = Utils.case_camel(key.replace("data-", ""))
                 dsmap[key] = value
         return dsmap
 
@@ -2508,9 +2735,25 @@ class Element(Node):
         self.setAttribute("id", newid)
 
     # Sets or returns the text content of a node and its descendants
+    @property
+    def innerText(self):
+        return "".join([str(each) for each in self.args if not isinstance(each, Node)])
+    
+    @innerText.setter
     def innerText(self, *args):
+        oldValue = self.innerText
         self.args = args
-        return "".join([each.__str__() for each in self.args])
+        self._add_mutation(**{
+            "name": "innerText",
+            "type": "characterData",
+            "addedNodes": NodeList(),
+            "namespace": None,
+            "nextSibling": None,
+            "oldValue": oldValue,
+            "previousSibling": None,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
 
     # Inserts an element adjacent to the current element
     def insertAdjacentElement(self, position: str, element):  # TODO - test. these look wrong.
@@ -2621,6 +2864,7 @@ class Element(Node):
         """Joins adjacent text nodes and removes empty text nodes in an element"""
         content = []
         nodestr = ""
+        oldValue = self.innerText
         for s in self.args:
             if type(s) == Text:
                 # content.append(s.textContent)
@@ -2637,6 +2881,18 @@ class Element(Node):
         if nodestr != "":
             content.append(nodestr)
         self.args = content
+
+        self._add_mutation(**{
+            "name": "normalize",
+            "type": "characterData",
+            "addedNodes": NodeList(),
+            "namespace": None,
+            "nextSibling": None,
+            "oldValue": oldValue,
+            "previousSibling": None,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
         return self.args
 
     def offsetHeight(self):
@@ -2677,6 +2933,27 @@ class Element(Node):
         """Prepends a node to the current element"""
         newargs = list(args) + list(self.args)
         self.args = tuple(newargs)
+        self._add_mutation(**{
+            "name": None,
+            "type": "childList",
+            "addedNodes": NodeList(args),
+            "namespace": None,
+            "nextSibling": None,
+            "oldValue": None,
+            "previousSibling": None,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
+
+    # def before(self, *args):
+    #     """Prepends a node to the current element"""
+    #     self.parentElement
+    #     self.args = tuple(newargs)
+
+    # def after(self, *args):
+    #     """Prepends a node to the current element"""
+    #     newargs = list(args) + list(self.args)
+    #     self.args = tuple(newargs)
 
     def querySelector(self, query: str):
         """[Returns the first child element that matches a specified CSS selector(s) of an element]
@@ -2692,7 +2969,7 @@ class Element(Node):
         except Exception as e:
             return None
 
-    def querySelectorAll(self, query: str):
+    def querySelectorAll(self, query: str) -> NodeList:
         """[Returns all child elements that matches a specified CSS selector(s) of an element]
 
         Args:
@@ -2701,6 +2978,8 @@ class Element(Node):
         Returns:
             [type]: [a list of Element objects]
         """
+        query = query.strip()
+
         naked_query = query[1:]
         if "." in naked_query or "[" in naked_query or " " in naked_query:
             # return self.getElementsBySelector(query, self)
@@ -2709,7 +2988,6 @@ class Element(Node):
 
             try:
                 expression = HTMLTranslator().css_to_xpath(query)
-                from domonic.webapi.xpath import XPathEvaluator, XPathResult
 
                 evaluator = XPathEvaluator()
                 expression = evaluator.createExpression(expression)
@@ -2722,11 +3000,11 @@ class Element(Node):
         elements = []
 
         def anon(el):
-            if self._matchElement(el, query):
+            if query == "*" or self._matchElement(el, query):
                 elements.append(el)
 
         self._iterate(self, anon)
-        return elements
+        return NodeList(elements)
 
     def remove(self):
         """Removes the element from the DOM"""
@@ -2746,7 +3024,19 @@ class Element(Node):
         try:
             if attribute[0:1] != "_":
                 attribute = "_" + attribute
+            oldValue = self.kwargs.get(attribute)
             del self.kwargs[attribute]
+            self._add_mutation(**{
+                "name": attribute,
+                "type": "attributes",
+                "addedNodes": NodeList(),
+                "namespace": None,
+                "nextSibling": None,
+                "oldValue": oldValue,
+                "previousSibling": None,
+                "removedNodes": NodeList(),
+                "target": self,
+            })
         except Exception as e:
             print("failed to remove!", e)
             pass
@@ -2757,6 +3047,18 @@ class Element(Node):
             if attribute == each:
                 val = self.kwargs[each]
                 del self.kwargs[each]
+
+                self._add_mutation(**{
+                    "name": attribute,
+                    "type": "attributes",
+                    "addedNodes": NodeList(),
+                    "namespace": None,
+                    "nextSibling": None,
+                    "oldValue": None,
+                    "previousSibling": None,
+                    "removedNodes": NodeList(),
+                    "target": self,
+                })
                 return Attr(attribute, val)
 
     def requestFullscreen(self):
@@ -2796,9 +3098,24 @@ class Element(Node):
         try:
             if attribute[0:1] != "_":
                 attribute = "_" + attribute
+            oldValue = self.kwargs.get(attribute)
+
+            if oldValue == value: return
+
             self.kwargs[attribute] = value
+            self._add_mutation(**{
+                "name": attribute.lstrip("_"),
+                "type": "attributes",
+                "addedNodes": NodeList(),
+                "namespace": None,
+                "nextSibling": None,
+                "oldValue": oldValue,
+                "previousSibling": None,
+                "removedNodes": NodeList(),
+                "target": self,
+            })
         except Exception as e:
-            # print('failed to set attribute', e)
+            print('failed to set attribute:', repr(e))
             return None
 
     def setAttributeNode(self, attr):
@@ -2854,7 +3171,6 @@ class Element(Node):
     def toString(self) -> str:
         """Converts an element to a string"""
         return str(self)
-
 
 class DOMImplementation:
     def __init__(self):
@@ -4000,7 +4316,19 @@ class Text(CharacterData):
 
     @data.setter
     def data(self, data):
+        oldValue = self.data
         self.args = (data,)
+        self._add_mutation(**{
+            "name": "data",
+            "type": "characterData",
+            "addedNodes": NodeList(),
+            "namespace": None,
+            "nextSibling": None,
+            "oldValue": oldValue,
+            "previousSibling": None,
+            "removedNodes": NodeList(),
+            "target": self,
+        })
         return self.args[0]
 
     nodeType: int = Node.TEXT_NODE
@@ -4086,17 +4414,133 @@ class HTMLCollection(list):
         else:
             return super().__getitem__(index)
 
+class MutationRecord:
+    """ MutationObserver Record Interface. """
 
-# TODO - is there a webapi module for this now?
-# from domonic.javascript import Object
-# MutationObserverInit = Object()
-# MutationObserverInit.subtree = False
-# MutationObserverInit.childList = False
-# MutationObserverInit.attributes = False
-# MutationObserverInit.attributeFilter = False
-# MutationObserverInit.attributeOldValue = False
-# MutationObserverInit.characterData = False
-# MutationObserverInit.characterDataOldValue = False
+    class Type:
+        ATTRIBUTES = "attributes"
+        CHILD_LIST = "childList"
+        CHARACTER_DATA = "characterData"
+    
+    target: Element
+    nextSibling: Element
+    previousSibling: Element
+
+    addedNodes: NodeList[Element]
+    removedNodes: NodeList[Element]
+
+    oldValue: str
+    attributeName: str
+    attributeNamespace: str
+
+    def __init__(
+        self, type=None, target=None, addedNodes=None,
+        removedNodes=None, previousSibling=None, nextSibling=None,
+        attributeName=None, attributeNamespace=None, oldValue=None
+    ):
+        self.type = type
+        self.target = target
+        self.addedNodes = addedNodes or NodeList()
+        self.removedNodes = removedNodes or NodeList()
+        self.previousSibling = previousSibling
+        self.nextSibling = nextSibling
+        self.attributeName = attributeName
+        self.attributeNamespace = attributeNamespace
+        self.oldValue = oldValue
+
+    def __setattr__(self, name, value):
+        if hasattr(self, name):
+            raise ValueError(f"Attribute '{name}' of {self.__class__.__name__} is read-only.")
+        super().__setattr__(name, value)
+
+    def __repr__(self):
+        return f"""{self.__class__.__name__}(
+    type={self.type !r}, target={self.target !r}, oldValue={self.oldValue !r},
+    addedNodes={self.addedNodes !r}, removedNodes={self.removedNodes !r},
+    previousSibling={self.previousSibling !r}, nextSibling={self.nextSibling !r},
+    attributeName={self.attributeName !r}, attributeNamespace={self.attributeNamespace !r}
+)"""
+
+class MutationObserver: # TODO - test
+    """ The MutationObserver interface provides the ability to watch for changes being made to the DOM tree. """
+
+    def __init__(
+        self, callback: t.Optional[t.Callable[[list[MutationRecord]], None]] = None,
+        interval=.5, append_callback: t.Optional[t.Callable[[MutationRecord], None]] = None
+    ):
+        self.is_connected = Event()
+        self.callback = callback
+        self.append_callback = append_callback
+        self.interval = interval
+        self.mutations = []
+        self.nodeList = []
+
+    def disconnect(self):
+        """ Stops the MutationObserver instance from receiving further notifications until
+        and unless observe() is called again. """
+
+        for target in self.nodeList:
+            for item in target.observerList:
+                if item[0] == self:
+                    target.observerList.remove(item)
+        self.is_connected.clear()
+        return self
+
+    def observe(
+        self, target: Node, subtree=False,
+        childList=False, attributes=False,
+        attributeFilter=None, attributeOldValue=False,
+        characterData=False, characterDataOldValue=False
+    ):
+        """ Configures the MutationObserver to begin receiving notifications through
+        its callback function when DOM changes matching the given options occur. """
+
+        options = {
+            "subtree": subtree,
+            "childList": childList,
+            "attributes": attributes,
+            "characterData": characterData,
+            "attributeFilter": attributeFilter,
+            "attributeOldValue": attributeOldValue,
+            "characterDataOldValue": characterDataOldValue
+        }
+
+        for item in target.observerList:
+            if item[0] == self:
+                item[1] = options
+                return self
+
+        target.observerList.append([self, options])
+        self.nodeList.append(target)
+
+        self.watch_mutations()
+
+    def takeRecords(self):
+        """ Removes all pending notifications from the MutationObserver's notification queue
+        and returns them in a new Array of MutationRecord objects. """
+        records = self.mutations.copy()
+        self.mutations.clear()
+        return records
+    
+    def append(self, record: MutationRecord):
+        """ Append MutationRecord """
+        self.mutations.insert(0, record)
+        if self.append_callback:
+            self.append_callback(record)
+        # self.callback(self.takeRecords())
+
+    @daemon_task
+    def watch_mutations(self):
+        if not self.callback: return
+
+        self.is_connected.set()
+
+        while self.is_connected.is_set():
+            time.sleep(self.interval)
+
+            if len(self.mutations):
+                self.callback(self.takeRecords())
+
 
 # class MutationObserver(): # TODO - test
 #     """ The MutationObserver interface provides the ability to watch for changes being made to the DOM tree. """
