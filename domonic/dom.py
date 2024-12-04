@@ -267,6 +267,18 @@ class Node(EventTarget):
                 "draggable",
                 "spellcheck",
                 "translate",
+
+                # TODO - tests
+                "autoplay",       # Added
+                "controls",       # Added
+                "loop",           # Added
+                "muted",          # Added
+                "default",        # Added
+                "allowfullscreen",# Added
+                "playsinline",    # Added
+                "value",          # Added
+                "defer",          # Added
+
             ]:
                 if value == "" or value == key:
                     return f""" {key}"""
