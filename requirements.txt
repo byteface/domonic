@@ -1,6 +1,6 @@
-elementpath~=2.5.2
-python-dateutil==2.8.2
-requests~=2.31.0
-urllib3~=2.0.5
+elementpath~=4.6.0
+python-dateutil==2.9.0.post0
+requests~=2.32.3
+urllib3~=2.2.3
 html5lib~=1.1
 cssselect~=1.2.0
