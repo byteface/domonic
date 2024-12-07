@@ -719,28 +719,26 @@ class DOMTest(unittest.TestCase):
         assert result[0].className == "test this thing"
 
         links = self.page.querySelectorAll("a[rel=nofollow]")
-        for linky in links:
-            print(linky.getAttribute("href"))
+        # for linky in links:
+        #     print(linky.getAttribute("href"))
         assert len(links) == 1
 
         result = self.page.querySelectorAll("li[class='nav-item']")
         expected = ["About", "Services", "Team", "Contact"]
-        # print('yabadabadooooooo', result)
         for i, r in enumerate(result):
             assert r.textContent == expected[i]
         assert len(result) == 4
 
         result = self.page.querySelectorAll("h4[class='font-weight-bold text-uppercase']")
-        # print(result)
-        for r in result:
-            print(r)
-        print(">>>>>>>>>")  # fails
+        # for r in result:
+        #     print(r)
+        assert len(result) == 1
 
         result = self.page.querySelectorAll("li.nav-item")
         # print(result)
-        for r in result:
-            print(r)
-        print(">>>>>>>>>")  # works
+        # for r in result:
+        #     print(r)
+        assert len(result) == 5
 
         result = self.page.querySelectorAll("a[href='#services']")
         # print(result)
@@ -750,9 +748,9 @@ class DOMTest(unittest.TestCase):
 
         result = self.page.querySelectorAll("p.text-gray")
         # print(result)
-        for r in result:
-            print(r)
-        print(">>>>>>>>>")  # works
+        # for r in result:
+        #     print(r)
+        assert len(result) == 5
 
         result = self.page.querySelectorAll("a[href$='technology']")
         # print(result)
