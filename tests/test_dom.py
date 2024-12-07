@@ -13,7 +13,7 @@ from domonic.html import *
 from domonic.style import *
 
 
-class TestCase(unittest.TestCase):
+class DOMTest(unittest.TestCase):
     """Tests for the dom package"""
 
     @classmethod
@@ -1228,7 +1228,7 @@ class TestCase(unittest.TestCase):
         # https://paul.kinlan.me/dom-treewalker/
 
 
-class NodeTest(TestCase):
+class NodeTest(unittest.TestCase):
     # found these unit tests for a 17 yr old dom implementation. modded them to work on domonic.
     # helped me fix lots of bugs and edge cases and quirky(expected) behaviors.
     # https://github.com/nibrahim/PlasTeX/tree/21875f4da0ae7639d2205260d2e5cb1b65539296/unittests/DOM
@@ -1688,7 +1688,7 @@ class NodeTest(TestCase):
     #     assert res == 'bar'
 
 
-class CommentTest(TestCase):
+class CommentTest(unittest.TestCase):
     def setUp(self):
         self.c = Comment("comment")
         self.elm = p()
@@ -1710,7 +1710,7 @@ class CommentTest(TestCase):
         self.assertEqual("<!--comment-->", str(self.elm.firstChild))
 
 
-class TestDocumentType(TestCase):
+class TestDocumentType(unittest.TestCase):
     def setUp(self):
         self.dtype = DocumentType()
         self.node = Node()
@@ -1727,7 +1727,7 @@ class TestDocumentType(TestCase):
         self.assertEqual(str(self.dtype), "<!DOCTYPE html>")
 
 
-class TestNodeList(TestCase):
+class TestNodeList(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.nl = NodeList(list(range(3)))
@@ -1768,7 +1768,7 @@ class TestNodeList(TestCase):
         self.assertEqual(self.nl.index(2), 2)
 
 
-class TestDomTokenList(TestCase):
+class TestDomTokenList(unittest.TestCase):
     def setUp(self):
         super().setUp()
 
