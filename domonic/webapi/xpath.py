@@ -14,6 +14,9 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 import elementpath
 
+# from elementpath import XPath1Parser
+# from elementpath import XPath2Parser
+
 
 class XPathEvaluator:
     def __init__(self) -> None:
@@ -41,36 +44,117 @@ class XPathExpression:
         expr = expr.replace("/@", "/@_")
         expr = expr.replace("/@__", "/@_")
 
+        print('XPathExpression:::::::::::::', expr)
+
         if len(expr) <= 0:
             raise Exception("no expression")
-        self.selector = elementpath.Selector(expr)
+        self.selector = elementpath.Selector(expr) #, parser=XPath2Parser)
 
     # TODO - DRY - make some utils . just stole this from Treewalker.
     @staticmethod
     def _upgrade_dom(node):
         def upgrade(el):
+            # print(f"Processing element: {el}")
             from domonic.dom import Text
 
             if isinstance(el, (Text, str)):
+                print("Skipping text or string element.", el)
                 return
-            for child in el:
+
+            children = list(el)  # Copy the children to avoid modifying during iteration
+            # print(f"Children to process: {children}")
+
+            for child in children:
                 if isinstance(child, str):
                     newchild = Text(child)
+                    # print(f"Replacing child {child} with {newchild}.")
                     el.replaceChild(newchild, child)
                     newchild.parentNode = el
 
-        node._iterate(node, upgrade)
+        # print("Starting _iterate...")
+        try:
+            node._iterate(node, upgrade)
+        except Exception as e:
+            print(f"Error during iteration: {e}")
+        
+        # print("Finished _iterate. returning node!!")
+        # print(node)
+
         return node
 
     def evaluate(self, node, type=6):  # XPathResult.ANY_TYPE):
         # note: otherwise would fail on regular text?
         node = XPathExpression._upgrade_dom(node)
-        return XPathResult(self.selector.select(node), type)
+        print("Now to evlaute!!!")
+
+        # print("Our node is!!!")
+        # print(node)
+
+        # import json
+        # print(json.dumps(node, indent=4, default=str))
+
+        # print("Inspecting node before selection:")
+        # return 
+
+        print(self.selector.select(node))
+
+        # print('glitchy')
+
+        result = XPathResult(self.selector.select(node), type)
+        print("The result is:::")
+        print(result)
+        return result
 
 
 class XPathNSResolver:
     def __init__(self) -> None:
         pass
+
+
+# class XPathResult:
+#     ANY_TYPE = 0
+#     NUMBER_TYPE = 1
+#     STRING_TYPE = 2
+#     BOOLEAN_TYPE = 3
+#     UNORDERED_NODE_ITERATOR_TYPE = 4
+#     ORDERED_NODE_ITERATOR_TYPE = 5
+#     UNORDERED_NODE_SNAPSHOT_TYPE = 6
+#     ORDERED_NODE_SNAPSHOT_TYPE = 7
+#     ANY_UNORDERED_NODE_TYPE = 8
+#     FIRST_ORDERED_NODE_TYPE = 9
+
+#     def __init__(self, value, _type):
+#         if _type == XPathResult.ANY_TYPE:
+#             tov = type(value)
+#             if isinstance(value, list):
+#                 _type = self.UNORDERED_NODE_ITERATOR_TYPE
+#             elif isinstance(value, bool):
+#                 _type = self.BOOLEAN_TYPE
+#             elif isinstance(value, str):
+#                 _type = self.STRING_TYPE
+#             elif isinstance(value, (int, float)):
+#                 _type = self.NUMBER_TYPE
+
+#         if not isinstance(_type, int) or _type < self.NUMBER_TYPE or _type > self.FIRST_ORDERED_NODE_TYPE:
+#             raise Exception(f"Unknown or invalid type: {_type}. Value: {value}")
+
+#         self.resultType = _type
+
+#         if _type == self.NUMBER_TYPE:
+#             self.numberValue = float(value) if not getattr(value, "isNodeSet", False) else value
+#         elif _type == self.STRING_TYPE:
+#             self.stringValue = str(value) if not getattr(value, "isNodeSet", False) else value
+#         elif _type == self.BOOLEAN_TYPE:
+#             self.booleanValue = bool(value) if not getattr(value, "isNodeSet", False) else value
+#         elif _type in (self.ANY_UNORDERED_NODE_TYPE, self.FIRST_ORDERED_NODE_TYPE):
+#             self.singleNodeValue = value
+#         elif isinstance(value, list):
+#             self.nodes = value
+#             self.snapshotLength = len(value)
+#             self.index = 0
+#             self.invalidIteratorState = False
+#         else:
+#             raise TypeError(f"Invalid value type for result type {_type}: {type(value)}")
 
 
 class XPathResult:

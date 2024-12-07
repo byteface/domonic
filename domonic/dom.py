@@ -1110,6 +1110,7 @@ class Node(EventTarget):
     @property
     def nextSibling(self):
         """[returns the next sibling of the current node.]"""
+        print('nextSibling')
         if self.parentNode is None:
             return None
         else:
@@ -1127,6 +1128,7 @@ class Node(EventTarget):
     @property
     def previousSibling(self):
         """[returns the previous sibling of the current node.]"""
+        print('previousSibling')
         if self.parentNode is None:
             return None
         else:
@@ -1140,13 +1142,18 @@ class Node(EventTarget):
     @property
     def textContent(self):
         """Returns the text content of a node and its descendants"""
+        # print('textContent called')
+        # print('textContent called self is:::', self)
+        # print('textContent called self args are::', self.args, len(self.args), type(self) )
         # TODO - test- also check difference to nodeValue
         # nodevalue is lvl 1 spec. textcontent is lvl 3 spec.
         outp = ""
         for each in self.args:
+            # print('loopsicle')
             if type(each) is str:
                 outp = outp + each
             else:
+                # print('blarg')
                 val = each.textContent
                 if val is not None:
                     outp = outp + val
@@ -1154,6 +1161,8 @@ class Node(EventTarget):
                     return None
         if outp == "":
             outp = None
+
+        # print('textContent returning:::', outp, type(outp))
         return outp
 
     @textContent.setter
@@ -1170,50 +1179,187 @@ class Node(EventTarget):
     # seems to make it work with https://github.com/sissaschool/elementpath
     # if i hack it to allow domonic root nodes
 
+    # def iter(self, tag=None):
+    #     """Creates a tree iterator with the current element as the root.
+    #     The iterator iterates over this element and all elements below it, in document (depth first) order.
+    #     If tag is not None or '*', only elements whose tag equals tag are returned from the iterator.
+    #     If the tree structure is modified during iteration, the result is undefined."""
+    #     for each in self.args:
+    #         if type(each) is str:
+    #             continue
+    #         if tag is None or tag == "*":
+    #             yield each
+    #         elif each.tag == tag:
+    #             yield each
+    #         for x in each.iter(tag):
+    #             yield x
+
+
     def iter(self, tag=None):
-        """Creates a tree iterator with the current element as the root.
-        The iterator iterates over this element and all elements below it, in document (depth first) order.
-        If tag is not None or '*', only elements whose tag equals tag are returned from the iterator.
-        If the tree structure is modified during iteration, the result is undefined."""
-        for each in self.args:
-            if type(each) is str:
+        # print('iter --')
+
+        """Creates a tree iterator with the current element as the root."""
+        children = getattr(self, "args", [])
+        if not isinstance(children, list):
+            raise TypeError("Expected self.args to be a list-like object.")
+
+        for child in children:
+            print('looptastic!')
+            if isinstance(child, str):  # Skip text nodes for `iter`.
+                # print('we got a text node!')
                 continue
             if tag is None or tag == "*":
-                yield each
-            elif each.tag == tag:
-                yield each
-            for x in each.iter(tag):
-                yield x
+                yield child
+            elif getattr(child, "tag", None) == tag:
+                yield child
+            yield from child.iter(tag)  # Recursive iteration.
+
 
     @property
     def tag(self):
         """Returns the tag name of the current node"""
-        return self.nodeName
+        # print('tag --')
+        # print("self::", self)
+        # print("type::", type(self))
+        # print("nodename::", self.nodeName)
+        # return self.nodeName
         # return self.tagName  # not sure current is correct as would return #nodeName
 
+        class TagWrapper:
+            def __init__(self, name):
+                self.__name__ = name  # Simulate expected attribute
+            def __str__(self):
+                return self.__name__
+
+        # print(f"tag -- {self.nodeName}")
+        return TagWrapper(self.nodeName)
+
+
+    @property
+    def nsmap(self):
+        """Returns the namespace map for the current node."""
+        # print("get nsmap for --", self)
+        return {}  # No namespaces defined
+
+
+    # @property
+    # def text(self):
+    #     """Returns the text content of the current node"""
+    #     return self.textContent
+    
     @property
     def text(self):
-        """Returns the text content of the current node"""
-        return self.textContent
+        """Returns the concatenated text content of the current node."""
+        # print('get text for --', self)
+        text = getattr(self, "textContent", "")
+        if text is None:
+            # print('NO TEXT') # TODO < huh? why is this being called
+            return ""
+        return text
+
+
+    # @property
+    # def attrib(self):
+    #     """Returns the attributes of the current node as a dict not a NamedNodeMap"""
+    #     try:
+    #         # print(self.kwargs)
+    #         return self.kwargs
+    #     except Exception as e:
+    #         # print('failed::', e)
+    #         return None
 
     @property
     def attrib(self):
-        """Returns the attributes of the current node as a dict not a NamedNodeMap"""
-        try:
-            # print(self.kwargs)
-            return self.kwargs
-        except Exception as e:
-            # print('failed::', e)
-            return None
+        """Returns the attributes of the current node as a dictionary."""
+        # print('attrib --')
+        return getattr(self, "kwargs", {}) or {}
+
+    # @property
+    # def tail(self):
+    #     """Returns the text content of the current node"""
+    #     return self.textContent
 
     @property
     def tail(self):
-        """Returns the text content of the current node"""
-        return self.textContent
+        """Returns the text following this node."""
+        # print('tail --')
+        return getattr(self, "_tail", None)  # Add logic to differentiate tail if needed.
 
     @property
     def length(self) -> int:
         return len(self)
+
+    # Again standard Extensions to make compatible with latest elementpath lib
+    # these are due to support for later versions of xpath
+
+    # def __iter__(self):
+    #     print(' * * * * __iter__ being called!!')
+    #     """Iterate over children."""
+    #     return iter(getattr(self, "args", []))
+
+
+    def __iter__(self):
+        # print(" * * * * __iter__ being called!!")
+        # print(type(self))
+        children = getattr(self, "args", [])
+        for child in children:
+            # print('loopy loo!!!!')
+            if isinstance(child, str):
+                from domonic.dom import Text
+                child = Text(child)  # Convert strings to compatible Text nodes
+            # print(type(child))
+            # if child is not self:
+            yield child
+
+
+    def find(self, path):
+        print(' *  *  *  * find being called!!')
+        """Find the first matching child node."""
+        from elementpath import select
+        results = list(select(self, path))
+        return results[0] if results else None
+
+    def findall(self, path):
+        print(' *  *  *  * findall being called!!')
+        """Find all matching child nodes."""
+        from elementpath import select
+        return list(select(self, path))
+
+    def xpath(self, path, namespaces=None):
+        print(' *  *  *  * xpath being called!!')
+        """Execute an XPath query on the node."""
+        from elementpath import select
+        return list(select(self, path, namespaces=namespaces))
+
+    def getparent(self):
+        # print('getParent')
+        return self.parentNode
+
+    def itersiblings(self, preceding=False):
+        # print(f"itersiblings called with preceding={preceding}")
+        print("IAM", self.tag)
+        print(len(self.args))
+        print(self.args)
+        if preceding:
+            for sibling in reversed(self.args):
+                print('itersiblings111!', type(sibling))
+                yield sibling
+        else:
+            for sibling in self.args:
+                print('itersiblings222!', type(sibling))
+                yield sibling
+
+    def getroottree(self):
+        # print('getroottree')
+        return self
+
+    def getroot(self):
+        # print('getroot')
+        # root = self.args.clear()
+        root = self.__class__(self.nodeName, **self.kwargs) 
+        return self
+
+
 
 
 class ParentNode:
@@ -2704,6 +2850,10 @@ class Element(Node):
         except Exception as e:
             return None
 
+
+
+
+
     def querySelectorAll(self, query: str):
         """[Returns all child elements that matches a specified CSS selector(s) of an element]
 
@@ -2713,32 +2863,145 @@ class Element(Node):
         Returns:
             [type]: [a list of Element objects]
         """
+        # print(f"Starting querySelectorAll with query: {query}")
         naked_query = query[1:]
+        # print(f"Naked query (query[1:]): {naked_query}")
+
+        # Check if XPath evaluation is needed
         if "." in naked_query or "[" in naked_query or " " in naked_query:
-            # return self.getElementsBySelector(query, self)
-            # from cssselect import GenericTranslator, SelectorError
-            from cssselect import HTMLTranslator, SelectorError
-
+            # print("XPath evaluation required for this query.")
             try:
-                expression = HTMLTranslator().css_to_xpath(query)
+                # Import cssselect components
+                from cssselect import HTMLTranslator, SelectorError
+                # print("Imported cssselect successfully.")
+
+                # Convert CSS to XPath
+                translator = HTMLTranslator()
+                expression = translator.css_to_xpath(query)
+                # print(f"Translated CSS query to XPath: {expression}")
+
+                # Import domonic XPath evaluator components
                 from domonic.webapi.xpath import XPathEvaluator, XPathResult
+                # print("Imported domonic XPath components successfully.")
 
+                # Create and evaluate XPath expression
                 evaluator = XPathEvaluator()
-                expression = evaluator.createExpression(expression)
-                result = expression.evaluate(self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+                # print("Initialized XPathEvaluator.")
+
+                xpath_expression = evaluator.createExpression(expression)
+                # print(f"Created XPath expression: {xpath_expression}")
+
+                result = xpath_expression.evaluate(self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+                # result = xpath_expression.evaluate(self, XPathResult.ANY_TYPE)
+                # result = xpath_expression.evaluate(self, XPathResult.UNORDERED_NODE_ITERATOR_TYPE)
+                # result = xpath_expression.evaluate(self, 6)
+
+                # print(f"XPath evaluation completed. Result nodes: {result.nodes}")
                 return result.nodes
-            except SelectorError:
-                print("Invalid selector.")
+
+            except SelectorError as se:
+                print(f"SelectorError encountered: {se}")
                 return []
+            except Exception as e:
+                print(f"Unexpected error during XPath evaluation: {e}")
+                return []
+        else:
+            print("No XPath evaluation required. Using custom matching logic.")
 
+        # Fallback: Manual iteration (if XPath fails or is unsupported)
+
+        # Initialize list for matched elements
         elements = []
-
-        def anon(el):
+        def match_and_collect(el):
             if self._matchElement(el, query):
                 elements.append(el)
 
-        self._iterate(self, anon)
+        self._iterate(self, match_and_collect)
         return elements
+
+
+
+    # def querySelectorAll(self, query: str):
+    #     """[Returns all child elements that matches a specified CSS selector(s) of an element]
+
+    #     Args:
+    #         query (str): [a CSS selector string]
+
+    #     Returns:
+    #         [type]: [a list of Element objects]
+    #     """
+    #     naked_query = query[1:]
+    #     if "." in naked_query or "[" in naked_query or " " in naked_query:
+    #         # return self.getElementsBySelector(query, self)
+    #         # from cssselect import GenericTranslator, SelectorError
+    #         from cssselect import HTMLTranslator, SelectorError
+
+    #         try:
+    #             expression = HTMLTranslator().css_to_xpath(query)
+    #             from domonic.webapi.xpath import XPathEvaluator, XPathResult
+
+    #             evaluator = XPathEvaluator()
+    #             expression = evaluator.createExpression(expression)
+    #             result = expression.evaluate(self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+    #             return result.nodes
+    #         except SelectorError:
+    #             print("Invalid selector.")
+    #             return []
+
+    #     elements = []
+
+    #     def anon(el):
+    #         if self._matchElement(el, query):
+    #             elements.append(el)
+
+    #     self._iterate(self, anon)
+    #     return elements
+
+
+
+
+    # def querySelectorAll(self, query: str):
+    #     """
+    #     Returns all child elements that match the specified CSS selector(s) of an element.
+
+    #     Args:
+    #         query (str): A CSS selector string.
+
+    #     Returns:
+    #         list: A list of Element objects matching the query.
+    #     """
+    #     from cssselect import HTMLTranslator, SelectorError
+    #     from domonic.webapi.xpath import XPathEvaluator, XPathResult
+
+    #     elements = []
+
+    #     try:
+    #         # Use HTMLTranslator to convert CSS to XPath
+    #         expression = HTMLTranslator().css_to_xpath(query)
+
+    #         # Use XPathEvaluator for efficient DOM evaluation
+    #         evaluator = XPathEvaluator()
+    #         xpath_expression = evaluator.createExpression(expression)
+    #         result = xpath_expression.evaluate(self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+    #         return list(result.nodes)  # Convert snapshot to a list of nodes
+    #     except SelectorError as e:
+    #         print(f"Invalid CSS selector: {query}. Error: {e}")
+    #         return []
+    #     except Exception as e:
+    #         print(f"Unexpected error during querySelectorAll: {e}")
+    #         return []
+
+    #     # Fallback: Manual iteration (if XPath fails or is unsupported)
+    #     def match_and_collect(el):
+    #         if self._matchElement(el, query):
+    #             elements.append(el)
+
+    #     self._iterate(self, match_and_collect)
+    #     return elements
+
+
+
+
 
     def remove(self):
         """Removes the element from the DOM"""
@@ -3499,6 +3762,25 @@ class Document(Element):
         """Returns the topmost element at the specified coordinates."""
         raise NotImplementedError
 
+    # def evaluate(
+    #     self,
+    #     xpathExpression: str,
+    #     contextNode: "Node" = None,
+    #     namespaceResolver=None,
+    #     resultType=XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
+    #     result=None,
+    # ):
+    #     """Evaluates an XPath expression and returns the result."""
+    #     if not isinstance(xpathExpression, str):
+    #         raise TypeError("xpathExpression must be a string")
+    #     if contextNode is None:
+    #         contextNode = self
+    #     evaluator = XPathEvaluator()
+    #     expression = evaluator.createExpression(xpathExpression)
+    #     result = expression.evaluate(contextNode, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+    #     return result.nodes
+
+
     def evaluate(
         self,
         xpathExpression: str,
@@ -3508,14 +3790,22 @@ class Document(Element):
         result=None,
     ):
         """Evaluates an XPath expression and returns the result."""
+        # from elementpath import XPathEvaluator
+
         if not isinstance(xpathExpression, str):
             raise TypeError("xpathExpression must be a string")
         if contextNode is None:
-            contextNode = self
-        evaluator = XPathEvaluator()
-        expression = evaluator.createExpression(xpathExpression)
-        result = expression.evaluate(contextNode, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        return result.nodes
+            contextNode = self  # Make sure `self` is a valid node.
+        evaluator = XPathEvaluator(contextNode)  # Provide a context node if required.
+        
+        try:
+            expression = evaluator.parse(xpathExpression)
+            result = expression.select(contextNode)
+            return list(result)  # Ensure results are returned as a list of nodes.
+        except Exception as e:
+            raise RuntimeError(f"XPath evaluation error: {e}")
+
+
 
     def elementsFromPoint(self, x, y):
         """Returns an array of all elements at the specified coordinates."""
@@ -3989,10 +4279,16 @@ class Entity(Node):
 class Text(CharacterData):
     """Text Node"""
 
+    # @property
+    # def wholeText(self):
+    #     """Returns a DOMString containing all the text content of the node and its descendants."""
+    #     return self.args[0]
     @property
     def wholeText(self):
-        """Returns a DOMString containing all the text content of the node and its descendants."""
-        return self.args[0]
+        if self.args and isinstance(self.args[0], str):
+            return self.args[0]
+        return ""
+
 
     def splitText(self, offset: int):
         """Splits the Text node into two Text nodes at the specified offset, keeping both in the tree as siblings.
@@ -4001,19 +4297,32 @@ class Text(CharacterData):
         self.args[0] = self.args[0][offset:]
         return text
 
+    # @property
+    # def assignedSlot(self):
+    #     """Returns the slot whose assignedNodes contains this node."""
+    #     return self.parentNode.assignedSlot
     @property
     def assignedSlot(self):
-        """Returns the slot whose assignedNodes contains this node."""
-        return self.parentNode.assignedSlot
+        if self.parentNode:
+            return self.parentNode.assignedSlot
+        return None
+
 
     @property
     def data(self):
         return self.args[0]
 
+    # @data.setter
+    # def data(self, data):
+    #     self.args = (data,)
+    #     return self.args[0]
     @data.setter
     def data(self, data):
+        if not isinstance(data, str):
+            raise ValueError("Data must be a string.")
         self.args = (data,)
-        return self.args[0]
+
+
 
     nodeType: int = Node.TEXT_NODE
 
@@ -4021,9 +4330,13 @@ class Text(CharacterData):
     def nodeName(self):
         return "#text"
 
+    # @property
+    # def childNodes(self):
+    #     return 0
     @property
     def childNodes(self):
-        return 0
+        return ()  # Text nodes have no children
+
 
     @property  # TODO - is this correct?
     def firstChild(self):
@@ -4054,8 +4367,11 @@ class Text(CharacterData):
     # def __repr__(self):
     # return str(self.textContent)
 
+    # def __iter__(self):
+    #     yield self
     def __iter__(self):
-        yield self
+        return iter(())  # No children for text nodes
+
 
 
 class HTMLCollection(list):

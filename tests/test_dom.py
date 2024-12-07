@@ -13,7 +13,7 @@ from domonic.html import *
 from domonic.style import *
 
 
-class TestCase(unittest.TestCase):
+class DOMTest(unittest.TestCase):
     """Tests for the dom package"""
 
     @classmethod
@@ -712,68 +712,113 @@ class TestCase(unittest.TestCase):
         # print("RESULT>>>>>", result)
         assert result.className == "test this thing"
 
-        result = dom1.getElementsByClassName("this")
+        result = dom1.getElementsByClassName("this")  # TODO - this is a different test
         # print('--')
         # print("RESULT>>>>>", result)
         assert len(result) == 1
         assert result[0].className == "test this thing"
 
-        links = self.page.querySelectorAll("a[rel=nofollow]")
+
+    def test_querySelectorAll(self):
+
+        dom1 = html(
+            div(
+                div(
+                    div(
+                        div(
+                            div(
+                                div(
+                                    div(
+                                        div(_id="thing"),
+                                        span(_id="fun"),
+                                        div("asdfasdf", div(), div("yo"), _class="test this thing"),
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+
+        for method in ['find', 'findall', 'xpath', '__iter__']:
+            print(f"Method {method} exists:", hasattr(self.page, method))
+
+        print('Testing with basic selector:')
+        # try:
+        # print(self.page.querySelectorAll("a"))
+        # return
+        # except Exception as e:
+            # print("Error with 'a':", e)
+
+        print('AAA:', self.page)
+        links = self.page.querySelectorAll("a[rel='nofollow']")
+        print('CHECK THE LINKS!!!')
+        print(links)
         for linky in links:
             print(linky.getAttribute("href"))
         assert len(links) == 1
 
+        print('BBBB:')
         result = self.page.querySelectorAll("li[class='nav-item']")
         expected = ["About", "Services", "Team", "Contact"]
-        # print('yabadabadooooooo', result)
+        print('yabadabadooooooo', result)
         for i, r in enumerate(result):
             assert r.textContent == expected[i]
         assert len(result) == 4
 
+        print('CCCC:')
         result = self.page.querySelectorAll("h4[class='font-weight-bold text-uppercase']")
-        # print(result)
+        print(result)
         for r in result:
             print(r)
         print(">>>>>>>>>")  # fails
 
+        print('DDDDD:')
         result = self.page.querySelectorAll("li.nav-item")
-        # print(result)
+        print(result)
         for r in result:
             print(r)
         print(">>>>>>>>>")  # works
 
+        print('EEEEE:')
         result = self.page.querySelectorAll("a[href='#services']")
-        # print(result)
+        print(result)
         for r in result:
             print(r)
         print(">>>>>>>>>")  # works
 
+        print('FFFFf:')
         result = self.page.querySelectorAll("p.text-gray")
-        # print(result)
+        print(result)
         for r in result:
             print(r)
         print(">>>>>>>>>")  # works
 
+        print('GGGGG:')
         result = self.page.querySelectorAll("a[href$='technology']")
-        # print(result)
+        print(result)
         for r in result:
             print(r)
 
         print(">>>>>>>>>")  # works
 
+        print('HHHH:')
         result = self.page.querySelectorAll("a[href*='twitter']")
-        # print(result)
+        print(result)
         for r in result:
             print(r)
 
         print(">>>>>>>>>")  # works
 
+        print('IIII:')
         result = dom1.querySelectorAll(".fa-twitter")
         print("--")
         print("z RESULT>>>>>", result)
         # TODO - failing. however this is now running through qselectorall
         # return
         # assert result.className == 'test this thing'
+
 
     def test_getElementsBySelector(self):
         dom1 = html(
@@ -1228,7 +1273,7 @@ class TestCase(unittest.TestCase):
         # https://paul.kinlan.me/dom-treewalker/
 
 
-class NodeTest(TestCase):
+class NodeTest(unittest.TestCase):
     # found these unit tests for a 17 yr old dom implementation. modded them to work on domonic.
     # helped me fix lots of bugs and edge cases and quirky(expected) behaviors.
     # https://github.com/nibrahim/PlasTeX/tree/21875f4da0ae7639d2205260d2e5cb1b65539296/unittests/DOM
@@ -1688,7 +1733,7 @@ class NodeTest(TestCase):
     #     assert res == 'bar'
 
 
-class CommentTest(TestCase):
+class CommentTest(unittest.TestCase):
     def setUp(self):
         self.c = Comment("comment")
         self.elm = p()
@@ -1710,7 +1755,7 @@ class CommentTest(TestCase):
         self.assertEqual("<!--comment-->", str(self.elm.firstChild))
 
 
-class TestDocumentType(TestCase):
+class TestDocumentType(unittest.TestCase):
     def setUp(self):
         self.dtype = DocumentType()
         self.node = Node()
@@ -1727,7 +1772,7 @@ class TestDocumentType(TestCase):
         self.assertEqual(str(self.dtype), "<!DOCTYPE html>")
 
 
-class TestNodeList(TestCase):
+class TestNodeList(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.nl = NodeList(list(range(3)))
@@ -1768,7 +1813,7 @@ class TestNodeList(TestCase):
         self.assertEqual(self.nl.index(2), 2)
 
 
-class TestDomTokenList(TestCase):
+class TestDomTokenList(unittest.TestCase):
     def setUp(self):
         super().setUp()
 
