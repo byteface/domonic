@@ -3986,13 +3986,16 @@ class Entity(Node):
 #         return self.args[1]
 
 
+
 class Text(CharacterData):
     """Text Node"""
 
     @property
     def wholeText(self):
         """Returns a DOMString containing all the text content of the node and its descendants."""
-        return self.args[0]
+        if self.args and isinstance(self.args[0], str):
+            return self.args[0]
+        return ""
 
     def splitText(self, offset: int):
         """Splits the Text node into two Text nodes at the specified offset, keeping both in the tree as siblings.
@@ -4004,7 +4007,9 @@ class Text(CharacterData):
     @property
     def assignedSlot(self):
         """Returns the slot whose assignedNodes contains this node."""
-        return self.parentNode.assignedSlot
+        if self.parentNode:
+            return self.parentNode.assignedSlot
+        return None
 
     @property
     def data(self):
@@ -4012,8 +4017,9 @@ class Text(CharacterData):
 
     @data.setter
     def data(self, data):
+        if not isinstance(data, str):
+            raise ValueError("Data must be a string.")
         self.args = (data,)
-        return self.args[0]
 
     nodeType: int = Node.TEXT_NODE
 
@@ -4023,7 +4029,8 @@ class Text(CharacterData):
 
     @property
     def childNodes(self):
-        return 0
+        return ()  # Text nodes have no children
+
 
     @property  # TODO - is this correct?
     def firstChild(self):
@@ -4055,7 +4062,9 @@ class Text(CharacterData):
     # return str(self.textContent)
 
     def __iter__(self):
-        yield self
+        return iter(())  # No children for text nodes
+
+
 
 
 class HTMLCollection(list):
