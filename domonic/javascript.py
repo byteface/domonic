@@ -28,7 +28,7 @@ from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import quote, unquote
 
-import requests
+# import requests
 from dateutil.parser import parse, parserinfo
 
 from domonic.webapi.url import URL, URLSearchParams
