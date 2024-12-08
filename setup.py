@@ -19,22 +19,15 @@ def read(filename: str) -> str:
     with open(filename, encoding="utf-8") as file:
         return file.read()
 
-# def get_requirements(filename: str = "requirements.txt"):
-#     """returns a list of all requirements"""
-#     requirements = read(filename)
-#     return list(
-#         filter(
-#             None,
-#             [req.strip() for req in requirements.split() if not req.startswith("#")],
-#         )
-#     )
-
 def get_requirements(filename: str = "requirements.txt"):
     """returns a list of all requirements"""
-    with open(os.path.join(os.path.dirname(__file__), filename)) as f:
-        requirements = f.read().splitlines()
-    return [req.strip() for req in requirements if req and not req.startswith("#")]
-
+    requirements = read(filename)
+    return list(
+        filter(
+            None,
+            [req.strip() for req in requirements.split() if not req.startswith("#")],
+        )
+    )
 
 setup(
     name="domonic",
