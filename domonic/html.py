@@ -121,6 +121,7 @@ html_tags = [
     "abbr",
     "main",
     "dir",
+    "mod",
     "wbr",
     "var",
     "sup",
@@ -374,9 +375,9 @@ html_attributes = [
     "disableremoteplayback",  # video
 ]
 
-
-def render(inp, outp="", to=None):  # doctype='html5')
-    """write the input to string or to a file.
+def render(inp: Node, outp: str = "", to: str = None) -> str:
+    """
+    Render an HTML element or document to a string or file.
 
     Args:
         inp (obj): A domonic tag. For example div()
@@ -384,7 +385,12 @@ def render(inp, outp="", to=None):  # doctype='html5')
         to (str): An optional output type. if 'pyml' is specified then pyml is returned instead of html.
 
     Returns:
-        str: A HTML rendered string
+        str: The rendered HTML string (or PyML if specified).
+    
+    Examples:
+        >>> div()  
+        '<div></div>'
+        >>> render(div(), outp='output.html')
     """
     if to == "pyml":
         if outp != "":
@@ -441,53 +447,34 @@ h5 = type("h5", (HTMLHeadingElement,), {"name": "h5"})
 h6 = type("h6", (HTMLHeadingElement,), {"name": "h6"})
 p = type("p", (HTMLParagraphElement,), {"name": "p"})
 
-i = type("i", (Element,), {"name": "i"})  # TODO - check which?
-b = type("b", (Element,), {"name": "b"})  # TODO - check which?
-portal = type("portal", (Element,), {"name": "portal"})  # TODO - check which?
+i = type("i", (Element,), {"name": "i"})
+b = type("b", (Element,), {"name": "b"})
+portal = type("portal", (Element,), {"name": "portal"})
 
 
 def Atag(self, *args, **kwargs):
-
-    # print('Atag: ', args, kwargs)
-    # Node.__init__(self, *args, **kwargs)
-    # Element.__init__(self, *args, **kwargs)
-
-    # TODO - fix BUG. this stops having no href on a tags
+    """
+    Base class for the a tag
+    """
+    # Note - so this only happens on init?
     if kwargs.get("_href", None) is not None:
         URL.__init__(self, url=kwargs["_href"])
-    # else:
-    # Node.__init__(*args, **kwargs)
+        HTMLAnchorElement.__init__(self, *args, **kwargs)
+
     Element.__init__(self, *args, **kwargs)
-    # Node.__init__(self, *args, **kwargs)
-    # URL.__init__(self, *args, **kwargs)
 
 
-def __update__(
-    self, *args, **kwargs
-):  # TODO - you removed this but where the unit test that you wrote it for in the first place?
-    # print('__update__: ', args, kwargs)
-    # URL.__update__(self)
-    # TODO - fix BUG. this stops having no href on a tags
-    if self.getattr("_href", None) is not None:
-        self.kwargs["_href"] = self.href
-    # Node.__init__(self, *args, **kwargs)
-    # URL.__init__(self, *args, **kwargs)
-    # self.__init__(*args, **kwargs)
-    Element.__init__(self, *args, **kwargs)
-    URL.__init__(self, *args, **kwargs)
-
-
-a = type("a", (Element, URL), {"name": "a", "__init__": Atag})  # , "__update__": __update__})
+a = type("a", (HTMLAnchorElement, Element, URL), {"name": "a", "__init__": Atag})
 ul = type("ul", (HTMLUListElement,), {"name": "ul"})
 ol = type("ol", (HTMLOListElement,), {"name": "ol"})
 li = type("li", (HTMLLIElement,), {"name": "li"})
 div = type("div", (HTMLDivElement,), {"name": "div"})
 
-strong = type("strong", (Element,), {"name": "strong"})  # TODO - check
-blockquote = type("blockquote", (Element,), {"name": "blockquote"})  # TODO - check
+strong = type("strong", (Element,), {"name": "strong"})
+blockquote = type("blockquote", (Element,), {"name": "blockquote"})
 table = type("table", (HTMLTableElement,), {"name": "table"})
-tr = type("tr", (Element,), {"name": "tr"})
-td = type("td", (Element,), {"name": "td"})
+tr = type("tr", (HTMLTableRowElement,), {"name": "tr"})
+td = type("td", (HTMLTableCellElement,), {"name": "td"})
 
 
 class form(HTMLFormElement):
@@ -515,7 +502,7 @@ class form(HTMLFormElement):
         return kids
 
 
-label = type("label", (Element,), {"name": "label"})
+label = type("label", (HTMLLabelElement,), {"name": "label"})
 # label.__doc__ = '''
 #                 .. highlight:: python
 #                 .. code-block:: python
@@ -535,7 +522,7 @@ aside = type("aside", (Element,), {"name": "aside"})
 hgroup = type("hgroup", (Element,), {"name": "hgroup"})
 address = type("address", (Element,), {"name": "address"})
 pre = type("pre", (HTMLPreElement,), {"name": "pre"})
-dl = type("dl", (Element,), {"name": "dl"})
+dl = type("dl", (HTMLDListElement,), {"name": "dl"})
 dt = type("dt", (Element,), {"name": "dt"})
 dd = type("dd", (Element,), {"name": "dd"})
 figure = type("figure", (Element,), {"name": "figure"})
@@ -544,7 +531,7 @@ em = type("em", (Element,), {"name": "em"})
 small = type("small", (Element,), {"name": "small"})
 s = type("s", (Element,), {"name": "s"})
 cite = type("cite", (Element,), {"name": "cite"})
-q = type("q", (Element,), {"name": "q"})
+q = type("q", (HTMLQuoteElement,), {"name": "q"})
 dfn = type("dfn", (Element,), {"name": "dfn"})
 abbr = type("abbr", (Element,), {"name": "abbr"})
 code = type("code", (Element,), {"name": "code"})
@@ -562,20 +549,20 @@ bdi = type("bdi", (Element,), {"name": "bdi"})
 bdo = type("bdo", (Element,), {"name": "bdo"})
 span = type("span", (HTMLSpanElement,), {"name": "span"})
 ins = type("ins", (Element,), {"name": "ins"})
-iframe = type("iframe", (Element,), {"name": "iframe"})
+iframe = type("iframe", (HTMLIFrameElement,), {"name": "iframe"})
 video = type("video", (HTMLVideoElement,), {"name": "video"})
 audio = type("audio", (HTMLAudioElement,), {"name": "audio"})
 canvas = type("canvas", (HTMLCanvasElement,), {"name": "canvas"})
-caption = type("caption", (Element,), {"name": "caption"})
+caption = type("caption", (HTMLTableCaptionElement,), {"name": "caption"})
 colgroup = type("colgroup", (Element,), {"name": "colgroup"})
-tbody = type("tbody", (Element,), {"name": "tbody"})
-thead = type("thead", (Element,), {"name": "thead"})
+tbody = type("tbody", (HTMLTableSectionElement,), {"name": "tbody"})
+thead = type("thead", (Element,), {"name": "thead"})  # Note - also should extend HTMLTableSectionElement
 tfoot = type("tfoot", (Element,), {"name": "tfoot"})
-th = type("th", (Element,), {"name": "th"})
+th = type("th", (HTMLTableHeaderCellElement,), {"name": "th"})
 fieldset = type(
     "fieldset", (HTMLFieldSetElement,), {"name": "fieldset"}
 )
-legend = type("legend", (Element,), {"name": "legend"})
+legend = type("legend", (HTMLLegendElement,), {"name": "legend"})
 button = type("button", (HTMLButtonElement,), {"name": "button"})
 select = type("select", (HTMLSelectElement,), {"name": "select"})
 datalist = type("datalist", (HTMLDataListElement,), {"name": "datalist"})
@@ -595,6 +582,7 @@ footer = type("footer", (Element,), {"name": "footer"})
 # map_ = type('map_', (tag,), {'name': 'map_'})
 # object_ = type('object_', (tag,), {'name': 'object_'})
 # del_ = type('del_', (tag,), {'name': 'del_'})
+mod = type("mod", (HTMLModElement,), {"name": "mod"})
 
 # time = HTMLTimeElement  # type('time', (tag,), {'name': 'time'})
 data = type("data", (HTMLDataElement,), {"name": "data"})
@@ -626,7 +614,7 @@ main = type("main", (Element,), {"name": "main"})
 
 # obsolete
 applet = type("applet", (Element,), {"name": "applet"})
-# object = type('object', (Element,), {'name': 'object'})
+# object = type('object', (HTMLObjectElement,), {'name': 'object'})
 basefont = type("basefont", (HTMLBaseFontElement,), {"name": "basefont"})
 center = type("center", (Element,), {"name": "center"})
 # dir = type('dir', (Element,), {'name': 'dir'})
@@ -636,16 +624,17 @@ listing = type("listing", (Element,), {"name": "listing"})
 plaintext = type("plaintext", (Element,), {"name": "plaintext"})
 strike = type("strike", (Element,), {"name": "strike"})
 xmp = type("xmp", (Element,), {"name": "xmp"})
+# shadow
 
-template = type("template", (Element,), {"name": "template"})
+template = type("template", (HTMLTemplateElement,), {"name": "template"})
 
 picture = type("picture", (HTMLPictureElement,), {"name": "picture"})
 dialog = type("dialog", (HTMLDialogElement,), {"name": "dialog"})
 
-
 # legacy.
 doctype = type("doctype", (DocumentType,), {"name": "doctype"})
 comment = type("comment", (Comment,), {"name": "comment"})
+content = type("content", (HTMLContentElement,), {"name": "content"})
 
 
 def create_element(name="custom_tag", *args, **kwargs):
@@ -659,7 +648,7 @@ def create_element(name="custom_tag", *args, **kwargs):
     if name in html_tags:
         return globals()[name](*args, **kwargs)
 
-    # NOTE: we care calling it custom_tag because it can't have hyphens
+    # NOTE: we care calling it custom_tag because it can't have hyphens < Note - use HTMLUnknownElement?
     custom_tag = type("custom_tag", (Element,), {"name": name})
     new_tag = custom_tag(*args, **kwargs)
     new_tag.name = name

@@ -11,7 +11,20 @@ from domonic.decorators import silence
 from domonic.html import *
 
 
-class TestCase(unittest.TestCase):
+class TestHTMLRendering(unittest.TestCase):
+    def test_div_tag(self):
+        tag = div()
+        self.assertEqual(str(tag), "<div></div>")
+
+    def test_anchor_tag(self):
+        tag = a(_href="http://example.com")
+        self.assertEqual(str(tag), '<a href="http://example.com"></a>')
+
+        tag = a()
+        self.assertEqual(str(tag), '<a></a>')
+
+
+class TestHTML(unittest.TestCase):
     def test_every_tag(self):
         assert str(html()) == "<html></html>"
         assert str(head()) == "<head></head>"
@@ -1285,7 +1298,7 @@ body(
         # print(s)
         assert '<script src="foo.js" async></script>' == str(s)
         s = script(_src="foo.js", _async="")
-        print(s)
+        # print(s)
         # assert '<script src="foo.js"></script>' == str(s)
         s = script(_src="foo.js", _async="", _hidden="", _checked="")
         # print(s)
@@ -1317,8 +1330,6 @@ body(
         # print(mydialog)
         # print(str(mydialog))
         # assert str(d) == '<html><dialog open>hello<form method="dialog" action="close"><button>close</button></form></dialog></html>'
-
-    # TODO - unit tests the tags of other the markups i.e. mathml, svg etc
 
 
 if __name__ == "__main__":

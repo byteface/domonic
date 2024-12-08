@@ -5297,12 +5297,56 @@ class HTMLElement(Element):  # TODO - check
     name = ""
 
 
-class HTMLAnchorElement(HTMLElement):  # TODO - check
+class HTMLAnchorElement(HTMLElement):
     name = "a"
 
+    def __init__(self, *args, href=None, target=None, rel=None, download=None, type=None, **kwargs):
+        """HTMLAnchorElement
 
-class HTMLAreaElement(HTMLElement):  # TODO - check
+        Args:
+            href (str, optional): Specifies the URL of the page the link goes to.
+            target (str, optional): Specifies where to open the linked document (e.g., "_self", "_blank").
+            rel (str, optional): Specifies the relationship between the current document and the linked document (e.g., "noopener", "noreferrer").
+            download (str, optional): Specifies that the target will be downloaded when clicked, instead of navigating to it.
+            type (str, optional): Specifies the MIME type of the linked resource.
+        """
+        super().__init__(*args, **kwargs)
+        if href is not None:
+            self.setAttribute("href", href)
+        if target is not None:
+            self.setAttribute("target", target)
+        if rel is not None:
+            self.setAttribute("rel", rel)
+        if download is not None:
+            self.setAttribute("download", download)
+        if type is not None:
+            self.setAttribute("type", type)
+
+
+class HTMLAreaElement(HTMLElement):
     name = "area"
+
+    def __init__(self, *args, href=None, target=None, alt=None, coords=None, shape=None, **kwargs):
+        """HTMLAreaElement
+
+        Args:
+            href (str, optional): Specifies the URL of the page the area links to.
+            target (str, optional): Specifies where to open the linked document (e.g., "_self", "_blank").
+            alt (str, optional): Specifies alternative text for the area.
+            coords (str, optional): Specifies the coordinates of the area in the image map (e.g., "x1,y1,x2,y2").
+            shape (str, optional): Specifies the shape of the clickable area (e.g., "rect", "circle", "poly").
+        """
+        super().__init__(*args, **kwargs)
+        if href is not None:
+            self.setAttribute("href", href)
+        if target is not None:
+            self.setAttribute("target", target)
+        if alt is not None:
+            self.setAttribute("alt", alt)
+        if coords is not None:
+            self.setAttribute("coords", coords)
+        if shape is not None:
+            self.setAttribute("shape", shape)
 
 
 class HTMLAudioElement(HTMLElement):
@@ -5519,6 +5563,16 @@ class HTMLDListElement(HTMLElement):
 
 class HTMLDataElement(HTMLElement):
     name = "data"
+    
+    def __init__(self, *args, value=None, **kwargs):
+        """HTMLDataElement
+
+        Args:
+            value (str, optional): Contains the machine-readable value associated with the content.
+        """
+        super().__init__(*args, **kwargs)
+        if value is not None:
+            self.setAttribute("value", value)
 
 
 class HTMLDataListElement(HTMLElement):
@@ -5881,6 +5935,25 @@ class HTMLLegendElement(HTMLElement):
 class HTMLLinkElement(HTMLElement):
     name = "link"
 
+    def __init__(self, *args, rel=None, href=None, type=None, sizes=None, **kwargs):
+        """HTMLLinkElement
+
+        Args:
+            rel (str, optional): Specifies the relationship between the current document and the linked resource.
+            href (str, optional): The URL of the linked resource.
+            type (str, optional): Specifies the type of the linked resource (like 'text/css').
+            sizes (str, optional): Defines the sizes of the icons linked.
+        """
+        super().__init__(*args, **kwargs)
+        if rel is not None:
+            self.setAttribute("rel", rel)
+        if href is not None:
+            self.setAttribute("href", href)
+        if type is not None:
+            self.setAttribute("type", type)
+        if sizes is not None:
+            self.setAttribute("sizes", sizes)
+
 
 class HTMLMapElement(HTMLElement):  # TODO - check
     name = "map"
@@ -5945,8 +6018,18 @@ class HTMLMeterElement(HTMLElement):
             self.setAttribute("optimum", optimum)
 
 
-class HTMLModElement(HTMLElement):  # TODO - check
+class HTMLModElement(HTMLElement):
     name = "mod"
+
+    def __init__(self, *args, datetime=None, **kwargs):
+        """HTMLModElement
+
+        Args:
+            datetime (str, optional): The date and time when the modification occurred.
+        """
+        super().__init__(*args, **kwargs)
+        if datetime is not None:
+            self.setAttribute("datetime", datetime)
 
 
 class HTMLOListElement(HTMLElement):
@@ -5996,13 +6079,33 @@ class HTMLParagraphElement(HTMLElement):
     name = "p"
 
 
-class HTMLParamElement(HTMLElement):  # TODO - check
+class HTMLParamElement(HTMLElement):
     name = "param"
     __isempty = True
+
+    def __init__(self, *args, name=None, value=None, **kwargs):
+        """HTMLParamElement
+
+        Args:
+            name (str, optional): The name of the parameter.
+            value (str, optional): The value of the parameter.
+        """
+        super().__init__(*args, **kwargs)
+        if name is not None:
+            self.setAttribute("name", name)
+        if value is not None:
+            self.setAttribute("value", value)
 
 
 class HTMLPictureElement(HTMLElement):
     name = "picture"
+
+    def __init__(self, *args, **kwargs):
+        """HTMLPictureElement
+
+        A container for `<source>` elements, allowing the browser to choose from multiple images based on media queries.
+        """
+        super().__init__(*args, **kwargs)
 
 
 class HTMLPreElement(HTMLElement):
@@ -6012,9 +6115,32 @@ class HTMLPreElement(HTMLElement):
 class HTMLProgressElement(HTMLElement):
     name = "progress"
 
+    def __init__(self, *args, value=None, max=None, **kwargs):
+        """HTMLProgressElement
 
-class HTMLQuoteElement(HTMLElement):  # TODO - check
+        Args:
+            value (str, optional): The current progress value.
+            max (str, optional): The maximum value of the progress.
+        """
+        super().__init__(*args, **kwargs)
+        if value is not None:
+            self.setAttribute("value", value)
+        if max is not None:
+            self.setAttribute("max", max)
+
+
+class HTMLQuoteElement(HTMLElement):
     name = "q"
+
+    def __init__(self, *args, cite=None, **kwargs):
+        """HTMLQuoteElement
+
+        Args:
+            cite (str, optional): The source URL for the quotation.
+        """
+        super().__init__(*args, **kwargs)
+        if cite is not None:
+            self.setAttribute("cite", cite)
 
 
 class HTMLScriptElement(HTMLElement):
@@ -6085,21 +6211,65 @@ class HTMLSelectElement(HTMLElement):
             self.setAttribute("size", size)
 
 
-class HTMLShadowElement(HTMLElement):  # TODO - check
+class HTMLShadowElement(HTMLElement):
     name = "shadow"
+    # Currently, the shadow element is obsolete and not typically used in HTML5. Its use was associated with the deprecated Shadow DOM v0 API.
+
+    def __init__(self, *args, **kwargs):
+        """HTMLShadowElement
+
+        The <shadow> element was used in the Shadow DOM v0 specification. It's not commonly used in modern web development.
+        """
+        super().__init__(*args, **kwargs)
 
 
-class HTMLSourceElement(HTMLElement):  # TODO - check
+class HTMLSourceElement(HTMLElement):
     name = "source"
     __isempty = True
+
+    def __init__(self, *args, src=None, type=None, media=None, sizes=None, **kwargs):
+        """HTMLSourceElement
+
+        Args:
+            src (str, optional): Specifies the URL of the resource.
+            type (str, optional): Specifies the MIME type of the resource.
+            media (str, optional): Specifies the media query for when to apply the source.
+            sizes (str, optional): Specifies the sizes of the source.
+        """
+        super().__init__(*args, **kwargs)
+        if src is not None:
+            self.setAttribute("src", src)
+        if type is not None:
+            self.setAttribute("type", type)
+        if media is not None:
+            self.setAttribute("media", media)
+        if sizes is not None:
+            self.setAttribute("sizes", sizes)
 
 
 class HTMLSpanElement(HTMLElement):
     name = "span"
 
 
+
 class HTMLStyleElement(HTMLElement):
     name = "style"
+
+    def __init__(self, *args, type=None, media=None, scoped=None, **kwargs):
+        """HTMLStyleElement
+
+        Args:
+            type (str, optional): Specifies the type of style sheet.
+            media (str, optional): Specifies the media for which the styles are intended.
+            scoped (str, optional): Indicates whether the style is scoped to the element.
+        """
+        super().__init__(*args, **kwargs)
+        if type is not None:
+            self.setAttribute("type", type)
+        if media is not None:
+            self.setAttribute("media", media)
+        if scoped is not None:
+            self.setAttribute("scoped", scoped)
 
 
 class HTMLTableCaptionElement(HTMLElement):  # TODO - check
@@ -6250,6 +6420,16 @@ class HTMLTextAreaElement(HTMLElement):
 class HTMLTimeElement(HTMLElement):
     name = "time"
 
+    def __init__(self, *args, datetime=None, **kwargs):
+        """HTMLTimeElement
+
+        Args:
+            datetime (str, optional): Represents the time value in a machine-readable format.
+        """
+        super().__init__(*args, **kwargs)
+        if datetime is not None:
+            self.setAttribute("datetime", datetime)
+
 
 class HTMLTitleElement(HTMLElement):
     name = "title"
@@ -6257,6 +6437,28 @@ class HTMLTitleElement(HTMLElement):
 
 class HTMLTrackElement(HTMLElement):
     name = "track"
+    
+    def __init__(self, *args, kind=None, label=None, src=None, srclang=None, default=None, **kwargs):
+        """HTMLTrackElement
+
+        Args:
+            kind (str, optional): Specifies the kind of text track. Can be "subtitles", "captions", "descriptions", or "chapters".
+            label (str, optional): A user-readable title for the track.
+            src (str, optional): The URL of the track file.
+            srclang (str, optional): The language of the track text.
+            default (bool, optional): Indicates if the track should be shown by default.
+        """
+        super().__init__(*args, **kwargs)
+        if kind is not None:
+            self.setAttribute("kind", kind)
+        if label is not None:
+            self.setAttribute("label", label)
+        if src is not None:
+            self.setAttribute("src", src)
+        if srclang is not None:
+            self.setAttribute("srclang", srclang)
+        if default is not None:
+            self.setAttribute("default", default)
 
 
 class HTMLUListElement(HTMLElement):
