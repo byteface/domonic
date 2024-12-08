@@ -1215,6 +1215,19 @@ class Node(EventTarget):
     def length(self) -> int:
         return len(self)
 
+    def is_matching(self, name, default_namespace=None):
+        """
+        Determine if this node matches the given name and namespace.
+        """
+        # Check name
+        if name and name != self.tagName:
+            return False
+        # Check namespace (if relevant)
+        if default_namespace and getattr(self, 'namespace', None) != default_namespace:
+            return False
+        return True
+
+
 
 class ParentNode:
     """not tested yet"""
