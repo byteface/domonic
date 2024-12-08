@@ -54,7 +54,9 @@ class Color:
         """
         if h[0] == "#":
             h = h.lstrip("#")
-        return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
+        if len(h) == 6: 
+            return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
+        raise ValueError(f"Unsupported color string: #{h}")
 
     # rgb = hex2rgb  # TODO - as static. but can also check if instance has value? so can get/set.
 
@@ -143,42 +145,65 @@ class Color:
 
     def __init__(self, *args, **kwargs) -> None:
         """
-        accepts a color in a variety of formats:
+        Accepts a color in a variety of formats:
+        - vec4: (r, g, b, a)
+        - vec3: (r, g, b)
+        - str: Hex color in "#RRGGBB" or "#RGB" format or named colors
+        - int/float: r, g, b, [a]
         """
-        if isinstance(args[0], vec4):
-            self.r = args[0][0]
-            self.g = args[0][1]
-            self.b = args[0][2]
-            self.a = args[0][3]
-        if isinstance(args[0], vec3):
-            self.r = args[0][0]
-            self.g = args[0][1]
-            self.b = args[0][2]
-        if isinstance(args[0], str):
-            if args[0].startswith("#"):
-                self.r, self.g, self.b = Color.hex2rgb(args[0])
-        if isinstance(args[0], (int, float)):
-            if len(args) == 3:
-                self.r, self.g, self.b = args
+        self.r = self.g = self.b = 0
+        self.a = 1  # Default alpha
+
+        # Handle vector inputs (vec4, vec3)
+        if len(args) == 1:
+            if isinstance(args[0], vec4):
+                self.r = args[0][0]  # or args[0].x
+                self.g = args[0][1]  # or args[0].y
+                self.b = args[0][2]  # or args[0].z
+                self.a = args[0][3]  # or args[0].a
+                return
+            if isinstance(args[0], vec3):
+                self.r = args[0][0]  # or args[0].x
+                self.g = args[0][1]  # or args[0].y
+                self.b = args[0][2]  # or args[0].z
+                return
+            if isinstance(args[0], str):  # Hex or named color
+                color_str = args[0]
+                if color_str.startswith("#"):
+                    if len(color_str) == 7:  # #RRGGBB
+                        self.r, self.g, self.b = self.hex2rgb(color_str)
+                    # elif len(color_str) == 4:  # #RGB
+                    #     self.r, self.g, self.b = self.hex2rgb(color_str)
+                    else:
+                        raise ValueError(f"Unsupported color string: {color_str}")    
+                    return
+                # elif color_str.lower() in self.named_colors():
+                #     self.r, self.g, self.b = self.named_colors()[color_str.lower()]
+                #     return
+                else:
+                    raise ValueError(f"Unsupported color string: {color_str}")
+
+        # Handle numeric RGB(A) inputs
+        if len(args) in (3, 4) and all(isinstance(c, (int, float)) for c in args):
+            self.r, self.g, self.b = args[:3]
             if len(args) == 4:
-                self.r, self.g, self.b, self.a = args
+                self.a = args[3]
+            return
 
-        # self.alpha = kwargs.get('a', 1.0)
-        # self.red = kwargs.get('r', self.r)
-        # self.green = kwargs.get('g', self.g)
-        # self.blue = kwargs.get('b', self.b)
+        if len(kwargs) > 0:
+            self.alpha = kwargs.get("alpha", self.a)
+            self.red = kwargs.get("red", self.r)
+            self.green = kwargs.get("green", self.g)
+            self.blue = kwargs.get("blue", self.b)
+            # self.gray = kwargs.get('gray', self.r)
+            self.hue = kwargs.get("hue", 0.0)
+            self.saturation = kwargs.get("saturation", 1.0)
+            self.brightness = kwargs.get("brightness", 1.0)
+            self.lightness = kwargs.get("lightness", 1.0)
+            return
 
-        self.alpha = kwargs.get("alpha", 1.0)  # TODO - props instead?
-        self.red = kwargs.get("red", self.r)
-        self.green = kwargs.get("green", self.g)
-        self.blue = kwargs.get("blue", self.b)
-        # self.gray = kwargs.get('gray', self.r)
-        self.hue = kwargs.get("hue", 0.0)
-        self.saturation = kwargs.get("saturation", 1.0)
-        self.brightness = kwargs.get("brightness", 1.0)
-        self.lightness = kwargs.get("lightness", 1.0)
+        raise ValueError(f"Unsupported input format for Color: {args}")
 
-        # print(self.r, self.g, self.b)
 
     @property
     def alpha(self) -> float:

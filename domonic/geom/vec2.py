@@ -1,13 +1,6 @@
 """
-    domonic.geom
+    domonic.geom.vec2
     ====================================
-
-    much of this was written by.ai
-    (https://6b.eleuther.ai/)
-
-    most of this code was derivied by continually pasting back into eleuther
-
-    # TODO - tests for all these new functions. sadly the ai didn't generate those.
 
 """
 import math
@@ -23,23 +16,11 @@ class vec2:
         self.y: float = y
 
     def __mul__(self, other):
-        """[vec2] * [number] or [vec2] * [vec2]]
-
-        Args:
-            other ([vec2]): [multiply this vector by this vector or by a number]
-
-        Returns:
-            [vec2]: [new vector]
-        """
-        # if isinstance(other, vec2):
-        #     return self.__class__((self.x * other.x, self.y * other.y))
-        # else:
-        #     return self.__class__((self.x * other, self.y * other))
-        # more pythonic...?
-        try:
-            return self.__class__((self.x * other.x, self.y * other.y))
-        except AttributeError:
-            return self.__class__((self.x * other, self.y * other))
+        if isinstance(other, (int, float)):
+            return vec2(self.x * other, self.y * other)
+        if isinstance(other, vec2):
+            return vec2(self.x * other.x, self.y * other.y)
+        raise ValueError("Unsupported operand type for multiplication")
 
     def __div__(self, other):
         if isinstance(other, vec2):
@@ -71,32 +52,38 @@ class vec2:
     def __add__(self, other):
         if isinstance(other, vec2):
             return vec2(self.x + other.x, self.y + other.y)
-        else:
+        if isinstance(other, (int, float)):
             return vec2(self.x + other, self.y + other)
+        raise ValueError("Unsupported operand type for subtraction")
 
     def __sub__(self, other):
         if isinstance(other, vec2):
             return vec2(self.x - other.x, self.y - other.y)
-        else:
+        if isinstance(other, (int, float)):
             return vec2(self.x - other, self.y - other)
+        raise ValueError("Unsupported operand type for subtraction")
 
     def __truediv__(self, other):
+        if isinstance(other, (int, float)):
+            return vec2(self.x / other, self.y / other)
         if isinstance(other, vec2):
             return vec2(self.x / other.x, self.y / other.y)
-        else:
-            return vec2(self.x / other, self.y / other)
+        raise ValueError("Unsupported operand type for division")
 
     def __floordiv__(self, other):
         if isinstance(other, vec2):
             return vec2(self.x // other.x, self.y // other.y)
-        else:
+        if isinstance(other, (int, float)):
             return vec2(self.x // other, self.y // other)
+        raise ValueError("Unsupported operand type for division")
 
     def __neg__(self):
         return vec2(-self.x, -self.y)
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
+        if isinstance(other, vec2):
+            return self.x == other.x and self.y == other.y
+        return False
 
     def __ne__(self, other):
         return self.x != other.x or self.y != other.y

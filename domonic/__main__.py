@@ -322,10 +322,17 @@ def parse_args():
         nargs="*",
         default=None,
     )
+    parser.add_argument(
+        "-h2p", 
+        "--html2pyml", 
+        help="Convert HTML to PyML", 
+        type=str, 
+        nargs="?", 
+        default=None
+    )
 
     # parser.add_argument('-u', '--ui', help="launches a UI")
     # parser.add_argument('-p', '--pyml2html', help="converts a .pyml template file to html", type=str)
-    # parser.add_argument('-g', '--html2pyml', help="converts a .html file to a .pyml template", type=str)
 
     # parser.add_argument('-w', '--website', action='store_true')  # launch the docs
     # parser.add_argument('-s', '--server', help="runs python -m http.server", type=str)
@@ -374,6 +381,20 @@ def do_things(arguments):
 
         print("filename:", Utils.url2file(arguments.download))
         render(page, Utils.url2file(arguments.download))
+
+    # print(arguments.download)
+    if arguments.html2pyml is not None:
+        print("creating domonic code from url:")
+        from domonic import domonic
+
+        page = domonic.get(arguments.html2pyml)
+        outp = domonic.parseString(page)
+
+        from domonic.html import render
+        from domonic.utils import Utils
+
+        # print("filename:", Utils.url2file(arguments.download))
+        print(render(outp, to='pyml'))
 
     if arguments.project is not None:
         print("creating a basic project:")

@@ -17,13 +17,35 @@ class vec4:
         y: float = 0.0,
         z: float = 0.0,
         w: float = 0.0,
-        n: float = 1.0,
     ):
         self.x: float = x
         self.y: float = y
         self.z: float = z
         self.w: float = w
-        self.n: float = n
+
+
+    def __getitem__(self, item):
+        if isinstance(item, int):
+            if item == 0:
+                return self.x
+            elif item == 1:
+                return self.y
+            elif item == 2:
+                return self.z
+            elif item == 3:
+                return self.w
+        elif isinstance(item, str):
+            if item == "x":
+                return self.x
+            elif item == "y":
+                return self.y
+            elif item == "z":
+                return self.z
+            elif item == "w":
+                return self.w
+        raise KeyError(f"Invalid key: {item}")
+
+
 
     def __add__(self, other):
         x = self.x + other.x

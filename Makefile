@@ -60,6 +60,31 @@ test_svg:
 format:
 	black domonic -l 120 && isort domonic
 
+
+# test individual modules with coverage
+coverage:
+	coverage run -m unittest -v tests.test_html
+	coverage run -m unittest -v tests.test_events
+	coverage run -m unittest -v tests.test_dom
+	coverage run -m unittest -v tests.test_style
+	coverage run -m unittest -v tests.test_javascript
+	coverage run -m unittest -v tests.test_javascript_date
+	coverage run -m unittest -v tests.test_terminal
+	coverage run -m unittest -v tests.test_CDN
+	coverage run -m unittest -v tests.test_JSON
+	coverage run -m unittest -v tests.test_svg
+	coverage run -m unittest -v tests.test_collada
+	coverage run -m unittest -v tests.test_x3d
+	coverage run -m unittest -v tests.test_dQuery
+	coverage run -m unittest -v tests.test_geom
+	coverage run -m unittest -v tests.test_d3
+	coverage run -m unittest -v tests.test_sitemap
+	coverage run -m unittest -v tests.test_domonic
+	coverage run -m unittest -v tests.test_templates
+	coverage run -m unittest -v tests.test_window
+	coverage report
+
+
 # release
 build:
 	rm -rf dist/

@@ -1,12 +1,12 @@
 """
-    domonic.d3.geom.shape
+    domonic.geom.shape
     ====================================
 
 """
 
 from domonic.geom.vec2 import vec2
 from domonic.svg import *
-
+from domonic.javascript import Math
 
 class vertex(vec2):
     """
@@ -180,123 +180,123 @@ class Shape(Point):
 
 
 class Line(Shape):
-    def __init__(self, p1, p2, color=None, *args):
+    def __init__(self, start, end, color=None, *args):
         super().__init__(color)
         # if isinstance(p1, vec2):
-        self.p1 = p1
-        self.p2 = p2
-        self.x = self.p1[0] - self.p2[0]
-        self.y = self.p1[1] - self.p2[1]
+        self.start = start
+        self.end = end
+        self.x = self.start[0] - self.end[0]
+        self.y = self.start[1] - self.end[1]
 
     def __str__(self):
-        return f"Line({self.p1}, {self.p2})"
+        return f"Line({self.start}, {self.end})"
 
     def __eq__(self, other):
-        return self.p1 == other.p1 and self.p2 == other.p2
+        return self.start == other.start and self.end == other.end
 
     def __ne__(self, other):
-        return self.p1 != other.p1 or self.p2 != other.p2
+        return self.start != other.start or self.end != other.end
 
     def __hash__(self):
-        return hash((self.p1, self.p2))
+        return hash((self.start, self.end))
 
     def __iter__(self):
-        return iter((self.p1, self.p2))
+        return iter((self.start, self.end))
 
     # def __len__(self):
     #     return 2
 
     def __getitem__(self, index):
-        return (self.p1, self.p2)[index]
+        return (self.start, self.end)[index]
 
     def __setitem__(self, index, value):
         if index == 0:
-            self.p1 = value
+            self.start = value
 
     def __delitem__(self, index):
         if index == 0:
-            self.p1 = None
+            self.start = None
 
     def __contains__(self, item):
-        return item in (self.p1, self.p2)
+        return item in (self.start, self.end)
 
     def __add__(self, other):
-        return Line(self.p1, other.p2)
+        return Line(self.start, other.end)
 
     def __sub__(self, other):  # self - other
-        return Line(self.p1, other.p1)
+        return Line(self.start, other.start)
 
     def __mul__(self, other):
-        return Line(self.p1, other.p2)
+        return Line(self.start, other.end)
 
     def __rmul__(self, other):
-        return Line(self.p1, other.p2)
+        return Line(self.start, other.end)
 
     def __neg__(self):
-        return Line(self.p1, self.p2)
+        return Line(self.start, self.end)
 
     def __pos__(self):
-        return Line(self.p1, self.p2)
+        return Line(self.start, self.end)
 
     def __abs__(self):
-        return Line(self.p1, self.p2)
+        return Line(self.start, self.end)
 
     # def __bool__(self):
-    #     return bool(self.p1 and self.p2)
+    #     return bool(self.start and self.end)
 
     # def __nonzero__(self):
-    #     return bool(self.p1 and self.p2)
+    #     return bool(self.start and self.end)
 
     # def __call__(self, p):
-    #     return Line(self.p1, p)
+    #     return Line(self.start, p)
 
     # def __getattr__(self, name):
     #     if name == 'p1':
-    #         return self.p1
+    #         return self.start
     #     elif name == 'p2':
-    #         return self.p2
+    #         return self.end
     #     else:
     #         raise AttributeError(name)
 
     # def __setattr__(self, name, value):
     #     if name == 'p1':
-    #         self.p1 = value
+    #         self.start = value
 
     # def __delattr__(self, name):
     #     if name == 'p1':
-    #         self.p1 = None
+    #         self.start = None
     #     elif name == 'p2':
-    #         self.p2 = None
+    #         self.end = None
     #     else:
     #         raise AttributeError(name)
 
     # def __getinitargs__(self):
-    #     return (self.p1, self.p2)
+    #     return (self.start, self.end)
 
     # def __setstate__(self, state):
-    #     self.p1 = state['p1']
-    #     self.p2 = state['p2']
+    #     self.start = state['p1']
+    #     self.end = state['p2']
 
     def __getstate__(self):
-        return {"p1": self.p1, "p2": self.p2}
+        return {"p1": self.start, "p2": self.end}
 
     def __reduce__(self):
-        return (Line, (self.p1, self.p2))
+        return (Line, (self.start, self.end))
 
     def __reduce_ex__(self, protocol):
         return self.__reduce__()
 
     def __copy__(self):
-        return Line(self.p1, self.p2)
+        return Line(self.start, self.end)
 
     def __deepcopy__(self, memo):
-        return Line(self.p1, self.p2)
+        return Line(self.start, self.end)
 
     def __bool__(self):
-        return bool(self.p1 and self.p2)
+        return bool(self.start and self.end)
 
     def __nonzero__(self):
-        return bool(self.p1 and self.p2)
+        return bool(self.start and self.end)
 
 
 class Plane:
@@ -796,6 +796,106 @@ class Polyline(Shape):
 #         self.color = color
 
 
-from domonic.geom.shape.shapes import Circle, Oval
+class Circle(Shape):
+    def __init__(self, x: float, y: float, radius: float = 1.0, color=None) -> None:
+        """[Circle(x, y, radius=1.0, color=None)]
 
-# from domonic.geom.shape.circle import Elipse
+        Args:
+            x ([float]): [the x coordinate of the center of the circle]
+            y ([float]): [the y coordinate of the center of the circle]
+            radius (float, optional): [description]. Defaults to 1.0.
+            color ([type], optional): [description]. Defaults to None.
+        """
+        super().__init__(color)
+        self.radius = radius  # Create an instance variable radius
+
+    @property
+    def area(self) -> float:
+        """[area]
+
+        Returns:
+            [float]: [the area of the circle]
+        """
+        return self.radius * self.radius * Math.PI
+
+    @property
+    def perimeter(self) -> float:
+        """[perimeter]
+
+        Returns:
+            [float]: [the perimeter of the circle]
+        """
+        return 2 * self.radius * Math.PI
+
+    @property
+    def average_circumference(self):
+        return 2 * self.radius
+
+    @property
+    def center(self):
+        x, y = self.center = [self.radius, self.radius]
+        return x, y
+
+    @center.setter
+    def center(self, center):
+        self._center = center
+
+    def __str__(self):
+        return f"Circle({self.center}, {self.radius}, {self.color})"
+
+    def __getstate__(self):
+        return {"center": self.center, "radius": self.radius}
+
+    def __setstate__(self, state):
+        self.center = state["center"]
+        self.radius = state["radius"]
+
+    def __copy__(self):
+        return Circle(self.center, self.radius, self.color)
+
+    def __deepcopy__(self, memo):
+        return Circle(self.center, self.radius, self.color)
+
+    def __contains__(self, other):
+        return other in self.center
+
+    def __len__(self):
+        return len(self.center)
+
+    def __getitem__(self, key):
+        return self.center[key]
+
+    def __setitem__(self, key, value):
+        self.center[key] = value
+
+    def __iter__(self):
+        return iter(self.center)
+
+    def __add__(self, other):
+        return Circle(self.center + other.center, self.radius + other.radius)
+
+    def __sub__(self, other):
+        return Circle(self.center - other.center, self.radius - other.radius)
+
+    def __mul__(self, other):
+        return Circle(self.center * other, self.radius * other)
+
+    # def __rmul__(self, other):
+    #     return Circle(self.center * other, self.radius * other
+
+
+class Oval(Circle):
+    def __init__(self, radius=2.5, size=3):
+        super().__init__(size, "green")
+        self.radius = radius
+        self.x = self.width / 2 - self.radius / 2
+        self.y = self.width / 2 + self.radius / 2
+
+
+class Ellipse(Shape):
+    def __init__(self, x, y, width, height, color=None):
+        super().__init__(color)
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height

@@ -1,5 +1,5 @@
 """
-    domonic.particles
+    domonic.geom.particles
     ====================================
     fun stuff
 

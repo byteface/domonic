@@ -9,6 +9,7 @@ from domonic.dom import *
 from domonic.html import *
 from domonic.javascript import *
 from domonic.webapi import *
+from domonic.webapi.urlpattern import URLPattern
 
 # from domonic.decorators import silence
 
