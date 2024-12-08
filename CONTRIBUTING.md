@@ -157,5 +157,6 @@ I'd like to thank here...
 * ShoGinn
 * FrackOverflow
 * lmgarret
+* dmalataeva
 
 and of course dependabot[bot]
