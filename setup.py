@@ -92,16 +92,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Text Processing :: Markup :: HTML",
     ],
-    # install_requires=get_requirements(),
-    # NOTE - currently need to hardcode these for cli tests due to github task runner?
-    install_requires=[
-        "elementpath~=4.6.0",
-        "python-dateutil==2.9.0.post0",
-        "requests~=2.32.3",
-        "urllib3~=2.2.3",
-        "html5lib~=1.1",
-        "cssselect~=1.2.0",
-    ],
+    install_requires=get_requirements(),
     packages=find_packages(),
     include_package_data=True,
     entry_points={

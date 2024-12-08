@@ -4,6 +4,3 @@ requests~=2.32.3
 urllib3~=2.2.3
 html5lib~=1.1
 cssselect~=1.2.0
-
-# NOTE - currently need to hardcode these again in setup.py due to github workflow of cli test
-# the isolated env doesnt seem to pick up the pip installed packages?

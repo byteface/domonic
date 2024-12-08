@@ -12,9 +12,6 @@
 
 from typing import Any, Callable, Dict, List, Optional, Union
 
-import elementpath
-
-
 class XPathEvaluator:
     def __init__(self) -> None:
         pass
@@ -43,6 +40,8 @@ class XPathExpression:
 
         if len(expr) <= 0:
             raise Exception("no expression")
+        
+        import elementpath
         self.selector = elementpath.Selector(expr)
 
     # TODO - DRY - make some utils . just stole this from Treewalker.
