@@ -26,7 +26,7 @@ class TestCase(unittest.TestCase):
 
         d = Date()
         # set the date
-        d.setTime(1546300800000)  # 2019-01-01, was on a Tuesday
+        d.setTime(1546300800000, timezone.utc)  # 2019-01-01, was on a Tuesday
         # print('>>', d.getDate())
         assert d.getDate() == 1
 
@@ -174,7 +174,7 @@ class TestCase(unittest.TestCase):
         # // Since month is zero based, birthday will be January 10, 1995
         birthday = Date(1994, 12, 10)
         acopy = Date()
-        acopy.setTime(birthday.getTime())
+        acopy.setTime(birthday.getTime(), timezone.utc)
         assert acopy.getTime() == birthday.getTime()
 
     # def test_getTimezoneOffset(self):
