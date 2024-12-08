@@ -9,41 +9,46 @@
 from typing import Dict, List, Any
 import time
 
+
 class EventTarget:
-    """EventTarget is a class you can extend to give your object event dispatching abilities.
+    """
+    EventTarget is a class you can extend to give your object event dispatching abilities.
 
     This class allows you to add, remove, and dispatch custom events, making it useful for creating
     event-driven components in your Python application.
 
-    Usage:
+    **Usage:**
+    
     To add an event listener:
-    - Use the addEventListener method.
-    
+    - Use the ``addEventListener`` method.
+
     To remove an event listener:
-    - Use the removeEventListener method.
-    
+    - Use the ``removeEventListener`` method.
+
     To dispatch an event:
     - Create an event object with the desired event type and optional event data.
-    - Use the dispatchEvent method to trigger the event.
+    - Use the ``dispatchEvent`` method to trigger the event.
 
-    Example:
-    ```python
-    target = EventTarget()
+    **Example:**
     
-    def my_event_handler(event):
-        print("Event received:", event)
-    
-    target.addEventListener("custom_event", my_event_handler)
-    
-    event_data = {"message": "Hello, world!"}
-    custom_event = {"type": "custom_event", "data": event_data}
-    target.dispatchEvent(custom_event)
-    
-    # Output: Event received: {'type': 'custom_event', 'data': {'message': 'Hello, world!'}}
-    ```
+    .. code-block:: python
 
-    Attributes:
-    - listeners (dict): A dictionary to store event listeners by event type.
+        target = EventTarget()
+        
+        def my_event_handler(event):
+            print("Event received:", event)
+        
+        target.addEventListener("custom_event", my_event_handler)
+        
+        event_data = {"message": "Hello, world!"}
+        custom_event = {"type": "custom_event", "data": event_data}
+        target.dispatchEvent(custom_event)
+        
+        # Output: Event received: {'type': 'custom_event', 'data': {'message': 'Hello, world!'}}
+
+    **Attributes:**
+
+    - ``listeners`` (dict): A dictionary to store event listeners by event type.
     """
 
     def __init__(self, *args, **kwargs) -> None:
@@ -119,15 +124,19 @@ class EventTarget:
         Returns:
             bool: True if the event was successfully dispatched, otherwise False.
 
-        Usage:
-        To dispatch an event asynchronously, use the 'await' keyword when calling this method.
+        **Usage:**
 
-        Example:
-        ```python
-        event_data = {"message": "Hello, world!"}
-        async_event = {"type": "async_event", "data": event_data}
-        await target.dispatchEventAsync(async_event)
+        To dispatch an event asynchronously, use the ``await`` keyword when calling this method.
+
+        **Example:**
+
+        .. code-block:: python
+
+            event_data = {"message": "Hello, world!"}
+            async_event = {"type": "async_event", "data": event_data}
+            await target.dispatchEventAsync(async_event)
         """
+
         eventType = event.get("type", None)
         if eventType in self.listeners:
             stack = self.listeners[eventType]

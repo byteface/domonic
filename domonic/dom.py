@@ -2145,25 +2145,27 @@ class Element(Node):
     # @staticmethod
     def getElementsBySelector(self, all_selectors, document):
         """
-            Get DOM elements based on the given CSS Selector
-            https://simonwillison.net/2003/Mar/25/getElementsBySelector/ < original author
-            http://www.openjs.com/scripts/dom/css_selector/ < ported to support ','
-            https://bin-co.com/python/scripts/getelementsbyselector-html-css-query.php < ported to py2 (broken/bugs) *BSD LICENSED*
+        Get DOM elements based on the given CSS Selector.
 
-            note - always needs a tag in the query
-            i.e. ('a.classname') will work. but just ('.classname') wont
+        Original sources:
+        - https://simonwillison.net/2003/Mar/25/getElementsBySelector/
+        - http://www.openjs.com/scripts/dom/css_selector/
+        - https://bin-co.com/python/scripts/getelementsbyselector-html-css-query.php (ported to Python 2, broken/bugs, BSD licensed)
 
-            fixed and ported to py3 here. quite cool means other peoples code works on my dom
-            # TODO - needs to work in conjuctions with _matchElement so querySelector works a bit better and dQuery picks it up
-            # TOOD - *= node content
+        Note:
+        - Always include a tag in the query. For example, `'a.classname'` will work, but just `'.classname'` will not.
+        - Fixed and ported to Python 3 in this library, allowing compatibility with existing codebases.
+        - TODO: Needs to work in conjunction with `_matchElement` for better querySelector support, and to ensure dQuery compatibility.
+        - TODO: Implement support for `*=` (node content).
 
         Args:
-            all_selectors ([type]): [description]
-            document ([type]): [description]
+            all_selectors (str): The CSS selectors to query.
+            document (object): The document object to search within.
 
         Returns:
-            [type]: [description]
+            list: A list of elements matching the CSS selectors.
         """
+
         selected = []
         # import string
         all_selectors = re.sub(r"\s*([^\w])\s*", r"\1", all_selectors)  # clean up whitespace

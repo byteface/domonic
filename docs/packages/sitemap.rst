@@ -103,6 +103,34 @@ Here's some more examples.
 	print(sm)
 
 
+Namespaced tags
+----------------
+
+There's a few options for creating the namespaced tags i.e. `image:image`, `image:loc`, `<image:caption>` etc
+
+Call globals to get them by a name string due to colon not being valid in python variable names . i.e.
+
+.. code-block :: python
+
+	str(globals()["image:license"]())  # returns '<image:license></image:license>'
+
+or there is a utility method to create them called create_ns_element:
+
+.. code-block :: python
+
+	from domonic.xml.sitemap import create_ns_element
+
+    vt = create_ns_element("video:title")
+	print(str(vt))
+
+or you can use an underscore instead of a colon.
+
+.. code-block :: python
+
+	from domonic.xml.sitemap import *
+    print(geo_placename())
+
+
 formatting
 ----------------
 
@@ -112,7 +140,7 @@ You can format with following normal python methods which are regonised by domon
 
 	print(f"{sm}") # f string will call __format__ and run through a prettify
 	print(f"{sm!s}") # str will not be prettified
-	print(f"{sm!r}") # r show the ojbect as a repr
+	print(f"{sm!r}") # r show the object as a repr
 	# print(f"{sm!a}")
 	
 
@@ -120,12 +148,12 @@ You can format with following normal python methods which are regonised by domon
 more
 ----------------
 
-For more infor on sitemaps see...
+For more info on sitemaps see...
 
 https://www.sitemaps.org/protocol.html
 
 
-
 .. automodule:: domonic.xml.sitemap
-    :members:
-    :noindex:
+   :members:
+   :noindex:
+   :exclude-members: image:image, image:loc, image:caption, image:title, image:geo_location, image:license

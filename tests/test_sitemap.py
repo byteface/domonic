@@ -57,6 +57,32 @@ class TestCase(unittest.TestCase):
         # print(f"{sm!a}")
         print(f"{sm}")
 
+
+    def test_namespaced_tags(self):
+        self.assertEqual(str(globals()["image:image"]()), '<image:image></image:image>')
+        self.assertEqual(str(globals()["image:loc"]()), '<image:loc></image:loc>')
+        self.assertEqual(str(globals()["image:caption"]()), '<image:caption></image:caption>')
+        self.assertEqual(str(globals()["image:title"]()), '<image:title></image:title>')
+        self.assertEqual(str(globals()["image:geo_location"]()), '<image:geo_location></image:geo_location>')
+        self.assertEqual(str(globals()["image:license"]()), '<image:license></image:license>')
+
+        self.assertEqual(str(create_ns_element("image:image")), '<image:image></image:image>')
+        self.assertEqual(str(create_ns_element("image:loc")), '<image:loc></image:loc>')
+        self.assertEqual(str(create_ns_element("image:title")), '<image:title></image:title>')
+        self.assertEqual(str(create_ns_element("image:caption")), '<image:caption></image:caption>')
+        self.assertEqual(str(create_ns_element("image:geo_location")), '<image:geo_location></image:geo_location>')
+        self.assertEqual(str(create_ns_element("image:license")), '<image:license></image:license>')
+
+        # Testing other namespaces (video, news, geo, atom, xhtml, mobile)
+        self.assertEqual(str(globals()["video:video"]()), '<video:video></video:video>')
+        self.assertEqual(str(globals()["video:title"]()), '<video:title></video:title>')
+        self.assertEqual(str(globals()["news:news"]()), '<news:news></news:news>')
+        self.assertEqual(str(globals()["geo:geo"]()), '<geo:geo></geo:geo>')
+        self.assertEqual(str(globals()["atom:link"]()), '<atom:link></atom:link>')
+        self.assertEqual(str(globals()["xhtml:link"]()), '<xhtml:link></xhtml:link>')
+        self.assertEqual(str(globals()["mobile:mobile"]()), '<mobile:mobile></mobile:mobile>')
+
+
     @silence
     def test_loadsitemap(self):
         from domonic.xml.sitemap import get_sitemap
@@ -64,6 +90,7 @@ class TestCase(unittest.TestCase):
         # sm = get_sitemap('https://x.net/sitemap.xml')
         sm = get_sitemap("https://x.net/merchants/ar/sitemap_index.xml")
         print(sm)
+
 
     @silence
     def test_parse_sitemapindex(self):

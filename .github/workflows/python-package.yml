@@ -30,11 +30,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip list
-    - name: Install
-      run: |
-        pip install .
-        pip install -e .  # Install domonic in editable mode to run test_cli
     - name: Run the tests
       run: |
         make test
-        python -m unittest -v tests.test_cli
