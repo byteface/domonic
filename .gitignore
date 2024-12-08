@@ -12,3 +12,5 @@ domonic.egg-info
 
 # sphinx
 docs/_build/
+
+.coverage
