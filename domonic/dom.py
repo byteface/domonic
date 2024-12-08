@@ -1219,10 +1219,8 @@ class Node(EventTarget):
         """
         Determine if this node matches the given name and namespace.
         """
-        # Check name
         if name and name != self.tagName:
             return False
-        # Check namespace (if relevant)
         if default_namespace and getattr(self, 'namespace', None) != default_namespace:
             return False
         return True
