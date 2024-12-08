@@ -1611,7 +1611,7 @@ class Date(Object):
             self.setMilliseconds(msValue)
         return self.getTime()
 
-    def setTime(self, milliseconds: int = None):
+    def setTime(self, milliseconds: int = None, tz: Any = None):
         """Sets the date and time of a date object
 
         Args:
@@ -1621,9 +1621,9 @@ class Date(Object):
             _type_: _description_
         """
         if milliseconds is None:
-            self.date = datetime.datetime.now()
+            self.date = datetime.datetime.now(tz)
         else:
-            self.date = datetime.datetime.fromtimestamp(milliseconds / 1000)
+            self.date = datetime.datetime.fromtimestamp(milliseconds / 1000, tz)
         return milliseconds
 
     def setUTCDate(self, day):
