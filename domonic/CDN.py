@@ -4,7 +4,6 @@
     For quick reference when prototyping
 """
 
-
 class CDN_JS:
     """
     JavaScript libraries
@@ -25,27 +24,30 @@ class CDN_JS:
     BRYTHON: str = "https://cdnjs.cloudflare.com/ajax/libs/brython/3.11.1/brython.min.js"
     MATHML: str = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"
     HTMX: str = "https://unpkg.com/htmx.org@1.9.0"
-
+    LODASH: str = "https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"
+    AXIOS: str = "https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"
+    DAY_JS: str = "https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"
+    CHART_JS: str = "https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"
+    ANIME_JS: str = "https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"
+    VALIDATOR_JS: str = "https://cdn.jsdelivr.net/npm/validator@13.6.0/validator.min.js"
 
 class CDN_CSS:
     """
-    Preferably use version numbers if available.
-    use LATEST if it always gets the latest
+    CSS Libraries
     """
 
-    BOOTSTRAP_5_ALPHA: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"  #:
-    BOOTSTRAP_4: str = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"  #:
-    MARX: str = "https://unpkg.com/marx-css/css/marx.min.css"  #:
-    MVP: str = "https://unpkg.com/mvp.css"  #:
-    WATER_LATEST: str = "https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css"  #:
-    BALLOON: str = "https://unpkg.com/balloon-css/balloon.min.css"  #:
-    THREE_DOTS_0_2_0: str = "https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css"  #:
-    MILLIGRAM_1_3_0: str = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"  #:
-    X3DOM: str = "https://www.x3dom.org/download/x3dom.css"  #:
-    FONTAWESOME_5_7_1: str = "https://use.fontawesome.com/releases/v5.7.1/css/all.css"  #:
-    MDI_5_4_55: str = "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"  #:
-    TAILWIND_2_2_15: str = "https://unpkg.com/tailwindcss@^2.2.15/dist/tailwind.min.css"  #:
-    SIMPLE: str = "https://cdn.simplecss.org/simple.min.css"  #:
+    BOOTSTRAP: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css"
+    MARX: str = "https://unpkg.com/marx-css/css/marx.min.css"
+    MVP: str = "https://unpkg.com/mvp.css"
+    WATER: str = "https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css"
+    BALLOON: str = "https://unpkg.com/balloon-css/balloon.min.css"
+    THREE_DOTS: str = "https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css"
+    MILLIGRAM: str = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"
+    X3DOM: str = "https://www.x3dom.org/download/x3dom.css"
+    FONTAWESOME: str = "https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+    MDI: str = "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"
+    TAILWIND: str = "https://unpkg.com/tailwindcss@^2.2.15/dist/tailwind.min.css"
+    SIMPLE: str = "https://cdn.simplecss.org/simple.min.css"
 
 
 class CDN_IMG:
