@@ -60,6 +60,28 @@ class KeyCode:
     NUMPAD_MULTIPLY: str = "106"
     NUMPAD_SUBTRACT: str = "109"
 
+    # Special characters
+    EXCLAMATION: str = "49"  # Shift + 1
+    AT: str = "50"  # Shift + 2
+    HASH: str = "51"  # Shift + 3
+    DOLLAR: str = "52"  # Shift + 4
+    PERCENT: str = "53"  # Shift + 5
+    CARET: str = "54"  # Shift + 6
+    AMPERSAND: str = "55"  # Shift + 7
+    STAR: str = "56"  # Shift + 8
+    LEFT_PARENTHESIS: str = "57"  # Shift + 9
+    RIGHT_PARENTHESIS: str = "48"  # Shift + 0
+    UNDERSCORE: str = "189"  # Shift + -
+    PLUS: str = "187"  # Shift + =
+    LEFT_CURLY_BRACKET: str = "219"  # Shift + [
+    RIGHT_CURLY_BRACKET: str = "221"  # Shift + ]
+    PIPE: str = "220"  # Shift + \
+    COLON: str = "186"  # Shift + ;
+    DOUBLE_QUOTE: str = "222"  # Shift + '
+    LESS_THAN: str = "188"  # Shift + ,
+    GREATER_THAN: str = "190"  # Shift + .
+    QUESTION_MARK: str = "191"  # Shift + /
+
     # Function keys
     F1: str = "112"
     F2: str = "113"
