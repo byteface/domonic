@@ -1,3 +1,5 @@
+from typing import Dict
+
 """
 domonic.constants
 ====================================
@@ -5,7 +7,7 @@ This module defines various constants used in the domonic package.
 """
 
 # Namespaces
-namespaces: dict[str, str] = {
+namespaces: Dict[str, str] = {
     "xml": "http://www.w3.org/XML/1998/namespace",
     "svg": "http://www.w3.org/2000/svg",
     "xlink": "http://www.w3.org/1999/xlink",
@@ -20,7 +22,7 @@ namespaces: dict[str, str] = {
 }
 
 # Document Types
-doctypes: dict[str, str] = {
+doctypes: Dict[str, str] = {
     "HTML5": "<!DOCTYPE html>",
     "HTML4_01_Strict": '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
     "HTML4_01_Transitional": '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
@@ -59,44 +61,44 @@ class HTTPStatus(Enum):
     NOT_FOUND = 404
     METHOD_NOT_ALLOWED = 405
     NOT_ACCEPTABLE = 406
-    PROXY_AUTHENTICATION_REQUIRED = 407
-    REQUEST_TIMEOUT = 408
+    PROXY_AUTHENTICATION REQUIRED = 407
+    REQUEST TIMEOUT = 408
     CONFLICT = 409
     GONE = 410
-    LENGTH_REQUIRED = 411
-    PRECONDITION_FAILED = 412
-    PAYLOAD_TOO_LARGE = 413
-    URI_TOO_LONG = 414
-    UNSUPPORTED_MEDIA_TYPE = 415
-    RANGE_NOT_SATISFIABLE = 416
-    EXPECTATION_FAILED = 417
-    IM_A_TEAPOT = 418
-    MISDIRECTED_REQUEST = 421
-    UNPROCESSABLE_ENTITY = 422
+    LENGTH REQUIRED = 411
+    PRECONDITION FAILED = 412
+    PAYLOAD TOO LARGE = 413
+    URI TOO LONG = 414
+    UNSUPPORTED MEDIA TYPE = 415
+    RANGE NOT SATISFIABLE = 416
+    EXPECTATION FAILED = 417
+    IM A TEAPOT = 418
+    MISDIRECTED REQUEST = 421
+    UNPROCESSABLE ENTITY = 422
     LOCKED = 423
-    FAILED_DEPENDENCY = 424
-    UPGRADE_REQUIRED = 426
-    PRECONDITION_REQUIRED = 428
-    TOO_MANY_REQUESTS = 429
-    REQUEST_HEADER_FIELDS_TOO_LARGE = 431
-    UNAVAILABLE_FOR_LEGAL_REASONS = 451
-    CLIENT_CLOSED_REQUEST = 499
-    INTERNAL_SERVER_ERROR = 500
-    NOT_IMPLEMENTED = 501
-    BAD_GATEWAY = 502
-    SERVICE_UNAVAILABLE = 503
-    GATEWAY_TIMEOUT = 504
-    HTTP_VERSION_NOT_SUPPORTED = 505
-    VARIANT_ALSO_NEGOTIATES = 506
-    INSUFFICIENT_STORAGE = 507
-    LOOP_DETECTED = 508
-    NOT_EXTENDED = 510
-    NETWORK_AUTHENTICATION_REQUIRED = 511
+    FAILED DEPENDENCY = 424
+    UPGRADE REQUIRED = 426
+    PRECONDITION REQUIRED = 428
+    TOO MANY REQUESTS = 429
+    REQUEST HEADER FIELDS TOO LARGE = 431
+    UNAVAILABLE FOR LEGAL REASONS = 451
+    CLIENT CLOSED REQUEST = 499
+    INTERNAL SERVER ERROR = 500
+    NOT IMPLEMENTED = 501
+    BAD GATEWAY = 502
+    SERVICE UNAVAILABLE = 503
+    GATEWAY TIMEOUT = 504
+    HTTP VERSION NOT SUPPORTED = 505
+    VARIANT ALSO NEGOTIATES = 506
+    INSUFFICIENT STORAGE = 507
+    LOOP DETECTED = 508
+    NOT EXTENDED = 510
+    NETWORK AUTHENTICATION REQUIRED = 511
 
 http_response_status_codes = {status.value: status.name.replace('_', ' ').title() for status in HTTPStatus}
 
 # Common MIME Types
-file_extensions: dict[str, str] = {
+file_extensions: Dict[str, str] = {
     "html": "text/html",
     "htm": "text/html",
     "xhtml": "application/xhtml+xml",
