@@ -1,16 +1,31 @@
+# macOS
 .DS_Store
 .Trashes
+
+# VSCode
 .vscode
-*.pyc
-venv
-winvenv
+
+# Python
+*.py[cod]
 __pycache__/
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.pyc
+winvenv/
 
-build
-dist
-domonic.egg-info
+# Distribution / packaging
+build/
+dist/
+domonic.egg-info/
 
-# sphinx
+# Sphinx documentation
 docs/_build/
 
+# Coverage reports
 .coverage
+.coverage.*
