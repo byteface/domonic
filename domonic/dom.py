@@ -2208,7 +2208,7 @@ class Element(Node):
                 context = []
                 for fnd in found:
                     if fnd.getAttribute("class") and re.search(
-                        r"(^|\s)" + class_name + "(\s|$)", fnd.getAttribute("class")
+                        r"(^|\s)" + class_name + r"(\s|$)", fnd.getAttribute("class")
                     ):
                         context.append(fnd)
 
