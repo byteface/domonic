@@ -1,31 +1,88 @@
-# macOS
+# OS
 .DS_Store
 .Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# VSCode
-.vscode
+# Editors / IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
 
 # Python
 *.py[cod]
+*.pyo
+*.pyd
 __pycache__/
-*.so
+*.pyc
+*.pyd
 .Python
+pip-selfcheck.json
+
+# Virtual environments
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
-*.pyc
+.venv/
 winvenv/
 
-# Distribution / packaging
+# Packaging / distribution
 build/
 dist/
+*.egg
+*.egg-info/
+.domonic-egg-info/        # keep original name pattern if needed
 domonic.egg-info/
+.eggs/
+pip-wheel-metadata/
+wheels/
+*.whl
 
 # Sphinx documentation
 docs/_build/
+build/docs/
 
-# Coverage reports
+# Coverage and test outputs
 .coverage
 .coverage.*
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Type checkers / caches
+.mypy_cache/
+.pytype/
+.pyre/
+.cache/
+
+# C extensions / compiled artifacts
+*.so
+*.dylib
+*.dll
+
+# Jupyter notebooks
+.ipynb_checkpoints
+
+# Environment files / secrets
+.env
+.env.*
+local.settings.json
+
+# Logs and runtime files
+*.log
+*.tmp
+*.pid
+
+# Misc
+*.pot
+*.mo
+
+Pipfile.lock
+poetry.lock
+.cache/pypoetry/
