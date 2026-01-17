@@ -35,7 +35,7 @@ build/
 dist/
 *.egg
 *.egg-info/
-.domonic-egg-info/        # keep original name pattern if needed
+.domonic-egg-info/
 domonic.egg-info/
 .eggs/
 pip-wheel-metadata/
