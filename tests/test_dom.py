@@ -960,6 +960,34 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(focus_calls, ["focus"])
         self.assertEqual(blur_calls, ["blur"])
 
+    def test_document_focus_tracking(self):
+        page = html(body(input(_type="text", _id="first"), button("go", _id="second")))
+        first = page.querySelector("#first")
+        second = page.querySelector("#second")
+
+        self.assertIs(page.activeElement, page.body)
+        self.assertFalse(page.hasFocus())
+
+        events = []
+        first.addEventListener("focus", lambda e: events.append(("first", e.type)))
+        first.addEventListener("blur", lambda e: events.append(("first", e.type)))
+        second.addEventListener("focus", lambda e: events.append(("second", e.type)))
+
+        first.focus()
+        self.assertIs(page.activeElement, first)
+        self.assertTrue(page.hasFocus())
+
+        second.focus()
+        self.assertIs(page.activeElement, second)
+        self.assertFalse(getattr(first, "_focused", False))
+        self.assertTrue(getattr(second, "_focused", False))
+
+        second.blur()
+        self.assertIs(page.activeElement, page.body)
+        self.assertFalse(page.hasFocus())
+
+        self.assertEqual(events, [("first", "focus"), ("first", "blur"), ("second", "focus")])
+
     def test_domimplementation_create_html_document(self):
         impl = DOMImplementation()
         doc = impl.createHTMLDocument("hello")

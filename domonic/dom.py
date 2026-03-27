@@ -2591,7 +2591,10 @@ class Element(Node):
 
     def blur(self):
         """Removes focus from an element"""
+        doc = self.ownerDocument if isinstance(self.ownerDocument, Document) else None
         self._focused = False
+        if doc is not None and getattr(doc, "_activeElement", None) is self:
+            doc._activeElement = None
         return self.dispatchEvent(Event("blur"))
 
     @property
@@ -2715,6 +2718,13 @@ class Element(Node):
 
     def focus(self):
         """Sets focus on an element"""
+        doc = self.ownerDocument if isinstance(self.ownerDocument, Document) else None
+        if doc is not None:
+            current = getattr(doc, "_activeElement", None)
+            if current is not None and current is not self:
+                current._focused = False
+                current.dispatchEvent(Event("blur"))
+            doc._activeElement = self
         self._focused = True
         return self.dispatchEvent(Event("focus"))
 
@@ -3822,6 +3832,7 @@ class Document(Element):
         # self.documentURI = uri
         # self.documentElement = self
         self._open_filename = None
+        self._activeElement = None
         self.stylesheets = None
         self.doctype = None
         super().__init__(*args, **kwargs)
@@ -3897,6 +3908,17 @@ class Document(Element):
     def stylesheets(self, stylesheets):
         self.__stylesheets = stylesheets
         # self.__stylesheets.__init__(self)  # to set the parent??
+
+    @property
+    def activeElement(self):
+        """Returns the currently focused element, or the body/document element fallback."""
+        if self._activeElement is not None:
+            return self._activeElement
+        return self.body or self.documentElement
+
+    def hasFocus(self):
+        """Returns True when the document currently tracks a focused element."""
+        return self._activeElement is not None
 
     @property
     def anchors(self):
