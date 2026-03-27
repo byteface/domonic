@@ -4,11 +4,14 @@
     - unit tests for domonic
 """
 
+import importlib
 import unittest
 
 from domonic import domonic
 from domonic.decorators import silence
 from domonic.html import *
+
+html_module = importlib.import_module("domonic.html")
 
 
 class TestHTMLRendering(unittest.TestCase):
@@ -39,9 +42,9 @@ class TestHTML(unittest.TestCase):
         assert str(script()) == "<script></script>"
         assert str(noscript()) == "<noscript></noscript>"
         assert str(iframe()) == "<iframe></iframe>"
-        # assert str(frame()) == '<frame></frame>'
-        # assert str(frameset()) == '<frameset></frameset>'
-        # assert str(noframes()) == '<noframes></noframes>'
+        assert str(frame()) == "<frame></frame>"
+        assert str(frameset()) == "<frameset></frameset>"
+        assert str(noframes()) == "<noframes></noframes>"
         assert str(b()) == "<b></b>"
         assert str(i()) == "<i></i>"
         assert str(u()) == "<u></u>"
@@ -92,14 +95,20 @@ class TestHTML(unittest.TestCase):
         assert str(output()) == "<output></output>"
         assert str(progress()) == "<progress></progress>"
         assert str(meter()) == "<meter></meter>"
-        # assert str(time()) == '<time></time>'
+        assert str(time()) == "<time></time>"
         # assert str(keygen()) == '<keygen></keygen>'
         assert str(output()) == "<output></output>"
         assert str(progress()) == "<progress></progress>"
         assert str(meter()) == "<meter></meter>"
         assert str(details()) == "<details></details>"
         assert str(data()) == "<data></data>"
-        # assert str(time()) == '<time></time>'
+        assert str(map()) == "<map></map>"
+        assert str(object()) == "<object></object>"
+        assert str(dir()) == "<dir></dir>"
+        assert str(del_()) == "<del></del>"
+        assert str(slot()) == "<slot></slot>"
+        assert str(search()) == "<search></search>"
+        assert str(portal()) == "<portal></portal>"
 
     def test_hello_world(self):
         assert str(html(body(h1("Hello World!")))) == """<html><body><h1>Hello World!</h1></body></html>"""
@@ -124,6 +133,12 @@ class TestHTML(unittest.TestCase):
             str(create_element("custom_el", div("some content"), _id="test"))
             == """<custom_el id="test"><div>some content</div></custom_el>"""
         )
+        assert str(create_element("time")) == "<time></time>"
+        assert str(create_element("del")) == "<del></del>"
+
+    def test_html_tag_registry_exports(self):
+        missing = [tag_name for tag_name in html_tags if not hasattr(html_module, html_module._TAG_ALIASES.get(tag_name, tag_name))]
+        assert missing == []
 
     def test_domonic_parse(self):
         page = domonic.parse("<html><body></body></html>")
@@ -148,6 +163,10 @@ body(
 
     @silence
     def test_domonic_get(self):
+        try:
+            import requests  # noqa: F401
+        except ModuleNotFoundError:
+            self.skipTest("requests is not installed")
         print("test_domonic_get-----------=-----------=-----------=-----------=-----------=-----------=-----------=")
         # page = domonic.get("http://eventual.technology")
         page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/checkout/")

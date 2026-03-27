@@ -5,6 +5,8 @@
     Generate HTML using python.
 
 """
+from typing import Any, Optional
+
 from domonic.dom import Document  # HTMLOptionsCollection,
 from domonic.dom import (Comment, DocumentType, DOMConfig, Element,
                          HTMLAnchorElement, HTMLAreaElement, HTMLAudioElement,
@@ -26,6 +28,7 @@ from domonic.dom import (Comment, DocumentType, DOMConfig, Element,
                          HTMLOptGroupElement, HTMLOptionElement,
                          HTMLOutputElement, HTMLParagraphElement,
                          HTMLParamElement, HTMLPictureElement, HTMLPreElement,
+                         HTMLPortalElement,
                          HTMLProgressElement, HTMLQuoteElement,
                          HTMLScriptElement, HTMLSelectElement,
                          HTMLShadowElement, HTMLSourceElement, HTMLSpanElement,
@@ -89,12 +92,17 @@ html_tags = [
     "aside",
     "applet",
     "object",
+    "slot",
+    "search",
     "basefont",
     "center",
     "embed",
+    "frame",
+    "frameset",
     "isindex",
     "listing",
     "menuitem",
+    "noframes",
     "plaintext",
     "strike",
     "template",
@@ -168,6 +176,8 @@ html_tags = [
     "a",
 ]
 # big, blink, bold, tt, var, frameset
+
+_TAG_ALIASES = {"del": "del_"}
 
 html_attributes = [
     "accept",
@@ -375,7 +385,7 @@ html_attributes = [
     "disableremoteplayback",  # video
 ]
 
-def render(inp: Node, outp: str = "", to: str = None) -> str:
+def render(inp: Node, outp: str = "", to: Optional[str] = None) -> str:
     """
     Render an HTML element or document to a string or file.
 
@@ -405,7 +415,7 @@ def render(inp: Node, outp: str = "", to: str = None) -> str:
 
 
 class TemplateError(IndexError):
-    def __init__(self, error, message="TemplateError: "):
+    def __init__(self, error: Exception, message: str = "TemplateError: "):
         """[raised when a template error occurs]
 
         Args:
@@ -449,10 +459,10 @@ p = type("p", (HTMLParagraphElement,), {"name": "p"})
 
 i = type("i", (Element,), {"name": "i"})
 b = type("b", (Element,), {"name": "b"})
-portal = type("portal", (Element,), {"name": "portal"})
+portal = type("portal", (HTMLPortalElement, Element), {"name": "portal"})
 
 
-def Atag(self, *args, **kwargs):
+def Atag(self, *args: Any, **kwargs: Any) -> None:
     """
     Base class for the a tag
     """
@@ -479,7 +489,7 @@ td = type("td", (HTMLTableCellElement,), {"name": "td"})
 
 class form(HTMLFormElement):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         new_kwargs = {}
         for k, v in kwargs.items():
             if k[0] != "_":
@@ -494,8 +504,8 @@ class form(HTMLFormElement):
         Element.__init__(self, *args, **kwargs)
 
     @property
-    def elements(self):
-        kids = []
+    def elements(self) -> list[HTMLElement]:
+        kids: list[HTMLElement] = []
         for child in self.children:
             if isinstance(child, (button, fieldset, input, object, output, select, textarea)):
                 kids.append(child)
@@ -579,12 +589,12 @@ menuitem = type("menuitem", (Element,), {"name": "menuitem"})  # dead but may be
 font = type("font", (Element,), {"name": "font"})
 header = type("header", (Element,), {"name": "header"})
 footer = type("footer", (Element,), {"name": "footer"})
-# map_ = type('map_', (tag,), {'name': 'map_'})
-# object_ = type('object_', (tag,), {'name': 'object_'})
-# del_ = type('del_', (tag,), {'name': 'del_'})
+map = type("map", (HTMLMapElement,), {"name": "map"})
+object = type("object", (HTMLObjectElement,), {"name": "object"})
+del_ = type("del_", (HTMLModElement,), {"name": "del"})
 mod = type("mod", (HTMLModElement,), {"name": "mod"})
 
-# time = HTMLTimeElement  # type('time', (tag,), {'name': 'time'})
+time = type("time", (HTMLTimeElement,), {"name": "time"})
 data = type("data", (HTMLDataElement,), {"name": "data"})
 
 base = type("base", (HTMLBaseElement,), {"name": "base"})
@@ -611,16 +621,20 @@ keygen = type("keygen", (closed_tag, HTMLKeygenElement), {"name": "keygen"})
 command = type("command", (closed_tag, Element), {"name": "command"})
 
 main = type("main", (Element,), {"name": "main"})
+slot = type("slot", (Element,), {"name": "slot"})
+search = type("search", (Element,), {"name": "search"})
 
 # obsolete
 applet = type("applet", (Element,), {"name": "applet"})
-# object = type('object', (HTMLObjectElement,), {'name': 'object'})
 basefont = type("basefont", (HTMLBaseFontElement,), {"name": "basefont"})
 center = type("center", (Element,), {"name": "center"})
-# dir = type('dir', (Element,), {'name': 'dir'})
+dir = type("dir", (Element,), {"name": "dir"})
 embed = type("embed", (HTMLEmbedElement,), {"name": "embed"})
+frame = type("frame", (Element,), {"name": "frame"})
+frameset = type("frameset", (HTMLFrameSetElement,), {"name": "frameset"})
 isindex = type("isindex", (Element,), {"name": "isindex"})
 listing = type("listing", (Element,), {"name": "listing"})
+noframes = type("noframes", (Element,), {"name": "noframes"})
 plaintext = type("plaintext", (Element,), {"name": "plaintext"})
 strike = type("strike", (Element,), {"name": "strike"})
 xmp = type("xmp", (Element,), {"name": "xmp"})
@@ -637,7 +651,7 @@ comment = type("comment", (Comment,), {"name": "comment"})
 content = type("content", (HTMLContentElement,), {"name": "content"})
 
 
-def create_element(name="custom_tag", *args, **kwargs):
+def create_element(name: str = "custom_tag", *args: Any, **kwargs: Any) -> Element:
     """
     A method for creating custom tags
 
@@ -646,11 +660,11 @@ def create_element(name="custom_tag", *args, **kwargs):
     """
     # checks if already exists
     if name in html_tags:
-        return globals()[name](*args, **kwargs)
+        tag_name = _TAG_ALIASES.get(name, name)
+        return globals()[tag_name](*args, **kwargs)
 
     # NOTE: we care calling it custom_tag because it can't have hyphens < Note - use HTMLUnknownElement?
     custom_tag = type("custom_tag", (Element,), {"name": name})
     new_tag = custom_tag(*args, **kwargs)
     new_tag.name = name
     return new_tag
-
