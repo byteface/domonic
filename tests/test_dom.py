@@ -851,6 +851,23 @@ class DOMTest(unittest.TestCase):
         result = self.page.getElementsBySelector("a[href*='twitter']", self.page)
         self.assertEqual(len(result), 1)
 
+    def test_get_elements_by_selector_supports_commas_and_tagless_class(self):
+        page = html(
+            body(
+                div("one", _class="card"),
+                span("two", _class="card"),
+                p("three", _id="hero"),
+            )
+        )
+
+        class_matches = page.getElementsBySelector(".card", page)
+        self.assertEqual(len(class_matches), 2)
+        self.assertEqual([node.tagName for node in class_matches], ["div", "span"])
+
+        combined = page.getElementsBySelector(".card, #hero", page)
+        self.assertEqual(len(combined), 3)
+        self.assertEqual([node.tagName for node in combined], ["div", "span", "p"])
+
     def test_decorators(self):
         from domonic.decorators import el
 
@@ -1200,6 +1217,18 @@ class DOMTest(unittest.TestCase):
             if os.path.exists(path):
                 os.remove(path)
 
+    def test_node_content_and_autoescape(self):
+        node = div("hello", [" ", span("world")])
+        self.assertEqual(node.content, "hello <span>world</span>")
+
+        previous = DOMConfig.GLOBAL_AUTOESCAPE
+        try:
+            DOMConfig.GLOBAL_AUTOESCAPE = True
+            escaped = div("<unsafe>")
+            self.assertEqual(escaped.content, "&lt;unsafe&gt;")
+        finally:
+            DOMConfig.GLOBAL_AUTOESCAPE = previous
+
     def test_selection_core_helpers(self):
         first = Text("hello")
         second = Text("world")
@@ -1321,6 +1350,19 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(host.querySelector("#before").tagName, "em")
         self.assertEqual(host.querySelector("#after").tagName, "b")
 
+    def test_innerhtml_and_outerhtml_parse_fragments(self):
+        host = div(_id="host")
+        host.innerHTML = "<span id='first'>A</span><span id='second'>B</span>"
+        self.assertEqual(len(host.children), 2)
+        self.assertEqual(host.children[0].getAttribute("id"), "first")
+        self.assertEqual(host.children[1].textContent, "B")
+
+        wrapper = div(host)
+        host.outerHTML = "<section id='replacement'>R</section><aside id='tail'>T</aside>"
+        self.assertEqual([child.tagName for child in wrapper.children], ["section", "aside"])
+        self.assertEqual(wrapper.querySelector("#replacement").textContent, "R")
+        self.assertEqual(wrapper.querySelector("#tail").textContent, "T")
+
     def test_insert_adjacent_invalid_position(self):
         target = span("target")
         with self.assertRaises(ValueError):
@@ -1354,6 +1396,19 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(len(matches), 2)
         self.assertTrue(all(match.getAttribute("name") == "email" for match in matches))
 
+    def test_document_links_includes_anchor_and_area(self):
+        page = html(
+            body(
+                a("home", _href="/"),
+                area(_href="/map"),
+                a("no href"),
+            )
+        )
+
+        links = page.links
+        self.assertEqual(len(links), 2)
+        self.assertEqual([link.tagName for link in links], ["a", "area"])
+
     def test_attribute_namespace_helpers(self):
         node = div()
         attr = Attr("data-mode", "test")
@@ -1362,6 +1417,9 @@ class DOMTest(unittest.TestCase):
         fetched = node.getAttributeNodeNS("data-mode")
         self.assertIsNotNone(fetched)
         self.assertEqual((fetched.name, fetched.value), ("data-mode", "test"))
+        direct_attr = node.getAttributeNode("data-mode")
+        self.assertIsNotNone(direct_attr)
+        self.assertEqual((direct_attr.name, direct_attr.value), ("data-mode", "test"))
         self.assertEqual(node.getAttributeNS("http://example.com/ns", "data-mode"), "test")
         node.setAttributeNS("http://example.com/ns", "data-other", "x")
         self.assertEqual(node.getAttribute("data-other"), "x")
@@ -1373,6 +1431,10 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(dataset.get("userId"), "7")
         self.assertEqual(dataset["themeName"], "night")
         self.assertIn("userId", dataset)
+        self.assertEqual(len(dataset), 2)
+        self.assertEqual(sorted(dataset.keys()), ["themeName", "userId"])
+        self.assertEqual(sorted(dataset.values()), ["7", "night"])
+        self.assertIn("userId", repr(dataset))
 
         self.assertTrue(dataset.set("mode", "demo"))
         self.assertEqual(dataset.get("mode"), "demo")
@@ -1412,9 +1474,15 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(node.__rtruediv__(2), str(node) * 2)
         self.assertIs(node.__setitem__("_title", "banner"), node)
         self.assertEqual(node.getAttribute("title"), "banner")
+        self.assertEqual([child.tagName for child in node], ["span"])
+        self.assertIn(node.firstChild, node)
+        self.assertNotIn(div("x"), node)
+        self.assertEqual(repr(node), '<div id="root" class="hero" data-role="banner" title="banner">')
+        self.assertEqual(node._repr_html_(), str(node))
 
     def test_node_attribute_rendering_configurations(self):
         button_node = button("Go", _disabled="", _data_value="7", _get="/api/items")
+        media_node = video(_autoplay=True, _controls=True, _loop=True, _muted=True, _playsinline=True)
         original_quotes = DOMConfig.ATTRIBUTE_QUOTES
         original_htmx = DOMConfig.HTMX_ENABLED
         try:
@@ -1427,6 +1495,12 @@ class DOMTest(unittest.TestCase):
 
             DOMConfig.ATTRIBUTE_QUOTES = ""
             self.assertIn(" data_value=7", button_node.__attributes__)
+            media_rendered = media_node.__attributes__
+            self.assertIn(" autoplay", media_rendered)
+            self.assertIn(" controls", media_rendered)
+            self.assertIn(" loop", media_rendered)
+            self.assertIn(" muted", media_rendered)
+            self.assertIn(" playsinline", media_rendered)
 
             DOMConfig.HTMX_ENABLED = True
             htmx_rendered = button_node.__attributes__
@@ -1597,6 +1671,47 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(len(ranges), 2)
         self.assertEqual(ranges.start(0), 0)
         self.assertEqual(ranges.end(1), 20)
+
+    def test_text_split_text_and_document_defaults(self):
+        node = div(Text("hello"))
+        text = node.firstChild
+        sibling = text.splitText(2)
+
+        self.assertEqual(text.data, "he")
+        self.assertEqual(sibling.data, "llo")
+        self.assertEqual(node.childNodes[1], sibling)
+        self.assertIsNone(text.firstChild)
+
+        page = Document()
+        self.assertEqual(page.URL, "")
+        self.assertEqual(page.baseURI, "")
+
+    def test_entity_reference_ordinal(self):
+        self.assertEqual(EntityReference.ordinal("A"), 65)
+        with self.assertRaises(ValueError):
+            EntityReference.ordinal("amp")
+
+    def test_legacy_html_element_classes(self):
+        basefont = HTMLBaseFontElement(color="red", face="Arial", size="4")
+        self.assertEqual(basefont.tagName, "basefont")
+        self.assertEqual(basefont.getAttribute("color"), "red")
+
+        frameset = HTMLFrameSetElement(cols="50%,50%", rows="100")
+        self.assertEqual(frameset.getAttribute("cols"), "50%,50%")
+        self.assertEqual(frameset.getAttribute("rows"), "100")
+
+        isindex = HTMLIsIndexElement(prompt="Search")
+        self.assertEqual(isindex.tagName, "isindex")
+        self.assertEqual(isindex.getAttribute("prompt"), "Search")
+
+        media = HTMLMediaElement(src="/movie.mp4", controls=True, muted=True)
+        self.assertEqual(media.getAttribute("src"), "/movie.mp4")
+        self.assertTrue(media.getAttribute("controls"))
+        self.assertTrue(media.getAttribute("muted"))
+
+        template = HTMLTemplateElement(div("inside"))
+        self.assertEqual(template.tagName, "template")
+        self.assertEqual(str(template.content), "<div>inside</div>")
 
     def test_location_assign_replace_reload(self):
         loc = Location("https://example.com/one?q=1")
