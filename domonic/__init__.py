@@ -15,14 +15,27 @@ VERSION = __version__
 
 import re
 
-import requests
-
 # from domonic.components import Input
-from domonic.html import *
-from domonic.html import html_attributes as attributes
-from domonic.javascript import *
-from domonic.svg import *
-from domonic.utils import Utils
+try:
+    from domonic.html import *
+    from domonic.html import html_attributes as attributes
+except ImportError:  # pragma: no cover - optional dependency chain
+    attributes = []
+
+try:
+    from domonic.javascript import *
+except ImportError:  # pragma: no cover - optional dependency chain
+    pass
+
+try:
+    from domonic.svg import *
+except ImportError:  # pragma: no cover - optional dependency chain
+    pass
+
+try:
+    from domonic.utils import Utils
+except ImportError:  # pragma: no cover - optional dependency chain
+    Utils = None
 
 
 class domonic:
@@ -33,6 +46,8 @@ class domonic:
     @staticmethod
     def get(url: str):
         """downloads html and converts to domonic"""
+        import requests
+
         r = requests.get(url)
         return domonic.parse(r.content.decode("utf-8"))
         # TODO - param to eval

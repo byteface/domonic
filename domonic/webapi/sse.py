@@ -3,7 +3,7 @@
     ====================================
     https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
 
-    TODO - consider a blocking verison?
+    TODO - consider a blocking version?
     TODO - port one of the polyfills?
     https://github.com/EventSource/eventsource/blob/master/lib/eventsource.js
     https://github.com/remy/polyfills/blob/master/EventSource.js
@@ -109,9 +109,9 @@ class EventSource(EventTarget):
     def close(self):
         """Closes the connection to the EventSource."""
         self._readyState = EventSource.CLOSED
-        # close the thread
-        self._thread.join()
-        self._thread = None
+        if getattr(self, "_thread", None) is not None:
+            self._thread.join()
+            self._thread = None
 
     def onreadystatechange(self, event):
         """Called when the state of the connection changes."""

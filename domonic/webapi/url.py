@@ -8,7 +8,7 @@
 
 """
 
-import urllib
+import urllib.parse
 
 
 class URL:

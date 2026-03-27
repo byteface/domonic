@@ -12,7 +12,10 @@
 
 from typing import Any, Callable, Dict, List, Optional, Union
 
-import elementpath
+try:
+    import elementpath
+except ImportError:  # pragma: no cover - optional dependency
+    elementpath = None
 
 
 class XPathEvaluator:
@@ -30,6 +33,8 @@ class XPathException:
 
 class XPathExpression:
     def __init__(self, expr: str):  # , resolver):
+        if elementpath is None:
+            raise ImportError("XPath support requires the optional 'elementpath' dependency.")
 
         # TODO - hack.
         # need to allow non underscore accessors to get underscored.

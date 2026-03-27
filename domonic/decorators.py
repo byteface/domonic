@@ -5,13 +5,26 @@
 """
 
 import functools
+import inspect
+import io
+import logging
 import warnings
-from functools import wraps
 from typing import Callable
 
 
+def _invoke_before(before, function):
+    result = before()
+    params = list(inspect.signature(function).parameters.values())
+    can_receive_value = any(
+        param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        for param in params
+    ) or any(param.kind == inspect.Parameter.VAR_POSITIONAL for param in params)
+    return result, can_receive_value
+
 def el(element="div", string: bool = False):
     """[wraps the results of a function in an element]"""
+
+    return_string = string or isinstance(element, str)
 
     if isinstance(element, str):
         from domonic.dom import Document
@@ -21,7 +34,9 @@ def el(element="div", string: bool = False):
     def decorator(function):
         def wrapper(*args, **kwargs):
             result = function(*args, **kwargs)
-            if string == False:
+            if result is None:
+                result = ""
+            if return_string is False:
                 return element(result)
             else:
                 return str(element(result))
@@ -49,57 +64,39 @@ def el(element="div", string: bool = False):
 
 
 def called(before=None, error: Callable[[Exception], None] = None):
-    """
-    Decorator to call a function before and after a function call.
-    """
+    """Call a hook before a function runs, with light support for legacy callback sugar."""
 
     def decorator(f):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
             if before:
-                before()
+                _, _ = _invoke_before(before, f)
             try:
                 return f(*args, **kwargs)
             except Exception as e:
                 if error:
                     error(e)
+                raise
+
+        if before is None:
+            wrapper()
+            return wrapper
+
+        params = inspect.signature(f).parameters
+        if params:
+            try:
+                result, can_receive_value = _invoke_before(before, f)
+                if can_receive_value:
+                    f(result)
+                else:
+                    f()
+            except Exception as e:
+                if error:
+                    error(e)
                 else:
                     raise
-            finally:
-                if before:
-                    before()
 
         return wrapper
-
-    return decorator
-    """[calls before() passing the response as args to the decorated function.
-        optional error handler. run the decorated function immediately.
-
-        WARNING: this is not for the regular decorating of a function
-        its syntactical sugar for a callback i.e.
-
-        @called(
-            lambda: º.ajax('https://www.google.com'),
-            lambda err: print('error:', err))
-        def success(data=None):
-            print("sweet!")
-            print(data)
-
-        """
-
-    def decorator(function):
-        nonlocal before
-        nonlocal error
-        try:
-            if before is None:
-                return function()
-            r = before()
-            return function(r)
-        except Exception as e:
-            if error is not None:
-                error(e)
-            else:
-                raise e
 
     return decorator
 
@@ -160,29 +157,39 @@ def accepts(*types):
 
 
 def silence(*args, **kwargs):
-    """stop a function from doing anything"""
+    """Suppress stdout for the wrapped function.
 
-    def dont_do_it(f):
-        return None
+    Supports both ``@silence`` and ``@silence()``.
+    """
 
-    return dont_do_it
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*f_args, **f_kwargs):
+            import contextlib
 
+            with contextlib.redirect_stdout(io.StringIO()):
+                return f(*f_args, **f_kwargs)
 
-# @silence
+        return wrapper
+
+    if args and callable(args[0]) and len(args) == 1 and not kwargs:
+        return decorator(args[0])
+    return decorator
 
 
 def check(f):
-    """Prints entry and exit of a function to the console"""
+    """Log entry and exit around a function call."""
 
+    logger = logging.getLogger(__name__)
+
+    @functools.wraps(f)
     def new_f(*args, **kwargs):
-        print("Entering", f.__name__)
-        f(*args, **kwargs)
-        print("Exited", f.__name__)
+        logger.info("Entering %s", f.__name__)
+        result = f(*args, **kwargs)
+        logger.info("Exited %s", f.__name__)
+        return result
 
     return new_f
-
-
-# @check()
 
 
 def log(logger, level="info"):
@@ -199,20 +206,20 @@ def log(logger, level="info"):
     return log_decorator
 
 
-def instead(f, somethingelse):
-    """what to return if it fails"""
+def instead(somethingelse):
+    """Return a fallback value when the wrapped function raises."""
 
-    def new_f():
-        try:
-            return f()
-        except Exception as e:
-            print("failed", e)
-        return somethingelse
+    def decorator(f):
+        @functools.wraps(f)
+        def new_f(*args, **kwargs):
+            try:
+                return f(*args, **kwargs)
+            except Exception:
+                return somethingelse
 
-    return new_f
+        return new_f
 
-
-# @instead("something else instead of what was supposed to happen")
+    return decorator
 
 
 def deprecated(func):
@@ -222,11 +229,7 @@ def deprecated(func):
 
     @functools.wraps(func)
     def new_func(*args, **kwargs):
-        warnings.simplefilter("always", DeprecationWarning)
-        warnings.warn(
-            "Call to deprecated function {}.".format(func.__name__), category=DeprecationWarning, stacklevel=2
-        )
-        warnings.simplefilter("default", DeprecationWarning)
+        raise Warning("Call to deprecated function {}.".format(func.__name__))
         return func(*args, **kwargs)
 
     return new_func
@@ -245,36 +248,6 @@ def as_json(func):
     return JSON_decorator
 
 
-# def evt(event, *args, **kwargs):  #TODO
-#     """
-#     a decorator that will call a function when an event is triggered.
-#     """
-#     def decorator(f):
-#         def wrapper(*args, **kwargs):
-#             return f(*args, **kwargs)
-#         return wrapper
-# return decorator
-# @evt('event', 'args', 'kwargs')
-
-
-# def catch(f):
-#     """ catch exceptions and return None """
-#     def new_f():
-#         try:
-#             return f()
-#         except Exception as e:
-#             print('failed', e)
-#             return None
-#     return new_f
-
-
-# def lenient(*args, **kwargs):
-# """ can try to remap args if passed incorrectly.
-# i.e. if expecting array but gets string, puts string in arr
-# should never switch order probably. just re-type
-# prints warning and runs
-# """
-
 '''
 def aka(names):
     """ @aka(*mylist) """
@@ -284,4 +257,57 @@ def aka(names):
             return fn(*a, **kwa)
         return wrapper
     return log_decorator
+'''
+
+
+'''
+import functools
+
+# def DIV(func):
+#     @functools.wraps(func)
+#     def wrapper(*args, **kwargs):
+#         result = func(*args, **kwargs)
+#         return div(result)
+#     return wrapper
+
+# Create dynamic decorators for each tag
+def create_html_decorator(tag):
+    def decorator(func=None, **kwargs):
+        # If no function is provided, we have been called with keyword arguments
+        if func is None:
+            return functools.partial(decorator, **kwargs)
+
+        # Convert underscores in attributes to valid HTML (e.g., _class to class)
+        updated_kwargs = {key.lstrip('_'): value for key, value in kwargs.items()}
+
+        # Define the wrapper function that is called when the decorated function is called
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            # Call the original function to get the content
+            content = func(*args, **kwargs)
+
+            # Generate attributes for the HTML tag
+            attrs = ''
+            for key, value in updated_kwargs.items():
+                attrs += f' {key}="{value}"'
+
+            # Return the HTML wrapped content
+            return f"<{tag}{attrs}>{content}</{tag}>"
+
+        return wrapper
+
+    return decorator
+
+
+# from domonic.html import html_tags -- circular reference
+
+# Dynamically create decorators for all HTML tags
+for tag in html_tags:
+    globals()[tag.upper()] = create_html_decorator(tag)
+
+
+# @DIV(_id="cool", _class"awesome")
+# @SPAN
+# def somecontent():
+#     return 'content only'
 '''
