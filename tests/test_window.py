@@ -79,6 +79,15 @@ class TestCase(unittest.TestCase):
         self.assertIn(("hashchange", "https://example.com#one", "https://example.com#two"), events)
         self.assertIn(("popstate", "https://example.com#one"), events)
 
+    def test_navigator_basic_specish_helpers(self):
+        win = Window()
+
+        self.assertEqual(win.navigator.registerProtocolHandler("mailto", "/compose", "Mail"), None)
+        self.assertEqual(win.navigator.requestMediaKeySystemAccess("org.example", []), None)
+        self.assertEqual(win.navigator.clearAppBadge(), None)
+        self.assertEqual(win.navigator.getBattery()["level"], 1.0)
+        self.assertFalse(win.navigator.vibrate([100]))
+
 
 if __name__ == "__main__":
     unittest.main()

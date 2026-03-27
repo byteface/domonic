@@ -824,9 +824,14 @@ class Node(EventTarget):
         if isinstance(aChild, DocumentFragment):
             items = aChild.args
             self.args = self.args + items
+            for item in items:
+                if isinstance(item, Node):
+                    item.parentNode = self
             return DocumentFragment()
         else:
             self.args = self.args + (aChild,)
+            if isinstance(aChild, Node):
+                aChild.parentNode = self
             # return aChild  # causes max recursion when called chained? then don't chain?
             return aChild
 
@@ -1064,6 +1069,7 @@ class Node(EventTarget):
                 + (new_node,)
                 + self.args[self.args.index(reference_node) :]
             )
+            new_node.parentNode = self
         return new_node
 
     def removeChild(self, node: Node) -> Node | None:
@@ -1620,7 +1626,8 @@ class Selection:
         return "Caret" if self.isCollapsed else "Range"
 
     def addRange(self, range_obj: "Range") -> None:
-        self._ranges.append(range_obj)
+        if range_obj not in self._ranges:
+            self._ranges.append(range_obj)
 
     def removeRange(self, range_obj: "Range") -> None:
         self._ranges = [candidate for candidate in self._ranges if candidate is not range_obj]
@@ -1629,6 +1636,8 @@ class Selection:
         self._ranges = []
 
     def getRangeAt(self, index: int) -> "Range":
+        if index < 0 or index >= len(self._ranges):
+            raise IndexError("Selection range index out of range")
         return self._ranges[index]
 
     def collapse(self, node: Node | None, offset: int = 0) -> None:
@@ -1651,6 +1660,29 @@ class Selection:
             return
         last = self._ranges[-1]
         self.collapse(last.endContainer, last.endOffset)
+
+    def extend(self, node: Node, offset: int = 0) -> None:
+        if not self._ranges:
+            self.collapse(node, offset)
+            return
+        active_range = self._ranges[-1]
+        active_range.setEnd(node, offset)
+
+    def setBaseAndExtent(
+        self,
+        anchorNode: Node,
+        anchorOffset: int,
+        focusNode: Node,
+        focusOffset: int,
+    ) -> None:
+        range_obj = Range()
+        if Range._compare_points(anchorNode, anchorOffset, focusNode, focusOffset) <= 0:
+            range_obj.setStart(anchorNode, anchorOffset)
+            range_obj.setEnd(focusNode, focusOffset)
+        else:
+            range_obj.setStart(focusNode, focusOffset)
+            range_obj.setEnd(anchorNode, anchorOffset)
+        self._ranges = [range_obj]
 
     def empty(self) -> None:
         self.removeAllRanges()
@@ -1760,13 +1792,6 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
         self._selection = Selection()
         super().__init__()
 
-    def getSelection(self) -> Selection:
-        """
-        Returns a Selection object representing the range of text selected by the user,
-        or the current position of the caret.
-        """
-        return self._selection
-
     def elementFromPoint(self, x: float, y: float) -> Element | None:
         """Returns the topmost element at the specified coordinates."""
         hits = self.elementsFromPoint(x, y)
@@ -1805,7 +1830,12 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
             return None
         first_child = target.firstChild
         if isinstance(first_child, Text):
-            return CaretPosition(first_child, 0)
+            rect = target.getBoundingClientRect()
+            width = max(rect.width, 1)
+            text_length = len(first_child.textContent)
+            relative = max(0, min(x - rect.left, width))
+            offset = min(text_length, int((relative / width) * text_length))
+            return CaretPosition(first_child, offset)
         return CaretPosition(target, 0)
 
 
@@ -3336,6 +3366,7 @@ class DOMImplementation:
         html_el.appendChild(head_el)
         html_el.appendChild(body_el)
         doc.args = (html_el,)
+        html_el.parentNode = doc
         return doc
 
     def hasFeatures(self, featureList) -> bool:
@@ -3585,6 +3616,44 @@ class Range(AbastractRange):
             end_path.pop()
         self.commonAncestorContainer = ancestor
 
+    def _common_ancestor_child_slice(self) -> tuple[Node, int, int] | None:
+        ancestor = self.commonAncestorContainer
+        if ancestor is None or isinstance(ancestor, Text):
+            return None
+
+        children = list(getattr(ancestor, "childNodes", []))
+
+        def resolve_index(node: Node | None, offset: int, *, is_end: bool) -> int | None:
+            if node is None:
+                return None
+            if node is ancestor:
+                bounded = max(0, min(offset, len(children)))
+                return bounded
+
+            current = node
+            while current is not None and getattr(current, "parentNode", None) is not ancestor:
+                current = getattr(current, "parentNode", None)
+
+            if current is None:
+                return None
+
+            try:
+                index = children.index(current)
+            except ValueError:
+                return None
+
+            if is_end:
+                if isinstance(node, Text) and offset == 0:
+                    return index
+                return index + 1
+            return index
+
+        start_index = resolve_index(self.startContainer, self.startOffset, is_end=False)
+        end_index = resolve_index(self.endContainer, self.endOffset, is_end=True)
+        if start_index is None or end_index is None:
+            return None
+        return ancestor, start_index, end_index
+
     def setStart(self, node: Node, offset: int) -> None:
         self.startContainer = node
         self.startOffset = offset
@@ -3638,7 +3707,7 @@ class Range(AbastractRange):
             self.END_TO_START: (self.endContainer, self.endOffset, sourceRange.startContainer, sourceRange.startOffset),
         }
         if how not in comparisons:
-            raise NotImplementedError
+            raise ValueError("Invalid Range comparison type")
         return self._compare_points(*comparisons[how])
 
     def deleteContents(self) -> None:
@@ -3662,8 +3731,28 @@ class Range(AbastractRange):
             if hasattr(container, "args"):
                 kept = children[: self.startOffset] + children[self.endOffset :]
                 container.args = tuple(kept)
+                for child in kept:
+                    if isinstance(child, Node):
+                        child.parentNode = container
             self.endContainer = container
             self.endOffset = self.startOffset
+            self._update_state()
+            return DocumentFragment(*extracted)
+        child_slice = self._common_ancestor_child_slice()
+        if child_slice is not None:
+            container, start_index, end_index = child_slice
+            children = list(container.childNodes)
+            extracted = children[start_index:end_index]
+            if hasattr(container, "args"):
+                kept = children[:start_index] + children[end_index:]
+                container.args = tuple(kept)
+                for child in kept:
+                    if isinstance(child, Node):
+                        child.parentNode = container
+            self.startContainer = container
+            self.endContainer = container
+            self.startOffset = start_index
+            self.endOffset = start_index
             self._update_state()
             return DocumentFragment(*extracted)
         return DocumentFragment()
@@ -3679,6 +3768,12 @@ class Range(AbastractRange):
             container = self.startContainer
             children = list(container.childNodes)
             cloned = [copy.deepcopy(child) for child in children[self.startOffset : self.endOffset]]
+            return DocumentFragment(*cloned)
+        child_slice = self._common_ancestor_child_slice()
+        if child_slice is not None:
+            container, start_index, end_index = child_slice
+            children = list(container.childNodes)
+            cloned = [copy.deepcopy(child) for child in children[start_index:end_index]]
             return DocumentFragment(*cloned)
         return DocumentFragment()
 
@@ -3704,6 +3799,14 @@ class Range(AbastractRange):
                 if hasattr(child, "getBoundingClientRect"):
                     rects.append(child.getBoundingClientRect())
             return rects
+        child_slice = self._common_ancestor_child_slice()
+        if child_slice is not None:
+            container, start_index, end_index = child_slice
+            rects = []
+            for child in list(container.childNodes)[start_index:end_index]:
+                if hasattr(child, "getBoundingClientRect"):
+                    rects.append(child.getBoundingClientRect())
+            return rects
         return []
 
     def insertNode(self, node: Node) -> None:
@@ -3723,9 +3826,12 @@ class Range(AbastractRange):
             new_children = children[:index]
             if before.textContent != "":
                 new_children.append(before)
+                before.parentNode = parent
             new_children.append(node)
+            node.parentNode = parent
             if after.textContent != "":
                 new_children.append(after)
+                after.parentNode = parent
             new_children.extend(children[index + 1 :])
             parent.args = tuple(new_children)
             self.startContainer = parent
@@ -3767,6 +3873,23 @@ class Range(AbastractRange):
         self._update_state()
 
     def createContextualFragment(self, fragment: Any) -> "DocumentFragment":
+        if isinstance(fragment, DocumentFragment):
+            return fragment
+        if isinstance(fragment, Node):
+            return DocumentFragment(fragment)
+        if not isinstance(fragment, str):
+            return DocumentFragment(fragment)
+
+        try:
+            from domonic import domonic
+
+            page = domonic.parseString(f"<body>{fragment}</body>")
+            if page is not None:
+                body = page.querySelector("body")
+                if body is not None:
+                    return DocumentFragment(*list(body.childNodes))
+        except Exception:
+            pass
         return DocumentFragment(fragment)
 
     def toString(self) -> str:
@@ -3778,6 +3901,11 @@ class Range(AbastractRange):
             container = self.startContainer
             children = list(container.childNodes)
             return "".join(str(child) for child in children[self.startOffset : self.endOffset])
+        child_slice = self._common_ancestor_child_slice()
+        if child_slice is not None:
+            container, start_index, end_index = child_slice
+            children = list(container.childNodes)
+            return "".join(str(child) for child in children[start_index:end_index])
         return ""
 
     def comparePoint(self, refNode: Node, offset: int) -> int:
@@ -3788,6 +3916,28 @@ class Range(AbastractRange):
         if self._compare_points(refNode, offset, self.endContainer, self.endOffset) > 0:
             return 1
         return 0
+
+    def intersectsNode(self, refNode: Node) -> bool:
+        if self.startContainer is None or self.endContainer is None:
+            return False
+        if isinstance(refNode, Text):
+            start_node, start_offset = refNode, 0
+            end_node, end_offset = refNode, len(refNode.textContent)
+        else:
+            parent = getattr(refNode, "parentNode", None)
+            if parent is None:
+                return refNode is self.commonAncestorContainer
+            siblings = list(getattr(parent, "childNodes", []))
+            if refNode not in siblings:
+                return False
+            index = siblings.index(refNode)
+            start_node, start_offset = parent, index
+            end_node, end_offset = parent, index + 1
+
+        return not (
+            self._compare_points(end_node, end_offset, self.startContainer, self.startOffset) <= 0
+            or self._compare_points(start_node, start_offset, self.endContainer, self.endOffset) >= 0
+        )
 
 
 class StaticRange(AbastractRange):
@@ -4020,10 +4170,18 @@ class Document(Element):
         """
         if event_type == "MouseEvent":
             return MouseEvent("click")
+        if event_type == "FocusEvent":
+            from domonic.events import FocusEvent
+
+            return FocusEvent("focus")
         if event_type == "KeyboardEvent":
             from domonic.events import KeyboardEvent
 
             return KeyboardEvent("keydown")
+        if event_type == "UIEvent":
+            from domonic.events import UIEvent
+
+            return UIEvent("load")
         if event_type == "CustomEvent":
             from domonic.events import CustomEvent
 
@@ -4032,6 +4190,14 @@ class Document(Element):
             from domonic.events import SubmitEvent
 
             return SubmitEvent("submit")
+        if event_type == "InputEvent":
+            from domonic.events import InputEvent
+
+            return InputEvent("input")
+        if event_type == "ClipboardEvent":
+            from domonic.events import ClipboardEvent
+
+            return ClipboardEvent("copy")
         if event_type is None:
             return Event()
         return Event(event_type)
@@ -4147,7 +4313,12 @@ class Document(Element):
 
     def domain(self):
         """Returns the domain name of the server that loaded the document"""
-        return
+        try:
+            from domonic.webapi.url import URL
+
+            return URL(getattr(self, "URL", "")).hostname or ""
+        except Exception:
+            return ""
 
     def domConfig(self):
         """Returns the DOMConfig which has settings for how html content is rendered"""
@@ -4200,7 +4371,12 @@ class Document(Element):
             return None
         first_child = target.firstChild
         if isinstance(first_child, Text):
-            return CaretPosition(first_child, 0)
+            rect = target.getBoundingClientRect()
+            width = max(rect.width, 1)
+            text_length = len(first_child.textContent)
+            relative = max(0, min(x - rect.left, width))
+            offset = min(text_length, int((relative / width) * text_length))
+            return CaretPosition(first_child, offset)
         return CaretPosition(target, 0)
 
     @property
@@ -5235,7 +5411,7 @@ def traverseChildren(tw: TreeWalker, _type: str) -> Node | None:
                 node = child
                 continue
         while node != None:
-            sibling = getattr(node, mapChild[_type])
+            sibling = getattr(node, mapSibling["next" if _type == "first" else "previous"])
             if sibling != None:
                 node = sibling
                 break
@@ -5398,7 +5574,7 @@ class TreeWalker:
             if node != None and nodeFilter(self, node) == NodeFilter.FILTER_ACCEPT:
                 self.currentNode = node
                 return node
-            return None
+        return None
 
     def firstChild(self) -> Node | None:
         """Moves the current Node to the first visible child of the current node, and returns the found child.

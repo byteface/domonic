@@ -1055,6 +1055,36 @@ class DOMTest(unittest.TestCase):
         r2.selectNodeContents(text)
         self.assertEqual(r2.toString(), "aef")
 
+    def test_range_cross_container_helpers(self):
+        container = div(span("a", _id="first"), span("b", _id="second"), span("c", _id="third"))
+        first = container.querySelector("#first")
+        third = container.querySelector("#third")
+
+        r = Range()
+        r.setStartBefore(first)
+        r.setEndAfter(third)
+
+        self.assertEqual(r.toString(), '<span id="first">a</span><span id="second">b</span><span id="third">c</span>')
+        self.assertEqual(str(r.cloneContents()), str(r.extractContents()))
+        self.assertEqual(str(container), "<div></div>")
+
+    def test_range_intersects_and_invalid_compare_type(self):
+        container = div(span("a", _id="first"), span("b", _id="second"), span("c", _id="third"))
+        first = container.querySelector("#first")
+        second = container.querySelector("#second")
+        third = container.querySelector("#third")
+
+        r = Range()
+        r.setStartBefore(first)
+        r.setEndAfter(second)
+
+        self.assertTrue(r.intersectsNode(first))
+        self.assertTrue(r.intersectsNode(second))
+        self.assertFalse(r.intersectsNode(third))
+
+        with self.assertRaises(ValueError):
+            r.compareBoundaryPoints(99, Range())
+
     def test_document_and_shadow_selection_helpers(self):
         host = div(_id="host")
         page = html(body(host))
@@ -1107,8 +1137,17 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(selection.anchorNode, first)
         self.assertEqual(selection.anchorOffset, 2)
 
+        selection.extend(second, 3)
+        self.assertEqual(selection.type, "Range")
+        self.assertEqual(selection.focusNode, second)
+        self.assertEqual(selection.focusOffset, 3)
+
         selection.collapseToEnd()
-        self.assertEqual(selection.focusOffset, 2)
+        self.assertEqual(selection.focusOffset, 3)
+
+        selection.setBaseAndExtent(second, 1, first, 1)
+        self.assertEqual(selection.anchorNode, first)
+        self.assertEqual(selection.focusNode, second)
 
         selection.deleteFromDocument()
         self.assertEqual(first.textContent, "hello")
@@ -1122,6 +1161,9 @@ class DOMTest(unittest.TestCase):
         selection.empty()
         self.assertEqual(selection.rangeCount, 0)
 
+        with self.assertRaises(IndexError):
+            selection.getRangeAt(0)
+
     def test_document_caret_position_from_point(self):
         target = div("hello", _id="target")
         target.style.left = "5px"
@@ -1132,8 +1174,18 @@ class DOMTest(unittest.TestCase):
 
         caret = page.caretPositionFromPoint(10, 10)
         self.assertIsNotNone(caret)
-        self.assertEqual(caret.offset, 0)
+        self.assertGreaterEqual(caret.offset, 0)
+        self.assertLessEqual(caret.offset, len("hello"))
         self.assertIn(caret.offsetNode, [target, target.firstChild])
+
+    def test_document_domain_and_event_factory_helpers(self):
+        page = html(body(div("x")))
+        page.URL = "https://example.com/path?q=1"
+
+        self.assertEqual(page.domain(), "example.com")
+        self.assertEqual(page.createEvent("FocusEvent").type, "focus")
+        self.assertEqual(page.createEvent("InputEvent").type, "input")
+        self.assertEqual(page.createEvent("ClipboardEvent").type, "copy")
 
     def test_insert_adjacent_element_positions(self):
         host = div(span("target", _id="target"), p("sibling", _id="sibling"))
@@ -1236,6 +1288,16 @@ class DOMTest(unittest.TestCase):
             seen.append(node.nodeValue)
             node = walker.nextNode()
         self.assertEqual(seen, ["a", "b", "c"])
+
+    def test_treewalker_parent_and_sibling_helpers(self):
+        page = html(body(div(span("a", _id="one"), span("b", _id="two"), span("c", _id="three"), _id="root")))
+        root = page.getElementById("root")
+        walker = page.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, None, False)
+
+        self.assertEqual(walker.firstChild().getAttribute("id"), "one")
+        self.assertEqual(walker.nextSibling().getAttribute("id"), "two")
+        self.assertEqual(walker.previousSibling().getAttribute("id"), "one")
+        self.assertIs(walker.parentNode(), root)
 
     def test_domquad_get_bounds(self):
         quad = DOMQuad(type("P", (), {"x": 5, "y": 10})(), type("P", (), {"x": 25, "y": 10})(), type("P", (), {"x": 25, "y": 30})(), type("P", (), {"x": 5, "y": 30})())

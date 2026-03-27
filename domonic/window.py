@@ -173,27 +173,27 @@ class Navigator:
 
     @staticmethod
     def registerProtocolHandler(scheme, url, title):
-        raise NotImplementedError
+        return None
 
     @staticmethod
     def requestMediaKeySystemAccess(keySystem, supportedConfigurations):
-        raise NotImplementedError
+        return None
 
     def canShare(self):
         return False
 
     def clearAppBadge(self):
-        raise NotImplementedError
+        return None
 
     def getBattery(self):
-        raise NotImplementedError
+        return {"charging": False, "chargingTime": 0, "dischargingTime": 0, "level": 1.0}
 
     @property
     def javaEnabled(self):
         return False
 
     def vibrate(self, pattern):
-        raise NotImplementedError
+        return False
 
 
 class Screen(EventTarget):
