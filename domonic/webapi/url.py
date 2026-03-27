@@ -9,12 +9,13 @@
 """
 
 import urllib.parse
+from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Tuple, Union
 
 
 class URL:
     """a-tag extends from URL"""
 
-    def __update__(self):
+    def __update__(self) -> None:
         # print( "update URL:", type(self), self  )
         try:
             # make obj with all old props
@@ -54,7 +55,7 @@ class URL:
             # print(e)
             pass
 
-    def __init__(self, url: str = "", *args, **kwargs):  # TODO - relative to
+    def __init__(self, url: str = "", *args: Any, **kwargs: Any) -> None:  # TODO - relative to
         """URL
 
         builds a url
@@ -74,16 +75,16 @@ class URL:
         self._searchParams = URLSearchParams(self.url.query)
 
     @property
-    def searchParams(self):
+    def searchParams(self) -> str:
         return self._searchParams.toString()
 
     @property
-    def origin(self):
+    def origin(self) -> str:
         if not self.protocol or not self.host:
             return ""
         return f"{self.protocol}://{self.host}"
 
-    def toString(self):
+    def toString(self) -> str:
         return str(self.href)
 
     # def toJson
@@ -99,7 +100,7 @@ class URL:
     #     self.href = href
 
     @property
-    def protocol(self):
+    def protocol(self) -> str:
         return self.__protocol
 
     @protocol.setter
@@ -109,7 +110,7 @@ class URL:
         self.__update__()
 
     @property
-    def hostname(self):
+    def hostname(self) -> Optional[str]:
         return self.__hostname
 
     @hostname.setter
@@ -122,16 +123,18 @@ class URL:
         self.__update__()
 
     @property
-    def port(self):
+    def port(self) -> Optional[int]:
         return self.__port
 
     @port.setter
-    def port(self, p: str):
+    def port(self, p: Optional[int]):
         self.__port = p
         self.__update__()
 
     @property
-    def host(self):
+    def host(self) -> Optional[str]:
+        if self.hostname is None:
+            return None
         if self.port is not None:
             return self.hostname + ":" + str(self.port)
         else:
@@ -151,7 +154,7 @@ class URL:
         self.__update__()
 
     @property
-    def pathname(self):
+    def pathname(self) -> str:
         return self.__pathname
 
     @pathname.setter
@@ -160,7 +163,7 @@ class URL:
         self.__update__()
 
     @property
-    def search(self):
+    def search(self) -> str:
         if not self.__search:
             return ""
         return self.__search if self.__search.startswith("?") else "?" + self.__search
@@ -174,7 +177,7 @@ class URL:
         self.__update__()
 
     @property
-    def hash(self):
+    def hash(self) -> str:
         """ " hash Sets or returns the anchor part (#) of a URL"""
         if "#" in self.href:
             return "#" + self.href.split("#")[1]
@@ -190,7 +193,7 @@ class URL:
         # def origin(self):
         """# origin    Returns the protocol, hostname and port number of a URL Location"""
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.href)
 
     # NOTE - node -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -258,7 +261,7 @@ class URL:
 class URLSearchParams:
     """[utility methods to work with the query string of a URL]"""
 
-    def __init__(self, paramString):  # , **paramsObj):
+    def __init__(self, paramString: Union[str, Dict[str, Any], Iterable[Tuple[str, Any]]]):  # , **paramsObj):
         """[Returns a URLSearchParams object instance.]
 
         Args:
@@ -274,78 +277,81 @@ class URLSearchParams:
 
             import urllib
 
-            self.params = urllib.parse.parse_qs(paramString)
+            self.params: Dict[str, List[str]] = urllib.parse.parse_qs(paramString)
         elif hasattr(paramString, "__iter__"):
-            self.params = [item for sublist in paramString for item in sublist]
+            self.params = {}
+            for key, value in paramString:
+                self.params.setdefault(str(key), []).append(str(value))
         elif isinstance(paramString, dict):
-            # self.params = dict([(key, item) for key, item in paramString.iteritems()])
-            self.params = {key: item for key, item in paramString.iteritems()}
+            self.params = {
+                str(key): value if isinstance(value, list) else [str(value)] for key, value in paramString.items()
+            }
         else:
             raise TypeError(
                 f"Malformed paramString.  Must be a string or a dict with dict like items. Got: {paramString}"
             )
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Tuple[str, List[str]]]:
         for attr in self.params.items():  # dir(self.params.items()):
             # if not attr.startswith("__"):
             yield attr
 
-    def append(self, key, value):
+    def append(self, key: str, value: str) -> None:
         """Appends a specified key/value pair as a new search parameter"""
         # TODO - ordereddict?
-        self.params[key].append(value)  # [key]=value
+        self.params.setdefault(key, []).append(value)  # [key]=value
 
-    def delete(self, key):
+    def delete(self, key: str) -> None:
         """Deletes the given search parameter, and its associated value, from the list of all search parameters."""
         del self.params[key]
 
-    def has(self, key):
+    def has(self, key: str) -> bool:
         """Returns a Boolean indicating if such a given parameter exists."""
         return key in self.params
 
-    def entries(self):
+    def entries(self) -> Iterable[Tuple[str, List[str]]]:
         """Returns an iterator allowing iteration through all key/value pairs contained in this object."""
         return self.params.items()
 
-    def forEach(self, func):
+    def forEach(self, func: Callable[[str, List[str]], Any]) -> None:
         """Allows iteration through all values contained in this object via a callback function."""
         for key, value in self.params.items():
             func(key, value)
 
-    def keys(self):
+    def keys(self) -> Iterable[str]:
         """Returns an iterator allowing iteration through all keys of the key/value pairs contained in this object."""
         return self.params.keys()
 
-    def get(self, key):
+    def get(self, key: str) -> Optional[str]:
         """Returns the first value associated with the given search parameter."""
         try:
             return self.params.get(key, None)[0]
         except Exception:
             return None
 
-    def sort(self):
+    def sort(self) -> None:
         """Sorts all key/value pairs, if any, by their keys."""
-        self.params.sort()
+        self.params = dict(sorted(self.params.items()))
 
-    def values(self):
+    def values(self) -> Iterable[List[str]]:
         """Returns an iterator allowing iteration through all values of the key/value pairs
         contained in this object."""
         return self.params.values()
 
-    def toString(self):
+    def toString(self) -> str:
         """Returns a string containing a query string suitable for use in a URL."""
         # return '&'.join([str(x) for x in self.params])
         return urllib.parse.urlencode(self.params, doseq=True)
         # return str(self.params)
 
-    def set(self, key, value):
+    def set(self, key: str, value: str) -> None:
         """Sets the value associated with a given search parameter to the given value.
         If there are several values, the others are deleted."""
-        self.params[key] = value
+        self.params[key] = [value]
 
-    def getAll(self, key):
+    def getAll(self, key: str) -> Optional[List[str]]:
         """Returns all the values associated with a given search parameter."""
         return self.params.get(key)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return urllib.parse.urlencode(self.params, doseq=True)

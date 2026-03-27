@@ -3,13 +3,15 @@
     ====================================
     snippets etc
 """
-# import typing
 import random
 from collections import Counter
 from itertools import chain, islice
 from re import sub
+from typing import Any, Dict, Iterable, Iterator, List, Sequence, TypeVar
 
 from domonic.decorators import deprecated
+
+T = TypeVar("T")
 
 
 class Utils:
@@ -46,7 +48,7 @@ class Utils:
         )
 
     @staticmethod
-    def squash(the_list: list) -> list:
+    def squash(the_list: Iterable[Iterable[T]]) -> List[T]:
         """[turns a 2d array into a flat one]
 
         Args:
@@ -58,12 +60,12 @@ class Utils:
         return [inner for outer in the_list for inner in outer]
 
     @staticmethod
-    def chunk(list: list, size: int) -> list:
+    def chunk(values: Sequence[T], size: int) -> List[Sequence[T]]:
         """chunk a list into batches"""
-        return [list[i : i + size] for i in range(0, len(list), size)]
+        return [values[i : i + size] for i in range(0, len(values), size)]
 
     @staticmethod
-    def dictify(arr: list) -> dict:
+    def dictify(arr: Iterable[T]) -> Dict[T, int]:
         """[turns a list into a dictionary where the list items are the keys]
 
         Args:
@@ -79,7 +81,7 @@ class Utils:
         return not some_str.strip()
 
     @staticmethod
-    def unique(some_arr: list) -> list:
+    def unique(some_arr: Iterable[T]) -> List[T]:
         """[removes duplicates from a list]
 
         Args:
@@ -91,18 +93,22 @@ class Utils:
         return list(set(some_arr))
 
     @staticmethod
-    def chunks(iterable, size: int, format=iter):
+    def chunks(iterable: Iterable[T], size: int, format: Any = iter) -> Iterator[Any]:
         """Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size"""
         it = iter(iterable)
         while True:
-            yield format(chain((it.next(),), islice(it, size - 1)))
+            try:
+                first = next(it)
+            except StopIteration:
+                return
+            yield format(chain((first,), islice(it, size - 1)))
 
     # >>> l = ["a", "b", "c", "d", "e", "f", "g"]
     # >>> for chunk in chunks(l, 3, tuple):
     # ...         print chunk
 
     @staticmethod
-    def clean(lst: list) -> list:
+    def clean(lst: Iterable[T]) -> List[T]:
         """[removes falsy values (False, None, 0 and “”) from a list ]
 
         Args:
@@ -114,7 +120,7 @@ class Utils:
         return list(filter(None, lst))
 
     @staticmethod
-    def get_vowels(string: str) -> list:
+    def get_vowels(string: str) -> List[str]:
         """[get a list of vowels from the word]
 
         Args:
@@ -138,7 +144,7 @@ class Utils:
         return string[:1].lower() + string[1:]
 
     @staticmethod
-    def merge_dictionaries(a: dict, b: dict) -> dict:
+    def merge_dictionaries(a: Dict[Any, Any], b: Dict[Any, Any]) -> Dict[Any, Any]:
         """[merges 2 dicts]
 
         Args:
@@ -151,7 +157,7 @@ class Utils:
         return {**a, **b}
 
     @staticmethod
-    def to_dictionary(keys: list, values: list) -> dict:
+    def to_dictionary(keys: Iterable[T], values: Iterable[Any]) -> Dict[T, Any]:
         """[take a list of keys and values and returns a dict]
 
         Args:
@@ -164,7 +170,7 @@ class Utils:
         return dict(zip(keys, values))
 
     @staticmethod
-    def most_frequent(lst: list) -> list:
+    def most_frequent(lst: Sequence[T]) -> T:
         return max(set(lst), key=lst.count)
 
     @staticmethod
@@ -192,7 +198,7 @@ class Utils:
         return a
 
     @staticmethod
-    def frequency(data):
+    def frequency(data: Iterable[T]) -> Dict[T, int]:
         """[check the frequency of elements in the data]
 
         Args:
