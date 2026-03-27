@@ -1226,7 +1226,7 @@ class Node(EventTarget):
     # getUserData() 🗑️
     # setUserData() 🗑️
 
-    # non standard methods to be etree compatible
+    # Non-standard helpers kept for etree-style compatibility.
     # seems to make it work with https://github.com/sissaschool/elementpath
     # if i hack it to allow domonic root nodes
 
@@ -2385,7 +2385,7 @@ class Element(Node):
 
         Note:
         - Always include a tag in the query. For example, `'a.classname'` will work, but just `'.classname'` will not.
-        - Fixed and ported to Python 3 in this library, allowing compatibility with existing codebases.
+        - Preserved as a compatibility helper for older selector-style code.
         - TODO: Needs to work in conjunction with `_matchElement` for better querySelector support, and to ensure dQuery compatibility.
         - TODO: Implement support for `*=` (node content).
 

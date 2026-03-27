@@ -544,6 +544,10 @@ class TestCase(unittest.TestCase):
         assert Number.MAX_VALUE == 1.7976931348623157e308
 
     def test_javascript_fetch(self):
+        try:
+            import requests  # noqa: F401
+        except ModuleNotFoundError:
+            self.skipTest("requests is not installed")
 
         TEST_DOMAIN = "https://google.com"
         urls = ["http://google.com", "http://linkedin.com"]  # use your own domains

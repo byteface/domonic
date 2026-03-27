@@ -9,8 +9,9 @@
         so will have to iterate and update them. i.e. Treewalker
 
 """
+from __future__ import annotations
 
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 
 try:
     import elementpath
@@ -22,7 +23,7 @@ class XPathEvaluator:
     def __init__(self) -> None:
         pass
 
-    def createExpression(self, expression: str):  # , namespaces: Dict[str, str]) -> None:
+    def createExpression(self, expression: str) -> XPathExpression:  # , namespaces: Dict[str, str]) -> None:
         return XPathExpression(expression)
 
 
@@ -50,7 +51,7 @@ class XPathExpression:
 
     # TODO - DRY - make some utils . just stole this from Treewalker.
     @staticmethod
-    def _upgrade_dom(node):
+    def _upgrade_dom(node: Any) -> Any:
         def upgrade(el):
             from domonic.dom import Text
 
@@ -66,7 +67,7 @@ class XPathExpression:
         return node
 
     @staticmethod
-    def _iter_descendants(node):
+    def _iter_descendants(node: Any) -> list[Any]:
         from domonic.dom import Element, Text
 
         descendants = []
@@ -86,7 +87,7 @@ class XPathExpression:
         return descendants
 
     @staticmethod
-    def _iter_children(node):
+    def _iter_children(node: Any) -> list[Any]:
         from domonic.dom import Element, Text
 
         children = []
@@ -96,7 +97,7 @@ class XPathExpression:
         return children
 
     @staticmethod
-    def _parse_steps(expr):
+    def _parse_steps(expr: str) -> list[tuple[str, str]]:
         steps = []
         i = 0
         axis = "child"
@@ -153,7 +154,7 @@ class XPathExpression:
         return steps
 
     @staticmethod
-    def _parse_step(step):
+    def _parse_step(step: str) -> tuple[str, list[str]]:
         predicates = []
         name_chars = []
         i = 0
@@ -190,11 +191,11 @@ class XPathExpression:
         return name, predicates
 
     @staticmethod
-    def _node_name(node):
+    def _node_name(node: Any) -> str:
         return getattr(node, "tagName", getattr(node, "name", ""))
 
     @staticmethod
-    def _predicate_matches(node, predicate, index, nodes):
+    def _predicate_matches(node: Any, predicate: str, index: int, nodes: list[Any]) -> bool:
         from domonic.dom import Text
 
         if predicate == "last()":
@@ -220,7 +221,7 @@ class XPathExpression:
         return False
 
     @staticmethod
-    def _step_matches(node, name):
+    def _step_matches(node: Any, name: str) -> bool:
         from domonic.dom import Element, Text
 
         if name == "text()":
@@ -231,7 +232,7 @@ class XPathExpression:
             return True
         return XPathExpression._node_name(node) == name
 
-    def _fallback_select(self, node):
+    def _fallback_select(self, node: Any) -> list[Any]:
         from domonic.dom import Text
 
         if self.expr == "/":
@@ -258,7 +259,7 @@ class XPathExpression:
             nodes = candidates
         return nodes
 
-    def evaluate(self, node, type=6):  # XPathResult.ANY_TYPE):
+    def evaluate(self, node: Any, type: int = 6):  # XPathResult.ANY_TYPE):
         # note: otherwise would fail on regular text?
         node = XPathExpression._upgrade_dom(node)
         if self.selector is not None:
@@ -284,7 +285,7 @@ class XPathResult:
     ANY_UNORDERED_NODE_TYPE = 8
     FIRST_ORDERED_NODE_TYPE = 9
 
-    def __init__(self, value, _type):
+    def __init__(self, value: Any, _type: int):
         if _type == XPathResult.ANY_TYPE:
             tov = type(value)
             if tov == "object":

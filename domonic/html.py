@@ -661,8 +661,9 @@ def create_element(name: str = "custom_tag", *args: Any, **kwargs: Any) -> Eleme
     i.e. hypenated tags <some-custom-tag></some-custom-tag>
     """
     # checks if already exists
-    if name in html_tags:
-        tag_name = _TAG_ALIASES.get(name, name)
+    normalized_name = name.lower()
+    if normalized_name in html_tags:
+        tag_name = _TAG_ALIASES.get(normalized_name, normalized_name)
         return globals()[tag_name](*args, **kwargs)
 
     # NOTE: we care calling it custom_tag because it can't have hyphens < Note - use HTMLUnknownElement?

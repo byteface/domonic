@@ -72,6 +72,10 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_history(self):
+        try:
+            import requests  # noqa: F401
+        except ModuleNotFoundError:
+            self.skipTest("requests is not installed")
 
         from domonic.window import window
 
@@ -199,13 +203,18 @@ class TestCase(unittest.TestCase):
         <div>Number of &lt;div&gt;s: <output></output></div>
         """
         page = domonic.parseString(somehtml)  # NOTE - probably requries html5lib install
+        if page is None:
+            self.skipTest("domonic.parseString requires optional HTML parsing support")
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression("//div")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         assert result.snapshotLength == 2
         # print(result.nodes)
 
-        import requests
+        try:
+            import requests
+        except ModuleNotFoundError:
+            self.skipTest("requests is not installed")
 
         # TODO - dont eventual.technology to parse against
         r = requests.get("http://eventual.technology")

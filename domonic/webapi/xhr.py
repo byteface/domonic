@@ -4,6 +4,7 @@
     https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
 
 """
+from __future__ import annotations
 
 import json
 import os
@@ -13,7 +14,7 @@ import traceback
 import urllib.parse
 import uuid
 from io import BytesIO
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable
 
 from domonic.javascript import Global
 
@@ -35,15 +36,15 @@ class XMLHttpRequest:
 
     def __init__(
         self,
-        url=None,
-        responseType=None,
-        withCredentials=False,
-        timeout=0,
-        onload=None,
-        onerror=None,
-        onprogress=None,
-        ontimeout=None,
-    ):
+        url: str | None = None,
+        responseType: str | None = None,
+        withCredentials: bool = False,
+        timeout: int = 0,
+        onload: Callable[..., Any] | None = None,
+        onerror: Callable[..., Any] | None = None,
+        onprogress: Callable[..., Any] | None = None,
+        ontimeout: Callable[..., Any] | None = None,
+    ) -> None:
         self.url = url
         self.responseType = responseType
         self.withCredentials = withCredentials
@@ -57,7 +58,7 @@ class XMLHttpRequest:
 
 
 class FormData:
-    def __init__(self, form):
+    def __init__(self, form: Any):
         """creates a new FormData object."""
 
         if isinstance(form, str):
@@ -111,44 +112,44 @@ class FormData:
     def __str__(self) -> str:
         return self._data
 
-    def toString(self):
+    def toString(self) -> str:
         """Returns a string representing the FormData object."""
         raise NotImplementedError
 
-    def append(self, name, value, filename):
+    def append(self, name: str, value: Any, filename: str | None = None) -> None:
         """Appends a new value onto an existing key inside a FormData object,
         or adds the key if it does not already exist."""
         raise NotImplementedError
 
-    def delete(self, name):
+    def delete(self, name: str) -> None:
         """Deletes a key/value pair from a FormData object."""
         raise NotImplementedError
 
-    def entries(self):
+    def entries(self) -> Any:
         """Returns an iterator allowing to go through all key/value pairs contained in this object."""
         raise NotImplementedError
 
-    def get(self, name):
+    def get(self, name: str) -> Any:
         """Returns the first value associated with a given key from within a FormData object."""
         raise NotImplementedError
 
-    def getAll(self, name):
+    def getAll(self, name: str) -> Any:
         """Returns an array of all the values associated with a given key from within a FormData"""
         raise NotImplementedError
 
-    def has(self, name):
+    def has(self, name: str) -> bool:
         """Returns a boolean stating whether a FormData object contains a certain key."""
         raise NotImplementedError
 
-    def keys(self):
+    def keys(self) -> Any:
         """Returns an iterator allowing to go through all keys of the key/value pairs contained in this object."""
         raise NotImplementedError
 
-    def set(self, name, value, filename):
+    def set(self, name: str, value: Any, filename: str | None = None) -> None:
         """Sets a new value for an existing key inside a FormData object,
         or adds the key/value if it does not already exist."""
         raise NotImplementedError
 
-    def values(self):
+    def values(self) -> Any:
         """Returns an iterator allowing to go through all values  contained in this object."""
         raise NotImplementedError
