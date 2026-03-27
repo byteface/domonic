@@ -5,6 +5,7 @@
 
 import unittest
 from datetime import datetime
+from unittest.mock import patch
 
 from domonic import domonic
 from domonic.decorators import silence
@@ -87,20 +88,40 @@ class TestCase(unittest.TestCase):
     def test_loadsitemap(self):
         from domonic.xml.sitemap import get_sitemap
 
-        # sm = get_sitemap('https://x.net/sitemap.xml')
-        sm = get_sitemap("https://x.net/merchants/ar/sitemap_index.xml")
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://x.net/merchants/ar/page-sitemap.xml</loc>
+    <lastmod>2021-07-08T13:12:16+00:00</lastmod>
+  </sitemap>
+</sitemapindex>"""
+        with patch("domonic.xml.sitemap._get_sitemap_text", return_value=xml):
+            sm = get_sitemap("https://x.net/merchants/ar/sitemap_index.xml")
         print(sm)
+        self.assertIsNotNone(sm)
+        self.assertEqual(getattr(sm, "tagName", None), "sitemapindex")
+        self.assertEqual(len(sm.getElementsByTagName("sitemap")), 1)
 
 
     @silence
     def test_parse_sitemapindex(self):
-        # pass
-        # https://x.net/merchants/ar/page-sitemap.xml
         from domonic.xml.sitemap import get_sitemap
 
-        sm = get_sitemap("https://x.net/merchants/ar/page-sitemap.xml")
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://x.net/merchants/ar/example</loc>
+    <lastmod>2021-07-08T13:12:16+00:00</lastmod>
+  </url>
+</urlset>"""
+        with patch("domonic.xml.sitemap._get_sitemap_text", return_value=xml):
+            sm = get_sitemap("https://x.net/merchants/ar/page-sitemap.xml")
         print(sm)
-        # pass
+        self.assertIsNotNone(sm)
+        self.assertIn(getattr(sm, "tagName", None), ("urlset", "html"))
+        if getattr(sm, "tagName", None) == "html":
+            self.assertEqual(len(sm.getElementsByTagName("urlset")), 1)
+        self.assertEqual(len(sm.getElementsByTagName("url")), 1)
 
     @silence
     def test_element_class(self):

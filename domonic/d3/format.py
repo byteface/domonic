@@ -165,7 +165,6 @@ def formatSpecifier(specifier):
     match = RegExp(re).exec(str(specifier))
     if not match:
         raise Exception("invalid format: " + specifier)
-    print(match)
 
     return FormatSpecifier(
         {

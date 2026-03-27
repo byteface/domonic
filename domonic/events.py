@@ -15,6 +15,26 @@ from typing import Any, Callable, ClassVar
 from domonic.constants.keyboard import Code, Key, KeyCode, KeyLocation, normalize_code, normalize_key
 
 
+class EventListener:
+    """Interface-style base for objects with a handleEvent method."""
+
+    def handleEvent(self, event: "Event") -> Any:
+        raise NotImplementedError
+
+
+class EventListenerOptions(dict):
+    """Dictionary-like listener options helper."""
+
+    def __init__(
+        self,
+        capture: bool = False,
+        once: bool = False,
+        passive: bool = False,
+        signal: Any = None,
+    ) -> None:
+        super().__init__(capture=capture, once=once, passive=passive, signal=signal)
+
+
 class EventTarget:
     """
     EventTarget is a class you can extend to give your object event dispatching abilities.
@@ -76,14 +96,15 @@ class EventTarget:
     @staticmethod
     def _normalize_listener_options(
         options: bool | dict[str, Any] | None = None, **kwargs: Any
-    ) -> dict[str, bool]:
-        normalized = {"capture": False, "once": False, "passive": False}
+    ) -> dict[str, Any]:
+        normalized: dict[str, Any] = {"capture": False, "once": False, "passive": False, "signal": None}
         if isinstance(options, bool):
             normalized["capture"] = options
         elif isinstance(options, dict):
             normalized["capture"] = bool(options.get("capture", False))
             normalized["once"] = bool(options.get("once", False))
             normalized["passive"] = bool(options.get("passive", False))
+            normalized["signal"] = options.get("signal")
 
         if "use_capture" in kwargs:
             normalized["capture"] = bool(kwargs["use_capture"])
@@ -93,6 +114,8 @@ class EventTarget:
             normalized["once"] = bool(kwargs["once"])
         if "passive" in kwargs:
             normalized["passive"] = bool(kwargs["passive"])
+        if "signal" in kwargs:
+            normalized["signal"] = kwargs["signal"]
         return normalized
 
     def _get_event_path(self, target: Any) -> list[Any]:
@@ -168,11 +191,20 @@ class EventTarget:
             self.listeners[eventType] = []
             self._listener_options[eventType] = []
         listener_options = self._normalize_listener_options(options, **kwargs)
+        signal = listener_options.get("signal")
+        if signal is not None:
+            if getattr(signal, "aborted", False):
+                return
         for listener in self._listener_options[eventType]:
             if listener["callback"] is callback and listener["capture"] == listener_options["capture"]:
                 return
         self.listeners[eventType].append(callback)
         self._listener_options[eventType].append({"callback": callback, **listener_options})
+        if signal is not None and hasattr(signal, "addEventListener"):
+            def _remove_on_abort(event: Any, target=self, ev_type=eventType, cb=callback, capture=listener_options["capture"]):
+                target.removeEventListener(ev_type, cb, {"capture": capture})
+
+            signal.addEventListener("abort", _remove_on_abort, {"once": True})
 
     def removeEventListener(
         self, eventType: str, callback: Callable[..., Any], options: bool | dict[str, Any] | None = None
@@ -531,6 +563,37 @@ class Event:
         self.cancelBubble = True
         self._propagation_stopped = True
         self._immediate_propagation_stopped = True
+
+
+class AbortSignal(EventTarget):
+    """Signal object used to communicate cancellation."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.aborted: bool = False
+        self.reason: Any = None
+        self.onabort = None
+
+    def _signal_abort(self, reason: Any = None) -> None:
+        if self.aborted:
+            return
+        self.aborted = True
+        self.reason = reason
+        self.dispatchEvent(Event(Event.ABORT))
+
+    def throwIfAborted(self) -> None:
+        if self.aborted:
+            raise RuntimeError(self.reason if self.reason is not None else "Signal already aborted")
+
+
+class AbortController:
+    """Controller used to abort work associated with an AbortSignal."""
+
+    def __init__(self) -> None:
+        self.signal = AbortSignal()
+
+    def abort(self, reason: Any = None) -> None:
+        self.signal._signal_abort(reason)
 
 
 class UIEvent(Event):
@@ -995,6 +1058,19 @@ class ErrorEvent(Event):
         self.lineno = options.get("lineno", 0)
         self.colno = options.get("colno", 0)
         self.error = options.get("error", None)
+        super().__init__(_type, options, *args, **kwargs)
+
+
+class CloseEvent(Event):
+    """CloseEvent"""
+
+    CLOSE: str = "close"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs  # if options is none use kwargs
+        self.code = options.get("code", 0)
+        self.reason = options.get("reason", "")
+        self.wasClean = bool(options.get("wasClean", False))
         super().__init__(_type, options, *args, **kwargs)
 
 

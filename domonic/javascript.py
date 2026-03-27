@@ -1251,11 +1251,66 @@ class Performance:
     _start: float = time.time()
 
     def __init__(self) -> None:
-        pass
+        self._entries: list[Any] = []
+        self._marks: dict[str, float] = {}
 
     def now(self) -> float:
         end = time.time()
         return end - Performance._start
+
+    def mark(self, name: str) -> Any:
+        from domonic.dom import PerformanceMark, PerformanceObserver
+
+        start = self.now()
+        self._marks[name] = start
+        entry = PerformanceMark(name, start)
+        self._entries.append(entry)
+        PerformanceObserver._notify_entry(entry)
+        return entry
+
+    def measure(self, name: str, startMark: str | None = None, endMark: str | None = None) -> Any:
+        from domonic.dom import PerformanceMeasure, PerformanceObserver
+
+        end = self.now() if endMark is None else self._marks.get(endMark, self.now())
+        start = 0.0 if startMark is None else self._marks.get(startMark, 0.0)
+        entry = PerformanceMeasure(name, start, end - start)
+        self._entries.append(entry)
+        PerformanceObserver._notify_entry(entry)
+        return entry
+
+    def getEntries(self) -> list[Any]:
+        return list(self._entries)
+
+    def getEntriesByType(self, entryType: str) -> list[Any]:
+        return [entry for entry in self._entries if getattr(entry, "entryType", None) == entryType]
+
+    def getEntriesByName(self, name: str, entryType: str | None = None) -> list[Any]:
+        entries = [entry for entry in self._entries if getattr(entry, "name", None) == name]
+        if entryType is not None:
+            entries = [entry for entry in entries if getattr(entry, "entryType", None) == entryType]
+        return entries
+
+    def clearMarks(self, name: str | None = None) -> None:
+        if name is None:
+            self._marks.clear()
+            self._entries = [entry for entry in self._entries if getattr(entry, "entryType", None) != "mark"]
+            return
+        self._marks.pop(name, None)
+        self._entries = [
+            entry
+            for entry in self._entries
+            if not (getattr(entry, "entryType", None) == "mark" and getattr(entry, "name", None) == name)
+        ]
+
+    def clearMeasures(self, name: str | None = None) -> None:
+        if name is None:
+            self._entries = [entry for entry in self._entries if getattr(entry, "entryType", None) != "measure"]
+            return
+        self._entries = [
+            entry
+            for entry in self._entries
+            if not (getattr(entry, "entryType", None) == "measure" and getattr(entry, "name", None) == name)
+        ]
 
     # def reset(self):
     #     Performance._start = time.time()
@@ -2883,9 +2938,32 @@ class Number(float):
             or exponential notation rounded to precision significant digits]
         """
         precision = int(precision)
-        # return str(math.pow(self.x, precision))
-        # raise NotImplementedError
-        return str(round(self.x, precision))
+        if precision < 1:
+            raise ValueError("precision must be at least 1")
+
+        if math.isnan(self.x) or math.isinf(self.x):
+            return str(self.x)
+
+        formatted = format(self.x, f".{precision}g")
+        if "e" in formatted or "E" in formatted:
+            return formatted.replace("E", "e")
+
+        sign = ""
+        mantissa = formatted
+        if mantissa.startswith(("-", "+")):
+            sign = mantissa[0]
+            mantissa = mantissa[1:]
+
+        digits_only = mantissa.replace(".", "")
+        significant = digits_only.lstrip("0")
+        significant_count = len(significant) if significant else 1
+
+        if significant_count < precision:
+            if "." not in mantissa:
+                mantissa += "."
+            mantissa += "0" * (precision - significant_count)
+
+        return sign + mantissa
 
     def toString(self, base: int | None) -> str:
         """[returns a string representing the specified Number object.]

@@ -1109,6 +1109,12 @@ class domonic:
 
                 parser = HTMLParser(tree=getTreeBuilder())
                 page = parser.parse(string)
+                try:
+                    from domonic.window import window as domonic_window
+
+                    domonic_window.customElements.upgrade(page)
+                except Exception:
+                    pass
                 # print('PARSED WITH HTML5 LIB')
                 return page
         except ImportError:
@@ -1117,7 +1123,14 @@ class domonic:
         try:
             from domonic.parsers import expatbuilder
 
-            return expatbuilder.parseString(string)
+            page = expatbuilder.parseString(string)
+            try:
+                from domonic.window import window as domonic_window
+
+                domonic_window.customElements.upgrade(page)
+            except Exception:
+                pass
+            return page
         except Exception as e:
             # TODO - problem with this method. is it takes literally forever.
             # as it removes 1 char then reparses entire doc. even on small pages this is a problem.

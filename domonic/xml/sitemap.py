@@ -146,16 +146,20 @@ def sitemap_from_urls(urls):
 
 
 def get_sitemap(path: str, *args, **kwargs):
-    """ 
+    """
     Download a sitemap
     """
+    import domonic
+
+    some_sitemap = domonic.domonic.parseString(_get_sitemap_text(path))
+    return some_sitemap
+
+
+def _get_sitemap_text(path: str) -> str:
     import requests
 
     r = requests.get(path)
-    import domonic
-
-    some_sitemap = domonic.domonic.parseString(r.text)
-    return some_sitemap
+    return r.text
 
 
 # image

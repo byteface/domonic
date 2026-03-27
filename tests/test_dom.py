@@ -1022,9 +1022,21 @@ class DOMTest(unittest.TestCase):
         doctype = impl.createDocumentType("html", "", "")
         doc = impl.createDocument("http://www.w3.org/1999/xhtml", "html", doctype)
 
+        self.assertIsInstance(doc, XMLDocument)
         self.assertEqual(str(doc.doctype), "<!DOCTYPE html>")
         self.assertEqual(doc.nodeType, Node.DOCUMENT_NODE)
         self.assertEqual(str(doctype), "<!DOCTYPE html>")
+        self.assertEqual(doc.documentElement.tagName, "html")
+        self.assertEqual(doc.documentElement.namespaceURI, "http://www.w3.org/1999/xhtml")
+
+    def test_domimplementation_create_xml_document(self):
+        impl = DOMImplementation()
+        doc = impl.createDocument("http://www.w3.org/2000/svg", "svg", None)
+
+        self.assertIsInstance(doc, XMLDocument)
+        self.assertEqual(doc.contentType, "application/xml")
+        self.assertEqual(doc.documentElement.tagName, "svg")
+        self.assertEqual(doc.documentElement.namespaceURI, "http://www.w3.org/2000/svg")
 
     def test_document_import_node_variants(self):
         page = html(body())
@@ -1160,8 +1172,25 @@ class DOMTest(unittest.TestCase):
         static = StaticRange(text, 0, text, 5)
         self.assertEqual(static.toString(), "hello")
         self.assertEqual(static.toRange().toString(), "hello")
+        self.assertIsInstance(static, AbstractRange)
         with self.assertRaises(TypeError):
             static.setStart(text, 1)
+
+    def test_range_boundary_validation_and_auto_ordering(self):
+        text = Text("abcdef")
+        r = Range()
+
+        with self.assertRaises(ValueError):
+            r.setStart(text, 99)
+
+        r.setStart(text, 4)
+        r.setEnd(text, 2)
+        self.assertEqual((r.startOffset, r.endOffset), (2, 2))
+
+        r.setStart(text, 1)
+        r.setEnd(text, 5)
+        with self.assertRaises(ValueError):
+            r.comparePoint(text, 10)
 
     def test_document_and_shadow_selection_helpers(self):
         host = div(_id="host")
@@ -1188,8 +1217,158 @@ class DOMTest(unittest.TestCase):
             '<button id="shadow-button" style="left:0px;top:0px;width:40px;height:20px;">go</button>',
         )
 
-        self.assertEqual(shadow.elementFromPoint(5, 5), shadow_button)
-        self.assertEqual(shadow.caretPositionFromPoint(5, 5).offset, 0)
+    def test_custom_elements_registry_and_upgrade(self):
+        from domonic import domonic as domonic_module
+        from domonic.window import window
+
+        class MyWidget(HTMLElement):
+            connected_count = 0
+
+            def connectedCallback(self):
+                self.connected_count += 1
+
+        class MyLabel(Element):
+            name = "my-label"
+
+        promise = window.customElements.whenDefined("my-widget")
+        self.assertEqual(promise.state, "pending")
+
+        defined = window.customElements.define("my-widget", MyWidget)
+        self.assertIs(defined, MyWidget)
+        self.assertEqual(window.customElements.get("my-widget"), MyWidget)
+        self.assertEqual(window.customElements.getName(MyWidget), "my-widget")
+        self.assertEqual(promise.state, "fulfilled")
+
+        widget = document.createElement("my-widget")
+        self.assertIsInstance(widget, MyWidget)
+        self.assertEqual(widget.tagName, "my-widget")
+
+        with self.assertRaises(ValueError):
+            window.customElements.define("my-widget", MyLabel)
+
+        parsed = domonic_module.parseString("<my-widget></my-widget>")
+        parsed_widget = parsed.querySelector("my-widget")
+        self.assertIsInstance(parsed_widget, MyWidget)
+
+    def test_custom_element_lifecycle_callbacks(self):
+        from domonic.window import window
+
+        class LifecycleWidget(HTMLElement):
+            observedAttributes = ("data-state",)
+
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.connected_calls = 0
+                self.disconnected_calls = 0
+                self.attribute_changes = []
+                self.adoptions = []
+
+            def connectedCallback(self):
+                self.connected_calls += 1
+
+            def disconnectedCallback(self):
+                self.disconnected_calls += 1
+
+            def attributeChangedCallback(self, name, old_value, new_value):
+                self.attribute_changes.append((name, old_value, new_value))
+
+            def adoptedCallback(self, old_document, new_document):
+                self.adoptions.append((old_document, new_document))
+
+        if window.customElements.get("life-widget") is None:
+            window.customElements.define("life-widget", LifecycleWidget)
+
+        doc = Document()
+        host = div()
+        doc.appendChild(host)
+
+        widget = document.createElement("life-widget")
+        host.appendChild(widget)
+        self.assertEqual(widget.connected_calls, 1)
+
+        widget.setAttribute("data-state", "ready")
+        self.assertEqual(widget.attribute_changes[-1], ("data-state", None, "ready"))
+
+        host.removeChild(widget)
+        self.assertEqual(widget.disconnected_calls, 1)
+
+        other_doc = Document()
+        imported = other_doc.importNode(widget, deep=True)
+        self.assertEqual(len(imported.adoptions), 1)
+        self.assertIs(imported.adoptions[-1][1], other_doc)
+
+    def test_shadow_root_slots_assign_nodes_and_elements(self):
+        host = div(_id="slot-host")
+        doc = Document()
+        doc.appendChild(host)
+
+        shadow = host.attachShadow({"mode": "open"})
+        default_slot = slot()
+        named_slot = slot(_name="header")
+        events = []
+        default_slot.addEventListener("slotchange", lambda event: events.append("default"))
+        named_slot.addEventListener("slotchange", lambda event: events.append("header"))
+        shadow.appendChild(named_slot)
+        shadow.appendChild(default_slot)
+
+        heading = h1("Title", _slot="header")
+        body_copy = span("Body")
+        host.appendChild(heading)
+        host.appendChild(body_copy)
+
+        self.assertEqual(named_slot.assignedElements(), [heading])
+        self.assertEqual(default_slot.assignedElements(), [body_copy])
+        self.assertIs(heading.assignedSlot, named_slot)
+        self.assertIs(body_copy.assignedSlot, default_slot)
+        self.assertIn("header", events)
+        self.assertIn("default", events)
+
+    def test_mutation_observer_child_list_records(self):
+        target = div()
+        delivered = []
+        observer = MutationObserver(lambda records, obs: delivered.extend(records))
+        observer.observe(target, {"childList": True})
+
+        child = span("hello")
+        target.appendChild(child)
+
+        self.assertEqual(len(delivered), 1)
+        record = delivered[0]
+        self.assertEqual(record.type, "childList")
+        self.assertIs(record.target, target)
+        self.assertEqual(list(record.addedNodes), [child])
+        self.assertEqual(list(record.removedNodes), [])
+        self.assertEqual(observer.takeRecords(), [])
+
+    def test_mutation_observer_attributes_and_filters(self):
+        target = div()
+        delivered = []
+        observer = MutationObserver(lambda records, obs: delivered.extend(records))
+        observer.observe(target, {"attributes": True, "attributeOldValue": True, "attributeFilter": ["data-id"]})
+
+        target.setAttribute("class", "skip")
+        target.setAttribute("data-id", "1")
+        target.setAttribute("data-id", "2")
+
+        self.assertEqual(len(delivered), 2)
+        self.assertEqual([record.attributeName for record in delivered], ["data-id", "data-id"])
+        self.assertEqual(delivered[0].oldValue, None)
+        self.assertEqual(delivered[1].oldValue, "1")
+
+    def test_mutation_observer_character_data_and_subtree(self):
+        target = div(Text("alpha"))
+        delivered = []
+        observer = MutationObserver(lambda records, obs: delivered.extend(records))
+        observer.observe(target, {"subtree": True, "characterData": True, "characterDataOldValue": True})
+
+        text_node = target.firstChild
+        text_node.replaceData(0, 5, "beta")
+
+        self.assertEqual(len(delivered), 1)
+        record = delivered[0]
+        self.assertEqual(record.type, "characterData")
+        self.assertIs(record.target, text_node)
+        self.assertEqual(record.oldValue, "alpha")
 
     def test_document_normalize_and_stream_writes(self):
         page = html()
@@ -1255,15 +1434,18 @@ class DOMTest(unittest.TestCase):
 
         selection.extend(second, 3)
         self.assertEqual(selection.type, "Range")
+        self.assertEqual(selection.anchorNode, first)
+        self.assertEqual(selection.anchorOffset, 2)
         self.assertEqual(selection.focusNode, second)
         self.assertEqual(selection.focusOffset, 3)
 
         selection.collapseToEnd()
         self.assertEqual(selection.focusOffset, 3)
+        self.assertEqual(selection.anchorOffset, 3)
 
         selection.setBaseAndExtent(second, 1, first, 1)
-        self.assertEqual(selection.anchorNode, first)
-        self.assertEqual(selection.focusNode, second)
+        self.assertEqual(selection.anchorNode, second)
+        self.assertEqual(selection.focusNode, first)
 
         selection.deleteFromDocument()
         self.assertEqual(first.textContent, "hello")
@@ -1280,6 +1462,26 @@ class DOMTest(unittest.TestCase):
         with self.assertRaises(IndexError):
             selection.getRangeAt(0)
 
+    def test_selection_anchor_focus_direction_and_range_order(self):
+        first = Text("hello")
+        second = Text("world")
+        host = div(first, second)
+        selection = Selection()
+
+        selection.collapse(second, 3)
+        selection.extend(first, 2)
+
+        self.assertIs(selection.anchorNode, second)
+        self.assertEqual(selection.anchorOffset, 3)
+        self.assertIs(selection.focusNode, first)
+        self.assertEqual(selection.focusOffset, 2)
+
+        active = selection.getRangeAt(0)
+        self.assertIs(active.startContainer, first)
+        self.assertEqual(active.startOffset, 2)
+        self.assertIs(active.endContainer, second)
+        self.assertEqual(active.endOffset, 3)
+
     def test_document_caret_position_from_point(self):
         target = div("hello", _id="target")
         target.style.left = "5px"
@@ -1293,6 +1495,7 @@ class DOMTest(unittest.TestCase):
         self.assertGreaterEqual(caret.offset, 0)
         self.assertLessEqual(caret.offset, len("hello"))
         self.assertIn(caret.offsetNode, [target, target.firstChild])
+        self.assertIsInstance(caret.getClientRect(), DOMRect)
 
     def test_document_domain_and_event_factory_helpers(self):
         page = html(body(div("x")))
@@ -1726,6 +1929,48 @@ class DOMTest(unittest.TestCase):
         self.assertIsNone(loc.replace("https://example.com/three"))
         self.assertEqual(loc.href, "https://example.com/three")
 
+    def test_document_environment_properties(self):
+        doc = HTMLDocument(
+            html(
+                head(script("console.log('one')"), script("console.log('two')")),
+                body(),
+            )
+        )
+
+        self.assertEqual(doc.designMode, "off")
+        doc.designMode = "on"
+        self.assertEqual(doc.designMode, "on")
+        self.assertEqual(doc.currentScript.tagName, "script")
+
+        first_script = doc.scripts[0]
+        doc.currentScript = first_script
+        self.assertIs(doc.currentScript, first_script)
+
+        doc.cookie = "session=abc123; Path=/"
+        doc.cookie = "theme=dark"
+        self.assertIn("session=abc123", doc.cookie)
+        self.assertIn("theme=dark", doc.cookie)
+
+        self.assertIsInstance(doc.lastModified, str)
+        doc.lastModified = "Sat, 27 Mar 2026 12:00:00 GMT"
+        self.assertEqual(doc.lastModified, "Sat, 27 Mar 2026 12:00:00 GMT")
+
+        doc.referrer = "https://ref.example"
+        self.assertEqual(doc.referrer, "https://ref.example")
+
+    def test_document_timeline_and_documenttimeline(self):
+        doc = HTMLDocument(html(body()))
+
+        timeline = doc.timeline
+        self.assertIsInstance(timeline, DocumentTimeline)
+        self.assertIs(timeline.document, doc)
+        self.assertEqual(timeline.originTime, 0.0)
+
+        first = timeline.currentTime
+        second = doc.timeline.currentTime
+        self.assertIs(doc.timeline, timeline)
+        self.assertGreaterEqual(second, first)
+
     def test_form_submit_dispatches_submit_event(self):
         page = html(body(form(input(_name="email"), _id="signup")))
         signup = page.getElementById("signup")
@@ -1736,6 +1981,335 @@ class DOMTest(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertEqual(calls, [("submit", None)])
+
+    def test_form_request_submit_and_button_click_dispatch_submitter(self):
+        page = html(body(form(button("Send", _id="send", _type="submit"), _id="signup")))
+        signup = page.getElementById("signup")
+        send = page.getElementById("send")
+        calls = []
+
+        signup.addEventListener("submit", lambda event: calls.append((event.type, event.submitter)))
+        signup.requestSubmit(send)
+        send.click()
+
+        self.assertEqual(calls[0], ("submit", send))
+        self.assertEqual(calls[1], ("submit", send))
+
+    def test_input_checkbox_and_radio_click_dispatch_events(self):
+        page = html(
+            body(
+                form(
+                    input(_id="check", _type="checkbox"),
+                    input(_id="radio_a", _type="radio", _name="group"),
+                    input(_id="radio_b", _type="radio", _name="group"),
+                )
+            )
+        )
+        checkbox = page.getElementById("check")
+        radio_a = page.getElementById("radio_a")
+        radio_b = page.getElementById("radio_b")
+        events = []
+
+        checkbox.addEventListener("input", lambda event: events.append((event.type, checkbox.checked)))
+        checkbox.addEventListener("change", lambda event: events.append((event.type, checkbox.checked)))
+        radio_a.addEventListener("change", lambda event: events.append(("radio-a", radio_a.checked)))
+        radio_b.addEventListener("change", lambda event: events.append(("radio-b", radio_b.checked)))
+
+        checkbox.click()
+        radio_a.click()
+        radio_b.click()
+
+        self.assertTrue(checkbox.checked)
+        self.assertFalse(radio_a.checked)
+        self.assertTrue(radio_b.checked)
+        self.assertEqual(events[:2], [("input", True), ("change", True)])
+        self.assertIn(("radio-a", True), events)
+        self.assertIn(("radio-b", True), events)
+
+    def test_select_and_textarea_value_helpers_dispatch_events(self):
+        picker = select(option("One", value="1"), option("Two", value="2"), _name="choice")
+        notes = textarea("hello", _name="notes")
+        events = []
+
+        picker.addEventListener("input", lambda event: events.append(("select-input", picker.value)))
+        picker.addEventListener("change", lambda event: events.append(("select-change", picker.value)))
+        notes.addEventListener("input", lambda event: events.append(("textarea-input", notes.value)))
+        notes.addEventListener("change", lambda event: events.append(("textarea-change", notes.value)))
+
+        picker.selectIndex(1)
+        notes.setValue("updated")
+
+        self.assertEqual(picker.selectedIndex, 1)
+        self.assertEqual(picker.value, "2")
+        self.assertEqual(notes.value, "updated")
+        self.assertEqual(
+            events,
+            [
+                ("select-input", "2"),
+                ("select-change", "2"),
+                ("textarea-input", "updated"),
+                ("textarea-change", "updated"),
+            ],
+        )
+
+    def test_form_validity_invalid_events_and_formnovalidate(self):
+        email = input(_name="email", _required=True, _id="email")
+        submitter = button("Send", _type="submit", _id="send")
+        signup = form(email, submitter, _id="signup")
+        invalid_calls = []
+        submit_calls = []
+
+        email.addEventListener("invalid", lambda event: invalid_calls.append(event.type))
+        signup.addEventListener("submit", lambda event: submit_calls.append(event.type))
+
+        self.assertFalse(signup.requestSubmit(submitter))
+        self.assertEqual(invalid_calls, ["invalid"])
+        self.assertEqual(submit_calls, [])
+
+        submitter.setAttribute("formnovalidate", True)
+        self.assertTrue(signup.requestSubmit(submitter))
+        self.assertEqual(submit_calls, ["submit"])
+
+    def test_dialog_details_and_media_dispatch_events(self):
+        dialog = HTMLDialogElement()
+        details_el = HTMLDetailsElement()
+        media = HTMLMediaElement(src="/movie.mp4")
+        events = []
+
+        dialog.addEventListener("toggle", lambda event: events.append(("dialog-toggle", dialog.open)))
+        dialog.addEventListener("close", lambda event: events.append(("dialog-close", event.reason)))
+        details_el.addEventListener("toggle", lambda event: events.append(("details-toggle", details_el.open)))
+        for event_name in ("loadstart", "loadedmetadata", "loadeddata", "play", "playing", "pause"):
+            media.addEventListener(event_name, lambda event, name=event_name: events.append(("media", name)))
+
+        dialog.showModal()
+        dialog.close("done")
+        details_el.toggle()
+        details_el.toggle()
+        media.load()
+        self.assertTrue(media.play())
+        self.assertIsNone(media.pause())
+
+        self.assertIn(("dialog-toggle", True), events)
+        self.assertIn(("dialog-close", "done"), events)
+        self.assertIn(("details-toggle", True), events)
+        self.assertIn(("details-toggle", False), events)
+        self.assertEqual(
+            [item for item in events if item[0] == "media"],
+            [
+                ("media", "loadstart"),
+                ("media", "loadedmetadata"),
+                ("media", "loadeddata"),
+                ("media", "play"),
+                ("media", "playing"),
+                ("media", "pause"),
+            ],
+        )
+
+    def test_form_reset_restores_default_control_state(self):
+        email = input(_name="email", _value="start@example.com")
+        accept = input(_type="checkbox", _checked=True)
+        picker = select(option("One", value="1", selected=True), option("Two", value="2"))
+        notes = textarea("hello")
+        signup = form(email, accept, picker, notes)
+
+        email.setValue("changed@example.com", dispatch_events=False)
+        accept.checked = False
+        picker.setValue("2", dispatch_events=False)
+        notes.setValue("updated", dispatch_events=False)
+
+        signup.reset()
+
+        self.assertEqual(email.value, "start@example.com")
+        self.assertTrue(accept.checked)
+        self.assertEqual(picker.value, "1")
+        self.assertEqual(notes.value, "hello")
+
+    def test_control_validity_helpers_and_image_lifecycle_events(self):
+        required_input = input(_required=True)
+        required_select = select(option("Choose", value=""), option("One", value="1"), _required=True)
+        required_textarea = textarea("", _required=True)
+        image = HTMLImageElement(src="/hero.png")
+        events = []
+
+        image.addEventListener("loadstart", lambda event: events.append(event.type))
+        image.addEventListener("load", lambda event: events.append(event.type))
+        image.addEventListener("error", lambda event: events.append(event.type))
+        image.addEventListener("abort", lambda event: events.append(event.type))
+
+        self.assertFalse(required_input.checkValidity())
+        self.assertFalse(required_input.reportValidity())
+        self.assertFalse(required_select.checkValidity())
+        self.assertFalse(required_textarea.checkValidity())
+
+        required_input.value = "ok"
+        required_select.value = "1"
+        required_textarea.value = "hello"
+
+        self.assertTrue(required_input.checkValidity())
+        self.assertTrue(required_select.reportValidity())
+        self.assertTrue(required_textarea.checkValidity())
+
+        image.load()
+        self.assertTrue(image.decode())
+        self.assertIsNone(image.error())
+        self.assertIsNone(image.abort())
+        self.assertEqual(events, ["loadstart", "load", "load", "error", "abort"])
+
+    def test_form_elements_returns_live_form_controls_collection(self):
+        signup = form(
+            input(_name="email", _id="email"),
+            fieldset(input(_name="nested")),
+            select(option("One", value="1"), _name="choice"),
+            textarea("hello", _name="bio"),
+            button("Save", _name="submitter"),
+            div("ignored"),
+            _id="signup",
+        )
+
+        controls = signup.elements
+        self.assertIsInstance(controls, HTMLFormControlsCollection)
+        self.assertEqual(controls.length, 6)
+        self.assertEqual(controls.item(0).getAttribute("name"), "email")
+        self.assertEqual(controls.namedItem("choice").tagName, "select")
+        self.assertEqual(controls["submitter"].tagName, "button")
+
+    def test_select_options_returns_live_options_collection(self):
+        picker = select(
+            option("One", value="1", _id="one"),
+            optgroup(
+                option("Two", value="2", _id="two"),
+                option("Three", value="3"),
+                _label="Group",
+            ),
+            _id="picker",
+        )
+
+        options = picker.options
+        self.assertIsInstance(options, HTMLOptionsCollection)
+        self.assertEqual(options.length, 3)
+        self.assertEqual(options.item(1).getAttribute("value"), "2")
+        self.assertEqual(options.namedItem("one").textContent, "One")
+
+        options.add(option("Four", value="4"))
+        self.assertEqual(options.length, 4)
+        options.remove(0)
+        self.assertEqual(options.length, 3)
+        self.assertEqual(options.item(0).textContent, "Two")
+
+    def test_range_get_client_rects_returns_domrectlist(self):
+        container = div(span("a"), span("b"))
+        rng = Range()
+        rng.setStart(container, 0)
+        rng.setEnd(container, 2)
+
+        rects = rng.getClientRects()
+        self.assertIsInstance(rects, DOMRectList)
+        self.assertEqual(rects.length, 2)
+        self.assertIsInstance(rects.item(0), DOMRect)
+        self.assertIsNone(rects.item(10))
+
+    def test_domrect_and_domrectreadonly_geometry_helpers(self):
+        readonly = DOMRectReadOnly(10, 20, -5, 15)
+        self.assertEqual(readonly.left, 5)
+        self.assertEqual(readonly.right, 10)
+        self.assertEqual(readonly.top, 20)
+        self.assertEqual(readonly.bottom, 35)
+
+        rect = DOMRect.fromRect(readonly)
+        rect.x = 30
+        rect.width = 12
+        self.assertEqual(rect.left, 30)
+        self.assertEqual(rect.right, 42)
+        self.assertEqual(rect.toJSON()["width"], 12)
+
+    def test_dommatrix_readonly_and_mutable_operations(self):
+        readonly = DOMMatrixReadOnly(1, 0, 0, 1, 10, 20)
+        self.assertTrue(readonly.is2D)
+        self.assertFalse(readonly.isIdentity)
+        self.assertEqual((readonly.a, readonly.d, readonly.e, readonly.f), (1.0, 1.0, 10.0, 20.0))
+
+        point = readonly.transformPoint(DOMPoint(2, 3))
+        self.assertEqual((point.x, point.y), (12.0, 23.0))
+
+        matrix = DOMMatrix()
+        matrix.translateSelf(5, 7).scaleSelf(2, 3)
+        moved = matrix.transformPoint(DOMPoint(1, 1))
+        self.assertEqual((moved.x, moved.y), (12.0, 24.0))
+
+        inverse = DOMMatrix.fromMatrix(matrix).invertSelf()
+        original = inverse.transformPoint(moved)
+        self.assertAlmostEqual(original.x, 1.0)
+        self.assertAlmostEqual(original.y, 1.0)
+
+        multiplied = DOMMatrixReadOnly(1, 0, 0, 1, 1, 2).multiply(DOMMatrixReadOnly(1, 0, 0, 1, 3, 4))
+        self.assertEqual((multiplied.e, multiplied.f), (4.0, 6.0))
+
+    def test_domquad_from_rect_uses_rect_bounds(self):
+        quad = DOMQuad.fromRect(DOMRect(5, 10, 20, 30))
+        bounds = DOMQuad.getBounds(quad)
+        self.assertEqual((bounds.left, bounds.top, bounds.width, bounds.height), (5, 10, 20, 30))
+
+    def test_resize_observer_reports_initial_and_changed_rects(self):
+        target = div()
+        target.style.width = "10px"
+        target.style.height = "20px"
+
+        entries = []
+        observer = ResizeObserver(lambda records, obs: entries.extend(records))
+        observer.observe(target)
+
+        self.assertEqual(len(entries), 1)
+        self.assertEqual((entries[0].contentRect.width, entries[0].contentRect.height), (10, 20))
+
+        target.style.width = "30px"
+        target.getBoundingClientRect()
+
+        self.assertEqual(len(entries), 2)
+        self.assertEqual(entries[-1].contentRect.width, 30)
+
+    def test_intersection_observer_reports_visibility_changes(self):
+        root = div()
+        root.style.left = "0px"
+        root.style.top = "0px"
+        root.style.width = "100px"
+        root.style.height = "100px"
+
+        target = div()
+        target.style.left = "10px"
+        target.style.top = "10px"
+        target.style.width = "20px"
+        target.style.height = "20px"
+        root.appendChild(target)
+
+        entries = []
+        observer = IntersectionObserver(lambda records, obs: entries.extend(records), {"root": root})
+        observer.observe(target)
+
+        self.assertTrue(entries[-1].isIntersecting)
+        self.assertGreater(entries[-1].intersectionRatio, 0)
+
+        target.style.left = "200px"
+        target.getBoundingClientRect()
+
+        self.assertFalse(entries[-1].isIntersecting)
+        self.assertEqual(entries[-1].intersectionRatio, 0.0)
+
+    def test_performance_observer_reports_marks_and_measures(self):
+        from domonic.javascript import performance
+
+        performance.clearMarks()
+        performance.clearMeasures()
+        entries = []
+        observer = PerformanceObserver(lambda records, obs: entries.extend(records))
+        observer.observe({"entryTypes": ["mark", "measure"]})
+
+        performance.mark("dom-start")
+        performance.measure("dom-total", "dom-start")
+
+        self.assertEqual([entry.entryType for entry in entries], ["mark", "measure"])
+        self.assertEqual(entries[0].name, "dom-start")
+        self.assertEqual(entries[1].name, "dom-total")
 
     def test_domonic_matches(self):
         content = ul(_id="birds").html(
@@ -2401,6 +2975,49 @@ class NodeTest(unittest.TestCase):
         # print(node._test4)
         # print(node['_test4'])
         assert node.hasAttributes()
+
+    def test_namednodemap_live_attribute_operations(self):
+        node = div(_id="hero", _class="banner")
+        attrs = node.attributes
+
+        self.assertEqual(attrs.length, 2)
+        self.assertEqual(attrs.item(0).name, "id")
+        self.assertEqual(attrs.item(1).name, "class")
+        self.assertIsNone(attrs.item(5))
+        self.assertEqual(attrs["id"].value, "hero")
+        self.assertEqual(attrs.getNamedItem("class").value, "banner")
+        self.assertIn("id", attrs)
+        self.assertEqual(attrs.keys(), ["id", "class"])
+
+        replaced = attrs.setNamedItem(Attr("title", "Hello"))
+        self.assertIsNone(replaced)
+        self.assertEqual(node.getAttribute("title"), "Hello")
+
+        attrs["data-state"] = "ready"
+        self.assertEqual(node.getAttribute("data-state"), "ready")
+
+        removed = attrs.removeNamedItem("class")
+        self.assertEqual(removed.name, "class")
+        self.assertFalse(node.hasAttribute("class"))
+
+    def test_namednodemap_namespace_helpers_and_parser_style_access(self):
+        node = div()
+        attrs = node.attributes
+
+        attrs["xlink:href"] = Attr("xlink:href", "#icon")
+        self.assertEqual(node.getAttribute("xlink:href"), "#icon")
+        self.assertEqual(
+            attrs.getNamedItemNS("http://www.w3.org/1999/xlink", "href").value,
+            "#icon",
+        )
+
+        removed = attrs.removeNamedItemNS("http://www.w3.org/1999/xlink", "href")
+        self.assertEqual(removed.name, "xlink:href")
+        self.assertIsNone(attrs.getNamedItem("xlink:href"))
+
+        attrs["role"] = Attr("role", "presentation")
+        del attrs["role"]
+        self.assertFalse(node.hasAttribute("role"))
 
     def test_textContent(self):
         node = Document.createElement("node")

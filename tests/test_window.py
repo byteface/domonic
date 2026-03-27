@@ -6,6 +6,7 @@
 import unittest
 
 from domonic.html import body, div
+from domonic.events import CloseEvent
 from domonic.window import MediaQueryList, Window
 
 
@@ -22,15 +23,21 @@ class TestCase(unittest.TestCase):
     def test_window_focus_close_and_name(self):
         win = Window()
         events = []
+        close_events = []
 
         win.addEventListener("focus", lambda event: events.append(event.type))
         win.addEventListener("blur", lambda event: events.append(event.type))
+        win.addEventListener("close", lambda event: close_events.append(event))
         win.focus()
         win.blur()
         win.name = "main"
         win.close()
 
         self.assertEqual(events, ["focus", "blur"])
+        self.assertEqual(len(close_events), 1)
+        self.assertIsInstance(close_events[0], CloseEvent)
+        self.assertEqual(close_events[0].code, 1000)
+        self.assertTrue(close_events[0].wasClean)
         self.assertEqual(win.name, "main")
         self.assertTrue(win.closed)
 
@@ -63,7 +70,22 @@ class TestCase(unittest.TestCase):
 
         self.assertEqual(win.location.href, "https://example.com")
         self.assertEqual(win.document.URL, "https://example.com")
+        self.assertEqual(win.document.referrer, "https://eventual.technology")
         self.assertEqual(win.history.state, "https://example.com")
+
+    def test_document_metadata_properties_are_window_backed(self):
+        win = Window()
+
+        self.assertIs(win.document.defaultView, win)
+        self.assertEqual(win.document.designMode, "off")
+
+        win.document.designMode = "on"
+        self.assertEqual(win.document.designMode, "on")
+
+        win.document.cookie = "session=abc123"
+        win.document.cookie = "theme=dark"
+        self.assertIn("session=abc123", win.document.cookie)
+        self.assertIn("theme=dark", win.document.cookie)
 
     def test_hashchange_and_popstate_events(self):
         win = Window()

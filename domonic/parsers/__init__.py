@@ -20,7 +20,7 @@ def create_element(name="custom_tag", *args, **kwargs):
     """
     NOTE - USED BY THE HACKED EXPAT PARSER TO GET VALID DOCUMENT NODES FROM ANY KNOWN SET
     """
-    from domonic.html import html_tags
+    from domonic.html import create_element as create_html_element, html_tags
 
     if name in html_tags:
         return globals()[name]()
@@ -29,12 +29,7 @@ def create_element(name="custom_tag", *args, **kwargs):
     if name in sitemap_tags:
         return globals()[name]()
 
-    from domonic.html import Element, tag  # , tag_init
-
-    custom_tag = type("custom_tag", (tag, Element), {"name": name})  # , '__init__': tag_init})
-    new_tag = custom_tag(*args, **kwargs)
-    new_tag.name = name
-    return new_tag
+    return create_html_element(name, *args, **kwargs)
 
 
 def remove_tags(html_str: str, tags):

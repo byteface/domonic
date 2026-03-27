@@ -154,7 +154,6 @@ def sleep(time=0):
     global interval
     if frame:
         return  # Soonest alarm already set, or will be.
-    print(timeout)
     if timeout is not None:
         timeout = Global.clearTimeout(timeout)
     delay = time - clockNow  # Strictly less than if we recomputed clockNow.

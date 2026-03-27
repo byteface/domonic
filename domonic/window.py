@@ -20,8 +20,8 @@ from typing import Any, Callable
 
 from domonic import domonic
 from domonic.dom import Document, Element, Location, document
-from domonic.events import Event, EventTarget, FocusEvent, HashChangeEvent, PopStateEvent
-from domonic.javascript import Window as JavaScriptWindow
+from domonic.events import CloseEvent, Event, EventTarget, FocusEvent, HashChangeEvent, PopStateEvent
+from domonic.javascript import Promise, Window as JavaScriptWindow
 from domonic.webapi.console import Console
 from domonic.webapi.credentials import CredentialsContainer
 from domonic.webapi.geo import Geolocation
@@ -77,30 +77,104 @@ class CustomElementRegistry:
     To get an instance of it, use the window.customElements property."""
 
     def __init__(self) -> None:
-        self.store: dict[str, type] = {}
+        self.store: dict[str, type[Element]] = {}
+        self._constructors: dict[type, str] = {}
+        self._when_defined: dict[str, list[Promise]] = {}
+
+    @staticmethod
+    def _validate_name(name: str) -> str:
+        normalized = str(name).strip().lower()
+        if not normalized or "-" not in normalized:
+            raise ValueError("Invalid custom element name. Must contain hyphen: " + str(name))
+        if not re.fullmatch(r"[a-z][.0-9_a-z-]*-[.0-9_a-z-]*", normalized):
+            raise ValueError("Invalid custom element name: " + str(name))
+        if normalized in {
+            "annotation-xml",
+            "color-profile",
+            "font-face",
+            "font-face-src",
+            "font-face-uri",
+            "font-face-format",
+            "font-face-name",
+            "missing-glyph",
+        }:
+            raise ValueError("Reserved custom element name: " + normalized)
+        return normalized
+
+    @staticmethod
+    def _coerce_constructor(name: str, constructor: Callable[..., Any], options: dict[str, Any] | None = None) -> type[Element]:
+        if not isinstance(constructor, type):
+            raise TypeError("constructor must be a class")
+        if issubclass(constructor, Element):
+            if getattr(constructor, "name", None) in (None, ""):
+                constructor.name = name
+            return constructor
+        attrs = {"name": name}
+        if options is not None and "extends" in options:
+            attrs["extends"] = options["extends"]
+        return type(name.replace("-", "_"), (constructor, Element), attrs)
 
     def define(self, name: str, constructor: Callable[..., Any], options: dict[str, Any] | None = None) -> type:
         """Defines a new custom element."""
-        if "-" not in name:
-            raise ValueError("Invalid custom element name. Must contain hypen: " + name)
-        from domonic.dom import Element
-        from domonic.html import tag
+        normalized = self._validate_name(name)
+        if normalized in self.store:
+            raise ValueError("Custom element already defined: " + normalized)
+        if constructor in self._constructors:
+            raise ValueError("Custom element constructor already defined: " + self._constructors[constructor])
 
-        el = type(name, (tag, Element), {"name": name, "__init__": constructor})
+        element_class = self._coerce_constructor(normalized, constructor, options)
+        element_class.name = normalized
         if options is not None and "extends" in options:
-            el.extends = options["extends"]
-        self.store[name] = el
-        return el
+            element_class.extends = options["extends"]
+        self.store[normalized] = element_class
+        self._constructors[constructor] = normalized
+        for promise in self._when_defined.pop(normalized, []):
+            promise.resolve(element_class)
+        return element_class
 
     def get(self, name: str) -> type | None:
         """Returns the constructor for the named custom element, or None."""
-        return self.store.get(name)
+        return self.store.get(str(name).strip().lower())
+
+    def getName(self, constructor: type) -> str | None:
+        return self._constructors.get(constructor)
+
+    def _upgrade_element(self, element: Element) -> Element:
+        name = str(getattr(element, "tagName", getattr(element, "name", ""))).strip().lower()
+        constructor = self.store.get(name)
+        if constructor is None or isinstance(element, constructor):
+            return element
+        old_document = element.ownerDocument if isinstance(element.ownerDocument, Document) else None
+        element.__class__ = constructor
+        element.name = name
+        element._custom_element_name = name
+        if hasattr(constructor, "observedAttributes"):
+            element.observedAttributes = getattr(constructor, "observedAttributes")
+        if isinstance(old_document, Document) and getattr(element, "isConnected", False):
+            callback = getattr(element, "connectedCallback", None)
+            if callable(callback) and not getattr(element, "_custom_element_connected", False):
+                element._custom_element_connected = True
+                callback()
+        return element
 
     def upgrade(self, root: Element | None = None) -> Element | None:
+        if root is None:
+            return None
+        self._upgrade_element(root)
+        for child in getattr(root, "childNodes", []):
+            if isinstance(child, Element):
+                self.upgrade(child)
         return root
 
-    def whenDefined(self, name: str) -> bool:
-        return name in self.store
+    def whenDefined(self, name: str) -> Promise:
+        normalized = self._validate_name(name)
+        constructor = self.store.get(normalized)
+        promise = Promise()
+        if constructor is not None:
+            promise.resolve(constructor)
+            return promise
+        self._when_defined.setdefault(normalized, []).append(promise)
+        return promise
 
 
 class Navigator:
@@ -250,8 +324,12 @@ class Window(JavaScriptWindow, EventTarget):
         return href
 
     def _set_document(self, doc: Document) -> Document:
+        previous_document = getattr(self, "_document", None)
         self._document = doc
         self._document.defaultView = self
+        self._document.URL = self._location.href
+        if previous_document is not None:
+            self._document.referrer = getattr(previous_document, "URL", "") or ""
         return self._document
 
     def _fetch_document(self, url: str) -> Document | None:
@@ -333,6 +411,7 @@ class Window(JavaScriptWindow, EventTarget):
             self._history._update(href)
         self._location = Location(href)
         self._document.URL = href
+        self._document.referrer = previous_href or ""
         if previous_href != href and previous_href.split("#", 1)[0] == href.split("#", 1)[0]:
             self.dispatchEvent(HashChangeEvent("hashchange", {"oldURL": previous_href, "newURL": href}))
 
@@ -351,7 +430,7 @@ class Window(JavaScriptWindow, EventTarget):
 
     def close(self):
         self._closed = True
-        self.dispatchEvent(Event("close"))
+        self.dispatchEvent(CloseEvent("close", {"bubbles": False, "cancelable": False, "code": 1000, "reason": "", "wasClean": True}))
         return None
 
     def confirm(self, message: str):

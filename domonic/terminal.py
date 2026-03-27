@@ -89,7 +89,7 @@ class command:
 
                 # try:
                 proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                intId = window.setInterval(3000, kill_switch, proc)
+                intId = window.setInterval(kill_switch, 3000, proc)
                 self.result = proc.stdout.readlines()
                 window.clearInterval(intId)
                 # except subprocess.TimeoutExpired as e:

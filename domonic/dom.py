@@ -11,6 +11,8 @@ from __future__ import annotations
 import copy
 import os
 import re
+import time
+from email.utils import formatdate
 from typing import Any, Callable, ClassVar, Iterable, Iterator
 
 from domonic.events import Event, EventTarget, MouseEvent
@@ -44,6 +46,282 @@ class DOMConfig:
     HTMX_ENABLED: bool = False  # Default is false
     # NO_REPR: bool = True  # objects always render?
     ATTRIBUTE_QUOTES: bool | str | None = '"'  # i.e. <tag="">
+
+
+def _get_custom_element_registry():
+    try:
+        from domonic.window import window as domonic_window
+    except Exception:
+        return None
+    return getattr(domonic_window, "customElements", None)
+
+
+def _iter_dom_nodes(node):
+    if not isinstance(node, Node):
+        return
+    yield node
+    for child in getattr(node, "childNodes", []):
+        if isinstance(child, Node):
+            yield from _iter_dom_nodes(child)
+
+
+def _node_is_connected(node: "Node") -> bool:
+    try:
+        return isinstance(node.rootNode, Document)
+    except Exception:
+        return False
+
+
+def _notify_attribute_changed(element: "Element", attribute: str, old_value: Any, new_value: Any) -> None:
+    callback = getattr(element, "attributeChangedCallback", None)
+    if not callable(callback) or old_value == new_value:
+        return
+    observed = getattr(element.__class__, "observedAttributes", ())
+    if observed is None:
+        observed = ()
+    normalized = attribute[1:] if attribute.startswith("_") else attribute
+    if normalized in tuple(observed):
+        callback(normalized, old_value, new_value)
+
+
+def _run_connected_callback(element: "Element") -> None:
+    callback = getattr(element, "connectedCallback", None)
+    if callable(callback) and not getattr(element, "_custom_element_connected", False):
+        element._custom_element_connected = True
+        callback()
+
+
+def _run_disconnected_callback(element: "Element") -> None:
+    callback = getattr(element, "disconnectedCallback", None)
+    if callable(callback) and getattr(element, "_custom_element_connected", False):
+        element._custom_element_connected = False
+        callback()
+
+
+def _run_adopted_callback(element: "Element", old_document: "Document | None", new_document: "Document | None") -> None:
+    callback = getattr(element, "adoptedCallback", None)
+    if callable(callback) and old_document is not new_document:
+        callback(old_document, new_document)
+
+
+def _adopt_tree(node: "Node", old_document: "Document | None", new_document: "Document | None") -> None:
+    for current in _iter_dom_nodes(node):
+        current._ownerDocument = new_document
+        if isinstance(current, Element):
+            _run_adopted_callback(current, old_document, new_document)
+
+
+def _upgrade_custom_element_instance(element: "Element") -> "Element":
+    registry = _get_custom_element_registry()
+    if registry is None:
+        return element
+    return registry._upgrade_element(element)
+
+
+def _connect_tree(node: "Node") -> None:
+    for current in _iter_dom_nodes(node):
+        current._ownerDocument = current.rootNode if isinstance(current.rootNode, Document) else getattr(current, "_ownerDocument", None)
+        current.isConnected = _node_is_connected(current)
+        if isinstance(current, Element):
+            _upgrade_custom_element_instance(current)
+            if current.isConnected:
+                _run_connected_callback(current)
+
+
+def _disconnect_tree(node: "Node") -> None:
+    for current in _iter_dom_nodes(node):
+        current.isConnected = False
+        if isinstance(current, Element):
+            _run_disconnected_callback(current)
+
+
+def _assigned_slot_for_node(node: "Node") -> "HTMLSlotElement | None":
+    parent = getattr(node, "parentNode", None)
+    if not isinstance(parent, Element):
+        return None
+    shadow_root = getattr(parent, "shadowRoot", None)
+    if not isinstance(shadow_root, ShadowRoot):
+        return None
+    slot_name = ""
+    if isinstance(node, Element):
+        slot_name = node.getAttribute("slot") or ""
+    for child in shadow_root.childNodes:
+        if isinstance(child, HTMLSlotElement):
+            if (child.getAttribute("name") or "") == slot_name:
+                return child
+    if slot_name == "":
+        for child in shadow_root.childNodes:
+            if isinstance(child, HTMLSlotElement) and not child.getAttribute("name"):
+                return child
+    return None
+
+
+def _notify_slot_change(target: "Node") -> None:
+    slots: list[HTMLSlotElement] = []
+    if isinstance(target, ShadowRoot):
+        slots = [child for child in target.childNodes if isinstance(child, HTMLSlotElement)]
+    elif isinstance(target, Element) and isinstance(getattr(target, "shadowRoot", None), ShadowRoot):
+        slots = [child for child in target.shadowRoot.childNodes if isinstance(child, HTMLSlotElement)]
+    for slot in slots:
+        slot.dispatchEvent(Event("slotchange"))
+
+
+def _iter_ancestors_inclusive(node: "Node | None") -> Iterator["Node"]:
+    current = node
+    while isinstance(current, Node):
+        yield current
+        current = getattr(current, "parentNode", None)
+
+
+def _normalize_mutation_observer_options(options: dict[str, Any]) -> dict[str, Any]:
+    normalized = {
+        "subtree": bool(options.get("subtree", False)),
+        "childList": bool(options.get("childList", False)),
+        "attributes": bool(options.get("attributes", False)),
+        "attributeFilter": options.get("attributeFilter"),
+        "attributeOldValue": bool(options.get("attributeOldValue", False)),
+        "characterData": bool(options.get("characterData", False)),
+        "characterDataOldValue": bool(options.get("characterDataOldValue", False)),
+    }
+    if normalized["attributeFilter"] is not None or normalized["attributeOldValue"]:
+        normalized["attributes"] = True
+    if normalized["characterDataOldValue"]:
+        normalized["characterData"] = True
+    if normalized["attributeFilter"] is not None:
+        normalized["attributeFilter"] = tuple(
+            attr[1:] if isinstance(attr, str) and attr.startswith("_") else attr
+            for attr in normalized["attributeFilter"]
+        )
+    if not any(
+        (
+            normalized["childList"],
+            normalized["attributes"],
+            normalized["characterData"],
+        )
+    ):
+        raise TypeError("MutationObserver options must enable childList, attributes, or characterData")
+    return normalized
+
+
+def _queue_mutation_record(
+    record_type: str,
+    target: "Node",
+    *,
+    added_nodes: Iterable["Node"] | None = None,
+    removed_nodes: Iterable["Node"] | None = None,
+    previous_sibling: "Node | None" = None,
+    next_sibling: "Node | None" = None,
+    attribute_name: str | None = None,
+    attribute_namespace: str | None = None,
+    old_value: str | None = None,
+) -> None:
+    try:
+        observers = list(MutationObserver._all_observers)
+    except NameError:
+        return
+    if not observers:
+        return
+    record = MutationRecord(
+        record_type,
+        target,
+        addedNodes=added_nodes or (),
+        removedNodes=removed_nodes or (),
+        previousSibling=previous_sibling,
+        nextSibling=next_sibling,
+        attributeName=attribute_name,
+        attributeNamespace=attribute_namespace,
+        oldValue=old_value,
+    )
+    pending: list[MutationObserver] = []
+    for observer in observers:
+        if observer._enqueue_if_observing(record):
+            pending.append(observer)
+    for observer in pending:
+        observer._flush()
+    _process_observer_notifications(target)
+
+
+_observer_processing: bool = False
+
+
+def _intersect_rects(first: DOMRectReadOnly, second: DOMRectReadOnly) -> DOMRect:
+    left = max(first.left, second.left)
+    top = max(first.top, second.top)
+    right = min(first.right, second.right)
+    bottom = min(first.bottom, second.bottom)
+    if right <= left or bottom <= top:
+        return DOMRect(left, top, 0, 0)
+    return DOMRect(left, top, right - left, bottom - top)
+
+
+def _default_intersection_root_rect(target: "Element", target_rect: DOMRectReadOnly) -> DOMRectReadOnly:
+    doc = target.ownerDocument if isinstance(target.ownerDocument, Document) else None
+    root = None
+    if doc is not None:
+        root = getattr(doc, "documentElement", None) or getattr(doc, "body", None)
+    if isinstance(root, Element) and root is not target:
+        return root.getBoundingClientRect()
+    return DOMRectReadOnly.fromRect(target_rect)
+
+
+def _process_observer_notifications(target: "Node | None" = None, target_rect: DOMRectReadOnly | None = None) -> None:
+    global _observer_processing
+    if _observer_processing:
+        return
+    _observer_processing = True
+    try:
+        try:
+            resize_observers = list(ResizeObserver._all_observers)
+        except NameError:
+            resize_observers = []
+        for observer in resize_observers:
+            observer._process(target, target_rect)
+
+        try:
+            intersection_observers = list(IntersectionObserver._all_observers)
+        except NameError:
+            intersection_observers = []
+        for observer in intersection_observers:
+            observer._process(target, target_rect)
+    finally:
+        _observer_processing = False
+
+
+def _form_owner(control: "Element") -> "HTMLFormElement | None":
+    owner_document = control.ownerDocument if isinstance(control.ownerDocument, Document) else None
+    form_id = control.getAttribute("form") if isinstance(control, Element) else None
+    if form_id and owner_document is not None:
+        form = owner_document.getElementById(form_id)
+        if isinstance(form, HTMLFormElement):
+            return form
+    for ancestor in _iter_ancestors_inclusive(getattr(control, "parentNode", None)):
+        if isinstance(ancestor, HTMLFormElement):
+            return ancestor
+    return None
+
+
+def _dispatch_value_change_events(control: "Element") -> None:
+    from domonic.events import Event, InputEvent
+
+    control.dispatchEvent(InputEvent("input", {"bubbles": True, "cancelable": False}))
+    control.dispatchEvent(Event("change", {"bubbles": True, "cancelable": False}))
+
+
+def _is_control_valid(control: "Element") -> bool:
+    if not isinstance(control, Element) or control.hasAttribute("disabled"):
+        return True
+    if control.hasAttribute("required"):
+        tag_name = getattr(control, "tagName", getattr(control, "name", "")).lower()
+        if tag_name == "input":
+            input_type = (control.getAttribute("type") or "text").lower()
+            if input_type in {"checkbox", "radio"}:
+                return control.checked
+            return control.value != ""
+        if tag_name == "textarea":
+            return control.value != ""
+        if tag_name == "select":
+            return control.value != ""
+    return True
 
 
 class Node(EventTarget):
@@ -131,6 +409,7 @@ class Node(EventTarget):
         self.isConnected: bool = True
         self.namespaceURI: str = "http://www.w3.org/1999/xhtml"
         self.outerText: str = None
+        self._ownerDocument = None
         self.parentNode = None
         self.prefix = None  # 🗑️
         # self.baseURIObject = None  # ?
@@ -519,7 +798,10 @@ class Node(EventTarget):
         allows dot notation for reading attributes
         *credit to the peeps on discord/python for this one*
         """
-        kwargs = super().__getattribute__("kwargs")
+        try:
+            kwargs = super().__getattribute__("kwargs")
+        except AttributeError:
+            kwargs = {}
 
         if attr in kwargs:
             return kwargs[attr]
@@ -824,6 +1106,10 @@ class Node(EventTarget):
             return True
         return self.contains(item) if isinstance(item, Node) else False
 
+    @property
+    def assignedSlot(self):
+        return _assigned_slot_for_node(self)
+
     def appendChild(self, aChild: "Node") -> "Node":
         """
         Adds a child to the current element.
@@ -834,15 +1120,29 @@ class Node(EventTarget):
         """
         if isinstance(aChild, DocumentFragment):
             items = aChild.args
+            previous_sibling = self.args[-1] if len(self.args) else None
             self.args = self.args + items
             for item in items:
                 if isinstance(item, Node):
+                    old_document = item.ownerDocument if isinstance(item.ownerDocument, Document) else None
                     item.parentNode = self
+                    _adopt_tree(item, old_document, self.ownerDocument if isinstance(self.ownerDocument, Document) else None)
+                    _connect_tree(item)
+            added_nodes = [item for item in items if isinstance(item, Node)]
+            if added_nodes:
+                _queue_mutation_record("childList", self, added_nodes=added_nodes, previous_sibling=previous_sibling)
+            _notify_slot_change(self)
             return DocumentFragment()
         else:
+            previous_sibling = self.args[-1] if len(self.args) else None
             self.args = self.args + (aChild,)
             if isinstance(aChild, Node):
+                old_document = aChild.ownerDocument if isinstance(aChild.ownerDocument, Document) else None
                 aChild.parentNode = self
+                _adopt_tree(aChild, old_document, self.ownerDocument if isinstance(self.ownerDocument, Document) else None)
+                _connect_tree(aChild)
+                _queue_mutation_record("childList", self, added_nodes=(aChild,), previous_sibling=previous_sibling)
+            _notify_slot_change(self)
             # return aChild  # causes max recursion when called chained? then don't chain?
             return aChild
 
@@ -1030,20 +1330,26 @@ class Node(EventTarget):
     @nodeValue.setter
     def nodeValue(self, content: Any):
         """Sets or returns the value of a node"""
+        old_value = self.nodeValue
         self.args = (content,)
+        if isinstance(self, CharacterData):
+            _queue_mutation_record("characterData", self, old_value=old_value)
         return content
 
     @property
-    def ownerDocument(self) -> "Node":
+    def ownerDocument(self) -> "Node | None":
         """Returns the root element (document object) for an element"""
-        return self.rootNode
+        root = self.rootNode
+        if isinstance(root, Document):
+            return root
+        return getattr(self, "_ownerDocument", None)
 
     @ownerDocument.setter
     def ownerDocument(self, newOwner: Node | None):  #: Element):
         """Sets the root element (document object) for an element"""
         if newOwner is None:
             return
-        self.parentNode = newOwner
+        self._ownerDocument = newOwner if isinstance(newOwner, Document) else getattr(newOwner, "ownerDocument", None)
 
     @property
     def rootNode(self) -> "Node":
@@ -1075,12 +1381,24 @@ class Node(EventTarget):
             # remove new_node from its previous parent node
             if new_node.parentNode is not None:
                 new_node.parentNode.removeChild(new_node)
+            old_document = new_node.ownerDocument if isinstance(new_node.ownerDocument, Document) else None
+            previous_sibling = reference_node.previousSibling
             self.args = (
                 self.args[: self.args.index(reference_node)]
                 + (new_node,)
                 + self.args[self.args.index(reference_node) :]
             )
             new_node.parentNode = self
+            _adopt_tree(new_node, old_document, self.ownerDocument if isinstance(self.ownerDocument, Document) else None)
+            _connect_tree(new_node)
+            _queue_mutation_record(
+                "childList",
+                self,
+                added_nodes=(new_node,),
+                previous_sibling=previous_sibling,
+                next_sibling=reference_node,
+            )
+        _notify_slot_change(self)
         return new_node
 
     def removeChild(self, node: Node) -> Node | None:
@@ -1091,10 +1409,21 @@ class Node(EventTarget):
 
             if each == node:
                 n = node
+                previous_sibling = n.previousSibling
+                next_sibling = n.nextSibling
+                _disconnect_tree(n)
                 n.parentNode = None
                 replace_args = list(self.args)
                 replace_args.remove(node)
                 self.args = tuple(replace_args)
+                _queue_mutation_record(
+                    "childList",
+                    self,
+                    removed_nodes=(n,),
+                    previous_sibling=previous_sibling,
+                    next_sibling=next_sibling,
+                )
+                _notify_slot_change(self)
 
                 return n
             r = each.removeChild(node)
@@ -1116,8 +1445,30 @@ class Node(EventTarget):
         for count, each in enumerate(self.args):
             if each == oldChild:
                 replace_args = list(self.args)
+                old_document = newChild.ownerDocument if isinstance(newChild.ownerDocument, Document) else None
+                previous_sibling = replace_args[count - 1] if count > 0 and isinstance(replace_args[count - 1], Node) else None
+                next_sibling = (
+                    replace_args[count + 1] if count + 1 < len(replace_args) and isinstance(replace_args[count + 1], Node) else None
+                )
+                if isinstance(oldChild, Node):
+                    _disconnect_tree(oldChild)
                 replace_args[count] = newChild
                 self.args = tuple(replace_args)
+                if isinstance(newChild, Node):
+                    newChild.parentNode = self
+                    _adopt_tree(newChild, old_document, self.ownerDocument if isinstance(self.ownerDocument, Document) else None)
+                    _connect_tree(newChild)
+                if isinstance(oldChild, Node):
+                    oldChild.parentNode = None
+                _queue_mutation_record(
+                    "childList",
+                    self,
+                    added_nodes=(newChild,) if isinstance(newChild, Node) else (),
+                    removed_nodes=(oldChild,) if isinstance(oldChild, Node) else (),
+                    previous_sibling=previous_sibling,
+                    next_sibling=next_sibling,
+                )
+                _notify_slot_change(self)
                 return oldChild
         return oldChild
         # for count, each in enumerate(self.args):
@@ -1236,10 +1587,13 @@ class Node(EventTarget):
     @textContent.setter
     def textContent(self, content):
         """Sets the text content of a node and its descendants"""
+        old_value = self.textContent
         if content in (None, ""):
             self.args = ()
         else:
             self.args = (content,)
+        if isinstance(self, CharacterData):
+            _queue_mutation_record("characterData", self, old_value=old_value)
         return content
 
     # def isSupported(self): return False #  🗑
@@ -1424,95 +1778,132 @@ class Attr(Node):
                 return True
         return False
 
-
-# from xml.dom.minidom import Attr
-from xml.dom.minidom import NamedNodeMap
-
-# class NamedNodeMap(NamedNodeMap):
-# def __getitem__(self, name):
-#     self.getNamedItem(name)
-# def __setitem__(self, name: str, value):
-#     self.setNamedItem(name, value)
-
-
-'''
 class NamedNodeMap:
-    """ TODO - not tested yet.
+    """A live collection of Attr nodes."""
 
-    a live object that represents a list of nodes.
-    """
-
-    def __init__(self, parentNode=None, *args, **kwargs):
+    def __init__(self, args: Iterable[Attr] | None = None, ownerDocument=None, parentNode=None):
         self.parentNode = parentNode
-        self.args = args
-        self.kwargs = kwargs
-        super().__init__(*args, **kwargs)
+        self.ownerDocument = ownerDocument
+        self._attrs = list(args or [])
 
-    def getNamedItem(self, name):
-        """ Returns a specified attribute node from a NamedNodeMap """
-        for item in self.args:
-            if item.name == name:
+    def _normalize_name(self, name: str) -> str:
+        return name[1:] if isinstance(name, str) and name.startswith("_") else name
+
+    def _storage_key(self, name: str) -> str:
+        normalized = self._normalize_name(name)
+        return normalized if normalized.startswith("_") else f"_{normalized}"
+
+    def _current_attrs(self) -> list[Attr]:
+        if self.parentNode is not None and hasattr(self.parentNode, "kwargs"):
+            return [Attr(key.lstrip("_"), value) for key, value in self.parentNode.kwargs.items()]
+        return list(self._attrs)
+
+    def _attribute_namespace(self, attr: Attr) -> str | None:
+        if ":" not in attr.name or self.parentNode is None:
+            return None
+        prefix = attr.name.split(":", 1)[0]
+        return self.parentNode.lookupNamespaceURI(prefix)
+
+    @property
+    def length(self) -> int:
+        return len(self._current_attrs())
+
+    def __len__(self) -> int:
+        return self.length
+
+    def __iter__(self) -> Iterator[Attr]:
+        return iter(self._current_attrs())
+
+    def __contains__(self, item: Any) -> bool:
+        if isinstance(item, Attr):
+            return self.getNamedItem(item.name) is not None
+        if isinstance(item, str):
+            return self.getNamedItem(item) is not None
+        return False
+
+    def __getitem__(self, key: int | str) -> Attr:
+        if isinstance(key, int):
+            item = self.item(key)
+            if item is None:
+                raise IndexError(key)
+            return item
+        item = self.getNamedItem(key)
+        if item is None:
+            raise KeyError(key)
+        return item
+
+    def __setitem__(self, key: str, value: Attr | Any) -> None:
+        if isinstance(value, Attr):
+            value.name = self._normalize_name(key)
+            self.setNamedItem(value)
+            return
+        self.setNamedItem(Attr(self._normalize_name(key), value))
+
+    def __delitem__(self, key: str) -> None:
+        removed = self.removeNamedItem(key)
+        if removed is None:
+            raise KeyError(key)
+
+    def item(self, index: int) -> Attr | None:
+        if not isinstance(index, int):
+            raise TypeError("index must be an integer")
+        attrs = self._current_attrs()
+        return attrs[index] if 0 <= index < len(attrs) else None
+
+    def getNamedItem(self, name: str) -> Attr | None:
+        normalized = self._normalize_name(name)
+        for item in self._current_attrs():
+            if item.name == normalized:
                 return item
         return None
 
-    def __getitem__(self, name):
-        print('getting:', name)
-        # return self.getNamedItem(name)
-        return self.parentNode.kwargs['_' + name]
+    def setNamedItem(self, attr: Attr) -> Attr | None:
+        normalized = self._normalize_name(attr.name)
+        old_attr = self.getNamedItem(normalized)
+        attr.name = normalized
+        if self.parentNode is not None and hasattr(self.parentNode, "kwargs"):
+            self.parentNode.setAttribute(normalized, attr.value)
+        else:
+            self._attrs = [existing for existing in self._attrs if existing.name != normalized]
+            self._attrs.append(Attr(normalized, attr.value))
+        return old_attr
 
-    def setNamedItem(self, name, value):
-        """ Replaces, or adds, the Attr identified in the map by the given name."""
-        # if exists replace it otherwise add it
-        has_item = False
-        for item in self.args:
-            if item.name == name:
-                item.value = value
-                has_item = True
-                # return True
-        if not has_item:
-            self.args.append(Attr(name, value))
+    def removeNamedItem(self, name: str) -> Attr | None:
+        normalized = self._normalize_name(name)
+        old_attr = self.getNamedItem(normalized)
+        if old_attr is None:
+            return None
+        if self.parentNode is not None and hasattr(self.parentNode, "kwargs"):
+            self.parentNode.removeAttribute(normalized)
+        else:
+            self._attrs = [existing for existing in self._attrs if existing.name != normalized]
+        return old_attr
 
-        self.parentNode.kwargs['_' + name] = value
-        return True
-
-    def __setitem__(self, name: str, value):
-        self.setNamedItem(name, value)
-
-    def removeNamedItem(self, name: str):
-        """ Removes a specified attribute node """
-        for item in self.args:
-            if item.name == name:
-                self.remove(item)
-                return True
-        return False
-
-    def item(self, index):
-        """ Returns the index'th item in the collection """
-        return self.args[index]
-
-    def getNameItemNS(self, namespaceURI: str, localName: str):
-        """ Returns a specified attribute node from a NamedNodeMap """
-        for item in self.args:
-            if item.namespaceURI == namespaceURI and item.localName == localName:
+    def getNamedItemNS(self, namespaceURI: str, localName: str) -> Attr | None:
+        normalized = self._normalize_name(localName)
+        for item in self._current_attrs():
+            item_local_name = item.name.split(":", 1)[-1]
+            if item_local_name == normalized and self._attribute_namespace(item) == namespaceURI:
                 return item
         return None
 
-    def setNamedItemNS(self, namespaceURI: str, localName: str, value):
-        """ Sets the specified attribute node (by name) """
-        for item in self.args:
-            if item.namespaceURI == namespaceURI and item.localName == localName:
-                item.value = value
-                return True
-        return False
+    def setNamedItemNS(self, attr: Attr) -> Attr | None:
+        return self.setNamedItem(attr)
 
-    def removeNamedItemNS(self, namespaceURI: str, localName: str) -> bool:
-        """ Removes a specified attribute node """
-        for item in self.args:
-            if item.namespaceURI == namespaceURI and item.localName == localName:
-                self.remove(item)  # TODO - check this? where is remove?
-                return True
-        return False
-'''
+    def removeNamedItemNS(self, namespaceURI: str, localName: str) -> Attr | None:
+        attr = self.getNamedItemNS(namespaceURI, localName)
+        if attr is None:
+            return None
+        return self.removeNamedItem(attr.name)
+
+    def keys(self) -> list[str]:
+        return [attr.name for attr in self._current_attrs()]
+
+    def values(self) -> list[Attr]:
+        return self._current_attrs()
+
+    def items(self) -> list[tuple[str, Attr]]:
+        return [(attr.name, attr) for attr in self._current_attrs()]
 
 
 class DOMStringMap:
@@ -1586,18 +1977,57 @@ class DOMStringMap:
     #     return [item.value for item in self.args]
 
 
-class DOMRect:
-    """A lightweight rectangle object for DOM geometry APIs."""
+class DOMRectReadOnly:
+    """Read-only rectangle object for DOM geometry APIs."""
 
-    def __init__(self, x=0, y=0, width=0, height=0):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.top = y
-        self.left = x
-        self.right = x + width
-        self.bottom = y + height
+    @staticmethod
+    def fromRect(other: Any | None = None) -> "DOMRectReadOnly":
+        if other is None:
+            return DOMRectReadOnly()
+        return DOMRectReadOnly(
+            getattr(other, "x", 0),
+            getattr(other, "y", 0),
+            getattr(other, "width", 0),
+            getattr(other, "height", 0),
+        )
+
+    def __init__(self, x: float = 0, y: float = 0, width: float = 0, height: float = 0):
+        self._x = x
+        self._y = y
+        self._width = width
+        self._height = height
+
+    @property
+    def x(self) -> float:
+        return self._x
+
+    @property
+    def y(self) -> float:
+        return self._y
+
+    @property
+    def width(self) -> float:
+        return self._width
+
+    @property
+    def height(self) -> float:
+        return self._height
+
+    @property
+    def top(self) -> float:
+        return min(self._y, self._y + self._height)
+
+    @property
+    def right(self) -> float:
+        return max(self._x, self._x + self._width)
+
+    @property
+    def bottom(self) -> float:
+        return max(self._y, self._y + self._height)
+
+    @property
+    def left(self) -> float:
+        return min(self._x, self._x + self._width)
 
     def toJSON(self):
         return {
@@ -1610,6 +2040,57 @@ class DOMRect:
             "bottom": self.bottom,
             "left": self.left,
         }
+
+
+class DOMRect(DOMRectReadOnly):
+    """Mutable rectangle object for DOM geometry APIs."""
+
+    @staticmethod
+    def fromRect(other: Any | None = None) -> "DOMRect":
+        rect = DOMRectReadOnly.fromRect(other)
+        return DOMRect(rect.x, rect.y, rect.width, rect.height)
+
+    @DOMRectReadOnly.x.setter
+    def x(self, value: float) -> None:
+        self._x = value
+
+    @DOMRectReadOnly.y.setter
+    def y(self, value: float) -> None:
+        self._y = value
+
+    @DOMRectReadOnly.width.setter
+    def width(self, value: float) -> None:
+        self._width = value
+
+    @DOMRectReadOnly.height.setter
+    def height(self, value: float) -> None:
+        self._height = value
+
+
+class DOMRectList(list):
+    """An ordered collection of DOMRect objects."""
+
+    @property
+    def length(self) -> int:
+        return len(self)
+
+    def item(self, index: int) -> DOMRect | None:
+        if not isinstance(index, int):
+            raise TypeError("index must be an integer")
+        return self[index] if 0 <= index < len(self) else None
+
+
+class DocumentTimeline:
+    """Minimal timeline object associated with a Document."""
+
+    def __init__(self, document: "Document | None" = None, originTime: float = 0.0):
+        self.document = document
+        self.originTime = float(originTime)
+        self._started_at = time.perf_counter()
+
+    @property
+    def currentTime(self) -> float:
+        return self.originTime + ((time.perf_counter() - self._started_at) * 1000.0)
 
 
 class CaretPosition:
@@ -1626,6 +2107,33 @@ class CaretPosition:
 class Selection:
     def __init__(self) -> None:
         self._ranges: list[Range] = []
+        self._anchorNode: Node | None = None
+        self._anchorOffset: int = 0
+        self._focusNode: Node | None = None
+        self._focusOffset: int = 0
+
+    def _set_anchor_focus(
+        self,
+        anchorNode: Node | None,
+        anchorOffset: int = 0,
+        focusNode: Node | None = None,
+        focusOffset: int = 0,
+    ) -> None:
+        self._anchorNode = anchorNode
+        self._anchorOffset = anchorOffset
+        self._focusNode = anchorNode if focusNode is None else focusNode
+        self._focusOffset = anchorOffset if focusNode is None else focusOffset
+
+    def _sync_anchor_focus_from_range(self, range_obj: "Range | None") -> None:
+        if range_obj is None:
+            self._set_anchor_focus(None, 0, None, 0)
+            return
+        self._set_anchor_focus(
+            range_obj.startContainer,
+            range_obj.startOffset,
+            range_obj.endContainer,
+            range_obj.endOffset,
+        )
 
     @property
     def rangeCount(self) -> int:
@@ -1637,19 +2145,19 @@ class Selection:
 
     @property
     def anchorNode(self) -> Node | None:
-        return self._ranges[0].startContainer if self._ranges else None
+        return self._anchorNode if self._ranges else None
 
     @property
     def anchorOffset(self) -> int:
-        return self._ranges[0].startOffset if self._ranges else 0
+        return self._anchorOffset if self._ranges else 0
 
     @property
     def focusNode(self) -> Node | None:
-        return self._ranges[-1].endContainer if self._ranges else None
+        return self._focusNode if self._ranges else None
 
     @property
     def focusOffset(self) -> int:
-        return self._ranges[-1].endOffset if self._ranges else 0
+        return self._focusOffset if self._ranges else 0
 
     @property
     def type(self) -> str:
@@ -1660,12 +2168,16 @@ class Selection:
     def addRange(self, range_obj: "Range") -> None:
         if range_obj not in self._ranges:
             self._ranges.append(range_obj)
+            if len(self._ranges) == 1:
+                self._sync_anchor_focus_from_range(range_obj)
 
     def removeRange(self, range_obj: "Range") -> None:
         self._ranges = [candidate for candidate in self._ranges if candidate is not range_obj]
+        self._sync_anchor_focus_from_range(self._ranges[0] if self._ranges else None)
 
     def removeAllRanges(self) -> None:
         self._ranges = []
+        self._sync_anchor_focus_from_range(None)
 
     def getRangeAt(self, index: int) -> "Range":
         if index < 0 or index >= len(self._ranges):
@@ -1680,6 +2192,7 @@ class Selection:
         range_obj.setStart(node, offset)
         range_obj.setEnd(node, offset)
         self._ranges = [range_obj]
+        self._set_anchor_focus(node, offset, node, offset)
 
     def collapseToStart(self) -> None:
         if not self._ranges:
@@ -1697,8 +2210,20 @@ class Selection:
         if not self._ranges:
             self.collapse(node, offset)
             return
+        anchor_node = self.anchorNode
+        anchor_offset = self.anchorOffset
         active_range = self._ranges[-1]
-        active_range.setEnd(node, offset)
+        if anchor_node is None:
+            active_range.setEnd(node, offset)
+            self._set_anchor_focus(active_range.startContainer, active_range.startOffset, node, offset)
+            return
+        if Range._compare_points(anchor_node, anchor_offset, node, offset) <= 0:
+            active_range.setStart(anchor_node, anchor_offset)
+            active_range.setEnd(node, offset)
+        else:
+            active_range.setStart(node, offset)
+            active_range.setEnd(anchor_node, anchor_offset)
+        self._set_anchor_focus(anchor_node, anchor_offset, node, offset)
 
     def setBaseAndExtent(
         self,
@@ -1715,6 +2240,7 @@ class Selection:
             range_obj.setStart(focusNode, focusOffset)
             range_obj.setEnd(anchorNode, anchorOffset)
         self._ranges = [range_obj]
+        self._set_anchor_focus(anchorNode, anchorOffset, focusNode, focusOffset)
 
     def empty(self) -> None:
         self.removeAllRanges()
@@ -1723,6 +2249,7 @@ class Selection:
         range_obj = Range()
         range_obj.selectNodeContents(node)
         self._ranges = [range_obj]
+        self._set_anchor_focus(node, 0, node, Range._container_length(node))
 
     def deleteFromDocument(self) -> None:
         for range_obj in list(self._ranges):
@@ -1818,6 +2345,7 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
     """property on element that has hidden DOM"""
 
     def __init__(self, host, mode="open"):
+        self.adoptedStyleSheets = []
         self.delegatesFocus = False
         self.host = host
         self.mode = mode
@@ -2433,6 +2961,8 @@ class Element(Node):
         Returns:
             [bool]: [True if selector maches Element otherwise False]
         """
+        if self.ownerDocument is None:
+            return False
         matches = self.ownerDocument.querySelectorAll(s)
         for match in matches:
             if match == self:
@@ -2628,7 +3158,8 @@ class Element(Node):
 
     # elem.attachShadow({mode: open|closed})
     def attachShadow(self, obj):
-        self.shadowRoot = ShadowRoot(self, obj["mode"])
+        mode = (obj or {}).get("mode", "open")
+        self.shadowRoot = ShadowRoot(self, mode)
         return self.shadowRoot
 
     # def accessKey( key: str ): -> None
@@ -2750,6 +3281,16 @@ class Element(Node):
         view = getattr(self.ownerDocument, "defaultView", None) if isinstance(self.ownerDocument, Document) else None
         evt = MouseEvent("click", {"bubbles": True, "cancelable": True, "view": view, "detail": 1})
         return self.dispatchEvent(evt)
+
+    def animate(self, keyframes: list[dict[str, Any]] | dict[str, Any], options: Any = None):
+        from domonic.animation import Animation, KeyframeEffect
+
+        owner_document = self.ownerDocument if isinstance(self.ownerDocument, Document) else globals().get("document")
+        timeline = owner_document.timeline if isinstance(owner_document, Document) else None
+        effect = KeyframeEffect(self, keyframes, options)
+        animation = Animation(effect, timeline)
+        animation.play()
+        return animation
 
     @staticmethod
     def _style_number(value):
@@ -2900,12 +3441,14 @@ class Element(Node):
 
     def getBoundingClientRect(self):
         """Returns the size of an element and its position relative to the viewport"""
-        return DOMRect(
+        rect = DOMRect(
             Element._style_number(self.style.left),
             Element._style_number(self.style.top),
             self.offsetWidth(),
             self.offsetHeight(),
         )
+        _process_observer_notifications(self, rect)
+        return rect
 
     def getSelection(self):
         """Returns a Selection object for this element's root tree."""
@@ -3251,6 +3794,8 @@ class Element(Node):
         if not query:
             return []
 
+        query = query.strip()
+
         def _fallback_selector_results():
             if query.startswith("."):
                 return self.getElementsByClassName(query[1:])
@@ -3271,7 +3816,9 @@ class Element(Node):
                 evaluator = XPathEvaluator()
                 expression = evaluator.createExpression(expression)
                 result = expression.evaluate(self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-                return result.nodes
+                if result.nodes:
+                    return result.nodes
+                return _fallback_selector_results()
             except ImportError:
                 return _fallback_selector_results()
             except SelectorError:
@@ -3302,13 +3849,20 @@ class Element(Node):
 
     def removeAttribute(self, attribute: str):
         """Removes a specified attribute from an element"""
-        try:
-            if attribute[0:1] != "_":
-                attribute = "_" + attribute
-            del self.kwargs[attribute]
-        except Exception as e:
-            print("failed to remove!", e)
-            pass
+        if attribute[0:1] != "_":
+            attribute = "_" + attribute
+        if attribute not in self.kwargs:
+            return None
+        old_value = self.kwargs.get(attribute)
+        del self.kwargs[attribute]
+        _notify_attribute_changed(self, attribute, old_value, None)
+        _queue_mutation_record(
+            "attributes",
+            self,
+            attribute_name=attribute[1:] if attribute.startswith("_") else attribute,
+            old_value=str(old_value) if old_value is not None else None,
+        )
+        return None
 
     def removeAttributeNode(self, attribute):  # untested
         """Removes a specified attribute node, and returns the removed node"""
@@ -3316,6 +3870,13 @@ class Element(Node):
             if attribute == each:
                 val = self.kwargs[each]
                 del self.kwargs[each]
+                _notify_attribute_changed(self, attribute, val, None)
+                _queue_mutation_record(
+                    "attributes",
+                    self,
+                    attribute_name=attribute[1:] if isinstance(attribute, str) and attribute.startswith("_") else attribute,
+                    old_value=str(val) if val is not None else None,
+                )
                 return Attr(attribute, val)
 
     def requestFullscreen(self):
@@ -3359,7 +3920,15 @@ class Element(Node):
         try:
             if attribute[0:1] != "_":
                 attribute = "_" + attribute
+            old_value = self.kwargs.get(attribute)
             self.kwargs[attribute] = value
+            _notify_attribute_changed(self, attribute, old_value, value)
+            _queue_mutation_record(
+                "attributes",
+                self,
+                attribute_name=attribute[1:] if attribute.startswith("_") else attribute,
+                old_value=str(old_value) if old_value is not None else None,
+            )
         except Exception as e:
             # print('failed to set attribute', e)
             return None
@@ -3431,11 +4000,12 @@ class DOMImplementation:
             qualifiedName = ""
         if doctype is None:
             doctype = ""
-        # d = Document()
-        # from domonic.html import html
-        d = HTMLDocument()  # html()
-        # d = Document()
-        d.createElementNS(namespaceURI, qualifiedName)
+        d = XMLDocument()
+        root = d.createElementNS(namespaceURI, qualifiedName) if qualifiedName else None
+        if root is not None:
+            d.args = (root,)
+            root.parentNode = d
+            d.documentElement = root
         d.doctype = doctype
         return d
 
@@ -3463,6 +4033,7 @@ class DOMImplementation:
         html_el.appendChild(body_el)
         doc.args = (html_el,)
         html_el.parentNode = doc
+        doc.documentElement = html_el
         return doc
 
     def hasFeatures(self, featureList) -> bool:
@@ -3616,7 +4187,7 @@ class AbastractRange:
     def getBoundingClientRect(self) -> DOMRect:
         return self.cloneRange().getBoundingClientRect()
 
-    def getClientRects(self) -> list[DOMRect]:
+    def getClientRects(self) -> DOMRectList:
         return self.cloneRange().getClientRects()
 
     def insertNode(self, newNode: "Node") -> None:
@@ -3725,6 +4296,9 @@ class AbastractRange:
             ancestor = start_path.pop()
             end_path.pop()
         self.commonAncestorContainer = ancestor
+
+
+AbstractRange = AbastractRange
 
 
 class Range(AbastractRange):
@@ -3844,18 +4418,37 @@ class Range(AbastractRange):
             return None
         return ancestor, start_index, end_index
 
+    @classmethod
+    def _validate_boundary_point(cls, node: Node, offset: int) -> int:
+        if node is None:
+            raise ValueError("Boundary node cannot be None")
+        if not isinstance(offset, int):
+            raise TypeError("Range offset must be an integer")
+        max_offset = cls._container_length(node)
+        if offset < 0 or offset > max_offset:
+            raise ValueError("Range offset is out of bounds")
+        return offset
+
     def setStart(self, node: Node, offset: int) -> None:
+        offset = self._validate_boundary_point(node, offset)
         self.startContainer = node
         self.startOffset = offset
         if self.endContainer is None:
             self.endContainer = node
             self.endOffset = offset
+        elif self._compare_points(node, offset, self.endContainer, self.endOffset) > 0:
+            self.endContainer = node
+            self.endOffset = offset
         self._update_state()
 
     def setEnd(self, node: Node, offset: int) -> None:
+        offset = self._validate_boundary_point(node, offset)
         self.endContainer = node
         self.endOffset = offset
         if self.startContainer is None:
+            self.startContainer = node
+            self.startOffset = offset
+        elif self._compare_points(node, offset, self.startContainer, self.startOffset) < 0:
             self.startContainer = node
             self.startOffset = offset
         self._update_state()
@@ -3977,18 +4570,18 @@ class Range(AbastractRange):
         bottom = max(rect.bottom for rect in rects)
         return DOMRect(left, top, right - left, bottom - top)
 
-    def getClientRects(self) -> list[DOMRect]:
+    def getClientRects(self) -> DOMRectList:
         if self.startContainer is None:
-            return []
+            return DOMRectList()
         if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
             parent = getattr(self.startContainer, "parentNode", None)
-            return [parent.getBoundingClientRect()] if hasattr(parent, "getBoundingClientRect") else []
+            return DOMRectList([parent.getBoundingClientRect()]) if hasattr(parent, "getBoundingClientRect") else DOMRectList()
         if self.startContainer == self.endContainer:
             rects = []
             for child in list(self.startContainer.childNodes)[self.startOffset : self.endOffset]:
                 if hasattr(child, "getBoundingClientRect"):
                     rects.append(child.getBoundingClientRect())
-            return rects
+            return DOMRectList(rects)
         child_slice = self._common_ancestor_child_slice()
         if child_slice is not None:
             container, start_index, end_index = child_slice
@@ -3996,8 +4589,8 @@ class Range(AbastractRange):
             for child in list(container.childNodes)[start_index:end_index]:
                 if hasattr(child, "getBoundingClientRect"):
                     rects.append(child.getBoundingClientRect())
-            return rects
-        return []
+            return DOMRectList(rects)
+        return DOMRectList()
 
     def insertNode(self, node: Node) -> None:
         if self.startContainer is None:
@@ -4101,6 +4694,7 @@ class Range(AbastractRange):
     def comparePoint(self, refNode: Node, offset: int) -> int:
         if self.startContainer is None or self.endContainer is None:
             raise Exception("Range has no boundaries")
+        offset = self._validate_boundary_point(refNode, offset)
         if self._compare_points(refNode, offset, self.startContainer, self.startOffset) < 0:
             return -1
         if self._compare_points(refNode, offset, self.endContainer, self.endOffset) > 0:
@@ -4200,6 +4794,13 @@ class Document(Element):
         # self.documentElement = self
         self._open_filename = None
         self._activeElement = None
+        self._defaultView = None
+        self._designMode = "off"
+        self._currentScript = None
+        self._cookie_store: dict[str, str] = {}
+        self._lastModified = formatdate(time.time(), usegmt=True)
+        self._referrer = ""
+        self._timeline = None
         self.stylesheets = None
         self.doctype = None
         super().__init__(*args, **kwargs)
@@ -4283,6 +4884,42 @@ class Document(Element):
             return self._activeElement
         return self.body or self.documentElement
 
+    @property
+    def timeline(self) -> DocumentTimeline:
+        if self._timeline is None:
+            self._timeline = DocumentTimeline(self)
+        return self._timeline
+
+    @property
+    def currentScript(self) -> Element | None:
+        if self._currentScript is not None:
+            return self._currentScript
+        scripts = self.scripts
+        return scripts[-1] if scripts else None
+
+    @currentScript.setter
+    def currentScript(self, script: Element | None) -> None:
+        self._currentScript = script
+
+    @property
+    def defaultView(self):
+        return self._defaultView
+
+    @defaultView.setter
+    def defaultView(self, value) -> None:
+        self._defaultView = value
+
+    @property
+    def designMode(self) -> str:
+        return self._designMode
+
+    @designMode.setter
+    def designMode(self, value: str) -> None:
+        normalized = str(value).strip().lower()
+        if normalized not in {"on", "off"}:
+            raise ValueError("designMode must be 'on' or 'off'")
+        self._designMode = normalized
+
     def hasFocus(self) -> bool:
         """Returns True when the document currently tracks a focused element."""
         return self._activeElement is not None
@@ -4322,9 +4959,20 @@ class Document(Element):
         """Closes the output stream previously opened with document.open()"""
         self._open_filename = None
 
-        # def cookie():
-        """ Returns all name/value pairs of cookies in the document """
-        # return
+    @property
+    def cookie(self) -> str:
+        return "; ".join(f"{name}={value}" for name, value in self._cookie_store.items())
+
+    @cookie.setter
+    def cookie(self, value: str) -> None:
+        if value is None:
+            return
+        text = str(value).strip()
+        if not text or "=" not in text:
+            return
+        first_pair = text.split(";", 1)[0]
+        name, cookie_value = first_pair.split("=", 1)
+        self._cookie_store[name.strip()] = cookie_value.strip()
 
     @property
     def charset(self):
@@ -4361,7 +5009,10 @@ class Document(Element):
         """Creates an Element node"""
         from domonic.html import create_element
 
-        return create_element(_type, *args, **kwargs)
+        el = create_element(_type, *args, **kwargs)
+        if isinstance(el, Element):
+            _upgrade_custom_element_instance(el)
+        return el
 
     @staticmethod
     def createElementNS(namespaceURI: str, qualifiedName: str, options: Any = None) -> "Element":
@@ -4371,6 +5022,7 @@ class Document(Element):
 
         el = create_element(qualifiedName)  # , *args, **kwargs)
         el.namespaceURI = namespaceURI
+        _upgrade_custom_element_instance(el)
         # el["name"] = qualifiedName
         return el
 
@@ -4442,6 +5094,18 @@ class Document(Element):
             from domonic.events import ProgressEvent
 
             return ProgressEvent("progress")
+        if event_type == "ErrorEvent":
+            from domonic.events import ErrorEvent
+
+            return ErrorEvent("error")
+        if event_type == "PopStateEvent":
+            from domonic.events import PopStateEvent
+
+            return PopStateEvent("popstate")
+        if event_type == "CloseEvent":
+            from domonic.events import CloseEvent
+
+            return CloseEvent("close")
         if event_type is None:
             return Event()
         return Event(event_type)
@@ -4490,11 +5154,6 @@ class Document(Element):
         """Returns the version of XML used for the document"""
         return "1.0"
 
-    # @property
-    # def currentScript(self):
-    #     """ Returns the currently executing script or null if none is executing """
-    #     return self.querySelector('script')
-
     @staticmethod
     def createCDATASection(data: str) -> CDATASection:
         """Creates a CDATASection node with the specified data"""
@@ -4526,14 +5185,6 @@ class Document(Element):
         # def createNSResolver(nodeResolver):
         #     """ Creates a NodeResolver """
         #     return NodeResolver(nodeResolver)
-
-        # def defaultView(self):
-        # """ Returns the window object associated with a document, or null if none is available. """
-        # return
-
-        # def designMode(self):
-        """ Controls whether the entire document should be editable or not."""
-        # return
 
     @property
     def doctype(self):
@@ -4736,6 +5387,7 @@ class Document(Element):
 
     def importNode(self, node, deep=False):
         """Imports a node from another document to this document."""
+        old_document = node.ownerDocument if isinstance(node, Node) else None
         if isinstance(node, Element):
             cloned = copy.deepcopy(node)
             if not deep:
@@ -4743,6 +5395,10 @@ class Document(Element):
             cloned.ownerDocument = self
             cloned._update_parents()
             cloned._iterate(cloned, lambda current: setattr(current, "ownerDocument", self))
+            for current in _iter_dom_nodes(cloned):
+                if isinstance(current, Element):
+                    _upgrade_custom_element_instance(current)
+                    _run_adopted_callback(current, old_document, self)
             return cloned
         elif isinstance(node, Comment):
             return Comment(node.data)
@@ -4761,9 +5417,13 @@ class Document(Element):
     #     """ Returns the encoding used to access the document's resources."""
     #     return
 
-    # def lastModified():
-    # ''' Returns the date and time the document was last modified'''
-    # return
+    @property
+    def lastModified(self) -> str:
+        return self._lastModified
+
+    @lastModified.setter
+    def lastModified(self, value: str) -> None:
+        self._lastModified = str(value)
 
     @property
     def links(self):
@@ -4811,9 +5471,13 @@ class Document(Element):
     # ''' Returns the (loading) status of the document'''
     # return
 
-    # def referrer():
-    # ''' Returns the URL of the document that loaded the current document'''
-    # return
+    @property
+    def referrer(self) -> str:
+        return self._referrer
+
+    @referrer.setter
+    def referrer(self, value: str) -> None:
+        self._referrer = "" if value is None else str(value)
 
     def renameNode(self, node, namespaceURI: str, nodename: str):
         """[Renames the specified node, and returns the renamed node.]
@@ -4974,7 +5638,7 @@ class DocumentFragment(Node):
     nodeType: int = Node.DOCUMENT_FRAGMENT_NODE
 
     def __init__(self, *args: Any) -> None:
-        self.args: list = args
+        super().__init__(*args)
 
     querySelector = Document.querySelector
     querySelectorAll = Document.querySelectorAll
@@ -5012,29 +5676,37 @@ class CharacterData(Node):
     def appendData(self, data):
         """Appends the given DOMString to the CharacterData.data string; when this method returns,
         data contains the concatenated DOMString."""
+        old_value = self.args[0]
         updated = self.args[0] + data
         self.args = (updated,)
+        _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
 
     def deleteData(self, offset: int, count: int):
         """Removes the specified amount of characters, starting at the specified offset,
         from the CharacterData.data string; when this method returns, data contains the shortened DOMString."""
+        old_value = self.args[0]
         updated = self.args[0][:offset] + self.args[0][offset + count :]
         self.args = (updated,)
+        _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
 
     def insertData(self, offset: int, data):
         """Inserts the specified characters, at the specified offset, in the CharacterData.data string;
         when this method returns, data contains the modified DOMString."""
+        old_value = self.args[0]
         updated = self.args[0][:offset] + data + self.args[0][offset:]
         self.args = (updated,)
+        _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
 
     def replaceData(self, offset: int, count: int, data):
         """Replaces the specified amount of characters, starting at the specified offset, with the specified DOMString;
         when this method returns, data contains the modified DOMString."""
+        old_value = self.args[0]
         updated = self.args[0][:offset] + data + self.args[0][offset + count :]
         self.args = (updated,)
+        _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
 
     # def replaceWith(self, newChildren):
@@ -5142,9 +5814,7 @@ class Text(CharacterData):
     @property
     def assignedSlot(self):
         """Returns the slot whose assignedNodes contains this node."""
-        if self.parentNode:
-            return self.parentNode.assignedSlot
-        return None
+        return _assigned_slot_for_node(self)
 
     @property
     def data(self):
@@ -5154,7 +5824,9 @@ class Text(CharacterData):
     def data(self, data):
         if not isinstance(data, str):
             raise ValueError("Data must be a string.")
+        old_value = self.args[0] if self.args else ""
         self.args = (data,)
+        _queue_mutation_record("characterData", self, old_value=old_value)
 
     nodeType: int = Node.TEXT_NODE
 
@@ -5199,6 +5871,10 @@ class Text(CharacterData):
 
 
 class HTMLCollection(list):
+    @property
+    def length(self) -> int:
+        return len(self)
+
     def __str__(self) -> str:
         return "".join([str(a) for a in self])
 
@@ -5239,52 +5915,341 @@ class HTMLCollection(list):
             return super().__getitem__(index)
 
 
-# TODO - is there a webapi module for this now?
-# from domonic.javascript import Object
-# MutationObserverInit = Object()
-# MutationObserverInit.subtree = False
-# MutationObserverInit.childList = False
-# MutationObserverInit.attributes = False
-# MutationObserverInit.attributeFilter = False
-# MutationObserverInit.attributeOldValue = False
-# MutationObserverInit.characterData = False
-# MutationObserverInit.characterDataOldValue = False
-
-# class MutationObserver(): # TODO - test
-#     """ The MutationObserver interface provides the ability to watch for changes being made to the DOM tree. """
-
-#     def __init__(self, callback, opts=MutationObserverInit):
-#         self.callback = callback
-#         self.mutations = []
-#         self.observer = None
-#         self.is_connected = False
-
-#     def disconnect(self):
-#         """ Stops the MutationObserver instance from receiving further notifications until
-#         and unless observe() is called again. """
-#         self.is_connected = False
-#         self.observer = None
-#         self.mutations = []
-#         self.callback = None
-#         return self
-
-#     def observe(self, target, options):
-#         """ Configures the MutationObserver to begin receiving notifications through
-#         its callback function when DOM changes matching the given options occur. """
-#         if self.is_connected:
-#             self.disconnect()
-#         self.observer = target.ownerDocument.createNodeObserver(self.mutations.append, True)
-#         self.is_connected = True
-
-#     def takeRecords(self):
-#         """ Removes all pending notifications from the MutationObserver's notification queue
-#         and returns them in a new Array of MutationRecord objects. """
-#         return []
+MutationCallback = Callable[[list["MutationRecord"], "MutationObserver"], Any]
 
 
-# ResizeObserver
-# IntersectionObserver
-# PerformanceObserver
+class MutationRecord:
+    """Represents a single DOM mutation delivered to a MutationObserver."""
+
+    __slots__ = (
+        "type",
+        "target",
+        "addedNodes",
+        "removedNodes",
+        "previousSibling",
+        "nextSibling",
+        "attributeName",
+        "attributeNamespace",
+        "oldValue",
+    )
+
+    def __init__(
+        self,
+        type: str,
+        target: Node,
+        *,
+        addedNodes: Iterable[Node] = (),
+        removedNodes: Iterable[Node] = (),
+        previousSibling: Node | None = None,
+        nextSibling: Node | None = None,
+        attributeName: str | None = None,
+        attributeNamespace: str | None = None,
+        oldValue: str | None = None,
+    ) -> None:
+        self.type = type
+        self.target = target
+        self.addedNodes = NodeList(addedNodes)
+        self.removedNodes = NodeList(removedNodes)
+        self.previousSibling = previousSibling
+        self.nextSibling = nextSibling
+        self.attributeName = attributeName
+        self.attributeNamespace = attributeNamespace
+        self.oldValue = oldValue
+
+
+class MutationObserver:
+    """Watches for DOM tree mutations and delivers MutationRecord objects."""
+
+    _all_observers: ClassVar[list["MutationObserver"]] = []
+
+    def __init__(self, callback: MutationCallback) -> None:
+        if not callable(callback):
+            raise TypeError("MutationObserver callback must be callable")
+        self.callback = callback
+        self._records: list[MutationRecord] = []
+        self._observations: dict[Node, dict[str, Any]] = {}
+        MutationObserver._all_observers.append(self)
+
+    def disconnect(self) -> None:
+        self._observations.clear()
+        self._records.clear()
+
+    def observe(self, target: Node, options: dict[str, Any]) -> None:
+        if not isinstance(target, Node):
+            raise TypeError("MutationObserver target must be a Node")
+        self._observations[target] = _normalize_mutation_observer_options(options)
+
+    def takeRecords(self) -> list[MutationRecord]:
+        records = list(self._records)
+        self._records.clear()
+        return records
+
+    def _enqueue_if_observing(self, record: MutationRecord) -> bool:
+        for current in _iter_ancestors_inclusive(record.target):
+            options = self._observations.get(current)
+            if options is None:
+                continue
+            if current is not record.target and not options["subtree"]:
+                continue
+            if record.type == "childList" and not options["childList"]:
+                continue
+            if record.type == "attributes":
+                if not options["attributes"]:
+                    continue
+                attribute_filter = options.get("attributeFilter")
+                if attribute_filter is not None and record.attributeName not in attribute_filter:
+                    continue
+                old_value = record.oldValue if options["attributeOldValue"] else None
+                filtered_record = MutationRecord(
+                    "attributes",
+                    record.target,
+                    attributeName=record.attributeName,
+                    attributeNamespace=record.attributeNamespace,
+                    oldValue=old_value,
+                )
+                self._records.append(filtered_record)
+                return True
+            if record.type == "characterData":
+                if not options["characterData"]:
+                    continue
+                old_value = record.oldValue if options["characterDataOldValue"] else None
+                filtered_record = MutationRecord("characterData", record.target, oldValue=old_value)
+                self._records.append(filtered_record)
+                return True
+            if record.type == "childList":
+                self._records.append(record)
+                return True
+        return False
+
+    def _flush(self) -> None:
+        if not self._records:
+            return
+        records = self.takeRecords()
+        self.callback(records, self)
+
+
+class ResizeObserverSize:
+    def __init__(self, inlineSize: float, blockSize: float) -> None:
+        self.inlineSize = inlineSize
+        self.blockSize = blockSize
+
+
+class ResizeObserverEntry:
+    def __init__(self, target: Element, contentRect: DOMRectReadOnly) -> None:
+        self.target = target
+        self.contentRect = DOMRect.fromRect(contentRect)
+        size = ResizeObserverSize(self.contentRect.width, self.contentRect.height)
+        self.borderBoxSize = [size]
+        self.contentBoxSize = [size]
+        self.devicePixelContentBoxSize = [size]
+
+
+ResizeObserverCallback = Callable[[list["ResizeObserverEntry"], "ResizeObserver"], Any]
+
+
+class ResizeObserver:
+    _all_observers: ClassVar[list["ResizeObserver"]] = []
+
+    def __init__(self, callback: ResizeObserverCallback) -> None:
+        if not callable(callback):
+            raise TypeError("ResizeObserver callback must be callable")
+        self.callback = callback
+        self._observations: dict[Element, tuple[float, float, float, float] | None] = {}
+        self._records: list[ResizeObserverEntry] = []
+        ResizeObserver._all_observers.append(self)
+
+    def observe(self, target: Element, options: dict[str, Any] | None = None) -> None:
+        if not isinstance(target, Element):
+            raise TypeError("ResizeObserver target must be an Element")
+        self._observations[target] = None
+        target.getBoundingClientRect()
+
+    def unobserve(self, target: Element) -> None:
+        self._observations.pop(target, None)
+
+    def disconnect(self) -> None:
+        self._observations.clear()
+        self._records.clear()
+
+    def takeRecords(self) -> list[ResizeObserverEntry]:
+        records = list(self._records)
+        self._records.clear()
+        return records
+
+    def _process(self, changed_target: Node | None = None, target_rect: DOMRectReadOnly | None = None) -> None:
+        for target, previous in list(self._observations.items()):
+            rect = DOMRect.fromRect(target_rect) if target is changed_target and target_rect is not None else DOMRect.fromRect(target.getBoundingClientRect())
+            current = (rect.x, rect.y, rect.width, rect.height)
+            if previous is None or previous != current:
+                self._observations[target] = current
+                self._records.append(ResizeObserverEntry(target, rect))
+        self._flush()
+
+    def _flush(self) -> None:
+        if not self._records:
+            return
+        records = self.takeRecords()
+        self.callback(records, self)
+
+
+class IntersectionObserverEntry:
+    def __init__(
+        self,
+        target: Element,
+        rootBounds: DOMRectReadOnly,
+        boundingClientRect: DOMRectReadOnly,
+        intersectionRect: DOMRectReadOnly,
+        time_value: float,
+    ) -> None:
+        self.target = target
+        self.rootBounds = DOMRect.fromRect(rootBounds)
+        self.boundingClientRect = DOMRect.fromRect(boundingClientRect)
+        self.intersectionRect = DOMRect.fromRect(intersectionRect)
+        self.time = time_value
+        self.isIntersecting = self.intersectionRect.width > 0 and self.intersectionRect.height > 0
+        target_area = self.boundingClientRect.width * self.boundingClientRect.height
+        intersection_area = self.intersectionRect.width * self.intersectionRect.height
+        self.intersectionRatio = 0.0 if target_area == 0 else intersection_area / target_area
+
+
+IntersectionObserverCallback = Callable[[list["IntersectionObserverEntry"], "IntersectionObserver"], Any]
+
+
+class IntersectionObserver:
+    _all_observers: ClassVar[list["IntersectionObserver"]] = []
+
+    def __init__(self, callback: IntersectionObserverCallback, options: dict[str, Any] | None = None) -> None:
+        if not callable(callback):
+            raise TypeError("IntersectionObserver callback must be callable")
+        self.callback = callback
+        self.root = (options or {}).get("root")
+        threshold = (options or {}).get("threshold", 0.0)
+        self.thresholds = sorted(threshold if isinstance(threshold, list) else [threshold])
+        self._observations: dict[Element, tuple[bool, float] | None] = {}
+        self._records: list[IntersectionObserverEntry] = []
+        IntersectionObserver._all_observers.append(self)
+
+    def observe(self, target: Element) -> None:
+        if not isinstance(target, Element):
+            raise TypeError("IntersectionObserver target must be an Element")
+        self._observations[target] = None
+        target.getBoundingClientRect()
+
+    def unobserve(self, target: Element) -> None:
+        self._observations.pop(target, None)
+
+    def disconnect(self) -> None:
+        self._observations.clear()
+        self._records.clear()
+
+    def takeRecords(self) -> list[IntersectionObserverEntry]:
+        records = list(self._records)
+        self._records.clear()
+        return records
+
+    def _process(self, changed_target: Node | None = None, target_rect: DOMRectReadOnly | None = None) -> None:
+        now_ms = time.perf_counter() * 1000.0
+        for target, previous in list(self._observations.items()):
+            bounding_rect = DOMRect.fromRect(target_rect) if target is changed_target and target_rect is not None else DOMRect.fromRect(target.getBoundingClientRect())
+            if isinstance(self.root, Element):
+                root_rect = DOMRect.fromRect(self.root.getBoundingClientRect())
+            else:
+                root_rect = DOMRect.fromRect(_default_intersection_root_rect(target, bounding_rect))
+            intersection_rect = _intersect_rects(root_rect, bounding_rect)
+            entry = IntersectionObserverEntry(target, root_rect, bounding_rect, intersection_rect, now_ms)
+            state = (entry.isIntersecting, entry.intersectionRatio)
+            if previous is None or previous != state:
+                self._observations[target] = state
+                self._records.append(entry)
+        self._flush()
+
+    def _flush(self) -> None:
+        if not self._records:
+            return
+        records = self.takeRecords()
+        self.callback(records, self)
+
+
+class PerformanceEntry:
+    def __init__(self, name: str, entryType: str, startTime: float, duration: float) -> None:
+        self.name = name
+        self.entryType = entryType
+        self.startTime = startTime
+        self.duration = duration
+
+    def toJSON(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "entryType": self.entryType,
+            "startTime": self.startTime,
+            "duration": self.duration,
+        }
+
+
+class PerformanceMark(PerformanceEntry):
+    def __init__(self, name: str, startTime: float) -> None:
+        super().__init__(name, "mark", startTime, 0.0)
+
+
+class PerformanceMeasure(PerformanceEntry):
+    def __init__(self, name: str, startTime: float, duration: float) -> None:
+        super().__init__(name, "measure", startTime, duration)
+
+
+PerformanceObserverCallback = Callable[[list["PerformanceEntry"], "PerformanceObserver"], Any]
+
+
+class PerformanceObserver:
+    supportedEntryTypes: ClassVar[list[str]] = ["mark", "measure"]
+    _all_observers: ClassVar[list["PerformanceObserver"]] = []
+
+    def __init__(self, callback: PerformanceObserverCallback) -> None:
+        if not callable(callback):
+            raise TypeError("PerformanceObserver callback must be callable")
+        self.callback = callback
+        self._entry_types: set[str] = set()
+        self._records: list[PerformanceEntry] = []
+        PerformanceObserver._all_observers.append(self)
+
+    def observe(self, options: dict[str, Any]) -> None:
+        entry_types = options.get("entryTypes")
+        if not entry_types:
+            raise TypeError("PerformanceObserver.observe requires entryTypes")
+        self._entry_types = set(entry_types)
+        if options.get("buffered"):
+            try:
+                from domonic.javascript import performance as js_performance
+
+                for entry in js_performance.getEntries():
+                    self._enqueue(entry)
+            except Exception:
+                pass
+        self._flush()
+
+    def disconnect(self) -> None:
+        self._entry_types.clear()
+        self._records.clear()
+
+    def takeRecords(self) -> list[PerformanceEntry]:
+        records = list(self._records)
+        self._records.clear()
+        return records
+
+    def _enqueue(self, entry: PerformanceEntry) -> None:
+        if entry.entryType in self._entry_types:
+            self._records.append(entry)
+
+    def _flush(self) -> None:
+        if not self._records:
+            return
+        records = self.takeRecords()
+        self.callback(records, self)
+
+    @classmethod
+    def _notify_entry(cls, entry: PerformanceEntry) -> None:
+        for observer in list(cls._all_observers):
+            observer._enqueue(entry)
+            observer._flush()
 
 
 class DOMException(Exception):
@@ -5354,7 +6319,7 @@ class DOMPoint(vec3):
         self.y: float = y
         self.z: float = z
         self.w: float = w
-        super().__init__(x, y, z, w)
+        super().__init__(x, y, z)
 
     def __str__(self) -> str:
         return "({}, {}, {}, {})".format(self.x, self.y, self.z, self.w)
@@ -5384,100 +6349,253 @@ class DOMPointReadOnly(DOMPoint):
         return "({}, {}, {}, {})".format(self.x, self.y, self.z, self.w)
 
 
-'''
-class DOMMatrix(mat4):
-    """ The DOMMatrix interface represents a transformation matrix
-
-    TODO - https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix
-
-    """
+class DOMMatrixReadOnly:
+    """Read-only 4x4 transformation matrix."""
 
     @staticmethod
-    def fromFloat64Array(array):
-        return DOMMatrix(
-            array[0],
-            array[1],
-            array[2],
-            array[3],
-            array[4],
-            array[5],
-            array[6],
-            array[7],
-            array[8],
-            array[9],
-            array[10],
-            array[11],
-            array[12],
-            array[13],
-            array[14],
-            array[15]
-        )
+    def fromFloat64Array(array: Iterable[float]) -> "DOMMatrixReadOnly":
+        return DOMMatrixReadOnly(*list(array))
 
     @staticmethod
-    def fromFloat32Array(array):
-        return DOMMatrix(
-            array[0],
-            array[1],
-            array[2],
-            array[3],
-            array[4],
-            array[5],
-            array[6],
-            array[7],
-            array[8],
-            array[9],
-            array[10],
-            array[11],
-            array[12],
-            array[13],
-            array[14],
-            array[15]
-        )
+    def fromFloat32Array(array: Iterable[float]) -> "DOMMatrixReadOnly":
+        return DOMMatrixReadOnly.fromFloat64Array(array)
 
     @staticmethod
-    def fromMatrix(matrix):
-        return DOMMatrix(matrix.m00, matrix.m01, matrix.m02, matrix.m03,
-                         matrix.m10, matrix.m11, matrix.m12, matrix.m13,
-                         matrix.m20, matrix.m21, matrix.m22, matrix.m23,
-                         matrix.m30, matrix.m31, matrix.m32, matrix.m33)
+    def fromMatrix(matrix: Any | None = None) -> "DOMMatrixReadOnly":
+        if matrix is None:
+            return DOMMatrixReadOnly()
+        values = []
+        for row in range(1, 5):
+            for col in range(1, 5):
+                values.append(getattr(matrix, f"m{row}{col}", 1.0 if row == col else 0.0))
+        return DOMMatrixReadOnly(*values)
 
-    def __init__(self, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33):
-        self.m00 = m00
-        self.m01 = m01
-        self.m02 = m02
-        self.m03 = m03
-        self.m10 = m10
-        self.m11 = m11
-        self.m12 = m12
-        self.m13 = m13
-        self.m20 = m20
-        self.m21 = m21
-        self.m22 = m22
-        self.m23 = m23
-        self.m30 = m30
-        self.m31 = m31
-        self.m32 = m32
-        self.m33 = m33
-        super().__init__(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33)
+    def __init__(self, *values: float) -> None:
+        if not values:
+            values = (
+                1.0, 0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                0.0, 0.0, 0.0, 1.0,
+            )
+        if len(values) == 6:
+            a, b, c, d, e, f = values
+            values = (
+                a, b, 0.0, 0.0,
+                c, d, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                e, f, 0.0, 1.0,
+            )
+        if len(values) != 16:
+            raise TypeError("DOMMatrix requires 6 or 16 values")
+        self._values = [float(value) for value in values]
 
-    def __str__(self):
-        return '({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {})'.format(
-            self.m00, self.m01, self.m02, self.m03, self.m10, self.m11, self.m12, self.m13,
-            self.m20, self.m21, self.m22, self.m23, self.m30, self.m31, self.m32, self.m33
+    def _get(self, row: int, col: int) -> float:
+        return self._values[(row - 1) * 4 + (col - 1)]
+
+    def _set(self, row: int, col: int, value: float) -> None:
+        self._values[(row - 1) * 4 + (col - 1)] = float(value)
+
+    @property
+    def is2D(self) -> bool:
+        return (
+            self.m13 == 0.0
+            and self.m14 == 0.0
+            and self.m23 == 0.0
+            and self.m24 == 0.0
+            and self.m31 == 0.0
+            and self.m32 == 0.0
+            and self.m34 == 0.0
+            and self.m43 == 0.0
+            and self.m33 == 1.0
+            and self.m44 == 1.0
         )
 
-    # def invertSelf(self):
-    #     self.invert()
-    #     return self
+    @property
+    def isIdentity(self) -> bool:
+        return self._values == [
+            1.0, 0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0,
+        ]
 
-    # def multiplySelf(self, other):
-    #     self.multiply(other)
-    #     return self
+    @property
+    def a(self) -> float:
+        return self.m11
 
-    # def translateSelf(self, tx, ty, tz):
-    #     self.translate(tx, ty, tz)
-    #     return self
-'''
+    @property
+    def b(self) -> float:
+        return self.m12
+
+    @property
+    def c(self) -> float:
+        return self.m21
+
+    @property
+    def d(self) -> float:
+        return self.m22
+
+    @property
+    def e(self) -> float:
+        return self.m41
+
+    @property
+    def f(self) -> float:
+        return self.m42
+
+    def __str__(self) -> str:
+        return f"DOMMatrix({', '.join(str(v) for v in self._values)})"
+
+    def toFloat64Array(self) -> list[float]:
+        return list(self._values)
+
+    def toFloat32Array(self) -> list[float]:
+        return list(self._values)
+
+    def toJSON(self) -> dict[str, float | bool]:
+        data = {f"m{row}{col}": self._get(row, col) for row in range(1, 5) for col in range(1, 5)}
+        data.update({"is2D": self.is2D, "isIdentity": self.isIdentity})
+        return data
+
+    def multiply(self, other: Any) -> "DOMMatrix":
+        return DOMMatrix.fromMatrix(self).multiplySelf(other)
+
+    def translate(self, tx: float = 0, ty: float = 0, tz: float = 0) -> "DOMMatrix":
+        return DOMMatrix.fromMatrix(self).translateSelf(tx, ty, tz)
+
+    def scale(self, scaleX: float = 1, scaleY: float | None = None, scaleZ: float = 1) -> "DOMMatrix":
+        return DOMMatrix.fromMatrix(self).scaleSelf(scaleX, scaleY, scaleZ)
+
+    def inverse(self) -> "DOMMatrix":
+        return DOMMatrix.fromMatrix(self).invertSelf()
+
+    def transformPoint(self, point: Any | None = None) -> DOMPoint:
+        if point is None:
+            point = DOMPoint(0, 0, 0, 1)
+        x = getattr(point, "x", 0.0)
+        y = getattr(point, "y", 0.0)
+        z = getattr(point, "z", 0.0)
+        w = getattr(point, "w", 1.0)
+        values = self._values
+        return DOMPoint(
+            x * values[0] + y * values[4] + z * values[8] + w * values[12],
+            x * values[1] + y * values[5] + z * values[9] + w * values[13],
+            x * values[2] + y * values[6] + z * values[10] + w * values[14],
+            x * values[3] + y * values[7] + z * values[11] + w * values[15],
+        )
+
+
+for _row in range(1, 5):
+    for _col in range(1, 5):
+        setattr(
+            DOMMatrixReadOnly,
+            f"m{_row}{_col}",
+            property(lambda self, r=_row, c=_col: self._get(r, c)),
+        )
+
+
+class DOMMatrix(DOMMatrixReadOnly):
+    """Mutable DOMMatrix implementation."""
+
+    @staticmethod
+    def fromFloat64Array(array: Iterable[float]) -> "DOMMatrix":
+        return DOMMatrix(*list(array))
+
+    @staticmethod
+    def fromFloat32Array(array: Iterable[float]) -> "DOMMatrix":
+        return DOMMatrix.fromFloat64Array(array)
+
+    @staticmethod
+    def fromMatrix(matrix: Any | None = None) -> "DOMMatrix":
+        readonly = DOMMatrixReadOnly.fromMatrix(matrix)
+        return DOMMatrix(*readonly.toFloat64Array())
+
+    @DOMMatrixReadOnly.a.setter
+    def a(self, value: float) -> None:
+        self.m11 = value
+
+    @DOMMatrixReadOnly.b.setter
+    def b(self, value: float) -> None:
+        self.m12 = value
+
+    @DOMMatrixReadOnly.c.setter
+    def c(self, value: float) -> None:
+        self.m21 = value
+
+    @DOMMatrixReadOnly.d.setter
+    def d(self, value: float) -> None:
+        self.m22 = value
+
+    @DOMMatrixReadOnly.e.setter
+    def e(self, value: float) -> None:
+        self.m41 = value
+
+    @DOMMatrixReadOnly.f.setter
+    def f(self, value: float) -> None:
+        self.m42 = value
+
+    def multiplySelf(self, other: Any) -> "DOMMatrix":
+        other_matrix = DOMMatrixReadOnly.fromMatrix(other)
+        left = self._values
+        right = other_matrix._values
+        result = [0.0] * 16
+        for row in range(4):
+            for col in range(4):
+                result[row * 4 + col] = sum(left[row * 4 + k] * right[k * 4 + col] for k in range(4))
+        self._values = result
+        return self
+
+    def translateSelf(self, tx: float = 0, ty: float = 0, tz: float = 0) -> "DOMMatrix":
+        translation = DOMMatrix(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            tx, ty, tz, 1,
+        )
+        return self.multiplySelf(translation)
+
+    def scaleSelf(self, scaleX: float = 1, scaleY: float | None = None, scaleZ: float = 1) -> "DOMMatrix":
+        if scaleY is None:
+            scaleY = scaleX
+        scale = DOMMatrix(
+            scaleX, 0, 0, 0,
+            0, scaleY, 0, 0,
+            0, 0, scaleZ, 0,
+            0, 0, 0, 1,
+        )
+        return self.multiplySelf(scale)
+
+    def invertSelf(self) -> "DOMMatrix":
+        matrix = [[self._values[row * 4 + col] for col in range(4)] for row in range(4)]
+        identity = [[1.0 if row == col else 0.0 for col in range(4)] for row in range(4)]
+        for col in range(4):
+            pivot = max(range(col, 4), key=lambda row: abs(matrix[row][col]))
+            if matrix[pivot][col] == 0:
+                raise ValueError("Matrix is not invertible")
+            matrix[col], matrix[pivot] = matrix[pivot], matrix[col]
+            identity[col], identity[pivot] = identity[pivot], identity[col]
+            factor = matrix[col][col]
+            matrix[col] = [value / factor for value in matrix[col]]
+            identity[col] = [value / factor for value in identity[col]]
+            for row in range(4):
+                if row == col:
+                    continue
+                factor = matrix[row][col]
+                matrix[row] = [current - factor * pivot_value for current, pivot_value in zip(matrix[row], matrix[col])]
+                identity[row] = [current - factor * pivot_value for current, pivot_value in zip(identity[row], identity[col])]
+        self._values = [identity[row][col] for row in range(4) for col in range(4)]
+        return self
+
+
+for _row in range(1, 5):
+    for _col in range(1, 5):
+        readonly_prop = getattr(DOMMatrixReadOnly, f"m{_row}{_col}")
+        setattr(
+            DOMMatrix,
+            f"m{_row}{_col}",
+            readonly_prop.setter(lambda self, value, r=_row, c=_col: self._set(r, c, value)),
+        )
 
 
 class DOMQuad:
@@ -5486,7 +6604,12 @@ class DOMQuad:
 
     @staticmethod
     def fromRect(rect: DOMRect) -> "DOMQuad":
-        return DOMQuad(rect.x, rect.y, rect.width, rect.height)
+        return DOMQuad(
+            DOMPointReadOnly(rect.left, rect.top),
+            DOMPointReadOnly(rect.right, rect.top),
+            DOMPointReadOnly(rect.right, rect.bottom),
+            DOMPointReadOnly(rect.left, rect.bottom),
+        )
 
     @staticmethod
     def fromQuad(quad: Any) -> "DOMQuad":
@@ -6681,6 +7804,20 @@ class HTMLButtonElement(HTMLElement):
         if value is not None:
             self.setAttribute("value", value)
 
+    def click(self):
+        result = super().click()
+        if self.hasAttribute("disabled"):
+            return result
+        button_type = (self.getAttribute("type") or "submit").lower()
+        form = _form_owner(self)
+        if form is None:
+            return result
+        if button_type == "submit":
+            form.requestSubmit(self)
+        elif button_type == "reset":
+            form.reset()
+        return result
+
 
 class HTMLCanvasElement(HTMLElement):
     name = "canvas"
@@ -6743,13 +7880,49 @@ class HTMLDialogElement(HTMLElement):
         if open is not None:
             self.setAttribute("open", open)
 
+    @property
+    def open(self) -> bool:
+        return self.hasAttribute("open")
+
+    @open.setter
+    def open(self, is_open: bool) -> None:
+        previous = self.open
+        if is_open:
+            self.setAttribute("open", True)
+        else:
+            self.removeAttribute("open")
+        if previous != self.open:
+            self.dispatchEvent(Event("toggle", {"bubbles": False, "cancelable": False}))
+
+    def show(self):
+        self.open = True
+        return self
+
+    def showModal(self):
+        self.open = True
+        return self
+
+    def close(self, returnValue: Any = ""):
+        from domonic.events import CloseEvent
+
+        self.returnValue = returnValue
+        self.open = False
+        self.dispatchEvent(CloseEvent("close", {"bubbles": False, "cancelable": False, "code": 0, "reason": str(returnValue), "wasClean": True}))
+        return self
+
 
 class HTMLDivElement(HTMLElement):
     name = "div"
 
 
+class XMLDocument(Document):
+    name = "xml"
+    contentType: str = "application/xml"
+
+
 class HTMLDocument(Document):
     name = "html"
+    contentType: str = "text/html"
 
 
 class HTMLEmbedElement(HTMLElement):
@@ -6768,8 +7941,59 @@ class HTMLFieldSetElement(HTMLElement):
         if name is not None:
             self.setAttribute("name", name)
 
+
 class HTMLFormControlsCollection(HTMLCollection):
-    pass
+    """Live collection of a form's listed controls."""
+
+    CONTROL_TYPES: ClassVar[tuple[type[HTMLElement], ...]] = ()
+
+    def __init__(self, form: "HTMLFormElement"):
+        super().__init__()
+        self._form = form
+
+    def _controls(self) -> list[HTMLElement]:
+        controls: list[HTMLElement] = []
+
+        def walk(node):
+            if not isinstance(node, Element):
+                return
+            if node is not self._form and isinstance(node, self.CONTROL_TYPES):
+                controls.append(node)
+            for child in getattr(node, "childNodes", []):
+                walk(child)
+
+        walk(self._form)
+        return controls
+
+    @property
+    def length(self) -> int:
+        return len(self._controls())
+
+    def __len__(self) -> int:
+        return self.length
+
+    def __iter__(self):
+        return iter(self._controls())
+
+    def __getitem__(self, index: int | str):
+        controls = self._controls()
+        if isinstance(index, str):
+            return self.namedItem(index)
+        return controls[index]
+
+    def item(self, index: int) -> HTMLElement | None:
+        controls = self._controls()
+        return controls[index] if 0 <= index < len(controls) else None
+
+    def namedItem(self, name: str) -> HTMLElement | None:
+        matches = [
+            control
+            for control in self._controls()
+            if control.getAttribute("id") == name or control.getAttribute("name") == name
+        ]
+        if not matches:
+            return None
+        return matches[0]
 
 
 class HTMLFormElement(HTMLElement):
@@ -6816,9 +8040,48 @@ class HTMLFormElement(HTMLElement):
             self.setAttribute("target", target)
 
     def submit(self):
+        return self.requestSubmit(None)
+
+    def checkValidity(self) -> bool:
+        from domonic.events import Event
+
+        valid = True
+        for control in self.elements:
+            if not _is_control_valid(control):
+                valid = False
+                control.dispatchEvent(Event("invalid", {"bubbles": False, "cancelable": True}))
+        return valid
+
+    def requestSubmit(self, submitter=None):
         from domonic.events import SubmitEvent
 
-        return self.dispatchEvent(SubmitEvent("submit", {"bubbles": True, "cancelable": True, "submitter": None}))
+        should_validate = not self.hasAttribute("novalidate")
+        if submitter is not None and submitter.hasAttribute("formnovalidate"):
+            should_validate = False
+        if should_validate and not self.checkValidity():
+            return False
+        return self.dispatchEvent(SubmitEvent("submit", {"bubbles": True, "cancelable": True, "submitter": submitter}))
+
+    def reset(self):
+        from domonic.events import Event
+
+        for control in self.elements:
+            if isinstance(control, HTMLInputElement):
+                control.value = control.defaultValue
+                control.checked = control.defaultChecked
+            elif isinstance(control, HTMLTextAreaElement):
+                control.value = control.defaultValue
+            elif isinstance(control, HTMLSelectElement):
+                for option in control.options:
+                    option.selected = option.defaultSelected
+        return self.dispatchEvent(Event("reset", {"bubbles": True, "cancelable": True}))
+
+    def reportValidity(self) -> bool:
+        return self.checkValidity()
+
+    @property
+    def elements(self) -> HTMLFormControlsCollection:
+        return HTMLFormControlsCollection(self)
 
 
 class HTMLFrameSetElement(HTMLElement):
@@ -6921,6 +8184,23 @@ class HTMLImageElement(HTMLElement):
             self.setAttribute("usemap", usemap)
         if width is not None:
             self.setAttribute("width", width)
+
+    def load(self):
+        self.dispatchEvent(Event("loadstart", {"bubbles": False, "cancelable": False}))
+        self.dispatchEvent(Event("load", {"bubbles": False, "cancelable": False}))
+        return self
+
+    def decode(self) -> bool:
+        self.dispatchEvent(Event("load", {"bubbles": False, "cancelable": False}))
+        return True
+
+    def error(self):
+        self.dispatchEvent(Event("error", {"bubbles": False, "cancelable": False}))
+        return None
+
+    def abort(self):
+        self.dispatchEvent(Event("abort", {"bubbles": False, "cancelable": False}))
+        return None
 
 
 class HTMLInputElement(HTMLElement):
@@ -7057,6 +8337,90 @@ class HTMLInputElement(HTMLElement):
             self.setAttribute("value", value)
         if width is not None:
             self.setAttribute("width", width)
+        self._default_value = self.value
+        self._default_checked = self.checked
+
+    @property
+    def value(self) -> str:
+        return self.getAttribute("value") or ""
+
+    @value.setter
+    def value(self, new_value: Any) -> None:
+        self.setAttribute("value", new_value)
+
+    def setValue(self, new_value: Any, *, dispatch_events: bool = True) -> str:
+        self.value = new_value
+        if dispatch_events:
+            _dispatch_value_change_events(self)
+        return self.value
+
+    @property
+    def defaultValue(self) -> str:
+        return getattr(self, "_default_value", self.value)
+
+    @defaultValue.setter
+    def defaultValue(self, new_value: Any) -> None:
+        self._default_value = "" if new_value is None else str(new_value)
+
+    @property
+    def defaultChecked(self) -> bool:
+        return bool(getattr(self, "_default_checked", self.checked))
+
+    @defaultChecked.setter
+    def defaultChecked(self, is_checked: bool) -> None:
+        self._default_checked = bool(is_checked)
+
+    @property
+    def checked(self) -> bool:
+        return self.hasAttribute("checked")
+
+    @checked.setter
+    def checked(self, is_checked: bool) -> None:
+        if is_checked:
+            self.setAttribute("checked", True)
+        else:
+            self.removeAttribute("checked")
+
+    def click(self):
+        result = super().click()
+        if self.hasAttribute("disabled"):
+            return result
+        input_type = (self.getAttribute("type") or "text").lower()
+        if input_type in {"checkbox", "radio"}:
+            was_checked = self.checked
+            if input_type == "radio":
+                if not was_checked:
+                    form = _form_owner(self)
+                    root = form if form is not None else self.parentNode
+                    name = self.getAttribute("name")
+                    for candidate in getattr(root, "querySelectorAll", lambda query: [])("input"):
+                        if (
+                            isinstance(candidate, HTMLInputElement)
+                            and candidate is not self
+                            and (candidate.getAttribute("type") or "").lower() == "radio"
+                            and candidate.getAttribute("name") == name
+                        ):
+                            candidate.checked = False
+                    self.checked = True
+            else:
+                self.checked = not was_checked
+            if self.checked != was_checked:
+                _dispatch_value_change_events(self)
+        elif input_type == "submit":
+            form = _form_owner(self)
+            if form is not None:
+                form.requestSubmit(self)
+        elif input_type == "reset":
+            form = _form_owner(self)
+            if form is not None:
+                form.reset()
+        return result
+
+    def checkValidity(self) -> bool:
+        return _is_control_valid(self)
+
+    def reportValidity(self) -> bool:
+        return self.checkValidity()
 
 
 class HTMLIsIndexElement(HTMLElement):
@@ -7145,6 +8509,21 @@ class HTMLMediaElement(HTMLElement):
             self.setAttribute("muted", muted)
         if controls is not None:
             self.setAttribute("controls", controls)
+
+    def load(self):
+        self.dispatchEvent(Event("loadstart", {"bubbles": False, "cancelable": False}))
+        self.dispatchEvent(Event("loadedmetadata", {"bubbles": False, "cancelable": False}))
+        self.dispatchEvent(Event("loadeddata", {"bubbles": False, "cancelable": False}))
+        return self
+
+    def play(self):
+        self.dispatchEvent(Event("play", {"bubbles": False, "cancelable": False}))
+        self.dispatchEvent(Event("playing", {"bubbles": False, "cancelable": False}))
+        return True
+
+    def pause(self):
+        self.dispatchEvent(Event("pause", {"bubbles": False, "cancelable": False}))
+        return None
 
 
 class HTMLMetaElement(HTMLElement):
@@ -7249,10 +8628,106 @@ class HTMLOptionElement(HTMLElement):
             self.setAttribute("selected", selected)
         if value is not None:
             self.setAttribute("value", value)
+        self._default_selected = self.selected
+
+    @property
+    def value(self) -> str:
+        attr_value = self.getAttribute("value")
+        return self.textContent if attr_value is None else attr_value
+
+    @value.setter
+    def value(self, new_value: Any) -> None:
+        self.setAttribute("value", new_value)
+
+    @property
+    def selected(self) -> bool:
+        return self.hasAttribute("selected")
+
+    @selected.setter
+    def selected(self, is_selected: bool) -> None:
+        if is_selected:
+            parent = self.parentNode
+            if isinstance(parent, HTMLSelectElement) and not parent.hasAttribute("multiple"):
+                for option in parent.options:
+                    if option is not self:
+                        option.removeAttribute("selected")
+            self.setAttribute("selected", True)
+        else:
+            self.removeAttribute("selected")
+
+    @property
+    def defaultSelected(self) -> bool:
+        return bool(getattr(self, "_default_selected", self.selected))
+
+    @defaultSelected.setter
+    def defaultSelected(self, is_selected: bool) -> None:
+        self._default_selected = bool(is_selected)
 
 
-# class HTMLOptionsCollection(HTMLElement):   # TODO - check
-#     name = 'options'
+class HTMLOptionsCollection(HTMLCollection):
+    """Live collection of a select element's option descendants."""
+
+    def __init__(self, select: "HTMLSelectElement"):
+        super().__init__()
+        self._select = select
+
+    def _options(self) -> list[HTMLOptionElement]:
+        options: list[HTMLOptionElement] = []
+
+        def walk(node):
+            if not isinstance(node, Element):
+                return
+            if node is not self._select and isinstance(node, HTMLOptionElement):
+                options.append(node)
+            for child in getattr(node, "childNodes", []):
+                walk(child)
+
+        walk(self._select)
+        return options
+
+    @property
+    def length(self) -> int:
+        return len(self._options())
+
+    def __len__(self) -> int:
+        return self.length
+
+    def __iter__(self):
+        return iter(self._options())
+
+    def __getitem__(self, index: int | str):
+        options = self._options()
+        if isinstance(index, str):
+            return self.namedItem(index)
+        return options[index]
+
+    def item(self, index: int) -> HTMLOptionElement | None:
+        options = self._options()
+        return options[index] if 0 <= index < len(options) else None
+
+    def namedItem(self, name: str) -> HTMLOptionElement | None:
+        for option in self._options():
+            if option.getAttribute("id") == name or option.getAttribute("name") == name:
+                return option
+        return None
+
+    def add(self, element: HTMLOptionElement, before: int | Node | None = None) -> None:
+        if isinstance(before, int):
+            reference = self.item(before)
+            if reference is None:
+                self._select.appendChild(element)
+            else:
+                self._select.insertBefore(element, reference)
+            return
+        if isinstance(before, Node):
+            self._select.insertBefore(element, before)
+            return
+        self._select.appendChild(element)
+
+    def remove(self, index: int) -> None:
+        option = self.item(index)
+        if option is not None:
+            self._select.removeChild(option)
 
 
 class HTMLOutputElement(HTMLElement):
@@ -7393,6 +8868,61 @@ class HTMLSelectElement(HTMLElement):
             self.setAttribute("required", required)
         if size is not None:
             self.setAttribute("size", size)
+
+    @property
+    def options(self) -> HTMLOptionsCollection:
+        return HTMLOptionsCollection(self)
+
+    @property
+    def selectedIndex(self) -> int:
+        for index, option in enumerate(self.options):
+            if option.selected:
+                return index
+        return -1
+
+    @selectedIndex.setter
+    def selectedIndex(self, index: int) -> None:
+        for option_index, option in enumerate(self.options):
+            option.selected = option_index == index
+
+    @property
+    def value(self) -> str:
+        index = self.selectedIndex
+        option = self.options.item(index)
+        return option.value if option is not None else ""
+
+    @value.setter
+    def value(self, new_value: Any) -> None:
+        string_value = "" if new_value is None else str(new_value)
+        matched = False
+        for option in self.options:
+            is_match = option.value == string_value
+            option.selected = is_match
+            matched = matched or is_match
+        if not matched and not self.hasAttribute("multiple"):
+            self.selectedIndex = -1
+
+    @property
+    def selectedOptions(self) -> list[HTMLOptionElement]:
+        return [option for option in self.options if option.selected]
+
+    def setValue(self, new_value: Any, *, dispatch_events: bool = True) -> str:
+        self.value = new_value
+        if dispatch_events:
+            _dispatch_value_change_events(self)
+        return self.value
+
+    def selectIndex(self, index: int, *, dispatch_events: bool = True) -> int:
+        self.selectedIndex = index
+        if dispatch_events:
+            _dispatch_value_change_events(self)
+        return self.selectedIndex
+
+    def checkValidity(self) -> bool:
+        return _is_control_valid(self)
+
+    def reportValidity(self) -> bool:
+        return self.checkValidity()
 
 
 class HTMLShadowElement(HTMLElement):
@@ -7538,6 +9068,74 @@ class HTMLTableSectionElement(HTMLElement):
     name = "tbody"
 
 
+class HTMLDetailsElement(HTMLElement):
+    name = "details"
+
+    def __init__(self, *args, open: bool = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if open is not None:
+            self.open = open
+
+    @property
+    def open(self) -> bool:
+        return self.hasAttribute("open")
+
+    @open.setter
+    def open(self, is_open: bool) -> None:
+        previous = self.open
+        if is_open:
+            self.setAttribute("open", True)
+        else:
+            self.removeAttribute("open")
+        if previous != self.open:
+            self.dispatchEvent(Event("toggle", {"bubbles": False, "cancelable": False}))
+
+    def toggle(self) -> bool:
+        self.open = not self.open
+        return self.open
+
+
+class HTMLSummaryElement(HTMLElement):
+    name = "summary"
+
+
+class HTMLSlotElement(HTMLElement):
+    name = "slot"
+
+    def assignedNodes(self, options: dict[str, Any] | None = None) -> list[Node]:
+        flatten = bool((options or {}).get("flatten"))
+        root = getattr(self, "parentNode", None)
+        if not isinstance(root, ShadowRoot):
+            return []
+
+        slot_name = self.getAttribute("name") or ""
+        assigned: list[Node] = []
+        for child in getattr(root.host, "childNodes", []):
+            if isinstance(child, Element):
+                child_slot = child.getAttribute("slot") or ""
+                if child_slot == slot_name:
+                    assigned.append(child)
+            elif slot_name == "":
+                assigned.append(child)
+
+        if assigned:
+            return assigned
+
+        fallback = [child for child in self.childNodes if isinstance(child, Node)]
+        if flatten:
+            flattened: list[Node] = []
+            for child in fallback:
+                if isinstance(child, HTMLSlotElement):
+                    flattened.extend(child.assignedNodes(options))
+                else:
+                    flattened.append(child)
+            return flattened
+        return fallback
+
+    def assignedElements(self, options: dict[str, Any] | None = None) -> list[Element]:
+        return [node for node in self.assignedNodes(options) if isinstance(node, Element)]
+
+
 class HTMLTemplateElement(HTMLElement):
     name = "template"
 
@@ -7607,6 +9205,46 @@ class HTMLTextAreaElement(HTMLElement):
             self.setAttribute("rows", rows)
         if wrap is not None:
             self.setAttribute("wrap", wrap)
+        self._default_value = self.value
+
+    @property
+    def value(self) -> str:
+        return "" if self.textContent is None else self.textContent
+
+    @value.setter
+    def value(self, new_value: Any) -> None:
+        self.textContent = "" if new_value is None else str(new_value)
+
+    def setValue(self, new_value: Any, *, dispatch_events: bool = True) -> str:
+        self.value = new_value
+        if dispatch_events:
+            _dispatch_value_change_events(self)
+        return self.value
+
+    @property
+    def defaultValue(self) -> str:
+        return getattr(self, "_default_value", self.value)
+
+    @defaultValue.setter
+    def defaultValue(self, new_value: Any) -> None:
+        self._default_value = "" if new_value is None else str(new_value)
+
+    def checkValidity(self) -> bool:
+        return _is_control_valid(self)
+
+    def reportValidity(self) -> bool:
+        return self.checkValidity()
+
+
+HTMLFormControlsCollection.CONTROL_TYPES = (
+    HTMLButtonElement,
+    HTMLFieldSetElement,
+    HTMLInputElement,
+    HTMLObjectElement,
+    HTMLOutputElement,
+    HTMLSelectElement,
+    HTMLTextAreaElement,
+)
 
 
 class HTMLTimeElement(HTMLElement):

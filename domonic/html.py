@@ -38,7 +38,8 @@ from domonic.dom import (Comment, DocumentType, DOMConfig, Element,
                          HTMLTableCellElement, HTMLTableColElement,
                          HTMLTableDataCellElement, HTMLTableElement,
                          HTMLTableHeaderCellElement, HTMLTableRowElement,
-                         HTMLTableSectionElement, HTMLTemplateElement,
+                         HTMLTableSectionElement, HTMLSlotElement,
+                         HTMLTemplateElement,
                          HTMLTextAreaElement, HTMLTimeElement,
                          HTMLTitleElement, HTMLTrackElement, HTMLUListElement,
                          HTMLUnknownElement, HTMLVideoElement, Node, Text)
@@ -507,12 +508,8 @@ class form(HTMLFormElement):
         Element.__init__(self, *args, **kwargs)
 
     @property
-    def elements(self) -> list[HTMLElement]:
-        kids: list[HTMLElement] = []
-        for child in self.children:
-            if isinstance(child, (button, fieldset, input, object, output, select, textarea)):
-                kids.append(child)
-        return kids
+    def elements(self) -> HTMLFormControlsCollection:
+        return super().elements
 
 
 label = type("label", (HTMLLabelElement,), {"name": "label"})
@@ -624,7 +621,7 @@ keygen = type("keygen", (closed_tag, HTMLKeygenElement), {"name": "keygen"})
 command = type("command", (closed_tag, Element), {"name": "command"})
 
 main = type("main", (Element,), {"name": "main"})
-slot = type("slot", (Element,), {"name": "slot"})
+slot = type("slot", (HTMLSlotElement,), {"name": "slot"})
 search = type("search", (Element,), {"name": "search"})
 
 # obsolete
@@ -669,6 +666,17 @@ def create_element(name: str = "custom_tag", *args: Any, **kwargs: Any) -> Eleme
     if normalized_name in _HTML_TAG_LOOKUP:
         tag_name = _TAG_ALIASES.get(normalized_name, normalized_name)
         return globals()[tag_name](*args, **kwargs)
+
+    try:
+        from domonic.window import window as domonic_window
+
+        registry = getattr(domonic_window, "customElements", None)
+        if registry is not None:
+            registered = registry.get(name) or registry.get(normalized_name)
+            if registered is not None:
+                return registered(*args, **kwargs)
+    except Exception:
+        pass
 
     # NOTE: we care calling it custom_tag because it can't have hyphens < Note - use HTMLUnknownElement?
     custom_tag = type("custom_tag", (Element,), {"name": name})

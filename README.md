@@ -10,7 +10,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![byteface github](https://img.shields.io/badge/GitHub-byteface-181717.svg?style=flat&logo=github)](https://github.com/byteface)
 
-#### A DOM for making HTML with Python 3! (and more)
+#### A Python [DOM](https://dom.spec.whatwg.org/) that goes way beyond minidom
+
+Built against the real DOM and broader web platform, not just a tiny HTML tree with a pile of non-standard helper methods.
 
 ### Install
 
@@ -147,7 +149,7 @@ print(DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH)  # Default False
 
 ## DOM
 
-DOM manipulation with python.
+DOM manipulation with Python, built with the actual platform in mind.
 
 ### createElement
 
@@ -164,7 +166,10 @@ print(site)
 
 ```
 
-There's an evolving DOM API. To learn more about the webAPI [click here](https://developer.mozilla.org/en-US/docs/Web/API).
+The aim is to track the real platform rather than invent a parallel helper API:
+- [WHATWG DOM Standard](https://dom.spec.whatwg.org/)
+- [HTML Standard](https://html.spec.whatwg.org/)
+- [MDN Web APIs](https://developer.mozilla.org/en-US/docs/Web/API)
 
 And check the [code/docs](https://domonic.readthedocs.io/) to see what's currently been implemented.
 

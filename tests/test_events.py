@@ -349,6 +349,9 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(document.createEvent("PointerEvent"), PointerEvent)
         self.assertIsInstance(document.createEvent("WheelEvent"), WheelEvent)
         self.assertIsInstance(document.createEvent("MessageEvent"), MessageEvent)
+        self.assertIsInstance(document.createEvent("ErrorEvent"), ErrorEvent)
+        self.assertIsInstance(document.createEvent("PopStateEvent"), PopStateEvent)
+        self.assertIsInstance(document.createEvent("CloseEvent"), CloseEvent)
 
     def test_handle_event_listener_object(self):
         target = EventTarget()
@@ -374,6 +377,35 @@ class TestCase(unittest.TestCase):
         target.dispatchEvent(event)
 
         self.assertFalse(event.defaultPrevented)
+
+    def test_abort_controller_signal_and_listener_options(self):
+        controller = AbortController()
+        signal = controller.signal
+        events = []
+        target = EventTarget()
+        listener_calls = []
+
+        signal.addEventListener("abort", lambda event: events.append((event.type, signal.reason)))
+        target.addEventListener("custom_event", lambda event: listener_calls.append(event.type), {"signal": signal})
+
+        controller.abort("stop")
+        target.dispatchEvent(Event("custom_event"))
+
+        self.assertTrue(signal.aborted)
+        self.assertEqual(signal.reason, "stop")
+        self.assertEqual(events, [("abort", "stop")])
+        self.assertEqual(listener_calls, [])
+
+        already_aborted = AbortController()
+        already_aborted.abort("done")
+        target.addEventListener("never", lambda event: listener_calls.append("never"), {"signal": already_aborted.signal})
+        self.assertFalse(target.hasEventListener("never"))
+
+    def test_close_event_shape(self):
+        event = CloseEvent("close", {"code": 1000, "reason": "bye", "wasClean": True})
+        self.assertEqual(event.code, 1000)
+        self.assertEqual(event.reason, "bye")
+        self.assertTrue(event.wasClean)
 
     def test_long_tail_event_data_helpers(self):
         custom_event = CustomEvent("custom")
