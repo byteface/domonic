@@ -1055,6 +1055,45 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(shadow.elementFromPoint(5, 5), shadow_button)
         self.assertEqual(shadow.caretPositionFromPoint(5, 5).offset, 0)
 
+    def test_selection_core_helpers(self):
+        first = Text("hello")
+        second = Text("world")
+        host = div(first, second)
+
+        selection = Selection()
+        self.assertEqual(selection.type, "None")
+        self.assertTrue(selection.isCollapsed)
+
+        selection.selectAllChildren(host)
+        self.assertEqual(selection.type, "Range")
+        self.assertEqual(selection.anchorNode, host)
+        self.assertEqual(selection.anchorOffset, 0)
+        self.assertEqual(selection.focusNode, host)
+        self.assertEqual(selection.focusOffset, 2)
+        self.assertTrue(selection.containsNode(first))
+        self.assertTrue(selection.containsNode(second, allowPartialContainment=True))
+
+        selection.collapse(first, 2)
+        self.assertEqual(selection.type, "Caret")
+        self.assertTrue(selection.isCollapsed)
+        self.assertEqual(selection.anchorNode, first)
+        self.assertEqual(selection.anchorOffset, 2)
+
+        selection.collapseToEnd()
+        self.assertEqual(selection.focusOffset, 2)
+
+        selection.deleteFromDocument()
+        self.assertEqual(first.textContent, "hello")
+        self.assertEqual(selection.rangeCount, 0)
+
+        selection.selectAllChildren(host)
+        selection.collapseToStart()
+        self.assertEqual(selection.anchorNode, host)
+        self.assertEqual(selection.anchorOffset, 0)
+
+        selection.empty()
+        self.assertEqual(selection.rangeCount, 0)
+
     def test_document_caret_position_from_point(self):
         target = div("hello", _id="target")
         target.style.left = "5px"

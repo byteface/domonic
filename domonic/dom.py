@@ -1593,21 +1593,96 @@ class Selection:
         return len(self._ranges)
 
     @property
+    def isCollapsed(self):
+        return self.rangeCount == 0 or all(range_obj.collapsed for range_obj in self._ranges)
+
+    @property
     def anchorNode(self):
         return self._ranges[0].startContainer if self._ranges else None
+
+    @property
+    def anchorOffset(self):
+        return self._ranges[0].startOffset if self._ranges else 0
 
     @property
     def focusNode(self):
         return self._ranges[-1].endContainer if self._ranges else None
 
+    @property
+    def focusOffset(self):
+        return self._ranges[-1].endOffset if self._ranges else 0
+
+    @property
+    def type(self):
+        if self.rangeCount == 0:
+            return "None"
+        return "Caret" if self.isCollapsed else "Range"
+
     def addRange(self, range_obj):
         self._ranges.append(range_obj)
+
+    def removeRange(self, range_obj):
+        self._ranges = [candidate for candidate in self._ranges if candidate is not range_obj]
 
     def removeAllRanges(self):
         self._ranges = []
 
     def getRangeAt(self, index):
         return self._ranges[index]
+
+    def collapse(self, node, offset=0):
+        if node is None:
+            self.removeAllRanges()
+            return
+        range_obj = Range()
+        range_obj.setStart(node, offset)
+        range_obj.setEnd(node, offset)
+        self._ranges = [range_obj]
+
+    def collapseToStart(self):
+        if not self._ranges:
+            return
+        first = self._ranges[0]
+        self.collapse(first.startContainer, first.startOffset)
+
+    def collapseToEnd(self):
+        if not self._ranges:
+            return
+        last = self._ranges[-1]
+        self.collapse(last.endContainer, last.endOffset)
+
+    def empty(self):
+        self.removeAllRanges()
+
+    def selectAllChildren(self, node):
+        range_obj = Range()
+        range_obj.selectNodeContents(node)
+        self._ranges = [range_obj]
+
+    def deleteFromDocument(self):
+        for range_obj in list(self._ranges):
+            range_obj.deleteContents()
+        self.removeAllRanges()
+
+    def containsNode(self, node, allowPartialContainment=False):
+        if node is None:
+            return False
+
+        if isinstance(node, Text):
+            node_end_offset = len(node.textContent)
+        else:
+            node_end_offset = len(list(getattr(node, "childNodes", [])))
+
+        for range_obj in self._ranges:
+            start_relation = range_obj.comparePoint(node, 0)
+            end_relation = range_obj.comparePoint(node, node_end_offset)
+            if allowPartialContainment:
+                if start_relation != 1 and end_relation != -1:
+                    return True
+            else:
+                if start_relation == 0 and end_relation == 0:
+                    return True
+        return False
 
     def toString(self):
         return "".join(range_obj.toString() for range_obj in self._ranges)

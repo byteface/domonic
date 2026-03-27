@@ -14,6 +14,7 @@ VERSION = __version__
 
 
 import re
+import domonic.dom as dom
 
 # from domonic.components import Input
 try:
@@ -39,6 +40,8 @@ except ImportError:  # pragma: no cover - optional dependency chain
 
 
 class domonic:
+
+    dom = dom
 
     JS_MASTER = "assets/js/master.js"
     CSS_STYLE = "assets/css/style.css"
@@ -84,7 +87,55 @@ class domonic:
                 prog = prog[0]
             elif prog[1] == None:
                 prog = prog[0]
+            else:
+                prog = list(prog)
         return prog
+
+    @staticmethod
+    def _split_top_level_pyml(pyml: str):
+        """Split sibling top-level pyml expressions into standalone chunks."""
+        chunks = []
+        current = []
+        depth = 0
+        quote = None
+        escaped = False
+
+        for char in pyml:
+            if quote is not None:
+                current.append(char)
+                if escaped:
+                    escaped = False
+                    continue
+                if char == "\\":
+                    escaped = True
+                    continue
+                if char == quote:
+                    quote = None
+                continue
+
+            if char in ("'", '"'):
+                quote = char
+                current.append(char)
+                continue
+
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth = max(0, depth - 1)
+
+            if char == "," and depth == 0:
+                chunk = "".join(current).strip().rstrip(",").strip()
+                if chunk:
+                    chunks.append(chunk)
+                current = []
+                continue
+
+            current.append(char)
+
+        chunk = "".join(current).strip().rstrip(",").strip()
+        if chunk:
+            chunks.append(chunk)
+        return chunks
 
     @staticmethod
     def domonify(pyml: str, *args, **kwargs):
@@ -115,6 +166,9 @@ class domonic:
         try:
             p = eval(s, {**kwargs, **globals()})
         except Exception as e:
+            fragments = domonic._split_top_level_pyml(pyml)
+            if len(fragments) > 1:
+                return tuple(domonic.domonify(fragment, *args, **kwargs) for fragment in fragments)
             print("Failed to evaluate as mulitline trying again:", e)
             pyml = "".join(pyml.splitlines()).strip(",")  # try again on a single line
             s = domonic.evaluate(pyml, *args, **kwargs)

@@ -1088,13 +1088,14 @@ class TestCase(unittest.TestCase):
                 domonic.load("<h1 id='one'><span></span><span></span></h1><h1 id='two'><span></span><span></span></h1>")
             )
         )
-        one = document.querySelector("#one")
-        two = document.querySelector("#two")
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        assert len(selectAll([one, two]).selectAll("span").nodes()) == 4
         # assertSelection(selectAll([one, two]).selectAll("span"), {groups: [one.querySelectorAll("span"), two.querySelectorAll("span")], parents: [one, two]})
 
         # selection.selectAll(function) selects the return values of the given function for each selected element
         d = html(head(domonic.load("<span id='one'></span>")))
-        one = document.querySelector("#one")
+        one = d.querySelector("#one")
         # assertSelection(select(document).selectAll(function() { return [one]; }), {groups: [[one]], parents: [document]})
 
         # selection.selectAll(function) passes the selector function data, index and group
@@ -1119,10 +1120,11 @@ class TestCase(unittest.TestCase):
 
         # selection.selectAll(…) will not propagate data
         # "<parent><child>hello</child></parent>", () => {
-        parent = document.querySelector("parent")
-        child = document.querySelector("child")
+        d = html(body(div(span("hello"))))
+        parent = d.querySelector("div")
+        child = d.querySelector("span")
         parent.__data__ = 42
-        select(parent).selectAll("child")
+        select(parent).selectAll("span")
         assert not ("__data__" in child)
 
         # selection.selectAll(…) groups selected elements by their parent in the originating selection
@@ -1146,8 +1148,8 @@ class TestCase(unittest.TestCase):
 
         # selection.selectAll(…) skips missing originating elements
         d = html(head(domonic.load("<h1><span>hello</span></h1>")))
-        h1 = document.querySelector("h1")
-        span = document.querySelector("span")
+        h1 = d.querySelector("h1")
+        child_span = d.querySelector("span")
         # assertSelection(selectAll([, h1]).selectAll("span"), {groups: [[span]], parents: [h1]})
         # assertSelection(selectAll([null, h1]).selectAll("span"), {groups: [[span]], parents: [h1]})
         # assertSelection(selectAll([undefined, h1]).selectAll("span"), {groups: [[span]], parents: [h1]})
@@ -1329,11 +1331,12 @@ class TestCase(unittest.TestCase):
 
     @silence
     def test_attr(self):
+        d = html(body(domonic.load("<h1 id='one' class='c1 c2'>hello</h1><h1 id='two' class='c3'></h1>")))
 
         # selection.attr(name) returns the value of the attribute with the specified name on the first selected element
         # <h1 class='c1 c2'>hello</h1><h1 class='c3'></h1>", () => {
-        assert select(document).select("h1").attr("class") == "c1 c2"
-        assert selectAll([None, document]).select("h1").attr("class") == "c1 c2"
+        assert select(d).select("h1").attr("class") == "c1 c2"
+        assert selectAll([None, d]).select("h1").attr("class") == "c1 c2"
 
         # selection.attr(name) coerces the specified name to a string
         # <h1 class='c1 c2'>hello</h1><h1 class='c3'></h1>", () => {
@@ -1395,8 +1398,8 @@ class TestCase(unittest.TestCase):
 
         # selection.attr(name, value) sets the value of the attribute with the specified name on the selected elements
         # <h1 id='one' class='c1 c2'>hello</h1><h1 id='two' class='c3'></h1>", () => {
-        one = document.querySelector("#one")
-        two = document.querySelector("#two")
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
         s = selectAll([one, two])
         assert s.attr("foo", "bar") == s
         assert one.getAttribute("foo") == "bar"
@@ -1404,8 +1407,8 @@ class TestCase(unittest.TestCase):
 
         # selection.attr(name, None) removes the attribute with the specified name on the selected elements
         # "<h1 id='one' foo='bar' class='c1 c2'>hello</h1><h1 id='two' foo='bar' class='c3'></h1>", () => {
-        one = document.querySelector("#one")
-        two = document.querySelector("#two")
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
         s = selectAll([one, two])
         assert s.attr("foo", None) == s
         assert one.hasAttribute("foo") == False
@@ -1413,10 +1416,10 @@ class TestCase(unittest.TestCase):
 
         # selection.attr(name, function) sets the value of the attribute with the specified name on the selected elements
         # <h1 id='one' class='c1 c2'>hello</h1><h1 id='two' class='c3'></h1>", () => {
-        one = document.querySelector("#one")
-        two = document.querySelector("#two")
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
         selection = selectAll([one, two])
-        assert selection.attr("foo", lambda d, i: "bar-" + i if i else None) == selection
+        assert selection.attr("foo", lambda d, i: f"bar-{i}" if i else None) == selection
         assert one.hasAttribute("foo") == False
         assert two.getAttribute("foo") == "bar-1"
 

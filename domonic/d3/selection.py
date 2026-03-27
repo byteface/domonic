@@ -8,6 +8,9 @@
 
 # from domonic.html import *
 
+import inspect
+import re
+
 from domonic.dom import document  # bring in the global
 from domonic.javascript import *
 
@@ -73,7 +76,7 @@ def none():
 
 
 def selector(selector):
-    return None if selector == None else lambda: document.querySelector(selector)
+    return None if selector == None else lambda this, *args: this.querySelector(selector)
 
 
 # // Given something array like (or null), returns something that is strictly an
@@ -149,7 +152,10 @@ class ClassList:
 
 
 def classArray(string):
-    return String(string).trim().split(r"/^|\s+/")
+    string = String(string).trim()
+    if string == "":
+        return []
+    return re.split(r"\s+", string)
 
 
 def classList(node):
@@ -179,6 +185,25 @@ def classedRemove(node, names):
 
 
 root = [None]
+_MISSING = object()
+
+
+def _invoke_callback(callback, *args):
+    try:
+        signature = inspect.signature(callback)
+    except (TypeError, ValueError):
+        return callback(*args)
+
+    parameters = list(signature.parameters.values())
+    if any(param.kind == inspect.Parameter.VAR_POSITIONAL for param in parameters):
+        return callback(*args)
+
+    positional = [
+        param
+        for param in parameters
+        if param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+    ]
+    return callback(*args[: len(positional)])
 
 
 class Selection:
@@ -196,7 +221,10 @@ class Selection:
 
     # unpack groups into a list of nodes
     def __iter__(self):
-        return self._groups.__iter__()
+        for group in self._groups:
+            for node in group:
+                if node is not None:
+                    yield node
 
     def select(self, select):
         if not callable(select):
@@ -212,25 +240,14 @@ class Selection:
             for i in range(n):
                 node = group[i]
                 if node is None:
-                    print("NODE WAS NONE.err?")
+                    subgroup[i] = None
                     continue
                 try:
-                    # print(node.__data__)
-                    node.__data__ = None
-                    # print('bipm', select)
-                    subnode = Function(select).call(node, node.__data__, i, group)
+                    data = getattr(node, "__data__", None)
+                    subnode = select(node, data, i, group)
                 except Exception as e:
-                    # print(e)
-                    print("failed. no __data__ on node")
                     subnode = None
-                # if subnode is not None:
-                #     if "__data__" in subnode:
-                #         subnode.__data__ = subnode.__data__
-                #     subgroup[i] = subnode
-                # subnode.__data__ = node.__data__
-                # subgroup[i] = subnode
-                # print('super::', node, subnode)
-                if "__data__" in node:
+                if subnode is not None and hasattr(node, "__data__"):
                     subnode.__data__ = node.__data__
                 subgroup[i] = subnode
             j += 1
@@ -244,7 +261,7 @@ class Selection:
     # import selectorAll from "../selectorAll.js";
 
     def arrayAll(self, select, *args):
-        return lambda: array(Function(select).apply(self.this, args))
+        return lambda this, *call_args: array(select(this, *call_args))
 
     def selectAll(self, select):
         if callable(select):
@@ -262,17 +279,15 @@ class Selection:
             for i in range(n):
                 node = group[i]
                 if node is None:
-                    print("selectaAll : NODE WAS NONE.err?")
                     continue
 
                 try:
-                    # print(node.__data__)
-                    node.__data__ = None  # TODO - only do this if not there
-                    subgroups.append(Function(select).call(node, node.__data__, i, group))
+                    data = getattr(node, "__data__", None)
+                    subgroups.append(select(node, data, i, group))
                     parents.append(node)
                 except Exception as e:
-                    # print(e)
-                    print("failed. no __data__ on node")
+                    subgroups.append([])
+                    parents.append(node)
 
                 # subgroups.append(Function(select).call(node, node.__data__, i, group))
                 # parents.append(node)
@@ -527,7 +542,7 @@ class Selection:
 
     # import selection_nodes from "./nodes.js";
     def nodes(self):
-        return Array.from_(self.this)
+        return [node for node in self]
 
     # import selection_node from "./node.js";
     def node(self):
@@ -539,7 +554,7 @@ class Selection:
             n = len(group)
             while i < n:
                 node = group[i]
-                if node:
+                if node is not None:
                     return node
                 i += 1
         return None
@@ -547,10 +562,7 @@ class Selection:
     # import selection_size from "./size.js";
     # def size: selection_size,
     def size(self):
-        size = 0
-        for node in self.this:
-            size += 1  # eslint-disable-line no-unused-vars
-        return size
+        return len(self.nodes())
 
     # import selection_empty from "./empty.js";
     # def empty: selection_empty,
@@ -575,15 +587,10 @@ class Selection:
             while i < n:
                 node = group[i]
                 if node is None:
-                    print("NODE WAS NONE.err?")
+                    i += 1
                     continue
-                # try:
-                node.__data__ = None
-                Function(callback).call(node, node.__data__, i, group)
-                # print('worked on this one')
-                # except Exception as e:
-                # print(e)
-                # print('failed. no __data__ on node mate', e)
+                data = getattr(node, "__data__", None)
+                callback(node, data, i, group)
 
                 i += 1
             j += 1
@@ -591,14 +598,16 @@ class Selection:
 
     # import selection_attr from "./attr.js";
     def attrRemove(self, name):
-        # return lambda this: this.removeAttribute(name)
-        self.this.removeAttribute(name)
-        return self
+        def anon(this, *args):
+            this.removeAttribute(name)
+
+        return anon
 
     def attrRemoveNS(self, fullname):
-        # return lambda this: this.removeAttributeNS(fullname['space'], fullname['local'])
-        self.this.removeAttributeNS(fullname["space"], fullname["local"])
-        return self
+        def anon(this, *args):
+            this.removeAttributeNS(fullname["space"], fullname["local"])
+
+        return anon
 
     def attrConstant(self, name, value):
         # print('setting:::', name, value)
@@ -616,29 +625,28 @@ class Selection:
         return anon
 
     def attrConstantNS(self, fullname, value):
-        # return lambda this: this.setAttributeNS(fullname['space'], fullname['local'], value)
-        self.this.setAttributeNS(fullname["space"], fullname["local"], value)
-        return self
+        def anon(this, *args):
+            this.setAttributeNS(fullname["space"], fullname["local"], value)
+
+        return anon
 
     def attrFunction(self, name, value, *args):
-        def anon(this):
+        def anon(this, *call_args):
             nonlocal value
             nonlocal name
-            nonlocal args
-            v = Function(value).apply(this, args)
+            v = _invoke_callback(value, *call_args)
             if v == None:
                 this.removeAttribute(name)
             else:
                 this.setAttribute(name, v)
 
-        return self
+        return anon
 
     def attrFunctionNS(self, fullname, value, *args):
-        def anon(this):
+        def anon(this, *call_args):
             nonlocal value
             nonlocal fullname
-            nonlocal args
-            v = Object(value).apply(this, args)
+            v = _invoke_callback(value, *call_args)
             if v == None:
                 this.removeAttributeNS(fullname["space"], fullname["local"])
             else:
@@ -646,32 +654,33 @@ class Selection:
 
         return anon
 
-    def attr(self, name, value, *args):
+    def attr(self, name, value=_MISSING, *args):
         # print("NAME!!", name, value, args)
         fullname = namespace(name)
 
-        # if len(args) > 0: #4:
-        if value is None:
+        if value is _MISSING:
             node = self.node()
-            print(node)
+            if node is None:
+                return None
             return (
                 node.getAttributeNS(fullname["space"], fullname["local"])
                 if isinstance(fullname, dict)
                 else node.getAttribute(fullname)
             )
 
-        a = self.attrRemoveNS if getattr(fullname, "local", None) is not None else self.attrRemove
-        b = self.attrFunctionNS if getattr(fullname, "local", None) is not None else self.attrFunction
-        c = self.attrConstantNS if getattr(fullname, "local", None) is not None else self.attrConstant
+        is_namespaced = isinstance(fullname, dict)
+        a = self.attrRemoveNS if is_namespaced else self.attrRemove
+        b = self.attrFunctionNS if is_namespaced else self.attrFunction
+        c = self.attrConstantNS if is_namespaced else self.attrConstant
 
         if value is None:
-            func = a
+            func = a(fullname) if is_namespaced else a(fullname)
         elif callable(value):
-            func = b
+            func = b(fullname, value)
         else:
-            func = c
+            func = c(fullname, value)
 
-        self.each(func(fullname, value))
+        self.each(func)
         return self
 
     # def style: selection_style,
@@ -704,7 +713,7 @@ class Selection:
         # print('styling fucntion')
         def anon(this, *args):
             # print('styling fucntion:anon/name', name)
-            v = Function(value).apply(this, args)
+            v = _invoke_callback(value, *args)
             # print('dark mavis',v)
             if v == None:
                 this.style.removeProperty(name)
@@ -762,7 +771,7 @@ class Selection:
 
     def propertyFunction(self, name, value):
         def anon(this, *args):
-            v = Function(value).apply(this, args)
+            v = _invoke_callback(value, *args)
             if v == None:
                 del this[name]
             else:
@@ -811,7 +820,7 @@ class Selection:
             # nonlocal this
             # nonlocal args
             # print('classedFunction', names, value)
-            v = Function(value).apply(this, args)
+            v = _invoke_callback(value, *args)
             if v == None:
                 classedRemove(this, names)
             else:
@@ -824,7 +833,7 @@ class Selection:
         # print(names)
         # if (args.length < 2):
         if value == None:
-            list = classList(this.node())
+            list = classList(self.node())
             i = -1
             n = len(names)
             while i < n:
@@ -849,6 +858,7 @@ class Selection:
             func = self.classedTrue
 
         self.each(func(names, value))
+        return self
 
     # def text: selection_text,
     def _textRemove(self):
@@ -862,14 +872,15 @@ class Selection:
 
     def _textFunction(self, value):
         def anon(this, *args):
-            v = Function(value).apply(this, args)
+            v = _invoke_callback(value, *args)
             this.textContent = "" if v == None else v
 
         return anon
 
     def text(self, value=None):
         if value == None:
-            return self.node()._textContent
+            node = self.node()
+            return None if node is None else node.textContent
         # return arguments.length
         #     ? this.each(value == null
         #         ? textRemove : (typeof value === "function"
@@ -884,6 +895,7 @@ class Selection:
             func = self._textConstant
 
         self.each(func(value))
+        return self
 
     # import selection_html from "./html.js";
     def htmlRemove(self):
@@ -897,12 +909,12 @@ class Selection:
 
     def htmlFunction(self, value):
         def anon(this, *args):
-            v = Function(value).apply(this, args)
+            v = _invoke_callback(value, *args)
             this.innerHTML = "" if v == None else v
 
         return anon
 
-    def html(self, value):
+    def html(self, value=None):
         # TODO write this commented out javascript as python instead
         # return arguments.length
         #     ? this.each(value == null
@@ -911,12 +923,16 @@ class Selection:
         #         : htmlConstant)(value))
         #     : this.node().innerHTML;
         if value == None:
-            func = htmlRemove
+            node = self.node()
+            return None if node is None else node.innerHTML
+        if value == None:
+            func = self.htmlRemove
         elif callable(value):
-            func = htmlFunction
+            func = self.htmlFunction
         else:
-            func = htmlConstant
-        return func(value)
+            func = self.htmlConstant
+        self.each(func(value))
+        return self
 
     # import selection_raise from "./raise.js";
     # def _raise(self):
@@ -1297,4 +1313,4 @@ def selectAll(selector):
 
 
 def selectorAll(selector):
-    return empty if selector == None else lambda: document.querySelectorAll(selector)
+    return empty if selector == None else lambda this, *args: this.querySelectorAll(selector)
