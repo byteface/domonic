@@ -2981,13 +2981,13 @@ class String:
         return self.x[item]
 
     def __add__(self, other: str) -> str:
-        return self.x + other
+        return self.x + str(other)
 
     def __radd__(self, other: str) -> str:
-        return self.x + other
+        return str(other) + self.x
 
     def __iadd__(self, other: str) -> str:
-        return self.x + other
+        return self.x + str(other)
 
     def __sub__(self, other: str) -> Any:
         return self.x - other
