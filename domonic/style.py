@@ -1,9 +1,12 @@
 """
-    domonic.style
-    ====================================
+domonic.style
+=============
 
-    # TODO - should this be moved to the webapi in a future revision?
+CSSOM-flavoured style helpers for domonic.
 
+This module provides ``CSSStyleDeclaration``, stylesheet lists, rule objects,
+and the basic structures needed to attach style data to DOM nodes and
+documents.
 """
 from __future__ import annotations
 
@@ -14,8 +17,10 @@ from .utils import Utils
 
 
 class StyleSheet:
-    """An object implementing the StyleSheet interface represents a single style sheet.
-    CSS style sheets will further implement the more specialized CSSStyleSheet interface.
+    """Base stylesheet object exposed through document-level style collections.
+
+    Concrete CSS sheets build on this interface with parsed rules and mutable
+    declaration content.
     """
 
     def __init__(self) -> None:
@@ -57,8 +62,10 @@ class StyleSheet:
 
 
 class StyleSheetList(list):
-    """An instance of this object can be returned by Document.styleSheets.
-    it can be iterated over in a standard for loop over its indices, or converted to an Array.
+    """List-like collection returned by ``Document.styleSheets``.
+
+    It behaves like an ordered DOM collection while still being convenient to
+    iterate over as a Python list.
     """
 
     def _populate_stylesheets_from_document(self, doc) -> None:
@@ -94,12 +101,7 @@ class StyleSheetList(list):
 
 
 class CSSRule:
-    """The CSSRule interface represents a single CSS rule.
-    There are several types of rules which inherit properties from CSSRule.
-
-    CSSFontFeatureValuesRule
-    CSSViewportRule
-    """
+    """Base class for CSSOM rules stored inside a stylesheet."""
 
     UNKNOWN_RULE: int = 0
     STYLE_RULE: int = 1

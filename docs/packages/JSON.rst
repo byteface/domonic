@@ -1,7 +1,9 @@
 JSON
 =============
 
-decorate any function that returns python objects to return json instead
+Domonic includes practical helpers for moving between Python objects, JSON, CSV, and simple HTML tables.
+
+Decorate any function that returns Python objects to return JSON instead:
 
 .. code-block :: python
 
@@ -49,7 +51,7 @@ convert csv files to json...
 	print(json_data)
 
 
-more to come...
+The module also includes helpers for validation, flattening, and turning table nodes back into row dictionaries.
 
 .. automodule:: domonic.JSON
     :members:

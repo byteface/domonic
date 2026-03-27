@@ -1,9 +1,7 @@
 d3
 =================
 
-*WARNING: this package is still in dev. expect bugs*
-
-d3 is another popular DOM manipulation library available in javascript. This is the python port of that.
+d3 is another popular DOM manipulation library available in JavaScript. This is the domonic-side Python port of that surface.
 
 It has several utilities for working with the DOM.
 
@@ -145,4 +143,3 @@ polygonLength() takes a polygon and returns the sum of the length of the polygon
 .. automodule:: domonic.d3
     :members:
     :noindex:
-

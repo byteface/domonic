@@ -1,5 +1,16 @@
 from __future__ import annotations
 
+"""
+domonic.animation
+=================
+
+Web Animations-style helpers for domonic.
+
+This module provides a practical Python surface for working with animation
+timing, keyframes, playback state, and DOM-connected ``Element.animate(...)``
+behaviour.
+"""
+
 import math
 import re
 from dataclasses import dataclass
@@ -59,6 +70,12 @@ def _resolve_easing(name: str):
 
 @dataclass
 class EffectTiming:
+    """Timing parameters shared by animation effects.
+
+    This is the author-facing timing object that describes delay, duration,
+    direction, fill mode, easing, and iteration behaviour.
+    """
+
     delay: float = 0.0
     direction: str = "normal"
     duration: float = 0.0
@@ -102,6 +119,8 @@ class EffectTiming:
 
 
 class ComputedEffectTiming(EffectTiming):
+    """Resolved timing data derived from an effect plus a current local time."""
+
     def __init__(
         self,
         timing: EffectTiming | None = None,
@@ -120,6 +139,8 @@ class ComputedEffectTiming(EffectTiming):
 
 
 class AnimationPlaybackEvent(Event):
+    """Event carrying playback timing information for animation lifecycle hooks."""
+
     def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.currentTime = options.get("currentTime")
@@ -128,6 +149,8 @@ class AnimationPlaybackEvent(Event):
 
 
 class AnimationEffect:
+    """Base class for effects that can be sampled over time and applied to targets."""
+
     def __init__(self, timing: EffectTiming | dict[str, Any] | None = None) -> None:
         self._timing = EffectTiming(**_coerce_timing_options(timing))
 
@@ -190,6 +213,8 @@ class AnimationEffect:
 
 
 class KeyframeEffect(AnimationEffect):
+    """Keyframe-based effect bound to a target object or DOM element."""
+
     def __init__(
         self,
         target: Any,

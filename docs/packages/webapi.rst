@@ -1,7 +1,7 @@
 webapi
 ===================
 
-The webapi is the latest package to be added to domonic.
+The webapi package groups browser-flavoured APIs that sit alongside the DOM surface.
 
 
 console
@@ -45,8 +45,8 @@ url is a wrapper around the urlparse and urlencode functions in python.
 	print(myurl.query.q)
 	print(myurl.query.q.value)
 
-for more information see mdn docs... 
-# TODO - link
+For more information see the MDN URL API docs:
+https://developer.mozilla.org/en-US/docs/Web/API/URL
 
 
 XPATH

@@ -1,17 +1,18 @@
-# Hi, Welcome to the docs.
+# domonic docs
 
+If something is missing, unclear, or wrong, feel free to send a pull request.
 
-If there's something you want to see documented or is incorrect feel free to send a pull request.
+To build locally:
 
-
-To build:
-
-
-```
+```bash
+python3 -m pip install -r requirements-docs.txt
 cd docs
 make html
 ```
 
-You will get several Warnings but if the build succeeds you're probably good.
+The built site will end up in `docs/_build/html/`.
 
-You may need to install the dev requirements. But if you want you can just install sphinx.
+Read the Docs uses:
+
+- [docs/conf.py](./conf.py)
+- [../.readthedocs.yaml](../.readthedocs.yaml)

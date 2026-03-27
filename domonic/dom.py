@@ -1,10 +1,14 @@
 """
-    domonic.dom
-    ====================================
+domonic.dom
+===========
 
-    The DOM represents a document with a logical tree.
-    https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model
+The core DOM implementation for domonic.
 
+This module provides the document tree, node and element types, collections,
+range and selection helpers, geometry interfaces, mutation and layout
+observers, and the document-facing APIs that the rest of the package builds on.
+It is intended to feel like a practical Python surface for the DOM and related
+web-platform concepts rather than a small HTML helper tree.
 """
 from __future__ import annotations
 
@@ -28,13 +32,11 @@ from domonic.webapi.xpath import (XPathEvaluator, XPathException,
 
 
 class DOMConfig:
-    """DOMConfig: Not to be confused with the obsolete DOMConfiguration.
+    """Global rendering and behaviour flags for domonic's DOM.
 
-    This class is used to set some global rules for our dom.
-
-    GLOBAL_AUTOESCAPE - If this is set to True, then all text nodes will be automatically escaped.
-    HTML5_MODE - doesn't render close tags on certain elements
-    HTMX_ENABLED - inludes htmx attributes into domonic for quicker notation
+    ``DOMConfig`` controls how trees are rendered and how a few optional
+    behaviours are interpreted across the library, such as auto-escaping text
+    content and optional closing-tag handling.
     """
 
     GLOBAL_AUTOESCAPE: bool = False  # Default is False
@@ -1779,7 +1781,12 @@ class Attr(Node):
         return False
 
 class NamedNodeMap:
-    """A live collection of Attr nodes."""
+    """Live attribute collection exposed by ``Element.attributes``.
+
+    ``NamedNodeMap`` behaves like the DOM interface rather than a plain Python
+    dict: it is ordered, can be accessed by index or attribute name, and stays
+    in sync with the owning element's current attributes.
+    """
 
     def __init__(self, args: Iterable[Attr] | None = None, ownerDocument=None, parentNode=None):
         self.parentNode = parentNode
@@ -2081,7 +2088,11 @@ class DOMRectList(list):
 
 
 class DocumentTimeline:
-    """Minimal timeline object associated with a Document."""
+    """Document-associated timeline used by animation surfaces.
+
+    This is the timing source behind ``document.timeline`` and
+    ``Element.animate(...)``.
+    """
 
     def __init__(self, document: "Document | None" = None, originTime: float = 0.0):
         self.document = document
@@ -2094,6 +2105,8 @@ class DocumentTimeline:
 
 
 class CaretPosition:
+    """Represents a caret location as a node plus offset pair."""
+
     def __init__(self, offsetNode: Node | None = None, offset: int = 0) -> None:
         self.offsetNode = offsetNode
         self.offset = offset
@@ -2105,6 +2118,12 @@ class CaretPosition:
 
 
 class Selection:
+    """Represents the user's current selection within a document or shadow tree.
+
+    Domonic keeps both ordered ``Range`` data and anchor/focus information so
+    selection direction can still be represented.
+    """
+
     def __init__(self) -> None:
         self._ranges: list[Range] = []
         self._anchorNode: Node | None = None
@@ -4728,6 +4747,13 @@ class Range(AbastractRange):
 
 
 class StaticRange(Range):
+    """Immutable snapshot of a range boundary pair.
+
+    ``StaticRange`` mirrors the platform idea of a range-like object that can
+    be inspected and cloned back into a mutable ``Range`` but cannot be edited
+    in place.
+    """
+
     def __init__(self, startContainer, startOffset, endContainer, endOffset):
         super().__init__()
         self.startContainer = startContainer
@@ -5919,7 +5945,11 @@ MutationCallback = Callable[[list["MutationRecord"], "MutationObserver"], Any]
 
 
 class MutationRecord:
-    """Represents a single DOM mutation delivered to a MutationObserver."""
+    """Single mutation payload delivered to a ``MutationObserver``.
+
+    Records describe one child-list, attribute, or character-data change and
+    carry the pieces of context the observer asked to receive.
+    """
 
     __slots__ = (
         "type",
@@ -5958,7 +5988,12 @@ class MutationRecord:
 
 
 class MutationObserver:
-    """Watches for DOM tree mutations and delivers MutationRecord objects."""
+    """Observe DOM tree mutations and receive ``MutationRecord`` batches.
+
+    This implementation follows the familiar platform model: call ``observe()``
+    with a target and options, allow DOM operations to queue records, then
+    receive them through the callback or ``takeRecords()``.
+    """
 
     _all_observers: ClassVar[list["MutationObserver"]] = []
 
@@ -6029,12 +6064,16 @@ class MutationObserver:
 
 
 class ResizeObserverSize:
+    """Inline and block dimensions reported by ``ResizeObserver`` entries."""
+
     def __init__(self, inlineSize: float, blockSize: float) -> None:
         self.inlineSize = inlineSize
         self.blockSize = blockSize
 
 
 class ResizeObserverEntry:
+    """Geometry snapshot for a single observed element resize."""
+
     def __init__(self, target: Element, contentRect: DOMRectReadOnly) -> None:
         self.target = target
         self.contentRect = DOMRect.fromRect(contentRect)
@@ -6048,6 +6087,12 @@ ResizeObserverCallback = Callable[[list["ResizeObserverEntry"], "ResizeObserver"
 
 
 class ResizeObserver:
+    """Observe element box changes through DOM geometry reads.
+
+    Domonic treats layout changes pragmatically: when relevant geometry changes
+    are computed, resize entries are queued and delivered to the callback.
+    """
+
     _all_observers: ClassVar[list["ResizeObserver"]] = []
 
     def __init__(self, callback: ResizeObserverCallback) -> None:
@@ -6093,6 +6138,8 @@ class ResizeObserver:
 
 
 class IntersectionObserverEntry:
+    """Visibility snapshot for one target observed by ``IntersectionObserver``."""
+
     def __init__(
         self,
         target: Element,
@@ -6116,6 +6163,13 @@ IntersectionObserverCallback = Callable[[list["IntersectionObserverEntry"], "Int
 
 
 class IntersectionObserver:
+    """Observe whether elements intersect a root rectangle or viewport-like area.
+
+    Domonic models intersections using element bounding boxes and a root
+    rectangle, which is enough for practical DOM-side visibility checks and
+    tests.
+    """
+
     _all_observers: ClassVar[list["IntersectionObserver"]] = []
 
     def __init__(self, callback: IntersectionObserverCallback, options: dict[str, Any] | None = None) -> None:
@@ -6350,7 +6404,11 @@ class DOMPointReadOnly(DOMPoint):
 
 
 class DOMMatrixReadOnly:
-    """Read-only 4x4 transformation matrix."""
+    """Read-only 4x4 transformation matrix for DOM geometry APIs.
+
+    Supports the common 2D aliases as well as the full 4x4 member set used by
+    transforms, points, and animation/geometry helpers.
+    """
 
     @staticmethod
     def fromFloat64Array(array: Iterable[float]) -> "DOMMatrixReadOnly":
@@ -6496,7 +6554,11 @@ for _row in range(1, 5):
 
 
 class DOMMatrix(DOMMatrixReadOnly):
-    """Mutable DOMMatrix implementation."""
+    """Mutable ``DOMMatrix`` implementation.
+
+    Use this when you want to construct, compose, invert, or transform points
+    with a matrix that can be updated in place.
+    """
 
     @staticmethod
     def fromFloat64Array(array: Iterable[float]) -> "DOMMatrix":

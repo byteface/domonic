@@ -1,12 +1,12 @@
 """
-    domonic.svg
-    ====================================
-    Generate SVG with python 3
+domonic.svg
+===========
 
-    WARNING - mostly lightly tested. keep expanding coverage as support improves.
+SVG tag constructors and SVG-aware DOM elements for domonic.
 
-    # https://www.w3.org/TR/SVG2/eltindex.html
-
+The SVG surface is designed to participate in the same tree, event, and
+rendering model as the rest of the library rather than living in a separate
+mini-framework.
 """
 
 from __future__ import annotations

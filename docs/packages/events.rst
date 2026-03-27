@@ -1,26 +1,29 @@
 events
 =================
 
-There's an Event Dispatcher i.e
+Domonic includes a DOM-style event system with ``EventTarget`` at the core.
+
+You can use it directly on your own Python objects:
 
 .. code-block :: python
 
 	from domonic.events import *
 
-	class SomeEventHandler(EventDispatcher):
+	class SomeEventHandler(EventTarget):
 	
 	    def __init__(self):
-	        super().__init__(self)
+	        super().__init__()
 	        self.addEventListener('some_event', self.on_custom_event)
 	
-	    def on_custom_event(evt):
+	    def on_custom_event(self, evt):
 	    	print('that just happened')
 
 	my_handler = SomeEventHandler()
-	my_handler.dispatchEvent('some_event')
+	my_handler.dispatchEvent(Event('some_event'))
 
 
-If you create a python virtual DOM with domonic you can listen for events like so...
+And because DOM nodes also inherit from that event model, you can listen for
+events on virtual documents and elements too:
 
 .. code-block :: python
 
@@ -31,10 +34,6 @@ If you create a python virtual DOM with domonic you can listen for events like s
 
 	page.addEventListener( MouseEvent.CLICK, on_page_clicked )
 
-* above example needs a MouseEvent relaying or dispatching from somewhere. i.e. examples/events
-
-
 .. automodule:: domonic.events
 	:members:
 	:noindex:
-

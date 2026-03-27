@@ -1,9 +1,12 @@
 """
-    domonic.events
-    ====================================
+domonic.events
+==============
 
-    https://developer.mozilla.org/en-US/docs/Web/Events
+DOM-style event classes and dispatch machinery for domonic.
 
+This module provides ``EventTarget`` plus a broad set of web-platform-flavoured
+event classes so DOM nodes, windows, animations, and helper objects can share a
+common event model.
 """
 
 from __future__ import annotations
@@ -16,14 +19,18 @@ from domonic.constants.keyboard import Code, Key, KeyCode, KeyLocation, normaliz
 
 
 class EventListener:
-    """Interface-style base for objects with a handleEvent method."""
+    """Interface-style base for listener objects with ``handleEvent()``."""
 
     def handleEvent(self, event: "Event") -> Any:
         raise NotImplementedError
 
 
 class EventListenerOptions(dict):
-    """Dictionary-like listener options helper."""
+    """Dictionary-like helper for DOM listener options.
+
+    Supports the common ``capture``, ``once``, ``passive``, and ``signal``
+    fields accepted by ``addEventListener()``.
+    """
 
     def __init__(
         self,
@@ -37,43 +44,11 @@ class EventListenerOptions(dict):
 
 class EventTarget:
     """
-    EventTarget is a class you can extend to give your object event dispatching abilities.
+    DOM-style event target base class.
 
-    This class allows you to add, remove, and dispatch custom events, making it useful for creating
-    event-driven components in your Python application.
-
-    **Usage:**
-    
-    To add an event listener:
-    - Use the ``addEventListener`` method.
-
-    To remove an event listener:
-    - Use the ``removeEventListener`` method.
-
-    To dispatch an event:
-    - Create an event object with the desired event type and optional event data.
-    - Use the ``dispatchEvent`` method to trigger the event.
-
-    **Example:**
-    
-    .. code-block:: python
-
-        target = EventTarget()
-        
-        def my_event_handler(event):
-            print("Event received:", event)
-        
-        target.addEventListener("custom_event", my_event_handler)
-        
-        event_data = {"message": "Hello, world!"}
-        custom_event = {"type": "custom_event", "data": event_data}
-        target.dispatchEvent(custom_event)
-        
-        # Output: Event received: {'type': 'custom_event', 'data': {'message': 'Hello, world!'}}
-
-    **Attributes:**
-
-    - ``listeners`` (dict): A dictionary to store event listeners by event type.
+    Extend ``EventTarget`` to give an object support for
+    ``addEventListener()``, ``removeEventListener()``, and ``dispatchEvent()``
+    with DOM-like capture, target, and bubble semantics where appropriate.
     """
 
     def __init__(self, *args, **kwargs) -> None:

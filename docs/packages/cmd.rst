@@ -27,10 +27,9 @@ run arbitrary commands...
 	Cmdcommand.run("echo hi")
 
 
-Take a look at the code in 'cmd.py' to see all the commands. (Disclaimer: not tested.)
+Take a look at the code in `cmd.py` to see the available command wrappers.
 
 
 .. automodule:: domonic.cmd
     :members:
     :noindex:
-

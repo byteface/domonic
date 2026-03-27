@@ -1,15 +1,14 @@
 """
-    domonic.window
-    ====================================
+domonic.window
+==============
 
-    be mindful there are 2 types of window to be found in domonic:
+The DOM-connected ``Window`` implementation for domonic.
 
-        1. the javascript window - a window with only static js methods
+Be mindful that domonic has two window-shaped surfaces:
 
-        2. the domonic window (this one) - a window connected to other things i.e. dom
-
-    You can extend or import either for your own purposes.
-
+1. ``domonic.javascript.Window`` for JavaScript-style globals and timer helpers
+2. ``domonic.window.Window`` for a browsing-context style object connected to
+   ``document``, history, storage, media queries, and custom elements
 """
 
 from __future__ import annotations
@@ -31,7 +30,11 @@ from domonic.webapi.webstorage import Storage
 
 
 class MediaQueryList(EventTarget):
-    """Minimal MediaQueryList implementation for Window.matchMedia()."""
+    """Result object returned by ``Window.matchMedia()``.
+
+    It exposes the media query string, the current match state, and ``change``
+    listeners in the familiar browser style.
+    """
 
     def __init__(self, media: str, *, width: int, height: int) -> None:
         super().__init__()
@@ -73,8 +76,12 @@ class MediaQueryList(EventTarget):
 
 
 class CustomElementRegistry:
-    """The CustomElementRegistry interface provides methods for registering custom elements and querying registered elements.
-    To get an instance of it, use the window.customElements property."""
+    """Registry for defining and upgrading custom elements.
+
+    Access this through ``window.customElements`` to register custom element
+    classes, wait for definitions, and upgrade parsed trees against the
+    registry.
+    """
 
     def __init__(self) -> None:
         self.store: dict[str, type[Element]] = {}
@@ -178,7 +185,7 @@ class CustomElementRegistry:
 
 
 class Navigator:
-    """Navigator"""
+    """Minimal browsing-environment navigator object."""
 
     cookieEnabled = False
     appName = "domonic"

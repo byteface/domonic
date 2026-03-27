@@ -1,6 +1,11 @@
 """
-    domonic.JSON
-    ====================================
+domonic.JSON
+============
+
+JSON and table-conversion helpers used throughout domonic.
+
+This module focuses on practical conversions between Python objects, JSON
+payloads, CSV data, and simple HTML table structures.
 """
 
 from __future__ import annotations

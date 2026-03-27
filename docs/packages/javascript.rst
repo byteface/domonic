@@ -1,9 +1,9 @@
 javascript
 ===================
 
-There's a javascript package that mimics the js API.
+Domonic includes a JavaScript-like runtime surface for practical scripting and porting.
 
-It's useful for things like quickly porting javascript code to python but also if you already know javascript:
+It's useful for quickly porting familiar JS code to Python while staying close to web-platform concepts:
 
 .. code-block :: python
 
@@ -29,7 +29,7 @@ It's useful for things like quickly porting javascript code to python but also i
 	# etc..
 
 
-As as all of the usual String and Numbers methods you may be familiar with.
+Alongside the global helpers, there are familiar ``String``, ``Number``, ``Array``, ``Date``, ``URL``, and timing APIs.
 
 
 Date class
@@ -46,7 +46,7 @@ The Date class is available...
 Array methods
 ----------------
 
-All the javascript array methods you may be familiar with available python
+Many of the familiar JavaScript array methods are available in Python form:
 
 .. code-block :: python
 
@@ -61,7 +61,7 @@ All the javascript array methods you may be familiar with available python
 	print(myarr.indexOf([6]))
 	print(myarr[1])
 	print(len(myarr))
-	print(myarr.join('---'))  #  TODO - test some js ones
+	print(myarr.join('---'))
 	print(myarr.lastIndexOf("1"))
 	print(myarr.lastIndexOf(3))
 	print(myarr.reverse())
@@ -340,4 +340,3 @@ Many other undocumented features. Take a look at the code.
 .. automodule:: domonic.javascript
     :members:
     :noindex:
-

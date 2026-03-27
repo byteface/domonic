@@ -1,141 +1,136 @@
-Domonic:
-========
+domonic
+=======
 
 .. image:: _static/domonic.jpg
   :width: 696
   :alt: domonic
 
-Generate HTML with Python 3
-===========================
+A Python DOM that goes way beyond minidom
+=========================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Domonic is a Python library for generating, parsing, traversing, and manipulating real document trees with the broader web platform in mind.
 
--------------------
+- HTML, SVG, DOM, events, CSSOM, geometry, observers, animation, and web APIs
+- A JavaScript-like runtime surface for practical porting and scripting
+- CLI tools for querying pages with XPath and CSS selectors
+- dQuery and d3 included as demanding consumers of the DOM, not just extras
+
+The aim is to track the actual platform rather than invent a parallel helper API:
+
+- `WHATWG DOM Standard <https://dom.spec.whatwg.org/>`_
+- `HTML Standard <https://html.spec.whatwg.org/>`_
+- `MDN Web APIs <https://developer.mozilla.org/en-US/docs/Web/API>`_
 
 .. image:: https://pepy.tech/badge/domonic
     :target: https://pepy.tech/project/domonic
-    
+
 .. image:: https://img.shields.io/pypi/pyversions/domonic.svg
     :target: https://pypi.org/project/domonic/
 
-.. image:: https://travis-ci.com/byteface/domonic.svg?branch=master
-    :target: https://travis-ci.com/byteface/domonic.svg?branch=master
-    
 .. image:: https://img.shields.io/pypi/l/domonic.svg
     :target: https://pypi.org/project/domonic/
     :alt: License Badge
 
-.. image:: https://img.shields.io/pypi/wheel/domonic.svg
+.. image:: https://img.shields.io/pypi/v/domonic.svg
     :target: https://pypi.org/project/domonic/
-    :alt: Wheel Support Badge
+    :alt: PyPI Version
 
+Install
+-------
 
-**Domonic** Not only a Python library for generating HTML
+.. code-block:: bash
 
--------------------
+   python3 -m pip install domonic
+   python3 -m pip install --upgrade domonic
 
-**Domonic contains several evolving packages:**
+Quick Example
+-------------
 
-- html : Generate html with python 3 😎
-- dom : DOM API in python 3 😲
-- javascript : js API in python 3 😳
-- terminal || cmd : call terminal commands with python3 😱 (*see at the end*)
-- JSON : utils for loading / decorating / transformin
-- SVG : Generate svg using python
-- aframe || x3d tags : auto generate 3d worlds with aframe. (see examples folder
-- dQuery - Utils for querying domonic. (alt + 0 for the º symbol)
-- geom - vec2, vec3 with _dunders_ as well as shape classes
+.. code-block:: python
 
-Take a look at the source code and contribute!
+   from domonic.html import *
 
+   page = html(
+       body(
+           h1("Hello, World!"),
+           a("docs", _href="https://domonic.readthedocs.io/")
+       )
+   )
+   print(f"{page}")
 
-HTML TEMPLATING
----------------
+.. code-block:: html
 
-.. code-block :: python
+   <!DOCTYPE html>
+   <html>
+       <body>
+           <h1>Hello, World!</h1>
+           <a href="https://domonic.readthedocs.io/">docs</a>
+       </body>
+   </html>
 
-  from domonic.html import *
+DOM Example
+-----------
 
-  mydom = html(body(h1('Hello, World!')))
-  print(f"{mydom}")
+.. code-block:: python
 
-.. code-block :: html
+   from domonic.dom import document
+   from domonic.html import html
 
-  <!DOCTYPE html>
-  <html>
-      <body>
-          <h1>Hello, World!</h1>
-      </body>
-  </html>
+   root = html()
+   card = document.createElement("section")
+   card.setAttribute("class", "card")
+   root.appendChild(card)
 
-
-To pretty print use an f-string. Which also adds the doctype.
-
-
-install
-----------------
-.. code-block :: python
-
-  python3 -m pip install domonic
-
-or if you had it before upgrade:
-
-.. code-block :: python
-
-  python3 -m pip install domonic --upgrade
-
+   print(root.querySelectorAll(".card"))
 
 CLI
-----------------
+---
 
-There's a few args you can pass to domonic on the command line to help you out.
+Query a remote page:
 
-To view the online the docs:
+.. code-block:: bash
 
-.. code-block :: python
+   domonic -x https://example.com '//title'
+   domonic -q https://example.com 'a.cta' --attr href --first
 
-  domonic -h
+Query a local file:
 
-To see the version:
+.. code-block:: bash
 
-.. code-block :: python
+   domonic --xpath-file ./page.html '//a' --count
+   domonic --query-file ./page.html 'a.cta' --text
 
-  domonic -v
+Pipe HTML in directly:
 
-To quickly create a domonic project for prototyping:
+.. code-block:: bash
 
-.. code-block :: python
+   curl -s https://example.com | domonic -x '//a' --count
+   cat page.html | domonic -q 'a.cta' --attr href
 
-  domonic -p
+Create a project with a chosen server:
 
+.. code-block:: bash
 
-To use xpath on a website (new):
+   domonic -p myproject --server fastapi
 
-.. code-block :: python
-
-  domonic -x https://google.com //a
-
-
-The User Guide
-----------------
-
-Here you can find some instructions for getting the most out of Domonic.
-
+Package Guide
+-------------
 
 .. toctree::
    :maxdepth: 2
 
    packages/html
    packages/dom
-   packages/javascript
    packages/events
-   packages/sitemap
+   packages/animation
+   packages/style
+   packages/javascript
+   packages/webapi
+   packages/constants
    packages/dQuery
    packages/d3
+   packages/svg
    packages/JSON
-   packages/constants
    packages/terminal
    packages/cmd
    packages/tween
@@ -145,39 +140,21 @@ Here you can find some instructions for getting the most out of Domonic.
    packages/decorators
    packages/components
    packages/utils
-   packages/webapi
-   packages/style
    packages/servers
+   packages/sitemap
    packages/autodocs
    contribute
 
+Projects
+--------
 
-Join-In
-----------------
-Feel free to join in if you find it useful.
+- `Blueberry <https://github.com/byteface/Blueberry/>`_: a browser-based file OS
+- `ezcron <https://github.com/byteface/ezcron/>`_: a cron viewer
+- `bombdisposer <https://github.com/byteface/bombdisposer/>`_: a basic game
+- `htmlx <https://github.com/byteface/htmlx/tree/master/htmlx>`_: a lighter DOM-focused sibling project
 
-If there's any methods you want that are missing or not complete yet. Just update the code and send a pull request.
-
-I'll merge and releaese asap.
-
-
-EXAMPLE PROJECTS
-----------------
-A browser based file browser. Working example of how components can work:
-https://github.com/byteface/Blueberry/
-
-A cron viewer:
-https://github.com/byteface/ezcron/
-
-
-Disclaimer
-----------------
-There's several more widely supported libraries doing HTML generation, DOM reading/manipulation, terminal wrappers etc. Maybe use one of those for production due to strictness and support.
-
-This is becoming more of a fast prototyping library.
-
-
-----------------
+Indices and Tables
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

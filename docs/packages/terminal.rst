@@ -57,10 +57,9 @@ run arbitrary commands...
 	command.run("echo hi")
 
 
-Take a look at the code in 'terminal.py' to see all the commands as there's loads. (Disclaimer: not all tested.)
+Take a look at the code in `terminal.py` to see the available command wrappers and platform-specific behaviour.
 
 
 .. automodule:: domonic.terminal
     :members:
     :noindex:
-

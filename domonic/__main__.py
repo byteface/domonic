@@ -90,11 +90,61 @@ def _open_directory(path: str = ".") -> None:
         os.startfile(path)
 
 
-def project(name):
+def _read_source(source: str | None, use_stdin: bool = False) -> str:
+    if use_stdin:
+        return sys.stdin.read()
+    if source is None:
+        raise ValueError("A source URL or file path is required")
+    if os.path.exists(source):
+        with open(source, encoding="utf-8") as handle:
+            return handle.read()
+    import requests
+
+    response = requests.get(source)
+    return response.text
+
+
+def _emit_results(results, *, text_only: bool = False, attr_name: str | None = None, count_only: bool = False, first_only: bool = False):
+    items = list(results)
+    if first_only:
+        items = items[:1]
+    if count_only:
+        print(len(items))
+        return len(items)
+
+    rendered: list[str] = []
+    for item in items:
+        if attr_name is not None:
+            value = getattr(item, attr_name, None)
+            if value is None and hasattr(item, "getAttribute"):
+                value = item.getAttribute(attr_name)
+            if value is not None:
+                rendered.append(str(value))
+                print(value)
+            continue
+        if text_only:
+            value = getattr(item, "textContent", None)
+            if callable(value):
+                value = value()
+            if value is None:
+                value = str(item)
+            rendered.append(str(value))
+            print(value)
+            continue
+        rendered.append(str(item))
+        print(item)
+    return rendered
+
+
+def project(name, server_choice: str | None = None):
     """
     this will replace the older bash script
     """
     from domonic.utils import Utils
+    server_opt = get_supported_servers()
+
+    if server_choice is not None and server_choice not in server_opt and server_choice != "none":
+        raise ValueError(f"Unsupported server '{server_choice}'. Supported servers: {', '.join(server_opt)}")
 
     def write_requirements(server: str) -> list[str]:
         requirements = ["domonic", "requests", *get_server_requirements(server)]
@@ -181,19 +231,18 @@ run:
     # os.system("python3 -m pip freeze > requirements.txt")
 
     # ask the user which server they want to use
-    server_opt = get_supported_servers()
-    print("You want a server?")
-    for i, server in enumerate(server_opt):
-        print(str(i) + ": " + server)
-    server_choice = input("Enter a number: ")
-    try:
-        server_choice = server_opt[int(server_choice)]
-    except (IndexError, ValueError):
-        if server_choice in server_opt:
-            server_choice = server_choice
-        else:
-            server_choice = "none"
-
+    if server_choice is None:
+        print("You want a server?")
+        for i, server in enumerate(server_opt):
+            print(str(i) + ": " + server)
+        server_choice = input("Enter a number: ")
+        try:
+            server_choice = server_opt[int(server_choice)]
+        except (IndexError, ValueError):
+            if server_choice in server_opt:
+                server_choice = server_choice
+            else:
+                server_choice = "none"
     # with python not touch
     with open("app.py", "w") as f:
         # write the hello world for the given server
@@ -257,6 +306,7 @@ def parse_args():
     )
     parser.add_argument("-v", "--version", action="store_true")
     parser.add_argument("-p", "--project", help="Create a new project", type=str)
+    parser.add_argument("--server", help="Choose the project server non-interactively", type=str, default=None)
     parser.add_argument(
         "-e",
         "--eval",
@@ -292,6 +342,14 @@ def parse_args():
         nargs="*",
         default=None,
     )
+    parser.add_argument("--xpath-file", help="pass a local HTML file and an xpath", type=str, nargs=2, default=None)
+    parser.add_argument("--query-file", help="pass a local HTML file and a css query", type=str, nargs=2, default=None)
+    parser.add_argument("--xpath-stdin", help="read HTML from stdin and apply an xpath", type=str, default=None)
+    parser.add_argument("--query-stdin", help="read HTML from stdin and apply a css query", type=str, default=None)
+    parser.add_argument("--text", help="print text content instead of node markup", action="store_true")
+    parser.add_argument("--attr", help="print a specific attribute from each result", type=str, default=None)
+    parser.add_argument("--count", help="print only the number of matches", action="store_true")
+    parser.add_argument("--first", help="print only the first match", action="store_true")
     parser.add_argument(
         "-h2p", 
         "--html2pyml", 
@@ -329,6 +387,18 @@ def parse_args():
 
 def do_things(arguments):
     from domonic.terminal import TerminalException
+
+    def _resolve_source_and_expression(values, label: str):
+        if values is None:
+            return None
+        if len(values) == 2:
+            return values[0], values[1], False
+        if len(values) == 1 and not sys.stdin.isatty():
+            return None, values[0], True
+        raise ValueError(
+            f"{label} expects exactly 2 arguments: a URL and an expression. "
+            f"If piping HTML in, pass just the expression."
+        )
 
     try:
         if arguments.assets is True:
@@ -368,7 +438,7 @@ def do_things(arguments):
 
     if arguments.project is not None:
         print("creating a basic project:")
-        project(arguments.project)
+        project(arguments.project, arguments.server)
 
     if arguments.help is True:
         import webbrowser
@@ -388,33 +458,65 @@ def do_things(arguments):
         print(result)
         return result
 
-    if arguments.xpath is not None:
+    if arguments.xpath is not None or arguments.xpath_file is not None or arguments.xpath_stdin is not None:
         from domonic import domonic
         from domonic.webapi.xpath import XPathEvaluator, XPathResult
 
-        url, xpath = arguments.xpath
-        # try:
-        import requests
+        source: str | None = None
+        xpath: str
+        use_stdin = False
+        if arguments.xpath is not None:
+            source, xpath, use_stdin = _resolve_source_and_expression(arguments.xpath, "xpath")
+        elif arguments.xpath_file is not None:
+            source, xpath = arguments.xpath_file
+        else:
+            xpath = arguments.xpath_stdin
+            use_stdin = True
 
-        r = requests.get(url)
-        page = domonic.parseString(r.text)
+        page = domonic.parseString(_read_source(source, use_stdin))
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression(xpath)
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        # assert str(result.nodes[0])
-        for n in result.nodes:
-            print(n)
-        # except Exception as e:
-        #     print('pip install html5lib')
+        return _emit_results(
+            result.nodes,
+            text_only=arguments.text,
+            attr_name=arguments.attr,
+            count_only=arguments.count,
+            first_only=arguments.first,
+        )
 
-    if arguments.query is not None:
-        url, query = arguments.query
-        from domonic.window import window
+    if arguments.query is not None or arguments.query_file is not None or arguments.query_stdin is not None:
+        query: str
+        if arguments.query is not None:
+            source, query, use_stdin = _resolve_source_and_expression(arguments.query, "query")
+            if use_stdin:
+                from domonic import domonic
 
-        window.location = url
-        results = window.document.querySelectorAll(query)
-        for result in results:
-            print(result)
+                page = domonic.parseString(_read_source(None, True))
+                results = page.querySelectorAll(query)
+            else:
+                from domonic.window import window
+
+                window.location = source
+                results = window.document.querySelectorAll(query)
+        else:
+            from domonic import domonic
+
+            if arguments.query_file is not None:
+                source, query = arguments.query_file
+                page = domonic.parseString(_read_source(source))
+            else:
+                query = arguments.query_stdin
+                page = domonic.parseString(_read_source(None, True))
+            results = page.querySelectorAll(query)
+
+        return _emit_results(
+            results,
+            text_only=arguments.text,
+            attr_name=arguments.attr,
+            count_only=arguments.count,
+            first_only=arguments.first,
+        )
 
     # if arguments.server is True:
     # port = domonic.get(arguments.server)

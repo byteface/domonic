@@ -1,7 +1,7 @@
 dom
 ============
 
-The DOM is gradually evolving...
+Domonic's DOM aims to be useful as an actual platform surface, not just a tree of helper objects.
 
 To use the DOM either reference your root 'html' node or import the dom modules global 'document'
 

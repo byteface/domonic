@@ -13,6 +13,9 @@
 .. automodule:: domonic.javascript
     :members:
 
+.. automodule:: domonic.animation
+    :members:
+
 .. automodule:: domonic.terminal
     :members:
 
@@ -26,6 +29,9 @@
     :members:
 
 .. automodule:: domonic.style
+    :members:
+
+.. automodule:: domonic.window
     :members:
 
 .. automodule:: domonic.utils
