@@ -5101,7 +5101,7 @@ class CSSStyleDeclaration(Style):
 
     def getPropertyValue(self, propertyName: str) -> str:  # TODO - test
         """Returns the value of the property with the specified name."""
-        raise NotImplementedError
+        return getattr(self, propertyName, "")
 
     def item(self, index: int) -> str:
         """Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.
@@ -5110,9 +5110,14 @@ class CSSStyleDeclaration(Style):
         """
         raise NotImplementedError
 
-    def removeProperty(self):
+    def removeProperty(self, propertyName):
         """Removes a property from the CSS declaration block."""
-        raise NotImplementedError
+        current = getattr(self, propertyName, "")
+        try:
+            delattr(self, propertyName)
+        except AttributeError:
+            setattr(self, propertyName, "")
+        return current
 
     # Modifies an existing CSS property or creates a new CSS property in the declaration block. """
     def setProperty(self, property, value, priority=None):

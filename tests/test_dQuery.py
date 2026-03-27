@@ -135,16 +135,25 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_click(self):
-        pass
+        page = html(body(button("go", _id="btn")))
+        º(page)
+        called = []
+        º("#btn").click(lambda e: called.append(e.type))
+        º("#btn").click(None)
+        assert called == ["click"]
 
     def test_clone(self):
         pass
 
     def test_closest(self):
-        pass
+        page = html(body(div(span("x", _id="child"), _class="wrapper")))
+        º(page)
+        assert str(º("#child").closest(".wrapper")) == '<div class="wrapper"><span id="child">x</span></div>'
 
     def test_contents(self):
-        pass
+        page = html(body(div("hi", span("there"), _id="test")))
+        º(page)
+        assert len(º("#test").contents().toArray()) == 2
 
     def test_context(self):
         pass
@@ -156,7 +165,9 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_data(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.data("answer", 42)
+        assert el.data("answer") == 42
 
     def test_dblclick(self):
         pass
@@ -168,7 +179,13 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_dequeue(self):
-        pass
+        el = º('<div id="test"></div>')
+        calls = []
+        el.delay(10)
+        el.elements[0]._dquery_queue.append(lambda: calls.append("ran"))
+        el.dequeue()
+        el.dequeue()
+        assert calls == ["ran"]
 
     def test_detach(self):
         pass
@@ -222,13 +239,28 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_focus(self):
-        pass
+        page = html(body(input(_id="field")))
+        º(page)
+        called = []
+        º("#field").on("focus", lambda e: called.append(e.type))
+        º("#field").focus()
+        assert called == ["focus"]
 
     def test_focusin(self):
-        pass
+        page = html(body(input(_id="field")))
+        º(page)
+        called = []
+        º("#field").on("focusin", lambda e: called.append(e.type))
+        º("#field").focusin()
+        assert called == ["focusin"]
 
     def test_focusout(self):
-        pass
+        page = html(body(input(_id="field")))
+        º(page)
+        called = []
+        º("#field").on("focusout", lambda e: called.append(e.type))
+        º("#field").focusout()
+        assert called == ["focusout"]
 
     def test_get(self):
         pass
@@ -243,13 +275,21 @@ class TestCase(unittest.TestCase):
         assert a.hasClass("five") == False
 
     def test_height(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.elements.style.height = "25px"
+        assert el.height() == 25
 
     def test_hide(self):
         pass
 
     def test_hover(self):
-        pass
+        page = html(body(div("x", _id="test")))
+        º(page)
+        calls = []
+        º("#test").hover(lambda e: calls.append("in"), lambda e: calls.append("out"))
+        º("#test").mouseenter()
+        º("#test").mouseleave()
+        assert calls == ["in", "out"]
 
     def test_html(self):
         pass
@@ -325,10 +365,14 @@ class TestCase(unittest.TestCase):
         assert str(º("#first").next("#third")) == ""
 
     def test_nextAll(self):
-        pass
+        page = html(body(div("one", _id="first"), div("two", _class="match"), div("three", _class="match")))
+        º(page)
+        assert str(º("#first").nextAll(".match")) == '<div class="match">two</div><div class="match">three</div>'
 
     def test_nextUntil(self):
-        pass
+        page = html(body(div("one", _id="first"), div("two"), div("stop", _id="stop"), div("three")))
+        º(page)
+        assert str(º("#first").nextUntil("#stop")) == "<div>two</div>"
 
     # def test_not(self):
     # pass
@@ -340,16 +384,26 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_offset(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.offset({"top": "12px", "left": "5px"})
+        assert el.offset() == {"top": 12, "left": 5}
 
     def test_offsetParent(self):
-        pass
+        page = html(body(div(span("x", _id="child"), _id="parent")))
+        º(page)
+        assert º("#child").offsetParent().getAttribute("id") == "parent"
 
     def on(self, event, callback):
         pass
 
     def test_one(self):
-        pass
+        page = html(body(button("go", _id="btn")))
+        º(page)
+        called = []
+        º("#btn").one("click", lambda e: called.append(e.type))
+        º("#btn").click()
+        º("#btn").click()
+        assert called == ["click"]
 
     def test_outerHeight(self):
         pass
@@ -363,13 +417,19 @@ class TestCase(unittest.TestCase):
         assert str(º("#child").parent()) == '<div id="parent"><span id="child">x</span></div>'
 
     def test_parents(self):
-        pass
+        page = html(body(div(section(span("x", _id="child"), _id="inner"), _id="outer")))
+        º(page)
+        assert str(º("#child").parents("#outer")) == '<div id="outer"><section id="inner"><span id="child">x</span></section></div>'
 
     def test_parentsUntil(self):
-        pass
+        page = html(body(div(section(span("x", _id="child"), _id="inner"), _id="outer")))
+        º(page)
+        assert str(º("#child").parentsUntil("#outer")) == '<section id="inner"><span id="child">x</span></section>'
 
     def test_position(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.offset({"top": "3px", "left": "7px"})
+        assert el.position() == {"top": 3, "left": 7}
 
     def prepend(self, html):
         pass
@@ -378,16 +438,23 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_prev(self):
-        pass
+        page = html(body(div("one", _id="first"), div("two", _id="second"), div("three", _id="third")))
+        º(page)
+        assert str(º("#third").prev()) == '<div id="second">two</div>'
 
     def test_prevAll(self):
-        pass
+        page = html(body(div("one", _class="match"), div("two"), div("three", _id="third"), div("four", _class="match")))
+        º(page)
+        assert str(º("#third").prevAll(".match")) == '<div class="match">one</div>'
 
     def test_prevUntil(self):
-        pass
+        page = html(body(div("one", _id="stop"), div("two"), div("three", _id="third")))
+        º(page)
+        assert str(º("#third").prevUntil("#stop")) == "<div>two</div>"
 
     def test_promise(self):
-        pass
+        el = º('<div id="test"></div>')
+        assert el.promise()["state"] == "resolved"
 
     def test_prop(self):
         pass
@@ -396,10 +463,14 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_queue(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.delay(10)
+        assert len(el.queue()) == 1
 
     def test_ready(self):
-        pass
+        calls = []
+        º('<div></div>').ready(lambda: calls.append("ready"))
+        assert calls == ["ready"]
 
     def test_remove(self):
         pass
@@ -415,7 +486,9 @@ class TestCase(unittest.TestCase):
         assert a.hasClass("one") == False
 
     def test_removeData(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.data("answer", 42).removeData("answer")
+        assert el.data("answer") is None
 
     def test_removeProp(self):
         pass
@@ -427,19 +500,38 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_resize(self):
-        pass
+        page = html(body(div("x", _id="test")))
+        º(page)
+        calls = []
+        º("#test").resize(lambda e: calls.append(e.type))
+        º("#test").resize()
+        assert calls == ["resize"]
 
     def test_scroll(self):
-        pass
+        page = html(body(div("x", _id="test")))
+        º(page)
+        calls = []
+        º("#test").scroll(lambda e: calls.append(e.type))
+        º("#test").scroll()
+        assert calls == ["scroll"]
 
     def test_scrollLeft(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.scrollLeft(11)
+        assert el.scrollLeft() == 11
 
     def test_scrollTop(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.scrollTop(13)
+        assert el.scrollTop() == 13
 
     def test_select(self):
-        pass
+        page = html(body(input(_id="field")))
+        º(page)
+        calls = []
+        º("#field").select(lambda e: calls.append(e.type))
+        º("#field").select()
+        assert calls == ["select"]
 
     def test_serialize(self):
         page = html(
@@ -460,13 +552,17 @@ class TestCase(unittest.TestCase):
         assert º("form").serialize() == "single=Single&multiple=Multiple&multiple=Multiple3&lname="
 
     def test_serializeArray(self):
-        pass
+        page = html(form(input(_type="text", _name="lname", _value="smith")))
+        º(page)
+        assert º("form").serializeArray() == [{"name": "lname", "value": "smith"}]
 
     def test_show(self):
         pass
 
     def test_siblings(self):
-        pass
+        page = html(body(div("one", _class="match"), div("two", _id="target"), div("three", _class="match")))
+        º(page)
+        assert str(º("#target").siblings(".match")) == '<div class="match">one</div><div class="match">three</div>'
 
     def test_size(self):
         pass
@@ -488,7 +584,12 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_submit(self):
-        pass
+        page = html(body(form(input(_name="x"), _id="form1")))
+        º(page)
+        called = []
+        º("#form1").on("submit", lambda e: called.append(e.type))
+        º("#form1").submit()
+        assert called == ["submit"]
 
     def test_text(self):
         page = html(
@@ -526,16 +627,33 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_triggerHandler(self):
-        pass
+        page = html(body(button("go", _id="btn")))
+        º(page)
+        called = []
+        º("#btn").on("click", lambda e: called.append(e.type))
+        event = º("#btn").triggerHandler("click")
+        assert called == ["click"]
+        assert event.type == "click"
 
     def test_unbind(self):
-        pass
+        page = html(body(button("go", _id="btn")))
+        º(page)
+        called = []
+        º("#btn").on("click", lambda e: called.append(e.type))
+        º("#btn").unbind("click")
+        º("#btn").triggerHandler("click")
+        assert called == []
 
     def test_undelegate(self):
         pass
 
     def test_unload(self):
-        pass
+        page = html(body(div("x", _id="test")))
+        º(page)
+        calls = []
+        º("#test").unload(lambda e: calls.append(e.type))
+        º("#test").unload()
+        assert calls == ["unload"]
 
     def test_unwrap(self):
         pass
@@ -544,13 +662,18 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_width(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.elements.style.width = "30px"
+        assert el.width() == 30
 
     def test_wrap(self):
         pass
 
     def test_wrapAll(self):
-        pass
+        page = html(body(span("a", _class="item"), span("b", _class="item")))
+        º(page)
+        º(".item").wrapAll("div")
+        assert str(page) == '<html><body><div><span class="item">a</span><span class="item">b</span></div></body></html>'
 
     def test_wrapInner(self):
         pass
@@ -635,6 +758,26 @@ class TestCase(unittest.TestCase):
         # º.noop()
 
         print(º.now())
+
+        node = div()
+        assert º.data(node, "k", "v") == "v"
+        assert º.data(node, "k") == "v"
+        assert º.hasData(node) == True
+        º.removeData(node, "k")
+        assert º.hasData(node) == False
+
+        cb_calls = []
+        cbs = º.Callbacks()
+        cbs.add(lambda value: cb_calls.append(value)).fire("ok")
+        assert cb_calls == ["ok"]
+
+        deferred_calls = []
+        dfd = º.Deferred()
+        dfd.done(lambda value: deferred_calls.append(value)).resolve("done")
+        assert deferred_calls == ["done"]
+
+        assert º.parseJSON('{"a":1}') == {"a": 1}
+        assert º.htmlPrefilter("<div></div>") == "<div></div>"
 
         # º.param()
         # º.parseHTML()

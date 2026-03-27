@@ -464,6 +464,13 @@ class TestCase(unittest.TestCase):
         # s.x = None
         # s.y = None
 
+    def test_css_style_declaration_property_helpers(self):
+        style = CSSStyleDeclaration()
+        style.setProperty("width", "10px")
+        self.assertEqual(style.getPropertyValue("width"), "10px")
+        self.assertEqual(style.removeProperty("width"), "10px")
+        self.assertEqual(style.getPropertyValue("width"), "")
+
 
 if __name__ == "__main__":
     unittest.main()

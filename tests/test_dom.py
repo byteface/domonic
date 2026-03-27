@@ -948,6 +948,139 @@ class DOMTest(unittest.TestCase):
         # this will likely move later versions
 
         # window = Window()
+        pass
+
+    def test_element_geometry_helpers(self):
+        el = div("x")
+        el.style.width = "100px"
+        el.style.height = "50px"
+        el.style.paddingLeft = 5
+        el.style.paddingRight = 5
+        el.style.paddingTop = 2
+        el.style.paddingBottom = 3
+        el.style.borderLeftWidth = 1
+        el.style.borderRightWidth = 1
+        el.style.borderTopWidth = 4
+        el.style.borderBottomWidth = 4
+        el.style.left = "12px"
+        el.style.top = "8px"
+
+        self.assertEqual(el.clientWidth, 110)
+        self.assertEqual(el.clientHeight, 55)
+        self.assertEqual(el.offsetWidth(), 112)
+        self.assertEqual(el.offsetHeight(), 63)
+        self.assertEqual(el.offsetLeft(), 12)
+        self.assertEqual(el.offsetTop(), 8)
+
+        rect = el.getBoundingClientRect()
+        self.assertEqual(rect.left, 12)
+        self.assertEqual(rect.top, 8)
+        self.assertEqual(rect.width, 112)
+        self.assertEqual(rect.height, 63)
+
+    def test_element_scroll_helpers(self):
+        el = div("x")
+        el.style.width = "20px"
+        el.style.height = "10px"
+        self.assertEqual(el.scrollWidth(), 20)
+        self.assertEqual(el.scrollHeight(), 10)
+        self.assertEqual(el.scrollLeft(), 0)
+        self.assertEqual(el.scrollTop(), 0)
+
+    def test_element_focus_blur(self):
+        el = input(_type="text")
+        focus_calls = []
+        blur_calls = []
+        el.addEventListener("focus", lambda e: focus_calls.append(e.type))
+        el.addEventListener("blur", lambda e: blur_calls.append(e.type))
+        el.focus()
+        el.blur()
+        self.assertEqual(focus_calls, ["focus"])
+        self.assertEqual(blur_calls, ["blur"])
+
+    def test_domimplementation_create_html_document(self):
+        impl = DOMImplementation()
+        doc = impl.createHTMLDocument("hello")
+        self.assertEqual(doc.querySelector("title").textContent, "hello")
+        self.assertEqual(doc.body.tagName, "body")
+        self.assertTrue(impl.hasFeatures(None))
+
+    def test_document_elements_from_point(self):
+        one = div("one", _id="one")
+        one.style.left = "0px"
+        one.style.top = "0px"
+        one.style.width = "50px"
+        one.style.height = "50px"
+        two = div("two", _id="two")
+        two.style.left = "10px"
+        two.style.top = "10px"
+        two.style.width = "20px"
+        two.style.height = "20px"
+        page = html(body(one, two))
+        hits = page.elementsFromPoint(15, 15)
+        self.assertTrue(any(hit.getAttribute("id") == "one" for hit in hits))
+        self.assertTrue(any(hit.getAttribute("id") == "two" for hit in hits))
+        self.assertEqual(page.elementFromPoint(15, 15).getAttribute("id"), "one")
+
+    def test_range_basic_operations(self):
+        container = div(span("a"), span("b"), span("c"))
+        r = Range()
+        r.setStart(container, 1)
+        r.setEnd(container, 3)
+        self.assertEqual(r.toString(), "<span>b</span><span>c</span>")
+
+        clone = r.cloneContents()
+        self.assertEqual(str(clone), "<span>b</span><span>c</span>")
+
+        extracted = r.extractContents()
+        self.assertEqual(str(extracted), "<span>b</span><span>c</span>")
+        self.assertEqual(str(container), "<div><span>a</span></div>")
+
+        fragment = r.createContextualFragment("<em>x</em>")
+        self.assertEqual(str(fragment), "<em>x</em>")
+
+    def test_node_iterator_next_node(self):
+        page = html(body(div(span("a"), p("b"), _id="root")))
+        iterator = page.createNodeIterator(page.body)
+        seen = []
+        node = iterator.nextNode()
+        while node is not None:
+            seen.append(getattr(node, "tagName", getattr(node, "nodeName", "")))
+            node = iterator.nextNode()
+        self.assertIn("body", seen)
+        self.assertIn("div", seen)
+        self.assertIn("span", seen)
+        self.assertIn("p", seen)
+
+    def test_document_get_elements_by_name(self):
+        page = html(
+            body(
+                input(_type="text", _name="email"),
+                form(
+                    input(_type="text", _name="email"),
+                    input(_type="text", _name="username"),
+                ),
+            )
+        )
+
+        matches = page.getElementsByName("email")
+        self.assertEqual(len(matches), 2)
+        self.assertTrue(all(match.getAttribute("name") == "email" for match in matches))
+
+    def test_fullscreen_and_scroll_helpers(self):
+        page = html(body(div(_id="hero"), section(_id="content")))
+        hero = page.getElementById("hero")
+
+        self.assertIsNone(page.fullscreenElement())
+        self.assertEqual(hero.requestFullscreen(), hero)
+        self.assertEqual(page.fullscreenElement(), hero)
+        self.assertIsNone(hero.exitFullscreen())
+        self.assertIsNone(page.fullscreenElement())
+
+        self.assertEqual(hero.scrollIntoView(), hero)
+        self.assertTrue(getattr(hero, "_scrolled_into_view", False))
+        self.assertEqual(hero.namespaceURI, "http://www.w3.org/1999/xhtml")
+
         # Window().console.log("test this")
         # window.console.log("test this")
 

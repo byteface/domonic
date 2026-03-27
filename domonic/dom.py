@@ -1024,8 +1024,9 @@ class Node(EventTarget):
     @ownerDocument.setter
     def ownerDocument(self, newOwner):  #: Element):
         """Sets the root element (document object) for an element"""
-        # self.rootNode = newOwner # NOTE - you can't set rootNode it's property that calcs it
-        pass
+        if newOwner is None:
+            return
+        self.parentNode = newOwner
 
     @property
     def rootNode(self):
@@ -1544,6 +1545,32 @@ class DOMStringMap:
     # def values(self):
     #     """ Returns an array of all the values in the map """
     #     return [item.value for item in self.args]
+
+
+class DOMRect:
+    """A lightweight rectangle object for DOM geometry APIs."""
+
+    def __init__(self, x=0, y=0, width=0, height=0):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.top = y
+        self.left = x
+        self.right = x + width
+        self.bottom = y + height
+
+    def toJSON(self):
+        return {
+            "x": self.x,
+            "y": self.y,
+            "width": self.width,
+            "height": self.height,
+            "top": self.top,
+            "right": self.right,
+            "bottom": self.bottom,
+            "left": self.left,
+        }
 
 
 class DOMTokenList(list):
@@ -2127,16 +2154,12 @@ class Element(Node):
         # for now I'm going using recursion so this is a bit of a hack to do a few levels
         if self.getAttribute("id") == _id:
             return self
-        try:
-            for child in self.childNodes:
-                if isinstance(child, str):
-                    continue
-                match = child._getElementById(_id)
-                if match is not False and match is not None:
-                    return match
-        except Exception as e:
-            print("fail", e)
-            pass  # TODO - dont iterate strings.... ooof nasty. so thats why you never pass silently.
+        for child in self.childNodes:
+            if not isinstance(child, Element):
+                continue
+            match = child._getElementById(_id)
+            if match is not False and match is not None:
+                return match
         return False
 
     def _getElementByAttrVal(self, attr: str, val: str):
@@ -2164,6 +2187,9 @@ class Element(Node):
         if query[0] == "#":
             if element.getAttribute("id") == query.split("#")[1]:
                 return True
+
+        if query == "*":
+            return True
 
         if element.tagName.lower() == query.lower():
             return True
@@ -2225,8 +2251,24 @@ class Element(Node):
         """
 
         selected = []
-        # import string
-        all_selectors = re.sub(r"\s*([^\w])\s*", r"\1", all_selectors)  # clean up whitespace
+        current = []
+        quote = None
+        for char in all_selectors:
+            if quote is not None:
+                current.append(char)
+                if char == quote:
+                    quote = None
+                continue
+            if char in ("'", '"'):
+                quote = char
+                current.append(char)
+                continue
+            if char.isspace():
+                if current and current[-1] != " ":
+                    current.append(" ")
+                continue
+            current.append(char)
+        all_selectors = "".join(current).strip()
         # Grab all of the tagName elements within current context
 
         def getElements(context, tag):
@@ -2240,7 +2282,36 @@ class Element(Node):
             return found
 
         context = [document]
-        inheriters = all_selectors.split(" ")
+        inheriters = []
+        current = []
+        bracket_depth = 0
+        quote = None
+        for char in all_selectors:
+            if quote is not None:
+                current.append(char)
+                if char == quote:
+                    quote = None
+                continue
+            if char in ("'", '"'):
+                quote = char
+                current.append(char)
+                continue
+            if char == "[":
+                bracket_depth += 1
+                current.append(char)
+                continue
+            if char == "]":
+                bracket_depth = max(0, bracket_depth - 1)
+                current.append(char)
+                continue
+            if char == " " and bracket_depth == 0:
+                if current:
+                    inheriters.append("".join(current))
+                    current = []
+                continue
+            current.append(char)
+        if current:
+            inheriters.append("".join(current))
 
         # Space
         for element in inheriters:
@@ -2266,7 +2337,7 @@ class Element(Node):
                 context = []
                 for fnd in found:
                     if fnd.getAttribute("class") and re.search(
-                        r"(^|\s)" + class_name + "(\s|$)", fnd.getAttribute("class")
+                        r"(^|\s)" + class_name + r"(\s|$)", fnd.getAttribute("class")
                     ):
                         context.append(fnd)
 
@@ -2275,33 +2346,34 @@ class Element(Node):
             # If the char '[' appears, that means it needs CSS 3 parsing
             if str.find(element, "[") + 1:
                 # Code to deal with attribute selectors
-                m = re.match(r'^(\w*)\[(\w+)([=~\|\^\$\*]?)=?[\'"]?([^\]\'"]*)[\'"]?\]$', element)
+                m = re.match(r"^([\w\*-]*)\[([\w-]+)([=~\|\^\$\*]?)=?['\"]?([^\]'\"]*)['\"]?\]$", element)
                 if m:
                     tag = m.group(1)
                     attr = m.group(2)
                     operator = m.group(3)
                     value = m.group(4)
                 else:
-                    return "NOPE"  # ?
+                    return []
 
                 found = getElements(context, tag)
                 context = []
                 for fnd in found:
+                    attr_value = fnd.getAttribute(attr)
+                    if attr_value is None:
+                        continue
                     if operator == "=" and fnd.getAttribute(attr) != value:
                         continue  # WORKING
-                    if operator == "~" and not (re.search(r"(^|\\s)" + value + "(\\s|$)", fnd.getAttribute(attr))):
+                    if operator == "~" and not (re.search(r"(^|\\s)" + value + "(\\s|$)", attr_value)):
                         continue  # NOT WORKING?
-                    if operator == "|" and not (re.search(r"^" + value + "-?", fnd.getAttribute(attr))):
+                    if operator == "|" and not (re.search(r"^" + value + "-?", attr_value)):
                         continue
-                    if operator == "^" and str.find(fnd.getAttribute(attr), value) != 0:
+                    if operator == "^" and str.find(attr_value, value) != 0:
                         continue  # WORKING
-                    if operator == "$" and str.rfind(fnd.getAttribute(attr), value) != (
-                        len(fnd.getAttribute(attr)) - len(value)
-                    ):
+                    if operator == "$" and str.rfind(attr_value, value) != (len(attr_value) - len(value)):
                         continue  # kinda WORKING
-                    if operator == "*" and not (str.find(fnd.getAttribute(attr), value) + 1):
+                    if operator == "*" and not (str.find(attr_value, value) + 1):
                         continue  # WORKING
-                    elif not fnd.getAttribute(attr):
+                    elif not attr_value:
                         continue
                     context.append(fnd)
 
@@ -2372,8 +2444,8 @@ class Element(Node):
 
     def blur(self):
         """Removes focus from an element"""
-        # raise NotImplementedError
-        pass
+        self._focused = False
+        return self.dispatchEvent(Event("blur"))
 
     @property
     def classList(self):
@@ -2407,25 +2479,42 @@ class Element(Node):
         evt = MouseEvent("click")
         return self.dispatchEvent(evt)
 
+    @staticmethod
+    def _style_number(value):
+        if value in (None, "", "auto", "none"):
+            return 0
+        if isinstance(value, (int, float)):
+            return value
+        match = re.search(r"-?\d+(?:\.\d+)?", str(value))
+        return float(match.group(0)) if match else 0
+
     @property
     def clientHeight(self):
         """Returns the height of an element, including padding"""
-        return self.style.height + self.style.paddingTop + self.style.paddingBottom
+        return (
+            Element._style_number(self.style.height)
+            + Element._style_number(self.style.paddingTop)
+            + Element._style_number(self.style.paddingBottom)
+        )
 
     @property
     def clientLeft(self):
         """Returns the width of the left border of an element"""
-        return self.style.left
+        return Element._style_number(self.style.left)
 
     @property
     def clientTop(self):
         """Returns the width of the top border of an element"""
-        return self.style.top
+        return Element._style_number(self.style.top)
 
     @property
     def clientWidth(self):
         """Returns the width of an element, including padding"""
-        return self.style.width + self.style.paddingLeft + self.style.paddingRight
+        return (
+            Element._style_number(self.style.width)
+            + Element._style_number(self.style.paddingLeft)
+            + Element._style_number(self.style.paddingRight)
+        )
 
     @property
     def contentEditable(self) -> bool:
@@ -2465,7 +2554,10 @@ class Element(Node):
 
     def exitFullscreen(self):
         """Cancels an element in fullscreen mode"""
-        raise NotImplementedError
+        doc = self.ownerDocument
+        if doc is not None:
+            doc._fullscreenElement = None
+        return None
 
     def firstElementChild(self):
         """Returns the first child element of an element"""
@@ -2476,7 +2568,8 @@ class Element(Node):
 
     def focus(self):
         """Sets focus on an element"""
-        raise NotImplementedError
+        self._focused = True
+        return self.dispatchEvent(Event("focus"))
 
     def setAttributeNodeNS(self, attr):  # TODO - test
         """Sets the attribute node of an element"""
@@ -2525,7 +2618,12 @@ class Element(Node):
 
     def getBoundingClientRect(self):
         """Returns the size of an element and its position relative to the viewport"""
-        raise NotImplementedError
+        return DOMRect(
+            Element._style_number(self.style.left),
+            Element._style_number(self.style.top),
+            self.offsetWidth(),
+            self.offsetHeight(),
+        )
 
     def getElementsByClassName(self, className: str) -> "HTMLCollection":
         """[Returns a collection of all child elements with the specified class name]
@@ -2669,7 +2767,7 @@ class Element(Node):
 
     def namespaceURI(self):
         """Returns the namespace URI of an element"""
-        pass
+        return getattr(self, "_namespaceURI", "http://www.w3.org/1999/xhtml")
 
     @property
     def nextSibling(self):
@@ -2725,23 +2823,31 @@ class Element(Node):
 
     def offsetHeight(self):
         """Returns the height of an element, including padding, border and scrollbar"""
-        raise NotImplementedError
+        return (
+            self.clientHeight
+            + Element._style_number(self.style.borderTopWidth)
+            + Element._style_number(self.style.borderBottomWidth)
+        )
 
     def offsetWidth(self):
         """Returns the width of an element, including padding, border and scrollbar"""
-        raise NotImplementedError
+        return (
+            self.clientWidth
+            + Element._style_number(self.style.borderLeftWidth)
+            + Element._style_number(self.style.borderRightWidth)
+        )
 
     def offsetLeft(self):
         """Returns the horizontal offset position of an element"""
-        raise NotImplementedError
+        return Element._style_number(self.style.left)
 
     def offsetParent(self):
         """Returns the offset container of an element"""
-        raise NotImplementedError
+        return self.parentNode
 
     def offsetTop(self):
         """Returns the vertical offset position of an element"""
-        raise NotImplementedError
+        return Element._style_number(self.style.top)
 
     @property
     def parentElement(self):
@@ -2785,13 +2891,23 @@ class Element(Node):
         Returns:
             [type]: [a list of Element objects]
         """
+        if not query:
+            return []
+
+        def _fallback_selector_results():
+            if query.startswith("."):
+                return self.getElementsByClassName(query[1:])
+            if query.startswith("#"):
+                found = self.getElementById(query[1:])
+                return [found] if found else []
+            results = self.getElementsBySelector(query, self)
+            return results if isinstance(results, list) else []
+
         naked_query = query[1:]
         if "." in naked_query or "[" in naked_query or " " in naked_query:
-            # return self.getElementsBySelector(query, self)
-            # from cssselect import GenericTranslator, SelectorError
-            from cssselect import HTMLTranslator, SelectorError
-
             try:
+                from cssselect import HTMLTranslator, SelectorError
+
                 expression = HTMLTranslator().css_to_xpath(query)
                 from domonic.webapi.xpath import XPathEvaluator, XPathResult
 
@@ -2799,6 +2915,8 @@ class Element(Node):
                 expression = evaluator.createExpression(expression)
                 result = expression.evaluate(self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
                 return result.nodes
+            except ImportError:
+                return _fallback_selector_results()
             except SelectorError:
                 print("Invalid selector.")
                 return []
@@ -2845,7 +2963,10 @@ class Element(Node):
 
     def requestFullscreen(self):
         """Shows an element in fullscreen mode"""
-        raise NotImplementedError
+        doc = self.ownerDocument
+        if doc is not None:
+            doc._fullscreenElement = self
+        return self
 
     # def setPointerCapture(self):
     #     ''' Sets the pointer capture to the specified element '''
@@ -2857,23 +2978,24 @@ class Element(Node):
 
     def scrollHeight(self):
         """Returns the entire height of an element, including padding"""
-        raise NotImplementedError
+        return max(self.clientHeight, getattr(self, "_scroll_height", self.clientHeight))
 
     def scrollIntoView(self):
         """Scrolls the specified element into the visible area of the browser window"""
-        raise NotImplementedError
+        self._scrolled_into_view = True
+        return self
 
     def scrollLeft(self):
         """Sets or returns the number of pixels an element's content is scrolled horizontally"""
-        raise NotImplementedError
+        return getattr(self, "_scroll_left", 0)
 
     def scrollTop(self):
         """Sets or returns the number of pixels an element's content is scrolled vertically"""
-        raise NotImplementedError
+        return getattr(self, "_scroll_top", 0)
 
     def scrollWidth(self):
         """Returns the entire width of an element, including padding"""
-        raise NotImplementedError
+        return max(self.clientWidth, getattr(self, "_scroll_width", self.clientWidth))
 
     def setAttribute(self, attribute, value):
         """Sets or changes the specified attribute, to the specified value"""
@@ -2974,17 +3096,19 @@ class DOMImplementation:
         return DocumentType(qualifiedName, publicId, systemId)
 
     def createHTMLDocument(self, title=None):
-        # d = Document()
-        # d.createElement('html')
-        # d.createElement('head')
-        # d.createElement('body')
-        # d.title = title
-        # return d
-        pass
+        doc = HTMLDocument()
+        html_el = Document.createElement("html")
+        head_el = Document.createElement("head")
+        body_el = Document.createElement("body")
+        if title is not None:
+            head_el.appendChild(Document.createElement("title", title))
+        html_el.appendChild(head_el)
+        html_el.appendChild(body_el)
+        doc.args = (html_el,)
+        return doc
 
     def hasFeatures(self, featureList) -> bool:
-        # return True
-        pass
+        return True
 
 
 class ProcessingInstruction(Node):
@@ -3212,31 +3336,77 @@ class Range(AbastractRange):
             raise NotImplementedError
 
     def deleteContents(self):
-        raise NotImplementedError
+        self.extractContents()
 
     def extractContents(self):
-        raise NotImplementedError
+        if self.startContainer is None:
+            return DocumentFragment()
+        if self.startContainer == self.endContainer:
+            container = self.startContainer
+            children = list(container.childNodes)
+            extracted = children[self.startOffset : self.endOffset]
+            if hasattr(container, "args"):
+                kept = children[: self.startOffset] + children[self.endOffset :]
+                container.args = tuple(kept)
+            return DocumentFragment(*extracted)
+        return DocumentFragment()
 
     def cloneContents(self):
-        raise NotImplementedError
+        import copy
+
+        if self.startContainer is None:
+            return DocumentFragment()
+        if self.startContainer == self.endContainer:
+            container = self.startContainer
+            children = list(container.childNodes)
+            cloned = [copy.deepcopy(child) for child in children[self.startOffset : self.endOffset]]
+            return DocumentFragment(*cloned)
+        return DocumentFragment()
 
     def insertNode(self, node):
-        raise NotImplementedError
+        if self.startContainer is None:
+            return
+        container = self.startContainer
+        if hasattr(container, "insertBefore"):
+            children = list(container.childNodes)
+            ref = children[self.startOffset] if self.startOffset < len(children) else None
+            container.insertBefore(node, ref)
 
     def surroundContents(self, newParent):
-        raise NotImplementedError
+        fragment = self.extractContents()
+        for child in fragment.args:
+            newParent.appendChild(child)
+        self.insertNode(newParent)
+        self.selectNode(newParent)
 
     def cloneRange(self):
-        raise NotImplementedError
+        new_range = Range()
+        new_range.startContainer = self.startContainer
+        new_range.startOffset = self.startOffset
+        new_range.endContainer = self.endContainer
+        new_range.endOffset = self.endOffset
+        new_range.collapsed = self.collapsed
+        new_range.commonAncestorContainer = self.commonAncestorContainer
+        return new_range
 
     def detach(self):
-        raise NotImplementedError
+        self.startContainer = None
+        self.endContainer = None
+        self.startOffset = 0
+        self.endOffset = 0
+        self.collapsed = True
 
     def createContextualFragment(self, fragment):
-        raise NotImplementedError
+        return DocumentFragment(fragment)
 
     def toString(self) -> str:
-        raise NotImplementedError
+        if self.startContainer is None:
+            return ""
+        if self.startContainer == self.endContainer:
+            container = self.startContainer
+            children = list(container.childNodes)
+            return "".join(str(child) for child in children[self.startOffset : self.endOffset])
+        return ""
 
 
 class StaticRange(AbastractRange):
@@ -3576,7 +3746,8 @@ class Document(Element):
 
     def elementFromPoint(self, x, y):
         """Returns the topmost element at the specified coordinates."""
-        raise NotImplementedError
+        hits = self.elementsFromPoint(x, y)
+        return hits[0] if hits else None
 
     def evaluate(
         self,
@@ -3598,7 +3769,20 @@ class Document(Element):
 
     def elementsFromPoint(self, x, y):
         """Returns an array of all elements at the specified coordinates."""
-        raise NotImplementedError
+        matches = []
+
+        def walk(node):
+            if isinstance(node, Element):
+                rect = node.getBoundingClientRect()
+                if rect.left <= x <= rect.right and rect.top <= y <= rect.bottom:
+                    matches.append(node)
+            for child in getattr(node, "childNodes", []):
+                if isinstance(child, str):
+                    continue
+                walk(child)
+
+        walk(self)
+        return matches
 
     @property
     def embeds(self):
@@ -3620,7 +3804,7 @@ class Document(Element):
 
     def fullscreenElement(self):
         """Returns the current element that is displayed in fullscreen mode"""
-        return None
+        return getattr(self, "_fullscreenElement", None)
 
     def fullscreenEnabled(self):
         """Returns a Boolean value indicating whether the document can be viewed in fullscreen mode"""
@@ -3636,19 +3820,18 @@ class Document(Element):
             [type]: [the element that has the ID attribute with the specified value]
         """
         for each in self.childNodes:
+            if not isinstance(each, Element):
+                continue
             if each.getAttribute("id") == _id:
                 return each
-            try:
-                for child in each.childNodes:
-                    if isinstance(child, str):
-                        continue
-                    match = child._getElementById(_id)
-                    # TODO - i think i need to build a hash map of IDs to positions on the tree
-                    # for now I'm going to use recursion and add this same method to Element
-                    if match is not False and match is not None:
-                        return match
-            except Exception as e:
-                pass  # TODO - dont iterate strings
+            for child in each.childNodes:
+                if not isinstance(child, Element):
+                    continue
+                match = child._getElementById(_id)
+                # TODO - i think i need to build a hash map of IDs to positions on the tree
+                # for now I'm going to use recursion and add this same method to Element
+                if match is not False and match is not None:
+                    return match
 
         return False
 
@@ -3661,17 +3844,19 @@ class Document(Element):
         Returns:
             [type]: [the matching elements]
         """
+        matches = HTMLCollection()
+
+        def walk(node):
+            if not isinstance(node, Element):
+                return
+            if node.getAttribute("name") == name:
+                matches.append(node)
+            for child in getattr(node, "childNodes", []):
+                walk(child)
+
         for each in self.childNodes:
-            if each.getAttribute("name") == name:
-                return each
-            try:
-                for child in each.childNodes:
-                    match = child._getElementByAttrVal("name", name)
-                    if match:
-                        return match
-            except Exception as e:
-                pass
-        return False
+            walk(each)
+        return matches
 
     # def hasFocus():
     # '''Returns a Boolean value indicating whether the document has focus'''
@@ -4514,8 +4699,17 @@ class NodeIterator:
         self._filter = filter
         self.entityReferenceExpansion = entityReferenceExpansion
         self.node = root
-        self.pointer = 0
+        self.pointer = -1
         self.stack = []
+
+        def collect(node):
+            self.stack.append(node)
+            for child in getattr(node, "childNodes", []):
+                if isinstance(child, str):
+                    continue
+                collect(child)
+
+        collect(root)
 
     @property
     def filter(self):
@@ -4543,17 +4737,22 @@ class NodeIterator:
 
     def previousNode(self):
         """Returns the previous Node in the document, or null if there are none."""
-        if self.pointer < 0:
+        if self.pointer <= 0:
             return None
-        if self.pointer == 0:
-            return self.root
-        if self.pointer == 1:
-            return self.stack[0]
-        return self.stack[self.pointer - 1]
+        self.pointer -= 1
+        self.node = self.stack[self.pointer]
+        return self.node
 
     def nextNode(self):
         """Returns the next Node in the document, or null if there are none."""
-        raise NotImplementedError()
+        self.pointer += 1
+        while self.pointer < len(self.stack):
+            candidate = self.stack[self.pointer]
+            if nodeFilter(self, candidate) == NodeFilter.FILTER_ACCEPT:
+                self.node = candidate
+                return candidate
+            self.pointer += 1
+        return None
 
 
 mapChild = {"first": "firstChild", "last": "lastChild", "next": "firstChild", "previous": "lastChild"}
