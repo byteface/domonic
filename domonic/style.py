@@ -62,39 +62,22 @@ class StyleSheetList(list):
 
     def _populate_stylesheets_from_document(self, doc):
         """parse the document to find all the stylesheets and add them to the list."""
-        # print('this runs')
-        # get loaded styles
-        # from domonic.dom import document
-        # newme = []
-
         sheets = doc.querySelectorAll('link[rel="stylesheet"]')
         for sheet in sheets:
-            # get the content of the style sheet
-            # TODO - sheet.href # make absolute
-            # TODO - download and parse
-            # self.styleSheets.append(StyleSheet(sheet))
-            print("external:", sheet)
-            ss = StyleSheet()
-            # print('whats going on?')
+            ss = CSSStyleSheet()
             ss.href = sheet.href
-            # ss.disabled = False
-            # ss.ownerNode = doc
-            # ss.parentStyleSheet = None
+            ss.ownerNode = sheet
+            ss.disabled = False
             self.append(ss)
 
-        # get inline styles
         styles = doc.querySelectorAll("style")
         for style in styles:
-            # self.styleSheets.append(StyleSheet(style))
-            print("inline:", style)
-            ss = StyleSheet()
+            ss = CSSStyleSheet()
             ss.href = doc.URL
-            # ss.disabled = False
-            # ss.ownerNode = doc
-            # ss.parentStyleSheet = None
+            ss.ownerNode = style
+            ss.disabled = False
+            ss.replaceSync(style.textContent or "")
             self.append(ss)
-
-        # self = newme
 
     @property
     def length(self):
@@ -103,7 +86,10 @@ class StyleSheetList(list):
 
     def item(self, index):
         """Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index."""
-        return self[index]
+        try:
+            return self[index]
+        except IndexError:
+            return None
 
 
 class CSSRule:
@@ -519,7 +505,8 @@ class CSSStyleSheet(StyleSheet):
 
     def deleteRule(self, index: int):
         """Deletes the rule at the specified index into the stylesheet's rule list."""
-        raise NotImplementedError
+        del self.cssRules[index]
+        self.rules = self.cssRules
 
     def insertRule(self, rule: str, index: int = None):
         """Inserts a new rule at the specified position in the stylesheet,
@@ -535,9 +522,11 @@ class CSSStyleSheet(StyleSheet):
             if index > len(self.cssRules):
                 raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
             self.cssRules.insert(index, rules[0])
+            self.rules = self.cssRules
             return index
         new_index = len(self.cssRules)
         self.cssRules.append(rules[0])
+        self.rules = self.cssRules
         return new_index
 
     def replace(self, text: str):
@@ -548,6 +537,7 @@ class CSSStyleSheet(StyleSheet):
     def replaceSync(self, text: str):
         """Synchronously replaces the content of the stylesheet."""
         self.cssRules = CSSParser.parseFromString(self, text)
+        self.rules = self.cssRules
 
     # @property
     # def rules(self):
@@ -562,12 +552,12 @@ class CSSStyleSheet(StyleSheet):
         to the matching elements.
         This differs from insertRule(), which takes the textual representation of the entire rule as a single string.
         """
-        raise NotImplementedError
+        return self.insertRule(f"{selectorText} {{{style}}}", index)
 
     def removeRule(self, index: int):
         """Functionally identical to deleteRule();
         removes the rule at the specified index from the stylesheet's rule list."""
-        raise NotImplementedError
+        return self.deleteRule(index)
 
     def __str__(self):
         # converts the rules to css code
@@ -5068,6 +5058,53 @@ class CSSStyleDeclaration(Style):
         self.parentRule = None
         self.cssText = None
 
+    @staticmethod
+    def _to_kebab(name: str) -> str:
+        return Utils.case_kebab(name) if name is not None else ""
+
+    @staticmethod
+    def _to_camel(name: str) -> str:
+        if not name:
+            return name
+        parts = name.split("-")
+        return parts[0] + "".join(part[:1].upper() + part[1:] for part in parts[1:])
+
+    def _current_css_text(self) -> str:
+        if getattr(self, "cssText", None):
+            return self.cssText or ""
+        if self._parent_node is not None:
+            return self._parent_node.getAttribute("style") or ""
+        return ""
+
+    def _property_entries(self):
+        text = self._current_css_text().strip()
+        if text == "":
+            return []
+        entries = []
+        for item in text.split(";"):
+            item = item.strip()
+            if not item or ":" not in item:
+                continue
+            name, value = item.split(":", 1)
+            value = value.strip()
+            priority = ""
+            if value.endswith("!important"):
+                value = value[: -len("!important")].strip()
+                priority = "important"
+            entries.append((name.strip(), value, priority))
+        return entries
+
+    def _sync_css_text(self, entries):
+        css_text = "; ".join(
+            f"{name}: {value}{' !important' if priority == 'important' else ''}"
+            for name, value, priority in entries
+        )
+        if css_text:
+            css_text += ";"
+        self.cssText = css_text
+        if self._parent_node is not None:
+            self._parent_node.setAttribute("style", css_text)
+
     # @property
     # def cssText(self):
     #     """Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
@@ -5079,7 +5116,7 @@ class CSSStyleDeclaration(Style):
     @property
     def length(self):
         """The number of properties. See the item() method below."""
-        raise NotImplementedError
+        return len(self._property_entries())
 
     # @property
     # def parentRule(self):
@@ -5095,35 +5132,52 @@ class CSSStyleDeclaration(Style):
     #     """ Special alias for the float CSS property. """
     #     raise NotImplementedError
 
-    def getPropertyPriority(self):
+    def getPropertyPriority(self, propertyName):
         """Returns the optional priority, "important"."""
-        raise NotImplementedError
+        target = self._to_kebab(propertyName)
+        for name, _, priority in self._property_entries():
+            if name == target:
+                return priority
+        return ""
 
     def getPropertyValue(self, propertyName: str) -> str:  # TODO - test
         """Returns the value of the property with the specified name."""
-        return getattr(self, propertyName, "")
+        target = self._to_kebab(propertyName)
+        for name, value, _ in reversed(self._property_entries()):
+            if name == target:
+                return value
+        return getattr(self, self._to_camel(propertyName), "")
 
     def item(self, index: int) -> str:
         """Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.
         An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).
         This is mostly useful for non-JavaScript DOM implementations.
         """
-        raise NotImplementedError
+        entries = self._property_entries()
+        if index < 0 or index >= len(entries):
+            return ""
+        return entries[index][0]
 
     def removeProperty(self, propertyName):
         """Removes a property from the CSS declaration block."""
-        current = getattr(self, propertyName, "")
+        current = self.getPropertyValue(propertyName)
+        target = self._to_kebab(propertyName)
+        entries = [entry for entry in self._property_entries() if entry[0] != target]
+        self._sync_css_text(entries)
         try:
-            delattr(self, propertyName)
-        except AttributeError:
-            setattr(self, propertyName, "")
+            setattr(self, self._to_camel(propertyName), "")
+        except Exception:
+            pass
         return current
 
     # Modifies an existing CSS property or creates a new CSS property in the declaration block. """
     def setProperty(self, property, value, priority=None):
-        # print("is this magic!")
-        # self[property] = value
-        setattr(self, property, value)
+        target = self._to_kebab(property)
+        priority = "important" if priority == "important" else ""
+        entries = [entry for entry in self._property_entries() if entry[0] != target]
+        entries.append((target, value, priority))
+        self._sync_css_text(entries)
+        setattr(self, self._to_camel(property), value)
 
     def getPropertyCSSValue(self):
         """Only supported via getComputedStyle in Firefox. Returns the property value as a
@@ -5131,13 +5185,13 @@ class CSSStyleDeclaration(Style):
         raise NotImplementedError
 
 
-COMMENT_REGEXP = r"/\/\*[^*]*\*\//gm"
+COMMENT_REGEXP = r"/\*[\s\S]*?\*/"
 
 
 class CSSParser:
     @staticmethod
     def parseFromString(parentStyleSheet: CSSStyleSheet, cssText: str):
-        css = cssText.replace(COMMENT_REGEXP, "")
+        css = re.sub(COMMENT_REGEXP, "", cssText)
         cssRules = []
         stack = []
         parentRule: CSSRule = None

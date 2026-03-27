@@ -460,6 +460,59 @@ class TestCase(unittest.TestCase):
         self.assertEqual(style.removeProperty("width"), "10px")
         self.assertEqual(style.getPropertyValue("width"), "")
 
+    def test_css_style_declaration_index_and_priority_helpers(self):
+        style = CSSStyleDeclaration()
+        style.setProperty("background-color", "red")
+        style.setProperty("font-size", "12px", "important")
+
+        self.assertEqual(style.length, 2)
+        self.assertEqual(style.item(0), "background-color")
+        self.assertEqual(style.item(1), "font-size")
+        self.assertEqual(style.item(2), "")
+        self.assertEqual(style.getPropertyPriority("font-size"), "important")
+        self.assertEqual(style.getPropertyValue("font-size"), "12px")
+        self.assertIn("font-size: 12px !important;", style.cssText)
+
+    def test_css_stylesheet_rule_mutation_helpers(self):
+        sheet = CSSStyleSheet()
+        first_index = sheet.insertRule("div { color: red; }")
+        second_index = sheet.addRule(".card", "padding: 1rem;", 1)
+
+        self.assertEqual(first_index, 0)
+        self.assertEqual(second_index, 1)
+        self.assertEqual(len(sheet.cssRules), 2)
+        self.assertEqual(sheet.cssRules[0].selectorText, "div")
+        self.assertEqual(sheet.cssRules[1].selectorText, ".card")
+
+        sheet.deleteRule(0)
+        self.assertEqual(len(sheet.cssRules), 1)
+        self.assertEqual(sheet.cssRules[0].selectorText, ".card")
+
+        sheet.removeRule(0)
+        self.assertEqual(len(sheet.cssRules), 0)
+
+    def test_stylesheet_list_populates_from_document(self):
+        page = html(
+            head(
+                link(_rel="stylesheet", _href="/assets/site.css"),
+                style("div { color: red; }"),
+            )
+        )
+        sheets = StyleSheetList()
+        sheets._populate_stylesheets_from_document(page)
+
+        self.assertEqual(sheets.length, 2)
+        self.assertEqual(sheets.item(0).href, "/assets/site.css")
+        self.assertEqual(sheets.item(1).cssRules[0].selectorText, "div")
+        self.assertIsNone(sheets.item(2))
+
+    def test_css_parser_strips_comments(self):
+        sheet = CSSStyleSheet()
+        rules = CSSParser.parseFromString(sheet, "/* heading */ div { color: red; } /* tail */")
+        self.assertEqual(len(rules), 1)
+        self.assertEqual(rules[0].selectorText, "div")
+        self.assertEqual(rules[0].style.getPropertyValue("color"), "red")
+
 
 if __name__ == "__main__":
     unittest.main()
