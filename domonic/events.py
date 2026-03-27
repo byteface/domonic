@@ -6,8 +6,8 @@
 
 """
 
-from typing import Dict, List, Any
 import time
+from typing import Any, Callable
 
 
 class EventTarget:
@@ -53,7 +53,7 @@ class EventTarget:
 
     def __init__(self, *args, **kwargs) -> None:
         # Initialize a dictionary to store event listeners.
-        self.listeners: Dict[str, List] = {}
+        self.listeners: dict[str, list[Callable[..., Any]]] = {}
 
     def hasEventListener(self, eventType: str) -> bool:
         """
@@ -92,7 +92,7 @@ class EventTarget:
             if callback in stack:
                 stack.remove(callback)
 
-    def dispatchEvent(self, event: Dict[str, Any]) -> bool:
+    def dispatchEvent(self, event: Any) -> bool:
         """
         Dispatch the specified event to all registered event listeners.
 
@@ -114,7 +114,7 @@ class EventTarget:
             return not event.defaultPrevented
         return True
 
-    async def dispatchEventAsync(self, event: Dict[str, Any]) -> bool:
+    async def dispatchEventAsync(self, event: Any) -> bool:
         """
         Dispatch the specified event asynchronously to all registered event listeners.
 
@@ -228,8 +228,7 @@ class Event:
         self.returnValue: bool = options.get("returnValue", True)
         self.srcElement: object = options.get("srcElement", None)
         self.target: object = options.get("target", None)
-        # ms = time.time_ns() # 1000000 py3.7 up
-        self.timeStamp: float = int(round(time.time() * 1000))
+        self.timeStamp: float = time.time_ns() / 1_000_000
 
     def composedPath(self):
         """

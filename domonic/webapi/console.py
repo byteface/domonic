@@ -47,11 +47,7 @@ class Console:
     def _getTime():
         import time
 
-        try:
-            return time.time_ns() // 1000
-        except Exception:
-            # python 3.6 doesn't have _ns
-            return time.time() * 1000000
+        return time.time_ns() // 1000
 
     @staticmethod
     def time(label: str):

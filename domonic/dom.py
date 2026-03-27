@@ -6,11 +6,12 @@
     https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model
 
 """
+from __future__ import annotations
 
 import copy
 import os
 import re
-from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Tuple, Union
+from typing import Any, Callable, Iterable, Iterator
 
 from domonic.events import Event, EventTarget, MouseEvent
 from domonic.geom.vec3 import vec3
@@ -841,7 +842,7 @@ class Node(EventTarget):
         return NodeList(self.args)
 
     @property
-    def children(self) -> List["Node"]:
+    def children(self) -> list[Node]:
         """Returns a collection of an element's child element (excluding text and comment nodes)"""
         newlist: list = []
         for each in self.args:
@@ -933,7 +934,7 @@ class Node(EventTarget):
         return False
 
     @property
-    def firstChild(self) -> Optional["Node"]:
+    def firstChild(self) -> Node | None:
         """Returns the first child node of an element"""
         try:
             return self.args[0]  # TODO - check if this means includes content
@@ -945,7 +946,7 @@ class Node(EventTarget):
         return len(self.args) > 0
 
     @property
-    def lastChild(self) -> Optional["Node"]:
+    def lastChild(self) -> Node | None:
         """Returns the last child node of an element"""
         try:
             return self.args[len(self.args) - 1]
@@ -953,14 +954,14 @@ class Node(EventTarget):
             return None
 
     @property
-    def localName(self) -> Optional[str]:
+    def localName(self) -> str | None:
         try:
             return self.tagName
         except Exception:
             return None
 
     @property
-    def nodeName(self) -> Optional[str]:
+    def nodeName(self) -> str | None:
         """Returns the name of a node"""
         # TODO - not sure what's better this or overriding on every element
         # if isinstance(self, Text):
@@ -994,7 +995,7 @@ class Node(EventTarget):
     nodeType: int = ELEMENT_NODE
 
     @property
-    def nodeValue(self) -> Optional[str]:
+    def nodeValue(self) -> str | None:
         """Sets or returns the value of a node"""
         outp = ""
         for each in self.args:
@@ -1022,7 +1023,7 @@ class Node(EventTarget):
         return self.rootNode
 
     @ownerDocument.setter
-    def ownerDocument(self, newOwner: Optional["Node"]):  #: Element):
+    def ownerDocument(self, newOwner: Node | None):  #: Element):
         """Sets the root element (document object) for an element"""
         if newOwner is None:
             return
@@ -1046,7 +1047,7 @@ class Node(EventTarget):
             nxt = nxt.parentNode
         return node
 
-    def insertBefore(self, new_node: "Node", reference_node: Optional["Node"] = None) -> "Node":
+    def insertBefore(self, new_node: Node, reference_node: Node | None = None) -> Node:
         """inserts a node before a reference node as a child of a specified parent node.
         this will remove the node from its previous parent node, if any.
 
@@ -1065,7 +1066,7 @@ class Node(EventTarget):
             )
         return new_node
 
-    def removeChild(self, node: "Node") -> Optional["Node"]:
+    def removeChild(self, node: Node) -> Node | None:
         """removes a child node from the DOM and returns the removed node."""
         for count, each in enumerate(self.args):
             if type(each) == str:
@@ -1574,7 +1575,7 @@ class DOMRect:
 
 
 class CaretPosition:
-    def __init__(self, offsetNode: Optional["Node"] = None, offset: int = 0) -> None:
+    def __init__(self, offsetNode: Node | None = None, offset: int = 0) -> None:
         self.offsetNode = offsetNode
         self.offset = offset
 
@@ -1586,7 +1587,7 @@ class CaretPosition:
 
 class Selection:
     def __init__(self) -> None:
-        self._ranges: List["Range"] = []
+        self._ranges: list[Range] = []
 
     @property
     def rangeCount(self) -> int:
@@ -1597,7 +1598,7 @@ class Selection:
         return self.rangeCount == 0 or all(range_obj.collapsed for range_obj in self._ranges)
 
     @property
-    def anchorNode(self) -> Optional["Node"]:
+    def anchorNode(self) -> Node | None:
         return self._ranges[0].startContainer if self._ranges else None
 
     @property
@@ -1605,7 +1606,7 @@ class Selection:
         return self._ranges[0].startOffset if self._ranges else 0
 
     @property
-    def focusNode(self) -> Optional["Node"]:
+    def focusNode(self) -> Node | None:
         return self._ranges[-1].endContainer if self._ranges else None
 
     @property
@@ -1630,7 +1631,7 @@ class Selection:
     def getRangeAt(self, index: int) -> "Range":
         return self._ranges[index]
 
-    def collapse(self, node: Optional["Node"], offset: int = 0) -> None:
+    def collapse(self, node: Node | None, offset: int = 0) -> None:
         if node is None:
             self.removeAllRanges()
             return
@@ -1664,7 +1665,7 @@ class Selection:
             range_obj.deleteContents()
         self.removeAllRanges()
 
-    def containsNode(self, node: Optional["Node"], allowPartialContainment: bool = False) -> bool:
+    def containsNode(self, node: Node | None, allowPartialContainment: bool = False) -> bool:
         if node is None:
             return False
 
@@ -1766,7 +1767,7 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
         """
         return self._selection
 
-    def elementFromPoint(self, x: float, y: float) -> Optional["Element"]:
+    def elementFromPoint(self, x: float, y: float) -> Element | None:
         """Returns the topmost element at the specified coordinates."""
         hits = self.elementsFromPoint(x, y)
         return hits[0] if hits else None
@@ -1777,7 +1778,7 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
             self._selection = Selection()
         return self._selection
 
-    def elementsFromPoint(self, x: float, y: float) -> List["Element"]:
+    def elementsFromPoint(self, x: float, y: float) -> list[Element]:
         """Returns an array of all elements at the specified coordinates."""
         matches = []
 
@@ -1794,7 +1795,7 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
             walk(child)
         return matches
 
-    def caretPositionFromPoint(self, x: float = 0, y: float = 0) -> Optional[CaretPosition]:
+    def caretPositionFromPoint(self, x: float = 0, y: float = 0) -> CaretPosition | None:
         """
         Returns a CaretPosition object containing the DOM node containing the caret,
         and caret's character offset within that node.
@@ -2209,7 +2210,7 @@ class NodeList(list):
     def length(self) -> int:
         return len(self)
 
-    def item(self, index: int) -> Optional[Node]:
+    def item(self, index: int) -> Node | None:
         """Returns an item in the list by its index, or null if the index is out-of-bounds."""
         # An alternative to accessing nodeList[i] (which instead returns  undefined when i is out-of-bounds).
         # This is mostly useful for non-JavaScript DOM implementations.
@@ -2222,7 +2223,7 @@ class NodeList(list):
     #     """ Returns a list of the nodes in the list."""
     #     return self
 
-    def entries(self) -> Iterable[Tuple[int, Node]]:
+    def entries(self) -> Iterable[tuple[int, Node]]:
         """Returns an iterator, allowing code to go through all key/value pairs contained in the collection.
         (In this case, the keys are numbers starting from 0 and the values are nodes."""
         # i.e.  Array [ 0, <p> ]
@@ -2804,12 +2805,12 @@ class Element(Node):
         # return self.querySelectorAll('.' + className)
         return HTMLCollection(self.querySelectorAll("." + className))
 
-    def elementFromPoint(self, x: float, y: float) -> Optional["Element"]:
+    def elementFromPoint(self, x: float, y: float) -> Element | None:
         """Returns the topmost element in this subtree at the specified coordinates."""
         hits = self.elementsFromPoint(x, y)
         return hits[0] if hits else None
 
-    def elementsFromPoint(self, x: float, y: float) -> List["Element"]:
+    def elementsFromPoint(self, x: float, y: float) -> list[Element]:
         """Returns all elements in this subtree at the specified coordinates."""
         matches = []
 
@@ -2825,7 +2826,7 @@ class Element(Node):
         walk(self)
         return matches
 
-    def caretPositionFromPoint(self, x: float, y: float) -> Optional[CaretPosition]:
+    def caretPositionFromPoint(self, x: float, y: float) -> CaretPosition | None:
         """Returns a CaretPosition for the closest element within this subtree."""
         target = self.elementFromPoint(x, y)
         if target is None:
@@ -2877,7 +2878,7 @@ class Element(Node):
             return False
 
     @property
-    def id(self) -> Optional[str]:
+    def id(self) -> str | None:
         """Sets or returns the value of the id attribute of an element"""
         return self.getAttribute("id")
 
@@ -2901,7 +2902,7 @@ class Element(Node):
             )
         return pos
 
-    def _coerce_adjacent_nodes(self, content: Any) -> List[Any]:
+    def _coerce_adjacent_nodes(self, content: Any) -> list[Any]:
         if isinstance(content, tuple):
             return list(content)
         if isinstance(content, list):
@@ -2924,7 +2925,7 @@ class Element(Node):
         parent.args = parent.args[:index] + tuple(nodes) + parent.args[index:]
         parent._update_parents()
 
-    def insertAdjacentElement(self, position: str, element: "Element") -> Optional["Element"]:
+    def insertAdjacentElement(self, position: str, element: Element) -> Element | None:
         """Inserts an element adjacent to the current element."""
         pos = self._normalize_adjacent_position(position)
         if pos == "beforebegin":
@@ -2983,7 +2984,7 @@ class Element(Node):
     #     """ Sets or returns the value of the lang attribute of an element """ # TODO - prop?
     #     return self.getAttribute('lang')
 
-    def lastElementChild(self) -> Optional["Node"]:
+    def lastElementChild(self) -> Node | None:
         """[Returns the last child element of an element]
 
         Returns:
@@ -2999,7 +3000,7 @@ class Element(Node):
         return getattr(self, "_namespaceURI", "http://www.w3.org/1999/xhtml")
 
     @property
-    def nextSibling(self) -> Optional["Node"]:
+    def nextSibling(self) -> Node | None:
         """Returns the next node at the same node tree level"""
         if self.parentNode is not None:
             for count, el in enumerate(self.parentNode.args):
@@ -3008,7 +3009,7 @@ class Element(Node):
         return None
 
     @property
-    def nextElementSibling(self) -> Optional["Node"]:
+    def nextElementSibling(self) -> Node | None:
         """Returns the next element at the same node tree level"""
         if self.parentNode is not None:
             for count, el in enumerate(self.parentNode.args):
@@ -3018,7 +3019,7 @@ class Element(Node):
         return None
 
     @property
-    def previousElementSibling(self) -> Optional["Node"]:
+    def previousElementSibling(self) -> Node | None:
         """returns the Element immediately prior to the specified one in its parent's children list,
         or None if the specified element is the first one in the list."""
         if self.parentNode is not None:
@@ -3028,7 +3029,7 @@ class Element(Node):
                         return self.parentNode.args[count - 1]
         return None
 
-    def normalize(self) -> List[Any]:
+    def normalize(self) -> list[Any]:
         """Joins adjacent text nodes and removes empty text nodes in an element"""
         content = []
         nodestr = ""
@@ -3070,7 +3071,7 @@ class Element(Node):
         """Returns the horizontal offset position of an element"""
         return Element._style_number(self.style.left)
 
-    def offsetParent(self) -> Optional["Node"]:
+    def offsetParent(self) -> Node | None:
         """Returns the offset container of an element"""
         return self.parentNode
 
@@ -3079,7 +3080,7 @@ class Element(Node):
         return Element._style_number(self.style.top)
 
     @property
-    def parentElement(self) -> Optional["Node"]:
+    def parentElement(self) -> Node | None:
         """Returns the parent element node of an element"""
         return self.parentNode
 
@@ -3098,7 +3099,7 @@ class Element(Node):
         self.args = tuple(newargs)
         self._update_parents()
 
-    def querySelector(self, query: str) -> Optional["Element"]:
+    def querySelector(self, query: str) -> Element | None:
         """[Returns the first child element that matches a specified CSS selector(s) of an element]
 
         Args:
@@ -3112,7 +3113,7 @@ class Element(Node):
         except Exception as e:
             return None
 
-    def querySelectorAll(self, query: str) -> List["Element"]:
+    def querySelectorAll(self, query: str) -> list[Element]:
         """[Returns all child elements that matches a specified CSS selector(s) of an element]
 
         Args:
@@ -3444,7 +3445,7 @@ class AbastractRange:
     def getBoundingClientRect(self) -> DOMRect:
         raise NotImplementedError
 
-    def getClientRects(self) -> List[DOMRect]:
+    def getClientRects(self) -> list[DOMRect]:
         raise NotImplementedError
 
     def insertNode(self, newNode: "Node") -> None:
@@ -3514,15 +3515,15 @@ class Range(AbastractRange):
     END_TO_START = 3
 
     def __init__(self) -> None:
-        self.startContainer: Optional[Node] = None
+        self.startContainer: Node | None = None
         self.startOffset = 0
-        self.endContainer: Optional[Node] = None
+        self.endContainer: Node | None = None
         self.endOffset = 0
         self.collapsed = True
-        self.commonAncestorContainer: Optional[Node] = None
+        self.commonAncestorContainer: Node | None = None
 
     @staticmethod
-    def _container_length(node: Optional[Node]) -> int:
+    def _container_length(node: Node | None) -> int:
         if node is None:
             return 0
         if isinstance(node, Text):
@@ -3530,8 +3531,8 @@ class Range(AbastractRange):
         return len(getattr(node, "childNodes", []))
 
     @staticmethod
-    def _path_to_root(node: Optional[Node]) -> List[Node]:
-        path: List[Node] = []
+    def _path_to_root(node: Node | None) -> list[Node]:
+        path: list[Node] = []
         current = node
         while current is not None:
             path.append(current)
@@ -3691,7 +3692,7 @@ class Range(AbastractRange):
         bottom = max(rect.bottom for rect in rects)
         return DOMRect(left, top, right - left, bottom - top)
 
-    def getClientRects(self) -> List[DOMRect]:
+    def getClientRects(self) -> list[DOMRect]:
         if self.startContainer is None:
             return []
         if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
@@ -3910,7 +3911,7 @@ class Document(Element):
         # self.__stylesheets.__init__(self)  # to set the parent??
 
     @property
-    def activeElement(self) -> Optional["Element"]:
+    def activeElement(self) -> Element | None:
         """Returns the currently focused element, or the body/document element fallback."""
         if self._activeElement is not None:
             return self._activeElement
@@ -4008,7 +4009,7 @@ class Document(Element):
         return el
 
     @staticmethod
-    def createEvent(event_type: Optional[str] = None) -> Event:
+    def createEvent(event_type: str | None = None) -> Event:
         """[Creates a new event]
 
         Args:
@@ -4039,7 +4040,7 @@ class Document(Element):
 
     @staticmethod
     def createTreeWalker(
-        root: "Node", whatToShow: Optional[int] = None, filter: Any = None, entityReferenceExpansion: Any = None
+        root: Node, whatToShow: int | None = None, filter: Any = None, entityReferenceExpansion: Any = None
     ) -> "TreeWalker":
         """[creates a TreeWalker object]
 
@@ -4090,7 +4091,7 @@ class Document(Element):
         return Range()
 
     @staticmethod
-    def createNodeIterator(root: "Node", whatToShow: Optional[int] = None, filter: Any = None) -> "NodeIterator":
+    def createNodeIterator(root: Node, whatToShow: int | None = None, filter: Any = None) -> NodeIterator:
         """Creates a NodeIterator that can be used to traverse the document tree or subtree under root."""
         whatToShow = NodeFilter.SHOW_ALL if whatToShow == None else whatToShow
         return NodeIterator(root, whatToShow, filter)
@@ -4142,7 +4143,7 @@ class Document(Element):
         """Returns the DOMConfig which has settings for how html content is rendered"""
         return DOMConfig
 
-    def elementFromPoint(self, x: float, y: float) -> Optional["Element"]:
+    def elementFromPoint(self, x: float, y: float) -> Element | None:
         """Returns the topmost element at the specified coordinates."""
         hits = self.elementsFromPoint(x, y)
         return hits[0] if hits else None
@@ -4165,7 +4166,7 @@ class Document(Element):
         result = expression.evaluate(contextNode, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         return result.nodes
 
-    def elementsFromPoint(self, x: float, y: float) -> List["Element"]:
+    def elementsFromPoint(self, x: float, y: float) -> list[Element]:
         """Returns an array of all elements at the specified coordinates."""
         matches = []
 
@@ -4182,7 +4183,7 @@ class Document(Element):
         walk(self)
         return matches
 
-    def caretPositionFromPoint(self, x: float, y: float) -> Optional[CaretPosition]:
+    def caretPositionFromPoint(self, x: float, y: float) -> CaretPosition | None:
         """Returns a CaretPosition for the closest element at the given coordinates."""
         target = self.elementFromPoint(x, y)
         if target is None:
@@ -4218,7 +4219,7 @@ class Document(Element):
         """Returns a Boolean value indicating whether the document can be viewed in fullscreen mode"""
         return False
 
-    def getElementById(self, _id: str) -> Optional["Element"]:
+    def getElementById(self, _id: str) -> Element | None:
         """[Returns the element that has the ID attribute with the specified value]
 
         Args:
@@ -4742,7 +4743,7 @@ class HTMLCollection(list):
     def __str__(self) -> str:
         return "".join([str(a) for a in self])
 
-    def item(self, index: int) -> Optional[Node]:
+    def item(self, index: int) -> Node | None:
         """[gets the indexth item in the collection.
         If index is greater than or equal to the number of nodes in the list, this returns null.]
 
@@ -4757,7 +4758,7 @@ class HTMLCollection(list):
         else:
             return None
 
-    def namedItem(self, name: str) -> Optional[Node]:
+    def namedItem(self, name: str) -> Node | None:
         """Returns the specific node whose ID or, as a fallback, name matches the string specified by name."""
         for item in self:
             if item.id == name:
@@ -4766,7 +4767,7 @@ class HTMLCollection(list):
                 return item
         return None
 
-    def __getitem__(self, index: Union[int, str]):
+    def __getitem__(self, index: int | str):
         # can return dot notation i.e
         # index = "named.item.with.periods" # TODO - test
         if isinstance(index, str):
@@ -4856,7 +4857,7 @@ class DOMException(Exception):
     INVALID_NODE_TYPE_ERR: int = 24
     DATA_CLONE_ERR: int = 25
 
-    def __init__(self, code, message: Optional[str] = None) -> None:
+    def __init__(self, code, message: str | None = None) -> None:
         self.code = code
         self.message: str = message
         self.name = "DOMException"
@@ -5043,7 +5044,7 @@ class DOMQuad:
         return DOMRect(left, top, right - left, bottom - top)
 
     @staticmethod
-    def toJSON(quad: "DOMQuad") -> Dict[str, Dict[str, float]]:
+    def toJSON(quad: DOMQuad) -> dict[str, dict[str, float]]:
         return {
             "p1": {"x": quad.p1.x, "y": quad.p1.y},
             "p2": {"x": quad.p2.x, "y": quad.p2.y},
@@ -5118,7 +5119,7 @@ class NodeIterator:
         self.entityReferenceExpansion = entityReferenceExpansion
         self.node = root
         self.pointer = -1
-        self.stack: List[Node] = []
+        self.stack: list[Node] = []
 
         def collect(node: Node) -> None:
             self.stack.append(node)
@@ -5153,7 +5154,7 @@ class NodeIterator:
         # Previously it was telling the engine that the NodeIterator was no more used, but this is now useless.
         pass
 
-    def previousNode(self) -> Optional[Node]:
+    def previousNode(self) -> Node | None:
         """Returns the previous Node in the document, or null if there are none."""
         if self.pointer <= 0:
             return None
@@ -5161,7 +5162,7 @@ class NodeIterator:
         self.node = self.stack[self.pointer]
         return self.node
 
-    def nextNode(self) -> Optional[Node]:
+    def nextNode(self) -> Node | None:
         """Returns the next Node in the document, or null if there are none."""
         self.pointer += 1
         while self.pointer < len(self.stack):
@@ -5184,7 +5185,7 @@ mapSibling = {"next": "nextSibling", "previous": "previousSibling"}
 #     return mapChild[x].toLowerCase() == '[object ' + _type.toLowerCase() + ']'
 
 
-def nodeFilter(tw: Union[NodeIterator, "TreeWalker"], node: Node) -> int:
+def nodeFilter(tw: NodeIterator | TreeWalker, node: Node) -> int:
     # Maps nodeType to whatToShow
     # print(node, type(node))
     # if isinstance(node, (str)): #, Text)):
@@ -5206,7 +5207,7 @@ def str_to_TextNode(content_str: Any) -> Any:
     return content_str
 
 
-def traverseChildren(tw: "TreeWalker", _type: str) -> Optional[Node]:
+def traverseChildren(tw: TreeWalker, _type: str) -> Node | None:
     # var child, node, parent, result, sibling
     # print('mapChild[_type]', mapChild[_type])
     node = getattr(
@@ -5238,7 +5239,7 @@ def traverseChildren(tw: "TreeWalker", _type: str) -> Optional[Node]:
     return None
 
 
-def traverseSiblings(tw: "TreeWalker", type: str) -> Optional[Node]:
+def traverseSiblings(tw: TreeWalker, type: str) -> Node | None:
     # node, result, sibling
     node = tw.currentNode
     if node == tw.root:
@@ -5261,7 +5262,7 @@ def traverseSiblings(tw: "TreeWalker", type: str) -> Optional[Node]:
             return None
 
 
-def nextSkippingChildren(node: Node, stayWithin: Node) -> Optional[Node]:
+def nextSkippingChildren(node: Node, stayWithin: Node) -> Node | None:
 
     # if isinstance(node, str):
     # node = Text(node)
@@ -5349,7 +5350,7 @@ class TreeWalker:
         self.last = None
         self.parent = None
         self.previous = None
-        self.children: List[Node] = []
+        self.children: list[Node] = []
         self.childIndex = 0
 
         self.tree = None
@@ -5377,7 +5378,7 @@ class TreeWalker:
     #     """ Is the Node on which the TreeWalker is currently pointing at. """
     #     return self.currentNode
 
-    def parentNode(self) -> Optional[Node]:
+    def parentNode(self) -> Node | None:
         """Moves the current Node to the first visible ancestor node in the document order,
         and returns the found node. It also moves the current node to this one. If no such node exists,
         or if it is before that the root node defined at the object construction,
@@ -5391,28 +5392,28 @@ class TreeWalker:
                 return node
             return None
 
-    def firstChild(self) -> Optional[Node]:
+    def firstChild(self) -> Node | None:
         """Moves the current Node to the first visible child of the current node, and returns the found child.
         It also moves the current node to this child. If no such child exists,
         returns null and the current node is not changed."""
         # return self.currentNode.firstChild
         return traverseChildren(self, "first")
 
-    def lastChild(self) -> Optional[Node]:
+    def lastChild(self) -> Node | None:
         """Moves the current Node to the last visible child of the current node, and returns the found child.
         It also moves the current node to this child.
         If no such child exists, null is returned and the current node is not changed."""
         # return self.currentNode.lastChild
         return traverseChildren(self, "last")
 
-    def previousSibling(self) -> Optional[Node]:
+    def previousSibling(self) -> Node | None:
         """Moves the current Node to its previous sibling, if any, and returns the found sibling.
         If there is no such node, return null and the current node is not changed.
         """
         # return self.previous
         return traverseSiblings(self, "previous")
 
-    def nextSibling(self) -> Optional[Node]:
+    def nextSibling(self) -> Node | None:
         """Moves the current Node to its next sibling, if any, and returns the found sibling.
         If there is no such node, null is returned and the current node is not changed."""
         # return self.currentNode.nextSibling

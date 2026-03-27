@@ -20,6 +20,7 @@ from domonic.d3 import *
 from domonic.d3.dispatch import Dispatch, dispatch
 from domonic.d3.format import *
 from domonic.d3.format import format
+from domonic.d3.queue import queue
 # from domonic.d3.path import Path
 from domonic.d3.polygon import *
 from domonic.d3.selection import *
@@ -31,6 +32,19 @@ from domonic.decorators import silence
 
 
 class TestCase(unittest.TestCase):
+
+    def test_d3_queue(self):
+        results = []
+
+        def first(done):
+            done(None, "a")
+
+        def second(done):
+            return "b"
+
+        queue(1).defer(first).defer(second).awaitAll(lambda error, values: results.append((error, values)))
+
+        assert results == [(None, ["a", "b"])]
 
     # domonic.d3.d3
     # def test_d3_hello(self):

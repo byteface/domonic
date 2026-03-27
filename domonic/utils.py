@@ -7,7 +7,7 @@ import random
 from collections import Counter
 from itertools import chain, islice
 from re import sub
-from typing import Any, Dict, Iterable, Iterator, List, Sequence, TypeVar
+from typing import Any, Iterable, Iterator, Sequence, TypeVar
 
 from domonic.decorators import deprecated
 
@@ -48,7 +48,7 @@ class Utils:
         )
 
     @staticmethod
-    def squash(the_list: Iterable[Iterable[T]]) -> List[T]:
+    def squash(the_list: Iterable[Iterable[T]]) -> list[T]:
         """[turns a 2d array into a flat one]
 
         Args:
@@ -60,12 +60,12 @@ class Utils:
         return [inner for outer in the_list for inner in outer]
 
     @staticmethod
-    def chunk(values: Sequence[T], size: int) -> List[Sequence[T]]:
+    def chunk(values: Sequence[T], size: int) -> list[Sequence[T]]:
         """chunk a list into batches"""
         return [values[i : i + size] for i in range(0, len(values), size)]
 
     @staticmethod
-    def dictify(arr: Iterable[T]) -> Dict[T, int]:
+    def dictify(arr: Iterable[T]) -> dict[T, int]:
         """[turns a list into a dictionary where the list items are the keys]
 
         Args:
@@ -81,7 +81,7 @@ class Utils:
         return not some_str.strip()
 
     @staticmethod
-    def unique(some_arr: Iterable[T]) -> List[T]:
+    def unique(some_arr: Iterable[T]) -> list[T]:
         """[removes duplicates from a list]
 
         Args:
@@ -108,7 +108,7 @@ class Utils:
     # ...         print chunk
 
     @staticmethod
-    def clean(lst: Iterable[T]) -> List[T]:
+    def clean(lst: Iterable[T]) -> list[T]:
         """[removes falsy values (False, None, 0 and “”) from a list ]
 
         Args:
@@ -120,7 +120,7 @@ class Utils:
         return list(filter(None, lst))
 
     @staticmethod
-    def get_vowels(string: str) -> List[str]:
+    def get_vowels(string: str) -> list[str]:
         """[get a list of vowels from the word]
 
         Args:
@@ -144,7 +144,7 @@ class Utils:
         return string[:1].lower() + string[1:]
 
     @staticmethod
-    def merge_dictionaries(a: Dict[Any, Any], b: Dict[Any, Any]) -> Dict[Any, Any]:
+    def merge_dictionaries(a: dict[Any, Any], b: dict[Any, Any]) -> dict[Any, Any]:
         """[merges 2 dicts]
 
         Args:
@@ -157,7 +157,7 @@ class Utils:
         return {**a, **b}
 
     @staticmethod
-    def to_dictionary(keys: Iterable[T], values: Iterable[Any]) -> Dict[T, Any]:
+    def to_dictionary(keys: Iterable[T], values: Iterable[Any]) -> dict[T, Any]:
         """[take a list of keys and values and returns a dict]
 
         Args:
@@ -198,7 +198,7 @@ class Utils:
         return a
 
     @staticmethod
-    def frequency(data: Iterable[T]) -> Dict[T, int]:
+    def frequency(data: Iterable[T]) -> dict[T, int]:
         """[check the frequency of elements in the data]
 
         Args:

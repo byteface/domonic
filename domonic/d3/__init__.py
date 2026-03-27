@@ -4,7 +4,7 @@
 
 """
 
-# from domonic.d3.queue import *
+from domonic.d3.queue import *
 # from domonic.d3.array import *
 # from domonic.d3.axis import *
 # from domonic.d3.brush import *
@@ -26,7 +26,6 @@ from domonic.d3.format import *
 from domonic.d3.path import *
 from domonic.d3.polygon import *
 # from domonic.d3.quadtree import *
-# from domonic.d3.queue import *
 # from domonic.d3.random import *
 # from domonic.d3.scale-chromatic import *
 # from domonic.d3.scale import *

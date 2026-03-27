@@ -2,152 +2,113 @@
     domonic.d3.queue
     ====================================
 
-    # TODO - completely untested
-
+    Small Python port of d3-queue's callback-oriented API.
 """
 
-# import {slice} from "./array";
-from domonic.javascript import *
+from __future__ import annotations
 
-noabort = {}
+from typing import Any, Callable
+
+from domonic.javascript import Error
+
+Task = Callable[..., Any]
 
 
 class Queue:
-    def __init__(self, size):
-        self._size = size
-        self._call = None
-        self._error = None
-        self._tasks = []
-        self._data = []
-        self._waiting = None
-        self._active = None
-        self._ended = None
-        self._start = 0  # inside a synchronous task callback?
+    def __init__(self, size: int | float):
+        if size < 1:
+            raise Error("invalid concurrency")
 
-    def defer(self, callback, *args):
-        if not type(callback, callable):
+        self._size = size
+        self._error: Exception | None = None
+        self._tasks: list[tuple[Task, tuple[Any, ...]]] = []
+        self._results: list[Any] = []
+        self._call: Callable[[Exception | None, list[Any]], Any] | None = None
+        self._started = False
+
+    def defer(self, callback: Task, *args: Any) -> Queue:
+        if not callable(callback):
             raise Error("invalid callback")
-        if self._call:
+        if self._call is not None:
             raise Error("defer after await")
-        if self._error != None:
+        if self._error is not None:
             return self
 
-        t = slice.call(args, 1)
-        t.append(callback)
-        self._waiting += 1
-        self._tasks.append(t)
-        poke(self)
+        self._tasks.append((callback, args))
         return self
 
-    def abort(self):
-        if self._error == None:
-            abort(self, Error("abort"))
+    def abort(self) -> Queue:
+        if self._error is None:
+            self._error = Error("abort")
+        self._notify()
         return self
 
-    def await(self, callback):
-        if not type(callback, callable):
+    def await_(self, callback: Callable[..., Any]) -> Queue:
+        if not callable(callback):
             raise Error("invalid callback")
-        if self._call:
+        if self._call is not None:
             raise Error("multiple await")
 
-        def _call(error, results):
-            callback.apply(None, [error].concat(results))
+        def _call(error: Exception | None, results: list[Any]) -> Any:
+            return callback(error, *results)
 
         self._call = _call
-
-        maybeNotify(self)
+        self._run()
         return self
 
-    def awaitAll(self, callback):
-        if not type(callback, callable):
+    def awaitAll(self, callback: Callable[[Exception | None, list[Any]], Any]) -> Queue:
+        if not callable(callback):
             raise Error("invalid callback")
-        if self._call:
+        if self._call is not None:
             raise Error("multiple await")
+
         self._call = callback
-        maybeNotify(self)
+        self._run()
         return self
 
+    def _run(self) -> None:
+        if self._started:
+            self._notify()
+            return
 
-def poke(q):
-    if not q._start:
-        try:
-            start(q)  # let the current task complete
-        except Exception as e:
-            if q._tasks[q._ended + q._active - 1]:
-                abort(q, e)  # task errored synchronously
-            elif not q._data:
-                raise e  # await callback errored synchronously
+        self._started = True
+        self._results = [None] * len(self._tasks)
 
+        for index, (task, args) in enumerate(self._tasks):
+            if self._error is not None:
+                break
 
-def start(q):
-    q._start = q._waiting
-    while q._start and q._active < q._size:
-        i = q._ended + q._active
-        t = q._tasks[i]
-        j = len(t) - 1
-        c = t[j]
-        t[j] = end(q, i)
-        q._waiting -= 1
-        q._active += 1
-        t = c.apply(None, t)
-        if not q._tasks[i]:
-            continue  # task finished synchronously
-        q._tasks[i] = t or noabort
+            finished = False
 
+            def done(error: Exception | None = None, result: Any = None, *, _index: int = index) -> None:
+                nonlocal finished
+                if finished:
+                    return
+                finished = True
+                if error is not None and self._error is None:
+                    self._error = error
+                    return
+                self._results[_index] = result
 
-def end(q, i):
-    def _end(e, r):
-        nonlocal q
-        nonlocal i
-        if not q._tasks[i]:
-            return  # ignore multiple callbacks
-        q._active -= 1
-        q._ended += 1
-        q._tasks[i] = None
-        if q._error != None:
-            return  # ignore secondary errors
-        if e != None:
-            abort(q, e)
-        else:
-            q._data[i] = r
-            if q._waiting:
-                poke(q)
-            else:
-                maybeNotify(q)
-
-    return _end
-
-
-def abort(q, e):
-    i = len(q._tasks)
-    q._error = e  # ignore active callbacks
-    q._data = None  # allow gc
-    q._waiting = None  # prevent starting
-
-    while i >= 0:
-        t = q._tasks[i]
-        if t:
-            q._tasks[i] = None
-        if t.abort:
             try:
-                t.abort()
-            except Exception as e:
-                pass
-        i -= 1
-    q._active = None  # allow notification
-    maybeNotify(q)
+                result = task(*args, done)
+            except Exception as error:
+                done(error)
+                continue
+
+            if not finished:
+                done(None, result)
+
+        self._notify()
+
+    def _notify(self) -> None:
+        if self._call is not None and self._started:
+            callback = self._call
+            self._call = None
+            callback(self._error, self._results)
 
 
-def maybeNotify(q):
-    if not q._active and q._call:
-        d = q._data
-        q._data = None  # allow gc
-        q._call(q._error, d)
-
-
-def queue(concurrency):
+def queue(concurrency: int | float | None = None) -> Queue:
     if concurrency is None:
-        concurrency = Infinity
-    elif not (concurrency >= 1):
-        raise Error("invalid concurrency")
+        concurrency = float("inf")
     return Queue(concurrency)

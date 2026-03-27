@@ -5,7 +5,9 @@
     Generate HTML using python.
 
 """
-from typing import Any, Optional
+from __future__ import annotations
+
+from typing import Any
 
 from domonic.dom import Document  # HTMLOptionsCollection,
 from domonic.dom import (Comment, DocumentType, DOMConfig, Element,
@@ -385,7 +387,7 @@ html_attributes = [
     "disableremoteplayback",  # video
 ]
 
-def render(inp: Node, outp: str = "", to: Optional[str] = None) -> str:
+def render(inp: Node, outp: str = "", to: str | None = None) -> str:
     """
     Render an HTML element or document to a string or file.
 

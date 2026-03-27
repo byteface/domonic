@@ -5,6 +5,7 @@
     # TODO - should this be moved to the webapi in a future revision?
 
 """
+from __future__ import annotations
 
 import re
 from re import M, findall, finditer
@@ -17,10 +18,10 @@ class StyleSheet:
     CSS style sheets will further implement the more specialized CSSStyleSheet interface.
     """
 
-    def __init__(self):
-        self.disabled = True  # a boolean value representing whether the current stylesheet has been applied or not
-        self.href = None
-        self.parentStyleSheet = None
+    def __init__(self) -> None:
+        self.disabled: bool = True  # a boolean value representing whether the current stylesheet has been applied or not
+        self.href: str | None = None
+        self.parentStyleSheet: StyleSheet | None = None
         self.ownerNode = None
         self.media = None
 
@@ -60,7 +61,7 @@ class StyleSheetList(list):
     it can be iterated over in a standard for loop over its indices, or converted to an Array.
     """
 
-    def _populate_stylesheets_from_document(self, doc):
+    def _populate_stylesheets_from_document(self, doc) -> None:
         """parse the document to find all the stylesheets and add them to the list."""
         sheets = doc.querySelectorAll('link[rel="stylesheet"]')
         for sheet in sheets:
@@ -80,11 +81,11 @@ class StyleSheetList(list):
             self.append(ss)
 
     @property
-    def length(self):
+    def length(self) -> int:
         """Returns the number of CSSStyleSheet objects in the collection."""
         return len(self)
 
-    def item(self, index):
+    def item(self, index: int) -> CSSStyleSheet | None:
         """Returns the CSSStyleSheet object at the index passed in, or null if no item exists for that index."""
         try:
             return self[index]
@@ -484,11 +485,11 @@ class CSSRuleList(list):
 class CSSStyleSheet(StyleSheet):
     """Creates a new CSSStyleSheet object."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self.rules: list = []
+        self.rules: list[CSSRule] = []
         self.cssRules: CSSRuleList = CSSRuleList()
-        self.ownerRule: CSSRule = None
+        self.ownerRule: CSSRule | None = None
 
     # @property
     # def cssRules():  # -> 'CSSStyleRuleList':
