@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "0.9.13"
+__version__ = "1.0.0rc1"
 __license__ = "MIT"
 __author__ = "@byteface"
 

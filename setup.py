@@ -1,10 +1,9 @@
-"""domonic - python 3 DOM API"""
+"""Packaging configuration for domonic."""
 
 import os
+import re
 
 from setuptools import find_packages, setup
-
-from domonic import __version__ as version
 
 
 def read(filename: str) -> str:
@@ -19,6 +18,16 @@ def read(filename: str) -> str:
     with open(filename, encoding="utf-8") as file:
         return file.read()
 
+
+def get_version() -> str:
+    """Read the package version without importing domonic during setup."""
+    version_file = read(os.path.join("domonic", "__init__.py"))
+    match = re.search(r'^__version__\s*=\s*"([^"]+)"', version_file, re.MULTILINE)
+    if not match:
+        raise RuntimeError("Unable to find package version.")
+    return match.group(1)
+
+
 def get_requirements(filename: str = "requirements.txt"):
     """returns a list of all requirements"""
     requirements = read(filename)
@@ -31,13 +40,19 @@ def get_requirements(filename: str = "requirements.txt"):
 
 setup(
     name="domonic",
-    version=version,
-    author="@byteface",
+    version=get_version(),
+    author="byteface",
     author_email="byteface@gmail.com",
     license="MIT",
     url="https://github.com/byteface/domonic",
-    download_url="https://github.com/byteface/domonic/archive/" + version + ".tar.gz",
-    description="Generate html with python 3. DOM API, Javascript API and more...",
+    project_urls={
+        "Documentation": "https://domonic.readthedocs.io/",
+        "Source": "https://github.com/byteface/domonic",
+        "Tracker": "https://github.com/byteface/domonic/issues",
+        "Examples": "https://github.com/byteface/domonic/tree/master/examples",
+        "Releases": "https://github.com/byteface/domonic/releases",
+    },
+    description="A Python DOM far beyond minidom, with HTML, SVG, events, web APIs, and a JavaScript-like runtime.",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     keywords=[
@@ -62,6 +77,14 @@ setup(
         "x3d",
         "events",
         "geom",
+        "whatwg",
+        "web api",
+        "custom elements",
+        "shadow dom",
+        "css selectors",
+        "html parser",
+        "animation",
+        "dom manipulation",
     ],
     python_requires=">=3.10",
     classifiers=[
@@ -73,7 +96,7 @@ setup(
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: 3.14",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "Intended Audience :: Other Audience",
@@ -85,15 +108,18 @@ setup(
         "Topic :: Multimedia :: Graphics :: Presentation",
         "Topic :: Software Development",
         "Topic :: Software Development :: Code Generators",
+        "Topic :: Software Development :: User Interfaces",
         "Topic :: Terminals",
         "Topic :: Utilities",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Text Processing :: Markup :: HTML",
+        "Topic :: Text Processing :: Markup :: XML",
     ],
     install_requires=get_requirements(),
-    packages=find_packages(),
+    packages=find_packages(exclude=("tests", "tests.*")),
     include_package_data=True,
+    license_files=("LICENSE.txt",),
     entry_points={
         "console_scripts": [
             "domonic = domonic.__main__:run",
