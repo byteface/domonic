@@ -21,12 +21,17 @@ class ConstantsTest(unittest.TestCase):
     def test_namespace_constants(self):
         self.assertEqual(namespaces["svg"], "http://www.w3.org/2000/svg")
         self.assertEqual(namespaces["html"], "http://www.w3.org/1999/xhtml")
+        self.assertEqual(namespaces["atom"], "http://www.w3.org/2005/Atom")
+        self.assertEqual(namespaces["news"], "http://www.google.com/schemas/sitemap-news/0.9")
+        self.assertEqual(namespaces["video"], "http://www.google.com/schemas/sitemap-video/1.1")
         self.assertEqual(get_namespace("svg"), "http://www.w3.org/2000/svg")
         self.assertEqual(get_namespace("missing", "fallback"), "fallback")
 
     def test_doctype_constants(self):
         self.assertEqual(doctypes["HTML5"], "<!DOCTYPE html>")
         self.assertIn("HTML 4.01", doctypes["HTML4_01_Strict"])
+        self.assertIn("XHTML 1.0 Strict", doctypes["XHTML1_0_Strict"])
+        self.assertIn("svg", doctypes["SVG1_1"].lower())
         self.assertEqual(get_doctype("HTML5"), "<!DOCTYPE html>")
         self.assertEqual(get_doctype("missing", "fallback"), "fallback")
 
@@ -42,9 +47,15 @@ class ConstantsTest(unittest.TestCase):
     def test_file_extension_constants(self):
         self.assertEqual(file_extensions["svg"], "image/svg+xml")
         self.assertEqual(file_extensions["json"], "application/json")
+        self.assertEqual(file_extensions["wasm"], "application/wasm")
+        self.assertEqual(file_extensions["webp"], "image/webp")
+        self.assertEqual(file_extensions["woff2"], "font/woff2")
+        self.assertEqual(file_extensions["csv"], "text/csv")
         self.assertIs(mime_types, file_extensions)
         self.assertEqual(get_mime_type(".svg"), "image/svg+xml")
         self.assertEqual(get_mime_type("JSON"), "application/json")
+        self.assertEqual(get_mime_type("wasm"), "application/wasm")
+        self.assertEqual(get_mime_type(".woff2"), "font/woff2")
         self.assertEqual(get_mime_type("missing", "fallback"), "fallback")
 
     def test_keyboard_modifier_helper(self):

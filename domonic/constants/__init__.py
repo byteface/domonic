@@ -6,6 +6,7 @@ domonic.constants
 This module defines various constants used in the domonic package.
 """
 
+import mimetypes
 from http import HTTPStatus as StdlibHTTPStatus
 from enum import IntEnum
 from typing import Final
@@ -20,8 +21,25 @@ def _status_text(status: "HTTPStatus") -> str:
 
 # Namespaces
 namespaces: Final[dict[str, str]] = {
+    "atom": "http://www.w3.org/2005/Atom",
+    "content": "http://purl.org/rss/1.0/modules/content/",
+    "dc": "http://purl.org/dc/elements/1.1/",
+    "dcterms": "http://purl.org/dc/terms/",
+    "fb": "http://ogp.me/ns/fb#",
+    "geo": "http://www.google.com/geo/schemas/sitemap/1.0",
+    "image": "http://www.google.com/schemas/sitemap-image/1.1",
+    "mathml": "http://www.w3.org/1998/Math/MathML",
+    "media": "http://search.yahoo.com/mrss/",
+    "mobile": "http://www.google.com/schemas/sitemap-mobile/1.0",
+    "news": "http://www.google.com/schemas/sitemap-news/0.9",
+    "og": "http://ogp.me/ns#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rss": "http://purl.org/rss/1.0/",
+    "schema": "https://schema.org/",
     "xml": "http://www.w3.org/XML/1998/namespace",
     "svg": "http://www.w3.org/2000/svg",
+    "video": "http://www.google.com/schemas/sitemap-video/1.1",
+    "wsdl": "http://schemas.xmlsoap.org/wsdl/",
     "xlink": "http://www.w3.org/1999/xlink",
     "xmlns": "http://www.w3.org/2000/xmlns/",
     "xm": "http://www.w3.org/2001/xml-events",
@@ -36,11 +54,20 @@ namespaces: Final[dict[str, str]] = {
 # Document Types
 doctypes: Final[dict[str, str]] = {
     "HTML5": "<!DOCTYPE html>",
+    "HTML5_LEGACY_COMPAT": '<!DOCTYPE html SYSTEM "about:legacy-compat">',
+    "XHTML5": '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 5.0//EN" "about:legacy-compat">',
+    "XHTML1_0_Strict": '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
+    "XHTML1_0_Transitional": '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+    "XHTML1_0_Frameset": '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">',
+    "XHTML1_1": '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">',
     "HTML4_01_Strict": '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
     "HTML4_01_Transitional": '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
     "HTML4_01_Frameset": '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">',
     "HTML3_2": '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">',
     "HTML2": '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">',
+    "SVG1_0": '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">',
+    "SVG1_1": '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">',
+    "MATHML2": '<!DOCTYPE math SYSTEM "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">',
 }
 
 # HTTP Response Status Codes
@@ -129,52 +156,36 @@ def get_status_text(code: int, default: str | None = None) -> str | None:
     """Return the status phrase for an HTTP response code."""
     return http_response_status_codes.get(code, default)
 
-# Common MIME Types
-file_extensions: Final[dict[str, str]] = {
-    "html": "text/html",
-    "htm": "text/html",
-    "xhtml": "application/xhtml+xml",
-    "xml": "application/xml",
-    "svg": "image/svg+xml",
-    "css": "text/css",
-    "js": "application/javascript",
-    "json": "application/json",
-    "txt": "text/plain",
-    "pdf": "application/pdf",
-    "png": "image/png",
-    "jpg": "image/jpeg",
-    "jpeg": "image/jpeg",
-    "gif": "image/gif",
-    "ico": "image/x-icon",
-    "tiff": "image/tiff",
-    "tif": "image/tiff",
-    "bmp": "image/bmp",
-    "mp3": "audio/mpeg",
-    "mp4": "video/mp4",
-    "mpeg": "video/mpeg",
-    "mpg": "video/mpeg",
-    "mov": "video/quicktime",
-    "qt": "video/quicktime",
-    "avi": "video/x-msvideo",
-    "wmv": "video/x-ms-wmv",
-    "flv": "video/x-flv",
-    "swf": "application/x-shockwave-flash",
-    "zip": "application/zip",
-    "gz": "application/x-gzip",
-    "bz2": "application/x-bzip2",
-    "rar": "application/x-rar-compressed",
-    "tar": "application/x-tar",
-    "7z": "application/x-7z-compressed",
-    "exe": "application/x-msdownload",
-    "msi": "application/x-msdownload",
-    "cab": "application/vnd.ms-cab-compressed",
-    "doc": "application/msword",
-    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "xls": "application/vnd.ms-excel",
-    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "ppt": "application/vnd.ms-powerpoint",
-    "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+mimetypes.init()
+_BASE_MIME_TYPES: dict[str, str] = {
+    extension.lstrip("."): mime_type for extension, mime_type in mimetypes.types_map.items() if extension.startswith(".")
 }
+_BASE_MIME_TYPES.update(
+    {
+        extension.lstrip("."): mime_type
+        for extension, mime_type in getattr(mimetypes, "common_types", {}).items()
+        if extension.startswith(".")
+    }
+)
+_BASE_MIME_TYPES.update(
+    {
+        "avif": "image/avif",
+        "csv": "text/csv",
+        "heic": "image/heic",
+        "heif": "image/heif",
+        "js": "application/javascript",
+        "json": "application/json",
+        "md": "text/markdown",
+        "mjs": "text/javascript",
+        "wasm": "application/wasm",
+        "webmanifest": "application/manifest+json",
+        "woff": "font/woff",
+        "woff2": "font/woff2",
+    }
+)
+
+# Common and extended MIME types
+file_extensions: Final[dict[str, str]] = dict(sorted(_BASE_MIME_TYPES.items()))
 
 mime_types: Final[dict[str, str]] = file_extensions
 
