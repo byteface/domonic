@@ -6,8 +6,17 @@ domonic.constants
 This module defines various constants used in the domonic package.
 """
 
+from http import HTTPStatus as StdlibHTTPStatus
 from enum import IntEnum
 from typing import Final
+
+
+def _status_text(status: "HTTPStatus") -> str:
+    try:
+        return StdlibHTTPStatus(status.value).phrase
+    except ValueError:
+        return status.name.replace("_", " ").title()
+
 
 # Namespaces
 namespaces: Final[dict[str, str]] = {
@@ -97,8 +106,28 @@ class HTTPStatus(IntEnum):
     NETWORK_AUTHENTICATION_REQUIRED = 511
 
 http_response_status_codes: Final[dict[int, str]] = {
-    status.value: status.name.replace("_", " ").title() for status in HTTPStatus
+    status.value: _status_text(status) for status in HTTPStatus
 }
+
+
+def get_namespace(prefix: str, default: str | None = None) -> str | None:
+    """Return the namespace URI for a known prefix."""
+    return namespaces.get(prefix, default)
+
+
+def get_doctype(name: str, default: str | None = None) -> str | None:
+    """Return a known doctype string by name."""
+    return doctypes.get(name, default)
+
+
+def get_mime_type(extension: str, default: str | None = None) -> str | None:
+    """Return the MIME type for a file extension with or without a leading dot."""
+    return file_extensions.get(extension.lower().lstrip("."), default)
+
+
+def get_status_text(code: int, default: str | None = None) -> str | None:
+    """Return the status phrase for an HTTP response code."""
+    return http_response_status_codes.get(code, default)
 
 # Common MIME Types
 file_extensions: Final[dict[str, str]] = {
@@ -147,10 +176,45 @@ file_extensions: Final[dict[str, str]] = {
     "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 }
 
+mime_types: Final[dict[str, str]] = file_extensions
+
 __all__ = [
+    "Char",
+    "Code",
+    "Color",
+    "Entity",
     "HTTPStatus",
+    "Key",
+    "KeyCode",
+    "KeyLocation",
     "doctypes",
     "file_extensions",
+    "get_doctype",
+    "get_mime_type",
+    "get_namespace",
+    "get_status_text",
     "http_response_status_codes",
+    "mime_types",
     "namespaces",
 ]
+
+
+def __getattr__(name: str):
+    if name == "Color":
+        from domonic.constants.color import Color
+
+        return Color
+    if name in {"Char", "Entity"}:
+        from domonic.constants.entities import Char, Entity
+
+        return {"Char": Char, "Entity": Entity}[name]
+    if name in {"Code", "Key", "KeyCode", "KeyLocation"}:
+        from domonic.constants.keyboard import Code, Key, KeyCode, KeyLocation
+
+        return {
+            "Code": Code,
+            "Key": Key,
+            "KeyCode": KeyCode,
+            "KeyLocation": KeyLocation,
+        }[name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

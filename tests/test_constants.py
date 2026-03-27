@@ -2,33 +2,55 @@ import unittest
 
 from domonic.constants import (
     HTTPStatus,
+    Char,
+    Code,
+    Color,
+    Entity,
+    Key,
+    KeyCode,
+    KeyLocation,
     doctypes,
     file_extensions,
+    get_doctype,
+    get_mime_type,
+    get_namespace,
+    get_status_text,
     http_response_status_codes,
+    mime_types,
     namespaces,
 )
-from domonic.constants.color import Color
-from domonic.constants.entities import Char, Entity
-from domonic.constants.keyboard import Code, Key, KeyCode, KeyLocation, normalize_code, normalize_key
+from domonic.constants.keyboard import normalize_code, normalize_key
 
 
 class ConstantsTest(unittest.TestCase):
     def test_namespace_constants(self):
         self.assertEqual(namespaces["svg"], "http://www.w3.org/2000/svg")
         self.assertEqual(namespaces["html"], "http://www.w3.org/1999/xhtml")
+        self.assertEqual(get_namespace("svg"), "http://www.w3.org/2000/svg")
+        self.assertEqual(get_namespace("missing", "fallback"), "fallback")
 
     def test_doctype_constants(self):
         self.assertEqual(doctypes["HTML5"], "<!DOCTYPE html>")
         self.assertIn("HTML 4.01", doctypes["HTML4_01_Strict"])
+        self.assertEqual(get_doctype("HTML5"), "<!DOCTYPE html>")
+        self.assertEqual(get_doctype("missing", "fallback"), "fallback")
 
     def test_http_status_constants(self):
         self.assertEqual(int(HTTPStatus.OK), 200)
         self.assertEqual(http_response_status_codes[404], "Not Found")
-        self.assertEqual(http_response_status_codes[418], "Im A Teapot")
+        self.assertEqual(http_response_status_codes[418], "I'm a Teapot")
+        self.assertEqual(http_response_status_codes[200], "OK")
+        self.assertEqual(get_status_text(200), "OK")
+        self.assertEqual(get_status_text(499), "Client Closed Request")
+        self.assertEqual(get_status_text(999, "fallback"), "fallback")
 
     def test_file_extension_constants(self):
         self.assertEqual(file_extensions["svg"], "image/svg+xml")
         self.assertEqual(file_extensions["json"], "application/json")
+        self.assertIs(mime_types, file_extensions)
+        self.assertEqual(get_mime_type(".svg"), "image/svg+xml")
+        self.assertEqual(get_mime_type("JSON"), "application/json")
+        self.assertEqual(get_mime_type("missing", "fallback"), "fallback")
 
     def test_keyboard_modifier_helper(self):
         self.assertTrue(KeyCode.is_modifier(KeyCode.SHIFT))
@@ -78,6 +100,13 @@ class ConstantsTest(unittest.TestCase):
         self.assertEqual(Color.rgb2hex(255, 0, 255), "#ff00ff")
         self.assertEqual(Color(255, 0, 255).toRGBA(), (255, 0, 255, 1))
         self.assertEqual(Color("#00ff00").convert("css"), "#00ff00")
+
+    def test_package_reexports(self):
+        self.assertEqual(Key.ENTER, "Enter")
+        self.assertEqual(Code.KEY_A, "KeyA")
+        self.assertEqual(KeyLocation.NUMPAD, 3)
+        self.assertEqual(str(Entity("&amp;")), "&")
+        self.assertEqual(str(Char("<")), "&lt;")
 
 
 if __name__ == "__main__":
