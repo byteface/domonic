@@ -39,9 +39,8 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_add(self):
-        # test = º('<p></p>').add('<h1>').add(div())
-        # print(test)
-        pass
+        test = º('<p></p>').add('<h1></h1>').add(div())
+        assert str(test) == "<p></p><h1></h1><div></div>"
 
     def test_addBack(self):
         pass
@@ -98,13 +97,8 @@ class TestCase(unittest.TestCase):
 
     def test_append(self):
         print("TEST APPEND")
-        # doc = html()
-        # º(doc)
-        # doc.append("some text")
-        # print(doc.html())
-        # d = º('<div></div>').append("some text")
-        # self.assertEqual(str(d), '<div>some text</div>')
-        pass
+        d = º('<div></div>').append("some text")
+        self.assertEqual(str(d), "<div>some text</div>")
 
     def test_appendTo(self):
         pass
@@ -132,7 +126,10 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_children(self):
-        pass
+        page = html(body(div(span("one"), b("two"), _id="test")))
+        º(page)
+        children = º("#test").children()
+        assert str(children) == "<span>one</span><b>two</b>"
 
     def test_clearQueue(self):
         pass
@@ -210,10 +207,13 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_filter(self):
-        pass
+        things = º('<li class="keep"></li><li></li><li class="keep"></li>')
+        assert str(things.filter(".keep")) == '<li class="keep"></li><li class="keep"></li>'
 
     def test_find(self):
-        pass
+        page = html(body(div(span("a"), p("b"), _id="test")))
+        º(page)
+        assert str(º("#test").find("span")) == "<span>a</span>"
 
     def test_finish(self):
         pass
@@ -319,7 +319,10 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_next(self):
-        pass
+        page = html(body(div("one", _id="first"), div("two", _id="second"), div("three", _id="third")))
+        º(page)
+        assert str(º("#first").next()) == '<div id="second">two</div>'
+        assert str(º("#first").next("#third")) == ""
 
     def test_nextAll(self):
         pass
@@ -355,7 +358,9 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_parent(self):
-        pass
+        page = html(body(div(span("x", _id="child"), _id="parent")))
+        º(page)
+        assert str(º("#child").parent()) == '<div id="parent"><span id="child">x</span></div>'
 
     def test_parents(self):
         pass
@@ -452,7 +457,7 @@ class TestCase(unittest.TestCase):
             )
         )
         º(page)
-        print(º("form").serialize())
+        assert º("form").serialize() == "single=Single&multiple=Multiple&multiple=Multiple3&lname="
 
     def test_serializeArray(self):
         pass
@@ -467,7 +472,8 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_slice(self):
-        pass
+        things = º("<li>a</li><li>b</li><li>c</li>")
+        assert str(things.slice(1, 3)) == "<li>b</li><li>c</li>"
 
     def test_slideDown(self):
         pass
@@ -510,22 +516,11 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_toggleClass(self):
-        # page = html(form(
-        #         select(_name="single",).html(
-        #             option("a", _selected=True),
-        #             option("b")
-        #         ), _id='test'
-        #     ),
-        #     div('hi'),
-        #     div(span('there'))
-        # )
-        # º(page)
-        # print(page)
-        # º('#test').toggleClass('someclass')
-        # print(page)
-        # º('#test').toggleClass('someclass')
-        # print(page)
-        pass
+        a = º('<div id="test2"></div>')
+        a.toggleClass("someclass")
+        assert str(a) == '<div id="test2" class="someclass"></div>'
+        a.toggleClass("someclass")
+        assert str(a) == '<div id="test2"></div>'
 
     def test_trigger(self):
         pass

@@ -81,7 +81,7 @@ class dQuery_el:
 
     def __str__(self):
         # print(type(self.elements))
-        if type(self.elements) is tuple:
+        if isinstance(self.elements, (list, tuple)):
             # if isinstance(self.elements, (list, tuple)):
             # print([str(el) for el in self.elements])
             return "".join([str(el) for el in self.elements])
@@ -91,6 +91,40 @@ class dQuery_el:
 
     def __getitem__(self, index):
         return self.elements[index]
+
+    def _ensure_list(self):
+        if self.elements is None:
+            self.elements = []
+        elif not isinstance(self.elements, (list, tuple)):
+            self.elements = [self.elements]
+        else:
+            self.elements = list(self.elements)
+        return self.elements
+
+    @staticmethod
+    def _match_selector(element, selector):
+        if selector is None:
+            return True
+        if callable(selector):
+            return selector(element)
+        if isinstance(selector, str):
+            if selector.startswith("#"):
+                return element.getAttribute("id") == selector[1:]
+            if selector.startswith("."):
+                classes = (element.getAttribute("class") or "").split()
+                return selector[1:] in classes
+            return getattr(element, "tagName", "").lower() == selector.lower()
+        return element == selector
+
+    @staticmethod
+    def _coerce_nodes(value):
+        if isinstance(value, dQuery_el):
+            value = value.elements
+        if isinstance(value, tuple):
+            return list(value)
+        if isinstance(value, list):
+            return value
+        return [value]
 
     @property
     def dom(self):
@@ -153,25 +187,14 @@ class dQuery_el:
 
     def add(self, elements):
         """Create a new dQuery object with elements added to the set of matched elements."""
-        """
-        dq = None
-        if type(elements) == str:
-            dq = º(elements).elements
-
-        if type(dq) not in [list, tuple]:
-            dq = [dq]
-
-        if type(self.elements) not in [list, tuple]:
-            self.elements = [self.elements]
-
-        # if type(dq) not in [list, tuple]:
-            # self.elements = [self.elements]
-
-        self.elements = list(self.elements) + list(dq)
+        self._ensure_list()
+        if isinstance(elements, str):
+            dq = º(0)
+            dq.init(elements)
+            self.elements.extend(self._coerce_nodes(dq.elements))
+        else:
+            self.elements.extend(self._coerce_nodes(elements))
         return self
-        """
-        # return self
-        raise NotImplementedError
 
     def addBack(self, selector):
         """Add the previous set of elements on the stack to the current set, optionally filtered by a selector."""
@@ -254,7 +277,7 @@ class dQuery_el:
             el.innerHTML = el.innerHTML + str(html)
 
         # print('APPEND SAYS:', self.elements)
-        # return self
+        return self
 
     def appendTo(self, target):
         """Insert every element in the set of matched elements to the end of the target."""
@@ -269,9 +292,9 @@ class dQuery_el:
         #     self.elements = (self.elements,)
 
         if value is not None:
-            if self.elements[0].getAttribute(property) is not None:
-                self.elements[0].setAttribute(property, value)
-                return self
+            for el in self._ensure_list():
+                el.setAttribute(property, value)
+            return self
         if type(self.elements) is not tuple and type(self.elements) is not list:
             return self.elements.getAttribute(property)
         else:
@@ -320,12 +343,13 @@ class dQuery_el:
 
     def children(self, selector=None):  # TODO - test
         """Get the children of each element in the set of matched elements, optionally filtered by a selector."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
-        if selector is None:
-            return self.elements
-        else:
-            return [el for el in self.elements if selector(el)]
+        children = []
+        for el in self._ensure_list():
+            for child in list(el.children):
+                if self._match_selector(child, selector):
+                    children.append(child)
+        self.elements = children
+        return self
 
     def clearQueue(self):
         """Remove from the queue all items that have not yet been run."""
@@ -407,16 +431,17 @@ class dQuery_el:
 
     def detach(self):  # TODO - test
         """Remove the set of matched elements from the DOM."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
-
-        for el in self.elements:
+        detached = []
+        for el in self._ensure_list():
             p = el.parentNode
             for i, n in enumerate(p.children):
                 if n == el:
                     l = list(p.args)
                     l.pop(i)
                     p.args = tuple(l)
+                    detached.append(el)
+                    break
+        self.elements = detached
         return self
 
     def die(self):
@@ -426,7 +451,7 @@ class dQuery_el:
     def each(self, func):
         """Iterate over a dQuery object, executing a function for each matched element."""
         # TODO - untested
-        for index, value in enumerate(self.elements):
+        for index, value in enumerate(self._ensure_list()):
             try:
                 func(index, value)
             except Exception as e:
@@ -437,8 +462,8 @@ class dQuery_el:
     def empty(self):
         """Remove all child nodes of the set of matched elements from the DOM."""
         # TODO - test
-        for el in self.elements:
-            el.args = []
+        for el in self._ensure_list():
+            el.args = ()
         return self
 
     def end(self):
@@ -456,9 +481,8 @@ class dQuery_el:
 
     def even(self):  # TODO - untested
         """Reduce the set of matched elements to the even ones in the set, numbered from zero."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
-        return [el for el in self.elements if el.index % 2 == 0]
+        self.elements = [el for index, el in enumerate(self._ensure_list()) if index % 2 == 0]
+        return self
 
     def fadeIn(self):
         """Display the matched elements by fading them to opaque."""
@@ -478,19 +502,23 @@ class dQuery_el:
 
     def filter(self, selector):  # TODO - untested
         """Reduce the set of matched elements to those that match the selector or pass the function’s test."""
-        if isinstance(selector, str):
-            return self.elements.filter(selector)
-        elif callable(selector):
-            return [el for el in self.elements if selector(el)]
-        else:
-            raise TypeError("selector must be a string or a callable")
+        self.elements = [el for el in self._ensure_list() if self._match_selector(el, selector)]
+        return self
 
     def find(self, selector):
         """Get the descendants of each element in the current set of matched elements, filtered by a selector,
         dQuery object, or element."""
-        # if isinstance(selector, str):
-        # return self.elements.find(selector)
-        raise NotImplementedError
+        found = []
+        for el in self._ensure_list():
+            if isinstance(selector, str):
+                matches = el.querySelectorAll(selector)
+                found.extend(list(matches) if isinstance(matches, (list, tuple)) else [matches])
+            else:
+                for child in el.getElementsByTagName("*"):
+                    if self._match_selector(child, selector):
+                        found.append(child)
+        self.elements = found
+        return self
 
     def finish(self):
         """Stop the currently-running animation, remove all queued animations, and complete all animations
@@ -522,12 +550,14 @@ class dQuery_el:
     def has(self, selector):  # TODO - test
         """Reduce the set of matched elements to those that have a descendant
         that matches the selector or DOM element."""
-        if isinstance(selector, str):
-            return self.elements.has(selector)
-        elif callable(selector):
-            return [el for el in self.elements if selector(el)]
-        else:
-            raise TypeError("selector must be a string or a callable")
+        matched = []
+        for el in self._ensure_list():
+            descendants = el.querySelectorAll(selector) if isinstance(selector, str) else el.getElementsByTagName("*")
+            descendants = descendants if isinstance(descendants, (list, tuple)) else [descendants]
+            if any(self._match_selector(child, selector) for child in descendants if child is not None):
+                matched.append(el)
+        self.elements = matched
+        return self
 
     def hasClass(self, classname):
         """Determine whether any of the matched elements are assigned the given class."""
@@ -547,7 +577,7 @@ class dQuery_el:
 
     def hide(self):
         """Hide the matched elements."""
-        for el in self.elements:
+        for el in self._ensure_list():
             el.style.display = "none"
         return self
 
@@ -559,20 +589,23 @@ class dQuery_el:
     def html(self, html=None):
         """Get the HTML contents of the first element in the set of matched elements or set the HTML contents
         of every matched element."""
+        elements = self._ensure_list()
         if html == None:
-            return self.elements[0].innerHTML
-        for el in self.elements:
+            return elements[0].innerHTML
+        for el in elements:
             el.innerHTML = html
         return self
 
     def index(self):  # TODO - test
         """Search for a given element from among the matched elements."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
-        for index, value in enumerate(self.elements):
-            if value == self.elements:
-                return index
-        return -1
+        elements = self._ensure_list()
+        if not elements:
+            return -1
+        first = elements[0]
+        if first.parentNode is None:
+            return 0
+        siblings = list(first.parentNode.children)
+        return siblings.index(first) if first in siblings else -1
 
     def innerHeight(self):
         """Get the current computed inner height (including padding but not border) for the first element in the set
@@ -708,17 +741,23 @@ class dQuery_el:
         """Bind an event handler to the “mouseup” JavaScript event, or trigger that event on an element."""
         raise NotImplementedError
 
-    def next(self, selector):  # TODO - test
+    def next(self, selector=None):  # TODO - test
         """Get the immediately following sibling of each element in the set of matched elements.
         If a selector is provided, it retrieves the next sibling only if it matches that selector."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
-        if isinstance(selector, str):
-            for el in self.elements:
-                el.next(selector)
-        elif isinstance(selector, Element):
-            for el in self.elements:
-                el.next(selector)
+        matches = []
+        for el in self._ensure_list():
+            if el.parentNode is None:
+                continue
+            siblings = list(el.parentNode.children)
+            try:
+                index = siblings.index(el)
+            except ValueError:
+                continue
+            if index + 1 < len(siblings):
+                candidate = siblings[index + 1]
+                if self._match_selector(candidate, selector):
+                    matches.append(candidate)
+        self.elements = matches
         return self
 
     def nextAll(self, selector):
@@ -742,7 +781,8 @@ class dQuery_el:
 
     def odd(self):  # TODO - untested
         """Reduce the set of matched elements to the odd ones in the set, numbered from zero."""
-        return self.filter(lambda x: x % 2 == 1)
+        self.elements = [el for index, el in enumerate(self._ensure_list()) if index % 2 == 1]
+        return self
 
     def off(self, event):
         """Remove an event handler."""
@@ -780,29 +820,29 @@ class dQuery_el:
         first element in the set of matched elements or set the outer width of every matched element."""
         raise NotImplementedError
 
-    def parent(self, selector):  # TODO - test
+    def parent(self, selector=None):  # TODO - test
         """Get the parent of each element in the current set of matched elements,
         optionally filtered by a selector."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
         parents = []
-        if isinstance(selector, str):
-            for el in self.elements:
-                p = el.parent
-                parents.append(p)
-        return parents
+        for el in self._ensure_list():
+            parent = el.parentNode
+            if parent is not None and self._match_selector(parent, selector):
+                parents.append(parent)
+        self.elements = parents
+        return self
 
-    def parents(self, selector):  # TODO - untested
+    def parents(self, selector=None):  # TODO - untested
         """Get the ancestors of each element in the current set of matched elements,
         optionally filtered by a selector."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
         parents = []
-        if isinstance(selector, str):
-            for el in self.elements:
-                p = el.parents
-                parents.append(p)
-        return parents
+        for el in self._ensure_list():
+            current = el.parentNode
+            while current is not None:
+                if self._match_selector(current, selector):
+                    parents.append(current)
+                current = current.parentNode
+        self.elements = parents
+        return self
 
     def parentsUntil(self, selector):
         """Get the ancestors of each element in the current set of matched elements,
@@ -820,9 +860,7 @@ class dQuery_el:
     def prepend(self, html):
         """Insert content, specified by the parameter, to the beginning of each element
         in the set of matched elements."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
-        for el in self.elements:
+        for el in self._ensure_list():
             el.innerHTML = html + el.innerHTML
         return self
 
@@ -881,14 +919,7 @@ class dQuery_el:
     def prop(self, property, value):
         """Get the value of a property for the first element in the set of matched elements or set one or more properties
         for every matched element."""
-        if value is not None:
-            if self.elements[0].getAttribute(property) is not None:
-                self.elements[0].setAttribute(property, value)
-                return self
-        if type(self.elements) is not tuple and type(self.elements) is not list:
-            return self.elements.getAttribute(property)
-        else:
-            return self.elements[0].getAttribute(property)
+        return self.attr(property, value)
 
     def pushStack(self, stack):  # TODO - test
         """Add a collection of DOM elements onto the dQuery."""
@@ -908,10 +939,9 @@ class dQuery_el:
 
     def remove(self, items):  # TODO - test
         """Remove the set of matched elements from the DOM."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
-        for el in self.elements:
-            el.remove()  # wont work . does this method even exist?
+        for el in self._ensure_list():
+            if el.parentNode is not None:
+                el.parentNode.removeChild(el)
         return self
 
     def removeAttr(self, attr: str):  # TODO - test
@@ -990,38 +1020,56 @@ class dQuery_el:
         # raise NotImplementedError
         # from domonic.javascript import Global
 
-        if isinstance(self.elements, (tuple, list)):
-            form = self.elements[0]
-        else:
-            form = self.elements
+        elements = self._ensure_list()
+        if not elements:
+            return ""
+        form = elements[0]
 
-        if form.nodeName != "FORM":
+        if form.nodeName.upper() != "FORM":
             return
 
         q = []
         for el in form.elements:
 
-            if el.getAttribute("name") == "":
+            name = el.getAttribute("name")
+            if name in (None, ""):
                 continue
 
-            if el.nodeName == "INPUT":
+            node_name = el.nodeName.upper()
+
+            if node_name == "INPUT":
+                value = getattr(el, "value", None)
+                if value is None:
+                    value = el.nodeValue if el.nodeValue is not None else ""
                 if el.type in ["email", "text", "hidden", "password", "button", "reset", "submit", "email"]:
-                    q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(el.nodeValue))
+                    q.append(name + "=" + Global.encodeURIComponent(value))
                 elif el.type in ["checkbox", "radio"]:
                     if el.checked:
-                        q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(el.nodeValue))
-            elif el.nodeName == "TEXTAREA":
-                q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(el.nodeValue))
-            elif el.nodeName == "SELECT":
+                        q.append(name + "=" + Global.encodeURIComponent(value))
+            elif node_name == "TEXTAREA":
+                value = getattr(el, "value", None)
+                if value is None:
+                    value = el.nodeValue if el.nodeValue is not None else ""
+                q.append(name + "=" + Global.encodeURIComponent(value))
+            elif node_name == "SELECT":
                 if el.getAttribute("multiple") != None:
                     for option in el.getElementsByTagName("option"):
                         if option.getAttribute("selected") != None:
-                            q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(option.nodeValue))
+                            q.append(name + "=" + Global.encodeURIComponent(option.nodeValue))
                 else:
-                    q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(el.nodeValue))
-            elif el.nodeName == "BUTTON":
+                    selected = None
+                    for option in el.getElementsByTagName("option"):
+                        if option.getAttribute("selected") is not None:
+                            selected = option
+                            break
+                    value = selected.nodeValue if selected is not None else el.nodeValue
+                    q.append(name + "=" + Global.encodeURIComponent(value))
+            elif node_name == "BUTTON":
+                value = getattr(el, "value", None)
+                if value is None:
+                    value = el.nodeValue if el.nodeValue is not None else ""
                 if el.type in ["reset", "submit", "button"]:
-                    q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(el.nodeValue))
+                    q.append(name + "=" + Global.encodeURIComponent(value))
 
         return "&".join(q)
 
@@ -1031,18 +1079,21 @@ class dQuery_el:
 
     def show(self):
         """Display the matched elements."""
-        for el in self.elements:
+        for el in self._ensure_list():
             el.style.display = ""
         return self
 
     def siblings(self, selector):  # TODO - untested
         """Return the siblings of the matched elements. filter by selector."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
         siblings = []
-        for el in self.elements:
-            siblings.append(el.parentNode.getElementsByTagName(selector))
-        return siblings
+        for el in self._ensure_list():
+            if el.parentNode is None:
+                continue
+            for sibling in list(el.parentNode.children):
+                if sibling != el and self._match_selector(sibling, selector):
+                    siblings.append(sibling)
+        self.elements = siblings
+        return self
 
     def size(self):
         """Return the number of elements in the dQuery object."""
@@ -1051,9 +1102,9 @@ class dQuery_el:
     def slice(self, start, end):  # TODO - test
         """Return a new dQuery object containing the set of matched elements starting at the specified index
         and ending at the specified index."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
-        return dQuery(self.elements[start:end])
+        dq = º(0)
+        dq.elements = self._ensure_list()[start:end]
+        return dq
 
     def slideDown(self):
         """Display the matched elements with a sliding motion."""
@@ -1078,25 +1129,22 @@ class dQuery_el:
     def text(self, newVal: str = None):
         """Get the combined text contents of each element in the set of matched elements, including their descendants,
         or set the text contents of the matched elements."""
+        elements = self._ensure_list()
         if newVal is not None:
-            for el in self.elements:
+            for el in elements:
                 el.textContent = newVal
+            return self
         else:
-            return [el.textContent for el in self.elements]
+            return [el.textContent for el in elements]
 
     def toArray(self):
         """Retrieve all the elements contained in the dQuery set, as an array."""
         # raise NotImplementedError
-        if isinstance(self.elements, (list, tuple)):
-            return self.elements
-        else:
-            return [self.elements]
+        return self._ensure_list()
 
     def toggle(self):  # TODO - test
         """Display or hide the matched elements."""
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
-        for el in self.elements:
+        for el in self._ensure_list():
             el.style.display = "" if el.style.display == "none" else "none"
         return self
 
@@ -1115,7 +1163,17 @@ class dQuery_el:
         #         º(el).addClass(className)
         #     else:
         #         º(el).removeClass(className)
-        raise NotImplementedError
+        for el in self._ensure_list():
+            classes = (el.getAttribute("class") or "").split()
+            if className in classes:
+                classes = [cls for cls in classes if cls != className]
+            else:
+                classes.append(className)
+            if classes:
+                el.setAttribute("class", " ".join(classes))
+            else:
+                el.removeAttribute("class")
+        return self
 
     def trigger(self, eventName, eventArg=None):  # TODO - test
         """Execute all handlers and behaviors attached to the matched elements for the given event type."""
@@ -1160,12 +1218,13 @@ class dQuery_el:
     def val(self, newVal=None):
         """Get the current value of the first element in the set of matched elements
         or set the value of every matched element."""
+        elements = self._ensure_list()
         if newVal is not None:
-            for el in self.elements:
+            for el in elements:
                 el.value = newVal
+            return self
         else:
-            return self.elements.value
-        # return self
+            return getattr(elements[0], "value", None)
 
     def width(self):
         """Get the current computed width for the first element in the set of matched elements
@@ -1178,11 +1237,12 @@ class dQuery_el:
             from domonic.html import create_element
 
             wrappingElement = create_element(wrappingElement)
-        if not isinstance(self.elements, (list, tuple)):
-            self.elements = (self.elements,)
-        for el in self.elements:
-            wrappingElement.appendChild(el)
-            el.parentNode.replaceChild(wrappingElement, el)
+        for el in self._ensure_list():
+            wrapper = wrappingElement.__class__()
+            parent = el.parentNode
+            wrapper.appendChild(el)
+            if parent is not None:
+                parent.replaceChild(wrapper, el)
         return self
 
     def wrapAll(self, wrappingElement):
@@ -1687,9 +1747,8 @@ class º(dQuery_el):
     @staticmethod
     def merge(one, *args):
         """Merge the contents of arrays into the first array."""
-        import itertools
-
-        one.append(list(itertools.chain(*args)))
+        for each in args:
+            one.extend(list(each))
         return one
 
     @staticmethod

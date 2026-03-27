@@ -29,7 +29,33 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib.parse import quote, unquote
 
 # import requests
-from dateutil.parser import parse, parserinfo
+try:
+    from dateutil.parser import parse, parserinfo
+except ImportError:  # pragma: no cover - optional dependency
+    class parserinfo:
+        def convertyear(self, year, *args, **kwargs):
+            return year
+
+    def parse(date_string, parser_info=None):
+        value = str(date_string).strip()
+        try:
+            return datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            pass
+
+        for fmt in (
+            "%Y-%m-%d %H:%M:%S",
+            "%Y-%m-%d",
+            "%d %B %Y",
+            "%d %b %Y",
+            "%Y/%m/%d",
+            "%m/%d/%Y",
+        ):
+            try:
+                return datetime.datetime.strptime(value, fmt)
+            except ValueError:
+                continue
+        raise ValueError(f"Unsupported date format without python-dateutil: {date_string}")
 
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.webstorage import Storage
