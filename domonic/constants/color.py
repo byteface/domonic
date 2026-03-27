@@ -3,9 +3,9 @@
     ====================================
 """
 
-# from typing import Union, Tuple, List, Dict, Any, Optional, Callable, cast, TypeVar, Generic, Iterable, Sequence
+from __future__ import annotations
 
-from typing import Optional, Tuple
+from typing import Literal
 
 from domonic.geom.vec3 import vec3
 from domonic.geom.vec4 import vec4
@@ -43,7 +43,7 @@ class Color:
         # rgba = '#'+secrets.token_hex(4)
 
     @staticmethod
-    def hex2rgb(h: str) -> Tuple[int, int, int]:
+    def hex2rgb(h: str) -> tuple[int, int, int]:
         """[takes a hex color in the form of #RRGGBB and returns the rgb values as a tuple i.e (r, g, b)]
 
         Args:
@@ -237,7 +237,7 @@ class Color:
     def blue(self, value: float) -> None:
         self.b = value
 
-    def toRGB(self):  # : -> vec3:
+    def toRGB(self) -> tuple[float, float, float]:  # : -> vec3:
         """[returns the color as RGB]
 
         Returns:
@@ -245,7 +245,7 @@ class Color:
         """
         return (self.r, self.g, self.b)
 
-    def toHsl(self):
+    def toHsl(self) -> tuple[float, float, float]:
         """returns the hsl for the color"""
         return (self.hue, self.saturation, self.brightness)
 
@@ -258,7 +258,7 @@ class Color:
     # def __repr__(self):
     #     return str(self)
 
-    def toHsv(self):
+    def toHsv(self) -> tuple[float, float, float]:
         """get the hsv for the color"""
         return (self.hue, self.saturation, self.brightness)
 
@@ -269,10 +269,10 @@ class Color:
     def toHex(self) -> str:
         return str(self)
 
-    def toRGBA(self):
+    def toRGBA(self) -> tuple[float, float, float, float]:
         return (self.r, self.g, self.b, self.a)
 
-    def toSVG(self, shape="circle", size=10):
+    def toSVG(self, shape: Literal["circle", "square"] = "circle", size: int = 10) -> str | None:
         """returns the color as an svg string
         Args:
             shape ([str]): [can be circle or square]
@@ -293,7 +293,7 @@ class Color:
     #     img = Image.new('RGB', (size, size), self.toHex())
     #     return img
 
-    def convert(self, to: str):
+    def convert(self, to: str) -> tuple[float, ...] | str | None:
         """convert the color to a different color space
 
         Args:
@@ -320,26 +320,28 @@ class Color:
         """
         return self.a > 0
 
-    def equals(self, color) -> bool:
+    def equals(self, color: Color) -> bool:
         return self.r == color.r and self.g == color.g and self.b == color.b
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """check if two colors are equal"""
+        if not isinstance(other, Color):
+            return NotImplemented
         return self.r == other.r and self.g == other.g and self.b == other.b
 
-    def __add__(self, other):
+    def __add__(self, other: Color) -> Color:
         """add two colors together"""
         return Color(self.r + other.r, self.g + other.g, self.b + other.b)
 
-    def __sub__(self, color):
+    def __sub__(self, color: Color) -> Color:
         """subtract a color from this color"""
         return Color(self.r - color.r, self.g - color.g, self.b - color.b)
 
-    def __mul__(self, color):
+    def __mul__(self, color: Color) -> Color:
         """multiply a color with this color"""
         return Color(self.r * color.r, self.g * color.g, self.b * color.b)
 
-    def __div__(self, color):
+    def __div__(self, color: Color) -> Color:
         """divide a color with this color"""
         return Color(self.r / color.r, self.g / color.g, self.b / color.b)
 

@@ -1,4 +1,4 @@
-from typing import Dict
+from __future__ import annotations
 
 """
 domonic.constants
@@ -6,8 +6,11 @@ domonic.constants
 This module defines various constants used in the domonic package.
 """
 
+from enum import IntEnum
+from typing import Final
+
 # Namespaces
-namespaces: Dict[str, str] = {
+namespaces: Final[dict[str, str]] = {
     "xml": "http://www.w3.org/XML/1998/namespace",
     "svg": "http://www.w3.org/2000/svg",
     "xlink": "http://www.w3.org/1999/xlink",
@@ -22,7 +25,7 @@ namespaces: Dict[str, str] = {
 }
 
 # Document Types
-doctypes: Dict[str, str] = {
+doctypes: Final[dict[str, str]] = {
     "HTML5": "<!DOCTYPE html>",
     "HTML4_01_Strict": '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">',
     "HTML4_01_Transitional": '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">',
@@ -32,9 +35,7 @@ doctypes: Dict[str, str] = {
 }
 
 # HTTP Response Status Codes
-from enum import Enum
-
-class HTTPStatus(Enum):
+class HTTPStatus(IntEnum):
     OK = 200
     CREATED = 201
     ACCEPTED = 202
@@ -95,10 +96,12 @@ class HTTPStatus(Enum):
     NOT_EXTENDED = 510
     NETWORK_AUTHENTICATION_REQUIRED = 511
 
-http_response_status_codes = {status.value: status.name.replace('_', ' ').title() for status in HTTPStatus}
+http_response_status_codes: Final[dict[int, str]] = {
+    status.value: status.name.replace("_", " ").title() for status in HTTPStatus
+}
 
 # Common MIME Types
-file_extensions: Dict[str, str] = {
+file_extensions: Final[dict[str, str]] = {
     "html": "text/html",
     "htm": "text/html",
     "xhtml": "application/xhtml+xml",
@@ -143,3 +146,11 @@ file_extensions: Dict[str, str] = {
     "ppt": "application/vnd.ms-powerpoint",
     "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 }
+
+__all__ = [
+    "HTTPStatus",
+    "doctypes",
+    "file_extensions",
+    "http_response_status_codes",
+    "namespaces",
+]

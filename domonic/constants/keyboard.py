@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from typing import ClassVar
+
+
 class KeyCode:
     """Class representing keyboard key codes."""
 
@@ -156,6 +161,31 @@ class KeyCode:
     SCROLL_LOCK: str = "145"
     PAUSE_BREAK: str = "19"
 
+    MODIFIER_KEYS: ClassVar[frozenset[str]] = frozenset(
+        {
+            SHIFT,
+            LEFT_SHIFT,
+            RIGHT_SHIFT,
+            CONTROL,
+            LEFT_CONTROL,
+            RIGHT_CONTROL,
+            LEFT_ALT,
+            RIGHT_ALT,
+            COMMAND,
+            LEFT_COMMAND,
+            RIGHT_COMMAND,
+            FN,
+        }
+    )
+
     def __init__(self) -> None:
         """Constructor for the KeyCode class."""
         pass
+
+    @classmethod
+    def is_modifier(cls, key_code: str) -> bool:
+        """Return True when the key code maps to a modifier key."""
+        return key_code in cls.MODIFIER_KEYS
+
+
+__all__ = ["KeyCode"]

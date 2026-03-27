@@ -4,6 +4,8 @@
 
 """
 
+import html
+
 
 class Entity:
 
@@ -13,9 +15,10 @@ class Entity:
         self.entity = entity
 
     def __str__(self) -> str:
-        import html
+        return html.unescape(self.entity)
 
-        return html.unescape(self.character)
+    def __repr__(self) -> str:
+        return f"Entity({self.entity!r})"
 
 
 class Char:
@@ -23,8 +26,6 @@ class Char:
         self.character = character
 
     def __str__(self) -> str:
-        import html
-
         return html.escape(self.character)
 
     # def __repr__(self):
@@ -427,3 +428,6 @@ class Char:
     PHONE: str = "&phone;"  #: ☎
     FEMALE: str = "&female;"  #: ♀
     MALE: str = "&male;"  #: ♂
+
+
+__all__ = ["Char", "Entity"]
