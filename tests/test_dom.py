@@ -1107,6 +1107,50 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(caret.offset, 0)
         self.assertIn(caret.offsetNode, [target, target.firstChild])
 
+    def test_insert_adjacent_element_positions(self):
+        host = div(span("target", _id="target"), p("sibling", _id="sibling"))
+        target = host.querySelector("#target")
+
+        before = em("before", _id="before")
+        returned = target.insertAdjacentElement("beforebegin", before)
+        self.assertIs(returned, before)
+        self.assertEqual([child.getAttribute("id") for child in host.children], ["before", "target", "sibling"])
+
+        after_begin = strong("start", _id="start")
+        target.insertAdjacentElement("AFTERBEGIN", after_begin)
+        self.assertEqual(target.children[0].getAttribute("id"), "start")
+
+        before_end = i("end", _id="end")
+        target.insertAdjacentElement("beforeend", before_end)
+        self.assertEqual(target.children[-1].getAttribute("id"), "end")
+
+        after = b("after", _id="after")
+        target.insertAdjacentElement("AfterEnd", after)
+        self.assertEqual([child.getAttribute("id") for child in host.children], ["before", "target", "after", "sibling"])
+
+    def test_insert_adjacent_html_and_text(self):
+        host = div(span("target", _id="target"), p("sibling", _id="sibling"))
+        target = host.querySelector("#target")
+
+        target.insertAdjacentHTML("beforebegin", "<em id='before'></em>")
+        target.insertAdjacentHTML("afterbegin", "<strong id='start'></strong>")
+        target.insertAdjacentHTML("beforeend", "<i id='end'></i>")
+        target.insertAdjacentHTML("afterend", "<b id='after'></b>")
+        target.insertAdjacentText("afterbegin", "prefix-")
+        target.insertAdjacentText("beforeend", "-suffix")
+
+        self.assertEqual([child.getAttribute("id") for child in host.children], ["before", "target", "after", "sibling"])
+        self.assertEqual(target.children[0].getAttribute("id"), "start")
+        self.assertEqual(target.children[-1].getAttribute("id"), "end")
+        self.assertEqual(str(target), '<span id="target">prefix-<strong id="start"></strong>target<i id="end"></i>-suffix</span>')
+        self.assertEqual(host.querySelector("#before").tagName, "em")
+        self.assertEqual(host.querySelector("#after").tagName, "b")
+
+    def test_insert_adjacent_invalid_position(self):
+        target = span("target")
+        with self.assertRaises(ValueError):
+            target.insertAdjacentText("middle", "x")
+
     def test_node_iterator_next_node(self):
         page = html(body(div(span("a"), p("b"), _id="root")))
         iterator = page.createNodeIterator(page.body)

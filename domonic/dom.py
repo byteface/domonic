@@ -2535,6 +2535,7 @@ class Element(Node):
     def append(self, *args):
         """Inserts a set of Node objects or DOMString objects after the last child of the Element."""
         self.args += args
+        self._update_parents()
         return self
 
     # elem.attachShadow({mode: open|closed})
@@ -2881,54 +2882,86 @@ class Element(Node):
         return "".join([each.__str__() for each in self.args])
 
     # Inserts an element adjacent to the current element
-    def insertAdjacentElement(self, position: str, element):  # TODO - test. these look wrong.
-        """Inserts an element adjacent to the current element"""
-        position = position.upper()
-        if position == "BEFOREBEGIN":
-            self.insertBefore(element, self.firstElementChild())
-        elif position == "AFTERBEGIN":
-            self.insertBefore(element, self.firstElementChild())
-        elif position == "AFTEREND":
-            self.insertAfter(element, self.firstElementChild())
-        elif position == "BEFOREEND":
-            self.insertBefore(element, self.lastElementChild())
+    def _normalize_adjacent_position(self, position: str) -> str:
+        pos = str(position).lower()
+        if pos not in ("beforebegin", "afterbegin", "beforeend", "afterend"):
+            raise ValueError(
+                f"The value provided ({position}) is not one of"
+                '"beforeBegin", "afterBegin", "beforeEnd", or "afterEnd".'
+            )
+        return pos
+
+    def _coerce_adjacent_nodes(self, content):
+        if isinstance(content, tuple):
+            return list(content)
+        if isinstance(content, list):
+            return content
+        return [content]
+
+    def before(self, *nodes):
+        if self.parentNode is None:
+            return
+        parent = self.parentNode
+        index = parent.args.index(self)
+        parent.args = parent.args[:index] + tuple(nodes) + parent.args[index:]
+        parent._update_parents()
+
+    def after(self, *nodes):
+        if self.parentNode is None:
+            return
+        parent = self.parentNode
+        index = parent.args.index(self) + 1
+        parent.args = parent.args[:index] + tuple(nodes) + parent.args[index:]
+        parent._update_parents()
+
+    def insertAdjacentElement(self, position: str, element):
+        """Inserts an element adjacent to the current element."""
+        pos = self._normalize_adjacent_position(position)
+        if pos == "beforebegin":
+            if self.parentNode is None:
+                return None
+            self.before(element)
+        elif pos == "afterbegin":
+            self.prepend(element)
+        elif pos == "beforeend":
+            self.append(element)
+        elif pos == "afterend":
+            if self.parentNode is None:
+                return None
+            self.after(element)
+        return element
 
     def insertAdjacentHTML(self, position: str, html: str):
         """Inserts raw HTML adjacent to the current element"""
-        # df = self._parse_html(html)
-        content = html
-        pos = position.lower()
+        from domonic import domonic
+
+        try:
+            content = domonic.load(html)
+        except Exception:
+            content = html
+
+        nodes = self._coerce_adjacent_nodes(content)
+        pos = self._normalize_adjacent_position(position)
         if pos == "beforebegin":
-            self.before(content)
+            self.before(*nodes)
         elif pos == "afterbegin":
-            self.prepend(content)
+            self.prepend(*nodes)
         elif pos == "beforeend":
-            self.append(content)
+            self.append(*nodes)
         elif pos == "afterend":
-            self.after(content)
-        else:
-            raise ValueError(
-                f"The value provided ({position}) is not one of"
-                '"beforeBegin", "afterBegin", "beforeEnd", or "afterEnd".'
-            )
+            self.after(*nodes)
 
     def insertAdjacentText(self, position: str, text: str):
         """Inserts text adjacent to the current element"""
-        content = text
-        pos = position.lower()
+        pos = self._normalize_adjacent_position(position)
         if pos == "beforebegin":
-            self.before(content)
+            self.before(text)
         elif pos == "afterbegin":
-            self.prepend(content)
+            self.prepend(text)
         elif pos == "beforeend":
-            self.append(content)
+            self.append(text)
         elif pos == "afterend":
-            self.after(content)
-        else:
-            raise ValueError(
-                f"The value provided ({position}) is not one of"
-                '"beforeBegin", "afterBegin", "beforeEnd", or "afterEnd".'
-            )
+            self.after(text)
 
     def isContentEditable(self) -> bool:
         """Returns true if the content of an element is editable, otherwise false"""
@@ -3053,6 +3086,7 @@ class Element(Node):
         """Prepends a node to the current element"""
         newargs = list(args) + list(self.args)
         self.args = tuple(newargs)
+        self._update_parents()
 
     def querySelector(self, query: str):
         """[Returns the first child element that matches a specified CSS selector(s) of an element]
