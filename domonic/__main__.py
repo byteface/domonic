@@ -8,6 +8,12 @@ import argparse
 import os
 import sys
 
+from domonic.ext import (
+    get_hello_world,
+    get_server_requirements,
+    get_supported_servers,
+)
+
 prog = """
 
 function project(){
@@ -73,6 +79,38 @@ def project(name):
     """
     this will replace the older bash script
     """
+    from domonic.utils import Utils
+
+    def write_requirements(server: str) -> list[str]:
+        requirements = ["domonic", "requests", *get_server_requirements(server)]
+        with open("requirements.txt", "w") as requirements_file:
+            requirements_file.write("\n".join(requirements) + "\n")
+        return requirements
+
+    def write_activation_script(server: str) -> None:
+        requirements = write_requirements(server)
+        install_commands = [
+            "python3 -m pip install --upgrade pip",
+            "python3 -m pip install -r requirements.txt",
+        ]
+
+        if Utils.is_windows():
+            with open("activate.bat", "w") as script:
+                script.write("@echo off\n")
+                script.write('call "venv\\Scripts\\activate"\n')
+                for command in install_commands:
+                    script.write(f"{command}\n")
+            os.system("activate.bat")
+            os.remove("activate.bat")
+        else:
+            with open("activate.sh", "w") as script:
+                script.write("#!/bin/bash\n")
+                script.write("source venv/bin/activate\n")
+                for command in install_commands:
+                    script.write(f"{command}\n")
+            os.system("bash activate.sh")
+            os.remove("activate.sh")
+
     PROJECT_NAME = name
     os.mkdir(PROJECT_NAME)
     os.chdir(PROJECT_NAME)
@@ -128,43 +166,24 @@ run:
     # os.system("python3 -m pip freeze > requirements.txt")
 
     # ask the user which server they want to use
-    server_opt = [
-        "none",
-        "sanic",
-        "flask",
-        "cherrypy",
-        "django",
-        "bottle",
-        "pyramid",
-        "werkzeug",
-        "tornado",
-        "aiohttp",
-        "fastapi",
-        "starlette",
-        "blacksheep",
-        "muffin",
-        "falcon",
-        "baize",
-        "emmett",
-        "quart",
-    ]
+    server_opt = get_supported_servers()
     print("You want a server?")
     for i, server in enumerate(server_opt):
         print(str(i) + ": " + server)
     server_choice = input("Enter a number: ")
     try:
         server_choice = server_opt[int(server_choice)]
-    except ValueError:
+    except (IndexError, ValueError):
         if server_choice in server_opt:
             server_choice = server_choice
+        else:
+            server_choice = "none"
 
     # TODO - any plugins?.. cors etc
 
     # with python not touch
     with open("app.py", "w") as f:
         # write the hello world for the given server
-        from domonic.ext import get_hello_world
-
         code = get_hello_world(server_choice)
         if code is not None:
             f.write(code)
@@ -172,60 +191,7 @@ run:
             f.write("from domonic.html import *")
 
     os.system("python3 -m venv venv")
-    from domonic.utils import Utils
-
-    if Utils.is_windows():
-        # create a bat file to activate the venv an install requirements
-        with open("activate.bat", "w") as f:
-            f.write("@echo off\n")
-            f.write('call "venv\\Scripts\\activate"\n')
-            f.write("python3 -m pip install requests\n")
-            if server_choice != "none":
-                f.write(f"python3 -m pip install {server_choice}\n")
-                if server_choice in [
-                    "fastapi",
-                    "starlette",
-                    "blacksheep",
-                    "muffin",
-                    "falcon",
-                    "baize",
-                    "emmett",
-                    "quart",
-                ]:
-                    # need to install uvicorn
-                    f.write("python3 -m pip install uvicorn\n")
-            f.write("python3 -m pip install domonic\n")
-            f.write("python3 -m pip freeze > requirements.txt\n")
-        # call the bat file
-        os.system("activate.bat")
-        # remove the activate.bat file
-        os.system("del activate.bat")
-    else:
-        # create a bash file to activate the venv an install requirements
-        with open("activate.sh", "w") as f:
-            f.write("#!/bin/bash\n")
-            f.write("source venv/bin/activate\n")
-            f.write("python3 -m pip install requests\n")
-            if server_choice != "none":
-                f.write(f"python3 -m pip install {server_choice}\n")
-                if server_choice in [
-                    "fastapi",
-                    "starlette",
-                    "blacksheep",
-                    "muffin",
-                    "falcon",
-                    "baize",
-                    "emmett",
-                    "quart",
-                ]:
-                    # need to install uvicorn
-                    f.write("python3 -m pip install uvicorn\n")
-            f.write("python3 -m pip install domonic\n")
-            f.write("python3 -m pip freeze > requirements.txt\n")
-        # call the bash file
-        os.system("bash activate.sh")
-        # remove the activate.sh file
-        os.system("rm activate.sh")
+    write_activation_script(server_choice)
 
     # license_opt = ["none", "mit", "gpl", "apache", "bsd", "mpl"]
     # print("You want a license?")

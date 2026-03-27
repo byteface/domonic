@@ -6,6 +6,8 @@
 
 """
 
+from __future__ import annotations
+
 # HELLO WORLDS - hello world code for other libs
 # "django"
 # "bottle"
@@ -85,6 +87,29 @@ if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
 """
 
+HELLO_STARLETTE: str = """
+import uvicorn
+from starlette.applications import Starlette
+from starlette.responses import HTMLResponse
+from starlette.routing import Route
+from domonic.html import *
+
+async def homepage(request):
+    return HTMLResponse(str(
+        html(
+        head(),
+        body(
+            div(span("Hello World!"))
+            )
+        )
+    ))
+
+app = Starlette(routes=[Route("/", homepage)])
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+"""
+
 HELLO_SANIC: str = """
 from sanic import Sanic
 from sanic import response
@@ -124,7 +149,7 @@ def hello():
         ))
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="127.0.0.1", port=5000)
 """
 
 HELLO_CHERRYPY: str = """
@@ -164,6 +189,54 @@ def index(name):
         )
 
 run(host='localhost', port=8080)
+"""
+
+HELLO_DJANGO: str = """
+import django
+from django.conf import settings
+from django.core.management import execute_from_command_line
+from django.http import HttpResponse
+from django.urls import path
+from domonic.html import *
+
+def index(request):
+    page = html(head(), body(div(span("Hello World!"))))
+    return HttpResponse(str(page))
+
+urlpatterns = [path("", index)]
+
+if not settings.configured:
+    settings.configure(
+        DEBUG=True,
+        ROOT_URLCONF=__name__,
+        SECRET_KEY="domonic-cli",
+        ALLOWED_HOSTS=["*"],
+        MIDDLEWARE=[],
+        INSTALLED_APPS=[],
+    )
+    django.setup()
+
+if __name__ == "__main__":
+    execute_from_command_line(["app.py", "runserver", "127.0.0.1:8000"])
+"""
+
+HELLO_PYRAMID: str = """
+from wsgiref.simple_server import make_server
+from pyramid.config import Configurator
+from pyramid.response import Response
+from domonic.html import *
+
+def home(request):
+    page = html(head(), body(div(span("Hello World!"))))
+    return Response(str(page), content_type="text/html")
+
+if __name__ == "__main__":
+    with Configurator() as config:
+        config.add_route("home", "/")
+        config.add_view(home, route_name="home")
+        app = config.make_wsgi_app()
+    server = make_server("127.0.0.1", 6543, app)
+    server.serve_forever()
 """
 
 HELLO_AIOHTTP: str = """
@@ -228,20 +301,186 @@ if __name__ == '__main__':
     run_simple('localhost', 4000, application)
 """
 
+HELLO_FALCON: str = """
+import falcon
+from wsgiref.simple_server import make_server
+from domonic.html import *
 
-def get_hello_world(server):
-    hello_words = {
-        "flask": HELLO_FLASK,
-        "cherrypy": HELLO_CHERRYPY,
-        "sanic": HELLO_SANIC,
-        "bottle": HELLO_BOTTLE,
-        "aiohttp": HELLO_AIOHTTP,
-        "tornado": HELLO_TORNADO,
-        "werkzeug": HELLO_WERKZEUG,
-        "fastapi": HELLO_FAST_API,
-        "blacksheep": HELLO_BLACKSHEEP,
-    }
-    if server in hello_words:
-        return hello_words[server]
-    else:
-        return None
+class HomeResource:
+
+    def on_get(self, req, resp):
+        page = html(head(), body(div(span("Hello World!"))))
+        resp.content_type = "text/html"
+        resp.text = str(page)
+
+app = falcon.App()
+app.add_route("/", HomeResource())
+
+if __name__ == "__main__":
+    server = make_server("127.0.0.1", 8000, app)
+    server.serve_forever()
+"""
+
+HELLO_QUART: str = """
+from quart import Quart
+from domonic.html import *
+
+app = Quart(__name__)
+
+@app.route("/")
+async def hello():
+    return str(
+        html(
+        head(),
+        body(
+            div(span("Hello World!"))
+            )
+        )
+    )
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=8000)
+"""
+
+HELLO_MUFFIN: str = """
+import muffin
+import uvicorn
+from domonic.html import *
+
+app = muffin.Application()
+
+@app.route("/")
+async def hello(request):
+    return str(
+        html(
+        head(),
+        body(
+            div(span("Hello World!"))
+            )
+        )
+    )
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+"""
+
+HELLO_BAIZE: str = """
+import uvicorn
+from baize.asgi import HTMLResponse, request_response
+from domonic.html import *
+
+@request_response
+async def app(request):
+    page = html(head(), body(div(span("Hello World!"))))
+    return HTMLResponse(str(page))
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+"""
+
+HELLO_EMMETT: str = """
+from emmett import App
+from domonic.html import *
+
+app = App(__name__)
+
+@app.route("/")
+async def index():
+    return str(
+        html(
+        head(),
+        body(
+            div(span("Hello World!"))
+            )
+        )
+    )
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=8000)
+"""
+
+HELLO_LITESTAR: str = """
+import uvicorn
+from litestar import Litestar, get
+from domonic.html import *
+
+@get("/")
+async def index() -> str:
+    return str(
+        html(
+        head(),
+        body(
+            div(span("Hello World!"))
+            )
+        )
+    )
+
+app = Litestar(route_handlers=[index])
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+"""
+
+HELLO_ROBYN: str = """
+from robyn import Robyn
+from domonic.html import *
+
+app = Robyn(__file__)
+
+@app.get("/")
+async def index(request):
+    return str(
+        html(
+        head(),
+        body(
+            div(span("Hello World!"))
+            )
+        )
+    )
+
+app.start(port=8080)
+"""
+
+
+SERVER_SCAFFOLDS: dict[str, dict[str, object]] = {
+    "none": {"packages": [], "template": None},
+    "sanic": {"packages": ["sanic==25.12.0"], "template": HELLO_SANIC},
+    "flask": {"packages": ["Flask==3.1.3"], "template": HELLO_FLASK},
+    "cherrypy": {"packages": ["CherryPy==18.10.0"], "template": HELLO_CHERRYPY},
+    "django": {
+        "packages": [
+            'Django==5.2.12; python_version < "3.12"',
+            'Django==6.0.3; python_version >= "3.12"',
+        ],
+        "template": HELLO_DJANGO,
+    },
+    "bottle": {"packages": ["bottle==0.13.4"], "template": HELLO_BOTTLE},
+    "pyramid": {"packages": ["pyramid==2.1"], "template": HELLO_PYRAMID},
+    "werkzeug": {"packages": ["Werkzeug==3.1.7"], "template": HELLO_WERKZEUG},
+    "tornado": {"packages": ["tornado==6.5.5"], "template": HELLO_TORNADO},
+    "aiohttp": {"packages": ["aiohttp==3.13.3"], "template": HELLO_AIOHTTP},
+    "fastapi": {"packages": ["fastapi==0.135.2", "uvicorn==0.42.0"], "template": HELLO_FAST_API},
+    "starlette": {"packages": ["starlette==1.0.0", "uvicorn==0.42.0"], "template": HELLO_STARLETTE},
+    "blacksheep": {"packages": ["blacksheep==2.6.2", "uvicorn==0.42.0"], "template": HELLO_BLACKSHEEP},
+    "muffin": {"packages": ["muffin==1.8.2", "uvicorn==0.42.0"], "template": HELLO_MUFFIN},
+    "falcon": {"packages": ["falcon==4.2.0"], "template": HELLO_FALCON},
+    "baize": {"packages": ["baize==0.23.1", "uvicorn==0.42.0"], "template": HELLO_BAIZE},
+    "emmett": {"packages": ["emmett==2.7.1"], "template": HELLO_EMMETT},
+    "litestar": {"packages": ["litestar==2.21.1", "uvicorn==0.42.0"], "template": HELLO_LITESTAR},
+    "quart": {"packages": ["Quart==0.20.0", "Hypercorn==0.18.0"], "template": HELLO_QUART},
+    "robyn": {"packages": ["robyn==0.82.1"], "template": HELLO_ROBYN},
+}
+
+
+def get_supported_servers() -> list[str]:
+    return list(SERVER_SCAFFOLDS.keys())
+
+
+def get_server_requirements(server: str) -> list[str]:
+    scaffold = SERVER_SCAFFOLDS.get(server, {})
+    return list(scaffold.get("packages", []))
+
+
+def get_hello_world(server: str) -> str | None:
+    scaffold = SERVER_SCAFFOLDS.get(server, {})
+    return scaffold.get("template")
