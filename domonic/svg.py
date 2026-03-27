@@ -3,13 +3,29 @@
     ====================================
     Generate SVG with python 3
 
-    WARNING - totally not tested. except circle. I just assumed it would work...
+    WARNING - mostly lightly tested. keep expanding coverage as support improves.
 
     # https://www.w3.org/TR/SVG2/eltindex.html
 
 """
+
+from __future__ import annotations
+
+from typing import Any
+
 from domonic.dom import Element
 from domonic.html import a, audio, canvas, iframe, script, style, video
+
+SVG_NAMESPACE = "http://www.w3.org/2000/svg"
+
+
+class SVGElement(Element):
+    """Base SVG element that keeps the SVG namespace on direct constructors."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.namespaceURI = SVG_NAMESPACE
+
 
 svg_tags = [
     "svg",
@@ -21,11 +37,14 @@ svg_tags = [
     "defs",
     "desc",
     "ellipse",
+    "filter",
     "image",
     "line",
     "linearGradient",
     "marker",
     "mask",
+    "metadata",
+    "missing-glyph",
     "mpath",
     "pattern",
     "polygon",
@@ -95,90 +114,111 @@ svg_tags = [
 #     Element.__init__(self, *args, **kwargs)
 
 
-svg = type("svg", (Element,), {"name": "svg"})
+svg = type("svg", (SVGElement,), {"name": "svg"})
 
-animate = type("animate", (Element,), {"name": "animate"})
-animateMotion = type("animateMotion", (Element,), {"name": "animateMotion"})
-animateTransform = type("animateTransform", (Element,), {"name": "animateTransform"})
-circle = type("circle", (Element,), {"name": "circle"})
-clipPath = type("clipPath", (Element,), {"name": "clipPath"})
-defs = type("defs", (Element,), {"name": "defs"})
-desc = type("desc", (Element,), {"name": "desc"})
-ellipse = type("ellipse", (Element,), {"name": "ellipse"})
-g = type("g", (Element,), {"name": "g"})
-image = type("image", (Element,), {"name": "image"})
-line = type("line", (Element,), {"name": "line"})
-linearGradient = type("linearGradient", (Element,), {"name": "linearGradient"})
-marker = type("marker", (Element,), {"name": "marker"})
-mask = type("mask", (Element,), {"name": "mask"})
-mpath = type("mpath", (Element,), {"name": "mpath"})
-pattern = type("pattern", (Element,), {"name": "pattern"})
-polygon = type("polygon", (Element,), {"name": "polygon"})
-polyline = type("polyline", (Element,), {"name": "polyline"})
-radialGradient = type("radialGradient", (Element,), {"name": "radialGradient"})
+animate = type("animate", (SVGElement,), {"name": "animate"})
+animateMotion = type("animateMotion", (SVGElement,), {"name": "animateMotion"})
+animateTransform = type("animateTransform", (SVGElement,), {"name": "animateTransform"})
+circle = type("circle", (SVGElement,), {"name": "circle"})
+clipPath = type("clipPath", (SVGElement,), {"name": "clipPath"})
+defs = type("defs", (SVGElement,), {"name": "defs"})
+desc = type("desc", (SVGElement,), {"name": "desc"})
+ellipse = type("ellipse", (SVGElement,), {"name": "ellipse"})
+filter = type("filter", (SVGElement,), {"name": "filter"})
+g = type("g", (SVGElement,), {"name": "g"})
+image = type("image", (SVGElement,), {"name": "image"})
+line = type("line", (SVGElement,), {"name": "line"})
+linearGradient = type("linearGradient", (SVGElement,), {"name": "linearGradient"})
+marker = type("marker", (SVGElement,), {"name": "marker"})
+mask = type("mask", (SVGElement,), {"name": "mask"})
+metadata = type("metadata", (SVGElement,), {"name": "metadata"})
+mpath = type("mpath", (SVGElement,), {"name": "mpath"})
+pattern = type("pattern", (SVGElement,), {"name": "pattern"})
+polygon = type("polygon", (SVGElement,), {"name": "polygon"})
+polyline = type("polyline", (SVGElement,), {"name": "polyline"})
+radialGradient = type("radialGradient", (SVGElement,), {"name": "radialGradient"})
 
-tspan = type("tspan", (Element,), {"name": "tspan"})
-path = type("path", (Element,), {"name": "path"})
-rect = type("rect", (Element,), {"name": "rect"})
-stop = type("stop", (Element,), {"name": "stop"})
-switch = type("switch", (Element,), {"name": "switch"})
-symbol = type("symbol", (Element,), {"name": "symbol"})
-text = type("text", (Element,), {"name": "text"})
-textPath = type("textPath", (Element,), {"name": "textPath"})
-title = type("title", (Element,), {"name": "title"})
-use = type("use", (Element,), {"name": "use"})
-view = type("view", (Element,), {"name": "view"})
+tspan = type("tspan", (SVGElement,), {"name": "tspan"})
+path = type("path", (SVGElement,), {"name": "path"})
+rect = type("rect", (SVGElement,), {"name": "rect"})
+stop = type("stop", (SVGElement,), {"name": "stop"})
+switch = type("switch", (SVGElement,), {"name": "switch"})
+symbol = type("symbol", (SVGElement,), {"name": "symbol"})
+text = type("text", (SVGElement,), {"name": "text"})
+textPath = type("textPath", (SVGElement,), {"name": "textPath"})
+title = type("title", (SVGElement,), {"name": "title"})
+use = type("use", (SVGElement,), {"name": "use"})
+view = type("view", (SVGElement,), {"name": "view"})
 
-feBlend = type("feBlend", (Element,), {"name": "feBlend"})
-feColorMatrix = type("feColorMatrix", (Element,), {"name": "feColorMatrix"})
-feComponentTransfer = type("feComponentTransfer", (Element,), {"name": "feComponentTransfer"})
-feComposite = type("feComposite", (Element,), {"name": "feComposite"})
-feConvolveMatrix = type("feConvolveMatrix", (Element,), {"name": "feConvolveMatrix"})
-feDiffuseLighting = type("feDiffuseLighting", (Element,), {"name": "feDiffuseLighting"})
-feDisplacementMap = type("feDisplacementMap", (Element,), {"name": "feDisplacementMap"})
-feGaussianBlur = type("feGaussianBlur", (Element,), {"name": "feGaussianBlur"})
-feImage = type("feImage", (Element,), {"name": "feImage"})
-feMerge = type("feMerge", (Element,), {"name": "feMerge"})
-feMorphology = type("feMorphology", (Element,), {"name": "feMorphology"})
-feOffset = type("feOffset", (Element,), {"name": "feOffset"})
-feSpecularLighting = type("feSpecularLighting", (Element,), {"name": "feSpecularLighting"})
-feTile = type("feTile", (Element,), {"name": "feTile"})
-feTurbulence = type("feTurbulence", (Element,), {"name": "feTurbulence"})
-feDistantLight = type("feDistantLight", (Element,), {"name": "feDistantLight"})
-fePointLight = type("fePointLight", (Element,), {"name": "fePointLight"})
-feSpotLight = type("feSpotLight", (Element,), {"name": "feSpotLight"})
+feBlend = type("feBlend", (SVGElement,), {"name": "feBlend"})
+feColorMatrix = type("feColorMatrix", (SVGElement,), {"name": "feColorMatrix"})
+feComponentTransfer = type("feComponentTransfer", (SVGElement,), {"name": "feComponentTransfer"})
+feComposite = type("feComposite", (SVGElement,), {"name": "feComposite"})
+feConvolveMatrix = type("feConvolveMatrix", (SVGElement,), {"name": "feConvolveMatrix"})
+feDiffuseLighting = type("feDiffuseLighting", (SVGElement,), {"name": "feDiffuseLighting"})
+feDisplacementMap = type("feDisplacementMap", (SVGElement,), {"name": "feDisplacementMap"})
+feGaussianBlur = type("feGaussianBlur", (SVGElement,), {"name": "feGaussianBlur"})
+feImage = type("feImage", (SVGElement,), {"name": "feImage"})
+feMerge = type("feMerge", (SVGElement,), {"name": "feMerge"})
+feMorphology = type("feMorphology", (SVGElement,), {"name": "feMorphology"})
+feOffset = type("feOffset", (SVGElement,), {"name": "feOffset"})
+feSpecularLighting = type("feSpecularLighting", (SVGElement,), {"name": "feSpecularLighting"})
+feTile = type("feTile", (SVGElement,), {"name": "feTile"})
+feTurbulence = type("feTurbulence", (SVGElement,), {"name": "feTurbulence"})
+feDistantLight = type("feDistantLight", (SVGElement,), {"name": "feDistantLight"})
+fePointLight = type("fePointLight", (SVGElement,), {"name": "fePointLight"})
+feSpotLight = type("feSpotLight", (SVGElement,), {"name": "feSpotLight"})
 
-feDropShadow = type("feDropShadow", (Element,), {"name": "feDropShadow"})
-discard = type("discard", (Element,), {"name": "discard"})
-feDistantLight = type("feDistantLight", (Element,), {"name": "feDistantLight"})
-feFlood = type("feFlood", (Element,), {"name": "feFlood"})
-feFuncA = type("feFuncA", (Element,), {"name": "feFuncA"})
-feFuncB = type("feFuncB", (Element,), {"name": "feFuncB"})
-feFuncG = type("feFuncG", (Element,), {"name": "feFuncG"})
-feFuncR = type("feFuncR", (Element,), {"name": "feFuncR"})
-feMergeNode = type("feMergeNode", (Element,), {"name": "feMergeNode"})
-foreignObject = type("foreignObject", (Element,), {"name": "foreignObject"})
-unknown = type("unknown", (Element,), {"name": "unknown"})
+feDropShadow = type("feDropShadow", (SVGElement,), {"name": "feDropShadow"})
+discard = type("discard", (SVGElement,), {"name": "discard"})
+feDistantLight = type("feDistantLight", (SVGElement,), {"name": "feDistantLight"})
+feFlood = type("feFlood", (SVGElement,), {"name": "feFlood"})
+feFuncA = type("feFuncA", (SVGElement,), {"name": "feFuncA"})
+feFuncB = type("feFuncB", (SVGElement,), {"name": "feFuncB"})
+feFuncG = type("feFuncG", (SVGElement,), {"name": "feFuncG"})
+feFuncR = type("feFuncR", (SVGElement,), {"name": "feFuncR"})
+feMergeNode = type("feMergeNode", (SVGElement,), {"name": "feMergeNode"})
+foreignObject = type("foreignObject", (SVGElement,), {"name": "foreignObject"})
+unknown = type("unknown", (SVGElement,), {"name": "unknown"})
 
-cursor = type("cursor", (Element,), {"name": "cursor"})
-hatchpath = type("hatchpath", (Element,), {"name": "hatchpath"})
-altGlyph = type("altGlyph", (Element,), {"name": "altGlyph"})
-tref = type("tref", (Element,), {"name": "tref"})
-tspan = type("tspan", (Element,), {"name": "tspan"})
-altGlyphDef = type("altGlyphDef", (Element,), {"name": "altGlyphDef"})
-altGlyphItem = type("altGlyphItem", (Element,), {"name": "altGlyphItem"})
-glyph = type("glyph", (Element,), {"name": "glyph"})
-glyphRef = type("glyphRef", (Element,), {"name": "glyphRef"})
-solidcolor = type("solidcolor", (Element,), {"name": "solidcolor"})
-hatch = type("hatch", (Element,), {"name": "hatch"})
-font = type("font", (Element,), {"name": "font"})
-hkern = type("hkern", (Element,), {"name": "hkern"})
-vkern = type("vkern", (Element,), {"name": "vkern"})
-animateColor = type("animateColor", (Element,), {"name": "animateColor"})
-metadata = type("metadata", (Element,), {"name": "metadata"})
+cursor = type("cursor", (SVGElement,), {"name": "cursor"})
+hatchpath = type("hatchpath", (SVGElement,), {"name": "hatchpath"})
+altGlyph = type("altGlyph", (SVGElement,), {"name": "altGlyph"})
+tref = type("tref", (SVGElement,), {"name": "tref"})
+tspan = type("tspan", (SVGElement,), {"name": "tspan"})
+altGlyphDef = type("altGlyphDef", (SVGElement,), {"name": "altGlyphDef"})
+altGlyphItem = type("altGlyphItem", (SVGElement,), {"name": "altGlyphItem"})
+glyph = type("glyph", (SVGElement,), {"name": "glyph"})
+glyphRef = type("glyphRef", (SVGElement,), {"name": "glyphRef"})
+solidcolor = type("solidcolor", (SVGElement,), {"name": "solidcolor"})
+hatch = type("hatch", (SVGElement,), {"name": "hatch"})
+font = type("font", (SVGElement,), {"name": "font"})
+hkern = type("hkern", (SVGElement,), {"name": "hkern"})
+vkern = type("vkern", (SVGElement,), {"name": "vkern"})
+animateColor = type("animateColor", (SVGElement,), {"name": "animateColor"})
+missing_glyph = type("missing_glyph", (SVGElement,), {"name": "missing-glyph"})
+
+
+def create_element(name: str = "custom_svg_tag", *args: Any, **kwargs: Any) -> Element:
+    """
+    A method for creating SVG tags, including custom or hyphenated ones.
+    """
+    normalized_name = str(name).strip()
+    if not normalized_name:
+        normalized_name = "custom_svg_tag"
+        name = "custom_svg_tag"
+
+    if normalized_name in svg_tags:
+        tag_name = normalized_name.replace("-", "_")
+        return globals()[tag_name](*args, **kwargs)
+
+    custom_svg_tag = type("custom_svg_tag", (SVGElement,), {"name": name})
+    new_tag = custom_svg_tag(*args, **kwargs)
+    new_tag.name = name
+    return new_tag
+
 
 # TODO --
-# _filter # builtin
 # _set # builtin
 
 # are these obs or new?
@@ -188,7 +228,6 @@ metadata = type("metadata", (Element,), {"name": "metadata"})
 # meshrow 🗑️?
 
 # TODO - just use underscores for these tags?
-# missing-glyph
 # color-profile
 # font-face
 # font-face-format

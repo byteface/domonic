@@ -54,6 +54,33 @@ class TestCase(unittest.TestCase):
         mysvg.appendChild(circ / 10)
         # print(mysvg)
 
+    def test_svg_namespace_and_factory(self):
+        drawing = create_element("svg", _viewBox="0 0 10 10")
+        grad = create_element("linearGradient")
+        custom = create_element("my-custom-svg")
+
+        self.assertEqual(drawing.namespaceURI, "http://www.w3.org/2000/svg")
+        self.assertEqual(grad.namespaceURI, "http://www.w3.org/2000/svg")
+        self.assertEqual(str(drawing), '<svg viewBox="0 0 10 10"></svg>')
+        self.assertEqual(str(custom), "<my-custom-svg></my-custom-svg>")
+
+    def test_svg_legacy_and_filter_exports(self):
+        icon = svg(
+            defs(filter(feGaussianBlur(_in="SourceGraphic", _stdDeviation="2"))),
+            metadata("info"),
+            missing_glyph(),
+        )
+
+        self.assertIn("<filter>", str(icon))
+        self.assertIn("<metadata>info</metadata>", str(icon))
+        self.assertIn("<missing-glyph></missing-glyph>", str(icon))
+
+    def test_svg_tag_exports_real_constructors(self):
+        for tag_name in svg_tags:
+            python_name = tag_name.replace("-", "_")
+            self.assertIn(python_name, globals())
+            self.assertEqual(str(globals()[python_name]()), f"<{tag_name}></{tag_name}>")
+
     # def test_hyphen_elements(self):
     #     test = svg(
     #         missing_glyph(),
