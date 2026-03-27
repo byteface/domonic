@@ -26,7 +26,7 @@ _webpage = html(
     head(),
     body(
         link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.MARX),
-        script(_src=CDN_JS.AFRAME_1_2),
+        script(_src=CDN_JS.AFRAME),
         str(_scene),
         _scripts,
     ),

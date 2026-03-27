@@ -23,6 +23,6 @@ for loop in range(1000):
 
 _scene = scene(*spheres, sky(_color=Color.paleskyblue))
 
-_webpage = html(head(), body(script(_src=CDN_JS.AFRAME_1_2), str(_scene), _scripts))
+_webpage = html(head(), body(script(_src=CDN_JS.AFRAME), str(_scene), _scripts))
 
 render(_webpage, "hello2.html")

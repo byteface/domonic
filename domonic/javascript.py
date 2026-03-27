@@ -9,6 +9,7 @@ from __future__ import annotations
 """
 
 import array
+import builtins
 import calendar
 # import chunk
 import datetime
@@ -1083,15 +1084,17 @@ class Math(Object):
     @_force_number
     def fround(x: float) -> float:
         """returns the nearest 32-bit single precision float representation of a Number"""
-        # return math.log10(x)
-        raise NotImplementedError
+        return struct.unpack(">f", struct.pack(">f", float(x)))[0]
 
     # TODO - test
     @staticmethod
     @_force_number
     def clz32(x: float) -> int:
         """returns the number of leading zero bits in the 32-bit binary representation of a number."""
-        raise NotImplementedError
+        value = int(x) & 0xFFFFFFFF
+        if value == 0:
+            return 32
+        return 32 - value.bit_length()
 
 
 # import urllib
@@ -1338,6 +1341,7 @@ class Performance:
 
 
 performance = Performance()
+Global.performance = performance
 
 
 class Intl:
@@ -1577,7 +1581,7 @@ class Date(Object):
         while day > days_in_the_month(self.date):
             day -= days_in_the_month(self.date)
             self.date = self.date.replace(day=int(1))
-            self.setMonth(self.month + 1)
+            self.setMonth(self.getMonth() + 1)
 
         if day > 0:
             self.date = self.date.replace(day=int(day))
@@ -1662,7 +1666,7 @@ class Date(Object):
         while minutesValue > 59:
             current_hour = self.date.hour
             self.setHours(current_hour + 1)
-            minutesValue -= 59
+            minutesValue -= 60
 
         while minutesValue < 0:
             current_hour = self.date.hour
@@ -1688,12 +1692,12 @@ class Date(Object):
         """
         while monthValue < 0:
             current_year = self.date.year
-            self.set_fullyear(current_year - 1)
-            monthValue += 11
+            self.setFullYear(current_year - 1)
+            monthValue += 12
 
         while monthValue > 11:
             current_year = self.date.year
-            self.set_fullyear(current_year + 1)
+            self.setFullYear(current_year + 1)
             monthValue -= 12
 
         if monthValue >= 0:
@@ -1960,8 +1964,8 @@ class Promise:
         return self
 
     def catch(self, error: Any) -> Promise:
-        # func(error)
-        print(error)
+        if self.state == "rejected" and callable(error):
+            self.data = error(self.data)
         return self
 
     def resolve(self, data: Any) -> Promise:
@@ -2906,7 +2910,7 @@ class Number(float):
     def toExponential(self, num: int | None = None) -> str:
         """Converts a number into an exponential notation"""
         if num is not None:
-            exp = "{:e}".format(Number(Number(self.x).toFixed(num)))
+            exp = f"{self.x:.{int(num)}e}"
         else:
             exp = "{:e}".format(self.x)
 
@@ -3807,15 +3811,76 @@ class ArrayBuffer:
     def slice(self, start: int, end: int) -> array.array:
         return self.buffer[start:end]
 
+    def _read(self, index: int, size: int, littleEndian: bool = False) -> list[int]:
+        chunk = [self.buffer[index + offset] for offset in range(size)]
+        return list(reversed(chunk)) if littleEndian and size > 1 else chunk
+
+    def _write(self, index: int, values: Sequence[int], littleEndian: bool = False) -> None:
+        chunk = list(reversed(list(values))) if littleEndian and len(values) > 1 else list(values)
+        for offset, value in enumerate(chunk):
+            self.buffer[index + offset] = value
+
+    def getUint8(self, index: int) -> int:
+        return __byteutils__().unpackU8(self._read(index, 1))
+
+    def getInt8(self, index: int) -> int:
+        return __byteutils__().unpackI8(self._read(index, 1))
+
+    def getUint16(self, index: int, littleEndian: bool = False) -> int:
+        return __byteutils__().unpackU16(self._read(index, 2, littleEndian))
+
+    def getInt16(self, index: int, littleEndian: bool = False) -> int:
+        return __byteutils__().unpackI16(self._read(index, 2, littleEndian))
+
+    def getUint32(self, index: int, littleEndian: bool = False) -> int:
+        return __byteutils__().unpackU32(self._read(index, 4, littleEndian))
+
+    def getInt32(self, index: int, littleEndian: bool = False) -> int:
+        return __byteutils__().unpackI32(self._read(index, 4, littleEndian))
+
+    def getFloat32(self, index: int, littleEndian: bool = False) -> Any:
+        return __byteutils__().unpackF32(self._read(index, 4, littleEndian))
+
+    def getFloat64(self, index: int, littleEndian: bool = False) -> Any:
+        return __byteutils__().unpackF64(self._read(index, 8, littleEndian))
+
+    def setUint8(self, index: int, value: Any) -> None:
+        self._write(index, __byteutils__().packU8(int(value)))
+
+    def setInt8(self, index: int, value: Any) -> None:
+        self._write(index, __byteutils__().packI8(int(value)))
+
+    def setUint16(self, index: int, value: Any, littleEndian: bool = False) -> None:
+        self._write(index, __byteutils__().packU16(int(value)), littleEndian)
+
+    def setInt16(self, index: int, value: Any, littleEndian: bool = False) -> None:
+        self._write(index, __byteutils__().packI16(int(value)), littleEndian)
+
+    def setUint32(self, index: int, value: Any, littleEndian: bool = False) -> None:
+        self._write(index, __byteutils__().packU32(int(value)), littleEndian)
+
+    def setInt32(self, index: int, value: Any, littleEndian: bool = False) -> None:
+        self._write(index, __byteutils__().packI32(int(value)), littleEndian)
+
+    def setFloat32(self, index: int, value: Any, littleEndian: bool = False) -> None:
+        self._write(index, __byteutils__().packF32(float(value)), littleEndian)
+
+    def setFloat64(self, index: int, value: Any, littleEndian: bool = False) -> None:
+        self._write(index, __byteutils__().packF64(float(value)), littleEndian)
+
 
 class DataView(ArrayBuffer):
     # ?? is this right. don't look lt
     def __init__(self, buffer: Any, byteOffset: int = 0, byteLength: int | None = None) -> None:
-        super().__init__(byteLength)
+        super().__init__(0 if byteLength is None else byteLength)
         self.isView = True
         self.buffer = buffer
         self.byteOffset = byteOffset
-        self.byteLength = byteLength
+        self._viewByteLength = buffer.byteLength - byteOffset if byteLength is None else byteLength
+
+    @property
+    def byteLength(self) -> int:
+        return self._viewByteLength
 
     def getUint8(self, index: int) -> Any:
         return self.buffer.getUint8(self.byteOffset + index)
@@ -3852,6 +3917,18 @@ class DataView(ArrayBuffer):
 
     def setInt16(self, index: int, value: Any, littleEndian: bool = False) -> None:
         self.buffer.setInt16(self.byteOffset + index, value, littleEndian)
+
+    def setUint32(self, index: int, value: Any, littleEndian: bool = False) -> None:
+        self.buffer.setUint32(self.byteOffset + index, value, littleEndian)
+
+    def setInt32(self, index: int, value: Any, littleEndian: bool = False) -> None:
+        self.buffer.setInt32(self.byteOffset + index, value, littleEndian)
+
+    def setFloat32(self, index: int, value: Any, littleEndian: bool = False) -> None:
+        self.buffer.setFloat32(self.byteOffset + index, value, littleEndian)
+
+    def setFloat64(self, index: int, value: Any, littleEndian: bool = False) -> None:
+        self.buffer.setFloat64(self.byteOffset + index, value, littleEndian)
 
 
 class TypedArray:
@@ -4005,11 +4082,13 @@ class TypedArray:
     @staticmethod
     def of(*args: Any) -> Any:
         # Creates a new Int8Array with a variable number of arguments
-        return Int8Array(args)
+        return Int8Array(list(args))
 
     @staticmethod
     def from_(thing: Any) -> Any:
         # Creates a new Int8Array from an array-like or iterable object
+        if isinstance(thing, tuple):
+            return Int8Array(list(thing))
         return Int8Array(thing)
 
     # def __getitem__(self, index):
@@ -4048,7 +4127,8 @@ class TypedArray:
         if index >= self.length:
             return undefined
 
-        b = self._pack(value)
+        packed_value = value.x if isinstance(value, Number) else value
+        b = self._pack(packed_value)
         # print(b)
         # print(  self._pack(10) )
         # print(  self._pack(20) )
@@ -4057,68 +4137,27 @@ class TypedArray:
         o = self.byteOffset + index * self.BYTES_PER_ELEMENT
         for i in range(0, self.BYTES_PER_ELEMENT):
             self.buffer[o] = b[i]
+            o += 1
 
     # // void set(TypedArray array, optional unsigned long offset);
     # // void set(sequence<type> array, optional unsigned long offset);
     def set(self, index: Any, value: Any) -> None:
         if index is None:
             raise SyntaxError("Not enough arguments")
+        offset = ToUint32(0 if value is None else value)
 
-        # arr = None
-        # sequence = None
-        # offset = None
-        # nlen = None
-        # i = None
-        # s = None
-        # d = None
-        # byteOffset = None
-        # byteLength = None
-        # tmp = None
-
-        if type(index, object) and index == self:
-            # void set(TypedArray arr, optional unsigned long offset)
-            arr = index
-            offset = ToUint32(value)
-
-            if offset + arr.length > self.length:
-                # raise RangeError("Offset plus length of array is out of range")
-                raise Exception("Offset plus length of array is out of range")
-
-            byteOffset = self.byteOffset + offset * self.BYTES_PER_ELEMENT
-            byteLength = arr.length * self.BYTES_PER_ELEMENT
-
-            if arr.buffer == self.buffer:
-                tmp = []
-                s = arr.byteOffset
-                for i in range(0, byteLength):
-                    tmp[i] = arr.buffer[s]
-                    s += 1
-                d = byteOffset
-                for i in range(0, byteLength):
-                    self.buffer[d] = tmp[i]
-                    d += 1
-            else:
-                s = arr.byteOffset
-                d = byteOffset
-                for i in range(0, byteLength):
-                    self.buffer[d] = arr.buffer[s]
-                    s += 1
-                    d += 1
-        elif type(index, object) and index != self:
-            # void set(sequence<type> arr, optional unsigned long offset);
-            sequence = index
-            nlen = ToUint32(sequence.length)
-            offset = ToUint32(value)
-
-            if offset + nlen > self.length:
-                # raise RangeError("Offset plus length of arr is out of range")
-                raise Exception("Offset plus length of arr is out of range")
-
-            for i in range(0, len):
-                s = sequence[i]
-                self._setter(offset + i, Number(s))
+        if isinstance(index, TypedArray):
+            sequence = [index[i] for i in range(index.length)]
+        elif isinstance(index, Sequence) and not isinstance(index, (str, bytes, bytearray)):
+            sequence = list(index)
         else:
             raise TypeError("Unexpected argument type(s)")
+
+        if offset + len(sequence) > self.length:
+            raise Exception("Offset plus length of arr is out of range")
+
+        for i, item in enumerate(sequence):
+            self.__setitem__(offset + i, item)
 
     # // TypedArray subarray(long begin, optional long end);
 
@@ -4147,20 +4186,19 @@ class TypedArray:
         if nlen < 0:
             nlen = 0
 
-        return self.__init__(self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, nlen)
+        return self.__class__(self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, nlen)
 
 
 def as_signed(value: int, bits: int) -> int:
     """Converts an unsigned integer to a signed integer."""
-    s = 32 - bits
-    mask = (1 << s) - 1
-    return (value & mask) - (value & (mask << s))
+    sign_bit = 1 << (bits - 1)
+    mask = (1 << bits) - 1
+    value &= mask
+    return value - (1 << bits) if value & sign_bit else value
 
 
 def as_unsigned(value: int, bits: int) -> int:
-    s = 32 - bits
-    mask = (1 << s) - 1
-    return value & mask
+    return value & ((1 << bits) - 1)
 
 
 class __byteutils__:
@@ -4224,131 +4262,31 @@ class __byteutils__:
         # return struct.unpack('>I', bytes)[0]
 
     def packIEEE754(self, v: float, ebits: int, fbits: int) -> list[Any]:
-
-        bias = (1 << (ebits - 1)) - 1
-
-        def roundToEven(n: float) -> int | float:
-            w = Math.floor(n)
-            f = n - w
-            if f < 0.5:
-                return w
-            if f > 0.5:
-                return w + 1
-            # return w % 2 ? w + 1 : w
-            return w if (w % 2) else w + 1
-
-        # Compute sign, exponent, fraction
-        if v != v:
-            # NaN
-            # http://dev.w3.org/2006/webapi/WebIDL/#es-type-mapping
-            e = (1 << ebits) - 1
-            f = pow(2, fbits - 1)
-            s = 0
-        elif v == Global.Infinity or v == -Global.Infinity:
-            e = (1 << ebits) - 1
-            f = 0
-            # s = (v < 0) ? 1 : 0
-            s = 1 if (v < 0) else 0
-        elif v == 0:
-            e = 0
-            f = 0
-            s = 1 if (1 / v == -Global.Infinity) else 0
-        else:
-            s = v < 0
-            v = abs(v)
-
-            if v >= pow(2, 1 - bias):
-
-                e = min(Math.floor(Math.log(v) / Math.LN2), 1023)
-                f = roundToEven(v / pow(2, e) * pow(2, fbits))
-
-                if f / pow(2, fbits) >= 2:
-                    e = e + 1
-                    f = 1
-                if e > bias:
-                    # Overflow
-                    e = (1 << ebits) - 1
-                    f = 0
-                else:
-                    # Normalized
-                    e = e + bias
-                    f = f - pow(2, fbits)
-            else:
-                # Denormalized
-                e = 0
-                f = roundToEven(v / pow(2, 1 - bias - fbits))
-
-        # Pack sign, exponent, fraction
-        bits = []
-        for i in range(fbits):
-            bits.append(f % 2)
-            f = Math.floor(f / 2)
-        for i in range(ebits):
-            bits.append(e % 2)
-            e = Math.floor(e / 2)
-        bits.append(s)
-        bits.reverse()
-        mystr = bits.join("")
-
-        # Bits to bytes
-        b = []
-        while mystr.length:
-            b.push(parseInt(mystr.substring(0, 8), 2))
-            mystr = mystr.substring(8)
-        return b
+        if (ebits, fbits) == (8, 23):
+            return list(struct.pack(">f", v))
+        if (ebits, fbits) == (11, 52):
+            return list(struct.pack(">d", v))
+        raise NotImplementedError(f"Unsupported IEEE754 layout: ebits={ebits}, fbits={fbits}")
 
     def unpackIEEE754(self, bytes: list[int], ebits: int, fbits: int) -> Any:
-
-        # Bytes to bits
-        bits = []
-        for i in range(len(bytes)):
-            b = bytes[i]
-            for j in range(8):
-                bits.append(1 if b % 2 else 0)
-                b = b >> 1
-
-        bits.reverse()
-        mystr = bits.join("")
-
-        # Unpack sign, exponent, fraction
-        bias = (1 << (ebits - 1)) - 1
-        # s = parseInt(str.substring(0, 1), 2) ? -1 : 1
-        s = -1 if (mystr[0] == "1") else 1
-
-        e = parseInt(mystr.substring(1, 1 + ebits), 2)
-        f = parseInt(mystr.substring(1 + ebits), 2)
-
-        # // Produce number
-        if e == (1 << ebits) - 1:
-            # return f !== 0 ? NaN : s * Infinity
-            if f != 0:
-                return Global.NaN
-            else:
-                return s * Global.InfInfinity
-        elif e > 0:
-            # Normalized
-            return s * pow(2, e - bias) * (1 + f / pow(2, fbits))
-        elif f != 0:
-            # Denormalized
-            return s * pow(2, -(bias - 1)) * (f / pow(2, fbits))
-        else:
-            return -0 if s < 0 else 0
+        data = bytes if isinstance(bytes, (builtins.bytes, bytearray)) else builtins.bytes(bytes)
+        if (ebits, fbits) == (8, 23):
+            return struct.unpack(">f", data)[0]
+        if (ebits, fbits) == (11, 52):
+            return struct.unpack(">d", data)[0]
+        raise NotImplementedError(f"Unsupported IEEE754 layout: ebits={ebits}, fbits={fbits}")
 
     def unpackF64(self, b: list[int]) -> Any:
-        return self.unpackIEEE754(b, 11, 52)
-        # return struct.unpack('>d', b)[0]
+        return struct.unpack(">d", bytes(b))[0]
 
     def packF64(self, v: float) -> list[Any]:
-        return self.packIEEE754(v, 11, 52)
-        # return struct.pack('>d', v)
+        return list(struct.pack(">d", v))
 
     def unpackF32(self, b: list[int]) -> Any:
-        return self.unpackIEEE754(b, 8, 23)
-        # return struct.unpack('>f', b)[0]
+        return struct.unpack(">f", bytes(b))[0]
 
     def packF32(self, v: float) -> list[Any]:
-        return self.packIEEE754(v, 8, 23)
-        # return struct.pack('>f', v)
+        return list(struct.pack(">f", v))
 
 
 Int8Array = type(

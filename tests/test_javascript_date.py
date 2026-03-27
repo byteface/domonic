@@ -191,6 +191,67 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(date1.getTimezoneOffset(), int)
         self.assertEqual(date1.getTimezoneOffset(), date2.getTimezoneOffset())
 
+    def test_date_setters_and_string_helpers(self):
+        event = Date("August 19, 1975 23:15:30")
+        event.setMinutes(45)
+        self.assertEqual(event.getMinutes(), 45)
+
+        event.setSeconds(42)
+        self.assertEqual(event.getSeconds(), 42)
+
+        event.setTime(Date("1999-07-01 00:00:00").getTime())
+        self.assertEqual(event.getFullYear(), 1999)
+        self.assertEqual(event.getMonth(), 6)
+        self.assertEqual(event.getDate(), 1)
+
+        event.setDate(24)
+        self.assertEqual(event.getDate(), 24)
+
+        event.setHours(20, 21, 22)
+        self.assertEqual(event.getHours(), 20)
+        self.assertEqual(event.getMinutes(), 21)
+        self.assertEqual(event.getSeconds(), 22)
+
+        event.setUTCDate(1)
+        event.setUTCFullYear(1928)
+        event.setUTCHours(3)
+        event.setUTCMilliseconds(123)
+        event.setUTCMinutes(50)
+        event.setUTCMonth(3)
+        event.setUTCSeconds(11)
+        event.setYear(1987)
+        self.assertEqual(event.getFullYear(), 1928)
+        self.assertEqual(event.getHours(), 3)
+        self.assertEqual(event.getMilliseconds(), 123)
+        self.assertEqual(event.getMinutes(), 50)
+        self.assertEqual(event.getMonth(), 3)
+        self.assertEqual(event.getSeconds(), 11)
+
+        self.assertIn("-", event.toDateString())
+        self.assertEqual(event.toGMTString(), event.toUTCString())
+        self.assertTrue(event.toJSON().startswith('"'))
+        self.assertIn("-", event.toISOString())
+        self.assertIsInstance(event.toLocaleDateString(), str)
+        self.assertIsInstance(event.toLocaleString(), str)
+        self.assertIsInstance(event.toLocaleTimeString(), str)
+        self.assertIsInstance(event.toTimeString(), str)
+        self.assertIn(":", event.toUTCString())
+        self.assertIsNotNone(event.UTC())
+
+    def test_date_setters_with_rollover(self):
+        event = Date("January 31, 2020 23:30:00")
+        event.setMonth(13)
+        self.assertEqual(event.getFullYear(), 2021)
+        self.assertEqual(event.getMonth(), 1)
+
+        event.setMonth(-1)
+        self.assertEqual(event.getFullYear(), 2020)
+        self.assertEqual(event.getMonth(), 11)
+
+        event.setMinutes(61)
+        self.assertEqual(event.getHours(), 0)
+        self.assertEqual(event.getMinutes(), 1)
+
     def setMinutes(self):
         event = Date("August 19, 1975 23:15:30")
         event.setMinutes(45)

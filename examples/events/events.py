@@ -61,7 +61,7 @@ page.addEventListener(MouseEvent.CLICK, on_page_clicked)
 
 
 # run the socket server
-async def update(websocket, path):
+async def update(websocket):
     while True:
         msg = await websocket.recv()
         print(msg)
@@ -76,10 +76,12 @@ async def update(websocket, path):
 
         await websocket.send("event receieved")
 
+async def main():
+    async with websockets.serve(update, "0.0.0.0", 5555):
+        await asyncio.Future()
 
-server = websockets.serve(update, "0.0.0.0", 5555)
-asyncio.get_event_loop().run_until_complete(server)
-asyncio.get_event_loop().run_forever()
+
+asyncio.run(main())
 
 
 """

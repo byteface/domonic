@@ -13,6 +13,7 @@ class CDN_JS:
     JQUERY_UI: str = "https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
     UNDERSCORE: str = "https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-min.js"
     BOOTSTRAP: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"
+    # BOOTSTRAP: str = "https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
     POPPER: str = "https://cdn.jsdelivr.net/npm/popper.js@2.11.7/dist/umd/popper.min.js"
     D3: str = "https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.4/d3.min.js"
     MODERNIZER: str = "https://cdnjs.cloudflare.com/ajax/libs/modernizr/3.11.7/modernizr.min.js"

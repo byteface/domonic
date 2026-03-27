@@ -211,27 +211,24 @@ class FormatSpecifier:
 
 # // Trims insignificant zeros, e.g., replaces 1.2000k with 1.2k.
 def formatTrim(s):
-    #   out:
-    #   for (var n = s.length, i = 1, i0 = -1, i1; i < n; ++i) {
     s = str(s)
 
     n = len(s)
-    i = 1
     i0 = -1
     i1 = None
 
-    #   for (var n = s.length, i = 1, i0 = -1, i1; i < n; ++i) {
     for i in range(1, n):
-        if s[i] == ".":
+        char = s[i]
+
+        if char == ".":
             i0 = i1 = i
-        elif s[i] == "0":
+        elif char == "0":
             if i0 == 0:
                 i0 = i
-                i1 = i
-        # else:
-        if not s[i]:
-            break  # out
-        if i0 > 0:
+            i1 = i
+        elif not char.isdigit():
+            break
+        else:
             i0 = 0
 
     return String(s).slice(0, i0) + String(s).slice(i1 + 1) if i0 > 0 else s
@@ -389,7 +386,7 @@ class formatLocale:
                 value = self.nan if Global.isNaN(value) else formatType(Math.abs(value), precision)
 
                 # Trim insignificant zeros.
-                if trim:
+                if trim and RegExp(r"[egprs%]").test(type):
                     value = formatTrim(value)
 
                 # If a negative value rounds to zero after formatting,

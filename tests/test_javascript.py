@@ -7,6 +7,7 @@
 import math
 import time
 import unittest
+from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from domonic.javascript import *
@@ -116,6 +117,26 @@ class TestCase(unittest.TestCase):
         obj = {"a": 5, "b": 7, "c": 9}
         for key, value in Object.entries(obj):
             self.assertEqual(obj[key], value)
+
+        configured = Object({"name": "Jane"})
+        Object.defineProperty(configured.__dict__, "role", "admin")
+        self.assertEqual(Object.getOwnPropertyDescriptor(configured, "name"), "Jane")
+        self.assertIn("name", list(Object.getOwnPropertyNames(configured)))
+        self.assertTrue("name" in Object.getOwnPropertySymbols(configured))
+        self.assertTrue(configured.hasOwnProperty("name"))
+        self.assertFalse(configured.hasOwnProperty("missing"))
+        created = Object.create(configured)
+        self.assertEqual(created.name, "Jane")
+        self.assertEqual(Object.getPrototypeOf(created), Object)
+        getter_holder = Object()
+        getter_holder.__defineGetter__("greet", lambda: "hi")
+        getter_holder.__defineSetter__("target", lambda value: value)
+        self.assertIsNotNone(getter_holder.__lookupGetter__("greet"))
+        self.assertIsNotNone(getter_holder.__lookupSetter__("target"))
+        self.assertEqual(getter_holder.toLocaleString(), getter_holder.toString())
+        self.assertIs(getter_holder.valueOf(), getter_holder)
+        Object.freeze(getter_holder)
+        self.assertTrue(getattr(getter_holder, "_Object__isFrozen"))
 
         # class Car(Object):
         #     def __init__(self, make, model, year):
@@ -323,6 +344,40 @@ class TestCase(unittest.TestCase):
             Window().alert("test this 2")
         print_mock.assert_called_once_with("test this 2")
 
+    def test_domonic_window_prompt(self):
+        with patch("builtins.print") as print_mock, patch("builtins.input", return_value="typed"):
+            self.assertEqual(Window.prompt("say something"), "typed")
+        print_mock.assert_called_once_with("say something")
+
+    def test_window_base64_animation_and_performance(self):
+        encoded = Window.btoa("hello")
+        self.assertEqual(Window.atob(encoded), "hello")
+
+        observed = []
+        Window.requestAnimationFrame(lambda ts: observed.append(ts))
+        self.assertEqual(len(observed), 1)
+        self.assertIsInstance(observed[0], float)
+
+        performance = Performance()
+        mark = performance.mark("start")
+        measure = performance.measure("total", "start")
+        self.assertEqual(mark.name, "start")
+        self.assertEqual(measure.name, "total")
+        self.assertTrue(performance.getEntries())
+        self.assertEqual(performance.getEntriesByType("mark")[0].name, "start")
+        self.assertEqual(performance.getEntriesByName("total")[0].name, "total")
+        performance.clearMarks("start")
+        self.assertEqual(performance.getEntriesByType("mark"), [])
+        performance.mark("again")
+        performance.clearMarks()
+        self.assertEqual(performance.getEntriesByType("mark"), [])
+        performance.measure("named")
+        self.assertEqual(performance.getEntriesByName("named", "measure")[0].name, "named")
+        performance.clearMeasures("named")
+        self.assertEqual(performance.getEntriesByName("named"), [])
+        performance.clearMeasures()
+        self.assertEqual(performance.getEntriesByType("measure"), [])
+
     def test_domonic_window_document_baseURI(self):
         # Window().alert("test this 2")
         # window = Window()
@@ -361,6 +416,22 @@ class TestCase(unittest.TestCase):
         # window.document.baseURI = "eventual.technology"
         # print("=",window.document.baseURI)
         self.assertNotEqual(enc_msg, msg)
+
+    def test_domonic_global_uri_helpers(self):
+        uri = "https://example.com/a path/?q=one&two=three#frag"
+        encoded_uri = Global.encodeURI(uri)
+        self.assertIn("%20", encoded_uri)
+        self.assertIn("?", encoded_uri)
+        self.assertEqual(Global.decodeURI(encoded_uri), uri)
+
+        component = "a path/with?symbols&more"
+        encoded_component = Global.encodeURIComponent(component)
+        self.assertIn("%2F", encoded_component)
+        self.assertIn("%3F", encoded_component)
+        self.assertEqual(Global.decodeURIComponent(encoded_component), component)
+
+        self.assertEqual(Global.parseFloat("12.5"), 12.5)
+        self.assertEqual(Global.parseInt("12"), 12)
 
     # TODO - this was move to webapi. tests are working by proxy
     def test_javascript_url(self):
@@ -530,6 +601,30 @@ class TestCase(unittest.TestCase):
             "even": [2, 4],
         }
 
+    def test_javascript_array_extended_surface(self):
+        self.assertEqual(Array.from_((1, 2)), [1, 2])
+        self.assertEqual(Array.from_(x for x in [3, 4]), [3, 4])
+        self.assertEqual(Array.from_(10), [""] * 10)
+
+        arr = Array(3)
+        self.assertEqual(arr, ["", "", ""])
+        arr[1] = "x"
+        self.assertEqual(arr[1], "x")
+        self.assertEqual(arr.toString(), "['', 'x', '']")
+        self.assertEqual(arr.toSource(), ["", "x", ""])
+        self.assertEqual(repr(arr), "['', 'x', '']")
+        self.assertNotEqual(arr, "not-an-array")
+
+        self.assertEqual(Array([1, 2]) + [3, 4], [1, 2, 3, 4])
+        self.assertEqual(Array([1, 2]) + Array([3]), [1, 2, 3])
+        with self.assertRaises(ValueError):
+            Array([1, 2]) + 3
+        with self.assertRaises(ValueError):
+            Array([1, 2]) - 3
+        self.assertEqual(Array([1, 2]).flat(0), [1, 2])
+        with self.assertRaises(ValueError):
+            Array([1]).flat(-1)
+
     def test_javascript_map(self):
         mapping = Map({"a": 1})
         self.assertTrue(mapping.has("a"))
@@ -589,12 +684,48 @@ class TestCase(unittest.TestCase):
             self.assertEqual(len(pooled.results), 2)
             self.assertEqual(sorted(result.url for result in pooled.results), sorted(urls))
 
+    def test_javascript_do_request_success_and_failure(self):
+        class FakeRequest:
+            def __init__(self, method, url):
+                self.method = method
+                self.url = url
+
+        class FakeSession:
+            def prepare_request(self, req):
+                return req
+
+            def send(self, prepped, **kwargs):
+                response = Mock()
+                response.method = prepped.method
+                response.url = prepped.url
+                return response
+
+            def close(self):
+                return None
+
+        fetched = FetchedSet()
+        fake_requests = SimpleNamespace(Request=FakeRequest, Session=lambda: FakeSession())
+        with patch.dict("sys.modules", {"requests": fake_requests}):
+            response = Window._do_request("https://example.com", fetched, method="POST", callback_function=lambda _: _, error_handler=None)
+        self.assertEqual(response.url, "https://example.com")
+        self.assertEqual(response.method, "POST")
+        self.assertEqual(len(fetched.results), 1)
+
+        broken_requests = SimpleNamespace(Request=FakeRequest, Session=lambda: (_ for _ in ()).throw(RuntimeError("boom")))
+        with patch.dict("sys.modules", {"requests": broken_requests}), patch("builtins.print") as print_mock:
+            self.assertIsNone(Window._do_request("https://example.com"))
+        print_mock.assert_called()
+
     def test_javascript_promise(self):
         myPromise = Promise(lambda resolve, reject: resolve("once!"))
         returned = myPromise.then(lambda successMessage: str(successMessage).upper())
         self.assertIs(returned, myPromise)
         self.assertEqual(myPromise.state, "fulfilled")
         self.assertEqual(myPromise.data, "ONCE!")
+
+        rejected = Promise(lambda resolve, reject: reject("bad"))
+        self.assertEqual(rejected.catch(lambda error: f"caught:{error}").data, "caught:bad")
+        self.assertEqual(rejected.state, "rejected")
 
     def test_javascript_string(self):
         mystr = String("Some String")
@@ -849,6 +980,122 @@ class TestCase(unittest.TestCase):
         self.assertEqual(test.toLowerCase(), "test")
         self.assertEqual(test.toLocaleLowerCase(), "test")
         self.assertEqual(test.toLocaleUpperCase(), "TEST")
+
+    def test_javascript_number_methods(self):
+        value = Number(255)
+        self.assertEqual(value.toString(None), "255")
+        self.assertEqual(value.toString(16), "ff")
+        self.assertEqual(Number(-10).toString(2), "-1010")
+        self.assertEqual(Number(12.3456).toFixed(2), "12.35")
+        self.assertEqual(Number(12.3456).toExponential(2), "1.23e+1")
+        self.assertEqual(Number(12.3456).toPrecision(4), "12.35")
+        self.assertTrue(Number(5).isInteger())
+        self.assertFalse(Number(5.5).isInteger())
+        self.assertEqual(abs(Number(-5)), 5)
+        self.assertEqual(Number(5) // 2, 2)
+        self.assertEqual(20 // Number(5), 4)
+        self.assertEqual(Number(5) % 2, 1)
+        self.assertEqual(11 % Number(5), 1)
+        self.assertEqual(Number(5) & 3, 1)
+        self.assertEqual(Number(5) | 2, 7)
+        self.assertEqual(Number(5) ^ 1, 4)
+        self.assertEqual(Number(5) << 1, 10)
+        self.assertEqual(Number(5) >> 1, 2)
+        self.assertEqual(+Number(5), 5)
+        self.assertEqual(-Number(5), -5)
+        self.assertTrue(Number(5) < 6)
+        self.assertTrue(Number(5) <= 5)
+        self.assertTrue(Number(5) > 4)
+        self.assertTrue(Number(5) >= 5)
+        self.assertEqual(Number(5).__iadd__(2), 7)
+        self.assertEqual(Number(5).__isub__(2), 3)
+        self.assertEqual(Number(5).__imul__(2), 10)
+        self.assertEqual(Number(5).__idiv__(2), 2.5)
+        self.assertEqual(Number(5).__imod__(2), 1)
+        self.assertEqual(Number(5).__ipow__(2), 25)
+        self.assertEqual(Number(5).__ilshift__(1), 10)
+        self.assertEqual(Number(5).__irshift__(1), 2)
+        self.assertEqual(Number(5).__iand__(3), 1)
+        self.assertEqual(Number(5).__ior__(2), 7)
+        self.assertEqual(Number(5).__ixor__(1), 4)
+        self.assertEqual(Number(5).__truediv__(2), 2.5)
+        self.assertEqual(Number(10).__rtruediv__(20), 2)
+        self.assertEqual(Number(5).__itruediv__(20), 4)
+        self.assertEqual(Number(3).__rmod__(10), 1)
+        self.assertEqual(Number(1.2e3).toExponential(), "1.2e+3")
+        self.assertEqual(Number(10).toFixed(-2), "10")
+        self.assertEqual(Number(0).toString(16), "0")
+        self.assertEqual(Number(float("inf")).toPrecision(2), "inf")
+        with self.assertRaises(ValueError):
+            Number(1).toPrecision(0)
+        with self.assertRaises(NotImplementedError):
+            Number(1).isSafeInteger()
+
+    def test_javascript_string_extended_surface(self):
+        text = String("Hello.World")
+        self.assertTrue(text == "Hello.World")
+        self.assertTrue(text == String("Hello.World"))
+        self.assertFalse(text == "Other")
+        self.assertEqual("Say " + text, "Say Hello.World")
+        self.assertEqual(text + "!", "Hello.World!")
+        self.assertEqual(text.__iadd__("!"), "Hello.World!")
+        self.assertEqual(text * 2, "Hello.WorldHello.World")
+        self.assertEqual(2 * text, "Hello.WorldHello.World")
+        self.assertEqual(text.__imul__(2), "Hello.WorldHello.World")
+        self.assertEqual(text.split(r"\."), ["Hello", "World"])
+        self.assertEqual(String("a,b,c").split(","), ["a", "b", "c"])
+        self.assertEqual(text.concat("!", seperator=""), "Hello.World!")
+        self.assertEqual(text.replace(r"Hello", lambda match: match.group(0).upper()), "HELLO.World")
+        self.assertEqual(text.replaceAll(".", "-"), "Hello-World")
+        self.assertEqual(text.indexOf("World"), 6)
+        self.assertEqual(text.indexOf("missing"), -1)
+        self.assertEqual(text.matchAll(r"[A-Z]"), "ello.orld")
+        self.assertIsNotNone(text.match(r"Hello"))
+        self.assertEqual(text.compile(r"World").pattern, "World")
+        self.assertEqual(text.anchor("greeting"), '<a name="greeting">Hello.World</a>')
+        self.assertEqual(text.big(), "<big>Hello.World</big>")
+        self.assertEqual(text.blink(), "<blink>Hello.World</blink>")
+        self.assertEqual(text.bold(), "<b>Hello.World</b>")
+        self.assertEqual(text.fixed(), "<tt>Hello.World</tt>")
+        self.assertEqual(text.fontcolor("red"), "<font color=red>Hello.World</font>")
+        self.assertEqual(text.fontsize("3"), "<font size=3>Hello.World</font>")
+        self.assertEqual(text.italics(), "<i>Hello.World</i>")
+        self.assertEqual(text.link("/home"), "<a href=/home>Hello.World</a>")
+        self.assertEqual(text.small(), "<small>Hello.World</small>")
+        self.assertEqual(text.strike(), "<strike>Hello.World</strike>")
+        self.assertEqual(text.sub(), "<sub>Hello.World</sub>")
+        self.assertEqual(text.sup(), "<sup>Hello.World</sup>")
+        self.assertEqual(String.fromCodePoint(65), "A")
+        self.assertEqual(String.toCodePoint("A"), 65)
+        self.assertEqual(String.toCharCode("A"), 65)
+        self.assertEqual(String.raw(r"a\b"), r"a\\b")
+        rendered = text("div", _id="greeting")
+        self.assertEqual(rendered.tagName, "div")
+        self.assertEqual(rendered.getAttribute("id"), "greeting")
+        self.assertIn("Hello.World", str(rendered))
+        self.assertEqual(text.div(_class="hero").tagName, "div")
+        self.assertIn("<html>", text.webpage())
+
+    def test_javascript_regexp_surface(self):
+        regex = RegExp(r"(foo)(bar)", "im")
+        self.assertTrue(regex.ignoreCase)
+        self.assertTrue(regex.multiline)
+        self.assertFalse(regex.dotAll)
+        regex.dotAll = True
+        regex.global_ = True
+        regex.hasIndices = True
+        regex.unicode = True
+        self.assertTrue(regex.dotAll)
+        self.assertTrue(regex.global_)
+        self.assertTrue(regex.hasIndices)
+        self.assertTrue(regex.unicode)
+        self.assertEqual(regex.source, r"(foo)(bar)")
+        self.assertEqual(regex.exec("xxfoobarxx"), ["foo", "bar"])
+        self.assertTrue(regex.test("foobar"))
+        self.assertFalse(regex.test("barfoo"))
+        self.assertEqual(regex.toString(), r"(foo)(bar)")
+        self.assertEqual(str(regex), r"(foo)(bar)")
+        self.assertIsNone(regex.compile())
 
     def test_set(self):
 
@@ -1181,6 +1428,93 @@ class TestCase(unittest.TestCase):
         arr = Float64Array(2)
         assert arr.length == 2
 
+    def test_javascript_math_bit_helpers(self):
+        self.assertAlmostEqual(Math.fround(1.337), 1.3370000123977661)
+        self.assertEqual(Math.clz32(1), 31)
+        self.assertEqual(Math.clz32(1000), 22)
+        self.assertEqual(Math.clz32(0), 32)
+
+    def test_arraybuffer_and_dataview(self):
+        buffer = ArrayBuffer(16)
+        self.assertEqual(buffer.byteLength, 16)
+        self.assertEqual(list(buffer.slice(0, 4)), [0, 0, 0, 0])
+
+        buffer.setUint8(0, 255)
+        buffer.setInt8(1, -1)
+        buffer.setUint16(2, 0x1234)
+        buffer.setUint16(4, 0x1234, True)
+        buffer.setInt16(6, -2)
+        buffer.setUint32(8, 0x12345678)
+        self.assertEqual(buffer.getUint8(0), 255)
+        self.assertEqual(buffer.getInt8(1), -1)
+        self.assertEqual(buffer.getUint16(2), 0x1234)
+        self.assertEqual(buffer.getUint16(4, True), 0x1234)
+        self.assertEqual(buffer.getInt16(6), -2)
+        self.assertEqual(buffer.getUint32(8), 0x12345678)
+
+        view = DataView(buffer, 2, 8)
+        self.assertEqual(view.byteLength, 8)
+        self.assertEqual(view.getUint16(0), 0x1234)
+        self.assertEqual(view.getUint16(2, True), 0x1234)
+        view.setInt16(4, -7)
+        self.assertEqual(buffer.getInt16(6), -7)
+        view.setUint32(0, 0x01020304, True)
+        self.assertEqual(buffer.getUint32(2, True), 0x01020304)
+        view.setFloat32(0, 1.5)
+        self.assertAlmostEqual(view.getFloat32(0), 1.5, places=6)
+
+    def test_typedarray_set_and_subarray(self):
+        target = Int8Array(4)
+        target.set([1, 2, 3], 1)
+        self.assertEqual([target[i] for i in range(target.length)], [0, 1, 2, 3])
+
+        source = Int8Array([5, 6])
+        target.set(source, 0)
+        self.assertEqual([target[i] for i in range(target.length)], [5, 6, 2, 3])
+
+        sub = target.subarray(1, 3)
+        self.assertIsInstance(sub, Int8Array)
+        self.assertEqual(sub.length, 2)
+        self.assertEqual([sub[i] for i in range(sub.length)], [6, 2])
+
+        clamped = Uint8ClampedArray([300, -5, 128])
+        self.assertEqual([clamped[i] for i in range(clamped.length)], [255, 0, 128])
+
+        float32 = Float32Array([1.5, 2.25])
+        self.assertAlmostEqual(float32[0], 1.5, places=6)
+        self.assertAlmostEqual(float32[1], 2.25, places=6)
+
+        float64 = Float64Array([3.5])
+        self.assertEqual(float64[0], 3.5)
+
+    def test_typedarray_error_paths_and_helpers(self):
+        self.assertEqual(Int8Array.of(1, 2)[0], 1)
+        self.assertEqual(Int8Array.from_([3, 4])[1], 4)
+        self.assertEqual(Int8Array(2).args.byteLength, 2)
+        self.assertIs(Int8Array(2).get(5), undefined)
+
+        with self.assertRaises(Exception):
+            Int16Array(ArrayBuffer(3), 1)
+        with self.assertRaises(Exception):
+            Int16Array(ArrayBuffer(3))
+        with self.assertRaises(Exception):
+            Int16Array(ArrayBuffer(2), 2, 1)
+        with self.assertRaises(Exception):
+            Int8Array(-1)
+        with self.assertRaises(TypeError):
+            Int8Array("bad")
+        with self.assertRaises(SyntaxError):
+            Int8Array(2).__getitem__(None)
+        with self.assertRaises(SyntaxError):
+            Int8Array(2).__setitem__(None, None)
+        with self.assertRaises(TypeError):
+            Int8Array(2).set("bad", 0)
+        with self.assertRaises(Exception):
+            Int8Array(2).set([1, 2, 3], 0)
+
+        base = Int8Array([1, 2, 3, 4])
+        self.assertEqual([base.subarray(-3, -1)[i] for i in range(2)], [2, 3])
+
     def test_reflect(self):
         target = {"name": "John"}
         self.assertEqual(list(Reflect.ownKeys(target)), ["name"])
@@ -1197,6 +1531,11 @@ class TestCase(unittest.TestCase):
         self.assertEqual(target["age"], 31)
         self.assertTrue(Reflect.deleteProperty(target, "age"))
         self.assertFalse(Reflect.has(target, "age"))
+
+        obj = Object({"name": "Jane"})
+        self.assertTrue(Reflect.setPrototypeOf(obj, Object))
+        self.assertEqual(Reflect.getPrototypeOf(obj), Object)
+        self.assertTrue(Reflect.preventExtensions(obj))
 
     def test_symbol(self):
         symbol = Symbol("token")

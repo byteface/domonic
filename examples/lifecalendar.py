@@ -14,6 +14,8 @@ app = FastAPI()
 
 MARGIN = 3
 PADDING = 3
+CELL_SIZE = 14
+YEAR_LABEL_WIDTH = 22
 
 DEFAULT_BIRTHDAY = "1970-01-01"
 average_lifespan_in_years = 81  # used to build the years in the calendar
@@ -21,31 +23,66 @@ average_lifespan_in_years = 81  # used to build the years in the calendar
 # create templates
 cell = lambda x=None, *args: div(
     _class=x if x else "",
-    _style=f"display:inline;margin:{MARGIN}px;padding:{PADDING}px;",
+    _style=(
+        f"display:inline-block;width:{CELL_SIZE}px;height:{CELL_SIZE}px;"
+        f"margin:{MARGIN}px;padding:{PADDING}px;box-sizing:border-box;"
+    ),
     **{"_aria-label": "Click to expand!"},
     **{"_data-balloon-pos": "up"},
     **{"_data-ref": "modalref"},
 ).html(*args)
 
-row = lambda *x: div(*x, _class="row")
+row = lambda *x: div(*x, _class="life-row")
 
 _materials = style(
     """
 .body{
     counter-reset: age 0;
 }
-.row{
-    font-size:5px;
-    counter-increment: age;
+.life-calendar{
+    display:inline-block;
 }
-.row:before{
+.life-weeks{
+    display:flex;
+    align-items:center;
+    gap:0;
+    margin-left:0;
+    padding-left:0;
+}
+.life-row{
+    display:flex;
+    align-items:center;
+    gap:0;
+    font-size:5px;
+    line-height:1;
+    counter-increment: age;
+    position:relative;
+    margin:0;
+    padding:0;
+    flex-wrap:nowrap;
+}
+.life-row:before{
     content:counter(age, decimal-leading-zero);
-    position:absolute; left:0; text-align:right;
+    display:inline-block;
+    width:""" + str(YEAR_LABEL_WIDTH) + """px;
+    margin-right:6px;
+    text-align:right;
+    font-size:10px;
+    line-height:""" + str(CELL_SIZE + (PADDING * 2)) + """px;
+    color:#333;
 }
 .week{
     background-color: white;
-    padding:4px; width:14px;
-    display:inline-block;
+    width:""" + str(CELL_SIZE) + """px;
+    min-width:""" + str(CELL_SIZE) + """px;
+    margin:""" + str(MARGIN) + """px;
+    padding:""" + str(PADDING) + """px;
+    box-sizing:border-box;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:10px;
+    line-height:1;
 }
 .d{
     background-color: white; border: 1px solid black;
@@ -71,9 +108,9 @@ _scripts = script(
 class World:
     def __init__(self, request, age, *args, **kwargs):
 
-        weeks = div(_style="margin-left:-14px;")
+        weeks = div(_class="life-weeks", _style=f"padding-left:{YEAR_LABEL_WIDTH + 6}px;")
         for count in range(1, 53):
-            weeks += span(str(count).zfill(2), _style="font-size:5px;", _class="week")
+            weeks += span(str(count).zfill(2), _class="week")
 
         years = []
         for count in range(average_lifespan_in_years):
@@ -83,7 +120,7 @@ class World:
                 year += cell("g open" if has_passed else "d open")  # , Char.CROSS if has_passed else '')
             years.append(year)
 
-        self.grid = div(weeks, *years, _class="container-fluid")
+        self.grid = div(weeks, *years, _class="life-calendar")
 
     def get_weeks(self, BIRTHDAY=DEFAULT_BIRTHDAY):
         currentDate = datetime.datetime.now()
@@ -110,28 +147,14 @@ async def world(request: Request, age: str = DEFAULT_BIRTHDAY):
         weeks_old = AGE.days / 365 * 52
         return weeks_old
 
-    weeks = div(_style="margin-left:-14px;")
-    for count in range(1, 53):
-        weeks += span(str(count).zfill(2), _style="font-size:5px;", _class="week")
-
-    years = []
-    for count in range(average_lifespan_in_years):
-        year = div()
-        for countw in range(52):
-            has_passed = ((count * 52) + countw) < int(get_weeks(age))
-            year += div("g open" if has_passed else "d open")  # , Char.CROSS if has_passed else '')
-        years.append(year)
-
-    grid = div(weeks, *years, _class="container-fluid")
-
     return HTMLResponse(
         str(
             html(
                 head(
-                    script(src="https://code.jquery.com/jquery-3.5.1.min.js"),
-                    link(rel="stylesheet", type="text/css", href=CDN_CSS.BALLOON),
-                    link(rel="stylesheet", type="text/css", href=CDN_CSS.BOOTSTRAP_4),
-                    link(rel="stylesheet", type="text/css", href=CDN_CSS.MVP),
+                    script(_src="https://code.jquery.com/jquery-3.5.1.min.js"),
+                    link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.BALLOON),
+                    link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.BOOTSTRAP),
+                    link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.MVP),
                     style(
                         """
                         .x-label{
@@ -145,6 +168,11 @@ async def world(request: Request, age: str = DEFAULT_BIRTHDAY):
                             display: inline-block;
                             position: absolute;
                             left: 50px;
+                        }
+                        .calendar-shell{
+                            top:110px;
+                            left:50px;
+                            position:absolute;
                         }
                     """
                     ),
@@ -167,8 +195,7 @@ async def world(request: Request, age: str = DEFAULT_BIRTHDAY):
                     h5("Week of the Year".upper(), _class="y-label"),
                     div(
                         str(World(request, age)),
-                        _class="container-fluid",
-                        _style="top:110px;left:50px;position:absolute;",
+                        _class="calendar-shell",
                     ),
                     script(
                         """

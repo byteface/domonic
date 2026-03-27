@@ -40,9 +40,9 @@ def get_word():
 
 def display_hangman(tries):
     stages = [
-        "  +---+\n  |   |\n  O   |\n /|\  |\n / \  |\n      |\n=========",
-        "  +---+\n  |   |\n  O   |\n /|\  |\n /    |\n      |\n=========",
-        "  +---+\n  |   |\n  O   |\n /|\  |\n      |\n      |\n=========",
+        "  +---+\n  |   |\n  O   |\n /|\\  |\n / \\  |\n      |\n=========",
+        "  +---+\n  |   |\n  O   |\n /|\\  |\n /    |\n      |\n=========",
+        "  +---+\n  |   |\n  O   |\n /|\\  |\n      |\n      |\n=========",
         "  +---+\n  |   |\n  O   |\n /|   |\n      |\n      |\n=========",
         "  +---+\n  |   |\n  O   |\n  |   |\n      |\n      |\n=========",
         "  +---+\n  |   |\n  O   |\n      |\n      |\n      |\n=========",
@@ -140,8 +140,8 @@ async def move(request: Request, letter: str = Query(...)):
     return Response(content=str(main(str(page), _id="game")), media_type="text/html")
 
 
-@app.route("/")
-@app.route("/play")
+@app.get("/")
+@app.get("/play")
 async def play(request: Request):
     # create a new game based on this session
     request.session["game"] = None

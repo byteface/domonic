@@ -165,14 +165,16 @@ socket.send('!');
 render(page, "gol.html")
 
 # run the socket server
-async def update(websocket, path):
+async def update(websocket):
     while True:
         update_grid()
         await websocket.send(json.dumps(gridNew, default=vars))
         msg = await websocket.recv()
         await websocket.send(json.dumps(gridNew, default=vars))
 
+async def main():
+    async with websockets.serve(update, "0.0.0.0", 5555):
+        await asyncio.Future()
 
-server = websockets.serve(update, "0.0.0.0", 5555)
-asyncio.get_event_loop().run_until_complete(server)
-asyncio.get_event_loop().run_forever()
+
+asyncio.run(main())

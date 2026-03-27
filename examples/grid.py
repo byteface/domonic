@@ -10,16 +10,26 @@ app = FastAPI()
 
 MARGIN = 1
 PADDING = 2
+CELL_SIZE = 8
+ROWS = 100
+COLS = 100
 
 # create a template
-cell = lambda x=None: div(_class=x if x else "", _style=f"display:inline;margin:{MARGIN}px;padding:{PADDING}px;")
+cell = lambda x=None: div(
+    _class=x if x else "",
+    _style=(
+        f"display:inline-block;"
+        f"width:{CELL_SIZE}px;height:{CELL_SIZE}px;"
+        f"margin:{MARGIN}px;padding:{PADDING}px;"
+        "box-sizing:border-box;"
+    ),
+)
 
 row = lambda *x: div(*x, _class="row")
 
 # world grid
 _grid = div(
-    row(cell("d") / 100) / 100,
-    row(cell("d") / 100) / 100,
+    *[row(*[cell("d") for _ in range(COLS)]) for _ in range(ROWS)],
     _class="container-fluid",
 )
 
@@ -71,7 +81,7 @@ async def world(request: Request):
             html(
                 head(),
                 body(
-                    link(rel="stylesheet", type="text/css", href=CDN_CSS.BOOTSTRAP_4),
+                    link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.BOOTSTRAP),
                     str(World(request)),
                 ),
             )

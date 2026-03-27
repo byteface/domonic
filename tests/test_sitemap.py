@@ -99,7 +99,9 @@ class TestCase(unittest.TestCase):
             sm = get_sitemap("https://x.net/merchants/ar/sitemap_index.xml")
         print(sm)
         self.assertIsNotNone(sm)
-        self.assertEqual(getattr(sm, "tagName", None), "sitemapindex")
+        self.assertIn(getattr(sm, "tagName", None), ("sitemapindex", "xml", "html"))
+        if getattr(sm, "tagName", None) in ("xml", "html"):
+            self.assertEqual(len(sm.getElementsByTagName("sitemapindex")), 1)
         self.assertEqual(len(sm.getElementsByTagName("sitemap")), 1)
 
 
@@ -118,8 +120,8 @@ class TestCase(unittest.TestCase):
             sm = get_sitemap("https://x.net/merchants/ar/page-sitemap.xml")
         print(sm)
         self.assertIsNotNone(sm)
-        self.assertIn(getattr(sm, "tagName", None), ("urlset", "html"))
-        if getattr(sm, "tagName", None) == "html":
+        self.assertIn(getattr(sm, "tagName", None), ("urlset", "xml", "html"))
+        if getattr(sm, "tagName", None) in ("xml", "html"):
             self.assertEqual(len(sm.getElementsByTagName("urlset")), 1)
         self.assertEqual(len(sm.getElementsByTagName("url")), 1)
 

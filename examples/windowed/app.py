@@ -56,7 +56,7 @@ tools = {
 }
 
 # render the toolbars
-render(domonic.loads("templates/toolbar.pyml", tools=tools, APPNAME=APPNAME), "toolbar.html")
+render(domonic.loads("templates/toolbar.pyml", tools=tools, APPNAME=APPNAME, Input=Input), "toolbar.html")
 
 # render a panel
 render(domonic.loads("templates/panel.pyml", somedata={}, APPNAME=APPNAME), "panel.html")
