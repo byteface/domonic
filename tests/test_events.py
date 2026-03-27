@@ -430,8 +430,10 @@ class TestCase(unittest.TestCase):
 
         keyboard_event = KeyboardEvent("keydown").initKeyboardEvent("keyup", True, True, None, 65, "A", 0, "", False)
         self.assertEqual(keyboard_event.type, "keyup")
-        self.assertEqual(keyboard_event.key, "A")
+        self.assertEqual(keyboard_event.key, "a")
         self.assertEqual(keyboard_event.charCode, 65)
+        self.assertEqual(keyboard_event.code, "KeyA")
+        self.assertEqual(keyboard_event.keyCode, 65)
 
         keyboard_with_modifiers = KeyboardEvent("keydown").initKeyboardEvent(
             "keydown", True, True, None, 65, "A", 1, "Alt Shift", True
@@ -440,6 +442,26 @@ class TestCase(unittest.TestCase):
         self.assertTrue(keyboard_with_modifiers.shiftKey)
         self.assertEqual(keyboard_with_modifiers.location, 1)
         self.assertTrue(keyboard_with_modifiers.repeat)
+        self.assertEqual(keyboard_with_modifiers.code, "KeyA")
+
+    def test_keyboard_event_modern_key_code_and_location_defaults(self):
+        keyboard_event = KeyboardEvent(
+            "keydown",
+            {
+                "key": "Enter",
+                "location": KeyboardEvent.DOM_KEY_LOCATION_NUMPAD,
+                "capsLock": True,
+                "repeat": True,
+            },
+        )
+
+        self.assertEqual(keyboard_event.key, "Enter")
+        self.assertEqual(keyboard_event.code, "NumpadEnter")
+        self.assertEqual(keyboard_event.keyCode, 13)
+        self.assertEqual(keyboard_event.location, KeyboardEvent.DOM_KEY_LOCATION_NUMPAD)
+        self.assertTrue(keyboard_event.repeat)
+        self.assertTrue(keyboard_event.getModifierState("CapsLock"))
+        self.assertFalse(keyboard_event.getModifierState("Shift"))
 
         pointer_event = PointerEvent("pointerdown", {"clientX": 5, "clientY": 6, "pointerId": 3})
         self.assertEqual(pointer_event.clientX, 5)

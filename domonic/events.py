@@ -12,6 +12,8 @@ import inspect
 import time
 from typing import Any, Callable, ClassVar
 
+from domonic.constants.keyboard import Code, Key, KeyCode, KeyLocation, normalize_code, normalize_key
+
 
 class EventTarget:
     """
@@ -705,6 +707,51 @@ class MouseEvent(UIEvent):
     # relatedTarget Returns the element related to the element that triggered the mouse event   MouseEvent, FocusEvent
 
 
+def _infer_char_code(key: str) -> int:
+    if len(key) == 1:
+        return ord(key)
+    return 0
+
+
+def _infer_legacy_keycode(key: str) -> int:
+    inferred = KeyCode.from_key(key)
+    return inferred if inferred is not None else 0
+
+
+def _infer_code_from_key_and_location(key: str, location: int) -> str:
+    key_to_code = {
+        Key.ENTER: Code.NUMPAD_ENTER if location == KeyLocation.NUMPAD else Code.ENTER,
+        Key.TAB: Code.TAB,
+        Key.SPACE: Code.SPACE,
+        Key.ESCAPE: Code.ESCAPE,
+        Key.BACKSPACE: Code.BACKSPACE,
+        Key.DELETE: Code.DELETE,
+        Key.INSERT: Code.INSERT,
+        Key.HOME: Code.HOME,
+        Key.END: Code.END,
+        Key.PAGE_UP: Code.PAGE_UP,
+        Key.PAGE_DOWN: Code.PAGE_DOWN,
+        Key.ARROW_LEFT: Code.ARROW_LEFT,
+        Key.ARROW_RIGHT: Code.ARROW_RIGHT,
+        Key.ARROW_UP: Code.ARROW_UP,
+        Key.ARROW_DOWN: Code.ARROW_DOWN,
+        Key.SHIFT: Code.SHIFT_RIGHT if location == KeyLocation.RIGHT else Code.SHIFT_LEFT,
+        Key.CONTROL: Code.CONTROL_RIGHT if location == KeyLocation.RIGHT else Code.CONTROL_LEFT,
+        Key.ALT: Code.ALT_RIGHT if location == KeyLocation.RIGHT else Code.ALT_LEFT,
+        Key.META: Code.META_RIGHT if location == KeyLocation.RIGHT else Code.META_LEFT,
+        Key.CAPS_LOCK: Code.CAPS_LOCK,
+        Key.NUM_LOCK: Code.NUM_LOCK,
+        Key.SCROLL_LOCK: Code.SCROLL_LOCK,
+        Key.CONTEXT_MENU: Code.CONTEXT_MENU,
+    }
+    if key in key_to_code:
+        return key_to_code[key]
+    normalized_code = normalize_code(key)
+    if normalized_code:
+        return normalized_code
+    return ""
+
+
 class KeyboardEvent(UIEvent):
     """keyboard events"""
 
@@ -712,12 +759,10 @@ class KeyboardEvent(UIEvent):
     KEYPRESS: str = "keypress"  #:
     KEYUP: str = "keyup"  #:
 
-    DOM_KEY_LOCATION_LEFT: int = 0  #:
-    DOM_KEY_LOCATION_STANDARD: int = 1  #:
-    DOM_KEY_LOCATION_RIGHT: int = 2  #:
-    DOM_KEY_LOCATION_NUMPAD: int = 3  #:
-    DOM_KEY_LOCATION_MOBILE: int = 4  #:
-    DOM_KEY_LOCATION_JOYSTICK: int = 5  #:
+    DOM_KEY_LOCATION_STANDARD: int = KeyLocation.STANDARD  #:
+    DOM_KEY_LOCATION_LEFT: int = KeyLocation.LEFT  #:
+    DOM_KEY_LOCATION_RIGHT: int = KeyLocation.RIGHT  #:
+    DOM_KEY_LOCATION_NUMPAD: int = KeyLocation.NUMPAD  #:
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
@@ -728,10 +773,29 @@ class KeyboardEvent(UIEvent):
         self._shiftKey: bool = options.get("shiftKey", False)
         self._metaKey: bool = options.get("metaKey", False)
 
-        self.charCode = options.get("charCode", None)
-        self.code = options.get("code", None)
-        self.key = options.get("key", None)
-        self.keyCode = options.get("keyCode", None)
+        self.location = options.get("location", self.DOM_KEY_LOCATION_STANDARD)
+        self.repeat = bool(options.get("repeat", False))
+        self.isComposing = bool(options.get("isComposing", False))
+        self._modifier_states = {
+            "Alt": self._altKey,
+            "Control": self._ctrlKey,
+            "Meta": self._metaKey,
+            "Shift": self._shiftKey,
+            "CapsLock": bool(options.get("capsLock", False)),
+            "NumLock": bool(options.get("numLock", False)),
+            "ScrollLock": bool(options.get("scrollLock", False)),
+            "AltGraph": bool(options.get("altGraph", False)),
+        }
+
+        raw_key = options.get("key", "")
+        raw_code = options.get("code", "")
+        raw_key_code = options.get("keyCode", None)
+        self.key = normalize_key(raw_key)
+        self.code = normalize_code(raw_code) or KeyCode.to_code(raw_key_code) or _infer_code_from_key_and_location(
+            self.key, self.location
+        )
+        self.keyCode = int(raw_key_code) if raw_key_code not in (None, "") else _infer_legacy_keycode(self.key)
+        self.charCode = int(options.get("charCode", _infer_char_code(self.key)))
 
         super().__init__(_type, options, *args, **kwargs)
 
@@ -753,8 +817,7 @@ class KeyboardEvent(UIEvent):
         self.view = viewArg
         self.viewArg = viewArg
         self.charCode = charArg
-        self.key = keyArg
-        self.code = keyArg
+        self.key = normalize_key(keyArg)
         self.location = locationArg
         self.locationArg = locationArg
         self.modifiersListArg = modifiersListArg
@@ -763,6 +826,16 @@ class KeyboardEvent(UIEvent):
         self._ctrlKey = "control" in modifiers or "ctrl" in modifiers
         self._metaKey = "meta" in modifiers
         self._shiftKey = "shift" in modifiers
+        self._modifier_states.update(
+            {
+                "Alt": self._altKey,
+                "Control": self._ctrlKey,
+                "Meta": self._metaKey,
+                "Shift": self._shiftKey,
+            }
+        )
+        self.code = _infer_code_from_key_and_location(self.key, self.location)
+        self.keyCode = _infer_legacy_keycode(self.key)
         self.repeat = repeat
         return self
 
@@ -787,13 +860,7 @@ class KeyboardEvent(UIEvent):
         return self.key
 
     def getModifierState(self, keyArg: str) -> bool:
-        lookup = {
-            "Alt": self.altKey,
-            "Control": self.ctrlKey,
-            "Meta": self.metaKey,
-            "Shift": self.shiftKey,
-        }
-        return lookup.get(keyArg, False)
+        return self._modifier_states.get(keyArg, False)
 
     # @property
     # def keyCode(self):
