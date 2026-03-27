@@ -1379,432 +1379,59 @@ class MessageEvent(Event):
         super().__init__(_type, options, *args, **kwargs)
 
 
-class GlobalEventHandler:  # (EventDispatcher):
+class GlobalEventHandler:
+    _handler_names = (
+        "onabort", "onblur", "oncancel", "oncanplay", "oncanplaythrough", "onchange", "onclick",
+        "onclose", "oncontextmenu", "oncuechange", "ondblclick", "ondrag", "ondragend",
+        "ondragenter", "ondragexit", "ondragleave", "ondragover", "ondragstart", "ondrop",
+        "ondurationchange", "onemptied", "onended", "onerror", "onfocus", "ongotpointercapture",
+        "oninput", "oninvalid", "onkeydown", "onkeypress", "onkeyup", "onload", "onloadeddata",
+        "onloadedmetadata", "onloadend", "onloadstart", "onlostpointercapture", "onmouseenter",
+        "onmouseleave", "onmousemove", "onmouseout", "onmouseover", "onmouseup", "onpause",
+        "onplay", "onplaying", "onpointercancel", "onpointerdown", "onpointerenter",
+        "onpointerleave", "onpointermove", "onpointerout", "onpointerover", "onpointerup",
+        "onprogress", "onratechange", "onreset", "onresize", "onscroll", "onseeked",
+        "onseeking", "onselect", "onselectionchange", "onselectstart", "onshow", "onstalled",
+        "onsubmit", "onsuspend", "ontimeupdate", "onvolumechange", "onwaiting", "onwheel",
+        "onanimationcancel", "onanimationend", "onanimationiteration", "onauxclick", "onformdata",
+        "onmousedown", "ontouchcancel", "ontouchstart", "ontransitioncancel", "ontransitionend",
+    )
+
+
+class WindowEventHandler:
+    _handler_names = (
+        "onabort", "onafterprint", "onbeforeprint", "onbeforeunload", "onblur", "oncanplay",
+        "oncanplaythrough", "onchange", "onclick", "oncontextmenu", "oncopy", "oncuechange",
+        "oncut", "ondblclick", "ondrag", "ondragend", "ondragenter", "ondragleave", "ondragover",
+        "ondragstart", "ondrop", "ondurationchange", "onemptied", "onended", "onerror", "onfocus",
+        "onhashchange", "oninput", "oninvalid", "onkeydown", "onkeypress", "onkeyup", "onload",
+        "onloadeddata", "onloadedmetadata", "onloadstart", "onmessage", "onmousedown",
+        "onmouseenter", "onmouseleave", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
+        "onmousewheel", "onoffline", "ononline", "onpagehide", "onpageshow", "onpaste",
+        "onpopstate", "onresize", "onscroll", "onstorage", "onsubmit", "onunload",
+    )
 
-    # def __init__(self):
-    #     super().__init__(self)
-    #     self.addEventListener(KeyboardEvent.KEYDOWN, self.onkeydown)
-    #     self.addEventListener(KeyboardEvent.KEYUP, self.onkeyup)
-
-    #     self.addEventListener(MouseEvent.MOUSEMOVE, self.onmousemove)
-    #     self.addEventListener(MouseEvent.MOUSEDOWN, self.onmousedown)
-    #     self.addEventListener(MouseEvent.MOUSEUP, self.onmouseup)
-
-    #     self.addEventListener(DragEvent.DRAG, self.ondrag)
-    #     self.addEventListener(DragEvent.END, self.ondragend)
-    #     self.addEventListener(DragEvent.ENTER, self.ondragenter)
-    #     self.addEventListener(DragEvent.EXIT, self.ondragexit)
-    #     self.addEventListener(DragEvent.LEAVE, self.ondragleave)
-    #     self.addEventListener(DragEvent.OVER, self.ondragover)
-    #     self.addEventListener(DragEvent.START, self.ondragstart)
-    #     self.addEventListener(DragEvent.DROP, self.ondrop)
-
-    #     self.addEventListener(ClipboardEvent.CUT, self.oncut)
-    #     self.addEventListener(ClipboardEvent.COPY, self.oncopy)
-    #     self.addEventListener(ClipboardEvent.PASTE, self.onpaste)
-
-    def onabort(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onblur(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oncancel(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oncanplay(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oncanplaythrough(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onchange(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onclick(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onclose(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oncontextmenu(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oncuechange(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondblclick(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondrag(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondragend(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondragenter(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondragexit(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondragleave(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondragover(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondragstart(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondrop(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondurationchange(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onemptied(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onended(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onerror(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onfocus(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ongotpointercapture(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oninput(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oninvalid(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onkeydown(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onkeypress(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onkeyup(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onload(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onloadeddata(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onloadedmetadata(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onloadend(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onloadstart(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onlostpointercapture(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onmouseenter(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onmouseleave(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onmousemove(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onmouseout(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onmouseover(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onmouseup(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onpause(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onplay(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onplaying(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onpointercancel(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onpointerdown(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onpointerenter(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onpointerleave(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onpointermove(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onpointerout(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onpointerover(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onpointerup(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onprogress(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onratechange(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onreset(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onresize(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onscroll(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onseeked(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onseeking(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onselect(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onselectionchange(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onselectstart(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onshow(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onstalled(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onsubmit(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onsuspend(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ontimeupdate(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onvolumechange(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onwaiting(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onwheel(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onanimationcancel(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onanimationend(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onanimationiteration(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onauxclick(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onformdata(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onmousedown(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ontouchcancel(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ontouchstart(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ontransitioncancel(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ontransitionend(self, event):
-        print(event)
-        raise NotImplementedError
-
-
-class WindowEventHandler:  # (EventHandler): # TODO - put in the window module?
     def __init__(self, window):
         super().__init__()
         self.window = window
 
-    def onabort(self, event):
-        print(event)
-        raise NotImplementedError
 
-    def onafterprint(self, event):
-        print(event)
-        raise NotImplementedError
+def _make_default_event_handler(name: str):
+    def handler(self, event):
+        self._last_event = event
+        callback = getattr(self, f"_{name}_callback", None)
+        if callable(callback):
+            return callback(event)
+        return event
 
-    def onbeforeprint(self, event):
-        print(event)
-        raise NotImplementedError
+    handler.__name__ = name
+    return handler
 
-    def onbeforeunload(self, event):
-        print(event)
-        raise NotImplementedError
 
-    def onblur(self, event):
-        print(event)
-        raise NotImplementedError
+def _install_default_event_handlers(*classes) -> None:
+    for cls in classes:
+        for name in getattr(cls, "_handler_names", ()):
+            setattr(cls, name, _make_default_event_handler(name))
 
-    def oncanplay(self, event):
-        print(event)
-        raise NotImplementedError
 
-    def oncanplaythrough(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onchange(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def onclick(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oncontextmenu(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oncopy(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oncuechange(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def oncut(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondblclick(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondrag(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondragend(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondragenter(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondragleave(self, event):
-        print(event)
-        raise NotImplementedError
-
-    def ondragover(self, event):
-        print(event)
-        raise NotImplementedError
+_install_default_event_handlers(GlobalEventHandler, WindowEventHandler)

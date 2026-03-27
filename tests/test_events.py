@@ -401,5 +401,16 @@ class TestCase(unittest.TestCase):
         self.assertEqual(message.data, "hi")
         self.assertEqual(message.ports, [1, 2])
 
+    def test_default_global_and_window_event_handlers_do_not_throw(self):
+        global_handler = GlobalEventHandler()
+        click_event = Event("click")
+        self.assertIs(global_handler.onclick(click_event), click_event)
+        self.assertEqual(global_handler.onkeydown(Event("keydown")).type, "keydown")
+
+        win = WindowEventHandler(window=None)
+        resize_event = Event("resize")
+        self.assertIs(win.onresize(resize_event), resize_event)
+        self.assertEqual(win._last_event.type, "resize")
+
 if __name__ == '__main__':
     unittest.main()

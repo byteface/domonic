@@ -3447,94 +3447,188 @@ class CDATASection(Node):
 class AbastractRange:
     def __init__(self) -> None:
         """Constructor for Range objects"""
-        raise NotImplementedError
+        self.startContainer: Node | None = None
+        self.startOffset: int = 0
+        self.endContainer: Node | None = None
+        self.endOffset: int = 0
+        self.collapsed: bool = True
+        self.commonAncestorContainer: Node | None = None
 
     def cloneContents(self) -> "DocumentFragment":
-        raise NotImplementedError
+        return self.cloneRange().cloneContents()
 
     def cloneRange(self) -> "Range":
-        raise NotImplementedError
+        new_range = Range()
+        if self.startContainer is not None:
+            new_range.setStart(self.startContainer, self.startOffset)
+        if self.endContainer is not None:
+            new_range.setEnd(self.endContainer, self.endOffset)
+        return new_range
 
     def compareBoundaryPoints(self, how: int, sourceRange: "Range") -> int:
-        raise NotImplementedError
+        return self.cloneRange().compareBoundaryPoints(how, sourceRange)
 
     def createContextualFragment(self, data: Any) -> "DocumentFragment":
-        raise NotImplementedError
+        return self.cloneRange().createContextualFragment(data)
 
     def deleteContents(self) -> None:
-        raise NotImplementedError
+        self.cloneRange().deleteContents()
 
     def detach(self) -> None:
-        raise NotImplementedError
+        self.startContainer = None
+        self.endContainer = None
+        self.startOffset = 0
+        self.endOffset = 0
+        self.collapsed = True
+        self.commonAncestorContainer = None
 
     def expand(self, unit: Any) -> None:
-        raise NotImplementedError
+        if self.startContainer is None:
+            return
+        unit = str(unit or "").lower()
+        if unit in ("all", "document", "container"):
+            self.selectNodeContents(self.commonAncestorContainer or self.startContainer)
+            return
+        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
+            self.selectNodeContents(self.commonAncestorContainer or self.startContainer)
+            return
+
+        text = self.startContainer.textContent
+        if unit == "character":
+            start = max(0, min(self.startOffset, len(text)))
+            end = max(start, min(len(text), start + 1))
+            self.setStart(self.startContainer, start)
+            self.setEnd(self.startContainer, end)
+            return
+
+        if unit == "word":
+            start = max(0, min(self.startOffset, len(text)))
+            end = max(start, min(self.endOffset, len(text)))
+            while start > 0 and not text[start - 1].isspace():
+                start -= 1
+            while end < len(text) and not text[end].isspace():
+                end += 1
+            self.setStart(self.startContainer, start)
+            self.setEnd(self.startContainer, end)
+            return
+
+        self.selectNodeContents(self.startContainer)
 
     def extractContents(self) -> "DocumentFragment":
-        raise NotImplementedError
+        return self.cloneRange().extractContents()
 
     def getBoundingClientRect(self) -> DOMRect:
-        raise NotImplementedError
+        return self.cloneRange().getBoundingClientRect()
 
     def getClientRects(self) -> list[DOMRect]:
-        raise NotImplementedError
+        return self.cloneRange().getClientRects()
 
     def insertNode(self, newNode: "Node") -> None:
-        raise NotImplementedError
+        self.cloneRange().insertNode(newNode)
 
     def selectNode(self, refNode: "Node") -> None:
-        raise NotImplementedError
+        if refNode.parentNode is None:
+            raise ValueError("Cannot select a detached node")
+        self.setStartBefore(refNode)
+        self.setEndAfter(refNode)
 
     def selectNodeContents(self, refNode: "Node") -> None:
-        raise NotImplementedError
+        self.setStart(refNode, 0)
+        self.setEnd(refNode, Range._container_length(refNode))
 
     def setEnd(self, refNode: "Node", offset: int) -> None:
-        raise NotImplementedError
+        self.endContainer = refNode
+        self.endOffset = offset
+        if self.startContainer is None:
+            self.startContainer = refNode
+            self.startOffset = offset
+        self._update_state()
 
     def setEndAfter(self, refNode: "Node") -> None:
-        raise NotImplementedError
+        self.setEnd(refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode) + 1)
 
     def setEndBefore(self, refNode: "Node") -> None:
-        raise NotImplementedError
+        self.setEnd(refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode))
 
     def setStart(self, refNode: "Node", offset: int) -> None:
-        raise NotImplementedError
+        self.startContainer = refNode
+        self.startOffset = offset
+        if self.endContainer is None:
+            self.endContainer = refNode
+            self.endOffset = offset
+        self._update_state()
 
     def setStartAfter(self, refNode: "Node") -> None:
-        raise NotImplementedError
+        self.setStart(refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode) + 1)
 
     def setStartBefore(self, refNode: "Node") -> None:
-        raise NotImplementedError
+        self.setStart(refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode))
 
     def surroundContents(self, newParent: "Node") -> None:
-        raise NotImplementedError
+        self.cloneRange().surroundContents(newParent)
 
     def toString(self) -> str:
-        raise NotImplementedError
+        return self.cloneRange().toString()
 
     def comparePoint(self, refNode: "Node", offset: int) -> int:
-        raise NotImplementedError
+        return self.cloneRange().comparePoint(refNode, offset)
 
     def deleteData(self, offset, count):
-        raise NotImplementedError
+        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
+            raise ValueError("Range data helpers require a single Text container")
+        self.startContainer.deleteData(offset, count)
+        self.endOffset = min(self.endOffset, len(self.startContainer.textContent))
+        self.startOffset = min(self.startOffset, self.endOffset)
+        self._update_state()
+        return self.startContainer.textContent
 
     def extractData(self, offset, count):
-        raise NotImplementedError
+        data = self.getData(offset, count)
+        self.deleteData(offset, count)
+        return data
 
     def getData(self, offset, count):
-        raise NotImplementedError
+        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
+            raise ValueError("Range data helpers require a single Text container")
+        return self.startContainer.textContent[offset : offset + count]
 
     def getEnd(self):
-        raise NotImplementedError
+        return (self.endContainer, self.endOffset)
 
     def getStart(self):
-        raise NotImplementedError
+        return (self.startContainer, self.startOffset)
 
     def replaceData(self, offset, count, data):
-        raise NotImplementedError
+        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
+            raise ValueError("Range data helpers require a single Text container")
+        self.startContainer.replaceData(offset, count, data)
+        self.endOffset = min(len(self.startContainer.textContent), max(self.startOffset, self.endOffset))
+        self._update_state()
+        return self.startContainer.textContent
 
     def setData(self, data):
-        raise NotImplementedError
+        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
+            raise ValueError("Range data helpers require a single Text container")
+        self.startContainer.data = data
+        self.startOffset = min(self.startOffset, len(data))
+        self.endOffset = min(self.endOffset, len(data))
+        self._update_state()
+        return self.startContainer.textContent
+
+    def _update_state(self) -> None:
+        self.collapsed = (
+            self.startContainer is self.endContainer and self.startOffset == self.endOffset
+        )
+        if self.startContainer is None or self.endContainer is None:
+            self.commonAncestorContainer = None
+            return
+        start_path = Range._path_to_root(self.startContainer)
+        end_path = Range._path_to_root(self.endContainer)
+        ancestor = None
+        while start_path and end_path and start_path[-1] is end_path[-1]:
+            ancestor = start_path.pop()
+            end_path.pop()
+        self.commonAncestorContainer = ancestor
 
 
 class Range(AbastractRange):
@@ -3917,6 +4011,9 @@ class Range(AbastractRange):
             return 1
         return 0
 
+    def isPointInRange(self, refNode: Node, offset: int) -> bool:
+        return self.comparePoint(refNode, offset) == 0
+
     def intersectsNode(self, refNode: Node) -> bool:
         if self.startContainer is None or self.endContainer is None:
             return False
@@ -3940,17 +4037,40 @@ class Range(AbastractRange):
         )
 
 
-class StaticRange(AbastractRange):
+class StaticRange(Range):
     def __init__(self, startContainer, startOffset, endContainer, endOffset):
+        super().__init__()
         self.startContainer = startContainer
         self.startOffset = startOffset
         self.endContainer = endContainer
         self.endOffset = endOffset
-        self.collapsed = False
-        self.commonAncestorContainer = None
+        self._update_state()
 
-    # def toRange(self):
-    #     return self
+    def _immutable(self, *args, **kwargs):
+        raise TypeError("StaticRange is immutable")
+
+    collapse = _immutable
+    createContextualFragment = Range.createContextualFragment
+    deleteContents = _immutable
+    deleteData = _immutable
+    detach = _immutable
+    expand = _immutable
+    extractContents = _immutable
+    insertNode = _immutable
+    replaceData = _immutable
+    selectNode = _immutable
+    selectNodeContents = _immutable
+    setData = _immutable
+    setEnd = _immutable
+    setEndAfter = _immutable
+    setEndBefore = _immutable
+    setStart = _immutable
+    setStartAfter = _immutable
+    setStartBefore = _immutable
+    surroundContents = _immutable
+
+    def toRange(self) -> Range:
+        return self.cloneRange()
 
 
 class TimeRanges:
@@ -4751,26 +4871,30 @@ class CharacterData(Node):
     def appendData(self, data):
         """Appends the given DOMString to the CharacterData.data string; when this method returns,
         data contains the concatenated DOMString."""
-        self.args[0] += data
-        return self.args[0]
+        updated = self.args[0] + data
+        self.args = (updated,)
+        return updated
 
     def deleteData(self, offset: int, count: int):
         """Removes the specified amount of characters, starting at the specified offset,
         from the CharacterData.data string; when this method returns, data contains the shortened DOMString."""
-        self.args[0] = self.args[0][:offset] + self.args[0][offset + count :]
-        return self.args[0]
+        updated = self.args[0][:offset] + self.args[0][offset + count :]
+        self.args = (updated,)
+        return updated
 
     def insertData(self, offset: int, data):
         """Inserts the specified characters, at the specified offset, in the CharacterData.data string;
         when this method returns, data contains the modified DOMString."""
-        self.args[0] = self.args[0][:offset] + data + self.args[0][offset:]
-        return self.args[0]
+        updated = self.args[0][:offset] + data + self.args[0][offset:]
+        self.args = (updated,)
+        return updated
 
     def replaceData(self, offset: int, count: int, data):
         """Replaces the specified amount of characters, starting at the specified offset, with the specified DOMString;
         when this method returns, data contains the modified DOMString."""
-        self.args[0] = self.args[0][:offset] + data + self.args[0][offset + count :]
-        return self.args[0]
+        updated = self.args[0][:offset] + data + self.args[0][offset + count :]
+        self.args = (updated,)
+        return updated
 
     # def replaceWith(self, newChildren):
     #     """ Replaces the characters in the children list of its parent with a set of Node or DOMString objects. """
@@ -4779,8 +4903,7 @@ class CharacterData(Node):
     def substringData(self, offset: int, length: int):
         """Returns a DOMString containing the part of CharacterData.data of the specified length and
         starting at the specified offset."""
-        self.args[0] = self.args[0][offset : offset + length]
-        return self.args[0]
+        return self.args[0][offset : offset + length]
 
 
 class EntityReference(Node):

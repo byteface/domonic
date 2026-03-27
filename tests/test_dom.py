@@ -1085,6 +1085,36 @@ class DOMTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             r.compareBoundaryPoints(99, Range())
 
+    def test_range_data_helpers_and_static_range(self):
+        text = Text("abcdef")
+        host = div(text)
+        r = Range()
+        r.setStart(text, 1)
+        r.setEnd(text, 4)
+
+        self.assertEqual(r.getStart(), (text, 1))
+        self.assertEqual(r.getEnd(), (text, 4))
+        self.assertEqual(r.getData(1, 3), "bcd")
+        self.assertEqual(r.extractData(2, 2), "cd")
+        self.assertEqual(text.textContent, "abef")
+
+        r.replaceData(1, 2, "ZZ")
+        self.assertEqual(text.textContent, "aZZf")
+        r.setData("hello")
+        self.assertEqual(text.textContent, "hello")
+
+        r.setStart(text, 1)
+        r.setEnd(text, 1)
+        r.expand("character")
+        self.assertEqual(r.toString(), "e")
+        self.assertTrue(r.isPointInRange(text, 1))
+
+        static = StaticRange(text, 0, text, 5)
+        self.assertEqual(static.toString(), "hello")
+        self.assertEqual(static.toRange().toString(), "hello")
+        with self.assertRaises(TypeError):
+            static.setStart(text, 1)
+
     def test_document_and_shadow_selection_helpers(self):
         host = div(_id="host")
         page = html(body(host))
