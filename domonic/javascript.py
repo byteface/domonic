@@ -626,29 +626,34 @@ class Map:
         """
         # parses the passed collectionn
         if isinstance(collection, list):
-            # create a dict from the list
             self.collection = dict(zip(collection, collection))
-        if isinstance(collection, dict):
-            # use the passed dict
+        elif isinstance(collection, dict):
             self.collection = collection
         else:
             raise TypeError("Map requires a list or dict.")
 
         self._data: dict[str, Any] = {}
         self._order: list[str] = []
+        self._dict = self._data
+        for key, value in self.collection.items():
+            normalized_key = str(key)
+            self._order.append(normalized_key)
+            self._dict[normalized_key] = value
 
     def __contains__(self, key: str) -> bool:
-        return key in self._dict
+        return str(key) in self._dict
 
     def __getitem__(self, key: str) -> Any:
-        return self._dict[key]
+        return self._dict[str(key)]
 
     def __setitem__(self, key: str, value: Any) -> None:
+        key = str(key)
         if key not in self._dict:
             self._order.append(key)
-            self._dict[key] = value
+        self._dict[key] = value
 
     def __delitem__(self, key: str) -> None:
+        key = str(key)
         self._order.remove(key)
         del self._dict[key]
 
@@ -669,17 +674,15 @@ class Map:
 
     def get(self, key: str, default: Any = None) -> Any:
         """Returns the value associated to the key, or undefined if there is none."""
-        return self._dict.get(key, default)
+        return self._dict.get(str(key), default)
 
     def has(self, key: str) -> bool:
         """Returns a boolean asserting whether a value has been associated to the key in the Map object or not."""
-        return key in self._dict
+        return str(key) in self._dict
 
     def set(self, key: str, value: Any) -> Map:
         """Sets the value for the key in the Map object. Returns the Map object."""
-        if key not in self._dict:
-            self._order.append(key)
-            self._dict[key] = value
+        self[str(key)] = value
         return self
 
     def iterkeys(self) -> Iterator[str]:
@@ -711,7 +714,7 @@ class Map:
     # func(self.args[i], i, self.args)
 
     def update(self, ordered_dict: Any) -> None:
-        for key, value in ordered_dict.iteritems():
+        for key, value in ordered_dict.items():
             self[key] = value
 
     def __str__(self) -> str:
@@ -1440,35 +1443,44 @@ class Date(Object):
 
     def getUTCDate(self) -> int:
         """Returns the day of the month, according to universal time (from 1-31)"""
-        return self.date.utcnow().month
+        utc_date = self.date.astimezone(timezone.utc) if self.date.tzinfo else self.date
+        return utc_date.day
 
     def getUTCDay(self) -> int:
         """Returns the day of the week, according to universal time (from 0-6)"""
-        return self.date.utcnow().day
+        utc_date = self.date.astimezone(timezone.utc) if self.date.tzinfo else self.date
+        pyweekday = utc_date.isoweekday()
+        return pyweekday if pyweekday < 6 else 0
 
     def getUTCFullYear(self) -> int:
         """Returns the year, according to universal time"""
-        return self.date.utcnow().year
+        utc_date = self.date.astimezone(timezone.utc) if self.date.tzinfo else self.date
+        return utc_date.year
 
     def getUTCHours(self) -> int:
         """Returns the hour, according to universal time (from 0-23)"""
-        return self.date.utcnow().hour
+        utc_date = self.date.astimezone(timezone.utc) if self.date.tzinfo else self.date
+        return utc_date.hour
 
     def getUTCMilliseconds(self) -> int:
         """Returns the milliseconds, according to universal time (from 0-999)"""
-        return round(self.date.utcnow().microsecond / 1000)
+        utc_date = self.date.astimezone(timezone.utc) if self.date.tzinfo else self.date
+        return round(utc_date.microsecond / 1000)
 
     def getUTCMinutes(self) -> int:
         """Returns the minutes, according to universal time (from 0-59)"""
-        return self.date.utcnow().minute
+        utc_date = self.date.astimezone(timezone.utc) if self.date.tzinfo else self.date
+        return utc_date.minute
 
     def getUTCMonth(self) -> int:
         """Returns the month, according to universal time (from 0-11)"""
-        return self.date.utcnow().month - 1
+        utc_date = self.date.astimezone(timezone.utc) if self.date.tzinfo else self.date
+        return utc_date.month - 1
 
     def getUTCSeconds(self) -> int:
         """Returns the seconds, according to universal time (from 0-59)"""
-        return self.date.utcnow().second
+        utc_date = self.date.astimezone(timezone.utc) if self.date.tzinfo else self.date
+        return utc_date.second
 
     def getYear(self) -> int:
         """Deprecated. Use the getFullYear() method instead"""
@@ -2528,9 +2540,8 @@ class Array:
 
     def findIndex(self, value: Any) -> int:
         """Returns the index of the first element in an array that pass a test"""
-        # written by .ai (https://6b.eleuther.ai/)
-        for i, value in enumerate(self.args):
-            if value == value:
+        for i, current in enumerate(self.args):
+            if current == value:
                 return i
         return -1
 
@@ -2545,7 +2556,7 @@ class Array:
 
     def keys(self) -> Iterator[Any]:
         """Returns a Array Iteration Object, containing the keys of the original array"""
-        for i in self.args:
+        for i in range(len(self.args)):
             yield i
 
     def copyWithin(self, target: Sequence[Any], start: int = 0, end: int | None = None) -> None:
@@ -2561,8 +2572,8 @@ class Array:
         Yields:
             [type]: [key/value pair]
         """
-        for i in self.args:
-            yield [i, self.args[i]]
+        for i, value in enumerate(self.args):
+            yield [i, value]
 
     def every(self, func: Callable[[Any], bool]) -> bool:
         """[Checks if every element in an array pass a test]
@@ -2639,10 +2650,13 @@ class Set:
         """Removes all elements from the Set object."""
         self.args.clear()
 
-    def delete(self, value: Any) -> None:
+    def delete(self, value: Any) -> bool:
         """Removes the element associated to the value
         returns a boolean asserting whether an element was successfully removed or not."""
-        return self.args.remove(value)
+        if value in self.args:
+            self.args.remove(value)
+            return True
+        return False
 
     def has(self, value: Any) -> bool:
         """Returns a boolean asserting whether an element is present with the given value in the Set object or not."""
@@ -2667,7 +2681,7 @@ class Set:
     def entries(self) -> Iterator[list[Any]]:
         """Returns a new iterator object that contains an array of [value, value] for each element in the Set object,
         in insertion order."""
-        return iter([[i, self.args[i]] for i in self.args])
+        return iter([[i, i] for i in self.args])
         # This is similar to the Map object, so that each entry's key is the same as its value for a Set.
 
     def forEach(self, callbackFn: Callable[[Any, Any], Any], thisArg: Any = None) -> None:
@@ -3056,7 +3070,7 @@ class String:
         if start is None:
             start = 0
         if end is None:
-            end = len(x)
+            end = len(self.x)
         # print(self.x.startswith(x, start, end))
         return self.x.startswith(x, start, end)
 
@@ -3073,7 +3087,7 @@ class String:
         if start is None:
             start = 0
         if end is None:
-            end = len(x)
+            end = len(self.x)
         return self.x.endswith(x, start, end)
 
     def toLowerCase(self) -> str:
@@ -3292,7 +3306,10 @@ class String:
         returns the last index within the calling String object of the first occurrence of the specified value,
         starting the search at fromIndex
         """
-        return self.x.rindex(searchValue, fromIndex)
+        try:
+            return self.x.rindex(searchValue, fromIndex)
+        except ValueError:
+            return -1
 
     # def test(self, pattern: str):? was this on string?
 

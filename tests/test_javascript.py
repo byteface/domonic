@@ -4,6 +4,7 @@
     unit tests for domonic.javascript
 """
 
+import math
 import time
 import unittest
 from inspect import stack
@@ -168,16 +169,28 @@ class TestCase(unittest.TestCase):
         print(Math.LOG10E)
 
     def test_domonic_PI(self):
-        print("test_domonic_PI:::")
-        print(Math.PI)
+        self.assertEqual(Math.PI, math.pi)
 
     def test_domonic_SQRT1_2(self):
-        print("test_domonic_SQRT1_2:::")
-        print(Math.SQRT1_2)
+        self.assertEqual(Math.SQRT1_2, math.sqrt(0.5))
 
     def test_domonic_SQRT2(self):
-        print("test_domonic_SQRT2:::")
-        print(Math.SQRT2)
+        self.assertEqual(Math.SQRT2, math.sqrt(2))
+
+    def test_domonic_math_matches_python_for_core_operations(self):
+        cases = [
+            ("ceil", -100.2, math.ceil(-100.2)),
+            ("floor", -100.8, math.floor(-100.8)),
+            ("round", -100.2, round(-100.2)),
+            ("trunc", -100.8, math.trunc(-100.8)),
+            ("sin", -1.2, math.sin(-1.2)),
+            ("cos", -1.2, math.cos(-1.2)),
+            ("tan", -1.2, math.tan(-1.2)),
+            ("sqrt", 100, math.sqrt(100)),
+        ]
+        for name, value, expected in cases:
+            with self.subTest(name=name, value=value):
+                self.assertEqual(getattr(Math, name)(value), expected)
 
     def test_domonic_acos(self):
         print("test_domonic_acos:::")
@@ -422,10 +435,7 @@ class TestCase(unittest.TestCase):
         # print(myarr.lastIndexOf("1"))
         assert myarr.lastIndexOf("1") == 0
         assert myarr.lastIndexOf(3) == 2
-        print(
-            "fails to assert:", myarr.reverse()
-        )  # TODO - not passing but looks right? - also not fixed by equality update
-        # assert myarr.reverse() == [[6], 5, {'4': 'four'}, 3, '2', '1']
+        assert myarr.reverse() == [[6], 5, {"4": "four"}, 3, "2", "1"]
         myarr = Array([[6], 5, {"4": "four"}, 3, "2", "1"])
         assert myarr.slice(0, 1) == [[6]]
         assert myarr == Array([[6], 5, {"4": "four"}, 3, "2", "1"])
@@ -521,7 +531,27 @@ class TestCase(unittest.TestCase):
         assert myarr.find(lambda x: x == "a") == None
         # print(myarr.find(lambda x: x == "b"))
         assert myarr.find(lambda x: x == "b") == "b"
-        pass
+        assert myarr.findIndex("b") == 3
+        assert myarr.findIndex("missing") == -1
+        assert list(myarr.keys()) == list(range(len(myarr)))
+        assert list(myarr.entries()) == [[0, 3], [1, 4], [2, 2], [3, "b"], [4, "c"], [5, 6], [6, 3]]
+
+    def test_javascript_map(self):
+        mapping = Map({"a": 1})
+        self.assertTrue(mapping.has("a"))
+        self.assertEqual(mapping.get("a"), 1)
+        self.assertEqual(mapping.keys(), ["a"])
+        self.assertEqual(mapping.entries(), [("a", 1)])
+        mapping.set("b", 2)
+        self.assertEqual(mapping.get("b"), 2)
+        self.assertEqual(mapping.keys(), ["a", "b"])
+        self.assertTrue(mapping.delete("a"))
+        self.assertFalse(mapping.delete("a"))
+        self.assertFalse(mapping.has("a"))
+
+        list_map = Map(["x", "y"])
+        self.assertEqual(list_map.get("x"), "x")
+        self.assertEqual(list_map.get("y"), "y")
 
     def test_javascript_interval(self):
         def hi():
@@ -670,7 +700,9 @@ class TestCase(unittest.TestCase):
         # print(mystr)
         # print(mystr)
         assert mystr.startsWith("S")
-        # assert(mystr.endsWith('g'))
+        assert mystr.startsWith("String", 5)
+        assert mystr.endsWith("String")
+        assert mystr.endsWith("Some", 0, 4)
 
         # print(">>", mystr.substr(1))
         assert mystr.substr(1) == "ome String"
@@ -743,6 +775,7 @@ class TestCase(unittest.TestCase):
         # lastIndex
         # print(mystr.lastIndexOf('o'))
         assert mystr.lastIndexOf("o") == 1
+        assert mystr.lastIndexOf("z") == -1
 
         # replace
         assert mystr.codePointAt(1) == 111
@@ -957,6 +990,10 @@ class TestCase(unittest.TestCase):
         assert mySet1.contains(5) == True
         assert mySet1.contains("some text") == True
         assert mySet1.contains("text") == False
+        self.assertTrue(mySet1.delete(5))
+        self.assertFalse(mySet1.delete(5))
+        self.assertFalse(mySet1.contains(5))
+        self.assertTrue(all(left == right for left, right in mySet1.entries()))
 
         """
         # TODO - make the following work. js sets can have dictionaries in them
@@ -1119,6 +1156,16 @@ class TestCase(unittest.TestCase):
         y = Int8Array(x)
         # print(y[0])  # 21
         assert y[0] == 21
+
+    def test_javascript_date_utc_accessors(self):
+        date = Date("2020-01-02 03:04:05.006")
+        self.assertEqual(date.getUTCDate(), 2)
+        self.assertEqual(date.getUTCDay(), 4)
+        self.assertEqual(date.getUTCFullYear(), 2020)
+        self.assertEqual(date.getUTCHours(), 3)
+        self.assertEqual(date.getUTCMinutes(), 4)
+        self.assertEqual(date.getUTCSeconds(), 5)
+        self.assertEqual(date.getUTCMonth(), 0)
 
         # From an ArrayBuffer
         # b = ArrayBuffer(8)
