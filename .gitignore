@@ -1,16 +1,88 @@
+# OS
 .DS_Store
 .Trashes
-.vscode
-*.pyc
-venv
-winvenv
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Python
+*.py[cod]
+*.pyo
+*.pyd
 __pycache__/
+*.pyc
+*.pyd
+.Python
+pip-selfcheck.json
 
-build
-dist
-domonic.egg-info
+# Virtual environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+winvenv/
 
-# sphinx
+# Packaging / distribution
+build/
+dist/
+*.egg
+*.egg-info/
+.domonic-egg-info/
+domonic.egg-info/
+.eggs/
+pip-wheel-metadata/
+wheels/
+*.whl
+
+# Sphinx documentation
 docs/_build/
+build/docs/
 
+# Coverage and test outputs
 .coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Type checkers / caches
+.mypy_cache/
+.pytype/
+.pyre/
+.cache/
+
+# C extensions / compiled artifacts
+*.so
+*.dylib
+*.dll
+
+# Jupyter notebooks
+.ipynb_checkpoints
+
+# Environment files / secrets
+.env
+.env.*
+local.settings.json
+
+# Logs and runtime files
+*.log
+*.tmp
+*.pid
+
+# Misc
+*.pot
+*.mo
+
+Pipfile.lock
+poetry.lock
+.cache/pypoetry/

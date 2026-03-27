@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![byteface github](https://img.shields.io/badge/GitHub-byteface-181717.svg?style=flat&logo=github)](https://github.com/byteface)
 
-#### A DOM for making HTML with python 3! (and more)
+#### A DOM for making HTML with Python 3! (and more)
 
 ### Install
 
@@ -27,7 +27,7 @@ print(html(body(h1('Hello, World!'))))
 # <html><body><h1>Hello, World!</h1></body></html>
 ```
 
-or to pretty format and insert the doctype, use an f-string:
+to pretty format and insert the doctype, use an f-string:
 
 ```python
 mydom = html(body(h1('Hello, World!'), a("somelink", _href="somepage.html")))
@@ -44,16 +44,14 @@ print(f"{mydom}")
 </html>
 ```
 
-### parsing html
-
-Basic useage...
+### Parsing html
 
 ```bash
 from domonic import domonic
 mydom = domonic.parseString('<somehtml...')
 ```
 
-To quickly parse a webapge try the window module...
+Quickly parse a webpage with the window module...
 
 ```bash
 from domonic.window import window
@@ -61,7 +59,7 @@ window.location = "http://www.google.com"
 print(window.document.title)
 ```
 
-Also try the xpath or css selectors on command line...
+Use xpath or css selectors on command line...
 
 ```bash
 domonic -x https://google.com '//a' | uniq | sort
@@ -69,16 +67,14 @@ domonic -x https://google.com '//a' | uniq | sort
 
 ### More
 
-- [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with python 3 😎
-- [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in python 3 😲
-- [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), [d3](https://domonic.readthedocs.io/packages/d3.html))
+- [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with Python 3 😎
+- [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in Python 3 😲
+- [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in Python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), [d3](https://domonic.readthedocs.io/packages/d3.html))
 - JSON : utils for loading / decorating / transforming
 - SVG || mathml || aframe || x3d tags - generators for popular tags
-- terminal || cmd : call terminal commands with python3 😱
+- terminal || cmd : call terminal commands with Python3 😱
 
-See the [docs/code](https://domonic.readthedocs.io/) for more features...
-
-or examples in the [repo...](https://github.com/byteface/domonic/tree/master/examples)
+See the [docs/code](https://domonic.readthedocs.io/) for more features or examples in the [repo](https://github.com/byteface/domonic/tree/master/examples)
 
 
 ### Namespace
@@ -102,9 +98,9 @@ or just import what you need...
 from domonic import div, span, input as myinput, html as root
 ```
 
-### html attributes
+### HTML attributes
 
-prepend attributes with an underscore ( avoids clashing with python keywords )
+Prepend attributes with an underscore ( avoids clashing with Python keywords )
 
 ```python
 test = label(_class='classname', _for="someinput")
@@ -115,9 +111,9 @@ print(test)
 <label class="classname" for="someinput"></label>
 ```
 
-### rendering DOM objects
+### Rendering DOM objects
 
-domonic is a pure python dom whos tree is composed of objects. i.e
+domonic is a pure Python dom whos tree is composed of objects. i.e
 
 ```python
 div()
@@ -155,7 +151,7 @@ DOM manipulation with python.
 
 ### createElement
 
-to create your own elements use the DOM API
+Create your own elements with the DOM API
 
 ```python
 from domonic.dom import *
@@ -198,9 +194,9 @@ from domonic.dom import document
 print(document)
 ```
 
-### javascript
+### Javascript
 
-There is a javascript package that mimics the js API:
+There is a Javascript package that mimics the js API:
 
 ```python
 from domonic.javascript import Math
@@ -284,7 +280,7 @@ print(atag)
 # <a href="http://somesite.com:8983/blog/article-one#some-hash">
 ```
 
-For writing and using regular javascript, load from a src...
+For writing and using regular Javascript, load from a src...
 
 ```python
 script(_src="/docs/5.0/dist/js/bootstrap.bundle.min.js", _integrity="sha384-1234", _crossorigin="anonymous"),
@@ -330,7 +326,7 @@ style("""
 """),
 ```
 
-### decorators
+### Decorators
 
 use decorators to wrap elements around function results
 
@@ -354,7 +350,7 @@ It returns the tag object by default. You can pass True as a second param to the
 
 ### data-tags
 
-python doesn't allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags
+Python doesn't allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags
 
 ```python
 div("test", **{"_data-test":"test"} )
@@ -371,7 +367,7 @@ str(t)
 
 ### JSON (utils)
 
-decorate any function that returns python objects to return json instead
+Decorate any function that returns Python objects to return json instead
 
 ```python
 from domonic.decorators import as_json
@@ -473,7 +469,7 @@ _webpage = html(head(),body(
 render( _webpage, 'hello.html' )
 ```
 
-### dQuery (NEW)
+### dQuery
 
 dQuery uses the º symbol (alt+0).
 
@@ -497,7 +493,7 @@ print(b)
 
 Only recently started so check to see what's implemented.
 
-### terminal
+### Terminal
 
 There is a command line package that can call bash/unix/posix and other apps on the command line:
 
@@ -574,31 +570,31 @@ To view the online the docs:
 domonic -h
 ```
 
-To see the version:
+See the version:
 
 ```bash
 domonic -v
 ```
 
-To quickly create a domonic project for prototyping:
+Quickly create a domonic project for prototyping:
 
 ```bash
 domonic -p myproject
 ```
 
-To evaluate some domonic pyml:
+Evaluate some domonic pyml:
 
 ```bash
 domonic -e 'html(head(),body(div()))'
 ```
 
-To use xpath on a website from the command line:
+Use xpath on a website from the command line:
 
 ```bash
 domonic -x https://google.com '//a'
 ```
 
-To use css selectors on a website from the command line:
+Use css selectors on a website from the command line:
 
 ```bash
 domonic -q https://google.com 'a'
@@ -618,21 +614,7 @@ Checkout [the docs](https://domonic.readthedocs.io/) for more examples i.e. gene
 
 There's also several useage examples in the repo so pull and have a look.
 
-### Join-In
-
-Feel free to contribute if you find it useful. (I'd be grateful for help on all fronts)
-
-Email me, message me directly if you like or create a discussion on here. Or join the [discord](https://discord.gg/a9pSZv4V5f).
-
-If there are any methods you want that are missing or not complete yet or you think you can help make it better just update the code and send a pull request. I'll merge and releaese asap.
-
-In the repo there's a requirements-dev.txt which is mostly the libs used in the examples.
-
-requirements.txt are the libs used for packaging just the lib.
-
-See also the CONTRIBUTING.md
-
-### running examples
+### Running the examples
 
 ```bash
 . venv/bin/activate
@@ -641,7 +623,7 @@ cd examples
 python lifecalendar.py
 ```
 
-### run tests
+### Run the tests
 
 There are tests used during dev. They are useful as code examples and to see what still needs doing.
 
@@ -651,7 +633,7 @@ See Makefile to run all tests:
 make test  # default tests ubuntu. so will fail on window when terminal test runs. comment out locally if that's the case
 ```
 
-or to test a single function:
+Testing a single function:
 
 ```bash
 python -m unittest tests.test_javascript.TestCase.test_javascript_array
@@ -660,7 +642,7 @@ python -m unittest tests.test_geom.TestCase.test_vec2
 python3 -m unittest tests.test_cmd.TestCase.test_cmd_dir  # only windows
 ```
 
-or to test a whole module
+Test a whole module
 
 ```bash
 python -m unittest tests.test_html
@@ -681,9 +663,11 @@ pip install pytest
 pytest tests
 ```
 
+## Contributing
+Contributions are welcome! If you'd like to contribute, please follow these steps:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Write your code and add tests if applicable.
+4. Submit a pull request with a clear description of your changes.
 
-### Disclaimer
-
-There's several more widely supported libraries doing HTML generation, DOM reading/manipulation, terminal wrappers etc. Maybe use one of those for production due to strictness and support.
-
-This is more of a fast prototyping library.
+For more details, see the [CONTRIBUTING.md](CONTRIBUTING.md) file.

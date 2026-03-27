@@ -1,58 +1,53 @@
 """
     domonic.CDN
     ====================================
-    For quick reference when prototyping you can use the CDN package.
-    (Don't rely on a CDN package for production code. wget a local copy.)
-
-    TODO - integrity/cross origin/module?
+    For quick reference when prototyping
 """
-
 
 class CDN_JS:
     """
-    js libs
+    JavaScript libraries
     """
 
-    JQUERY_3_5_1: str = "https://code.jquery.com/jquery-3.5.1.min.js"  #:
-    JQUERY: str = "https://code.jquery.com/jquery-3.6.0.min.js"  #: latest
-    JQUERY_UI: str = "https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"  #:
-    UNDERSCORE: str = "https://cdn.jsdelivr.net/npm/underscore@1.11.0/underscore-min.js"  #:
-    BOOTSTRAP_4: str = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"  #:
-    POPPER_1_16_1: str = "https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"  #:
-    BOOTSTRAP_5_ALPHA: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"  #:
-    BOOTSTRAP_5 = "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"  #: latest
-    D3_6_1_0: str = "https://cdnjs.cloudflare.com/ajax/libs/d3/6.1.0/d3.min.js"  #:
-    D3: str = "https://cdnjs.cloudflare.com/ajax/libs/d3/7.4.3/d3.min.js"  #: latest
-    MODERNIZER_2_8_3: str = "https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"  #:
-    MOMENT_2_27_0: str = "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"  #:
-    PIXI_5_3_3: str = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js"  #:
-    SOCKET_1_4_5: str = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"  #:
-    X3DOM: str = "https://www.x3dom.org/download/x3dom.js"  #:
-    AFRAME_1_2: str = "https://aframe.io/releases/1.2.0/aframe.min.js"  #:
-    BRYTHON_3_9_5: str = "https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.5/brython.min.js"  #:
-    MATHML: str = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=MML_HTMLorMML"  #:
-    HTMX: str = "https://unpkg.com/htmx.org@1.7.0"  #: latest
-
+    JQUERY: str = "https://code.jquery.com/jquery-3.6.4.min.js"
+    JQUERY_UI: str = "https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+    UNDERSCORE: str = "https://cdn.jsdelivr.net/npm/underscore@1.13.6/underscore-min.js"
+    BOOTSTRAP: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"
+    POPPER: str = "https://cdn.jsdelivr.net/npm/popper.js@2.11.7/dist/umd/popper.min.js"
+    D3: str = "https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.4/d3.min.js"
+    MODERNIZER: str = "https://cdnjs.cloudflare.com/ajax/libs/modernizr/3.11.7/modernizr.min.js"
+    MOMENT: str = "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"
+    PIXI: str = "https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.1.0/pixi.min.js"
+    SOCKET: str = "https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"
+    X3DOM: str = "https://www.x3dom.org/download/x3dom.js"
+    AFRAME: str = "https://aframe.io/releases/1.3.0/aframe.min.js"
+    BRYTHON: str = "https://cdnjs.cloudflare.com/ajax/libs/brython/3.11.1/brython.min.js"
+    MATHML: str = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"
+    HTMX: str = "https://unpkg.com/htmx.org@1.9.0"
+    LODASH: str = "https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"
+    AXIOS: str = "https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"
+    DAY_JS: str = "https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"
+    CHART_JS: str = "https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"
+    ANIME_JS: str = "https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"
+    VALIDATOR_JS: str = "https://cdn.jsdelivr.net/npm/validator@13.6.0/validator.min.js"
 
 class CDN_CSS:
     """
-    Preferably use version numbers if available.
-    use LATEST if it always gets the latest
+    CSS Libraries
     """
 
-    BOOTSTRAP_5_ALPHA: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"  #:
-    BOOTSTRAP_4: str = "https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"  #:
-    MARX: str = "https://unpkg.com/marx-css/css/marx.min.css"  #:
-    MVP: str = "https://unpkg.com/mvp.css"  #:
-    WATER_LATEST: str = "https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css"  #:
-    BALLOON: str = "https://unpkg.com/balloon-css/balloon.min.css"  #:
-    THREE_DOTS_0_2_0: str = "https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css"  #:
-    MILLIGRAM_1_3_0: str = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"  #:
-    X3DOM: str = "https://www.x3dom.org/download/x3dom.css"  #:
-    FONTAWESOME_5_7_1: str = "https://use.fontawesome.com/releases/v5.7.1/css/all.css"  #:
-    MDI_5_4_55: str = "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"  #:
-    TAILWIND_2_2_15: str = "https://unpkg.com/tailwindcss@^2.2.15/dist/tailwind.min.css"  #:
-    SIMPLE: str = "https://cdn.simplecss.org/simple.min.css"  #:
+    BOOTSTRAP: str = "https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css"
+    MARX: str = "https://unpkg.com/marx-css/css/marx.min.css"
+    MVP: str = "https://unpkg.com/mvp.css"
+    WATER: str = "https://cdn.jsdelivr.net/gh/kognise/water.css@latest/water.min.css"
+    BALLOON: str = "https://unpkg.com/balloon-css/balloon.min.css"
+    THREE_DOTS: str = "https://cdnjs.cloudflare.com/ajax/libs/three-dots/0.2.0/three-dots.min.css"
+    MILLIGRAM: str = "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css"
+    X3DOM: str = "https://www.x3dom.org/download/x3dom.css"
+    FONTAWESOME: str = "https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+    MDI: str = "https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css"
+    TAILWIND: str = "https://unpkg.com/tailwindcss@^2.2.15/dist/tailwind.min.css"
+    SIMPLE: str = "https://cdn.simplecss.org/simple.min.css"
 
 
 class CDN_IMG:
