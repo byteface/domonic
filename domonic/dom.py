@@ -10,7 +10,6 @@
 import copy
 import os
 import re
-import urllib.parse
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 from domonic.events import Event, EventTarget, MouseEvent
@@ -4363,15 +4362,15 @@ class Location:
 
     def origin(self):  # TODO - test
         """Returns the protocol, hostname and port number of a URL"""
-        parsed = urllib.parse.urlsplit(self.href or "")
-        if not parsed.scheme or not parsed.netloc:
-            return ""
-        return f"{parsed.scheme}://{parsed.netloc}"
+        from domonic.webapi.url import URL
+
+        return URL(self.href or "").origin
 
     def search(self):  # TODO - test
         """Sets or returns the querystring part of a URL"""
-        parsed = urllib.parse.urlsplit(self.href or "")
-        return f"?{parsed.query}" if parsed.query else ""
+        from domonic.webapi.url import URL
+
+        return URL(self.href or "").search
 
     def assign(self, url: str = "") -> None:
         """Loads a new document"""

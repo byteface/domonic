@@ -40,8 +40,11 @@ class URL:
             new["search"] = self.search  # self.url.query
             new["_searchParams"] = self._searchParams  # URLSearchParams(self.url.query)
             # NOTE - rebuild happening here
+            query = new["search"] or ""
+            if query and not query.startswith("?"):
+                query = "?" + query
             self.url = urllib.parse.urlsplit(
-                new["protocol"] + "://" + new["host"] + new["pathname"] + new["hash"] + new["search"]
+                new["protocol"] + "://" + new["host"] + new["pathname"] + query + new["hash"]
             )
 
             self.href = self.url.geturl()
@@ -73,6 +76,12 @@ class URL:
     @property
     def searchParams(self):
         return self._searchParams.toString()
+
+    @property
+    def origin(self):
+        if not self.protocol or not self.host:
+            return ""
+        return f"{self.protocol}://{self.host}"
 
     def toString(self):
         return str(self.href)
@@ -148,6 +157,20 @@ class URL:
     @pathname.setter
     def pathname(self, p: str):
         self.__pathname = p
+        self.__update__()
+
+    @property
+    def search(self):
+        if not self.__search:
+            return ""
+        return self.__search if self.__search.startswith("?") else "?" + self.__search
+
+    @search.setter
+    def search(self, value: str):
+        if value is None:
+            value = ""
+        self.__search = value if value == "" else value.lstrip("?")
+        self._searchParams = URLSearchParams(self.__search)
         self.__update__()
 
     @property
