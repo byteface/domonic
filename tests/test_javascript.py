@@ -7,7 +7,6 @@
 import math
 import time
 import unittest
-from inspect import stack
 from unittest.mock import Mock, patch
 
 from domonic.javascript import *
@@ -25,8 +24,6 @@ class TestCase(unittest.TestCase):
     def test_object(self):
 
         o = Object()
-        print(o)
-        print(type(o))
 
         myObj = Object()
         string = "myString"
@@ -73,11 +70,9 @@ class TestCase(unittest.TestCase):
         # print(Object().fromEntries())
         arr = [["0", "a"], ["1", "b"], ["2", "c"]]
         obj = Object.fromEntries(arr)
-        print(obj)
         assert obj == {"0": "a", "1": "b", "2": "c"}
 
         obj = {"foo": "bar", "baz": 42}
-        print(Object.entries(obj))
         assert Object.entries(obj) == [["foo", "bar"], ["baz", 42]]
 
         # array like object
@@ -107,7 +102,7 @@ class TestCase(unittest.TestCase):
         # iterate through key-value gracefully
         obj = {"a": 5, "b": 7, "c": 9}
         for key, value in Object.entries(obj):
-            print(f"{key} {value}")  # "a 5", "b 7", "c 9"
+            self.assertEqual(obj[key], value)
 
         # class Car(Object):
         #     def __init__(self, make, model, year):
@@ -127,18 +122,14 @@ class TestCase(unittest.TestCase):
     # TODO - to get reference back to self. in a dict it needs to readd the method and pass self
     Animal = {
         "type": "Invertebrates",  # Default value of properties
-        # 'displayType': lambda self: print("STACK!!!!!",stack()[1].function)  # Method which will display type of Animal
-        "displayType": lambda self: print(self.type),
+        "displayType": lambda self: self.type,
     }
     animal1 = Object.create(Animal)
-    print(animal1)
-    # print(animal1['type'])
-    print(animal1.__dict__)
-    animal1.displayType(animal1)  # Output:Invertebrates #TODO - need to work without passing self
+    animal1.displayType(animal1)
 
     fish = Object.create(Animal)
     fish.type = "Fishes"
-    fish.displayType(animal1)  # Output:Fishes
+    fish.displayType(animal1)
 
     def test_domonic_abs(self):
         # python -m unittest tests.test_javascript.TestCase.test_domonic_abs
@@ -570,7 +561,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual(myPromise.data, "ONCE!")
 
     def test_javascript_string(self):
-        print("test_javascript_string")
         mystr = String("Some String")
 
         assert mystr.toLowerCase() == "some string"
@@ -637,7 +627,6 @@ class TestCase(unittest.TestCase):
         assert mystr.search("o") == True
 
         # substr
-        print(mystr.substr(1, 2))
         assert mystr.substr(1, 2) == "om"
         assert mystr.substr(1, 3) == "ome"
         assert mystr.substr(1, 4) == "ome "
@@ -666,7 +655,6 @@ class TestCase(unittest.TestCase):
         assert mystr.codePointAt(1) == 111
         # print(mystr.padEnd(2))
         # print(f"-{mystr}-")
-        print(f"---{mystr.padEnd(13)}-")
         assert mystr.padEnd(13) == "Some String  "
         assert mystr.padStart(13) == "  Some String"
         assert mystr.padStart(13, "-") == "--Some String"
@@ -680,23 +668,18 @@ class TestCase(unittest.TestCase):
         # assert mystr.trimEnd(1) == "String" # TODO
 
     def test_javascript_URLSearchParams(self):
-        print("test_javascript_URLSearchParams")
-
         paramsString = "q=test&topic=api"
         searchParams = URLSearchParams(paramsString)
 
         # Iterate the search parameters.
-        for p in searchParams:
-            print(p)
+        self.assertEqual(list(searchParams), [("q", ["test"]), ("topic", ["api"])])
 
         assert searchParams.has("topic") == True  # True
         # print( searchParams.get("topic") )
         assert searchParams.get("topic") == "api"  # True
         # searchParams.getAll("topic"); # ["api"]
         assert searchParams.get("foo") is None  # true
-        print(searchParams.toString())
         searchParams.append("topic", "webdev")
-        print(searchParams.toString())
         assert searchParams.toString() == "q=test&topic=api&topic=webdev"
         searchParams.set("topic", "More webdev")
         assert searchParams.toString() == "q=test&topic=More+webdev"
@@ -716,20 +699,17 @@ class TestCase(unittest.TestCase):
 
         paramsString2 = "?query=value"
         searchParams2 = URLSearchParams(paramsString2)
-        print(searchParams2)
         assert searchParams2.has("query") == True
 
         url = URL("http://example.com/search?query=%40")
 
         searchParams3 = URLSearchParams(url.search)
 
-        print(searchParams3)
-        # print(str(searchParams3))
-        # assert searchParams3.has("query") == True
+        self.assertEqual(searchParams3.toString(), "query=%40")
 
         base64 = window.btoa(String.fromCharCode(19, 224, 23, 64, 31, 128))  # base64 is "E+AXQB+A"
-        print(base64)
         searchParams = URLSearchParams("q=foo&bin=" + str(base64))  # q=foo&bin=E+AXQB+A
+        self.assertTrue(searchParams.has("bin"))
         # getBin = searchParams.get("bin")  # "E AXQB A" + char is replaced by spaces
         # print(getBin)
         # window.btoa(window.atob(getBin))  # "EAXQBA==" no error thrown
@@ -748,7 +728,6 @@ class TestCase(unittest.TestCase):
             Worker("/worker.py")
 
     def test_javascript_at(self):
-        print("test_javascript_at")
         myarr = Array(["a", "b", "c", "d"])
         assert myarr.at(-1) == "d"
         myarr = ["a", "b", "c", "d"]
@@ -792,32 +771,32 @@ class TestCase(unittest.TestCase):
     def test_javascript_called(self):
 
         from domonic.decorators import called
-        from domonic.dQuery import dQuery_el, º
+        from domonic.dQuery import º
 
-        # import time
-        # @called(lambda:time.sleep(2))
-        # def anon( data=None ):
-        #     print("func you")
-        #     print(data)
-        # import time
-        # @called(time.sleep(2)) # calls right away without lambda. but doesnt pass data. can i detect it?
-        # def anon( data=None ):
-        #     print("func you")
-        #     print(data)
+        response = Mock()
+        response.text = "sweet!"
+        seen = []
+        errors = []
 
-        @called(lambda: º.ajax("https://www.google.com"), lambda err: print("error:", err))
-        def success(data=None):
-            print("sweet!")
-            print(data.text)
+        with patch.object(º, "ajax", return_value=response):
+
+            @called(lambda: º.ajax("https://www.google.com"), lambda err: errors.append(err))
+            def success(data=None):
+                seen.append(data.text if data is not None else None)
 
         from domonic.decorators import iife
 
+        iife_seen = []
+
         @iife()
         def sup():
-            print("sup!")
+            iife_seen.append("sup")
             return True
 
-        self.assertTrue(sup)
+        self.assertEqual(seen, ["sweet!"])
+        self.assertEqual(errors, [])
+        self.assertEqual(iife_seen, ["sup"])
+        self.assertTrue(callable(sup))
 
     def test_javascript_numbersandstrings(self):
         n = Number(1)
@@ -970,7 +949,7 @@ class TestCase(unittest.TestCase):
 
         # var buffer = new ArrayBuffer(8);
         view = Int8Array(b)
-        print(view)
+        self.assertEqual(view.byteLength, 8)
 
         # From a length
         int8 = Int8Array(2)
@@ -979,7 +958,6 @@ class TestCase(unittest.TestCase):
         # print(Int8Array(25)[0])
         # print(Int8Array(12)[0])
         int8[0] = 42
-        print(int8[0])  # 42
         assert int8[0] == 42
         # print(int8.length)  # 2
         assert int8.length == 2
@@ -1001,12 +979,13 @@ class TestCase(unittest.TestCase):
         b = ArrayBuffer(8)
         z = Int8Array(b, 1, 4)
         # print(z[0])  # 0
-        print(z.length)
         assert z[0] == 0
         assert z[1] == 0
         assert z[2] == 0
         assert z[3] == 0
         assert z.length == 4
+        with self.assertRaises(Exception):
+            Int8Array(ArrayBuffer(2), 3)
 
         # test Int8Array in various ways
 
@@ -1108,81 +1087,93 @@ class TestCase(unittest.TestCase):
 
         # var x3 = performance.now();
         x3 = time.time()
-        # // Results.
-        print("TIME 1: ", (x2 - x1))
-        print("TIME 2: ", (x3 - x2))
+        self.assertGreaterEqual(x2 - x1, 0)
+        self.assertGreaterEqual(x3 - x2, 0)
 
         # test uint8array in various ways
         arr = Uint8Array()
-        print(arr)
         assert arr.length == 0
 
         arr = Uint8Array(2)
-        print(arr.length)
         assert arr.length == 2
 
         # test uint8array in various ways
         arr = Uint8ClampedArray()
-        print(arr)
         assert arr.length == 0
 
         arr = Uint8ClampedArray(2)
-        print(arr.length)
         assert arr.length == 2
 
         # test uint8array in various ways
         arr = Int16Array()
-        print(arr)
         assert arr.length == 0
 
         arr = Int16Array(2)
-        print(arr.length)
         assert arr.length == 2
 
         # test uint8array in various ways
         arr = Uint16Array()
-        print(arr)
         assert arr.length == 0
 
         arr = Uint16Array(2)
-        print(arr.length)
         assert arr.length == 2
 
         # test uint8array in various ways
         arr = Int32Array()
-        print(arr)
         assert arr.length == 0
 
         arr = Int32Array(2)
-        print(arr.length)
         assert arr.length == 2
 
         # test uint8array in various ways
         arr = Uint32Array()
-        print(arr)
         assert arr.length == 0
 
         arr = Uint32Array(2)
-        print(arr.length)
         assert arr.length == 2
 
         # test uint8array in various ways
         arr = Float32Array()
-        print(arr)
         assert arr.length == 0
 
         arr = Float32Array(2)
-        print(arr.length)
         assert arr.length == 2
 
         # test uint8array in various ways
         arr = Float64Array()
-        print(arr)
         assert arr.length == 0
 
         arr = Float64Array(2)
-        print(arr.length)
         assert arr.length == 2
+
+    def test_reflect(self):
+        target = {"name": "John"}
+        self.assertEqual(list(Reflect.ownKeys(target)), ["name"])
+        self.assertEqual(Reflect.apply(lambda left, right: left + right, None, [2, 3]), 5)
+        self.assertTrue(Reflect.defineProperty(target, "age", {"value": 30}))
+        self.assertEqual(Reflect.get(target, "age", None), 30)
+        self.assertTrue(Reflect.has(target, "age"))
+        self.assertEqual(
+            Reflect.getOwnPropertyDescriptor(target, "age"),
+            {"value": 30, "writable": True, "enumerable": True, "configurable": True},
+        )
+        self.assertTrue(Reflect.set(target, "age", 31, None))
+        self.assertEqual(target["age"], 31)
+        self.assertTrue(Reflect.deleteProperty(target, "age"))
+        self.assertFalse(Reflect.has(target, "age"))
+
+    def test_symbol(self):
+        symbol = Symbol("token")
+        same_symbol = Symbol("token")
+        other_symbol = Symbol("other")
+        self.assertTrue(symbol.hasInstance(same_symbol))
+        self.assertFalse(symbol.hasInstance(other_symbol))
+        self.assertFalse(symbol.isConcatSpreadable())
+        self.assertEqual(list(symbol.iterator([1, 2])), [1, 2])
+        self.assertEqual(list(symbol.asyncIterator([3, 4])), [3, 4])
+        self.assertEqual(symbol.toString(), "Symbol(token)")
+        self.assertEqual(symbol.toSource(), "Symbol(token)")
+        self.assertEqual(symbol.valueOf(), "token")
 
     # def test_storage(self):
     #     print("test_storage")

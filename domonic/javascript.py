@@ -3861,7 +3861,6 @@ class TypedArray:
             return
         elif isinstance(arg, int):
             # self.buffer = array.array('B', [0] * arg)
-            print("a!")
             # self.buffer = ArrayBuffer(arg)
             # self.byteLength = arg
             # self.length = arg
@@ -4387,24 +4386,47 @@ class Reflect:
     def defineProperty(target: Any, propertyKey: str, attributes: Any) -> Any:
         """Similar to Object.defineProperty().
         Returns a Boolean that is true if the property was successfully defined."""
-        raise NotImplementedError
+        try:
+            value = attributes.get("value") if isinstance(attributes, dict) else attributes
+            if isinstance(target, dict):
+                target[propertyKey] = value
+            else:
+                setattr(target, propertyKey, value)
+            return True
+        except Exception:
+            return False
 
     @staticmethod
     def deleteProperty(target: Any, propertyKey: str) -> Any:
         """The delete operator as a function. Equivalent to calling delete target[propertyKey]."""
-        raise NotImplementedError
+        try:
+            if isinstance(target, dict):
+                del target[propertyKey]
+            else:
+                delattr(target, propertyKey)
+            return True
+        except Exception:
+            return False
 
     @staticmethod
     def get(target: Any, propertyKey: str, receiver: Any) -> Any:
         """Returns the value of the property.
         Works like getting a property from an object (target[propertyKey]) as a function."""
-        raise NotImplementedError
+        if isinstance(target, dict):
+            return target.get(propertyKey)
+        return getattr(target, propertyKey, None)
 
     @staticmethod
     def getOwnPropertyDescriptor(target: Any, propertyKey: str) -> Any:
         """Similar to Object.getOwnPropertyDescriptor().
         Returns a property descriptor of the given property if it exists on the object,  undefined otherwise."""
-        raise NotImplementedError
+        if isinstance(target, dict):
+            if propertyKey not in target:
+                return None
+            return {"value": target[propertyKey], "writable": True, "enumerable": True, "configurable": True}
+        if hasattr(target, propertyKey):
+            return {"value": getattr(target, propertyKey), "writable": True, "enumerable": True, "configurable": True}
+        return None
 
     getPrototypeOf = Object.getPrototypeOf
     # isExtensible = Object.isExtensible
@@ -4413,23 +4435,36 @@ class Reflect:
     def has(target: Any, propertyKey: str) -> Any:
         """Returns a Boolean indicating whether the target has the property.
         Either as own or inherited. Works like the in operator as a function."""
-        raise NotImplementedError
+        if isinstance(target, dict):
+            return propertyKey in target
+        return hasattr(target, propertyKey)
 
     @staticmethod
     def preventExtensions(target: Any) -> Any:
         """Similar to Object.preventExtensions(). Returns a Boolean that is true if the update was successful."""
-        raise NotImplementedError
+        Object.freeze(target)
+        return True
 
     @staticmethod
     def set(target: Any, propertyKey: str, value: Any, receiver: Any) -> Any:
         """A function that assigns values to properties.
         Returns a Boolean that is true if the update was successful."""
-        raise NotImplementedError
+        try:
+            if isinstance(target, dict):
+                target[propertyKey] = value
+            else:
+                setattr(target, propertyKey, value)
+            return True
+        except Exception:
+            return False
 
     @staticmethod
     def setPrototypeOf(target: Any, prototype: Any) -> Any:
         """A function that sets the prototype of an object. Returns a Boolean that is true if the update was successful."""
-        raise NotImplementedError
+        if isinstance(target, Object):
+            target.prototype = prototype
+            return True
+        return False
 
 
 class Symbol:
@@ -4440,7 +4475,7 @@ class Symbol:
     # Creates a new Symbol object.
     def __init__(self, symbol: Any) -> None:
         self.symbol = symbol
-        self.description = None
+        self.description = str(symbol)
         self.registry.append(self)
         # self.__class__.registry = self.registry
 
@@ -4523,16 +4558,16 @@ class Symbol:
 
     def toSource(self) -> Any:
         """Returns a string containing the source of the Symbol. Overrides the Object.prototype.toSource() method."""
-        raise NotImplementedError
+        return f"Symbol({self.description})"
 
     def toString(self) -> Any:
         """Returns a string containing the description of the Symbol.
         Overrides the Object.prototype.toString() method."""
-        raise NotImplementedError
+        return f"Symbol({self.description})"
 
     def valueOf(self) -> Any:
         """Returns the Symbol. Overrides the Object.prototype.valueOf() method."""
-        raise NotImplementedError
+        return self.symbol
 
 
 # class _TNow:
