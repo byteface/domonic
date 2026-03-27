@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import inspect
 import time
-from typing import Any, Callable
+from typing import Any, Callable, ClassVar
 
 
 class EventTarget:
@@ -987,20 +987,20 @@ class PointerEvent(MouseEvent):
 
 
 class BeforeUnloadEvent(Event):
-    BEFOREUNLOAD = "beforeunload"  #:
+    BEFOREUNLOAD: ClassVar[str] = Event.BEFOREUNLOAD  #:
     """ BeforeUnloadEvent """
 
-    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self._beforeunload_return_value = options.get("returnValue", "")
         super().__init__(_type, options, *args, **kwargs)
 
     @property
-    def returnValue(self):
+    def returnValue(self) -> Any:
         return self._beforeunload_return_value
 
     @returnValue.setter
-    def returnValue(self, value):
+    def returnValue(self, value: Any) -> None:
         self._beforeunload_return_value = "" if value is None else value
         self.defaultPrevented = value not in ("", True, False, None)
 

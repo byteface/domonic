@@ -11,7 +11,7 @@ from __future__ import annotations
 import copy
 import os
 import re
-from typing import Any, Callable, Iterable, Iterator
+from typing import Any, Callable, ClassVar, Iterable, Iterator
 
 from domonic.events import Event, EventTarget, MouseEvent
 from domonic.geom.vec3 import vec3
@@ -44,7 +44,7 @@ class DOMConfig:
     )
     HTMX_ENABLED: bool = False  # Default is false
     # NO_REPR: bool = True  # objects always render?
-    ATTRIBUTE_QUOTES = '"'  # i.e. <tag="">
+    ATTRIBUTE_QUOTES: bool | str | None = '"'  # i.e. <tag="">
 
 
 class Node(EventTarget):
@@ -73,7 +73,7 @@ class Node(EventTarget):
     NOTATION_NODE: int = 12
 
     __isempty: bool = False  # tells us if the node is empty i.e. has no content aka 'self closing'. in html that would be: area, base, br, col, embed, hr, img, input, link, meta, param, source, track, True
-    __context: list = None  # private. tags will append to last item in context on creation.
+    __context: ClassVar[list["Node"] | None] = None  # private. tags will append to last item in context on creation.
 
     # __slots__ = ['____attributes__',
     #              '__content',
@@ -3657,10 +3657,10 @@ class AbastractRange:
 class Range(AbastractRange):
     # TODO - untested
 
-    START_TO_START = 0
-    START_TO_END = 1
-    END_TO_END = 2
-    END_TO_START = 3
+    START_TO_START: ClassVar[int] = 0
+    START_TO_END: ClassVar[int] = 1
+    END_TO_END: ClassVar[int] = 2
+    END_TO_START: ClassVar[int] = 3
 
     def __init__(self) -> None:
         self.startContainer: Node | None = None
@@ -4117,7 +4117,7 @@ class TimeRanges:
 class Document(Element):
     """The Document interface represents the entire HTML or XML document."""
 
-    URL = None
+    URL: ClassVar[URL | None] = None
 
     def __init__(self, *args, **kwargs):
         """Constructor for Document objects"""
@@ -5443,19 +5443,19 @@ class DOMQuad:
 # https://bspaans.github.io/python-mingus/_modules/xml/dom/xmlbuilder.html
 class NodeFilter:
 
-    SHOW_ALL = 0xFFFFFFFF
-    SHOW_ELEMENT = 0x00000001
-    SHOW_ATTRIBUTE = 0x00000002
-    SHOW_TEXT = 0x00000004
-    SHOW_CDATA_SECTION = 0x00000008
-    SHOW_ENTITY_REFERENCE = 0x00000010
-    SHOW_ENTITY = 0x00000020
-    SHOW_PROCESSING_INSTRUCTION = 0x00000040
-    SHOW_COMMENT = 0x00000080
-    SHOW_DOCUMENT = 0x00000100
-    SHOW_DOCUMENT_TYPE = 0x00000200
-    SHOW_DOCUMENT_FRAGMENT = 0x00000400
-    SHOW_NOTATION = 0x00000800
+    SHOW_ALL: int = 0xFFFFFFFF
+    SHOW_ELEMENT: int = 0x00000001
+    SHOW_ATTRIBUTE: int = 0x00000002
+    SHOW_TEXT: int = 0x00000004
+    SHOW_CDATA_SECTION: int = 0x00000008
+    SHOW_ENTITY_REFERENCE: int = 0x00000010
+    SHOW_ENTITY: int = 0x00000020
+    SHOW_PROCESSING_INSTRUCTION: int = 0x00000040
+    SHOW_COMMENT: int = 0x00000080
+    SHOW_DOCUMENT: int = 0x00000100
+    SHOW_DOCUMENT_TYPE: int = 0x00000200
+    SHOW_DOCUMENT_FRAGMENT: int = 0x00000400
+    SHOW_NOTATION: int = 0x00000800
 
     FILTER_ACCEPT: int = 1
     FILTER_REJECT: int = 2

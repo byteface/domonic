@@ -2,14 +2,17 @@
 # vim:fileencoding=utf-8
 # License: Apache 2.0 Copyright: 2017, Kovid Goyal <kovid at kovidgoyal.net>
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import codecs
 import importlib
 import sys
-from collections import namedtuple
 from locale import getpreferredencoding
+from typing import Final, NamedTuple
+
+
+class Version(NamedTuple):
+    major: int
+    minor: int
+    patch: int
 
 if not hasattr(sys, "generating_docs_via_sphinx"):
     from lxml import \
@@ -21,7 +24,7 @@ if not hasattr(sys, "generating_docs_via_sphinx"):
     except ImportError:
         raise
     else:
-        version = namedtuple("Version", "major minor patch")(html_parser.MAJOR, html_parser.MINOR, html_parser.PATCH)
+        version = Version(html_parser.MAJOR, html_parser.MINOR, html_parser.PATCH)
 
         if not hasattr(etree, "adopt_external_document"):
             raise ImportError("Your version of lxml is too old, version 3.8.0 is minimum")
@@ -39,7 +42,7 @@ if not hasattr(sys, "generating_docs_via_sphinx"):
                 " libxml2 versions: html5-parser: {} != lxml: {}".format(LIBXML_VERSION, etree.LIBXML_VERSION)
             )
 
-BOMS = (codecs.BOM_UTF8, codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE)
+BOMS: Final[tuple[bytes, ...]] = (codecs.BOM_UTF8, codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE)
 
 
 def check_bom(data):
@@ -66,7 +69,7 @@ def detect_encoding(raw):
     return detect(q)["encoding"]
 
 
-passthrough_encodings = frozenset(("utf-8", "utf8", "ascii"))
+PASSTHROUGH_ENCODINGS: Final[frozenset[str]] = frozenset(("utf-8", "utf8", "ascii"))
 
 
 def safe_get_preferred_encoding():
@@ -85,7 +88,7 @@ def as_utf8(bytes_or_unicode, transport_encoding=None, fallback_encoding=None):
     if isinstance(bytes_or_unicode, bytes):
         data = bytes_or_unicode
         if transport_encoding:
-            if transport_encoding.lower() not in passthrough_encodings:
+            if transport_encoding.lower() not in PASSTHROUGH_ENCODINGS:
                 data = bytes_or_unicode.decode(transport_encoding).encode("utf-8")
         else:
             # See
@@ -103,7 +106,7 @@ def as_utf8(bytes_or_unicode, transport_encoding=None, fallback_encoding=None):
                     or safe_get_preferred_encoding()
                     or "cp-1252"
                 )
-                if encoding and encoding.lower() not in passthrough_encodings:
+                if encoding and encoding.lower() not in PASSTHROUGH_ENCODINGS:
                     if encoding == "x-user-defined":
                         # https://encoding.spec.whatwg.org/#x-user-defined
                         buf = (b if b <= 0x7F else 0xF780 + b - 0x80 for b in bytearray(data))
@@ -125,7 +128,7 @@ def normalize_treebuilder(x):
     return {"lxml.etree": "lxml", "etree": "stdlib_etree"}.get(x, x)
 
 
-NAMESPACE_SUPPORTING_BUILDERS = frozenset("lxml stdlib_etree dom lxml_html".split())
+NAMESPACE_SUPPORTING_BUILDERS: Final[frozenset[str]] = frozenset("lxml stdlib_etree dom lxml_html".split())
 
 
 def parse(

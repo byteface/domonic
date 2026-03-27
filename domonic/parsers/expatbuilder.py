@@ -27,6 +27,7 @@ This avoids all the overhead of SAX and pulldom to gain performance.
 #      calling any methods on the node object if it exists.  (A rather
 #      nice speedup is achieved this way as well!)
 
+from typing import Final
 from xml.dom import (EMPTY_NAMESPACE, EMPTY_PREFIX, XMLNS_NAMESPACE, Node,
                      minidom, xmlbuilder)
 from xml.dom.minidom import _append_child, _set_attribute_node
@@ -40,16 +41,16 @@ from domonic.html import *
 from domonic.xml.sitemap import (changefreq, lastmod, loc, priority, sitemap,
                                  sitemapindex, url, urlset)
 
-TEXT_NODE = Node.TEXT_NODE
-CDATA_SECTION_NODE = Node.CDATA_SECTION_NODE
-DOCUMENT_NODE = Node.DOCUMENT_NODE
+TEXT_NODE: Final[int] = Node.TEXT_NODE
+CDATA_SECTION_NODE: Final[int] = Node.CDATA_SECTION_NODE
+DOCUMENT_NODE: Final[int] = Node.DOCUMENT_NODE
 
-FILTER_ACCEPT = xmlbuilder.DOMBuilderFilter.FILTER_ACCEPT
-FILTER_REJECT = xmlbuilder.DOMBuilderFilter.FILTER_REJECT
-FILTER_SKIP = xmlbuilder.DOMBuilderFilter.FILTER_SKIP
-FILTER_INTERRUPT = xmlbuilder.DOMBuilderFilter.FILTER_INTERRUPT
+FILTER_ACCEPT: Final[int] = xmlbuilder.DOMBuilderFilter.FILTER_ACCEPT
+FILTER_REJECT: Final[int] = xmlbuilder.DOMBuilderFilter.FILTER_REJECT
+FILTER_SKIP: Final[int] = xmlbuilder.DOMBuilderFilter.FILTER_SKIP
+FILTER_INTERRUPT: Final[int] = xmlbuilder.DOMBuilderFilter.FILTER_INTERRUPT
 
-theDOMImplementation = DOMImplementation()  # minidom.getDOMImplementation()
+theDOMImplementation: Final[DOMImplementation] = DOMImplementation()  # minidom.getDOMImplementation()
 
 # Expat typename -> TypeInfo
 _typeinfo_map = {
