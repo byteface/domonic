@@ -4019,12 +4019,22 @@ class Document(Element):
             [type]: [a new event]
         """
         if event_type == "MouseEvent":
-            return MouseEvent()
-        elif event_type == "KeyboardEvent":
-            return MouseEvent()
-        elif event_type is None:
+            return MouseEvent("click")
+        if event_type == "KeyboardEvent":
+            from domonic.events import KeyboardEvent
+
+            return KeyboardEvent("keydown")
+        if event_type == "CustomEvent":
+            from domonic.events import CustomEvent
+
+            return CustomEvent("custom")
+        if event_type == "SubmitEvent":
+            from domonic.events import SubmitEvent
+
+            return SubmitEvent("submit")
+        if event_type is None:
             return Event()
-        return Event()
+        return Event(event_type)
 
     @staticmethod
     def createTextNode(text: str) -> "Text":

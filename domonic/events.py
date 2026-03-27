@@ -6,6 +6,9 @@
 
 """
 
+from __future__ import annotations
+
+import inspect
 import time
 from typing import Any, Callable
 
@@ -54,6 +57,7 @@ class EventTarget:
     def __init__(self, *args, **kwargs) -> None:
         # Initialize a dictionary to store event listeners.
         self.listeners: dict[str, list[Callable[..., Any]]] = {}
+        self._listener_options: dict[str, list[dict[str, Any]]] = {}
 
     def hasEventListener(self, eventType: str) -> bool:
         """
@@ -65,9 +69,83 @@ class EventTarget:
         Returns:
             bool: True if listeners for the event type exist, otherwise False.
         """
-        return eventType in self.listeners
+        return bool(self.listeners.get(eventType))
 
-    def addEventListener(self, eventType: str, callback, *args, **kwargs) -> None:
+    @staticmethod
+    def _normalize_listener_options(
+        options: bool | dict[str, Any] | None = None, **kwargs: Any
+    ) -> dict[str, bool]:
+        normalized = {"capture": False, "once": False, "passive": False}
+        if isinstance(options, bool):
+            normalized["capture"] = options
+        elif isinstance(options, dict):
+            normalized["capture"] = bool(options.get("capture", False))
+            normalized["once"] = bool(options.get("once", False))
+            normalized["passive"] = bool(options.get("passive", False))
+
+        if "use_capture" in kwargs:
+            normalized["capture"] = bool(kwargs["use_capture"])
+        if "capture" in kwargs:
+            normalized["capture"] = bool(kwargs["capture"])
+        if "once" in kwargs:
+            normalized["once"] = bool(kwargs["once"])
+        if "passive" in kwargs:
+            normalized["passive"] = bool(kwargs["passive"])
+        return normalized
+
+    def _get_event_path(self, target: Any) -> list[Any]:
+        path: list[Any] = []
+        current = target
+        seen: set[int] = set()
+        while current is not None and id(current) not in seen:
+            path.append(current)
+            seen.add(id(current))
+            if hasattr(current, "parentNode") and getattr(current, "parentNode", None) is not None:
+                current = current.parentNode
+                continue
+            owner_document = getattr(current, "ownerDocument", None)
+            if owner_document is not None and owner_document is not current:
+                current = owner_document
+                continue
+            default_view = getattr(current, "defaultView", None)
+            if default_view is not None and default_view is not current:
+                current = default_view
+                continue
+            break
+        return path
+
+    def _invoke_listeners(self, current_target: Any, event: "Event", capture: bool) -> None:
+        event_type = event.type
+        listeners = list(getattr(current_target, "_listener_options", {}).get(event_type, []))
+        event.currentTarget = current_target
+        event.srcElement = event.target
+        event.eventPhase = Event.AT_TARGET if current_target is event.target else (
+            Event.CAPTURING_PHASE if capture else Event.BUBBLING_PHASE
+        )
+
+        for listener in listeners:
+            if listener["capture"] != capture:
+                continue
+            callback = listener["callback"]
+            callback(event)
+            if listener["once"]:
+                current_target.removeEventListener(event_type, callback, listener["capture"])
+            if event._immediate_propagation_stopped:
+                return
+
+        if capture is False:
+            handler = getattr(current_target, f"on{event_type}", None)
+            if callable(handler):
+                handler(event)
+
+    def addEventListener(
+        self,
+        eventType: str,
+        callback: Callable[..., Any],
+        options: bool | dict[str, Any] | None = None,
+        *args,
+        **kwargs,
+    ) -> None:
         """
         Add an event listener for the given event type.
 
@@ -77,9 +155,17 @@ class EventTarget:
         """
         if eventType not in self.listeners:
             self.listeners[eventType] = []
+            self._listener_options[eventType] = []
+        listener_options = self._normalize_listener_options(options, **kwargs)
+        for listener in self._listener_options[eventType]:
+            if listener["callback"] is callback and listener["capture"] == listener_options["capture"]:
+                return
         self.listeners[eventType].append(callback)
+        self._listener_options[eventType].append({"callback": callback, **listener_options})
 
-    def removeEventListener(self, eventType: str, callback) -> None:
+    def removeEventListener(
+        self, eventType: str, callback: Callable[..., Any], options: bool | dict[str, Any] | None = None
+    ) -> None:
         """
         Remove an event listener for the given event type.
 
@@ -87,10 +173,22 @@ class EventTarget:
             eventType (str): The type of the event.
             callback (Callable): The callback function to be removed.
         """
-        if eventType in self.listeners:
-            stack = self.listeners[eventType]
-            if callback in stack:
-                stack.remove(callback)
+        if eventType not in self.listeners:
+            return
+        capture = self._normalize_listener_options(options)["capture"]
+        callbacks = self.listeners[eventType]
+        listeners = self._listener_options.get(eventType, [])
+        for index, listener in enumerate(listeners):
+            if listener["callback"] is callback and listener["capture"] == capture:
+                listeners.pop(index)
+                try:
+                    callbacks.remove(callback)
+                except ValueError:
+                    pass
+                break
+        if not listeners:
+            self._listener_options.pop(eventType, None)
+            self.listeners.pop(eventType, None)
 
     def dispatchEvent(self, event: Any) -> bool:
         """
@@ -102,17 +200,39 @@ class EventTarget:
         Returns:
             bool: True if the event was successfully dispatched, otherwise False.
         """
-        eventType = event.type
-        if eventType in self.listeners:
-            stack = self.listeners[eventType]
-            event.target = self
-            for callback in stack:
-                try:
-                    callback(event)
-                except Exception as e:
-                    print(e)
-            return not event.defaultPrevented
-        return True
+        if not isinstance(event, Event):
+            event = Event(event.get("type", ""), event)
+        event.target = self
+        event.currentTarget = self
+        event.srcElement = self
+        event.cancelBubble = False
+        event._propagation_stopped = False
+        event._immediate_propagation_stopped = False
+
+        path = self._get_event_path(self)
+        capture_targets = list(reversed(path[1:]))
+        bubble_targets = path[1:] if event.bubbles else []
+
+        try:
+            for target in capture_targets:
+                self._invoke_listeners(target, event, capture=True)
+                if event._propagation_stopped:
+                    return not event.defaultPrevented
+
+            self._invoke_listeners(self, event, capture=True)
+            if not event._immediate_propagation_stopped:
+                self._invoke_listeners(self, event, capture=False)
+
+            if event._propagation_stopped:
+                return not event.defaultPrevented
+
+            for target in bubble_targets:
+                self._invoke_listeners(target, event, capture=False)
+                if event._propagation_stopped:
+                    break
+        except Exception as e:
+            print(e)
+        return not event.defaultPrevented
 
     async def dispatchEventAsync(self, event: Any) -> bool:
         """
@@ -136,21 +256,63 @@ class EventTarget:
             async_event = {"type": "async_event", "data": event_data}
             await target.dispatchEventAsync(async_event)
         """
+        if not isinstance(event, Event):
+            event = Event(event.get("type", ""), event)
+        event.target = self
+        event.currentTarget = self
+        event.srcElement = self
+        event.cancelBubble = False
+        event._propagation_stopped = False
+        event._immediate_propagation_stopped = False
 
-        eventType = event.get("type", None)
-        if eventType in self.listeners:
-            stack = self.listeners[eventType]
-            event["target"] = self
-            for callback in stack:
-                try:
-                    if hasattr(callback, '__await__'):
-                        await callback(event)
-                    else:
-                        callback(event)
-                except Exception as e:
-                    print(e)
-            return not event.get("defaultPrevented", False)
-        return True
+        async def call_listener(callback: Callable[..., Any], current_target: Any, capture: bool) -> None:
+            event.currentTarget = current_target
+            event.srcElement = event.target
+            event.eventPhase = Event.AT_TARGET if current_target is event.target else (
+                Event.CAPTURING_PHASE if capture else Event.BUBBLING_PHASE
+            )
+            result = callback(event)
+            if inspect.isawaitable(result):
+                await result
+
+        async def invoke(current_target: Any, capture: bool) -> None:
+            listeners = list(getattr(current_target, "_listener_options", {}).get(event.type, []))
+            for listener in listeners:
+                if listener["capture"] != capture:
+                    continue
+                await call_listener(listener["callback"], current_target, capture)
+                if listener["once"]:
+                    current_target.removeEventListener(event.type, listener["callback"], listener["capture"])
+                if event._immediate_propagation_stopped:
+                    return
+            if capture is False:
+                handler = getattr(current_target, f"on{event.type}", None)
+                if callable(handler):
+                    result = handler(event)
+                    if inspect.isawaitable(result):
+                        await result
+
+        try:
+            path = self._get_event_path(self)
+            for target in reversed(path[1:]):
+                await invoke(target, True)
+                if event._propagation_stopped:
+                    return not event.defaultPrevented
+
+            await invoke(self, True)
+            if not event._immediate_propagation_stopped:
+                await invoke(self, False)
+
+            if event._propagation_stopped or not event.bubbles:
+                return not event.defaultPrevented
+
+            for target in path[1:]:
+                await invoke(target, False)
+                if event._propagation_stopped:
+                    break
+        except Exception as e:
+            print(e)
+        return not event.defaultPrevented
 
 
 EventDispatcher = EventTarget  #: legacy alias
@@ -211,7 +373,7 @@ class Event:
     def __str__(self) -> str:
         return self.type + ":" + str(self.timeStamp)
 
-    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+    def __init__(self, _type: str = "", options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.type: str = _type
         self.bubbles: bool = options.get("bubbles", True)
@@ -229,6 +391,8 @@ class Event:
         self.srcElement: object = options.get("srcElement", None)
         self.target: object = options.get("target", None)
         self.timeStamp: float = time.time_ns() / 1_000_000
+        self._propagation_stopped: bool = False
+        self._immediate_propagation_stopped: bool = False
 
     def composedPath(self):
         """
@@ -247,13 +411,25 @@ class Event:
             path.append(self.target.defaultView)
         return path
 
-    def initEvent(self, _type: str = None, *args, **kwargs) -> "Event":
+    def initEvent(
+        self, _type: str | None = None, bubbles: bool = True, cancelable: bool = True, *args, **kwargs
+    ) -> "Event":
         """Initialize the event."""
-        self.__init__(_type, args, kwargs)
+        self.type = _type or self.type
+        self.bubbles = bubbles
+        self.cancelable = cancelable
+        self.cancelBubble = False
+        self.defaultPrevented = False
+        self.currentTarget = None
+        self.eventPhase = Event.AT_TARGET
+        self._propagation_stopped = False
+        self._immediate_propagation_stopped = False
+        return self
 
     def stopPropagation(self):
         """[prevents further propagation of the current event in the capturing and bubbling phases]"""
         self.cancelBubble = True  # Set the cancelBubble flag to stop propagation
+        self._propagation_stopped = True
 
     def msConvertURL(self, url):
         """
@@ -281,7 +457,9 @@ class Event:
         Returns:
             None
         """
-        self.defaultPrevented = True
+        if self.cancelable:
+            self.defaultPrevented = True
+            self.returnValue = False
 
     def stopImmediatePropagation(self) -> None:
         """
@@ -293,7 +471,8 @@ class Event:
             None
         """
         self.cancelBubble = True
-        self.defaultPrevented = True
+        self._propagation_stopped = True
+        self._immediate_propagation_stopped = True
 
 
 class UIEvent(Event):
@@ -362,7 +541,7 @@ class MouseEvent(UIEvent):
         self.x = options.get("x", 0)
         self.y = options.get("y", 0)
         self._clientX = options.get("clientX", 0)
-        self._clientX = options.get("clientY", 0)
+        self._clientY = options.get("clientY", 0)
         self._altKey: bool = options.get("altKey", False)
         self._ctrlKey: bool = options.get("ctrlKey", False)
         self._shiftKey: bool = options.get("shiftKey", False)
@@ -412,11 +591,11 @@ class MouseEvent(UIEvent):
 
     @property
     def clientX(self):
-        return self.x
+        return self._clientX
 
     @property
     def clientY(self):
-        return self.y
+        return self._clientY
 
     @property
     def altKey(self):
@@ -447,9 +626,15 @@ class MouseEvent(UIEvent):
         return self._button
 
     # MOUSE_EVENT
-    def getModifierState(self):
+    def getModifierState(self, keyArg: str):
         """Returns an array containing target ranges that will be affected by the insertion/deletion"""
-        pass
+        lookup = {
+            "Alt": self.altKey,
+            "Control": self.ctrlKey,
+            "Meta": self.metaKey,
+            "Shift": self.shiftKey,
+        }
+        return lookup.get(keyArg, False)
 
     # MovementX Returns the horizontal coordinate of the mouse pointer relative to the position of the last mousemove event MouseEvent
     # MovementY Returns the vertical coordinate of the mouse pointer relative to the position of the last mousemove event   MouseEvent
@@ -532,6 +717,15 @@ class KeyboardEvent(UIEvent):
     @property
     def unicode(self):
         return self.key
+
+    def getModifierState(self, keyArg: str) -> bool:
+        lookup = {
+            "Alt": self.altKey,
+            "Control": self.ctrlKey,
+            "Meta": self.metaKey,
+            "Shift": self.shiftKey,
+        }
+        return lookup.get(keyArg, False)
 
     # @property
     # def keyCode(self):
@@ -676,6 +870,7 @@ class SubmitEvent(Event):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
+        self.submitter = options.get("submitter", None)
         super().__init__(_type, options, *args, **kwargs)
 
 
@@ -707,10 +902,10 @@ class PointerEvent(Event):
         super().__init__(_type, options, *args, **kwargs)
 
     def getCoalescedEvents(self):
-        pass
+        return []
 
     def getPredictedEvents(self):
-        pass
+        return []
 
     # def getCurrentPoint(self, element):
     #     """ Returns the current coordinates of the specified element relative to the viewport. """
@@ -817,7 +1012,7 @@ class InputEvent(UIEvent):
 
     def getTargetRanges(self):
         """Returns an array containing target ranges that will be affected by the insertion/deletion"""
-        pass
+        return []
 
 
 class PageTransitionEvent(Event):
@@ -907,7 +1102,7 @@ class CustomEvent(Event):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
-        self.detail = None
+        self.detail = options.get("detail", None)
         super().__init__(_type, options, *args, **kwargs)
 
     def initCustomEvent(self):

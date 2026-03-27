@@ -179,6 +179,7 @@ html_tags = [
 ]
 # big, blink, bold, tt, var, frameset
 
+_HTML_TAG_LOOKUP = set(html_tags)
 _TAG_ALIASES = {"del": "del_"}
 
 html_attributes = [
@@ -661,8 +662,11 @@ def create_element(name: str = "custom_tag", *args: Any, **kwargs: Any) -> Eleme
     i.e. hypenated tags <some-custom-tag></some-custom-tag>
     """
     # checks if already exists
-    normalized_name = name.lower()
-    if normalized_name in html_tags:
+    normalized_name = str(name).strip().lower()
+    if not normalized_name:
+        normalized_name = "custom_tag"
+        name = "custom_tag"
+    if normalized_name in _HTML_TAG_LOOKUP:
         tag_name = _TAG_ALIASES.get(normalized_name, normalized_name)
         return globals()[tag_name](*args, **kwargs)
 

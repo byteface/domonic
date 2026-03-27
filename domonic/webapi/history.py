@@ -66,6 +66,10 @@ class History:  # (EventTarget):
 
     @property
     def state(self):
+        if not self.states:
+            return None
+        if self.index >= len(self.states):
+            return self.states[-1]
         return self.states[self.index]
 
     def __repr__(self) -> str:

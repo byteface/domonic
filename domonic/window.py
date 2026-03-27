@@ -11,14 +11,17 @@
     You can extend or import either for your own purposes.
 
 """
-import sys
 
-import requests
+from __future__ import annotations
+
+import re
+import sys
+from typing import Any, Callable
 
 from domonic import domonic
-from domonic.dom import *
-from domonic.dom import Location, document
-from domonic.javascript import Window
+from domonic.dom import Document, Element, Location, document
+from domonic.events import Event, EventTarget
+from domonic.javascript import Window as JavaScriptWindow
 from domonic.webapi.console import Console
 from domonic.webapi.credentials import CredentialsContainer
 from domonic.webapi.geo import Geolocation
@@ -26,75 +29,84 @@ from domonic.webapi.history import History
 from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.webstorage import Storage
 
-# from domonic.webapi.mediacapabilities import MediaCapabilities
-# from domonic.webapi.mediasession import MediaSession
+
+class MediaQueryList(EventTarget):
+    """Minimal MediaQueryList implementation for Window.matchMedia()."""
+
+    def __init__(self, media: str, *, width: int, height: int) -> None:
+        super().__init__()
+        self.media = media
+        self.matches = self._evaluate(media, width=width, height=height)
+        self.onchange: Callable[[Event], Any] | None = None
+
+    @staticmethod
+    def _evaluate(media: str, *, width: int, height: int) -> bool:
+        if not media:
+            return False
+        text = media.strip().lower()
+        if text in ("all", "screen"):
+            return True
+
+        checks: list[bool] = []
+        for label, value in (("min-width", width), ("max-width", width), ("min-height", height), ("max-height", height)):
+            match = re.search(rf"\({label}\s*:\s*(\d+)px\)", text)
+            if not match:
+                continue
+            target = int(match.group(1))
+            if label.startswith("min-"):
+                checks.append(value >= target)
+            else:
+                checks.append(value <= target)
+
+        orientation_match = re.search(r"\(orientation\s*:\s*(portrait|landscape)\)", text)
+        if orientation_match:
+            orientation = "landscape" if width >= height else "portrait"
+            checks.append(orientation == orientation_match.group(1))
+
+        return all(checks) if checks else False
+
+    def addListener(self, callback: Callable[[Event], Any]) -> None:
+        self.addEventListener("change", callback)
+
+    def removeListener(self, callback: Callable[[Event], Any]) -> None:
+        self.removeEventListener("change", callback)
 
 
-# TODO - test
 class CustomElementRegistry:
     """The CustomElementRegistry interface provides methods for registering custom elements and querying registered elements.
     To get an instance of it, use the window.customElements property."""
 
     def __init__(self) -> None:
-        self.store = {}
+        self.store: dict[str, type] = {}
 
-    # Defines a new custom element.
-    def define(self, name: str, constructor, options=None) -> None:
-        """[defines a new custom element.]
-
-        Args:
-            name ([str]): [Name for the new custom element. Note that custom element names must contain a hyphen.]
-            constructor ([type]): [Constructor for the new custom element.]
-            options ([dict]): [Object that controls how the element is defined. One option is currently supported: extends]
-        """
+    def define(self, name: str, constructor: Callable[..., Any], options: dict[str, Any] | None = None) -> type:
+        """Defines a new custom element."""
         if "-" not in name:
             raise ValueError("Invalid custom element name. Must contain hypen: " + name)
-        # el = document.createElement(name)
-        # el.constructor = constructor
         from domonic.dom import Element
         from domonic.html import tag
 
         el = type(name, (tag, Element), {"name": name, "__init__": constructor})
-        if options is not None:
-            if "extends" in options:
-                el.extends = options["extends"]
+        if options is not None and "extends" in options:
+            el.extends = options["extends"]
         self.store[name] = el
         return el
 
-    def get(self, name):
-        """
-        Returns the constructor for the named custom element,
-        or undefined if the custom element is not defined.
-        """
-        # see if its in the store or return none
-        if name in self.store:
-            return self.store[name]
-        else:
-            return None
+    def get(self, name: str) -> type | None:
+        """Returns the constructor for the named custom element, or None."""
+        return self.store.get(name)
 
-    # Upgrades a custom element directly, even before it is connected to its shadow root.
-    def upgrade(self):
-        pass
+    def upgrade(self, root: Element | None = None) -> Element | None:
+        return root
 
-    # Returns an empty promise that resolves when a custom element becomes defined with the given name.
-    # If such a custom element is already defined, the returned promise is immediately fulfilled.
-    def whenDefined(self):
-        pass
+    def whenDefined(self, name: str) -> bool:
+        return name in self.store
 
 
 class Navigator:
     """Navigator"""
 
-    # Determines whether cookies are enabled in the browser
     cookieEnabled = False
-
-    # Determines whether the browser is online
-    # onLine = False
-    @property
-    def onLine(self):
-        raise NotImplementedError
-
-    # Returns the name of the browser Navigator
     appName = "domonic"
 
     def __init__(self, *args, **kwargs):
@@ -118,31 +130,20 @@ class Navigator:
         self.contacts = None
         self._screen = Screen()
 
-        # @property
-        # def appVersion():
-        """ Returns the version information of the browser """
-        # from domonic import __version__
-        # return __version__
-
-        # @property
-        # def language():
-        """ Returns the language of the browser Navigator """
-        # import locale
-        # return locale.getdefaultlocale()
-
-    # def languages
+    @property
+    def onLine(self) -> bool:
+        return True
 
     @property
     def platform(self) -> str:
         """Returns the platform"""
         if "darwin" in sys.platform:
             return "mac"
-        elif "linux" in sys.platform:
+        if "linux" in sys.platform:
             return "linux"
-        elif "win32" in sys.platform:
+        if "win32" in sys.platform:
             return "windows"
-        else:
-            return "unknown"
+        return "unknown"
 
     @property
     def product(self) -> str:
@@ -151,88 +152,59 @@ class Navigator:
 
     @property
     def userAgent(self) -> str:
-        """Returns the user-agent header sent by the browser to the server Navigator"""
-        raise NotImplementedError
+        """Returns the user-agent header sent by the browser Navigator"""
+        return f"domonic/{self.appName} ({self.platform})"
 
     @property
     def deviceMemory(self) -> float:
-        """Returns the amount of memory available on the device"""
         return 1
 
     @property
     def doNotTrack(self):
-        """Returns the value of the doNotTrack attribute of the Navigator object"""
-        # return False
-        return "lol"
+        return "unspecified"
 
     @property
     def hardwareConcurrency(self):
-        """Returns the number of logical processors available to the browser Navigator"""
         return 1
 
     @property
     def maxTouchPoints(self):
-        """Returns the maximum number of touch points Navigator"""
         return 1
 
     @staticmethod
     def registerProtocolHandler(scheme, url, title):
-        """Registers a new protocol handler Navigator"""
         raise NotImplementedError
 
     @staticmethod
     def requestMediaKeySystemAccess(keySystem, supportedConfigurations):
-        """Requests a new MediaKeySystemAccess object Navigator"""
         raise NotImplementedError
 
     def canShare(self):
-        """Returns whether the browser Navigator can share files"""
         return False
 
     def clearAppBadge(self):
-        """Clears the app badge Navigator"""
         raise NotImplementedError
 
     def getBattery(self):
-        """Returns the battery information Navigator"""
         raise NotImplementedError
 
     @property
     def javaEnabled(self):
-        """Returns whether the browser Navigator supports Java"""
         return False
 
     def vibrate(self, pattern):
-        """Vibrates the device Navigator"""
         raise NotImplementedError
-
-    # deprecated
-    # Navigator.securitypolicy
-    # Navigator.standalone
-    # Navigator.wakeLock
-    # Navigator.appCodeName
-    # Navigator.appName
-    # Navigator.appVersion
-    # Navigator.activeVRDisplays
-    # Navigator.battery
-    # Navigator.mimeTypes
-    # Navigator.oscpu
-    # Navigator.platform
-    # Navigator.plugins
-    # Navigator.product
-    # Navigator.productSub
-    # Navigator.vendorSub
 
 
 class Screen(EventTarget):
     # https://developer.mozilla.org/en-US/docs/Web/API/Screen
 
     def __init__(self):
-        """Screen. (you will need to set them)"""
+        super().__init__()
         self.availLeft = 0
         self.availTop = 0
-        self.availHeight = 0
-        self.availWidth = 0
+        self.availHeight = 768
+        self.availWidth = 1024
         self.colorDepth = 24
         self.height = 768
         self.left = 0
@@ -241,325 +213,214 @@ class Screen(EventTarget):
         self.width = 1024
         self.orientation = None
 
-    # def lockOrientation(self):
-    #     """ Locks the screen orientation """
-    #     raise NotImplementedError
+    @property
+    def screenLeft(self) -> int:
+        return self.left
 
-    # def unlockOrientation(self):
-    #     """ Unlocks the screen orientation """
-    #     raise NotImplementedError
+    @property
+    def screenTop(self) -> int:
+        return self.top
 
 
-class Window(Window):
+class Window(JavaScriptWindow, EventTarget):
     def __init__(self):
+        EventTarget.__init__(self)
         self.customElements = CustomElementRegistry()
-        self._localStorage: Storage = Storage()  # TODO - should persist across sessions
-        self._sessionStorage: Storage = Storage()  # TODO - should reset on page refresh
+        self._localStorage: Storage = Storage()
+        self._sessionStorage: Storage = Storage()
         self._navigator: Navigator = Navigator()
-        self._location: Location = Location("eventual.technology")
+        self._screen: Screen = self._navigator._screen
+        self._document: Document = document
+        self._document.defaultView = self
+        self._location: Location = Location("https://eventual.technology")
+        self._document.URL = self._location.href
         self._console: Console = Console()
         self._history: History = History(self)
-        # personalbar?
-        super(Window, Window).__init__(self)
+        self._closed: bool = False
+        self._focused: bool = True
+        self._name: str = ""
+        self._default_status: str = ""
+        JavaScriptWindow.__init__(self)
+
+    @staticmethod
+    def _normalize_url(value: str | Location) -> str:
+        href = value.href if isinstance(value, Location) else str(value)
+        if href and "://" not in href:
+            href = "https://" + href
+        return href
+
+    def _set_document(self, doc: Document) -> Document:
+        self._document = doc
+        self._document.defaultView = self
+        return self._document
+
+    def _fetch_document(self, url: str) -> Document | None:
+        try:
+            import requests
+        except ModuleNotFoundError:
+            return None
+
+        try:
+            response = requests.get(url, timeout=5)
+            response.raise_for_status()
+        except Exception:
+            return None
+
+        try:
+            import html5lib
+        except ModuleNotFoundError:
+            html5lib = None
+
+        if html5lib is not None:
+            from html5lib import HTMLParser
+            from domonic.ext.html5lib_ import getTreeBuilder
+
+            parser = HTMLParser(tree=getTreeBuilder())
+            page = parser.parse(response.text)
+            page.URL = url
+            return page
+
+        try:
+            from domonic.parsers import remove_doctype, remove_newlines, remove_tabs, remove_whitespace, remove_tags
+        except Exception:
+            return None
+
+        content = remove_tags(response.text, ["js", "css", "#"])
+        content = remove_doctype(content)
+        content = remove_whitespace(content)
+        content = remove_newlines(content)
+        content = remove_tabs(content)
+        page = domonic.parseString(content)
+        if page is not None:
+            page.URL = url
+        return page
 
     @property
     def history(self) -> History:
-        """Returns the history object"""
         return self._history
 
     @property
     def console(self) -> Console:
-        """Returns the console object"""
         return self._console
 
     @property
     def localStorage(self) -> Storage:
-        """Returns the local storage object"""
         return self._localStorage
 
     @property
     def sessionStorage(self) -> Storage:
-        """Returns the session storage object"""
         return self._sessionStorage
 
-    @staticmethod
+    @property
     def document(self) -> Document:
-        from domonic.dom import document
+        return self._document
 
-        return document
+    @document.setter
+    def document(self, value: Document) -> None:
+        self._set_document(value)
 
     @property
     def location(self) -> Location:
         return self._location
-        # return Location(self.window.location.href)
-
-    def _set_location_using_htm5lib(self, url):
-        # from html5lib import parse
-        # return parse(html)
-        # import html5lib
-        # import requests
-        from html5lib import HTMLParser
-
-        from domonic.ext.html5lib_ import getTreeBuilder
-
-        if "http" not in url:
-            url = "https://" + url
-
-        r = requests.get(url)
-        parser = HTMLParser(tree=getTreeBuilder())
-        page = parser.parse(r.text)
-
-        # from domonic.dom import document
-        document = page
-        return document
 
     @location.setter
-    def location(self, value):
-        # NOTE - not documented. still unverified
-        # self._location = value
-        # TODO - load the content of the location using requests
-
-        # self._history.pushState(None, None, value)
-        self._history._update(value)  # pushState(None, None, value)
-
-        try:
-            import html5lib
-
-            if "html5lib" in sys.modules:
-                self.document = self._set_location_using_htm5lib(value)
-                self._location = Location(value)
-                self.document.URL = value
-                return
-        except ImportError:
-            pass
-
+    def location(self, value: str | Location) -> None:
         if value is None:
             return
-        import requests
+        href = self._normalize_url(value)
+        if getattr(self._history, "skip_update", False) is False:
+            self._history._update(href)
+        self._location = Location(href)
+        self._document.URL = href
 
-        r = requests.get(value)
-        content = r.text  # .encode('utf-8')
-        # print(content)
-        # content = content.replace('\n', '')
-        # content = content.replace('\t', '')
-        # content = content.replace(' ', '')
-        # content = content.replace('\r', '')
-
-        from domonic.parsers import remove_doctype, remove_tags
-
-        content = remove_tags(content, ["js", "css", "#"])
-        content = remove_doctype(content)
-
-        # from domonic.utils import Utils
-        # content = Utils.escape(content)
-        # content = domonic.parsers.remove_html_tag_by_name(content, 'head') # TODO - buggy.removed start of docs too?
-        # content = domonic.parsers.remove_html_tag_by_name(content, 'body')
-
-        # clean invalid html
-        content.replace("&", "&amp;")
-        content = domonic.parsers.remove_whitespace(content)
-        content = domonic.parsers.remove_newlines(content)
-        content = domonic.parsers.remove_tabs(content)
-
-        print(content)
-        # return
-        # clean the html before parsing
-
-        # TODO - don't use parseString as it is not a HTML parser its XML parser. atm I'm just using for testing
-        self.document = domonic.domonic.parseString(content)
-        self.document.URL = value
-        self._location = Location(value)
+        loaded_document = self._fetch_document(href)
+        if loaded_document is not None:
+            self._set_document(loaded_document)
 
     def blur(self):
-        """Removes focus from an element"""
-        raise NotImplementedError
+        self._focused = False
+        self.dispatchEvent(Event("blur"))
+        return None
 
-    def closed(self):
-        """[Returns a Boolean value indicating whether a window has been closed or not]"""
-        raise NotImplementedError
+    @property
+    def closed(self) -> bool:
+        return self._closed
 
     def close(self):
-        """[Closes the output stream previously opened with document.open()]"""
-        raise NotImplementedError
+        self._closed = True
+        self.dispatchEvent(Event("close"))
+        return None
 
     def confirm(self, message: str):
-        """[Displays a dialog box with a message and an OK and a Cancel button.]
-        (https://developer.mozilla.org/en-US/docs/Web/API/Window/confirm)
-
-        Args:
-            message ([type]): [the message to display in the dialog box]
-        """
-        raise NotImplementedError
+        return True
 
     @property
     def defaultStatus(self):
-        """Returns the default status message of the window"""
-        raise NotImplementedError
+        return self._default_status
 
     @defaultStatus.setter
     def defaultStatus(self, value=None):
-        """Sets the default text in the statusbar of a window"""
-        raise NotImplementedError
+        self._default_status = "" if value is None else str(value)
 
     def focus(self):
-        """Gives focus to an element"""
-        raise NotImplementedError
+        self._focused = True
+        self.dispatchEvent(Event("focus"))
+        return None
 
     def frameElement(self):
-        """Returns the <iframe> element in which the current window is inserted"""
-        raise NotImplementedError
+        return None
 
     def getComputedStyle(self, el, pseudo=None):
-        """Gets the current computed CSS styles applied to an element"""
-        raise NotImplementedError
+        return getattr(el, "style", None)
 
     def getSelection(self):
-        """Returns a Selection object representing the range of text selected by the user"""
-        raise NotImplementedError
+        return self.document.getSelection()
 
-    # def history(self):
-    # """ Returns the History object for the window """
-    # raise NotImplementedError
-    # from domonic.webapi.history import History
-    # return History()
-    # return self._history
-
+    @property
     def innerHeight(self):
-        """[Returns the height of the window's content area (viewport) including scrollbars]"""
-        raise NotImplementedError
+        return self._screen.height
 
+    @property
     def innerWidth(self):
-        """[Returns the width of a window's content area (viewport) including scrollbars]"""
-        raise NotImplementedError
+        return self._screen.width
 
     def matchMedia(self, media_query_list):
-        """Returns a MediaQueryList object representing the specified CSS media query string"""
-        raise NotImplementedError
+        return MediaQueryList(media_query_list, width=self.innerWidth, height=self.innerHeight)
 
     def moveBy(self, x: int, y: int):
-        """[Moves a window relative to its current position]
-
-        Args:
-            x ([int]): [the horizontal offset]
-            y ([int]): [the vertical offset]
-        """
-        raise NotImplementedError
+        self._screen.left += x
+        self._screen.top += y
 
     def moveTo(self, x: int, y: int):
-        """[Moves a window to the specified position]
+        self._screen.left = x
+        self._screen.top = y
 
-        Args:
-            x (int): [the position on the x-axis]
-            y (int): [the position on the y-axis]
-        """
-        raise NotImplementedError
-
+    @property
     def name(self):
-        """Returns the name of the window"""
-        raise NotImplementedError
+        return self._name
+
+    @name.setter
+    def name(self, value: str):
+        self._name = value
 
     @property
     def navigator(self):
-        """Returns the Navigator object for the window"""
         return self._navigator
 
     @property
     def screen(self) -> Screen:
-        """Returns the Screen object for the window (See Screen object)"""
         return self._screen
 
     @property
     def screenLeft(self) -> int:
-        """Returns the horizontal coordinate of the window relative to the screen"""
         return self._screen.screenLeft
 
     @property
     def screenTop(self) -> int:
-        """Returns the vertical coordinate of the window relative to the screen"""
         return self._screen.screenTop
 
-    """
-    # # The event occurs when the window's history changes  PopStateEvent?
-    # def onpopstate(self):
-    #     raise NotImplementedError
 
-    # Opens an HTML output stream to collect output from document.write() Document, Window
-    def open(self):
-        raise NotImplementedError
-
-    # Returns a reference to the window that created the window
-    def opener(self):
-        raise NotImplementedError
-
-    # Returns the height of the browser window, including toolbars/scrollbars Window
-    def outerHeight(self):
-        raise NotImplementedError
-
-    # Returns the width of the browser window, including toolbars/scrollbars
-    def outerWidth(self):
-        raise NotImplementedError
-
-    # Returns the pixels the current document has been scrolled (horizontally) from the upper left corner of the window
-    def pageXOffset(self):
-        raise NotImplementedError
-
-    # Returns the pixels the current document has been scrolled (vertically) from the upper left corner of the window Window
-    def pageYOffset(self):
-        raise NotImplementedError
-
-    # Returns the parent window of the current window Window
-    def parent(self):
-        raise NotImplementedError
-
-    # Prints the content of the current window
-    def _print(self):
-        raise NotImplementedError
-
-    # Resizes the window by the specified pixels
-    def resizeBy(self):
-        raise NotImplementedError
-
-    # Resizes the window to the specified width and height
-    def resizeTo(self):
-        raise NotImplementedError
-
-    # Deprecated. This method has been replaced by the scrollTo() method. Window
-    def scroll(self):
-        raise NotImplementedError
-
-    # Scrolls the document by the specified number of pixels
-    def scrollBy(self):
-        raise NotImplementedError
-
-    # Scrolls the specified element into the visible area of the browser window   Element
-    def scrollIntoView(self):
-        raise NotImplementedError
-
-    # Scrolls the document to the specified coordinates  < TODO - this will be fun
-    def scrollTo(self):
-        raise NotImplementedError
-
-    # An alias of pageXOffset Window
-    def scrollX(self):
-        raise NotImplementedError
-
-    # An alias of pageYOffset Window
-    def scrollY(self):
-        raise NotImplementedError
-
-    # Stops the window from loading
-    def stop(self):
-        raise NotImplementedError
-
-    # Sets or returns the text in the statusbar of a window
-    def status(self):
-        raise NotImplementedError
-
-    # the topmost browser window
-    def top(self):
-        raise NotImplementedError
-    """
-
-
-# global window
 window = Window()
+alert = window.alert
+confirm = window.confirm
+prompt = window.prompt

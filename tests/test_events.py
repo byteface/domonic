@@ -5,7 +5,9 @@
 
 """
 
+import asyncio
 import unittest
+
 from domonic import *
 from domonic.dom import document
 from domonic.events import *
@@ -48,11 +50,9 @@ class TestCase(unittest.TestCase):
         def test(evt, *args, **kwargs):
             self.assertTrue(evt.target == somebody or evt.target == site)
 
-        def async_test(evt, *args, **kwargs):
-            async def delayed_assert():
-                await asyncio.sleep(1)
-                self.assertTrue(evt.target == somebody or evt.target == site)
-            asyncio.run(delayed_assert())
+        async def async_test(evt, *args, **kwargs):
+            await asyncio.sleep(0)
+            self.assertTrue(evt.target == somebody or evt.target == site)
 
         site.addEventListener("click", test)
         somebody.addEventListener("anything", test)
@@ -62,21 +62,24 @@ class TestCase(unittest.TestCase):
 
         # Asynchronous event handling
         site.addEventListener("async_event", async_test)
-        site.dispatchEventAsync(Event("async_event"))
+        asyncio.run(site.dispatchEventAsync(Event("async_event")))
 
-    async def test_async_events(self):
-        site = EventTarget()
-        somebody = EventTarget()
+    def test_async_events(self):
+        async def runner():
+            site = EventTarget()
+            somebody = EventTarget()
 
-        async def async_test(evt, *args, **kwargs):
-            await asyncio.sleep(1)
-            self.assertTrue(evt.target == somebody or evt.target == site)
+            async def async_test(evt, *args, **kwargs):
+                await asyncio.sleep(0)
+                self.assertTrue(evt.target == somebody or evt.target == site)
 
-        site.addEventListener("click", async_test)
-        somebody.addEventListener("anything", async_test)
+            site.addEventListener("click", async_test)
+            somebody.addEventListener("anything", async_test)
 
-        await site.dispatchEventAsync(Event("click"))
-        await somebody.dispatchEventAsync(Event("anything"))
+            await site.dispatchEventAsync(Event("click"))
+            await somebody.dispatchEventAsync(Event("anything"))
+
+        asyncio.run(runner())
 
     def test_default_event_properties(self):
         event = Event("custom_event")
@@ -108,7 +111,12 @@ class TestCase(unittest.TestCase):
     def test_stop_propagation(self):
         event = Event("custom_event")
         event.stopImmediatePropagation()
-        self.assertTrue(event.defaultPrevented)
+        self.assertTrue(event.cancelBubble)
+
+    def test_prevent_default_respects_cancelable(self):
+        event = Event("custom_event", {"cancelable": False})
+        event.preventDefault()
+        self.assertFalse(event.defaultPrevented)
 
     def test_event_bubbling(self):
         # Create an event target and some event handlers
@@ -139,6 +147,19 @@ class TestCase(unittest.TestCase):
         # Check if event bubbling occurred in the correct order
         expected_results = ["Handler 1", "Handler 2", "Handler 3"]
         self.assertEqual(results, expected_results)
+
+    def test_event_bubbles_to_parent_targets(self):
+        parent = EventTarget()
+        child = EventTarget()
+        child.parentNode = parent
+        results = []
+
+        parent.addEventListener("custom_event", lambda event: results.append(("parent", event.eventPhase)))
+        child.addEventListener("custom_event", lambda event: results.append(("child", event.eventPhase)))
+
+        child.dispatchEvent(Event("custom_event", {"bubbles": True}))
+
+        self.assertEqual(results, [("child", Event.AT_TARGET), ("parent", Event.BUBBLING_PHASE)])
 
     def test_event_target_with_target_matching(self):
         # Create an event target and some event handlers
@@ -210,6 +231,56 @@ class TestCase(unittest.TestCase):
         expected_results = ["Capture Handler 1", "Capture Handler 2", "Capture Handler 3", "Bubble Handler"]
         self.assertEqual(results, expected_results)
 
+    def test_capture_and_bubble_order_across_path(self):
+        root = EventTarget()
+        parent = EventTarget()
+        child = EventTarget()
+        parent.parentNode = root
+        child.parentNode = parent
+        results = []
+
+        root.addEventListener("custom_event", lambda event: results.append("root-capture"), {"capture": True})
+        parent.addEventListener("custom_event", lambda event: results.append("parent-capture"), {"capture": True})
+        child.addEventListener("custom_event", lambda event: results.append("child-capture"), {"capture": True})
+        child.addEventListener("custom_event", lambda event: results.append("child-bubble"))
+        parent.addEventListener("custom_event", lambda event: results.append("parent-bubble"))
+
+        child.dispatchEvent(Event("custom_event", {"bubbles": True}))
+
+        self.assertEqual(
+            results,
+            ["root-capture", "parent-capture", "child-capture", "child-bubble", "parent-bubble"],
+        )
+
+    def test_once_listener_is_removed_after_first_dispatch(self):
+        target = EventTarget()
+        calls = []
+
+        target.addEventListener("custom_event", lambda event: calls.append(event.type), {"once": True})
+
+        target.dispatchEvent(Event("custom_event"))
+        target.dispatchEvent(Event("custom_event"))
+
+        self.assertEqual(calls, ["custom_event"])
+
+    def test_stop_immediate_propagation_stops_remaining_listeners(self):
+        target = EventTarget()
+        calls = []
+
+        def first(event):
+            calls.append("first")
+            event.stopImmediatePropagation()
+
+        def second(event):
+            calls.append("second")
+
+        target.addEventListener("custom_event", first)
+        target.addEventListener("custom_event", second)
+
+        target.dispatchEvent(Event("custom_event"))
+
+        self.assertEqual(calls, ["first"])
+
     def test_ui_event_initialization(self):
         event_data = {
             "canBubble": True,
@@ -253,6 +324,26 @@ class TestCase(unittest.TestCase):
         # Check if the path includes the expected elements in the correct order
         expected_path = [child, parent, root]
         self.assertEqual(path, expected_path)
+
+    def test_custom_event_detail(self):
+        event = CustomEvent("custom_event", {"detail": {"message": "hello"}})
+        self.assertEqual(event.detail, {"message": "hello"})
+
+    def test_submit_event_submitter(self):
+        submitter = object()
+        event = SubmitEvent("submit", {"submitter": submitter})
+        self.assertIs(event.submitter, submitter)
+
+    def test_mouse_event_client_coordinates_and_modifiers(self):
+        event = MouseEvent("click", {"clientX": 10, "clientY": 20, "ctrlKey": True})
+        self.assertEqual(event.clientX, 10)
+        self.assertEqual(event.clientY, 20)
+        self.assertTrue(event.getModifierState("Control"))
+
+    def test_document_create_event_specializations(self):
+        self.assertIsInstance(document.createEvent("MouseEvent"), MouseEvent)
+        self.assertIsInstance(document.createEvent("KeyboardEvent"), KeyboardEvent)
+        self.assertIsInstance(document.createEvent("CustomEvent"), CustomEvent)
 
 if __name__ == '__main__':
     unittest.main()
