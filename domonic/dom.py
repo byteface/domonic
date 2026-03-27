@@ -10,6 +10,7 @@
 import copy
 import os
 import re
+import urllib.parse
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 from domonic.events import Event, EventTarget, MouseEvent
@@ -3684,14 +3685,18 @@ class StaticRange(AbastractRange):
 
 
 class TimeRanges:
-    def __init__(self):
-        self.length = 0
+    def __init__(self, *ranges):
+        self._ranges = []
+        for item in ranges:
+            if isinstance(item, (list, tuple)) and len(item) == 2:
+                self._ranges.append((item[0], item[1]))
+        self.length = len(self._ranges)
 
     def start(self, index):
-        raise NotImplementedError
+        return self._ranges[index][0]
 
     def end(self, index):
-        raise NotImplementedError
+        return self._ranges[index][1]
 
     def __len__(self):
         return self.length
@@ -4358,30 +4363,29 @@ class Location:
 
     def origin(self):  # TODO - test
         """Returns the protocol, hostname and port number of a URL"""
-        # from domonic.javascript import URL
-        from domonic.webapi.url import URL
-
-        return URL(self.href).origin
+        parsed = urllib.parse.urlsplit(self.href or "")
+        if not parsed.scheme or not parsed.netloc:
+            return ""
+        return f"{parsed.scheme}://{parsed.netloc}"
 
     def search(self):  # TODO - test
         """Sets or returns the querystring part of a URL"""
-        from domonic.webapi.url import URL
-
-        return URL(self.href).search
+        parsed = urllib.parse.urlsplit(self.href or "")
+        return f"?{parsed.query}" if parsed.query else ""
 
     def assign(self, url: str = "") -> None:
         """Loads a new document"""
-        # TODO - if different download?
-        # dom.baseURI = url
-        pass
+        self.href = url
+        return None
 
     def reload(self):
         """Reloads the current document"""
-        raise NotImplementedError
+        return self.href
 
-    def replace(self):
+    def replace(self, url: str = ""):
         """Replaces the current document with a new one"""
-        raise NotImplementedError
+        self.href = url
+        return None
 
 
 location = Location

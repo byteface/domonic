@@ -15,20 +15,16 @@ class TestCase(unittest.TestCase):
     def test_domonic_css(self):
 
         test = div("huh?", _style="alignContent: center;")  # TODO - should be parsing these styles
-        print(test.style.alignContent)
         test.style.alignContent = "flex-start"
-        print(test.style.alignContent)
-        print(str(test))
         assert test.style.alignContent == "flex-start"
         # assert str(test) == '<div style="align-content: flex-start;">huh?</div>'
 
         atag = a("linky", _href="https://eventual.technology", _style="alignContent: center;")
-        print(atag.style.alignContent)
+        assert atag.style.alignContent is not None
 
         sometag = div("asdfasdf", _id="test")
-        print(sometag.style)
         sometag.style.alignContent = None
-        print(sometag.style.alignContent)
+        assert sometag.style.alignContent == "none"
 
         sometag.style.backgroundColor = "black"
         sometag.style.fontSize = "12px"
@@ -36,8 +32,8 @@ class TestCase(unittest.TestCase):
         # huh = document.createAttribute("test")
         # huh.value = "wtf"
         # sometag.setAttributeNode(huh)
-        print(sometag.style.fontSize)
-        print(sometag)
+        assert sometag.style.fontSize == "12px"
+        assert "font-size:12px;" in str(sometag)
 
         # dom.select('#test' ).dostuff() # TODO -
         # print(sometag.style)
@@ -94,12 +90,9 @@ class TestCase(unittest.TestCase):
         ss = CSSStyleSheet()
         p = CSSParser.parseFromString(ss, somecss)
 
-        print("SHEET:", ss.rules)
-        print("PARSER:", p)
-
         for r in p:
-            print("bo:", r.selectorText)
-            print(r.style.cssText)
+            assert r.selectorText is not None
+            assert r.style.cssText is not None
             # print(r.style)
             # print(r.parentRule)
 
@@ -163,7 +156,6 @@ class TestCase(unittest.TestCase):
         assert cssRules[0].parentRule == None
         assert cssRules[0].parentStyleSheet == cssStyleSheet
         assert cssRules[0].selectorText == ":host"
-        print(">>>>>>>>>>>>>>>>>>>>>", cssRules[0].cssText)
         # assert cssRules[0].cssText == ':host { display: flex; overflow: hidden; width: 100%; }'
         assert cssRules[0].style.parentRule == cssRules[0]
         # assert cssRules[0].style.length == 3
@@ -216,7 +208,6 @@ class TestCase(unittest.TestCase):
         assert cssRules[3].parentRule == None
         assert cssRules[3].parentStyleSheet == cssStyleSheet
         assert cssRules[3].name == "keyframes1"
-        print(cssRules[3].cssText)
         # assert cssRules[3].cssText == '@keyframes keyframes1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }'
         # assert cssRules[3].cssRules.length == 2
         children2 = cssRules[3].cssRules
@@ -227,7 +218,6 @@ class TestCase(unittest.TestCase):
         assert children2[0].style.parentRule == children2[0]
         # assert children2[0].style[0] == 'transform'
         # assert children2[0].style['transform'] == 'rotate(0deg)'
-        print(children2[0].cssText)
         # assert children2[0].cssText == 'from { transform: rotate(0deg); }'
         assert children2[1].parentRule == cssRules[3]
         assert children2[1].parentStyleSheet == cssStyleSheet
@@ -251,7 +241,6 @@ class TestCase(unittest.TestCase):
         assert children3[0].style.parentRule == children3[0]
         # assert children3[0].style[0] == 'transform'
         # assert children3[0].style['transform'] == 'rotate(0deg)'
-        print(children3[0].cssText)
         # assert children3[0].cssText == '0% { transform: rotate(0deg); }'
         assert children3[1].parentRule == cssRules[4]
         assert children3[1].parentStyleSheet == cssStyleSheet

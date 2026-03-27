@@ -19,24 +19,11 @@ class TestCase(unittest.TestCase):
     def test_hello(self):
         d = html(head(body(li(_class="things"), div(_id="test"))))
         º(d)
-        print("---** -")
-        print(º("#test"))
-        print("---** -")
-        print(º(".things"))
-        print("---** -")
-
-        print("a::")
         a = º('<div class="test2"></div>')
-        print(a)
-
-        print("b::")
-        print(º("#test"))
         b = º("#test").append(a)
-        print(b)
-
-        print(d)
-
-        pass
+        self.assertIn('class="test2"', str(a))
+        self.assertIn('id="test"', str(b))
+        self.assertIn('class="things"', str(d))
 
     def test_add(self):
         test = º('<p></p>').add('<h1></h1>').add(div())
@@ -68,7 +55,7 @@ class TestCase(unittest.TestCase):
         º(app)  # TODO _str is none?
         # print( 'wtf:??:', º('#test1') ) # TODO - better errors when passing wrong id name
         º("#test").after(p("hi"))
-        print(app)
+        self.assertIn("<p>hi</p>", str(app))
         # pass
 
     def test_ajaxComplete(self):
@@ -96,7 +83,6 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_append(self):
-        print("TEST APPEND")
         d = º('<div></div>').append("some text")
         self.assertEqual(str(d), "<div>some text</div>")
 
@@ -679,8 +665,6 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_staticmethods(self):
-        print("test_staticmethods::::::::::::::::::")
-
         d = html()
         º(d)
 
@@ -715,12 +699,12 @@ class TestCase(unittest.TestCase):
 
         obj1 = {"a": 1, "b": 2}
         obj2 = {"c": 1, "b": 5}
-        print(º.extend(obj1, obj2))
+        self.assertEqual(º.extend(obj1, obj2), {"a": 1, "b": 5, "c": 1})
 
         test = lambda x: x
         test2 = 1
-        print("well?:", º.isFunction(test))
-        print("well?:", º.isFunction(test2))
+        self.assertTrue(º.isFunction(test))
+        self.assertFalse(º.isFunction(test2))
 
         # º.get()
         # º.getJSON()
@@ -743,21 +727,17 @@ class TestCase(unittest.TestCase):
         first = ["a", "b", "c"]
         second = ["d", "e", "f"]
         result = º.merge(º.merge([], first), second)
-        print(first)
-        print(second)
-        print(result)
+        self.assertEqual(result, ["a", "b", "c", "d", "e", "f"])
 
         first = ["a", "b", "c"]
         second = ["d", "e", "f"]
         result = º.merge(first, second)
-        print(first)
-        print(second)
-        print(result)
+        self.assertEqual(result, ["a", "b", "c", "d", "e", "f"])
 
         # º.noConflict()
         # º.noop()
 
-        print(º.now())
+        self.assertIsInstance(º.now(), int)
 
         node = div()
         assert º.data(node, "k", "v") == "v"
@@ -789,7 +769,7 @@ class TestCase(unittest.TestCase):
         # º.readyException()
         # º.removeData()
         # º.sub()
-        print(º.trim("  some tst \n   TEST."))
+        self.assertEqual(º.trim("  some tst \n   TEST."), "some tst    TEST.")
         # º.type()
         # º.unique()
         # º.uniqueSort()

@@ -741,10 +741,7 @@ class DOMTest(unittest.TestCase):
         assert len(result) == 5
 
         result = self.page.querySelectorAll("a[href='#services']")
-        # print(result)
-        for r in result:
-            print(r)
-        print(">>>>>>>>>")  # works
+        self.assertEqual(len(result), 1)
 
         result = self.page.querySelectorAll("p.text-gray")
         # print(result)
@@ -753,22 +750,13 @@ class DOMTest(unittest.TestCase):
         assert len(result) == 5
 
         result = self.page.querySelectorAll("a[href$='technology']")
-        # print(result)
-        for r in result:
-            print(r)
-
-        print(">>>>>>>>>")  # works
+        self.assertEqual(len(result), 1)
 
         result = self.page.querySelectorAll("a[href*='twitter']")
-        # print(result)
-        for r in result:
-            print(r)
-
-        print(">>>>>>>>>")  # works
+        self.assertEqual(len(result), 1)
 
         result = dom1.querySelectorAll(".fa-twitter")
-        print("--")
-        print("z RESULT>>>>>", result)
+        self.assertEqual(result, [])
         # TODO - failing. however this is now running through qselectorall
         # return
         # assert result.className == 'test this thing'
@@ -827,7 +815,6 @@ class DOMTest(unittest.TestCase):
         # print(str(page.getElementsBySelector("a", page)))
 
         # print(º('#team'))
-        print("xxxxxxxxxxxxxxxxxxxxxxxx")
         node = str(self.page.getElementsBySelector("#team", self.page)[0])
         assert node.startswith('<section id="team"')
 
@@ -853,53 +840,28 @@ class DOMTest(unittest.TestCase):
         # render( page, 'index.html' )
 
         links = self.page.getElementsBySelector("a[rel=nofollow]", self.page)
-        for linky in links:
-            print(linky.getAttribute("href"))
-        print(">>>>>>>>>")  # works
+        self.assertEqual(len(links), 1)
 
         result = self.page.getElementsBySelector("li[class='nav-item']", self.page)
-        # print(result)
-        for r in result:
-            print(r)
-        print(">>>>>>>>>")  # works
+        self.assertEqual(len(result), 4)
 
         result = self.page.getElementsBySelector("h4[class='font-weight-bold text-uppercase']", self.page)
-        # print(result)
-        for r in result:
-            print(r)
-        print(">>>>>>>>>")  # fails
+        self.assertEqual(len(result), 1)
 
         result = self.page.getElementsBySelector("li.nav-item", self.page)
-        # print(result)
-        for r in result:
-            print(r)
-        print(">>>>>>>>>")  # works
+        self.assertEqual(len(result), 5)
 
         result = self.page.getElementsBySelector("a[href='#services']", self.page)
-        # print(result)
-        for r in result:
-            print(r)
-        print(">>>>>>>>>")  # works
+        self.assertEqual(len(result), 1)
 
         result = self.page.getElementsBySelector("p.text-gray", self.page)
-        # print(result)
-        for r in result:
-            print(r)
-        print(">>>>>>>>>")  # works
+        self.assertEqual(len(result), 5)
 
         result = self.page.getElementsBySelector("a[href$='technology']", self.page)
-        # print(result)
-        for r in result:
-            print(r)
-
-        print(">>>>>>>>>")  # works
+        self.assertEqual(len(result), 1)
 
         result = self.page.getElementsBySelector("a[href*='twitter']", self.page)
-        # print(result)
-        for r in result:
-            print(r)
-
-        print(">>>>>>>>>")  # works
+        self.assertEqual(len(result), 1)
 
     def test_decorators(self):
         from domonic.decorators import el
@@ -1172,6 +1134,25 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(rect.width, 20)
         self.assertEqual(rect.height, 20)
 
+    def test_time_ranges(self):
+        ranges = TimeRanges((0, 5), (10, 20))
+        self.assertEqual(len(ranges), 2)
+        self.assertEqual(ranges.start(0), 0)
+        self.assertEqual(ranges.end(1), 20)
+
+    def test_location_assign_replace_reload(self):
+        loc = Location("https://example.com/one?q=1")
+        self.assertEqual(str(loc), "https://example.com/one?q=1")
+        self.assertIn("example.com", loc.origin())
+        self.assertEqual(loc.search(), "?q=1")
+
+        self.assertIsNone(loc.assign("https://example.com/two"))
+        self.assertEqual(loc.href, "https://example.com/two")
+        self.assertEqual(loc.reload(), "https://example.com/two")
+
+        self.assertIsNone(loc.replace("https://example.com/three"))
+        self.assertEqual(loc.href, "https://example.com/three")
+
         # Window().console.log("test this")
         # window.console.log("test this")
 
@@ -1280,8 +1261,6 @@ class DOMTest(unittest.TestCase):
 
         # Drop id, everywhere: <span class='theclass' style='font-weight: bold'>...</span>
         s5 = Sanitizer({"dropAttributes": {"id": ["*"]}}).sanitize(sample)
-        print("5::::", s5)
-        print(s5)
         assert str(s5) == '<div style="cool"><span class="theclass" style="font-weight: bold">hello</span></div>'
 
         # Comments will be dropped by default.
@@ -1327,18 +1306,16 @@ class DOMTest(unittest.TestCase):
 
         # https://github.com/byteface/domonic/issues/38
         com = f"{html(head(),body(Comment('foo')))}"
-        print(com)
+        assert "<!--foo-->" in com
         # not able to recreate. Comment was updated to a Node in 6.1
         # this may have been due to that
         # TODO - mulitple arguments to comment
 
     def test_body_two(self):
-        print("im running1")
         aNewBodyElement = document.createElement("body")
         aNewBodyElement.id = "newBodyElement"
         page = html()
         page.body = aNewBodyElement
-        print("im running2")
         assert page.body.id == "newBodyElement"
 
     def test_head(self):
@@ -1374,7 +1351,6 @@ class DOMTest(unittest.TestCase):
         # print(rootnode)
         walker = doc.createTreeWalker(rootnode, NodeFilter.SHOW_ELEMENT, None, False)
 
-        print(walker.currentNode)
         assert str(walker.currentNode) == '<div id="contentarea"><p>Some <span>text</span></p><b>Bold text</b></div>'
         # print(walker.firstChild())
         # print(walker.firstChild())
@@ -1387,15 +1363,12 @@ class DOMTest(unittest.TestCase):
 
         # Step through and alert all child nodes
         # for n in walker.nextNode():
-        print("---")
         while walker.nextNode():
             # print('+++', walker.nextNode())
             window.alert(walker.currentNode)  # //alerts P, SPAN, and B.
-        print("---")
 
         # //Go back to the first child node of the collection and alert it
         walker.currentNode = rootnode  # //reset TreeWalker pointer to point to root node
-        print(walker.currentNode)
         # print('>>', walker.firstChild()) # calling it breaks it cos it moves it?. is it like an iterator then?
         assert walker.firstChild().tagName.lower() == "p"  # //alerts P
 
