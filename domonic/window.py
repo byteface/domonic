@@ -20,7 +20,7 @@ from typing import Any, Callable
 
 from domonic import domonic
 from domonic.dom import Document, Element, Location, document
-from domonic.events import Event, EventTarget, HashChangeEvent, PopStateEvent
+from domonic.events import Event, EventTarget, FocusEvent, HashChangeEvent, PopStateEvent
 from domonic.javascript import Window as JavaScriptWindow
 from domonic.webapi.console import Console
 from domonic.webapi.credentials import CredentialsContainer
@@ -342,7 +342,7 @@ class Window(JavaScriptWindow, EventTarget):
 
     def blur(self):
         self._focused = False
-        self.dispatchEvent(Event("blur"))
+        self.dispatchEvent(FocusEvent("blur", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
         return None
 
     @property
@@ -367,7 +367,7 @@ class Window(JavaScriptWindow, EventTarget):
 
     def focus(self):
         self._focused = True
-        self.dispatchEvent(Event("focus"))
+        self.dispatchEvent(FocusEvent("focus", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
         return None
 
     def frameElement(self):

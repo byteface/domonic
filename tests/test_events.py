@@ -9,7 +9,7 @@ import asyncio
 import unittest
 
 from domonic import *
-from domonic.dom import document
+from domonic.dom import Range, document
 from domonic.events import *
 
 class TestCase(unittest.TestCase):
@@ -85,7 +85,9 @@ class TestCase(unittest.TestCase):
         event = Event("custom_event")
         self.assertIsNone(event.target)
         self.assertFalse(event.defaultPrevented)
-        self.assertEqual(event.eventPhase, Event.AT_TARGET)
+        self.assertEqual(event.eventPhase, Event.NONE)
+        self.assertFalse(event.bubbles)
+        self.assertFalse(event.cancelable)
 
     def test_custom_event_properties(self):
         # Define custom event data
@@ -97,14 +99,14 @@ class TestCase(unittest.TestCase):
 
         # Test custom event properties
         self.assertEqual(event.type, "custom_event")
-        self.assertTrue(event.bubbles)
-        self.assertTrue(event.cancelable)
-        self.assertEqual(event.eventPhase, Event.AT_TARGET)
+        self.assertFalse(event.bubbles)
+        self.assertFalse(event.cancelable)
+        self.assertEqual(event.eventPhase, Event.NONE)
         self.assertIsInstance(event.timeStamp, (int, float))
         self.assertEqual(event.custom_data, event_data)
 
     def test_prevent_default(self):
-        event = Event("custom_event")
+        event = Event("custom_event", {"cancelable": True})
         event.preventDefault()
         self.assertTrue(event.defaultPrevented)
 
@@ -431,6 +433,14 @@ class TestCase(unittest.TestCase):
         self.assertEqual(keyboard_event.key, "A")
         self.assertEqual(keyboard_event.charCode, 65)
 
+        keyboard_with_modifiers = KeyboardEvent("keydown").initKeyboardEvent(
+            "keydown", True, True, None, 65, "A", 1, "Alt Shift", True
+        )
+        self.assertTrue(keyboard_with_modifiers.altKey)
+        self.assertTrue(keyboard_with_modifiers.shiftKey)
+        self.assertEqual(keyboard_with_modifiers.location, 1)
+        self.assertTrue(keyboard_with_modifiers.repeat)
+
         pointer_event = PointerEvent("pointerdown", {"clientX": 5, "clientY": 6, "pointerId": 3})
         self.assertEqual(pointer_event.clientX, 5)
         self.assertEqual(pointer_event.pointerId, 3)
@@ -448,6 +458,72 @@ class TestCase(unittest.TestCase):
         target.addEventListener("custom_event", boom)
         with self.assertRaises(RuntimeError):
             target.dispatchEvent(Event("custom_event"))
+
+    def test_cancel_bubble_and_return_value_semantics(self):
+        event = Event("custom")
+        event.cancelBubble = True
+        self.assertTrue(event.cancelBubble)
+        self.assertTrue(event._propagation_stopped)
+
+        event = Event("custom")
+        event.returnValue = False
+        self.assertTrue(event.defaultPrevented)
+        self.assertFalse(event.returnValue)
+
+        event.returnValue = True
+        self.assertFalse(event.defaultPrevented)
+        self.assertTrue(event.returnValue)
+
+    def test_pointer_beforeunload_input_and_fetch_helpers(self):
+        pointer = PointerEvent("pointermove", {"coalescedEvents": [1, 2], "predictedEvents": [3]})
+        self.assertEqual(pointer.getCoalescedEvents(), [1, 2])
+        self.assertEqual(pointer.getPredictedEvents(), [3])
+
+        beforeunload = BeforeUnloadEvent("beforeunload")
+        beforeunload.returnValue = "Leave?"
+        self.assertTrue(beforeunload.defaultPrevented)
+        self.assertEqual(beforeunload.returnValue, "Leave?")
+        beforeunload.returnValue = ""
+        self.assertFalse(beforeunload.defaultPrevented)
+
+        target = EventTarget()
+        input_event = InputEvent("input")
+        input_event.target = target
+        input_event._targetRanges = [Range()]
+        self.assertEqual(len(input_event.getTargetRanges()), 1)
+
+        request = type("Request", (), {"url": "/a", "referrer": "/b", "clientId": "c1"})()
+        fetch_event = FetchEvent("fetch", {"request": request})
+        marker = object()
+        self.assertIs(fetch_event.waitUntil(marker), marker)
+        self.assertEqual(fetch_event._pending_promises, [marker])
+
+    def test_dispatch_resets_phase_and_current_target(self):
+        target = EventTarget()
+        event = Event("custom_event", {"bubbles": True, "cancelable": True})
+
+        target.dispatchEvent(event)
+
+        self.assertEqual(event.eventPhase, Event.NONE)
+        self.assertIsNone(event.currentTarget)
+
+    def test_async_dispatch_respects_false_and_resets_state(self):
+        async def runner():
+            target = EventTarget()
+
+            async def listener(event):
+                await asyncio.sleep(0)
+                return False
+
+            target.addEventListener("custom_event", listener)
+            event = Event("custom_event", {"cancelable": True})
+            result = await target.dispatchEventAsync(event)
+            self.assertFalse(result)
+            self.assertTrue(event.defaultPrevented)
+            self.assertEqual(event.eventPhase, Event.NONE)
+            self.assertIsNone(event.currentTarget)
+
+        asyncio.run(runner())
 
 if __name__ == '__main__':
     unittest.main()

@@ -224,23 +224,28 @@ class EventTarget:
         capture_targets = list(reversed(path[1:]))
         bubble_targets = path[1:] if event.bubbles else []
 
-        for target in capture_targets:
-            self._invoke_listeners(target, event, capture=True)
+        try:
+            for target in capture_targets:
+                self._invoke_listeners(target, event, capture=True)
+                if event._propagation_stopped:
+                    return not event.defaultPrevented
+
+            self._invoke_listeners(self, event, capture=True)
+            if not event._immediate_propagation_stopped:
+                self._invoke_listeners(self, event, capture=False)
+
             if event._propagation_stopped:
                 return not event.defaultPrevented
 
-        self._invoke_listeners(self, event, capture=True)
-        if not event._immediate_propagation_stopped:
-            self._invoke_listeners(self, event, capture=False)
-
-        if event._propagation_stopped:
+            for target in bubble_targets:
+                self._invoke_listeners(target, event, capture=False)
+                if event._propagation_stopped:
+                    break
             return not event.defaultPrevented
-
-        for target in bubble_targets:
-            self._invoke_listeners(target, event, capture=False)
-            if event._propagation_stopped:
-                break
-        return not event.defaultPrevented
+        finally:
+            event.eventPhase = Event.NONE
+            event.currentTarget = None
+            event._in_passive_listener = False
 
     async def dispatchEventAsync(self, event: Any) -> bool:
         """
@@ -274,7 +279,7 @@ class EventTarget:
         event._immediate_propagation_stopped = False
         event._in_passive_listener = False
 
-        async def call_listener(callback: Callable[..., Any], current_target: Any, capture: bool) -> None:
+        async def call_listener(callback: Callable[..., Any], current_target: Any, capture: bool) -> Any:
             event.currentTarget = current_target
             event.srcElement = event.target
             event.eventPhase = Event.AT_TARGET if current_target is event.target else (
@@ -285,7 +290,8 @@ class EventTarget:
             else:
                 result = callback(event)
             if inspect.isawaitable(result):
-                await result
+                result = await result
+            return result
 
         async def invoke(current_target: Any, capture: bool) -> None:
             listeners = list(getattr(current_target, "_listener_options", {}).get(event.type, []))
@@ -293,7 +299,9 @@ class EventTarget:
                 if listener["capture"] != capture:
                     continue
                 event._in_passive_listener = listener["passive"]
-                await call_listener(listener["callback"], current_target, capture)
+                result = await call_listener(listener["callback"], current_target, capture)
+                if result is False:
+                    event.preventDefault()
                 event._in_passive_listener = False
                 if listener["once"]:
                     current_target.removeEventListener(event.type, listener["callback"], listener["capture"])
@@ -304,27 +312,34 @@ class EventTarget:
                 if callable(handler):
                     result = handler(event)
                     if inspect.isawaitable(result):
-                        await result
+                        result = await result
+                    if result is False:
+                        event.preventDefault()
 
         path = self._get_event_path(self)
         event._path = path
-        for target in reversed(path[1:]):
-            await invoke(target, True)
-            if event._propagation_stopped:
+        try:
+            for target in reversed(path[1:]):
+                await invoke(target, True)
+                if event._propagation_stopped:
+                    return not event.defaultPrevented
+
+            await invoke(self, True)
+            if not event._immediate_propagation_stopped:
+                await invoke(self, False)
+
+            if event._propagation_stopped or not event.bubbles:
                 return not event.defaultPrevented
 
-        await invoke(self, True)
-        if not event._immediate_propagation_stopped:
-            await invoke(self, False)
-
-        if event._propagation_stopped or not event.bubbles:
+            for target in path[1:]:
+                await invoke(target, False)
+                if event._propagation_stopped:
+                    break
             return not event.defaultPrevented
-
-        for target in path[1:]:
-            await invoke(target, False)
-            if event._propagation_stopped:
-                break
-        return not event.defaultPrevented
+        finally:
+            event.eventPhase = Event.NONE
+            event.currentTarget = None
+            event._in_passive_listener = False
 
 
 EventDispatcher = EventTarget  #: legacy alias
@@ -378,6 +393,7 @@ class Event:
     VOLUMECHANGE: str = "volumechange"  #:
     WAITING: str = "waiting"  #:
 
+    NONE: int = 0
     CAPTURING_PHASE: int = 1
     AT_TARGET: int = 2
     BUBBLING_PHASE: int = 3
@@ -388,18 +404,17 @@ class Event:
     def __init__(self, _type: str = "", options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.type: str = _type
-        self.bubbles: bool = options.get("bubbles", True)
-        self.cancelable: bool = options.get("cancelable", True)
-        self.cancelBubble: bool = options.get("cancelBubble", False)
-        self.composed: bool = options.get("composed", True)
+        self.bubbles: bool = options.get("bubbles", False)
+        self.cancelable: bool = options.get("cancelable", False)
+        self._cancelBubble: bool = False
+        self.composed: bool = options.get("composed", False)
         self.currentTarget: object = options.get("currentTarget", None)
         self.defaultPrevented: bool = options.get("defaultPrevented", False)
-        # self.eventPhase: int = options.get("eventPhase", None)
-        self.eventPhase: int = options.get("eventPhase", Event.AT_TARGET)
+        self.eventPhase: int = options.get("eventPhase", Event.NONE)
         self.explicitOriginalTarget: object = options.get("explicitOriginalTarget", None)
         self.isTrusted: bool = options.get("isTrusted", False)
         self.originalTarget: object = options.get("originalTarget", None)
-        self.returnValue: bool = options.get("returnValue", True)
+        self._returnValue: bool = True
         self.srcElement: object = options.get("srcElement", None)
         self.target: object = options.get("target", None)
         self.timeStamp: float = time.time_ns() / 1_000_000
@@ -407,6 +422,27 @@ class Event:
         self._immediate_propagation_stopped: bool = False
         self._in_passive_listener: bool = False
         self._path: list[Any] | None = None
+        self.cancelBubble = options.get("cancelBubble", False)
+        self.returnValue = options.get("returnValue", True)
+
+    @property
+    def cancelBubble(self) -> bool:
+        return self._cancelBubble
+
+    @cancelBubble.setter
+    def cancelBubble(self, value: bool) -> None:
+        self._cancelBubble = bool(value)
+        if self._cancelBubble:
+            self._propagation_stopped = True
+
+    @property
+    def returnValue(self) -> bool:
+        return self._returnValue
+
+    @returnValue.setter
+    def returnValue(self, value: bool) -> None:
+        self._returnValue = bool(value)
+        self.defaultPrevented = not self._returnValue
 
     def composedPath(self):
         """
@@ -440,7 +476,7 @@ class Event:
         self.cancelBubble = False
         self.defaultPrevented = False
         self.currentTarget = None
-        self.eventPhase = Event.AT_TARGET
+        self.eventPhase = Event.NONE
         self._propagation_stopped = False
         self._immediate_propagation_stopped = False
         self._path = None
@@ -533,10 +569,8 @@ class UIEvent(Event):
         Returns:
             UIEvent: The initialized UIEvent object.
         """
-        self.type = _type
+        self.initEvent(_type, canBubble, cancelable)
         self.canBubble = canBubble
-        self.bubbles = canBubble
-        self.cancelable = cancelable
         self.view = view
         self.detail = detail
         return self
@@ -594,14 +628,14 @@ class MouseEvent(UIEvent):
         **kwargs
     ) -> "MouseEvent":
         # print('initMouseEvent')
-        self.type = _type or self.type
+        self.initEvent(_type or self.type, canBubble, cancelable)
         self.canBubble = canBubble
-        self.bubbles = canBubble
-        self.cancelable = cancelable
         self.view = view
         self.detail = detail
         self.screenX = screenX
         self.screenY = screenY
+        self.x = clientX
+        self.y = clientY
         self._clientX = clientX
         self._clientY = clientY
         self._ctrlKey = ctrlKey
@@ -609,6 +643,7 @@ class MouseEvent(UIEvent):
         self._shiftKey = shiftKey
         self._metaKey = metaKey
         self._button = button
+        self._buttons = [] if button is None else [button]
         self.relatedTarget = relatedTarget
         # TODO - parse from_json - so can relay
         return self
@@ -712,16 +747,22 @@ class KeyboardEvent(UIEvent):
         modifiersListArg,
         repeat,
     ) -> "KeyboardEvent":
-        self.type = typeArg
+        self.initEvent(typeArg, canBubbleArg, cancelableArg)
         self.canBubbleArg = canBubbleArg
-        self.bubbles = canBubbleArg
         self.cancelableArg = cancelableArg
-        self.cancelable = cancelableArg
+        self.view = viewArg
         self.viewArg = viewArg
         self.charCode = charArg
         self.key = keyArg
+        self.code = keyArg
+        self.location = locationArg
         self.locationArg = locationArg
         self.modifiersListArg = modifiersListArg
+        modifiers = {modifier.strip().lower() for modifier in str(modifiersListArg).split() if modifier}
+        self._altKey = "alt" in modifiers
+        self._ctrlKey = "control" in modifiers or "ctrl" in modifiers
+        self._metaKey = "meta" in modifiers
+        self._shiftKey = "shift" in modifiers
         self.repeat = repeat
         return self
 
@@ -926,13 +967,15 @@ class PointerEvent(MouseEvent):
         self.twist: float = options.get("twist", 0)
         self.pointerType: str = options.get("pointerType", "")
         self.isPrimary: bool = options.get("isPrimary", False)
+        self._coalescedEvents = list(options.get("coalescedEvents", []))
+        self._predictedEvents = list(options.get("predictedEvents", []))
         super().__init__(_type, options, *args, **kwargs)
 
     def getCoalescedEvents(self):
-        return []
+        return list(self._coalescedEvents)
 
     def getPredictedEvents(self):
-        return []
+        return list(self._predictedEvents)
 
     # def getCurrentPoint(self, element):
     #     """ Returns the current coordinates of the specified element relative to the viewport. """
@@ -949,7 +992,17 @@ class BeforeUnloadEvent(Event):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
+        self._beforeunload_return_value = options.get("returnValue", "")
         super().__init__(_type, options, *args, **kwargs)
+
+    @property
+    def returnValue(self):
+        return self._beforeunload_return_value
+
+    @returnValue.setter
+    def returnValue(self, value):
+        self._beforeunload_return_value = "" if value is None else value
+        self.defaultPrevented = value not in ("", True, False, None)
 
 
 class SVGEvent(Event):
@@ -1039,6 +1092,14 @@ class InputEvent(UIEvent):
 
     def getTargetRanges(self):
         """Returns an array containing target ranges that will be affected by the insertion/deletion"""
+        if hasattr(self, "_targetRanges"):
+            return list(self._targetRanges)
+        if isinstance(getattr(self, "target", None), object):
+            target = self.target
+            if hasattr(target, "getSelection"):
+                selection = target.getSelection()
+                if selection is not None:
+                    return [selection.getRangeAt(i) for i in range(selection.rangeCount)]
         return []
 
 
@@ -1165,6 +1226,7 @@ class FetchEvent(Event):
         self.request = options.get("request", None)
         """ Returns the request object """
         self._responded_with = options.get("response", None)
+        self._pending_promises: list[Any] = []
         super().__init__(_type, options, *args, **kwargs)
 
     @property
@@ -1192,7 +1254,8 @@ class FetchEvent(Event):
 
     def waitUntil(self, promise):
         """Returns a promise that resolves when the response is available"""
-        return super().waitUntil(promise)
+        self._pending_promises.append(promise)
+        return promise
 
 
 class ExtendableEvent(Event):
