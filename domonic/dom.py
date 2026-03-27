@@ -154,6 +154,46 @@ class Node(EventTarget):
                 self.namespaceURI = "http://www.w3.org/1999/xlink"
             elif nm == "math":
                 self.namespaceURI = "http://www.w3.org/1998/Math/MathML"
+            # elif nm == "rdf":
+            #     self.namespaceURI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+            # elif nm == "rdfs":
+            #     self.namespaceURI = "http://www.w3.org/2000/01/rdf-schema#"
+            # elif nm == "owl":
+            #     self.namespaceURI = "http://www.w3.org/2002/07/owl#"
+            # elif nm == "dc":
+            #     self.namespaceURI = "http://purl.org/dc/elements/1.1/"
+            # elif nm == "dcterms":
+            #     self.namespaceURI = "http://purl.org/dc/terms/"
+            # elif nm == "foaf":
+            #     self.namespaceURI = "http://xmlns.com/foaf/0.1/"
+            # elif nm == "cc":
+            #     self.namespaceURI = "http://web.resource.org/cc/"
+            # elif nm == "gr":
+            #     self.namespaceURI = "http://purl.org/goodrelations/v1#"
+            # elif nm == "sioc":
+            #     self.namespaceURI = "http://rdfs.org/sioc/ns#"
+            # elif nm == "doap":
+            #     self.namespaceURI = "http://usefulinc.com/ns/doap#"
+            # elif nm == "vcard":
+            #     self.namespaceURI = "http://www.w3.org/2006/vcard/ns#"
+            # elif nm == "schema":
+            #     self.namespaceURI = "http://schema.org/"
+            # elif nm == "og":
+            #     self.namespaceURI = "http://ogp.me/ns#"
+            # elif nm == "geo":
+            #     self.namespaceURI = "http://www.w3.org/2003/01/geo/wgs84_pos#"
+            # elif nm == "rev":
+            #     self.namespaceURI = "http://purl.org/stuff/rev#"
+            # elif nm == "sioc":
+            #     self.namespaceURI = "http://rdfs.org/sioc/ns#"
+            # elif nm == "skos":
+            #     self.namespaceURI = "http://www.w3.org/2004/02/skos/core#"  # TODO - test
+            # elif nm == "wot":
+            #     self.namespaceURI = "http://xmlns.com/wot/0.1/"
+            # elif nm == "wgs84_pos":
+            #     self.namespaceURI = "http://www.w3.org/2003/01/geo/wgs84_pos#"
+            # elif nm == "xhv":
+            #     self.namespaceURI = "http://www.w3.org/1999/xhtml/vocab#"
         except Exception as e:
             pass
 
@@ -278,6 +318,23 @@ class Node(EventTarget):
                 "playsinline",    # Added
                 "value",          # Added
                 "defer",          # Added
+
+                # TODO - tests - ?. are these boolean?
+                # "compact",        # Added
+                # "ismap",          # Added
+                # "sandbox",        # Added
+                # "seamless",       # Added
+                # "selected",       # Added
+                # "sortable",       # Added
+                # "truespeed",      # Added
+                # "typemustmatch",  # Added
+                # "visible",        # Added
+                # "wrap",           # Added
+                # "novalidate",     # Added
+                # "open",           # Added
+                # "readonly",       # Added
+                # "required",       # Added
+                
 
             ]:
                 if value == "" or value == key:
@@ -966,6 +1023,7 @@ class Node(EventTarget):
 
     @ownerDocument.setter
     def ownerDocument(self, newOwner):  #: Element):
+        """Sets the root element (document object) for an element"""
         # self.rootNode = newOwner # NOTE - you can't set rootNode it's property that calcs it
         pass
 
@@ -2314,6 +2372,7 @@ class Element(Node):
 
     def blur(self):
         """Removes focus from an element"""
+        # raise NotImplementedError
         pass
 
     @property
@@ -2972,6 +3031,9 @@ class Comment(Node):
 
 
 class CDATASection(Node):
+    """The CDATASection interface represents a CDATA section that can be used within XML 
+    to include extended portions of unescaped text, such that the symbols < and & do not 
+    need escaping as they normally do within XML when used as text."""
 
     nodeType: int = Node.CDATA_SECTION_NODE
     __slots__ = "data"
@@ -2992,9 +3054,13 @@ class CDATASection(Node):
     def length(self) -> int:
         return len(self.data)
 
+    # def __format__(self, format_spec):
+    #     return str(self)
+
 
 class AbastractRange:
     def __init__(self):
+        """Constructor for Range objects"""
         raise NotImplementedError
 
     def cloneContents(self):

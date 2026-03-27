@@ -653,3 +653,4 @@ def create_element(name="custom_tag", *args, **kwargs):
     new_tag = custom_tag(*args, **kwargs)
     new_tag.name = name
     return new_tag
+
