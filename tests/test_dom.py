@@ -2043,6 +2043,11 @@ class NodeTest(unittest.TestCase):
                         assert getattr(item, "parentNode", node) is node, f"parentNode is incorrect ({item.parentNode})"
                         self._checkPositions(item)
 
+    def test_truthiness(self):
+        doc = Document()
+        assert doc  # to support `if doc: ...`
+        assert bool(doc)  # more explicitly
+
     def test_Document(self):
         # There should be one-- and preferably only one --obvious way to do it.
         doc = Document()

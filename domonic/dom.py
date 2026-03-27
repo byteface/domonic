@@ -812,6 +812,10 @@ class Node(EventTarget):
         except Exception:
             return
 
+    def __bool__(self) -> bool:
+        # Nodes should be truthy by existence, not by child count.
+        return True
+
     def __len__(self) -> int:
         return len(self.args)
 
