@@ -1225,7 +1225,10 @@ class Node(EventTarget):
     @textContent.setter
     def textContent(self, content):
         """Sets the text content of a node and its descendants"""
-        self.args = (content,)
+        if content in (None, ""):
+            self.args = ()
+        else:
+            self.args = (content,)
         return content
 
     # def isSupported(self): return False #  🗑
@@ -2931,8 +2934,10 @@ class Element(Node):
 
     # Sets or returns the text content of a node and its descendants
     def innerText(self, *args: Any) -> str:
-        self.args = args
-        return "".join([each.__str__() for each in self.args])
+        if args:
+            self.textContent = "".join(str(each) for each in args)
+            return self.textContent
+        return self.textContent
 
     # Inserts an element adjacent to the current element
     def _normalize_adjacent_position(self, position: str) -> str:
@@ -4653,9 +4658,13 @@ class Document(Element):
     def importNode(self, node, deep=False):
         """Imports a node from another document to this document."""
         if isinstance(node, Element):
-            node = node.copy()
-            node.ownerDocument = self
-            return node
+            cloned = copy.deepcopy(node)
+            if not deep:
+                cloned.args = ()
+            cloned.ownerDocument = self
+            cloned._update_parents()
+            cloned._iterate(cloned, lambda current: setattr(current, "ownerDocument", self))
+            return cloned
         elif isinstance(node, Comment):
             return Comment(node.data)
         elif isinstance(node, Text):
@@ -4689,14 +4698,24 @@ class Document(Element):
 
     def normalizeDocument(self):  # TODO - test
         """Removes empty Text nodes, and joins adjacent nodes"""
-        for each in self.childNodes:
+        content = []
+        pending_text = ""
+        for each in list(self.childNodes):
             if each.nodeType == Node.TEXT_NODE:
-                if each.nodeValue.strip() == "":
-                    each.parentNode.removeChild(each)
-                else:
-                    each.normalize()
-            else:
-                each.normalize()
+                value = each.nodeValue or ""
+                if value.strip() == "":
+                    continue
+                pending_text += value
+                continue
+            if pending_text != "":
+                content.append(Text(pending_text))
+                pending_text = ""
+            each.normalize()
+            content.append(each)
+        if pending_text != "":
+            content.append(Text(pending_text))
+        self.args = tuple(content)
+        self._update_parents()
         return
 
     def open(self, index="index.html"):
@@ -4806,12 +4825,14 @@ class Document(Element):
             html (str, optional): [the content to write to the document]
         """
         html = str(html)
-        if self._open_filename is not None:
+        current_open_filename = self._open_filename
+        if current_open_filename is not None:
             # open the file and APPEND the html to the file without losing the previous content
-            with open(self._open_filename, "a") as f:
+            with open(current_open_filename, "a") as f:
                 f.write(html)
         content = DocumentFragment(html)
         self.__init__(content)
+        self._open_filename = current_open_filename
 
     def writeln(self, html: str = ""):  # -> None: # TODO - untested
         """[writes HTML text to a document, followed by a line break]

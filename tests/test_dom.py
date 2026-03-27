@@ -5,6 +5,8 @@
 
 """
 
+import os
+import tempfile
 import unittest
 
 from domonic import *
@@ -259,26 +261,14 @@ class DOMTest(unittest.TestCase):
         node.appendChild(kid2)
         node.appendChild(kid3)
         somelist = node.childNodes
-        for each in somelist.values():
-            print(each)
-        # <p>
-        # #text "hey"
-        # <span>
-        # https://developer.mozilla.org/en-US/docs/Web/API/NodeList/values
-        # TODO - output should be no close tag and a hash say text?
-        for each in somelist.keys():
-            print(each)
-        somelist.forEach(
-            lambda currentValue, currentIndex, listObj, **kwargs: print(currentValue, currentIndex, kwargs), "myThisArg"
-        )
-        for each in somelist.entries():
-            print(each)
-        # Array [ 0, <p> ]
-        # Array [ 1, #text "hey" ]
-        # Array [ 2, <span> ]
-        # print(somelist.item(0))
-        # print(somelist.item(1))
-        # print(somelist.item(2))
+        self.assertEqual(list(somelist.values()), [kid1, kid2, kid3])
+        self.assertEqual(list(somelist.keys()), [0, 1, 2])
+        self.assertEqual(list(somelist.entries()), [(0, kid1), (1, kid2), (2, kid3)])
+
+        seen = []
+        somelist.forEach(lambda currentValue, currentIndex, listObj, **kwargs: seen.append((currentValue, currentIndex, listObj)))
+        self.assertEqual(seen, [(kid1, 0, somelist), (kid2, 1, somelist), (kid3, 2, somelist)])
+
         assert somelist.item(0) == kid1
         assert somelist.item(1) == kid2
         assert somelist.item(2) == kid3
@@ -370,7 +360,6 @@ class DOMTest(unittest.TestCase):
         a2 = div("hi")
         self.assertEqual(True, a1.isEqualNode(a2))
 
-        print(a1.nodeValue)
         self.assertEqual(True, a1.nodeValue == "hi")
 
         a1.nodeValue = "something else"
@@ -387,8 +376,6 @@ class DOMTest(unittest.TestCase):
         myobj.style.float = "left"
         # myobj.style.zIndex = "1"
         # print('---')
-        print(myobj)
-        print(str(myobj))
         self.assertEqual(True, str(myobj) == '<div class="mytest" style="float:left;"></div>')
 
         # print("NOW>>>>")
@@ -398,7 +385,7 @@ class DOMTest(unittest.TestCase):
         )
 
         myobj = domonic.load(mylist)
-        print(myobj)
+        self.assertEqual(len(myobj), 10)
 
         myorderedlist = ol()
         myorderedlist += str(li() / 10)
@@ -524,7 +511,8 @@ class DOMTest(unittest.TestCase):
         # print(mydiv)
         assert str(mydiv) == '<div>I like cake<div class="myclass"><div>1</div><div>2</div><div>3</div></div></div>'
 
-        print(sometag.innerText())
+        self.assertEqual(sometag.innerText(), "test2")
+        sometag.textContent = ""
 
         # return
         # print(sometag.nodeName)
@@ -901,8 +889,6 @@ class DOMTest(unittest.TestCase):
         def test():
             return "hi!"
 
-        print(test())
-        # print('decorators work4!')
         assert str(test()) == "<html><body><div>hi!</div></body></html>"
 
     def test_domonic_window_console_log(self):
@@ -1013,6 +999,32 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(doc.querySelector("title").textContent, "hello")
         self.assertEqual(doc.body.tagName, "body")
         self.assertTrue(impl.hasFeatures(None))
+
+    def test_domimplementation_create_document_and_doctype(self):
+        impl = DOMImplementation()
+        doctype = impl.createDocumentType("html", "", "")
+        doc = impl.createDocument("http://www.w3.org/1999/xhtml", "html", doctype)
+
+        self.assertEqual(str(doc.doctype), "<!DOCTYPE html>")
+        self.assertEqual(doc.nodeType, Node.DOCUMENT_NODE)
+        self.assertEqual(str(doctype), "<!DOCTYPE html>")
+
+    def test_document_import_node_variants(self):
+        page = html(body())
+        imported_element = page.importNode(div(span("x"), _id="one"), deep=True)
+        imported_comment = page.importNode(Comment("note"))
+        imported_text = page.importNode(Text("hello"))
+        imported_instruction = page.importNode(ProcessingInstruction("xml-stylesheet", 'href="style.css"'))
+        imported_fragment = page.importNode(DocumentFragment())
+        imported_attr = page.importNode(Attr("data-id", "7"))
+
+        self.assertEqual(str(imported_element), '<div id="one"><span>x</span></div>')
+        self.assertIs(imported_element.ownerDocument, page)
+        self.assertEqual(str(imported_comment), "<!--note-->")
+        self.assertEqual(str(imported_text), "hello")
+        self.assertEqual(str(imported_instruction), '<?xml-stylesheet href="style.css"?>')
+        self.assertIsInstance(imported_fragment, DocumentFragment)
+        self.assertEqual((imported_attr.name, imported_attr.value), ("data-id", "7"))
 
     def test_document_elements_from_point(self):
         one = div("one", _id="one")
@@ -1162,6 +1174,32 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(shadow.elementFromPoint(5, 5), shadow_button)
         self.assertEqual(shadow.caretPositionFromPoint(5, 5).offset, 0)
 
+    def test_document_normalize_and_stream_writes(self):
+        page = html()
+        page.args = (Text("alpha"), Text(""), Text("beta"),)
+        for child in page.args:
+            child.parentNode = page
+
+        page.normalizeDocument()
+        self.assertEqual(len(page.childNodes), 1)
+        self.assertEqual(page.textContent, "alphabeta")
+
+        fd, path = tempfile.mkstemp(prefix="domonic_doc_", suffix=".html")
+        os.close(fd)
+        os.remove(path)
+        try:
+            page.open(path)
+            page.write("<p>one</p>")
+            self.assertEqual(str(page), "<html><p>one</p></html>")
+            page.writeln("<p>two</p>")
+            self.assertEqual(str(page), "<html><p>two</p>\n</html>")
+
+            with open(path, "r", encoding="utf-8") as handle:
+                self.assertEqual(handle.read(), "<p>one</p><p>two</p>\n")
+        finally:
+            if os.path.exists(path):
+                os.remove(path)
+
     def test_selection_core_helpers(self):
         first = Text("hello")
         second = Text("world")
@@ -1232,9 +1270,17 @@ class DOMTest(unittest.TestCase):
         page.URL = "https://example.com/path?q=1"
 
         self.assertEqual(page.domain(), "example.com")
-        self.assertEqual(page.createEvent("FocusEvent").type, "focus")
-        self.assertEqual(page.createEvent("InputEvent").type, "input")
-        self.assertEqual(page.createEvent("ClipboardEvent").type, "copy")
+        expected_types = {
+            "FocusEvent": "focus",
+            "InputEvent": "input",
+            "ClipboardEvent": "copy",
+            "MouseEvent": "click",
+            "KeyboardEvent": "keydown",
+            "SubmitEvent": "submit",
+        }
+        for event_name, expected_type in expected_types.items():
+            with self.subTest(event_name=event_name):
+                self.assertEqual(page.createEvent(event_name).type, expected_type)
 
     def test_insert_adjacent_element_positions(self):
         host = div(span("target", _id="target"), p("sibling", _id="sibling"))
@@ -1307,6 +1353,69 @@ class DOMTest(unittest.TestCase):
         matches = page.getElementsByName("email")
         self.assertEqual(len(matches), 2)
         self.assertTrue(all(match.getAttribute("name") == "email" for match in matches))
+
+    def test_attribute_namespace_helpers(self):
+        node = div()
+        attr = Attr("data-mode", "test")
+
+        self.assertIs(node.setAttributeNodeNS(attr), node)
+        fetched = node.getAttributeNodeNS("data-mode")
+        self.assertIsNotNone(fetched)
+        self.assertEqual((fetched.name, fetched.value), ("data-mode", "test"))
+        self.assertEqual(node.getAttributeNS("http://example.com/ns", "data-mode"), "test")
+        node.setAttributeNS("http://example.com/ns", "data-other", "x")
+        self.assertEqual(node.getAttribute("data-other"), "x")
+
+    def test_dom_html_element_constructor_helpers(self):
+        cases = [
+            (HTMLAnchorElement, {"href": "/home", "target": "_blank", "rel": "noopener", "download": "file.txt", "type": "text/html"}, {"href": "/home", "target": "_blank", "rel": "noopener", "download": "file.txt", "type": "text/html"}),
+            (HTMLAreaElement, {"href": "/map", "target": "_self", "alt": "Map", "coords": "0,0,10,10", "shape": "rect"}, {"href": "/map", "target": "_self", "alt": "Map", "coords": "0,0,10,10", "shape": "rect"}),
+            (HTMLAudioElement, {"autoplay": True, "controls": True, "loop": True, "muted": True, "preload": "auto", "src": "/song.mp3"}, {"autoplay": True, "controls": True, "loop": True, "muted": True, "preload": "auto", "src": "/song.mp3"}),
+            (HTMLBaseElement, {"href": "https://example.com", "target": "_top"}, {"href": "https://example.com", "target": "_top"}),
+            (HTMLBodyElement, {"aLink": "red", "background": "/bg.png", "bgColor": "#fff", "link": "blue", "onload": "init()", "onunload": "bye()", "text": "black", "vLink": "purple"}, {"aLink": "red", "background": "/bg.png", "bgColor": "#fff", "link": "blue", "onload": "init()", "onunload": "bye()", "text": "black", "vLink": "purple"}),
+            (HTMLButtonElement, {"disabled": True, "form": "signup", "formaction": "/submit", "formenctype": "multipart/form-data", "formmethod": "post", "formnovalidate": True, "formtarget": "_blank", "name": "go", "type": "submit", "value": "Send"}, {"disabled": True, "form": "signup", "formaction": "/submit", "formenctype": "multipart/form-data", "formmethod": "post", "formnovalidate": True, "formtarget": "_blank", "name": "go", "type": "submit", "value": "Send"}),
+            (HTMLCanvasElement, {"width": 320, "height": 240}, {"width": 320, "height": 240}),
+            (HTMLDataElement, {"value": "42"}, {"value": "42"}),
+            (HTMLDialogElement, {"open": True}, {"open": True}),
+            (HTMLFormElement, {"action": "/submit", "autocomplete": "on", "enctype": "multipart/form-data", "method": "post", "name": "signup", "novalidate": True, "target": "_blank"}, {"action": "/submit", "autocomplete": "on", "enctype": "multipart/form-data", "method": "post", "name": "signup", "novalidate": True, "target": "_blank"}),
+            (HTMLIFrameElement, {"src": "/frame", "name": "hero", "sandbox": "allow-scripts", "allowfullscreen": True}, {"src": "/frame", "name": "hero", "sandbox": "allow-scripts", "allowfullscreen": True}),
+            (HTMLImageElement, {"alt": "hero", "src": "/hero.png", "crossorigin": "anonymous", "height": "100", "ismap": True, "longdesc": "/desc", "sizes": "100vw", "srcset": "/hero.png 1x", "usemap": "#hero", "width": "200"}, {"alt": "hero", "src": "/hero.png", "crossorigin": "anonymous", "height": "100", "ismap": True, "longdesc": "/desc", "sizes": "100vw", "srcset": "/hero.png 1x", "usemap": "#hero", "width": "200"}),
+            (HTMLInputElement, {"accept": "image/*", "alt": "Upload", "autocomplete": "on", "autofocus": True, "checked": True, "dirname": "dir", "disabled": True, "form": "signup", "formaction": "/submit", "formenctype": "multipart/form-data", "formmethod": "post", "formnovalidate": True, "formtarget": "_blank", "height": "10", "maxlength": "20", "multiple": True, "name": "avatar", "pattern": ".*", "placeholder": "Upload", "readonly": True, "required": True, "size": "10", "src": "/image.png", "step": "2", "type": "file", "value": "x", "width": "30"}, {"accept": "image/*", "alt": "Upload", "autocomplete": "on", "autofocus": True, "checked": True, "dirname": "dir", "disabled": True, "form": "signup", "formaction": "/submit", "formenctype": "multipart/form-data", "formmethod": "post", "formnovalidate": True, "formtarget": "_blank", "height": "10", "maxlength": "20", "multiple": True, "name": "avatar", "pattern": ".*", "placeholder": "Upload", "readonly": True, "required": True, "size": "10", "src": "/image.png", "step": "2", "type": "file", "value": "x", "width": "30"}),
+            (HTMLLinkElement, {"rel": "stylesheet", "href": "/app.css", "type": "text/css", "sizes": "32x32"}, {"rel": "stylesheet", "href": "/app.css", "type": "text/css", "sizes": "32x32"}),
+            (HTMLMetaElement, {"charset": "utf-8", "content": "text/html", "http_equiv": "content-type", "name": "viewport"}, {"charset": "utf-8", "content": "text/html", "http-equiv": "content-type", "name": "viewport"}),
+            (HTMLMeterElement, {"value": "5", "_min": "0", "_max": "10", "low": "2", "high": "8", "optimum": "6"}, {"value": "5", "_min": "0", "_max": "10", "low": "2", "high": "8", "optimum": "6"}),
+            (HTMLOptionElement, {"disabled": True, "label": "Choice", "selected": True, "value": "1"}, {"disabled": True, "label": "Choice", "selected": True, "value": "1"}),
+            (HTMLParamElement, {"name": "quality", "value": "high"}, {"name": "quality", "value": "high"}),
+            (HTMLProgressElement, {"value": "30", "max": "100"}, {"value": "30", "max": "100"}),
+            (HTMLQuoteElement, {"cite": "https://example.com"}, {"cite": "https://example.com"}),
+            (HTMLTextAreaElement, {"autofocus": True, "cols": "40", "disabled": True, "form": "signup", "maxlength": "100", "name": "message", "placeholder": "Write", "readonly": True, "required": True, "rows": "5", "wrap": "soft"}, {"autofocus": True, "cols": "40", "disabled": True, "form": "signup", "maxlength": "100", "name": "message", "placeholder": "Write", "readonly": True, "required": True, "rows": "5", "wrap": "soft"}),
+            (HTMLTimeElement, {"datetime": "2026-03-27"}, {"datetime": "2026-03-27"}),
+            (HTMLTrackElement, {"kind": "subtitles", "label": "English", "src": "/captions.vtt", "srclang": "en", "default": True}, {"kind": "subtitles", "label": "English", "src": "/captions.vtt", "srclang": "en", "default": True}),
+            (HTMLVideoElement, {"autoplay": True, "controls": True, "height": "720", "loop": True, "muted": True, "poster": "/poster.png", "preload": "auto", "src": "/movie.mp4", "width": "1280"}, {"autoplay": True, "controls": True, "height": "720", "loop": True, "muted": True, "poster": "/poster.png", "preload": "auto", "src": "/movie.mp4", "width": "1280"}),
+        ]
+
+        for constructor, kwargs, expected in cases:
+            with self.subTest(constructor=constructor.__name__):
+                element = constructor(**kwargs)
+                for attr_name, attr_value in expected.items():
+                    self.assertEqual(element.getAttribute(attr_name), attr_value)
+
+    def test_br_render_modes(self):
+        original_slash = DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH
+        original_space = DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH
+        try:
+            DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH = True
+            DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH = False
+            self.assertEqual(str(HTMLBRElement()), "<br/>")
+
+            DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH = True
+            self.assertEqual(str(HTMLBRElement()), "<br />")
+
+            DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH = False
+            self.assertEqual(str(HTMLBRElement()), "<br >")
+        finally:
+            DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH = original_slash
+            DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH = original_space
 
     def test_fullscreen_and_scroll_helpers(self):
         page = html(body(div(_id="hero"), section(_id="content")))
@@ -1385,36 +1494,6 @@ class DOMTest(unittest.TestCase):
 
         self.assertTrue(result)
         self.assertEqual(calls, [("submit", None)])
-
-        # Window().console.log("test this")
-        # window.console.log("test this")
-
-        # c = Console()
-        # c.log()
-        # Console.log('test')
-        # someObject = { 'str': "Some text", 'id': 5 }
-        # Console.log(someObject)
-
-        # [09:27:13.475] ({str:"Some text", id:5})
-
-        count = 5
-        Console.log("--count: %d", count)
-        assert Console.log("count: %d", count) == "count: 5"
-        Console.log("--count:", count)
-        assert Console.log("count:", count) == "count: 5"
-
-        console.time("answer time")
-        console.timeLog("answer time")
-        console.timeEnd("answer time")
-
-        errorMsg = "the # is not even"
-        for number in range(2, 5):
-            console.log("the # is " + str(number))
-            console.assert_(number % 2 == 0, {"number": number, "errorMsg": errorMsg})
-
-        console.info("test2")
-        console.warn("test3")
-        pass
 
     def test_domonic_matches(self):
         content = ul(_id="birds").html(
