@@ -178,7 +178,7 @@ run:
         # create a bat file to activate the venv an install requirements
         with open("activate.bat", "w") as f:
             f.write("@echo off\n")
-            f.write('call "venv\Scripts\activate"\n')
+            f.write('call "venv\\Scripts\\activate"\n')
             f.write("python3 -m pip install requests\n")
             if server_choice != "none":
                 f.write(f"python3 -m pip install {server_choice}\n")
