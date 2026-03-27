@@ -2622,11 +2622,17 @@ class Element(Node):
 
     def blur(self):
         """Removes focus from an element"""
+        from domonic.events import FocusEvent
+
         doc = self.ownerDocument if isinstance(self.ownerDocument, Document) else None
         self._focused = False
+        related_target = None
         if doc is not None and getattr(doc, "_activeElement", None) is self:
             doc._activeElement = None
-        return self.dispatchEvent(Event("blur"))
+            related_target = getattr(doc, "body", None)
+        result = self.dispatchEvent(FocusEvent("blur", {"bubbles": False, "cancelable": False, "relatedTarget": related_target}))
+        self.dispatchEvent(FocusEvent("focusout", {"bubbles": True, "cancelable": False, "relatedTarget": related_target}))
+        return result
 
     @property
     def classList(self):
@@ -2655,9 +2661,8 @@ class Element(Node):
 
     def click(self):
         """Simulates a mouse-click on an element"""
-        # evt = MouseEvent('click', {'bubbles': True,'cancelable': True,'view': window});
-        # TODO - don't if its cancelled
-        evt = MouseEvent("click")
+        view = getattr(self.ownerDocument, "defaultView", None) if isinstance(self.ownerDocument, Document) else None
+        evt = MouseEvent("click", {"bubbles": True, "cancelable": True, "view": view, "detail": 1})
         return self.dispatchEvent(evt)
 
     @staticmethod
@@ -2749,15 +2754,22 @@ class Element(Node):
 
     def focus(self):
         """Sets focus on an element"""
+        from domonic.events import FocusEvent
+
         doc = self.ownerDocument if isinstance(self.ownerDocument, Document) else None
+        previous = None
         if doc is not None:
             current = getattr(doc, "_activeElement", None)
             if current is not None and current is not self:
+                previous = current
                 current._focused = False
-                current.dispatchEvent(Event("blur"))
+                current.dispatchEvent(FocusEvent("blur", {"bubbles": False, "cancelable": False, "relatedTarget": self}))
+                current.dispatchEvent(FocusEvent("focusout", {"bubbles": True, "cancelable": False, "relatedTarget": self}))
             doc._activeElement = self
         self._focused = True
-        return self.dispatchEvent(Event("focus"))
+        result = self.dispatchEvent(FocusEvent("focus", {"bubbles": False, "cancelable": False, "relatedTarget": previous}))
+        self.dispatchEvent(FocusEvent("focusin", {"bubbles": True, "cancelable": False, "relatedTarget": previous}))
+        return result
 
     def setAttributeNodeNS(self, attr):  # TODO - test
         """Sets the attribute node of an element"""
@@ -4290,6 +4302,10 @@ class Document(Element):
         """
         if event_type == "MouseEvent":
             return MouseEvent("click")
+        if event_type == "PointerEvent":
+            from domonic.events import PointerEvent
+
+            return PointerEvent("pointerdown")
         if event_type == "FocusEvent":
             from domonic.events import FocusEvent
 
@@ -4306,6 +4322,10 @@ class Document(Element):
             from domonic.events import CustomEvent
 
             return CustomEvent("custom")
+        if event_type == "CompositionEvent":
+            from domonic.events import CompositionEvent
+
+            return CompositionEvent("compositionstart")
         if event_type == "SubmitEvent":
             from domonic.events import SubmitEvent
 
@@ -4318,6 +4338,26 @@ class Document(Element):
             from domonic.events import ClipboardEvent
 
             return ClipboardEvent("copy")
+        if event_type == "WheelEvent":
+            from domonic.events import WheelEvent
+
+            return WheelEvent("wheel")
+        if event_type == "BeforeUnloadEvent":
+            from domonic.events import BeforeUnloadEvent
+
+            return BeforeUnloadEvent("beforeunload")
+        if event_type == "MessageEvent":
+            from domonic.events import MessageEvent
+
+            return MessageEvent("message")
+        if event_type == "TransitionEvent":
+            from domonic.events import TransitionEvent
+
+            return TransitionEvent("transitionend")
+        if event_type == "ProgressEvent":
+            from domonic.events import ProgressEvent
+
+            return ProgressEvent("progress")
         if event_type is None:
             return Event()
         return Event(event_type)
@@ -6656,6 +6696,11 @@ class HTMLFormElement(HTMLElement):
             self.setAttribute("novalidate", novalidate)
         if target is not None:
             self.setAttribute("target", target)
+
+    def submit(self):
+        from domonic.events import SubmitEvent
+
+        return self.dispatchEvent(SubmitEvent("submit", {"bubbles": True, "cancelable": True, "submitter": None}))
 
 
 class HTMLFrameSetElement(HTMLElement):  # TODO - check - appears deprecated

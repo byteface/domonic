@@ -129,9 +129,11 @@ class EventTarget:
             callback = listener["callback"]
             event._in_passive_listener = listener["passive"]
             if hasattr(callback, "handleEvent"):
-                callback.handleEvent(event)
+                result = callback.handleEvent(event)
             else:
-                callback(event)
+                result = callback(event)
+            if result is False:
+                event.preventDefault()
             event._in_passive_listener = False
             if listener["once"]:
                 current_target.removeEventListener(event_type, callback, listener["capture"])
@@ -141,7 +143,9 @@ class EventTarget:
         if capture is False:
             handler = getattr(current_target, f"on{event_type}", None)
             if callable(handler):
-                handler(event)
+                result = handler(event)
+                if result is False:
+                    event.preventDefault()
 
     def addEventListener(
         self,
@@ -220,25 +224,22 @@ class EventTarget:
         capture_targets = list(reversed(path[1:]))
         bubble_targets = path[1:] if event.bubbles else []
 
-        try:
-            for target in capture_targets:
-                self._invoke_listeners(target, event, capture=True)
-                if event._propagation_stopped:
-                    return not event.defaultPrevented
-
-            self._invoke_listeners(self, event, capture=True)
-            if not event._immediate_propagation_stopped:
-                self._invoke_listeners(self, event, capture=False)
-
+        for target in capture_targets:
+            self._invoke_listeners(target, event, capture=True)
             if event._propagation_stopped:
                 return not event.defaultPrevented
 
-            for target in bubble_targets:
-                self._invoke_listeners(target, event, capture=False)
-                if event._propagation_stopped:
-                    break
-        except Exception as e:
-            print(e)
+        self._invoke_listeners(self, event, capture=True)
+        if not event._immediate_propagation_stopped:
+            self._invoke_listeners(self, event, capture=False)
+
+        if event._propagation_stopped:
+            return not event.defaultPrevented
+
+        for target in bubble_targets:
+            self._invoke_listeners(target, event, capture=False)
+            if event._propagation_stopped:
+                break
         return not event.defaultPrevented
 
     async def dispatchEventAsync(self, event: Any) -> bool:
@@ -305,27 +306,24 @@ class EventTarget:
                     if inspect.isawaitable(result):
                         await result
 
-        try:
-            path = self._get_event_path(self)
-            event._path = path
-            for target in reversed(path[1:]):
-                await invoke(target, True)
-                if event._propagation_stopped:
-                    return not event.defaultPrevented
-
-            await invoke(self, True)
-            if not event._immediate_propagation_stopped:
-                await invoke(self, False)
-
-            if event._propagation_stopped or not event.bubbles:
+        path = self._get_event_path(self)
+        event._path = path
+        for target in reversed(path[1:]):
+            await invoke(target, True)
+            if event._propagation_stopped:
                 return not event.defaultPrevented
 
-            for target in path[1:]:
-                await invoke(target, False)
-                if event._propagation_stopped:
-                    break
-        except Exception as e:
-            print(e)
+        await invoke(self, True)
+        if not event._immediate_propagation_stopped:
+            await invoke(self, False)
+
+        if event._propagation_stopped or not event.bubbles:
+            return not event.defaultPrevented
+
+        for target in path[1:]:
+            await invoke(target, False)
+            if event._propagation_stopped:
+                break
         return not event.defaultPrevented
 
 
@@ -425,8 +423,11 @@ class Event:
             else:
                 break
         # Include the window as the final item in the path.
-        if hasattr(self.target, "defaultView"):
-            path.append(self.target.defaultView)
+        if path:
+            last = path[-1]
+            default_view = getattr(last, "defaultView", None)
+            if default_view is not None and default_view not in path:
+                path.append(default_view)
         return path
 
     def initEvent(
@@ -532,11 +533,13 @@ class UIEvent(Event):
         Returns:
             UIEvent: The initialized UIEvent object.
         """
-        self._type = _type
+        self.type = _type
         self.canBubble = canBubble
+        self.bubbles = canBubble
         self.cancelable = cancelable
         self.view = view
         self.detail = detail
+        return self
 
 
 class MouseEvent(UIEvent):
@@ -591,8 +594,9 @@ class MouseEvent(UIEvent):
         **kwargs
     ) -> "MouseEvent":
         # print('initMouseEvent')
-        self._type = _type
+        self.type = _type or self.type
         self.canBubble = canBubble
+        self.bubbles = canBubble
         self.cancelable = cancelable
         self.view = view
         self.detail = detail
@@ -607,6 +611,7 @@ class MouseEvent(UIEvent):
         self._button = button
         self.relatedTarget = relatedTarget
         # TODO - parse from_json - so can relay
+        return self
 
     @property
     def clientX(self):
@@ -707,15 +712,18 @@ class KeyboardEvent(UIEvent):
         modifiersListArg,
         repeat,
     ) -> "KeyboardEvent":
-        self._type = typeArg
+        self.type = typeArg
         self.canBubbleArg = canBubbleArg
+        self.bubbles = canBubbleArg
         self.cancelableArg = cancelableArg
+        self.cancelable = cancelableArg
         self.viewArg = viewArg
-        self.charArg = charArg
-        self.keyArg = keyArg
+        self.charCode = charArg
+        self.key = keyArg
         self.locationArg = locationArg
         self.modifiersListArg = modifiersListArg
         self.repeat = repeat
+        return self
 
     @property
     def altKey(self):
@@ -875,10 +883,10 @@ class ErrorEvent(Event):
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.message: str = options.get("message", "")
-        # self.filename=None
-        # self.lineno=0
-        # self.colno=0
-        # self.error={}
+        self.filename = options.get("filename", None)
+        self.lineno = options.get("lineno", 0)
+        self.colno = options.get("colno", 0)
+        self.error = options.get("error", None)
         super().__init__(_type, options, *args, **kwargs)
 
 
@@ -893,7 +901,7 @@ class SubmitEvent(Event):
         super().__init__(_type, options, *args, **kwargs)
 
 
-class PointerEvent(Event):
+class PointerEvent(MouseEvent):
     """PointerEvent"""
 
     POINTER: str = "pointer"  #:

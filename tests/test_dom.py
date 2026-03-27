@@ -960,6 +960,25 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(focus_calls, ["focus"])
         self.assertEqual(blur_calls, ["blur"])
 
+    def test_focus_event_related_targets_and_bubbling_helpers(self):
+        page = html(body(input(_type="text", _id="first"), input(_type="text", _id="second")))
+        body_focus_events = []
+        body_blur_events = []
+        first = page.querySelector("#first")
+        second = page.querySelector("#second")
+
+        page.body.addEventListener("focusin", lambda e: body_focus_events.append((e.type, e.relatedTarget)))
+        page.body.addEventListener("focusout", lambda e: body_blur_events.append((e.type, e.relatedTarget)))
+
+        first.focus()
+        second.focus()
+        second.blur()
+
+        self.assertEqual(body_focus_events[0][0], "focusin")
+        self.assertIsNone(body_focus_events[0][1])
+        self.assertIs(body_focus_events[1][1], first)
+        self.assertIs(body_blur_events[0][1], second)
+
     def test_document_focus_tracking(self):
         page = html(body(input(_type="text", _id="first"), button("go", _id="second")))
         first = page.querySelector("#first")
@@ -1355,6 +1374,17 @@ class DOMTest(unittest.TestCase):
 
         self.assertIsNone(loc.replace("https://example.com/three"))
         self.assertEqual(loc.href, "https://example.com/three")
+
+    def test_form_submit_dispatches_submit_event(self):
+        page = html(body(form(input(_name="email"), _id="signup")))
+        signup = page.getElementById("signup")
+        calls = []
+
+        signup.addEventListener("submit", lambda event: calls.append((event.type, event.submitter)))
+        result = signup.submit()
+
+        self.assertTrue(result)
+        self.assertEqual(calls, [("submit", None)])
 
         # Window().console.log("test this")
         # window.console.log("test this")

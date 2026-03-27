@@ -344,6 +344,9 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(document.createEvent("MouseEvent"), MouseEvent)
         self.assertIsInstance(document.createEvent("KeyboardEvent"), KeyboardEvent)
         self.assertIsInstance(document.createEvent("CustomEvent"), CustomEvent)
+        self.assertIsInstance(document.createEvent("PointerEvent"), PointerEvent)
+        self.assertIsInstance(document.createEvent("WheelEvent"), WheelEvent)
+        self.assertIsInstance(document.createEvent("MessageEvent"), MessageEvent)
 
     def test_handle_event_listener_object(self):
         target = EventTarget()
@@ -411,6 +414,40 @@ class TestCase(unittest.TestCase):
         resize_event = Event("resize")
         self.assertIs(win.onresize(resize_event), resize_event)
         self.assertEqual(win._last_event.type, "resize")
+
+    def test_event_init_helpers_and_subclass_shape(self):
+        ui_event = UIEvent("resize").initUIEvent("scroll", True, False, "view", 2)
+        self.assertEqual(ui_event.type, "scroll")
+        self.assertTrue(ui_event.bubbles)
+        self.assertFalse(ui_event.cancelable)
+
+        mouse_event = MouseEvent("click").initMouseEvent("mousedown", True, True, None, 1, 0, 0, 11, 22, True, False, False, False, 1, None)
+        self.assertEqual(mouse_event.type, "mousedown")
+        self.assertEqual(mouse_event.clientX, 11)
+        self.assertTrue(mouse_event.ctrlKey)
+
+        keyboard_event = KeyboardEvent("keydown").initKeyboardEvent("keyup", True, True, None, 65, "A", 0, "", False)
+        self.assertEqual(keyboard_event.type, "keyup")
+        self.assertEqual(keyboard_event.key, "A")
+        self.assertEqual(keyboard_event.charCode, 65)
+
+        pointer_event = PointerEvent("pointerdown", {"clientX": 5, "clientY": 6, "pointerId": 3})
+        self.assertEqual(pointer_event.clientX, 5)
+        self.assertEqual(pointer_event.pointerId, 3)
+
+        error_event = ErrorEvent("error", {"message": "boom", "filename": "x.py", "lineno": 4, "colno": 2})
+        self.assertEqual(error_event.filename, "x.py")
+        self.assertEqual(error_event.lineno, 4)
+
+    def test_dispatch_does_not_swallow_listener_exceptions(self):
+        target = EventTarget()
+
+        def boom(event):
+            raise RuntimeError("boom")
+
+        target.addEventListener("custom_event", boom)
+        with self.assertRaises(RuntimeError):
+            target.dispatchEvent(Event("custom_event"))
 
 if __name__ == '__main__':
     unittest.main()
