@@ -3,8 +3,13 @@
     ====================================
 """
 
+from __future__ import annotations
+
 import csv
 import json
+from collections.abc import Mapping, Sequence
+from pathlib import Path
+from typing import Any
 
 from domonic.decorators import as_json
 from domonic.html import table, td, th, tr
@@ -12,7 +17,7 @@ from domonic.html import table, td, th, tr
 return_json = as_json  # legacy. use the one in decorators package
 
 
-def parse_file(filepath: str):
+def parse_file(filepath: str | Path) -> Any:
     """[loads a json file and returns a python object]
 
     Args:
@@ -21,13 +26,11 @@ def parse_file(filepath: str):
     Returns:
         [type]: [a python object]
     """
-    f = open(filepath)
-    data = json.load(f)
-    f.close()
-    return data
+    with open(filepath, encoding="utf-8") as json_file:
+        return json.load(json_file)
 
 
-def parse(json_string: str):
+def parse(json_string: str | bytes | bytearray) -> Any:
     """[take a json string and return a python object]
 
     Args:
@@ -36,10 +39,12 @@ def parse(json_string: str):
     Returns:
         [type]: [a python object]
     """
+    if isinstance(json_string, (bytes, bytearray)):
+        json_string = json_string.decode("utf-8")
     return json.loads(json_string)
 
 
-def stringify(data, filepath: str = None, **kwargs):
+def stringify(data: Any, filepath: str | Path | None = None, **kwargs) -> str:
     """[stringify a python object]
 
     Args:
@@ -49,17 +54,17 @@ def stringify(data, filepath: str = None, **kwargs):
     Returns:
         [type]: [the stringified object]
     """
+    payload = json.dumps(data, **kwargs)
     if filepath is not None:
-        json.dump(data, filepath, **kwargs)
-        return json.dumps(data, **kwargs)
-    return json.dumps(data, **kwargs)  # indent=4, sort_keys=True, default=str
+        with open(filepath, "w", encoding="utf-8") as json_file:
+            json_file.write(payload)
+    return payload
 
 
-def tablify(arr):
+def tablify(arr: str | Mapping[str, Any] | Sequence[Mapping[str, Any]]):
     """tablify
 
     takes a json array and returns a html table
-    # TODO - reverse. table to json
 
     Args:
         arr (list): the json array
@@ -68,36 +73,57 @@ def tablify(arr):
         str: a html table
     """
 
-    def _get_headings(arr, t):
-        headings = []
+    def _get_headings(items, node):
+        headings: list[str] = []
         row = tr()
-        for each in arr:
+        for each in items:
+            if not isinstance(each, Mapping):
+                raise ValueError("tablify expects a dict or list of dicts")
             for key in each:
                 if key not in headings:
                     headings.append(key)
                     row.appendChild(th(key))
-        t.appendChild(row)
+        node.appendChild(row)
         return headings
-
-    # print( type(arr) )
 
     if isinstance(arr, str):
         arr = json.loads(arr)
     if isinstance(arr, dict):
         arr = [arr]
-    if type(arr) != list:
-        raise ValueError  # need to pass a list of dicts [{},{}]
+    if not isinstance(arr, Sequence):
+        raise ValueError("tablify expects a dict or list of dicts")
 
     t = table()
     headings = _get_headings(arr, t)
     for item in arr:
-        # row = tr([td(item.get(heading, "")) for heading in headings]) # incorrect
-        row = tr(*[td(item.get(heading, "")) for heading in headings])  # correct
+        row = tr(*[td(item.get(heading, "")) for heading in headings])
         t.appendChild(row)
     return t
 
 
-def csvify(arr, outfile="data.csv"):
+def table2json(node) -> list[dict[str, str]]:
+    """Convert a domonic table node back into a list of row dictionaries."""
+    if getattr(node, "tagName", None) != "table":
+        raise ValueError("table2json expects a domonic table element")
+
+    rows = node.getElementsByTagName("tr")
+    if not rows:
+        return []
+
+    headings = [heading.textContent for heading in rows[0].getElementsByTagName("th")]
+    items: list[dict[str, str]] = []
+    for row in rows[1:]:
+        cells = row.getElementsByTagName("td")
+        items.append(
+            {
+                heading: cells[index].textContent if index < len(cells) else ""
+                for index, heading in enumerate(headings)
+            }
+        )
+    return items
+
+
+def csvify(arr: str | Mapping[str, Any] | Sequence[Mapping[str, Any]], outfile: str | Path = "data.csv") -> str:
     """csvify
 
     takes a json array and dumps a csv file
@@ -113,40 +139,45 @@ def csvify(arr, outfile="data.csv"):
         arr = json.loads(arr)  # leniency. allow for a string
     elif isinstance(arr, dict):
         arr = [arr]
-    if type(arr) != list:
-        raise ValueError  # if it aint a list by now reject it
+    if not isinstance(arr, Sequence):
+        raise ValueError("csvify expects a dict or list of dicts")
 
-    def _get_headings(arr):
-        headings = []
-        for each in arr:
+    def _get_headings(items):
+        headings: list[str] = []
+        for each in items:
+            if not isinstance(each, Mapping):
+                raise ValueError("csvify expects a dict or list of dicts")
             for key in each:
                 if key not in headings:
                     headings.append(key)
         return headings
 
-    with open(outfile, "w") as file:
+    headings = _get_headings(arr)
+    with open(outfile, "w", encoding="utf-8", newline="") as file:
         output = csv.writer(file)
-        output.writerow(_get_headings(arr))
+        output.writerow(headings)
         for row in arr:
-            output.writerow(row.values())
+            output.writerow([row.get(heading, "") for heading in headings])
+    return str(outfile)
 
 
-def csv2json(csv_filepath, json_filepath=None):
+def csv2json(csv_filepath: str | Path, json_filepath: str | Path | None = None) -> str:
     """
     convert a CSV to JSON.
     """
     items = []
-    with open(csv_filepath, encoding="utf-8") as csvf:
-        csvReader = csv.DictReader(csvf)
-        for row in csvReader:
+    with open(csv_filepath, encoding="utf-8", newline="") as csvf:
+        csv_reader = csv.DictReader(csvf)
+        for row in csv_reader:
             items.append(row)
 
+    payload = json.dumps(items)
     if json_filepath is None:
-        return json.dumps(items)
+        return payload
 
-    with open(json_filepath, "w", encoding="utf-8") as f:
-        json.dump(items, f, indent=4)
-        return json.dumps(items)
+    with open(json_filepath, "w", encoding="utf-8") as json_file:
+        json.dump(items, json_file, indent=4)
+    return payload
 
 
 """
@@ -168,11 +199,11 @@ def csv2json_hugefile(arr, infile="data.csv", start_row=0):
 """
 
 
-def flatten(b, delim="__"):
+def flatten(b: Mapping[str, Any], delim: str = "__") -> dict[str, Any]:
     """
     # i.e. input = map( lambda x: JSON.flatten( x, "__" ), input )
     """
-    val = {}
+    val: dict[str, Any] = {}
     for i in b.keys():
         if isinstance(b[i], dict):
             get = flatten(b[i], delim)
@@ -184,14 +215,14 @@ def flatten(b, delim="__"):
     return val
 
 
-def is_json(json: str) -> bool:
-    if type(json) != str:
+def is_json(value: str) -> bool:
+    if not isinstance(value, str):
         return False
-
-    if json.startswith("{") and json.endswith("}"):
-        return True
-
-    if json.startswith("[") and json.endswith("]"):
-        return True
-
-    return False
+    value = value.strip()
+    if not value:
+        return False
+    try:
+        json.loads(value)
+    except (TypeError, ValueError):
+        return False
+    return True

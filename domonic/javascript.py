@@ -1117,9 +1117,13 @@ class Global:
         eval(pythonstring)
 
     @staticmethod
-    def isFinite(x) -> bool:  # TODO - test
+    def isFinite(x) -> bool:
         """Returns true if x is a finite number"""
-        return math.isfinite(x)
+        try:
+            value = x if isinstance(x, (int, float)) else float(x)
+        except (TypeError, ValueError):
+            return False
+        return math.isfinite(value)
 
     @staticmethod
     def isNaN(x: Any) -> bool:
@@ -1151,26 +1155,16 @@ class Global:
         return "NaN"
 
     @staticmethod
-    def Boolean(x: Any) -> bool:  # TODO - test
-        if isinstance(x, int):
-            return bool(x)
-        elif isinstance(x, str):
-            if x.lower() == "true":
-                return True
-            elif x.lower() == "false":
-                return False
-            elif x == "":
-                return False
-            else:
-                return True
-        elif isinstance(x, bool):
+    def Boolean(x: Any) -> bool:
+        if isinstance(x, bool):
             return x
-        elif isinstance(x, (list, tuple, dict, object)):
-            return True
-        elif x is None:
+        if x is None:
             return False
-        else:
-            return True
+        if isinstance(x, (int, float)):
+            return x != 0 and not math.isnan(x)
+        if isinstance(x, str):
+            return x != ""
+        return True
 
     @staticmethod
     def parseFloat(x: str) -> float:
@@ -2133,31 +2127,27 @@ class Array:
     """javascript array"""
 
     @staticmethod
-    def from_(obj: Any) -> Array:  # TODO - test
+    def from_(obj: Any) -> Array:
         """Creates a new Array instance from an array-like or iterable object."""
-        # return Array(object)
         if isinstance(obj, Array):
-            return obj
-        elif isinstance(obj, list):
+            return Array(*obj.args)
+        if isinstance(obj, list):
             return Array(*obj)
-        elif isinstance(obj, tuple):
-            items = list(obj)
-            return Array(*items)
-        elif isinstance(obj, dict):
-            items = list(obj.items())
-            return Array(*items)
-        # if it is iterable unpack it
-        elif hasattr(obj, "__iter__"):
-            items = list(obj)
-            return Array(*items)
-        else:
-            return Array([obj])
+        if isinstance(obj, tuple):
+            return Array(*obj)
+        if isinstance(obj, dict):
+            return Array(*obj.items())
+        if isinstance(obj, str):
+            return Array(*list(obj))
+        if hasattr(obj, "__iter__"):
+            return Array(*list(obj))
+        return Array(obj)
 
     @staticmethod
-    def of(*args: Any) -> Array:  # TODO - test
+    def of(*args: Any) -> Array:
         """Creates a new Array instance with a variable number of arguments,
         regardless of number or type of the arguments."""
-        return Array(args)
+        return Array(*args)
 
     def __init__(self, *args: Any) -> None:
         """[An Array that behaves like a js array]"""
@@ -2252,20 +2242,28 @@ class Array:
             self.args += a
         return self.args
 
-    def flat(self, depth: int = 1) -> list[Any]:  # TODO - test
+    def flat(self, depth: int = 1) -> list[Any]:
         """[Flattens an array into a single-dimensional array or a depth of arrays]"""
-        if depth < 1:
-            raise ValueError("depth must be greater than 0")
-        if depth == 1:
-            return self.args
-        flat = []
-        for i in self.args:
-            flat += i.flat(depth - 1)
-        return flat
+        if depth < 0:
+            raise ValueError("depth must be greater than or equal to 0")
 
-    def flatMap(self, fn: Callable[[Any], Any]) -> Array:  # TODO - test
+        def _flatten(items: list[Any], level: int) -> list[Any]:
+            flattened: list[Any] = []
+            for item in items:
+                if level > 0 and isinstance(item, Array):
+                    flattened.extend(_flatten(item.args, level - 1))
+                elif level > 0 and isinstance(item, list):
+                    flattened.extend(_flatten(item, level - 1))
+                else:
+                    flattened.append(item)
+            return flattened
+
+        return _flatten(self.args, depth)
+
+    def flatMap(self, fn: Callable[[Any], Any]) -> Array:
         """[Maps a function over an array and flattens the result]"""
-        return Array(fn(i) for i in self.args)
+        mapped = [fn(i) for i in self.args]
+        return Array(*Array(mapped).flat(1))
 
     def fill(self, value: Any = None, start: int | None = None, end: int | None = None) -> list[Any]:
         """[Fills elements of an array from a start index to an end index with a static value]"""
@@ -2277,7 +2275,7 @@ class Array:
             self.args[i] = value
         return self.args
 
-    def groupBy(self, callback) -> dict:  # TODO - test
+    def groupBy(self, callback) -> dict:
         """[Groups the elements of an array according to the result of calling a callback function on each element]
 
         Args:
@@ -3232,26 +3230,12 @@ class String:
         # TODO - implement localeCompare
         raise NotImplementedError
 
-    def trimStart(self, length: int) -> str:  # TODO - huh?. length
-        """[Removes whitespace from the beginning of a string.]
-
-        Args:
-            length (int): [the length of the resulting string]
-
-        Returns:
-            [str]: [the trimmed string]
-        """
+    def trimStart(self) -> str:
+        """[Removes whitespace from the beginning of a string.]"""
         return self.x.lstrip()
 
-    def trimEnd(self, length: int) -> str:  # TODO - huh?. length
-        """[Removes whitespace from the end of a string]
-
-        Args:
-            length (int): [the length of the resulting string]
-
-        Returns:
-            [type]: [the trimmed string]
-        """
+    def trimEnd(self) -> str:
+        """[Removes whitespace from the end of a string]"""
         return self.x.rstrip()
 
     def includes(self, searchValue: str, position: int = 0) -> bool:

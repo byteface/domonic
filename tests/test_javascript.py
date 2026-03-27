@@ -283,6 +283,18 @@ class TestCase(unittest.TestCase):
         self.assertEqual("NaN", Global.Number("test"))
         self.assertEqual(2, Global.Number("1") + Global.Number("1.0"))
 
+    def test_domonic_global_boolean_and_isfinite(self):
+        self.assertTrue(Global.isFinite("12.5"))
+        self.assertTrue(Global.isFinite(3))
+        self.assertFalse(Global.isFinite("abc"))
+        self.assertFalse(Global.isFinite(float("inf")))
+
+        self.assertFalse(Global.Boolean(""))
+        self.assertFalse(Global.Boolean(0))
+        self.assertFalse(Global.Boolean(None))
+        self.assertTrue(Global.Boolean("false"))
+        self.assertTrue(Global.Boolean([]))
+
     def test_domonic_window_console_log(self):
         # window = Window()
         # Window().console.log("test this")
@@ -494,6 +506,17 @@ class TestCase(unittest.TestCase):
         assert list(myarr.keys()) == list(range(len(myarr)))
         assert list(myarr.entries()) == [[0, 3], [1, 4], [2, 2], [3, "b"], [4, "c"], [5, 6], [6, 3]]
 
+        assert Array.from_("abc") == ["a", "b", "c"]
+        assert Array.from_({"a": 1}) == [("a", 1)]
+        assert Array.of(1, 2, 3) == [1, 2, 3]
+        assert Array([1, [2, [3]], 4]).flat() == [1, 2, [3], 4]
+        assert Array([1, [2, [3]], 4]).flat(2) == [1, 2, 3, 4]
+        assert Array([1, 2, 3]).flatMap(lambda value: [value, value * 10]) == [1, 10, 2, 20, 3, 30]
+        assert Array([1, 2, 3, 4]).groupBy(lambda value, index, arr: "even" if value % 2 == 0 else "odd") == {
+            "odd": [1, 3],
+            "even": [2, 4],
+        }
+
     def test_javascript_map(self):
         mapping = Map({"a": 1})
         self.assertTrue(mapping.has("a"))
@@ -664,8 +687,8 @@ class TestCase(unittest.TestCase):
         assert mystr.includes("Some") == True
         # assert mystr.matchAll(['a', 'b']) == False # TODO - dont think this is supposed to take lists?
         # assert mystr.match('a', 'b') == False # TODO
-        # assert mystr.trimStart(1) == "Some" # TODO
-        # assert mystr.trimEnd(1) == "String" # TODO
+        assert String("  Some").trimStart() == "Some"
+        assert String("String  ").trimEnd() == "String"
 
     def test_javascript_URLSearchParams(self):
         paramsString = "q=test&topic=api"

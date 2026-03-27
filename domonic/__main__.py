@@ -6,6 +6,7 @@
 
 import argparse
 import os
+import subprocess
 import sys
 
 from domonic.ext import (
@@ -71,8 +72,22 @@ function project(){
 }
 
 """
-# TODO - nautilus instead of open for linux
-# wrewrite as pure python
+def _open_directory(path: str = ".") -> None:
+    if sys.platform.startswith("darwin"):
+        subprocess.run(["open", path], check=False)
+        return
+
+    if sys.platform.startswith("linux"):
+        for command in (["xdg-open", path], ["nautilus", path]):
+            try:
+                subprocess.run(command, check=False)
+                return
+            except FileNotFoundError:
+                continue
+        return
+
+    if os.name == "nt":
+        os.startfile(path)
 
 
 def project(name):
@@ -179,8 +194,6 @@ run:
         else:
             server_choice = "none"
 
-    # TODO - any plugins?.. cors etc
-
     # with python not touch
     with open("app.py", "w") as f:
         # write the hello world for the given server
@@ -202,7 +215,6 @@ run:
     # dl the license
 
     # create static
-    # TODO - build asset folders based on server choice.
     os.mkdir("static")
     os.mkdir("static/js")
     os.mkdir("static/css")
@@ -221,15 +233,7 @@ run:
     if os.name == "posix":
         os.system("chmod -R 777 static")
 
-    if Utils.is_mac():
-        os.system("open .")
-    elif Utils.is_linux():
-        os.system("nautilus .")
-    elif Utils.is_windows():
-        # TODO - check what to do on windows
-        os.system("start .")
-        # explorer.exe .?
-        # os.system("explorer.exe .")
+    _open_directory(".")
 
 
 # def webpage(content):
