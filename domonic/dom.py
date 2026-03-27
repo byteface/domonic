@@ -1574,63 +1574,63 @@ class DOMRect:
 
 
 class CaretPosition:
-    def __init__(self, offsetNode=None, offset=0):
+    def __init__(self, offsetNode: Optional["Node"] = None, offset: int = 0) -> None:
         self.offsetNode = offsetNode
         self.offset = offset
 
-    def getClientRect(self):
+    def getClientRect(self) -> DOMRect:
         if hasattr(self.offsetNode, "getBoundingClientRect"):
             return self.offsetNode.getBoundingClientRect()
         return DOMRect(0, 0, 0, 0)
 
 
 class Selection:
-    def __init__(self):
-        self._ranges = []
+    def __init__(self) -> None:
+        self._ranges: List["Range"] = []
 
     @property
-    def rangeCount(self):
+    def rangeCount(self) -> int:
         return len(self._ranges)
 
     @property
-    def isCollapsed(self):
+    def isCollapsed(self) -> bool:
         return self.rangeCount == 0 or all(range_obj.collapsed for range_obj in self._ranges)
 
     @property
-    def anchorNode(self):
+    def anchorNode(self) -> Optional["Node"]:
         return self._ranges[0].startContainer if self._ranges else None
 
     @property
-    def anchorOffset(self):
+    def anchorOffset(self) -> int:
         return self._ranges[0].startOffset if self._ranges else 0
 
     @property
-    def focusNode(self):
+    def focusNode(self) -> Optional["Node"]:
         return self._ranges[-1].endContainer if self._ranges else None
 
     @property
-    def focusOffset(self):
+    def focusOffset(self) -> int:
         return self._ranges[-1].endOffset if self._ranges else 0
 
     @property
-    def type(self):
+    def type(self) -> str:
         if self.rangeCount == 0:
             return "None"
         return "Caret" if self.isCollapsed else "Range"
 
-    def addRange(self, range_obj):
+    def addRange(self, range_obj: "Range") -> None:
         self._ranges.append(range_obj)
 
-    def removeRange(self, range_obj):
+    def removeRange(self, range_obj: "Range") -> None:
         self._ranges = [candidate for candidate in self._ranges if candidate is not range_obj]
 
-    def removeAllRanges(self):
+    def removeAllRanges(self) -> None:
         self._ranges = []
 
-    def getRangeAt(self, index):
+    def getRangeAt(self, index: int) -> "Range":
         return self._ranges[index]
 
-    def collapse(self, node, offset=0):
+    def collapse(self, node: Optional["Node"], offset: int = 0) -> None:
         if node is None:
             self.removeAllRanges()
             return
@@ -1639,32 +1639,32 @@ class Selection:
         range_obj.setEnd(node, offset)
         self._ranges = [range_obj]
 
-    def collapseToStart(self):
+    def collapseToStart(self) -> None:
         if not self._ranges:
             return
         first = self._ranges[0]
         self.collapse(first.startContainer, first.startOffset)
 
-    def collapseToEnd(self):
+    def collapseToEnd(self) -> None:
         if not self._ranges:
             return
         last = self._ranges[-1]
         self.collapse(last.endContainer, last.endOffset)
 
-    def empty(self):
+    def empty(self) -> None:
         self.removeAllRanges()
 
-    def selectAllChildren(self, node):
+    def selectAllChildren(self, node: "Node") -> None:
         range_obj = Range()
         range_obj.selectNodeContents(node)
         self._ranges = [range_obj]
 
-    def deleteFromDocument(self):
+    def deleteFromDocument(self) -> None:
         for range_obj in list(self._ranges):
             range_obj.deleteContents()
         self.removeAllRanges()
 
-    def containsNode(self, node, allowPartialContainment=False):
+    def containsNode(self, node: Optional["Node"], allowPartialContainment: bool = False) -> bool:
         if node is None:
             return False
 
@@ -1684,7 +1684,7 @@ class Selection:
                     return True
         return False
 
-    def toString(self):
+    def toString(self) -> str:
         return "".join(range_obj.toString() for range_obj in self._ranges)
 
     __str__ = toString
@@ -2209,7 +2209,7 @@ class NodeList(list):
     def length(self) -> int:
         return len(self)
 
-    def item(self, index) -> Node:
+    def item(self, index: int) -> Optional[Node]:
         """Returns an item in the list by its index, or null if the index is out-of-bounds."""
         # An alternative to accessing nodeList[i] (which instead returns  undefined when i is out-of-bounds).
         # This is mostly useful for non-JavaScript DOM implementations.
@@ -2229,7 +2229,7 @@ class NodeList(list):
         for i in range(len(self)):
             yield i, self[i]
 
-    def forEach(self, func, thisArg=None) -> None:
+    def forEach(self, func: Callable[[Node, int, "NodeList"], Any], thisArg: Any = None) -> None:
         """Calls a function for each item in the NodeList."""
         # thisArg = thisArg or self
         for i in range(len(self)):
@@ -2249,20 +2249,20 @@ class NodeList(list):
 class RadioNodeList(NodeList):
     # TODO - not tested
 
-    def __init__(self, name: str):  # , owner: Element):
+    def __init__(self, name: str) -> None:  # , owner: Element):
         self.name: str = name
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Node]:
         return iter(self.getElementsByName(self.name))
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> Node:
         return self.getElementsByName(self.name)[index]
 
     def __len__(self) -> int:
         return len(self.getElementsByName(self.name))
 
     @property
-    def value(self):
+    def value(self) -> Any:
         """Returns the value of the first element in the collection,
         or null if there are no elements in the collection."""
         return self[0].value if len(self) > 0 else None
@@ -3413,74 +3413,74 @@ class CDATASection(Node):
 
 
 class AbastractRange:
-    def __init__(self):
+    def __init__(self) -> None:
         """Constructor for Range objects"""
         raise NotImplementedError
 
-    def cloneContents(self):
+    def cloneContents(self) -> "DocumentFragment":
         raise NotImplementedError
 
-    def cloneRange(self):
+    def cloneRange(self) -> "Range":
         raise NotImplementedError
 
-    def compareBoundaryPoints(self, how, sourceRange):
+    def compareBoundaryPoints(self, how: int, sourceRange: "Range") -> int:
         raise NotImplementedError
 
-    def createContextualFragment(self, data):
+    def createContextualFragment(self, data: Any) -> "DocumentFragment":
         raise NotImplementedError
 
-    def deleteContents(self):
+    def deleteContents(self) -> None:
         raise NotImplementedError
 
-    def detach(self):
+    def detach(self) -> None:
         raise NotImplementedError
 
-    def expand(self, unit):
+    def expand(self, unit: Any) -> None:
         raise NotImplementedError
 
-    def extractContents(self):
+    def extractContents(self) -> "DocumentFragment":
         raise NotImplementedError
 
-    def getBoundingClientRect(self):
+    def getBoundingClientRect(self) -> DOMRect:
         raise NotImplementedError
 
-    def getClientRects(self):
+    def getClientRects(self) -> List[DOMRect]:
         raise NotImplementedError
 
-    def insertNode(self, newNode):
+    def insertNode(self, newNode: "Node") -> None:
         raise NotImplementedError
 
-    def selectNode(self, refNode):
+    def selectNode(self, refNode: "Node") -> None:
         raise NotImplementedError
 
-    def selectNodeContents(self, refNode):
+    def selectNodeContents(self, refNode: "Node") -> None:
         raise NotImplementedError
 
-    def setEnd(self, refNode, offset):
+    def setEnd(self, refNode: "Node", offset: int) -> None:
         raise NotImplementedError
 
-    def setEndAfter(self, refNode):
+    def setEndAfter(self, refNode: "Node") -> None:
         raise NotImplementedError
 
-    def setEndBefore(self, refNode):
+    def setEndBefore(self, refNode: "Node") -> None:
         raise NotImplementedError
 
-    def setStart(self, refNode, offset):
+    def setStart(self, refNode: "Node", offset: int) -> None:
         raise NotImplementedError
 
-    def setStartAfter(self, refNode):
+    def setStartAfter(self, refNode: "Node") -> None:
         raise NotImplementedError
 
-    def setStartBefore(self, refNode):
+    def setStartBefore(self, refNode: "Node") -> None:
         raise NotImplementedError
 
-    def surroundContents(self, newParent):
+    def surroundContents(self, newParent: "Node") -> None:
         raise NotImplementedError
 
     def toString(self) -> str:
         raise NotImplementedError
 
-    def comparePoint(self, refNode, offset):
+    def comparePoint(self, refNode: "Node", offset: int) -> int:
         raise NotImplementedError
 
     def deleteData(self, offset, count):
@@ -3513,16 +3513,16 @@ class Range(AbastractRange):
     END_TO_END = 2
     END_TO_START = 3
 
-    def __init__(self):
-        self.startContainer = None
+    def __init__(self) -> None:
+        self.startContainer: Optional[Node] = None
         self.startOffset = 0
-        self.endContainer = None
+        self.endContainer: Optional[Node] = None
         self.endOffset = 0
         self.collapsed = True
-        self.commonAncestorContainer = None
+        self.commonAncestorContainer: Optional[Node] = None
 
     @staticmethod
-    def _container_length(node):
+    def _container_length(node: Optional[Node]) -> int:
         if node is None:
             return 0
         if isinstance(node, Text):
@@ -3530,8 +3530,8 @@ class Range(AbastractRange):
         return len(getattr(node, "childNodes", []))
 
     @staticmethod
-    def _path_to_root(node):
-        path = []
+    def _path_to_root(node: Optional[Node]) -> List[Node]:
+        path: List[Node] = []
         current = node
         while current is not None:
             path.append(current)
@@ -3539,7 +3539,7 @@ class Range(AbastractRange):
         return path
 
     @staticmethod
-    def _compare_points(node_a, offset_a, node_b, offset_b):
+    def _compare_points(node_a: Node, offset_a: int, node_b: Node, offset_b: int) -> int:
         if node_a is node_b:
             if offset_a < offset_b:
                 return -1
@@ -3569,7 +3569,7 @@ class Range(AbastractRange):
             return 1
         return 0
 
-    def _update_state(self):
+    def _update_state(self) -> None:
         self.collapsed = (
             self.startContainer is self.endContainer and self.startOffset == self.endOffset
         )
@@ -3584,7 +3584,7 @@ class Range(AbastractRange):
             end_path.pop()
         self.commonAncestorContainer = ancestor
 
-    def setStart(self, node, offset):
+    def setStart(self, node: Node, offset: int) -> None:
         self.startContainer = node
         self.startOffset = offset
         if self.endContainer is None:
@@ -3592,7 +3592,7 @@ class Range(AbastractRange):
             self.endOffset = offset
         self._update_state()
 
-    def setEnd(self, node, offset):
+    def setEnd(self, node: Node, offset: int) -> None:
         self.endContainer = node
         self.endOffset = offset
         if self.startContainer is None:
@@ -3600,19 +3600,19 @@ class Range(AbastractRange):
             self.startOffset = offset
         self._update_state()
 
-    def setStartBefore(self, node):
+    def setStartBefore(self, node: Node) -> None:
         self.setStart(node.parentNode, list(node.parentNode.childNodes).index(node))
 
-    def setStartAfter(self, node):
+    def setStartAfter(self, node: Node) -> None:
         self.setStart(node.parentNode, list(node.parentNode.childNodes).index(node) + 1)
 
-    def setEndBefore(self, node):
+    def setEndBefore(self, node: Node) -> None:
         self.setEnd(node.parentNode, list(node.parentNode.childNodes).index(node))
 
-    def setEndAfter(self, node):
+    def setEndAfter(self, node: Node) -> None:
         self.setEnd(node.parentNode, list(node.parentNode.childNodes).index(node) + 1)
 
-    def collapse(self, toStart):
+    def collapse(self, toStart: bool) -> None:
         if toStart:
             self.endContainer = self.startContainer
             self.endOffset = self.startOffset
@@ -3621,15 +3621,15 @@ class Range(AbastractRange):
             self.startOffset = self.endOffset
         self._update_state()
 
-    def selectNode(self, node):
+    def selectNode(self, node: Node) -> None:
         self.setStartBefore(node)
         self.setEndAfter(node)
 
-    def selectNodeContents(self, node):
+    def selectNodeContents(self, node: Node) -> None:
         self.setStart(node, 0)
         self.setEnd(node, self._container_length(node))
 
-    def compareBoundaryPoints(self, how, sourceRange):
+    def compareBoundaryPoints(self, how: int, sourceRange: "Range") -> int:
         comparisons = {
             self.START_TO_START: (self.startContainer, self.startOffset, sourceRange.startContainer, sourceRange.startOffset),
             self.START_TO_END: (self.startContainer, self.startOffset, sourceRange.endContainer, sourceRange.endOffset),
@@ -3640,10 +3640,10 @@ class Range(AbastractRange):
             raise NotImplementedError
         return self._compare_points(*comparisons[how])
 
-    def deleteContents(self):
+    def deleteContents(self) -> None:
         self.extractContents()
 
-    def extractContents(self):
+    def extractContents(self) -> "DocumentFragment":
         if self.startContainer is None:
             return DocumentFragment()
         if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
@@ -3667,7 +3667,7 @@ class Range(AbastractRange):
             return DocumentFragment(*extracted)
         return DocumentFragment()
 
-    def cloneContents(self):
+    def cloneContents(self) -> "DocumentFragment":
         import copy
 
         if self.startContainer is None:
@@ -3681,7 +3681,7 @@ class Range(AbastractRange):
             return DocumentFragment(*cloned)
         return DocumentFragment()
 
-    def getBoundingClientRect(self):
+    def getBoundingClientRect(self) -> DOMRect:
         rects = self.getClientRects()
         if not rects:
             return DOMRect(0, 0, 0, 0)
@@ -3691,7 +3691,7 @@ class Range(AbastractRange):
         bottom = max(rect.bottom for rect in rects)
         return DOMRect(left, top, right - left, bottom - top)
 
-    def getClientRects(self):
+    def getClientRects(self) -> List[DOMRect]:
         if self.startContainer is None:
             return []
         if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
@@ -3705,7 +3705,7 @@ class Range(AbastractRange):
             return rects
         return []
 
-    def insertNode(self, node):
+    def insertNode(self, node: Node) -> None:
         if self.startContainer is None:
             return
         container = self.startContainer
@@ -3741,14 +3741,14 @@ class Range(AbastractRange):
             self.endOffset = max(self.endOffset, self.startOffset)
             self._update_state()
 
-    def surroundContents(self, newParent):
+    def surroundContents(self, newParent: Node) -> None:
         fragment = self.extractContents()
         for child in fragment.args:
             newParent.appendChild(child)
         self.insertNode(newParent)
         self.selectNode(newParent)
 
-    def cloneRange(self):
+    def cloneRange(self) -> "Range":
         new_range = Range()
         new_range.startContainer = self.startContainer
         new_range.startOffset = self.startOffset
@@ -3758,14 +3758,14 @@ class Range(AbastractRange):
         new_range.commonAncestorContainer = self.commonAncestorContainer
         return new_range
 
-    def detach(self):
+    def detach(self) -> None:
         self.startContainer = None
         self.endContainer = None
         self.startOffset = 0
         self.endOffset = 0
         self._update_state()
 
-    def createContextualFragment(self, fragment):
+    def createContextualFragment(self, fragment: Any) -> "DocumentFragment":
         return DocumentFragment(fragment)
 
     def toString(self) -> str:
@@ -3779,7 +3779,7 @@ class Range(AbastractRange):
             return "".join(str(child) for child in children[self.startOffset : self.endOffset])
         return ""
 
-    def comparePoint(self, refNode, offset):
+    def comparePoint(self, refNode: Node, offset: int) -> int:
         if self.startContainer is None or self.endContainer is None:
             raise Exception("Range has no boundaries")
         if self._compare_points(refNode, offset, self.startContainer, self.startOffset) < 0:
@@ -4527,7 +4527,7 @@ class DocumentFragment(Node):
 
     nodeType: int = Node.DOCUMENT_FRAGMENT_NODE
 
-    def __init__(self, *args) -> None:
+    def __init__(self, *args: Any) -> None:
         self.args: list = args
 
     querySelector = Document.querySelector
@@ -4537,7 +4537,7 @@ class DocumentFragment(Node):
     _matchElement = Document._matchElement
     attributes = Element.attributes
 
-    def replaceChildren(self, newChildren) -> None:
+    def replaceChildren(self, newChildren: Iterable[Any]) -> None:
         """Replaces the childNodes of the DocumentFragment object."""
         self.content.replaceChild(newChildren)
 
@@ -4742,7 +4742,7 @@ class HTMLCollection(list):
     def __str__(self) -> str:
         return "".join([str(a) for a in self])
 
-    def item(self, index: int):
+    def item(self, index: int) -> Optional[Node]:
         """[gets the indexth item in the collection.
         If index is greater than or equal to the number of nodes in the list, this returns null.]
 
@@ -4757,7 +4757,7 @@ class HTMLCollection(list):
         else:
             return None
 
-    def namedItem(self, name: str):
+    def namedItem(self, name: str) -> Optional[Node]:
         """Returns the specific node whose ID or, as a fallback, name matches the string specified by name."""
         for item in self:
             if item.id == name:
@@ -4766,7 +4766,7 @@ class HTMLCollection(list):
                 return item
         return None
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: Union[int, str]):
         # can return dot notation i.e
         # index = "named.item.with.periods" # TODO - test
         if isinstance(index, str):
@@ -4886,7 +4886,7 @@ class DOMPoint(vec3):
     """The DOMPoint interface represents a point specified by x and y coordinates."""
 
     @staticmethod
-    def fromPoint(point) -> "DOMPoint":
+    def fromPoint(point: Any) -> "DOMPoint":
         return DOMPoint(point.x, point.y, point.z, point.w)
 
     def __init__(self, x: float, y: float, z: float = 0, w: float = 1) -> None:
@@ -4899,7 +4899,7 @@ class DOMPoint(vec3):
     def __str__(self) -> str:
         return "({}, {}, {}, {})".format(self.x, self.y, self.z, self.w)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "({}, {}, {}, {})".format(self.x, self.y, self.z, self.w)
 
 
@@ -4907,7 +4907,7 @@ class DOMPointReadOnly(DOMPoint):
     """The DOMPointReadOnly interface represents a point specified by x and y coordinates."""
 
     @staticmethod
-    def fromPoint(point) -> "DOMPointReadOnly":
+    def fromPoint(point: Any) -> "DOMPointReadOnly":
         return DOMPointReadOnly(point.x, point.y, point.z, point.w)
 
     def __init__(self, x: float, y: float, z: float = 0, w: float = 1) -> None:
@@ -4920,7 +4920,7 @@ class DOMPointReadOnly(DOMPoint):
     def __str__(self) -> str:
         return "({}, {}, {}, {})".format(self.x, self.y, self.z, self.w)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "({}, {}, {}, {})".format(self.x, self.y, self.z, self.w)
 
 
@@ -5025,15 +5025,15 @@ class DOMQuad:
     four corners represented as Cartesian coordinates."""
 
     @staticmethod
-    def fromRect(rect) -> "DOMQuad":
+    def fromRect(rect: DOMRect) -> "DOMQuad":
         return DOMQuad(rect.x, rect.y, rect.width, rect.height)
 
     @staticmethod
-    def fromQuad(quad) -> "DOMQuad":
+    def fromQuad(quad: Any) -> "DOMQuad":
         return DOMQuad(quad.p1.x, quad.p1.y, quad.p2.x, quad.p2.y, quad.p3.x, quad.p3.y, quad.p4.x, quad.p4.y)
 
     @staticmethod
-    def getBounds(quad):
+    def getBounds(quad: "DOMQuad") -> DOMRect:
         xs = [quad.p1.x, quad.p2.x, quad.p3.x, quad.p4.x]
         ys = [quad.p1.y, quad.p2.y, quad.p3.y, quad.p4.y]
         left = min(xs)
@@ -5043,7 +5043,7 @@ class DOMQuad:
         return DOMRect(left, top, right - left, bottom - top)
 
     @staticmethod
-    def toJSON(quad):
+    def toJSON(quad: "DOMQuad") -> Dict[str, Dict[str, float]]:
         return {
             "p1": {"x": quad.p1.x, "y": quad.p1.y},
             "p2": {"x": quad.p2.x, "y": quad.p2.y},
@@ -5051,7 +5051,7 @@ class DOMQuad:
             "p4": {"x": quad.p4.x, "y": quad.p4.y},
         }
 
-    def __init__(self, p1, p2, p3, p4):
+    def __init__(self, p1: Any, p2: Any, p3: Any, p4: Any) -> None:
         self.p1 = p1
         self.p2 = p2
         self.p3 = p3
@@ -5105,16 +5105,22 @@ class NodeFilter:
 class NodeIterator:
     """[NodeIterator is an iterator object that iterates over the descendants of a node, in tree order.]"""
 
-    def __init__(self, root, whatToShow=NodeFilter.SHOW_ALL, filter=None, entityReferenceExpansion=False):
+    def __init__(
+        self,
+        root: Node,
+        whatToShow: int = NodeFilter.SHOW_ALL,
+        filter: Any = None,
+        entityReferenceExpansion: bool = False,
+    ) -> None:
         self.root = root
         self.whatToShow = whatToShow
         self._filter = filter
         self.entityReferenceExpansion = entityReferenceExpansion
         self.node = root
         self.pointer = -1
-        self.stack = []
+        self.stack: List[Node] = []
 
-        def collect(node):
+        def collect(node: Node) -> None:
             self.stack.append(node)
             for child in getattr(node, "childNodes", []):
                 if isinstance(child, str):
@@ -5124,7 +5130,7 @@ class NodeIterator:
         collect(root)
 
     @property
-    def filter(self):
+    def filter(self) -> Any:
         return self._filter
 
     # def expandEntityReferences(self, expand):
@@ -5142,12 +5148,12 @@ class NodeIterator:
         """
         return self.pointer < 0
 
-    def detach(self):
+    def detach(self) -> None:
         # This operation is a no-op. It doesn't do anything.
         # Previously it was telling the engine that the NodeIterator was no more used, but this is now useless.
         pass
 
-    def previousNode(self):
+    def previousNode(self) -> Optional[Node]:
         """Returns the previous Node in the document, or null if there are none."""
         if self.pointer <= 0:
             return None
@@ -5155,7 +5161,7 @@ class NodeIterator:
         self.node = self.stack[self.pointer]
         return self.node
 
-    def nextNode(self):
+    def nextNode(self) -> Optional[Node]:
         """Returns the next Node in the document, or null if there are none."""
         self.pointer += 1
         while self.pointer < len(self.stack):
@@ -5178,7 +5184,7 @@ mapSibling = {"next": "nextSibling", "previous": "previousSibling"}
 #     return mapChild[x].toLowerCase() == '[object ' + _type.toLowerCase() + ']'
 
 
-def nodeFilter(tw, node):
+def nodeFilter(tw: Union[NodeIterator, "TreeWalker"], node: Node) -> int:
     # Maps nodeType to whatToShow
     # print(node, type(node))
     # if isinstance(node, (str)): #, Text)):
@@ -5194,13 +5200,13 @@ def nodeFilter(tw, node):
     return tw._filter.acceptNode(node)
 
 
-def str_to_TextNode(content_str):
+def str_to_TextNode(content_str: Any) -> Any:
     if isinstance(content_str, str):
         return Text(content_str)
     return content_str
 
 
-def traverseChildren(tw, _type):
+def traverseChildren(tw: "TreeWalker", _type: str) -> Optional[Node]:
     # var child, node, parent, result, sibling
     # print('mapChild[_type]', mapChild[_type])
     node = getattr(
@@ -5232,7 +5238,7 @@ def traverseChildren(tw, _type):
     return None
 
 
-def traverseSiblings(tw, type):
+def traverseSiblings(tw: "TreeWalker", type: str) -> Optional[Node]:
     # node, result, sibling
     node = tw.currentNode
     if node == tw.root:
@@ -5255,7 +5261,7 @@ def traverseSiblings(tw, type):
             return None
 
 
-def nextSkippingChildren(node, stayWithin):
+def nextSkippingChildren(node: Node, stayWithin: Node) -> Optional[Node]:
 
     # if isinstance(node, str):
     # node = Text(node)
@@ -5287,7 +5293,7 @@ def nextSkippingChildren(node, stayWithin):
 class TreeWalker:
     """The TreeWalker object represents the nodes of a document subtree and a position within them."""
 
-    def _upgrade_dom(self):
+    def _upgrade_dom(self) -> None:
         """[
             Our dom has some strings that are not Text Nodes
             so we have to upgrade them to Node objects. As we can't know siblings otherwise
@@ -5295,7 +5301,7 @@ class TreeWalker:
         ]
         """
 
-        def upgrade(el):
+        def upgrade(el: Node) -> None:
             if isinstance(el, (Text, str)):
                 return
             for child in el:
@@ -5307,7 +5313,13 @@ class TreeWalker:
 
         self._root._iterate(self._root, upgrade)
 
-    def __init__(self, node, whatToShow=NodeFilter.SHOW_ALL, _filter=None, expandEntityReferences=False):
+    def __init__(
+        self,
+        node: Node,
+        whatToShow: int = NodeFilter.SHOW_ALL,
+        _filter: Any = None,
+        expandEntityReferences: bool = False,
+    ) -> None:
         self._root = node
         self._upgrade_dom()
         # print("test", type(self._root[0][0]))
@@ -5320,7 +5332,7 @@ class TreeWalker:
 
         self._filter = _filter
 
-        def acceptNode(node):
+        def acceptNode(node: Node) -> int:
             nonlocal _filter
             # result
             # if active:
@@ -5337,7 +5349,7 @@ class TreeWalker:
         self.last = None
         self.parent = None
         self.previous = None
-        self.children = []
+        self.children: List[Node] = []
         self.childIndex = 0
 
         self.tree = None
@@ -5347,11 +5359,11 @@ class TreeWalker:
         self.expandEntityReferences = expandEntityReferences
 
     @property
-    def root(self):
+    def root(self) -> Node:
         """Returns a Node representing the root node as specified when the TreeWalker was created."""
         return self._root
 
-    def whatToShow(self, options):
+    def whatToShow(self, options: int) -> int:
         """Returns an unsigned long being a bitmask made of constants describing the types of Node that must be presented.
         Non-matching nodes are skipped, but their children may be included, if relevant. The possible values are:"""
         return options
@@ -5365,7 +5377,7 @@ class TreeWalker:
     #     """ Is the Node on which the TreeWalker is currently pointing at. """
     #     return self.currentNode
 
-    def parentNode(self):
+    def parentNode(self) -> Optional[Node]:
         """Moves the current Node to the first visible ancestor node in the document order,
         and returns the found node. It also moves the current node to this one. If no such node exists,
         or if it is before that the root node defined at the object construction,
@@ -5379,28 +5391,28 @@ class TreeWalker:
                 return node
             return None
 
-    def firstChild(self):
+    def firstChild(self) -> Optional[Node]:
         """Moves the current Node to the first visible child of the current node, and returns the found child.
         It also moves the current node to this child. If no such child exists,
         returns null and the current node is not changed."""
         # return self.currentNode.firstChild
         return traverseChildren(self, "first")
 
-    def lastChild(self):
+    def lastChild(self) -> Optional[Node]:
         """Moves the current Node to the last visible child of the current node, and returns the found child.
         It also moves the current node to this child.
         If no such child exists, null is returned and the current node is not changed."""
         # return self.currentNode.lastChild
         return traverseChildren(self, "last")
 
-    def previousSibling(self):
+    def previousSibling(self) -> Optional[Node]:
         """Moves the current Node to its previous sibling, if any, and returns the found sibling.
         If there is no such node, return null and the current node is not changed.
         """
         # return self.previous
         return traverseSiblings(self, "previous")
 
-    def nextSibling(self):
+    def nextSibling(self) -> Optional[Node]:
         """Moves the current Node to its next sibling, if any, and returns the found sibling.
         If there is no such node, null is returned and the current node is not changed."""
         # return self.currentNode.nextSibling
