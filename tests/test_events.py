@@ -345,5 +345,61 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(document.createEvent("KeyboardEvent"), KeyboardEvent)
         self.assertIsInstance(document.createEvent("CustomEvent"), CustomEvent)
 
+    def test_handle_event_listener_object(self):
+        target = EventTarget()
+        calls = []
+
+        class Handler:
+            def handleEvent(self, event):
+                calls.append(event.type)
+
+        target.addEventListener("custom_event", Handler())
+        target.dispatchEvent(Event("custom_event"))
+
+        self.assertEqual(calls, ["custom_event"])
+
+    def test_passive_listener_cannot_prevent_default(self):
+        target = EventTarget()
+
+        def listener(event):
+            event.preventDefault()
+
+        target.addEventListener("custom_event", listener, {"passive": True})
+        event = Event("custom_event")
+        target.dispatchEvent(event)
+
+        self.assertFalse(event.defaultPrevented)
+
+    def test_long_tail_event_data_helpers(self):
+        custom_event = CustomEvent("custom")
+        custom_event.initCustomEvent("customized", bubbles=False, cancelable=True, detail={"ok": True})
+        self.assertEqual(custom_event.type, "customized")
+        self.assertEqual(custom_event.detail, {"ok": True})
+        self.assertFalse(custom_event.bubbles)
+
+        transition = TransitionEvent("transitionend", {"propertyName": "opacity", "elapsedTime": 0.25})
+        self.assertEqual(transition.propertyName, "opacity")
+        self.assertEqual(transition.elapsedTime, 0.25)
+
+        request = type("Request", (), {"url": "/a", "referrer": "/a", "clientId": "c1"})()
+        fetch_event = FetchEvent("fetch", {"request": request, "clientId": "c2"})
+        self.assertTrue(fetch_event.isReload)
+        self.assertTrue(fetch_event.replacesClientId)
+        self.assertEqual(fetch_event.resultingClientId, "c2")
+        self.assertEqual(fetch_event.respondWith("response"), "response")
+
+        marker = object()
+        extendable = ExtendableEvent("extendable")
+        self.assertIs(extendable.waitUntil(marker), marker)
+        self.assertEqual(extendable._pending_promises, [marker])
+
+        promise_event = PromiseRejectionEvent("unhandledrejection", {"reason": "boom", "isRejected": True})
+        self.assertEqual(promise_event.reason, "boom")
+        self.assertTrue(promise_event.isRejected)
+
+        message = MessageEvent("message", {"data": "hi", "ports": [1, 2]})
+        self.assertEqual(message.data, "hi")
+        self.assertEqual(message.ports, [1, 2])
+
 if __name__ == '__main__':
     unittest.main()

@@ -65,6 +65,20 @@ class TestCase(unittest.TestCase):
         self.assertEqual(win.document.URL, "https://example.com")
         self.assertEqual(win.history.state, "https://example.com")
 
+    def test_hashchange_and_popstate_events(self):
+        win = Window()
+        events = []
+
+        win.addEventListener("hashchange", lambda event: events.append((event.type, event.oldURL, event.newURL)))
+        win.addEventListener("popstate", lambda event: events.append((event.type, event.state)))
+
+        win.location = "https://example.com#one"
+        win.location = "https://example.com#two"
+        win.history.back()
+
+        self.assertIn(("hashchange", "https://example.com#one", "https://example.com#two"), events)
+        self.assertIn(("popstate", "https://example.com#one"), events)
+
 
 if __name__ == "__main__":
     unittest.main()

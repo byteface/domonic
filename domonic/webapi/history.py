@@ -4,7 +4,7 @@
     https://developer.mozilla.org/en-US/docs/Web/API/History
 """
 
-# from domonic.events import Event, EventTarget
+from domonic.events import PopStateEvent
 
 
 class History:  # (EventTarget):
@@ -35,6 +35,7 @@ class History:  # (EventTarget):
         self.skip_update = True
         if self.window:
             self.window.location = self.states[self.index]
+            self.window.dispatchEvent(PopStateEvent("popstate", {"state": self.state}))
         # self.dispatchEvent(Event('popstate'))
 
     def forward(self):
@@ -43,6 +44,7 @@ class History:  # (EventTarget):
         self.skip_update = True
         if self.window:
             self.window.location = self.state  # s[self.index]
+            self.window.dispatchEvent(PopStateEvent("popstate", {"state": self.state}))
 
     def go(self, n: int):
         """Loads a specific URL from the history list"""

@@ -807,8 +807,8 @@ class Node(EventTarget):
                     for e in el:
                         if type(e) not in (str, list, dict, int, float, tuple, object, set):
                             e._iterate(e, callback)
-        except Exception as e:
-            print("_iterate error", e)
+        except Exception:
+            return
 
     def __len__(self) -> int:
         return len(self.args)
@@ -4474,8 +4474,6 @@ class Document(Element):
             # open the file and APPEND the html to the file without losing the previous content
             with open(self._open_filename, "a") as f:
                 f.write(html)
-        else:
-            print("No file opened")
         content = DocumentFragment(html)
         self.__init__(content)
 

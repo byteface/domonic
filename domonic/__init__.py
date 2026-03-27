@@ -259,7 +259,6 @@ class domonic:
             # TODO -  keyword argument repeated (<string>, line 617)
             # keyword argument repeated (<string>, line 3)
             # TODO - invalid syntax (<string>, line 615)
-            print("Eval failed! you will have to modify the output manually")
             return pyml
 
     @staticmethod
@@ -286,9 +285,7 @@ class domonic:
             l = eval(test_line)
             # print('PASS:', line)
             return True, line
-        except Exception as e:
-            print(test_line)
-            print("FAIL:", line, e)
+        except Exception:
             # print(e)
             # rety fix_hyphen_tags
             if ")" in line:  # if there was a bracket return that at least
@@ -1124,7 +1121,6 @@ class domonic:
         except Exception as e:
             # TODO - problem with this method. is it takes literally forever.
             # as it removes 1 char then reparses entire doc. even on small pages this is a problem.
-            print(e)
             dodgycharIndex = int(Utils.digits(str(e).split(",")[1]))
             # string[int(dodgycharIndex)-1] = Utils.escape(string[int(dodgycharIndex)-1])
             dodgyChar = string[int(dodgycharIndex) - 1]
@@ -1133,7 +1129,7 @@ class domonic:
                 domonic.parseString_prev_error = dodgycharIndex
                 return domonic.parseString(string)
             else:
-                print("failed to parse invalid xml. clean and try again", e)
+                return None
 
         # else:
         # from xml.dom import pulldom

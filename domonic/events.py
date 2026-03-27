@@ -127,7 +127,12 @@ class EventTarget:
             if listener["capture"] != capture:
                 continue
             callback = listener["callback"]
-            callback(event)
+            event._in_passive_listener = listener["passive"]
+            if hasattr(callback, "handleEvent"):
+                callback.handleEvent(event)
+            else:
+                callback(event)
+            event._in_passive_listener = False
             if listener["once"]:
                 current_target.removeEventListener(event_type, callback, listener["capture"])
             if event._immediate_propagation_stopped:
@@ -208,8 +213,10 @@ class EventTarget:
         event.cancelBubble = False
         event._propagation_stopped = False
         event._immediate_propagation_stopped = False
+        event._in_passive_listener = False
 
         path = self._get_event_path(self)
+        event._path = path
         capture_targets = list(reversed(path[1:]))
         bubble_targets = path[1:] if event.bubbles else []
 
@@ -264,6 +271,7 @@ class EventTarget:
         event.cancelBubble = False
         event._propagation_stopped = False
         event._immediate_propagation_stopped = False
+        event._in_passive_listener = False
 
         async def call_listener(callback: Callable[..., Any], current_target: Any, capture: bool) -> None:
             event.currentTarget = current_target
@@ -271,7 +279,10 @@ class EventTarget:
             event.eventPhase = Event.AT_TARGET if current_target is event.target else (
                 Event.CAPTURING_PHASE if capture else Event.BUBBLING_PHASE
             )
-            result = callback(event)
+            if hasattr(callback, "handleEvent"):
+                result = callback.handleEvent(event)
+            else:
+                result = callback(event)
             if inspect.isawaitable(result):
                 await result
 
@@ -280,7 +291,9 @@ class EventTarget:
             for listener in listeners:
                 if listener["capture"] != capture:
                     continue
+                event._in_passive_listener = listener["passive"]
                 await call_listener(listener["callback"], current_target, capture)
+                event._in_passive_listener = False
                 if listener["once"]:
                     current_target.removeEventListener(event.type, listener["callback"], listener["capture"])
                 if event._immediate_propagation_stopped:
@@ -294,6 +307,7 @@ class EventTarget:
 
         try:
             path = self._get_event_path(self)
+            event._path = path
             for target in reversed(path[1:]):
                 await invoke(target, True)
                 if event._propagation_stopped:
@@ -393,11 +407,15 @@ class Event:
         self.timeStamp: float = time.time_ns() / 1_000_000
         self._propagation_stopped: bool = False
         self._immediate_propagation_stopped: bool = False
+        self._in_passive_listener: bool = False
+        self._path: list[Any] | None = None
 
     def composedPath(self):
         """
         Returns a list of the event's path, from the root to the target.
         """
+        if self._path is not None:
+            return list(self._path)
         path = []
         current_target = self.target
         while current_target is not None:
@@ -424,6 +442,7 @@ class Event:
         self.eventPhase = Event.AT_TARGET
         self._propagation_stopped = False
         self._immediate_propagation_stopped = False
+        self._path = None
         return self
 
     def stopPropagation(self):
@@ -457,7 +476,7 @@ class Event:
         Returns:
             None
         """
-        if self.cancelable:
+        if self.cancelable and not self._in_passive_listener:
             self.defaultPrevented = True
             self.returnValue = False
 
@@ -1068,11 +1087,11 @@ class TransitionEvent(Event):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
-        self.propertyName = None
+        self.propertyName = options.get("propertyName", None)
         """ Returns the name of the transition"""
-        self.elapsedTime = None
+        self.elapsedTime = options.get("elapsedTime", None)
         """  Returns the number of seconds a transition has been running """
-        self.pseudoElement = None
+        self.pseudoElement = options.get("pseudoElement", None)
         """ Returns the name of the pseudo-element of the transition """
         super().__init__(_type, options, *args, **kwargs)
 
@@ -1091,9 +1110,9 @@ class ProgressEvent(Event):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
-        self.lengthComputable: bool = options.get("lengthComputable", None)
-        self.loaded: int = options.get("loaded", None)
-        self.total: int = options.get("total", None)
+        self.lengthComputable: bool = options.get("lengthComputable", False)
+        self.loaded: int = options.get("loaded", 0)
+        self.total: int = options.get("total", 0)
         super().__init__(_type, options, *args, **kwargs)
 
 
@@ -1105,8 +1124,12 @@ class CustomEvent(Event):
         self.detail = options.get("detail", None)
         super().__init__(_type, options, *args, **kwargs)
 
-    def initCustomEvent(self):
-        pass
+    def initCustomEvent(
+        self, _type: str, bubbles: bool = True, cancelable: bool = True, detail: Any = None
+    ) -> "CustomEvent":
+        self.initEvent(_type, bubbles, cancelable)
+        self.detail = detail
+        return self
 
 
 class GamePadEvent(Event):
@@ -1117,7 +1140,7 @@ class GamePadEvent(Event):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
-        self.gamepad = None
+        self.gamepad = options.get("gamepad", None)
         super().__init__(_type, options, *args, **kwargs)
 
 
@@ -1129,33 +1152,39 @@ class FetchEvent(Event):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
-        self.clientId = None
+        self.clientId = options.get("clientId", None)
         """ Returns the client ID of the fetch request """
-        self.request = None
+        self.request = options.get("request", None)
         """ Returns the request object """
-        self.isReload = None
-        """ Returns whether the request is a reload or not """
+        self._responded_with = options.get("response", None)
         super().__init__(_type, options, *args, **kwargs)
 
     @property
     def isReload(self):
-        return self.request.url == self.request.referrer
+        if self.request is None:
+            return False
+        return getattr(self.request, "url", None) == getattr(self.request, "referrer", object())
 
     @property
     def replacesClientId(self):
-        return self.clientId != self.request.clientId
+        if self.request is None:
+            return False
+        return self.clientId != getattr(self.request, "clientId", None)
 
     @property
     def resultingClientId(self):
-        return self.clientId if self.replacesClientId else self.request.clientId
+        if self.request is None:
+            return self.clientId
+        return self.clientId if self.replacesClientId else getattr(self.request, "clientId", None)
 
     def respondWith(self, response):
         """Returns a promise that resolves to the response object"""
-        pass
+        self._responded_with = response
+        return response
 
     def waitUntil(self, promise):
         """Returns a promise that resolves when the response is available"""
-        pass
+        return super().waitUntil(promise)
 
 
 class ExtendableEvent(Event):
@@ -1167,13 +1196,15 @@ class ExtendableEvent(Event):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
-        self.extendable = None
+        self.extendable = options.get("extendable", True)
         """ Returns whether the event is extendable or not """
-        self.timeStamp = None
+        self._pending_promises: list[Any] = []
         """ Returns the time stamp of the event """
-        # self.waitUntil(promise)
-        """ Returns a promise that resolves when the event is handled """
         super().__init__(_type, options, *args, **kwargs)
+
+    def waitUntil(self, promise: Any):
+        self._pending_promises.append(promise)
+        return promise
 
 
 class SyncEvent(ExtendableEvent):
@@ -1183,9 +1214,9 @@ class SyncEvent(ExtendableEvent):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
-        self.tag = None
+        self.tag = options.get("tag", None)
         """ Returns the tag of the sync event """
-        self.lastChance = None
+        self.lastChance = options.get("lastChance", None)
         """ Returns whether the sync event is the last chance or not """
         super().__init__(_type, options, *args, **kwargs)
 
@@ -1197,17 +1228,17 @@ class SecurityPolicyViolationEvent(ExtendableEvent):
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
-        self.blockedURI = None
+        self.blockedURI = options.get("blockedURI", None)
         """ Returns the blocked URI """
-        self.violatedDirective = None
+        self.violatedDirective = options.get("violatedDirective", None)
         """ Returns the violated directive """
-        self.originalPolicy = None
+        self.originalPolicy = options.get("originalPolicy", None)
         """ Returns the original policy """
-        self.isFrameAncestor = None
+        self.isFrameAncestor = options.get("isFrameAncestor", None)
         """ Returns whether the frame is an ancestor of the frame that violated the policy """
-        self.isMainFrame = None
+        self.isMainFrame = options.get("isMainFrame", None)
         """ Returns whether the frame is the main frame """
-        self.frame = None
+        self.frame = options.get("frame", None)
         """ Returns the frame that violated the policy """
         super().__init__(_type, options, *args, **kwargs)
 
@@ -1316,11 +1347,12 @@ class PromiseRejectionEvent(Event):  # TODO - put with the promise?
     HANDLED: str = "rejectionhandled"  #:
 
     def __init__(self, _type, options=None, *args, **kwargs):
-        self.promise = None
+        options = options or kwargs
+        self.promise = options.get("promise", None)
         """ Returns the promise that was rejected """
-        self.reason = None
+        self.reason = options.get("reason", None)
         """ Returns the reason of the rejection """
-        self.isRejected = None
+        self.isRejected = options.get("isRejected", None)
         """ Returns whether the promise was rejected or not """
         super().__init__(_type, options, *args, **kwargs)
 
@@ -1342,7 +1374,7 @@ class MessageEvent(Event):
         """ Returns the last event id of the message """
         self.source = options.get("source", None)
         """ Returns the source of the message """
-        self.ports = options.get("ports", None)
+        self.ports = options.get("ports", [])
         """ Returns the ports of the message """
         super().__init__(_type, options, *args, **kwargs)
 

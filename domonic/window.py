@@ -20,7 +20,7 @@ from typing import Any, Callable
 
 from domonic import domonic
 from domonic.dom import Document, Element, Location, document
-from domonic.events import Event, EventTarget
+from domonic.events import Event, EventTarget, HashChangeEvent, PopStateEvent
 from domonic.javascript import Window as JavaScriptWindow
 from domonic.webapi.console import Console
 from domonic.webapi.credentials import CredentialsContainer
@@ -327,11 +327,14 @@ class Window(JavaScriptWindow, EventTarget):
     def location(self, value: str | Location) -> None:
         if value is None:
             return
+        previous_href = self._location.href
         href = self._normalize_url(value)
         if getattr(self._history, "skip_update", False) is False:
             self._history._update(href)
         self._location = Location(href)
         self._document.URL = href
+        if previous_href != href and previous_href.split("#", 1)[0] == href.split("#", 1)[0]:
+            self.dispatchEvent(HashChangeEvent("hashchange", {"oldURL": previous_href, "newURL": href}))
 
         loaded_document = self._fetch_document(href)
         if loaded_document is not None:
