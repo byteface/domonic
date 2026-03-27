@@ -1,12 +1,12 @@
-coverage==7.6.8
-flake8==7.1.1
+coverage==7.13.4
+flake8==7.3.0
 itsdangerous==2.2.0
-Jinja2==3.1.4
-Sphinx==7.4.7 #
-fastapi==0.115.6 #
-uvicorn==0.32.1 #
+Jinja2==3.1.6
+Sphinx==9.1.0 #
+fastapi==0.135.1 #
+uvicorn==0.42.0 #
 toml==0.10.2 #
-ujson==5.10.0 #
-websockets==14.1 #
-isort==5.10.1 #
-wheel==0.45.1 #
+ujson==5.12.0 #
+websockets==16.0 #
+isort==8.0.1 #
+wheel==0.46.3 #

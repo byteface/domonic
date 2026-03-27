@@ -158,5 +158,7 @@ I'd like to thank here...
 * FrackOverflow
 * lmgarret
 * dmalataeva
+* Eoghan Murray - eoghanmurray
+* Nikolay - Kiuh
 
 and of course dependabot[bot]
