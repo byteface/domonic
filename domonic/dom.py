@@ -1511,29 +1511,38 @@ class DOMStringMap:
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        self._store: dict[str, Any] = dict(*args, **kwargs)
+        super().__init__()
+
+    def __getitem__(self, name: str) -> Any:
+        return self._store[name]
+
+    def __setitem__(self, name: str, value: Any) -> None:
+        self._store[name] = value
+
+    def __contains__(self, name: str) -> bool:
+        return name in self._store
+
+    def __iter__(self):
+        return iter(self._store)
+
+    def items(self):
+        return self._store.items()
 
     def get(self, name: str):
         """Returns the value of the item with the specified name"""
-        for item in self.args:
-            if item.name == name:
-                return item.value
-        return None
+        return self._store.get(name)
 
     def set(self, name: str, value):
         """Sets the value of the item with the specified name"""
-        for item in self.args:
-            if item.name == name:
-                item.value = value
-                return True
-        return False
+        self._store[name] = value
+        return True
 
     def delete(self, name: str) -> bool:
         """Deletes the item with the specified name"""
-        for item in self.args:
-            if item.name == name:
-                self.remove(item)
-                return True
+        if name in self._store:
+            del self._store[name]
+            return True
         return False
 
     # def has(self, name):
@@ -1756,25 +1765,26 @@ class DOMTokenList(list):
         otherwise adds token to list. If force is true, adds token to list,
         and if force is false, removes token from list if present."""
         if force is None:
-            if token in self.args:
+            if token in self:
                 self.remove(token)
             else:
-                self.append(token)
+                self.add(token)
         elif force is True:
             self.add(token)
         elif force is False:
             self.remove(token)
         else:
             raise TypeError("force must be a boolean")
+        self.classes = list(self)
 
     def contains(self, token) -> bool:
         """Returns true if the token is in the list, and false otherwise"""
         # return token in self.el.className
-        return token in self.classes
+        return token in self
 
     def item(self, index: int):
         """Returns the token at the specified index"""
-        return self[index]  # or None
+        return self[index] if 0 <= index < len(self) else None
 
     def toString(self) -> str:
         """Returns a string containing all tokens in the list, with spaces separating each token"""
@@ -2718,17 +2728,13 @@ class Element(Node):
     @property
     def dataset(self):
         """Returns the value of the dataset attribute of an element"""
-        # return self.getAttribute('data-*')  # TODO - copilot suggested a star. is that supposed to work?
-        # loop all attributes and return the ones that start with data-
-        # return {key: value for key, value in self.kwargs.items() if key.startswith('data-')}
         from domonic.utils import Utils
 
         dsmap = DOMStringMap()
         for key, value in self.kwargs.items():
-            if key.startswith("data-"):
-                # remove data from the key and change case to lower
-                key = Utils.camel_case(key.replace("data-", ""))
-                dsmap[key] = value
+            attr_name = key[1:] if key.startswith("_") else key
+            if attr_name.startswith("data-"):
+                dsmap[Utils.case_camel(attr_name.replace("data-", ""))] = value
         return dsmap
 
     @property

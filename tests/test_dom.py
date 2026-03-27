@@ -1366,6 +1366,133 @@ class DOMTest(unittest.TestCase):
         node.setAttributeNS("http://example.com/ns", "data-other", "x")
         self.assertEqual(node.getAttribute("data-other"), "x")
 
+    def test_dataset_and_dom_string_map_helpers(self):
+        node = div(**{"_data-user-id": "7", "_data-theme-name": "night"})
+        dataset = node.dataset
+
+        self.assertEqual(dataset.get("userId"), "7")
+        self.assertEqual(dataset["themeName"], "night")
+        self.assertIn("userId", dataset)
+
+        self.assertTrue(dataset.set("mode", "demo"))
+        self.assertEqual(dataset.get("mode"), "demo")
+        self.assertEqual(sorted(dataset.items()), [("mode", "demo"), ("themeName", "night"), ("userId", "7")])
+        self.assertTrue(dataset.delete("mode"))
+        self.assertFalse(dataset.delete("missing"))
+        self.assertEqual(dataset.get("mode"), None)
+
+    def test_node_operator_helpers(self):
+        node = div(span("a"), _id="root")
+        sibling = div("b")
+
+        self.assertEqual(node["id"], "root")
+        self.assertEqual(node[0].tagName, "span")
+
+        clones = node * 2
+        self.assertEqual(len(clones), 2)
+        self.assertTrue(all(isinstance(clone, type(node)) for clone in clones))
+        self.assertIsNot(clones[0], node)
+        self.assertEqual([str(clone) for clone in 2 * node], [str(clone) for clone in clones])
+        self.assertEqual(node / 2, '<div id="root"><span>a</span></div><div id="root"><span>a</span></div>')
+
+        node += sibling
+        self.assertIs(sibling.parentNode, node)
+        self.assertEqual(len(node.args), 2)
+        node -= sibling
+        self.assertEqual(len(node.args), 1)
+
+        updated = node >> {"_class": "hero", "_data-role": "banner"}
+        self.assertIs(updated, node)
+        self.assertEqual(node.getAttribute("class"), "hero")
+        self.assertEqual(node.getAttribute("data-role"), "banner")
+        self.assertIs(node | False, node)
+        self.assertEqual(node | "fallback", "fallback")
+        self.assertEqual(node.__div__(2), str(node) * 2)
+        self.assertEqual(node.__rdiv__(2), str(node) * 2)
+        self.assertEqual(node.__rtruediv__(2), str(node) * 2)
+        self.assertIs(node.__setitem__("_title", "banner"), node)
+        self.assertEqual(node.getAttribute("title"), "banner")
+
+    def test_node_attribute_rendering_configurations(self):
+        button_node = button("Go", _disabled="", _data_value="7", _get="/api/items")
+        original_quotes = DOMConfig.ATTRIBUTE_QUOTES
+        original_htmx = DOMConfig.HTMX_ENABLED
+        try:
+            DOMConfig.ATTRIBUTE_QUOTES = '"'
+            DOMConfig.HTMX_ENABLED = False
+            rendered = button_node.__attributes__
+            self.assertIn(" disabled", rendered)
+            self.assertIn(' data_value="7"', rendered)
+            self.assertIn(' get="/api/items"', rendered)
+
+            DOMConfig.ATTRIBUTE_QUOTES = ""
+            self.assertIn(" data_value=7", button_node.__attributes__)
+
+            DOMConfig.HTMX_ENABLED = True
+            htmx_rendered = button_node.__attributes__
+            self.assertIn(" data-hx-get=", htmx_rendered)
+        finally:
+            DOMConfig.ATTRIBUTE_QUOTES = original_quotes
+            DOMConfig.HTMX_ENABLED = original_htmx
+
+    def test_node_autoescape_and_pyml_helpers(self):
+        node = div(Text("<unsafe>"), span(Text("ok")), _data_label="x", **{"data-mode": "demo"})
+        original_autoescape = DOMConfig.GLOBAL_AUTOESCAPE
+        try:
+            DOMConfig.GLOBAL_AUTOESCAPE = True
+            self.assertIn("&lt;unsafe&gt;", node.content)
+        finally:
+            DOMConfig.GLOBAL_AUTOESCAPE = original_autoescape
+
+        pyml = node.__pyml__()
+        self.assertIn('div(_data_label="x"', pyml)
+        self.assertIn('**{"_data-mode":demo}', pyml)
+        self.assertIn('"<unsafe>"', pyml)
+        self.assertIn('span("ok")', pyml)
+
+    def test_context_manager_and_format_helpers(self):
+        with div(_id="outer") as outer:
+            span("child")
+
+        self.assertEqual(len(outer.args), 1)
+        self.assertEqual(outer.firstChild.tagName, "span")
+
+        original_optional = DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS
+        try:
+            DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = True
+            formatted = format(outer, "")
+            self.assertIn('<div id="outer">', formatted)
+            self.assertIn("<span>child</span>", formatted)
+        finally:
+            DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = original_optional
+
+    def test_format_helpers_for_closed_and_optional_tags(self):
+        original_optional = DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS
+        original_autoescape = DOMConfig.GLOBAL_AUTOESCAPE
+        try:
+            DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = False
+            DOMConfig.GLOBAL_AUTOESCAPE = True
+            self.assertEqual(format(li("item"), ""), "\n<li>item")
+            self.assertEqual(format(br(), ""), "\n<br />")
+            self.assertIn("&lt;safe&gt;", format(div("<safe>"), ""))
+        finally:
+            DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = original_optional
+            DOMConfig.GLOBAL_AUTOESCAPE = original_autoescape
+
+    def test_document_value_type_helpers(self):
+        instruction = ProcessingInstruction("xml-stylesheet", 'href="style.css"')
+        comment = Comment("hello")
+        cdata = CDATASection("<tag/>")
+        entity = EntityReference("&amp;")
+
+        self.assertEqual(str(instruction), '<?xml-stylesheet href="style.css"?>')
+        self.assertEqual(str(comment), "<!--hello-->")
+        self.assertEqual(str(cdata), "<![CDATA[<tag/>]]>")
+        self.assertEqual(comment.length, 5)
+        self.assertEqual(cdata.length, 6)
+        self.assertEqual(str(entity), "&amp;")
+        self.assertEqual(EntityReference.fromOrdinal(38), "&")
+
     def test_dom_html_element_constructor_helpers(self):
         cases = [
             (HTMLAnchorElement, {"href": "/home", "target": "_blank", "rel": "noopener", "download": "file.txt", "type": "text/html"}, {"href": "/home", "target": "_blank", "rel": "noopener", "download": "file.txt", "type": "text/html"}),
@@ -2295,6 +2422,23 @@ class TestDomTokenList(unittest.TestCase):
         assert not sample.classList.contains("theclass")
         # print(len(sample.classList))
         assert len(sample.classList) == 3
+
+    def test_toggle_item_and_string_helpers(self):
+        sample = div(_class="one two")
+        tokens = sample.classList
+
+        tokens.toggle("two")
+        self.assertFalse(tokens.contains("two"))
+        tokens.toggle("three")
+        self.assertTrue(tokens.contains("three"))
+        tokens.toggle("four", True)
+        self.assertTrue(tokens.contains("four"))
+        tokens.toggle("four", False)
+        self.assertFalse(tokens.contains("four"))
+        self.assertEqual(tokens.item(0), "one")
+        self.assertEqual(tokens.item(10), None)
+        self.assertEqual(tokens.toString(), "one three")
+        self.assertEqual(sample.className, "one three")
 
 
 if __name__ == "__main__":
