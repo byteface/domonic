@@ -179,14 +179,7 @@ file_extensions: Final[dict[str, str]] = {
 mime_types: Final[dict[str, str]] = file_extensions
 
 __all__ = [
-    "Char",
-    "Code",
-    "Color",
-    "Entity",
     "HTTPStatus",
-    "Key",
-    "KeyCode",
-    "KeyLocation",
     "doctypes",
     "file_extensions",
     "get_doctype",
@@ -197,24 +190,3 @@ __all__ = [
     "mime_types",
     "namespaces",
 ]
-
-
-def __getattr__(name: str):
-    if name == "Color":
-        from domonic.constants.color import Color
-
-        return Color
-    if name in {"Char", "Entity"}:
-        from domonic.constants.entities import Char, Entity
-
-        return {"Char": Char, "Entity": Entity}[name]
-    if name in {"Code", "Key", "KeyCode", "KeyLocation"}:
-        from domonic.constants.keyboard import Code, Key, KeyCode, KeyLocation
-
-        return {
-            "Code": Code,
-            "Key": Key,
-            "KeyCode": KeyCode,
-            "KeyLocation": KeyLocation,
-        }[name]
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

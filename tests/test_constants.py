@@ -2,13 +2,6 @@ import unittest
 
 from domonic.constants import (
     HTTPStatus,
-    Char,
-    Code,
-    Color,
-    Entity,
-    Key,
-    KeyCode,
-    KeyLocation,
     doctypes,
     file_extensions,
     get_doctype,
@@ -19,7 +12,9 @@ from domonic.constants import (
     mime_types,
     namespaces,
 )
-from domonic.constants.keyboard import normalize_code, normalize_key
+from domonic.constants.color import Color
+from domonic.constants.entities import Char, Entity
+from domonic.constants.keyboard import Code, Key, KeyCode, KeyLocation, normalize_code, normalize_key
 
 
 class ConstantsTest(unittest.TestCase):
@@ -100,13 +95,6 @@ class ConstantsTest(unittest.TestCase):
         self.assertEqual(Color.rgb2hex(255, 0, 255), "#ff00ff")
         self.assertEqual(Color(255, 0, 255).toRGBA(), (255, 0, 255, 1))
         self.assertEqual(Color("#00ff00").convert("css"), "#00ff00")
-
-    def test_package_reexports(self):
-        self.assertEqual(Key.ENTER, "Enter")
-        self.assertEqual(Code.KEY_A, "KeyA")
-        self.assertEqual(KeyLocation.NUMPAD, 3)
-        self.assertEqual(str(Entity("&amp;")), "&")
-        self.assertEqual(str(Char("<")), "&lt;")
 
 
 if __name__ == "__main__":
