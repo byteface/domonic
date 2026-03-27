@@ -98,6 +98,19 @@ class TestCase(unittest.TestCase):
 
         # returns an empty array for any primitive type
         assert Object.entries(100) == []
+        assert Object.keys(100) == []
+        assert Object.values(100) == []
+
+        class ExampleObject:
+            def __init__(self):
+                self.alpha = 1
+                self.beta = 2
+                self._private = 3
+
+        example = ExampleObject()
+        self.assertEqual(Object.entries(example), [["alpha", 1], ["beta", 2]])
+        self.assertEqual(Object.keys(example), ["alpha", "beta"])
+        self.assertEqual(Object.values(example), [1, 2])
 
         # iterate through key-value gracefully
         obj = {"a": 5, "b": 7, "c": 9}
@@ -638,11 +651,10 @@ class TestCase(unittest.TestCase):
         assert mystr.replace("S", "X") != "Xome Xtring"
 
         # localeCompare
-        # assert(mystr.localeCompare('a', 'b') == -1)
-        # assert(mystr.localeCompare('a', 'a') == 0)
-        # assert(mystr.localeCompare('a', 'A') == 1)
-        # assert(mystr.localeCompare('a', 'aa') == -1)
-        # assert(mystr.localeCompare('a', 'Aa') == -1)
+        self.assertLess(String("apple").localeCompare("banana"), 0)
+        self.assertEqual(String("apple").localeCompare("apple"), 0)
+        self.assertGreater(String("banana").localeCompare("apple"), 0)
+        self.assertLess(String("a").localeCompare("aa"), 0)
 
         # search
         mystr = String("Some String")
@@ -1173,6 +1185,7 @@ class TestCase(unittest.TestCase):
         target = {"name": "John"}
         self.assertEqual(list(Reflect.ownKeys(target)), ["name"])
         self.assertEqual(Reflect.apply(lambda left, right: left + right, None, [2, 3]), 5)
+        self.assertEqual(Reflect.construct(dict, [[("name", "John")]]), {"name": "John"})
         self.assertTrue(Reflect.defineProperty(target, "age", {"value": 30}))
         self.assertEqual(Reflect.get(target, "age", None), 30)
         self.assertTrue(Reflect.has(target, "age"))
@@ -1194,6 +1207,13 @@ class TestCase(unittest.TestCase):
         self.assertFalse(symbol.isConcatSpreadable())
         self.assertEqual(list(symbol.iterator([1, 2])), [1, 2])
         self.assertEqual(list(symbol.asyncIterator([3, 4])), [3, 4])
+        self.assertTrue(symbol.match("auth token present"))
+        self.assertEqual(symbol.search("auth token present"), 5)
+        self.assertEqual(symbol.split("pretokenpost"), ["pre", "post"])
+        self.assertIs(symbol.species(), Symbol)
+        self.assertEqual(symbol.toPrimitive(), "token")
+        self.assertEqual(symbol.toStringTag(), "Symbol")
+        self.assertEqual(symbol.unscopables(), {})
         self.assertEqual(symbol.toString(), "Symbol(token)")
         self.assertEqual(symbol.toSource(), "Symbol(token)")
         self.assertEqual(symbol.valueOf(), "token")

@@ -185,6 +185,11 @@ class TestCase(unittest.TestCase):
     #     # // (eg -120). NOT the timezone offset of the date object.
     #     assert date1.getTimezoneOffset() == -420
     #     assert date1.getTimezoneOffset() == date2.getTimezoneOffset()
+    def test_getTimezoneOffset(self):
+        date1 = Date("August 19, 1975 23:15:30 GMT+07:00")
+        date2 = Date("August 19, 1975 23:15:30 GMT-02:00")
+        self.assertIsInstance(date1.getTimezoneOffset(), int)
+        self.assertEqual(date1.getTimezoneOffset(), date2.getTimezoneOffset())
 
     def setMinutes(self):
         event = Date("August 19, 1975 23:15:30")

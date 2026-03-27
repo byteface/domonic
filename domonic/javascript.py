@@ -14,6 +14,7 @@ import calendar
 import datetime
 import gc
 import json
+import locale as pylocale
 import math
 import multiprocessing
 import os
@@ -26,6 +27,7 @@ import threading
 import time
 import urllib.parse
 from datetime import timezone
+from email.utils import parsedate_to_datetime
 from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Callable, Iterable, Iterator, Mapping, Sequence
 from urllib.parse import quote, unquote
@@ -45,13 +47,26 @@ except ImportError:  # pragma: no cover - optional dependency
         except ValueError:
             pass
 
+        try:
+            return parsedate_to_datetime(value)
+        except (TypeError, ValueError, IndexError):
+            pass
+
         for fmt in (
             "%Y-%m-%d %H:%M:%S",
             "%Y-%m-%d",
+            "%Y %m %d",
             "%d %B %Y",
             "%d %b %Y",
             "%Y/%m/%d",
             "%m/%d/%Y",
+            "%B %d, %Y %H:%M:%S",
+            "%B %d, %Y %H:%M",
+            "%B %d, %y %H:%M:%S",
+            "%B %d, %y %H:%M",
+            "%d %b %Y %H:%M:%S GMT",
+            "%B %d, %Y %H:%M:%S GMT%z",
+            "%B %d, %y %H:%M:%S GMT%z",
         ):
             try:
                 return datetime.datetime.strptime(value, fmt)
@@ -67,6 +82,23 @@ JSONScalar = str | int | float | bool | None
 PropertyDict = dict[str, Any]
 ObjectEntries = Iterable[tuple[str, Any] | list[Any]]
 ArrayItems = Sequence[Any] | Iterable[Any]
+
+
+def _own_enumerable_items(obj: Any) -> list[tuple[str, Any]]:
+    """Return a JS-ish view of an object's own enumerable string properties."""
+    if obj is None:
+        return []
+    if isinstance(obj, dict):
+        return [(str(key), value) for key, value in obj.items()]
+    if isinstance(obj, (str, bytes, bytearray)):
+        return [(str(index), value) for index, value in enumerate(obj)]
+    if isinstance(obj, Sequence) and not isinstance(obj, (str, bytes, bytearray)):
+        return [(str(index), value) for index, value in enumerate(obj)]
+    if isinstance(obj, (float, int, bool, complex)):
+        return []
+    if hasattr(obj, "__dict__"):
+        return [(key, value) for key, value in vars(obj).items() if not key.startswith("_")]
+    return []
 
 
 def function(python_str: str) -> Callable[[], Any]:
@@ -234,29 +266,18 @@ class Object:
     @staticmethod
     def entries(obj: Any) -> list[list[Any]]:
         """Returns an array containing all of the [key, value] pairs in the object."""
-        if isinstance(obj, dict):
-            return [[k, v] for k, v in obj.items()]
-        if isinstance(obj, (float, int)):
-            return []
+        return [[key, value] for key, value in _own_enumerable_items(obj)]
 
     @staticmethod
-    def keys(obj: Any) -> Any:
+    def keys(obj: Any) -> list[str]:
         """Returns an array containing the names of all of the given object's own enumerable string properties."""
-        if isinstance(obj, dict):
-            return obj.keys()
-        if isinstance(obj, (float, int)):
-            return []
-        return obj.__dict__.keys()  # TODO - this is probably wrong
+        return [key for key, _ in _own_enumerable_items(obj)]
 
     @staticmethod
-    def values(obj: Any) -> Any:
+    def values(obj: Any) -> list[Any]:
         """Returns an array containing the values that correspond to
         all of a given object's own enumerable string properties."""
-        if isinstance(obj, dict):
-            return obj.values()
-        if isinstance(obj, (float, int)):
-            return []
-        return obj.__dict__.values()  # TODO - this is probably wrong
+        return [value for _, value in _own_enumerable_items(obj)]
 
     @staticmethod
     def getOwnPropertyDescriptor(obj: Any, prop: str) -> Any:
@@ -1483,12 +1504,9 @@ class Date(Object):
     def getTimezoneOffset(self) -> int:
         """Returns the difference, in minutes, between a date as evaluated in the UTC time zone,
         and the same date as evaluated in the local time zone"""
-        # return self.date.now().utcoffset().total_seconds() / 60  # TODO - TEST
-        # date1 = self.date.astimezone()
-        # date1.replace(tzinfo = timezone.utc)
-        # date2 = self.date.astimezone()
-        # date2.replace(tzinfo=timezone.utc)
-        raise NotImplementedError()
+        local_date = self.date.astimezone()
+        offset = local_date.utcoffset() or datetime.timedelta()
+        return int(-(offset.total_seconds() / 60))
 
     def getUTCDate(self) -> int:
         """Returns the day of the month, according to universal time (from 1-31)"""
@@ -1808,7 +1826,7 @@ class Date(Object):
 
     def UTC(self) -> datetime.datetime:
         """Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time"""
-        return self.date.utcnow()
+        return datetime.datetime.now(timezone.utc)
 
     # TODO - add all dunders and test
     # def __eq__(self, other):
@@ -3301,12 +3319,22 @@ class String:
     def localeCompare(self, comparisonString: str, locale: str = None, *args) -> int:
         """method returns a number indicating whether a reference string comes before,
         or after, or is the same as the given string in sort order"""
-        # if locale is None:
-        #     locale = self.locale
-        # return locale.strcoll(self.x, comparisonString, *args)
-        # pass
-        # TODO - implement localeCompare
-        raise NotImplementedError
+        if locale:
+            previous_locale = None
+            try:
+                previous_locale = pylocale.setlocale(pylocale.LC_COLLATE)
+                pylocale.setlocale(pylocale.LC_COLLATE, locale)
+                comparison = pylocale.strcoll(self.x, comparisonString)
+            except Exception:
+                comparison = (self.x > comparisonString) - (self.x < comparisonString)
+            finally:
+                if previous_locale is not None:
+                    try:
+                        pylocale.setlocale(pylocale.LC_COLLATE, previous_locale)
+                    except Exception:
+                        pass
+            return comparison
+        return (self.x > comparisonString) - (self.x < comparisonString)
 
     def trimStart(self) -> str:
         """[Removes whitespace from the beginning of a string.]"""
@@ -4427,10 +4455,9 @@ class Reflect:
     """
 
     @staticmethod
-    def ownKeys(target: Any) -> Any:
+    def ownKeys(target: Any) -> list[str]:
         """Returns an array of the target object's own (not inherited) property keys."""
-        return target.keys()
-        # return target.__dict__.keys()
+        return Object.getOwnPropertyNames(target)
 
     @staticmethod
     def apply(target: Callable[..., Any], thisArgument: Any, argumentsList: Sequence[Any]) -> Any:
@@ -4439,10 +4466,11 @@ class Reflect:
         return target(*argumentsList)
 
     @staticmethod
-    def construct(target: Any, argumentsList: Sequence[Any], newTarget: Any) -> Any:
+    def construct(target: Any, argumentsList: Sequence[Any], newTarget: Any = None) -> Any:
         """The new operator as a function. Equivalent to calling new target(...argumentsList).
         Also provides the option to specify a different prototype."""
-        raise NotImplementedError
+        constructor = newTarget or target
+        return constructor(*argumentsList)
 
     @staticmethod
     def defineProperty(target: Any, propertyKey: str, attributes: Any) -> Any:
@@ -4471,7 +4499,7 @@ class Reflect:
             return False
 
     @staticmethod
-    def get(target: Any, propertyKey: str, receiver: Any) -> Any:
+    def get(target: Any, propertyKey: str, receiver: Any = None) -> Any:
         """Returns the value of the property.
         Works like getting a property from an object (target[propertyKey]) as a function."""
         if isinstance(target, dict):
@@ -4508,7 +4536,7 @@ class Reflect:
         return True
 
     @staticmethod
-    def set(target: Any, propertyKey: str, value: Any, receiver: Any) -> Any:
+    def set(target: Any, propertyKey: str, value: Any, receiver: Any = None) -> Any:
         """A function that assigns values to properties.
         Returns a Boolean that is true if the update was successful."""
         try:
@@ -4569,7 +4597,9 @@ class Symbol:
     def match(self, item: Any) -> Any:
         """A method that matches the symbol against a string,
         also used to determine if an object may be used as a regular expression."""
-        raise NotImplementedError
+        if isinstance(item, str):
+            return self.description in item
+        return self.symbol == item
 
     # A method that returns an iterator, that yields matches of the regular expression against a string.
     # Used by String.prototype.matchAll().
@@ -4583,29 +4613,33 @@ class Symbol:
 
     # A method that returns the index within a string that matches the regular expression.
     # Used by String.prototype.search().
-    def search(self) -> Any:
-        raise NotImplementedError
+    def search(self, value: str) -> int:
+        if not isinstance(value, str):
+            return -1
+        return value.find(self.description)
 
     # A method that splits a string at the indices that match a regular expression. Used by String.prototype.split().
-    def split(self) -> Any:
-        raise NotImplementedError
+    def split(self, value: str) -> list[str]:
+        if not isinstance(value, str):
+            return [str(value)]
+        return value.split(self.description)
 
     # A constructor function that is used to create derived objects.
-    def species(self) -> Any:
-        raise NotImplementedError
+    def species(self) -> type[Symbol]:
+        return self.__class__
 
     # A method converting an object to a primitive value.
     def toPrimitive(self) -> Any:
-        raise NotImplementedError
+        return self.symbol
 
     # A string value used for the default description of an object.
     # Used by Object.prototype.toString().
-    def toStringTag(self) -> Any:
-        raise NotImplementedError
+    def toStringTag(self) -> str:
+        return "Symbol"
 
     # An object value of whose own and inherited property names are excluded from the with environment bindings of the associated object.
-    def unscopables(self) -> Any:
-        raise NotImplementedError
+    def unscopables(self) -> dict[str, bool]:
+        return {}
 
     # @staticmethod
     # def for(key):
