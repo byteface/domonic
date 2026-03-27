@@ -1039,6 +1039,73 @@ class DOMTest(unittest.TestCase):
         fragment = r.createContextualFragment("<em>x</em>")
         self.assertEqual(str(fragment), "<em>x</em>")
 
+    def test_range_text_and_compare_helpers(self):
+        text = Text("abcdef")
+        host = p(text)
+        host.style.left = "10px"
+        host.style.top = "20px"
+        host.style.width = "80px"
+        host.style.height = "10px"
+
+        r = Range()
+        r.setStart(text, 1)
+        r.setEnd(text, 4)
+        self.assertEqual(r.toString(), "bcd")
+        self.assertEqual(r.comparePoint(text, 0), -1)
+        self.assertEqual(r.comparePoint(text, 2), 0)
+        self.assertEqual(r.comparePoint(text, 5), 1)
+        self.assertEqual(len(r.getClientRects()), 1)
+        self.assertEqual(r.getBoundingClientRect().left, 10)
+
+        extracted = r.extractContents()
+        self.assertEqual(str(extracted), "bcd")
+        self.assertEqual(text.textContent, "aef")
+
+        r2 = Range()
+        r2.selectNodeContents(text)
+        self.assertEqual(r2.toString(), "aef")
+
+    def test_document_and_shadow_selection_helpers(self):
+        host = div(_id="host")
+        page = html(body(host))
+        shadow = host.attachShadow({"mode": "open"})
+        shadow_button = button("go", _id="shadow-button")
+        shadow_button.style.left = "0px"
+        shadow_button.style.top = "0px"
+        shadow_button.style.width = "40px"
+        shadow_button.style.height = "20px"
+        shadow.appendChild(shadow_button)
+
+        doc_selection = page.getSelection()
+        shadow_selection = shadow.getSelection()
+        self.assertEqual(doc_selection.rangeCount, 0)
+        self.assertEqual(shadow_selection.rangeCount, 0)
+
+        r = Range()
+        r.selectNode(shadow_button)
+        shadow_selection.addRange(r)
+        self.assertEqual(shadow_selection.rangeCount, 1)
+        self.assertEqual(
+            shadow_selection.getRangeAt(0).toString(),
+            '<button id="shadow-button" style="left:0px;top:0px;width:40px;height:20px;">go</button>',
+        )
+
+        self.assertEqual(shadow.elementFromPoint(5, 5), shadow_button)
+        self.assertEqual(shadow.caretPositionFromPoint(5, 5).offset, 0)
+
+    def test_document_caret_position_from_point(self):
+        target = div("hello", _id="target")
+        target.style.left = "5px"
+        target.style.top = "5px"
+        target.style.width = "30px"
+        target.style.height = "10px"
+        page = html(body(target))
+
+        caret = page.caretPositionFromPoint(10, 10)
+        self.assertIsNotNone(caret)
+        self.assertEqual(caret.offset, 0)
+        self.assertIn(caret.offsetNode, [target, target.firstChild])
+
     def test_node_iterator_next_node(self):
         page = html(body(div(span("a"), p("b"), _id="root")))
         iterator = page.createNodeIterator(page.body)
@@ -1080,6 +1147,30 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(hero.scrollIntoView(), hero)
         self.assertTrue(getattr(hero, "_scrolled_into_view", False))
         self.assertEqual(hero.namespaceURI, "http://www.w3.org/1999/xhtml")
+
+    def test_treewalker_text_filter(self):
+        page = html(body(div("a", span("b"), "c", _id="root")))
+        root = page.getElementById("root")
+        walker = page.createTreeWalker(
+            root,
+            NodeFilter.SHOW_TEXT,
+            lambda node: NodeFilter.FILTER_ACCEPT if String(node.nodeValue).trim() != "" else NodeFilter.FILTER_REJECT,
+            False,
+        )
+        seen = []
+        node = walker.nextNode()
+        while node is not None:
+            seen.append(node.nodeValue)
+            node = walker.nextNode()
+        self.assertEqual(seen, ["a", "b", "c"])
+
+    def test_domquad_get_bounds(self):
+        quad = DOMQuad(type("P", (), {"x": 5, "y": 10})(), type("P", (), {"x": 25, "y": 10})(), type("P", (), {"x": 25, "y": 30})(), type("P", (), {"x": 5, "y": 30})())
+        rect = DOMQuad.getBounds(quad)
+        self.assertEqual(rect.left, 5)
+        self.assertEqual(rect.top, 10)
+        self.assertEqual(rect.width, 20)
+        self.assertEqual(rect.height, 20)
 
         # Window().console.log("test this")
         # window.console.log("test this")

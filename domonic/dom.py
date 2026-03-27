@@ -1573,6 +1573,48 @@ class DOMRect:
         }
 
 
+class CaretPosition:
+    def __init__(self, offsetNode=None, offset=0):
+        self.offsetNode = offsetNode
+        self.offset = offset
+
+    def getClientRect(self):
+        if hasattr(self.offsetNode, "getBoundingClientRect"):
+            return self.offsetNode.getBoundingClientRect()
+        return DOMRect(0, 0, 0, 0)
+
+
+class Selection:
+    def __init__(self):
+        self._ranges = []
+
+    @property
+    def rangeCount(self):
+        return len(self._ranges)
+
+    @property
+    def anchorNode(self):
+        return self._ranges[0].startContainer if self._ranges else None
+
+    @property
+    def focusNode(self):
+        return self._ranges[-1].endContainer if self._ranges else None
+
+    def addRange(self, range_obj):
+        self._ranges.append(range_obj)
+
+    def removeAllRanges(self):
+        self._ranges = []
+
+    def getRangeAt(self, index):
+        return self._ranges[index]
+
+    def toString(self):
+        return "".join(range_obj.toString() for range_obj in self._ranges)
+
+    __str__ = toString
+
+
 class DOMTokenList(list):
     """DOMTokenList represents a set of space-separated tokens."""
 
@@ -1638,28 +1680,57 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
         self.delegatesFocus = False
         self.host = host
         self.mode = mode
+        self.parentNode = host
+        self._selection = Selection()
+        super().__init__()
 
     def getSelection(self):
         """
         Returns a Selection object representing the range of text selected by the user,
         or the current position of the caret.
         """
-        raise NotImplementedError
+        return self._selection
 
     def elementFromPoint(self, x, y):
         """Returns the topmost element at the specified coordinates."""
-        raise NotImplementedError
+        hits = self.elementsFromPoint(x, y)
+        return hits[0] if hits else None
+
+    def getSelection(self):
+        """Returns a Selection object for the document."""
+        if not hasattr(self, "_selection"):
+            self._selection = Selection()
+        return self._selection
 
     def elementsFromPoint(self, x, y):
         """Returns an array of all elements at the specified coordinates."""
-        raise NotImplementedError
+        matches = []
 
-    def caretPositionFromPoint(self):
+        def walk(node):
+            if not isinstance(node, Element):
+                return
+            rect = node.getBoundingClientRect()
+            if rect.left <= x <= rect.right and rect.top <= y <= rect.bottom:
+                matches.append(node)
+            for child in getattr(node, "childNodes", []):
+                walk(child)
+
+        for child in self.childNodes:
+            walk(child)
+        return matches
+
+    def caretPositionFromPoint(self, x=0, y=0):
         """
         Returns a CaretPosition object containing the DOM node containing the caret,
         and caret's character offset within that node.
         """
-        raise NotImplementedError
+        target = self.elementFromPoint(x, y)
+        if target is None:
+            return None
+        first_child = target.firstChild
+        if isinstance(first_child, Text):
+            return CaretPosition(first_child, 0)
+        return CaretPosition(target, 0)
 
 
 class DocumentType(Node):
@@ -2625,6 +2696,15 @@ class Element(Node):
             self.offsetHeight(),
         )
 
+    def getSelection(self):
+        """Returns a Selection object for this element's root tree."""
+        root = self.rootNode
+        if hasattr(root, "_selection"):
+            return root._selection
+        selection = Selection()
+        setattr(root, "_selection", selection)
+        return selection
+
     def getElementsByClassName(self, className: str) -> "HTMLCollection":
         """[Returns a collection of all child elements with the specified class name]
 
@@ -2637,6 +2717,37 @@ class Element(Node):
         # TODO - this will have to change as this i live and qsa aint.
         # return self.querySelectorAll('.' + className)
         return HTMLCollection(self.querySelectorAll("." + className))
+
+    def elementFromPoint(self, x, y):
+        """Returns the topmost element in this subtree at the specified coordinates."""
+        hits = self.elementsFromPoint(x, y)
+        return hits[0] if hits else None
+
+    def elementsFromPoint(self, x, y):
+        """Returns all elements in this subtree at the specified coordinates."""
+        matches = []
+
+        def walk(node):
+            if not isinstance(node, Element):
+                return
+            rect = node.getBoundingClientRect()
+            if rect.left <= x <= rect.right and rect.top <= y <= rect.bottom:
+                matches.append(node)
+            for child in getattr(node, "childNodes", []):
+                walk(child)
+
+        walk(self)
+        return matches
+
+    def caretPositionFromPoint(self, x, y):
+        """Returns a CaretPosition for the closest element within this subtree."""
+        target = self.elementFromPoint(x, y)
+        if target is None:
+            return None
+        first_child = target.firstChild
+        if isinstance(first_child, Text):
+            return CaretPosition(first_child, 0)
+        return CaretPosition(target, 0)
 
     def getElementsByTagName(self, tagName: str) -> "HTMLCollection":
         """[Returns a collection of all child elements with the specified tag name
@@ -3278,37 +3389,109 @@ class AbastractRange:
 class Range(AbastractRange):
     # TODO - untested
 
+    START_TO_START = 0
+    START_TO_END = 1
+    END_TO_END = 2
+    END_TO_START = 3
+
     def __init__(self):
         self.startContainer = None
-        self.startOffset = None
+        self.startOffset = 0
         self.endContainer = None
-        self.endOffset = None
-        self.collapsed = None
+        self.endOffset = 0
+        self.collapsed = True
         self.commonAncestorContainer = None
+
+    @staticmethod
+    def _container_length(node):
+        if node is None:
+            return 0
+        if isinstance(node, Text):
+            return len(node.textContent)
+        return len(getattr(node, "childNodes", []))
+
+    @staticmethod
+    def _path_to_root(node):
+        path = []
+        current = node
+        while current is not None:
+            path.append(current)
+            current = getattr(current, "parentNode", None)
+        return path
+
+    @staticmethod
+    def _compare_points(node_a, offset_a, node_b, offset_b):
+        if node_a is node_b:
+            if offset_a < offset_b:
+                return -1
+            if offset_a > offset_b:
+                return 1
+            return 0
+
+        path_a = Range._path_to_root(node_a)
+        path_b = Range._path_to_root(node_b)
+        common = None
+        while path_a and path_b and path_a[-1] is path_b[-1]:
+            common = path_a.pop()
+            path_b.pop()
+        if common is None:
+            return 0
+        child_a = path_a[-1] if path_a else common
+        child_b = path_b[-1] if path_b else common
+        siblings = list(getattr(common, "childNodes", []))
+        try:
+            index_a = siblings.index(child_a)
+            index_b = siblings.index(child_b)
+        except ValueError:
+            return 0
+        if index_a < index_b:
+            return -1
+        if index_a > index_b:
+            return 1
+        return 0
+
+    def _update_state(self):
+        self.collapsed = (
+            self.startContainer is self.endContainer and self.startOffset == self.endOffset
+        )
+        if self.startContainer is None or self.endContainer is None:
+            self.commonAncestorContainer = None
+            return
+        start_path = self._path_to_root(self.startContainer)
+        end_path = self._path_to_root(self.endContainer)
+        ancestor = None
+        while start_path and end_path and start_path[-1] is end_path[-1]:
+            ancestor = start_path.pop()
+            end_path.pop()
+        self.commonAncestorContainer = ancestor
 
     def setStart(self, node, offset):
         self.startContainer = node
         self.startOffset = offset
-        self.collapsed = False
-        self.commonAncestorContainer = node
+        if self.endContainer is None:
+            self.endContainer = node
+            self.endOffset = offset
+        self._update_state()
 
     def setEnd(self, node, offset):
         self.endContainer = node
         self.endOffset = offset
-        self.collapsed = False
-        self.commonAncestorContainer = node
+        if self.startContainer is None:
+            self.startContainer = node
+            self.startOffset = offset
+        self._update_state()
 
     def setStartBefore(self, node):
-        self.setStart(node.parentNode, node.index)
+        self.setStart(node.parentNode, list(node.parentNode.childNodes).index(node))
 
     def setStartAfter(self, node):
-        self.setStart(node.parentNode, node.index + 1)
+        self.setStart(node.parentNode, list(node.parentNode.childNodes).index(node) + 1)
 
     def setEndBefore(self, node):
-        self.setEnd(node.parentNode, node.index)
+        self.setEnd(node.parentNode, list(node.parentNode.childNodes).index(node))
 
     def setEndAfter(self, node):
-        self.setEnd(node.parentNode, node.index + 1)
+        self.setEnd(node.parentNode, list(node.parentNode.childNodes).index(node) + 1)
 
     def collapse(self, toStart):
         if toStart:
@@ -3317,7 +3500,7 @@ class Range(AbastractRange):
         else:
             self.startContainer = self.endContainer
             self.startOffset = self.endOffset
-        self.collapsed = True
+        self._update_state()
 
     def selectNode(self, node):
         self.setStartBefore(node)
@@ -3325,15 +3508,18 @@ class Range(AbastractRange):
 
     def selectNodeContents(self, node):
         self.setStart(node, 0)
-        self.setEnd(node, len(node.childNodes))
+        self.setEnd(node, self._container_length(node))
 
     def compareBoundaryPoints(self, how, sourceRange):
-        if how == 0:
-            return self.startContainer == sourceRange.startContainer and self.startOffset == sourceRange.startOffset
-        elif how == 2:
-            return self.endContainer == sourceRange.endContainer and self.endOffset == sourceRange.endOffset
-        else:
+        comparisons = {
+            self.START_TO_START: (self.startContainer, self.startOffset, sourceRange.startContainer, sourceRange.startOffset),
+            self.START_TO_END: (self.startContainer, self.startOffset, sourceRange.endContainer, sourceRange.endOffset),
+            self.END_TO_END: (self.endContainer, self.endOffset, sourceRange.endContainer, sourceRange.endOffset),
+            self.END_TO_START: (self.endContainer, self.endOffset, sourceRange.startContainer, sourceRange.startOffset),
+        }
+        if how not in comparisons:
             raise NotImplementedError
+        return self._compare_points(*comparisons[how])
 
     def deleteContents(self):
         self.extractContents()
@@ -3341,6 +3527,14 @@ class Range(AbastractRange):
     def extractContents(self):
         if self.startContainer is None:
             return DocumentFragment()
+        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
+            text = self.startContainer.textContent
+            extracted = text[self.startOffset : self.endOffset]
+            self.startContainer.textContent = text[: self.startOffset] + text[self.endOffset :]
+            self.endContainer = self.startContainer
+            self.endOffset = self.startOffset
+            self._update_state()
+            return DocumentFragment(Text(extracted))
         if self.startContainer == self.endContainer:
             container = self.startContainer
             children = list(container.childNodes)
@@ -3348,6 +3542,9 @@ class Range(AbastractRange):
             if hasattr(container, "args"):
                 kept = children[: self.startOffset] + children[self.endOffset :]
                 container.args = tuple(kept)
+            self.endContainer = container
+            self.endOffset = self.startOffset
+            self._update_state()
             return DocumentFragment(*extracted)
         return DocumentFragment()
 
@@ -3356,6 +3553,8 @@ class Range(AbastractRange):
 
         if self.startContainer is None:
             return DocumentFragment()
+        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
+            return DocumentFragment(Text(self.startContainer.textContent[self.startOffset : self.endOffset]))
         if self.startContainer == self.endContainer:
             container = self.startContainer
             children = list(container.childNodes)
@@ -3363,14 +3562,65 @@ class Range(AbastractRange):
             return DocumentFragment(*cloned)
         return DocumentFragment()
 
+    def getBoundingClientRect(self):
+        rects = self.getClientRects()
+        if not rects:
+            return DOMRect(0, 0, 0, 0)
+        left = min(rect.left for rect in rects)
+        top = min(rect.top for rect in rects)
+        right = max(rect.right for rect in rects)
+        bottom = max(rect.bottom for rect in rects)
+        return DOMRect(left, top, right - left, bottom - top)
+
+    def getClientRects(self):
+        if self.startContainer is None:
+            return []
+        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
+            parent = getattr(self.startContainer, "parentNode", None)
+            return [parent.getBoundingClientRect()] if hasattr(parent, "getBoundingClientRect") else []
+        if self.startContainer == self.endContainer:
+            rects = []
+            for child in list(self.startContainer.childNodes)[self.startOffset : self.endOffset]:
+                if hasattr(child, "getBoundingClientRect"):
+                    rects.append(child.getBoundingClientRect())
+            return rects
+        return []
+
     def insertNode(self, node):
         if self.startContainer is None:
             return
         container = self.startContainer
+        if isinstance(container, Text):
+            text = container.textContent
+            before = Text(text[: self.startOffset])
+            after = Text(text[self.startOffset :])
+            parent = container.parentNode
+            if parent is None:
+                return
+            children = list(parent.childNodes)
+            index = children.index(container)
+            replacement = [part for part in (before, node, after) if part.textContent != "" if isinstance(part, Text)] if False else None
+            new_children = children[:index]
+            if before.textContent != "":
+                new_children.append(before)
+            new_children.append(node)
+            if after.textContent != "":
+                new_children.append(after)
+            new_children.extend(children[index + 1 :])
+            parent.args = tuple(new_children)
+            self.startContainer = parent
+            self.endContainer = parent
+            self.startOffset = index + 1
+            self.endOffset = index + 1
+            self._update_state()
+            return
         if hasattr(container, "insertBefore"):
             children = list(container.childNodes)
             ref = children[self.startOffset] if self.startOffset < len(children) else None
             container.insertBefore(node, ref)
+            self.startOffset += 1
+            self.endOffset = max(self.endOffset, self.startOffset)
+            self._update_state()
 
     def surroundContents(self, newParent):
         fragment = self.extractContents()
@@ -3394,7 +3644,7 @@ class Range(AbastractRange):
         self.endContainer = None
         self.startOffset = 0
         self.endOffset = 0
-        self.collapsed = True
+        self._update_state()
 
     def createContextualFragment(self, fragment):
         return DocumentFragment(fragment)
@@ -3402,11 +3652,22 @@ class Range(AbastractRange):
     def toString(self) -> str:
         if self.startContainer is None:
             return ""
+        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
+            return self.startContainer.textContent[self.startOffset : self.endOffset]
         if self.startContainer == self.endContainer:
             container = self.startContainer
             children = list(container.childNodes)
             return "".join(str(child) for child in children[self.startOffset : self.endOffset])
         return ""
+
+    def comparePoint(self, refNode, offset):
+        if self.startContainer is None or self.endContainer is None:
+            raise Exception("Range has no boundaries")
+        if self._compare_points(refNode, offset, self.startContainer, self.startOffset) < 0:
+            return -1
+        if self._compare_points(refNode, offset, self.endContainer, self.endOffset) > 0:
+            return 1
+        return 0
 
 
 class StaticRange(AbastractRange):
@@ -3783,6 +4044,16 @@ class Document(Element):
 
         walk(self)
         return matches
+
+    def caretPositionFromPoint(self, x, y):
+        """Returns a CaretPosition for the closest element at the given coordinates."""
+        target = self.elementFromPoint(x, y)
+        if target is None:
+            return None
+        first_child = target.firstChild
+        if isinstance(first_child, Text):
+            return CaretPosition(first_child, 0)
+        return CaretPosition(target, 0)
 
     @property
     def embeds(self):
@@ -4627,8 +4898,13 @@ class DOMQuad:
 
     @staticmethod
     def getBounds(quad):
-        # return DOMRect(quad.p1.x, quad.p1.y, quad.p2.x - quad.p1.x, quad.p2.y - quad.p1.y)
-        raise NotImplementedError
+        xs = [quad.p1.x, quad.p2.x, quad.p3.x, quad.p4.x]
+        ys = [quad.p1.y, quad.p2.y, quad.p3.y, quad.p4.y]
+        left = min(xs)
+        top = min(ys)
+        right = max(xs)
+        bottom = max(ys)
+        return DOMRect(left, top, right - left, bottom - top)
 
     @staticmethod
     def toJSON(quad):
@@ -4777,6 +5053,8 @@ def nodeFilter(tw, node):
         return NodeFilter.FILTER_SKIP
     if tw._filter == None:
         return NodeFilter.FILTER_ACCEPT
+    if callable(tw._filter):
+        return tw._filter(node)
     return tw._filter.acceptNode(node)
 
 
