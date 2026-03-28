@@ -61,13 +61,18 @@ from domonic import domonic
 mydom = domonic.parseString('<somehtml...')
 ```
 
-Quickly parse a webpage with the window module...
+or parse an entire webpage with the window module...
 
 ```python
 from domonic.window import window
 window.location = "https://example.com"
 print(window.document.title)
 ```
+
+html5lib is bundled as the default parser as it's pure python. However see the `Parsers` section below as other parser backends are supported and are much faster.
+
+
+### xpath or css
 
 Use xpath or css selectors on command line...
 
@@ -474,7 +479,7 @@ _scene = scene(
     )
 
 _webpage = html(head(),body(
-    script(_src=CDN_JS.AFRAME_1_2), # < NOTICE you need to import aframe to use it
+    script(_src=CDN_JS.AFRAME), # < NOTICE you need to import aframe to use it
     str(_scene)
     )
 )
@@ -703,6 +708,47 @@ or...
 pip install pytest
 pytest tests
 ```
+
+
+### Parsers
+
+You can choose a parser per call (see below on parser install notes):
+
+```python
+from domonic import domonic
+
+page = domonic.parseString("<p>Hello</p>", parser="html5_parser")
+page = domonic.parseString("<p>Hello</p>", parser="html5lib") # bundled with domonic
+page = domonic.parseString("<p>Hello</p>", parser="justhtml")
+page = domonic.parseString("<p>Hello</p>", parser="markupever") # stupidly fast
+page = domonic.parseString("<p>Hello</p>", parser="selectolax")
+page = domonic.parseString("<p>Hello</p>", parser="expat")
+```
+
+Or set the default parser for your app:
+
+```python
+from domonic import domonic
+
+domonic.set_default_parser("html5_parser")
+page = domonic.parseString("<p>Hello</p>")
+```
+
+Parser install notes (listed in order of speed when used with domonic):
+
+- `markupever`: `pip install markupever` 🚀 Rust
+- `html5_parser`: `pip install html5-parser lxml` 🚀 c++
+- `selectolax`: `pip install selectolax lxml` 🚀 c++
+- `justhtml`: `pip install justhtml` 🐢 python
+- `html5lib`: `pip install html5lib` 🐢 python
+- `expat`: 🐌 built into Python. (chokes on html5 or malformed content)
+
+`html5lib` has a direct treebuilder integration.
+`markupever` also uses an lxml adapter but we can get content w/o pretty formatting
+`html5_parser` and `selectolax` have to use an lxml adapter as there's no hooks
+`justhtml` uses html5lib adapter-backed parser (parse + conversion == slower).
+
+*html5parser was a hidden feature on older version of domonic
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute, please follow these steps:

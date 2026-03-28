@@ -535,9 +535,10 @@ https://github.com/byteface/domonic/issues/28
 
 Basic useage...
 
-.. code-block :: python
-    from domonic import domonic
-    domonic.parseString('<somehtml...')
+.. code-block:: python
+
+   from domonic import domonic
+   domonic.parseString('<somehtml...')
 
 
 An examples of using the parser...
@@ -568,6 +569,17 @@ An examples of using the parser...
 
     # turn the downloaded site into .pyml ;)
     print(page.__pyml__())
+
+You can also choose the parser directly through ``domonic.parseString()``:
+
+.. code-block:: python
+
+    from domonic import domonic
+
+    page = domonic.parseString("<p>Hello World!</p>", parser="html5_parser")
+    print(page.querySelector("p").text)
+
+Supported parser names are ``auto``, ``html5_parser``, ``html5lib``, ``lxml_html``, ``justhtml``, ``markupever``, ``selectolax``, and ``expat``.
 
 
 For a quick parse try the window module...

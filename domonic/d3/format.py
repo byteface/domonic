@@ -345,6 +345,8 @@ class formatLocale:
         # Is this an integer type?
         # Can this type generate exponential notation?
         formatType = formatTypes[type]
+        if type == "r" and comma:
+            formatType = formatDecimal
         maybeSuffix = RegExp(r"[defgprs%]").test(type)
 
         # Set the default precision if not specified,

@@ -21,7 +21,7 @@ CDN_JS
 
 .. code-block :: python
 
-	script(_src=CDN_JS.JQUERY_3_5_1)
+	script(_src=CDN_JS.JQUERY)
 
 
 
@@ -30,21 +30,46 @@ CDN_CSS
 
 .. code-block :: python
 
-	classless_css = link(_rel="stylesheet", _href=CDN_CSS.WATER_LATEST)
+	classless_css = link(_rel="stylesheet", _href=CDN_CSS.WATER)
 
-currently constants exist for:
+Current CSS constants include:
 
-- BOOTSTRAP_5_ALPHA
-- BOOTSTRAP_4
+- BOOTSTRAP
 - MARX
 - MVP
-- WATER_LATEST
+- WATER
 - BALLOON
-- THREE_DOTS_0_2_0
-- MILLIGRAM_1_3_0
+- THREE_DOTS
+- MILLIGRAM
 - X3DOM
-- FONTAWESOME_5_7_1
-- MDI_5_4_55
+- FONTAWESOME
+- MDI
+- TAILWIND
+- SIMPLE
+
+Current JavaScript constants include:
+
+- JQUERY
+- JQUERY_UI
+- UNDERSCORE
+- BOOTSTRAP
+- POPPER
+- D3
+- MODERNIZER
+- MOMENT
+- PIXI
+- SOCKET
+- X3DOM
+- AFRAME
+- BRYTHON
+- MATHML
+- HTMX
+- LODASH
+- AXIOS
+- DAY_JS
+- CHART_JS
+- ANIME_JS
+- VALIDATOR_JS
 
 CDN_IMG
 ----------------

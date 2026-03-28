@@ -53,7 +53,7 @@ aframe is a simliar library and its tags can be used if you import the js
 		)
 
 	_webpage = html(head(),body(
-		script(_src=CDN_JS.AFRAME_1_2), # < NOTICE you need to import aframe to use it
+		script(_src=CDN_JS.AFRAME), # < NOTICE you need to import aframe to use it
 		str(_scene)
 		)
 	)

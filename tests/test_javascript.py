@@ -20,6 +20,14 @@ from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
 
 class TestCase(unittest.TestCase):
 
+    @staticmethod
+    def _py_cbrt(value):
+        if hasattr(math, "cbrt"):
+            return math.cbrt(value)
+        if value == 0:
+            return 0.0
+        return math.copysign(abs(value) ** (1 / 3), value)
+
     # domonic.javascript.Math
 
     def test_object(self):
@@ -236,7 +244,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Math.atanh(0.5), math.atanh(0.5))
 
     def test_domonic_cbrt(self):
-        self.assertEqual(Math.cbrt(100), math.cbrt(100))
+        self.assertEqual(Math.cbrt(100), self._py_cbrt(100))
 
     def test_domonic_ceil(self):
         self.assertEqual(Math.ceil(-100), math.ceil(-100))

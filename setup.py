@@ -5,6 +5,8 @@ import re
 
 from setuptools import find_packages, setup
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
 
 def read(filename: str) -> str:
     """Returns the contents of a file.
@@ -15,7 +17,7 @@ def read(filename: str) -> str:
     Returns:
         str: content of the file
     """
-    with open(filename, encoding="utf-8") as file:
+    with open(os.path.join(BASE_DIR, filename), encoding="utf-8") as file:
         return file.read()
 
 

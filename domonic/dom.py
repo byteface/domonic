@@ -381,32 +381,6 @@ class Node(EventTarget):
                 new_kwargs[k] = v
         self.kwargs = new_kwargs
 
-        try:
-            self.content = "".join([each.__str__() for each in args])
-            QM = DOMConfig.ATTRIBUTE_QUOTES
-            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == "":
-                QM = ""
-            elif DOMConfig.ATTRIBUTE_QUOTES is True or DOMConfig.ATTRIBUTE_QUOTES is None:
-                QM = '"'
-            # elif DOMConfig.ATTRIBUTE_QUOTES == 'maybe':
-            #     if type(value) is not str:
-            #         QM = ''
-            #     else:
-            #         QM = '"'
-
-            self.__attributes__ = "".join(
-                [
-                    f""" {key.split('_', 1)[1]}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}"""
-                    for key, value in self.kwargs.items()
-                ]
-            )
-        except IndexError as e:
-            from domonic.html import TemplateError
-
-            raise TemplateError(e)
-        # except Exception as e:
-        # print(e)
-
         self.baseURI: str = ""  # TODO - if ownerdocument has a basetag, use that
         self.isConnected: bool = True
         self.namespaceURI: str = "http://www.w3.org/1999/xhtml"

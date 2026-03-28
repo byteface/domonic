@@ -65,6 +65,70 @@ class TestCase(unittest.TestCase):
         # from domonic import render
         # print( render( t1 ) )
 
+    def test_parse_string_with_expat_parser_option(self):
+        page = domonic.parseString("<div><span>Hello</span></div>", parser="expat")
+        self.assertIsNotNone(page)
+        self.assertEqual(page.querySelector("span").text, "Hello")
+
+    def test_parse_string_rejects_unknown_parser(self):
+        with self.assertRaises(ValueError):
+            domonic.parseString("<div></div>", parser="nope")
+
+    def test_parse_string_with_html5_parser_option(self):
+        try:
+            page = domonic.parseString("<html><body><p>Hi</p></body></html>", parser="html5_parser")
+        except ImportError:
+            self.skipTest("html5_parser is not installed")
+        else:
+            self.assertIsNotNone(page)
+            self.assertEqual(page.querySelector("p").text, "Hi")
+
+    def test_parse_string_with_lxml_html_option(self):
+        try:
+            page = domonic.parseString("<html><body><p>Hi</p></body></html>", parser="lxml_html")
+        except ImportError:
+            self.skipTest("lxml is not installed")
+        else:
+            self.assertIsNotNone(page)
+            self.assertEqual(page.querySelector("p").text, "Hi")
+
+    def test_default_parser_setter(self):
+        previous = domonic.get_default_parser()
+        try:
+            domonic.set_default_parser("expat")
+            self.assertEqual(domonic.get_default_parser(), "expat")
+            page = domonic.parseString("<div><span>Hello</span></div>")
+            self.assertEqual(page.querySelector("span").text, "Hello")
+        finally:
+            domonic.set_default_parser(previous)
+
+    def test_parse_string_with_markupever_option(self):
+        try:
+            page = domonic.parseString("<html><body><p>Hi</p></body></html>", parser="markupever")
+        except ImportError:
+            self.skipTest("markupever is not installed")
+        else:
+            self.assertIsNotNone(page)
+            self.assertEqual(page.querySelector("p").text, "Hi")
+
+    def test_parse_string_with_selectolax_option(self):
+        try:
+            page = domonic.parseString("<html><body><p>Hi</p></body></html>", parser="selectolax")
+        except ImportError:
+            self.skipTest("selectolax is not installed")
+        else:
+            self.assertIsNotNone(page)
+            self.assertEqual(page.querySelector("p").text, "Hi")
+
+    def test_parse_string_with_justhtml_option(self):
+        try:
+            page = domonic.parseString("<html><body><p>Hi</p></body></html>", parser="justhtml")
+        except ImportError:
+            self.skipTest("justhtml is not installed")
+        else:
+            self.assertIsNotNone(page)
+            self.assertEqual(page.querySelector("p").text, "Hi")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -164,7 +164,7 @@ Here are the 4 most common ones I experienced when creating large templates...
 
 IndexError: list index out of range
     - You most likely didn't put a underscore on an attribute.
-    - THIS ALSO APPLIES TO **{"_data-tags":"x"}
+    - THIS ALSO APPLIES TO ``{"_data-tags":"x"}``
 
 SyntaxError: invalid syntax
     - You are Missing a comma between attributes
@@ -173,7 +173,7 @@ SyntaxError: positional argument follows keyword argument
     - You have to pass attributes LAST. and strings and objects first. *see docs*
 
 TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
-    - You are Missing a comma between attributes. before the **{}
+    - You are Missing a comma between attributes before ``**{}``
 
 
 
@@ -262,4 +262,3 @@ pass a UID. w, h, path, duration, steps, looping, y_offset
 .. code-block :: javascript
 
 	animated_monster = SpriteCSS('ken', 70, 80, 'assets/spritesheets/ken.png', 0.8, 4, True, 80)
-

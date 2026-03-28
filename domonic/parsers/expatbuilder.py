@@ -258,7 +258,7 @@ class ExpatBuilder:
         #     self.document = node
         #     return
         # else:
-        self.document.appendChild(node)
+        self.document.appendChild(doctype)
         self.document.doctype = doctype
         if self._filter and self._filter.acceptNode(doctype) == FILTER_REJECT:
             self.document.doctype = None

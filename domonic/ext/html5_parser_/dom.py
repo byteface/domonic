@@ -16,15 +16,26 @@ try:
 except AttributeError:
     dict_items = dict.items
 
+_ELEM_NAME_CACHE = {}
+
 
 def elem_name_parts(elem):
-    tag = elem.tag
+    key = (elem.tag, elem.prefix)
+    cached = _ELEM_NAME_CACHE.get(key)
+    if cached is not None:
+        return cached
+
+    tag, prefix = key
     if tag.startswith("{"):
         uri, _, name = tag.rpartition("}")
-        if elem.prefix:
-            name = elem.prefix + ":" + name
-        return uri[1:], name
-    return None, tag
+        if prefix:
+            name = prefix + ":" + name
+        cached = (uri[1:], name)
+    else:
+        cached = (None, tag)
+
+    _ELEM_NAME_CACHE[key] = cached
+    return cached
 
 
 def attr_name_parts(name, elem, val):
@@ -61,22 +72,32 @@ def adapt(source_tree, return_root=True, **kw):
     dest_tree = impl.createDocument(uri, qname, None)
     dest_tree.doctype = source_tree.docinfo.doctype
     dest_root = dest_tree.documentElement
+    create_text = dest_tree.createTextNode
+    create_comment = dest_tree.createComment
+    create_element_ns = dest_tree.createElementNS
     stack = [(source_root, dest_root)]
     while stack:
         src, dest = stack.pop()
-        if src.text:
-            dest.appendChild(dest_tree.createTextNode(src.text))
+        append_child = dest.appendChild
+        set_attribute_ns = dest.setAttributeNS
+
+        text = src.text
+        if text:
+            append_child(create_text(text))
         add_namespace_declarations(src, dest)
         for name, val in src.items():
-            dest.setAttributeNS(*attr_name_parts(name, src, val))
+            set_attribute_ns(*attr_name_parts(name, src, val))
         for child in src.iterchildren():
             if isinstance(child, _Comment):
-                dchild = dest_tree.createComment((child.text or "").replace("--", "—"))
+                dchild = create_comment((child.text or "").replace("--", "—"))
             else:
-                dchild = dest_tree.createElementNS(*elem_name_parts(child))
+                dchild = create_element_ns(*elem_name_parts(child))
                 stack.append((child, dchild))
-            dest.appendChild(dchild)
-            if child.tail:
-                dest.appendChild(dest_tree.createTextNode(child.tail))
+            append_child(dchild)
+            tail = child.tail
+            if tail:
+                append_child(create_text(tail))
 
-    return dest_root if return_root else dest_tree
+    if return_root or (qname and qname.lower() == "html"):
+        return dest_root
+    return dest_tree

@@ -351,31 +351,7 @@ class Window(JavaScriptWindow, EventTarget):
         except Exception:
             return None
 
-        try:
-            import html5lib
-        except ModuleNotFoundError:
-            html5lib = None
-
-        if html5lib is not None:
-            from html5lib import HTMLParser
-            from domonic.ext.html5lib_ import getTreeBuilder
-
-            parser = HTMLParser(tree=getTreeBuilder())
-            page = parser.parse(response.text)
-            page.URL = url
-            return page
-
-        try:
-            from domonic.parsers import remove_doctype, remove_newlines, remove_tabs, remove_whitespace, remove_tags
-        except Exception:
-            return None
-
-        content = remove_tags(response.text, ["js", "css", "#"])
-        content = remove_doctype(content)
-        content = remove_whitespace(content)
-        content = remove_newlines(content)
-        content = remove_tabs(content)
-        page = domonic.parseString(content)
+        page = domonic.parseString(response.text)
         if page is not None:
             page.URL = url
         return page

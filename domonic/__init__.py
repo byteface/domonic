@@ -14,6 +14,7 @@ VERSION = __version__
 
 
 import re
+import sys
 import domonic.dom as dom
 
 # from domonic.components import Input
@@ -42,9 +43,39 @@ except ImportError:  # pragma: no cover - optional dependency chain
 class domonic:
 
     dom = dom
+    DEFAULT_PARSER = "auto"
 
     JS_MASTER = "assets/js/master.js"
     CSS_STYLE = "assets/css/style.css"
+
+    @staticmethod
+    def set_default_parser(parser: str):
+        """Set the default parser used by parseString when no parser is passed."""
+        parser_name = (parser or "auto").lower()
+        valid = {
+            "auto",
+            "html5_parser",
+            "html5-parser",
+            "html5lib",
+            "lxml_html",
+            "lxml-html",
+            "expat",
+            "selectolax",
+            "markupever",
+            "justhtml",
+        }
+        if parser_name not in valid:
+            raise ValueError(f"Unknown parser: {parser}")
+        if parser_name == "html5-parser":
+            parser_name = "html5_parser"
+        if parser_name == "lxml-html":
+            parser_name = "lxml_html"
+        domonic.DEFAULT_PARSER = parser_name
+
+    @staticmethod
+    def get_default_parser() -> str:
+        """Return the parser name used by parseString by default."""
+        return domonic.DEFAULT_PARSER
 
     @staticmethod
     def get(url: str):
@@ -1092,38 +1123,11 @@ class domonic:
     parseString_prev_error = None
 
     @staticmethod
-    def parseString(string):  # , parser=None):
+    def parseString(string, parser=None):
         """Parse a file into a DOM from a string."""
-        # if parser is None:
-        # import xml.parsers.expat.ExpatError as ExpatError        # parser = xml.parsers.expat.ParserCreate()
+        parser = (parser or domonic.DEFAULT_PARSER or "auto").lower()
 
-        # TODO - this needs to be off for debugging
-        try:
-            # if users has html5lib installed used that to parse
-            import html5lib
-
-            if "html5lib" in sys.modules:
-                from html5lib import HTMLParser
-
-                from domonic.ext.html5lib_ import getTreeBuilder
-
-                parser = HTMLParser(tree=getTreeBuilder())
-                page = parser.parse(string)
-                try:
-                    from domonic.window import window as domonic_window
-
-                    domonic_window.customElements.upgrade(page)
-                except Exception:
-                    pass
-                # print('PARSED WITH HTML5 LIB')
-                return page
-        except ImportError:
-            pass
-
-        try:
-            from domonic.parsers import expatbuilder
-
-            page = expatbuilder.parseString(string)
+        def _upgrade_custom_elements(page):
             try:
                 from domonic.window import window as domonic_window
 
@@ -1131,6 +1135,139 @@ class domonic:
             except Exception:
                 pass
             return page
+
+        def _looks_like_full_html_document(source: str) -> bool:
+            probe = source.lstrip().lower()
+            return probe.startswith("<!doctype") or probe.startswith("<html") or "<html" in probe[:512]
+
+        def _normalize_parsed_page(page, source: str):
+            is_full_document = _looks_like_full_html_document(source)
+
+            if isinstance(page, dom.DocumentFragment):
+                return page
+
+            html_root = None
+            if getattr(page, "tagName", "").lower() == "html":
+                html_root = page
+            else:
+                for child in getattr(page, "childNodes", []) or []:
+                    if getattr(child, "tagName", "").lower() == "html":
+                        html_root = child
+                        break
+
+            if html_root is None:
+                return page
+
+            if is_full_document:
+                return html_root
+
+            body = html_root.querySelector("body") if hasattr(html_root, "querySelector") else None
+            container = body if body is not None else html_root
+            children = list(getattr(container, "childNodes", []) or [])
+            if len(children) == 1:
+                return children[0]
+            if len(children) > 1:
+                return dom.Document.createDocumentFragment(*children)
+            return dom.Document.createDocumentFragment()
+
+        def _parse_with_html5lib():
+            import html5lib  # noqa: F401
+            from html5lib import HTMLParser
+            from domonic.ext.html5lib_ import getTreeBuilder
+
+            html_parser = HTMLParser(tree=getTreeBuilder())
+            if _looks_like_full_html_document(string):
+                page = html_parser.parse(string)
+            else:
+                page = html_parser.parseFragment(string)
+            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+
+        def _parse_with_html5_parser():
+            from domonic.ext.html5_parser_ import parse as html5_parser_parse
+
+            page = html5_parser_parse(string, treebuilder="domonic", return_root=False)
+            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+
+        def _parse_with_lxml_html():
+            from domonic.ext.lxml_html_ import parse as lxml_html_parse
+
+            page = lxml_html_parse(string, return_root=False)
+            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+
+        def _parse_with_markupever():
+            from domonic.ext.markupever_ import parse as markupever_parse
+
+            page = markupever_parse(string, return_root=False)
+            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+
+        def _parse_with_selectolax():
+            from domonic.ext.selectolax_ import parse as selectolax_parse
+
+            page = selectolax_parse(string, return_root=False)
+            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+
+        def _parse_with_justhtml():
+            from domonic.ext.justhtml_ import parse as justhtml_parse
+
+            page = justhtml_parse(string, return_root=False)
+            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+
+        if parser == "html5lib":
+            return _parse_with_html5lib()
+        if parser in ("lxml_html", "lxml-html"):
+            return _parse_with_lxml_html()
+        if parser in ("html5_parser", "html5-parser"):
+            return _parse_with_html5_parser()
+        if parser == "markupever":
+            return _parse_with_markupever()
+        if parser == "selectolax":
+            return _parse_with_selectolax()
+        if parser == "justhtml":
+            return _parse_with_justhtml()
+        if parser == "expat":
+            from domonic.parsers import expatbuilder
+
+            page = expatbuilder.parseString(string)
+            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+        if parser != "auto":
+            raise ValueError(f"Unknown parser: {parser}")
+
+        # TODO - this needs to be off for debugging
+        try:
+            return _parse_with_html5lib()
+        except ImportError:
+            pass
+
+        try:
+            return _parse_with_lxml_html()
+        except Exception:
+            pass
+
+        try:
+            return _parse_with_html5_parser()
+        except Exception:
+            pass
+
+        try:
+            return _parse_with_justhtml()
+        except Exception:
+            pass
+
+        try:
+            return _parse_with_markupever()
+        except Exception:
+            pass
+
+        try:
+            return _parse_with_selectolax()
+        except Exception:
+            pass
+
+        try:
+            from domonic.parsers import expatbuilder
+
+            page = expatbuilder.parseString(string)
+            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
         except Exception as e:
             # TODO - problem with this method. is it takes literally forever.
             # as it removes 1 char then reparses entire doc. even on small pages this is a problem.
@@ -1140,7 +1277,7 @@ class domonic:
             string = Utils.replace_between(string, dodgyChar, "", dodgycharIndex - 2, dodgycharIndex + 2)
             if domonic.parseString_prev_error != dodgycharIndex:
                 domonic.parseString_prev_error = dodgycharIndex
-                return domonic.parseString(string)
+                return domonic.parseString(string, parser="expat")
             else:
                 return None
 

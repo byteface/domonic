@@ -1,5 +1,8 @@
 include README.md
 include LICENSE.txt
+include requirements.txt
+include requirements-dev.txt
+include requirements-docs.txt
 recursive-include tests *
 global-exclude __pycache__
 global-exclude *.pyc

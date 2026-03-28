@@ -944,7 +944,11 @@ class Math(Object):
     @_force_number
     def cbrt(x: float) -> float:
         """Returns the cube root of a number."""
-        return math.cbrt(x)
+        if hasattr(math, "cbrt"):
+            return math.cbrt(x)
+        if x == 0:
+            return 0.0
+        return math.copysign(abs(x) ** (1 / 3), x)
 
     @staticmethod
     @_force_number
