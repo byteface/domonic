@@ -18,9 +18,43 @@ ParamInput = str | dict[str, Any] | Iterable[tuple[str, Any]]
 class URL:
     """a-tag extends from URL"""
 
+    def _get_href_value(self) -> str:
+        getter = getattr(self, "getAttribute", None)
+        if callable(getter):
+            href = getter("href")
+            if href is not None:
+                return href
+        return getattr(self, "_url_href", "") or ""
+
+    def _set_href_value(self, href: str) -> None:
+        object.__setattr__(self, "_url_href", href or "")
+        setter = getattr(self, "setAttribute", None)
+        if callable(setter):
+            setter("href", href or "")
+
+    def _load_from_href(self, href: str) -> None:
+        href = href or ""
+        parsed = urllib.parse.urlsplit(href)
+        object.__setattr__(self, "url", parsed)
+        object.__setattr__(self, "_url_href", href)
+        object.__setattr__(self, "_URL__protocol", parsed.scheme)
+        object.__setattr__(self, "_URL__hostname", parsed.hostname)
+        object.__setattr__(self, "_URL__port", parsed.port)
+        object.__setattr__(self, "_URL__pathname", parsed.path)
+        object.__setattr__(self, "_URL__search", parsed.query)
+        object.__setattr__(self, "_URL__hash", f"#{parsed.fragment}" if parsed.fragment else "")
+        object.__setattr__(self, "_searchParams", URLSearchParams(parsed.query))
+        object.__setattr__(self, "_url_state_source", href)
+
+    def _ensure_url_state(self) -> None:
+        href = self._get_href_value()
+        if getattr(self, "_url_state_source", None) != href:
+            self._load_from_href(href)
+
     def __update__(self) -> None:
         # print( "update URL:", type(self), self  )
         try:
+            self._ensure_url_state()
             new = {
                 "protocol": self.protocol,
                 "hostname": self.hostname,
@@ -40,7 +74,8 @@ class URL:
                 new["protocol"] + "://" + new["host"] + new["pathname"] + query + new["hash"]
             )
 
-            self.href = self.url.geturl()
+            self._set_href_value(self.url.geturl())
+            object.__setattr__(self, "_url_state_source", self.url.geturl())
 
         except Exception:  # as e:
             # print('fails on props called by init as they dont exist yet')
@@ -55,23 +90,25 @@ class URL:
         Args:
             url (str): a url
         """
-        self.url = urllib.parse.urlsplit(url)
-        self.href = url  # self.url.geturl()
-        self.protocol = self.url.scheme
-        self.hostname = self.url.hostname
-        self.port = self.url.port
-        self.host = self.url.hostname
-        self.pathname = self.url.path
-        self.hash = ""
-        self.search = self.url.query
-        self._searchParams = URLSearchParams(self.url.query)
+        self._load_from_href(url)
+
+    @property
+    def href(self) -> str:
+        return self._get_href_value()
+
+    @href.setter
+    def href(self, href: str) -> None:
+        self._load_from_href(href)
+        self._set_href_value(href)
 
     @property
     def searchParams(self) -> str:
+        self._ensure_url_state()
         return self._searchParams.toString()
 
     @property
     def origin(self) -> str:
+        self._ensure_url_state()
         if not self.protocol or not self.host:
             return ""
         return f"{self.protocol}://{self.host}"
@@ -93,6 +130,7 @@ class URL:
 
     @property
     def protocol(self) -> str:
+        self._ensure_url_state()
         return self.__protocol
 
     @protocol.setter
@@ -103,6 +141,7 @@ class URL:
 
     @property
     def hostname(self) -> str | None:
+        self._ensure_url_state()
         return self.__hostname
 
     @hostname.setter
@@ -116,6 +155,7 @@ class URL:
 
     @property
     def port(self) -> int | None:
+        self._ensure_url_state()
         return self.__port
 
     @port.setter
@@ -125,6 +165,7 @@ class URL:
 
     @property
     def host(self) -> str | None:
+        self._ensure_url_state()
         if self.hostname is None:
             return None
         if self.port is not None:
@@ -147,6 +188,7 @@ class URL:
 
     @property
     def pathname(self) -> str:
+        self._ensure_url_state()
         return self.__pathname
 
     @pathname.setter
@@ -156,6 +198,7 @@ class URL:
 
     @property
     def search(self) -> str:
+        self._ensure_url_state()
         if not self.__search:
             return ""
         return self.__search if self.__search.startswith("?") else "?" + self.__search
@@ -171,6 +214,7 @@ class URL:
     @property
     def hash(self) -> str:
         """ " hash Sets or returns the anchor part (#) of a URL"""
+        self._ensure_url_state()
         if "#" in self.href:
             return "#" + self.href.split("#")[1]
         # return ''

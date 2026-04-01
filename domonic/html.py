@@ -470,12 +470,7 @@ def Atag(self, *args: Any, **kwargs: Any) -> None:
     """
     Base class for the a tag
     """
-    # Note - so this only happens on init?
-    if kwargs.get("_href", None) is not None:
-        URL.__init__(self, url=kwargs["_href"])
-        HTMLAnchorElement.__init__(self, *args, **kwargs)
-
-    Element.__init__(self, *args, **kwargs)
+    HTMLAnchorElement.__init__(self, *args, **kwargs)
 
 
 a = type("a", (HTMLAnchorElement, Element, URL), {"name": "a", "__init__": Atag})
