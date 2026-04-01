@@ -1,5 +1,5 @@
 # test all modules
-PYTHON ?= python3
+PYTHON ?= ./venv/bin/python
 
 test:
 	$(PYTHON) -m unittest -v tests.test_html
@@ -89,13 +89,16 @@ coverage:
 
 
 # release
+clean:
+	rm -rf build/ dist/ domonic.egg-info/
+
 build:
-	rm -rf dist/
+	rm -rf dist/ build/ domonic.egg-info/
 	$(PYTHON) -m build
 	rm -rf build/
 
 deploy:
-	rm -rf dist/
+	rm -rf dist/ build/ domonic.egg-info/
 	$(PYTHON) -m build
 	twine upload dist/*
 	rm -rf build/

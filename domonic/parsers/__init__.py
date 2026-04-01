@@ -36,6 +36,53 @@ def remove_tags(html_str: str, tags):
     """
     removes a list of tags and their content from the html
     """
+    def remove_tag_block(content: str, tag_name: str) -> str:
+        opening = f"<{tag_name}"
+        closing = f"</{tag_name}>"
+        lower_content = content.lower()
+        result = []
+        cursor = 0
+
+        while True:
+            start = lower_content.find(opening, cursor)
+            if start == -1:
+                result.append(content[cursor:])
+                break
+
+            result.append(content[cursor:start])
+
+            open_end = lower_content.find(">", start)
+            if open_end == -1:
+                result.append(content[start:])
+                break
+
+            close_start = lower_content.find(closing, open_end + 1)
+            if close_start == -1:
+                cursor = open_end + 1
+                continue
+
+            cursor = close_start + len(closing)
+
+        return "".join(result)
+
+    def remove_html_comments(content: str) -> str:
+        result = []
+        cursor = 0
+
+        while True:
+            start = content.find("<!--", cursor)
+            if start == -1:
+                result.append(content[cursor:])
+                break
+
+            result.append(content[cursor:start])
+            end = content.find("-->", start + 4)
+            if end == -1:
+                break
+            cursor = end + 3
+
+        return "".join(result)
+
     if isinstance(tags, str):
         tags = [tags]
 
@@ -43,16 +90,13 @@ def remove_tags(html_str: str, tags):
         for tag in tags:
 
             if tag == "js" or tag == "javascript":
-                scripts = re.compile(r"<(script).*?</\1>(?s)")
-                html_str = scripts.sub("", html_str)
+                html_str = remove_tag_block(html_str, "script")
 
             if tag == "css":
-                css = re.compile(r"<(style).*?</\1>(?s)")
-                html_str = css.sub("", html_str)
+                html_str = remove_tag_block(html_str, "style")
 
             if "comment" in tag or tag == "#" or tag == "//":
-                comments = re.compile(r"<!--(.|\s)*?-->")
-                html_str = comments.sub("", html_str)
+                html_str = remove_html_comments(html_str)
 
             # tag = re.compile(r'<(style).*?</\1>(?s)')
             # html = tag.sub('', html)

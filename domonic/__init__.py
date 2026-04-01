@@ -6,7 +6,7 @@
 
 """
 
-__version__ = "1.0.0rc1"
+__version__ = "1.0.0"
 __license__ = "MIT"
 __author__ = "@byteface"
 
@@ -379,32 +379,73 @@ class domonic:
         page = "".join(page.split('<?xml version="1.0" encoding="utf-8" ?>'))
         page = "".join(page.split('<?xml version="1.0" encoding="UTF-8" ?>'))
 
+        def remove_tag_block(content="", tag_name=""):
+            if not content or not tag_name:
+                return content
+
+            opening = f"<{tag_name}"
+            closing = f"</{tag_name}>"
+            lower_content = content.lower()
+            result = []
+            cursor = 0
+
+            while True:
+                start = lower_content.find(opening, cursor)
+                if start == -1:
+                    result.append(content[cursor:])
+                    break
+
+                result.append(content[cursor:start])
+
+                open_end = lower_content.find(">", start)
+                if open_end == -1:
+                    result.append(content[start:])
+                    break
+
+                close_start = lower_content.find(closing, open_end + 1)
+                if close_start == -1:
+                    cursor = open_end + 1
+                    continue
+
+                cursor = close_start + len(closing)
+
+            return "".join(result)
+
+        def remove_html_comments(content=""):
+            if not content:
+                return content
+
+            result = []
+            cursor = 0
+
+            while True:
+                start = content.find("<!--", cursor)
+                if start == -1:
+                    result.append(content[cursor:])
+                    break
+
+                result.append(content[cursor:start])
+                end = content.find("-->", start + 4)
+                if end == -1:
+                    break
+                cursor = end + 3
+
+            return "".join(result)
+
         # fully strip inline css and js
         if not script_tags:
-            # scripts = re.compile(r'<(script).*?</\1>(?s)')
-            # TODO fix #DeprecationWarning: Flags not at the start of the expression
-            scripts = re.compile(r"<(script).*?</\1>")
-            page = scripts.sub("", page)
+            page = remove_tag_block(page, "script")
 
         if not style_tags:
-            # css = re.compile(r'<(style).*?</\1>(?s)')
-            # TODO fix #DeprecationWarning: Flags not at the start of the expression
-            css = re.compile(r"<(style).*?</\1>", re.DOTALL)
-
-            page = css.sub("", page)
+            page = remove_tag_block(page, "style")
 
         # fully strip svg and code tags
         # svg = re.compile(r'<(svg).*?</\1>(?s)')
         # page = svg.sub('', page)
 
-        # code = re.compile(r'<(code).*?</\1>(?s)')
-        # TODO fix #DeprecationWarning: Flags not at the start of the expression
-        code = re.compile(r"<(code).*?</\1>")
+        page = remove_tag_block(page, "code")
 
-        page = code.sub("", page)
-
-        comments = re.compile(r"<!--(.|\s)*?-->")
-        page = comments.sub("", page)
+        page = remove_html_comments(page)
         # page = page.strip('\n').strip()
 
         # remove abnormal spacing between tag attributes (TODO- maybe 2 spaces is valid somewhere?)
@@ -416,33 +457,42 @@ class domonic:
         page = page.replace("“", "&ldquo;")
         page = page.replace("”", "&rdquo;")
 
-        # REPLACE ANY STRINGS WE MATCH ON (NOT CONTAINED IN TAGS.
-        REGY = re.compile(r"(\u0028)(?![^<>]*>)")
-        page = REGY.sub("$LEFTPARENTHESIS$", page)
+        # Replace reserved characters in text nodes only, leaving tag contents intact.
+        def replace_outside_tags(content="", replacements=None):
+            if not content or not replacements:
+                return content
 
-        REGY = re.compile(r"(\u0029)(?![^<>]*>)")
-        page = REGY.sub("$RIGHTPARENTHESIS$", page)
+            result = []
+            in_tag = False
+            for char in content:
+                if char == "<":
+                    in_tag = True
+                    result.append(char)
+                    continue
+                if char == ">":
+                    in_tag = False
+                    result.append(char)
+                    continue
+                if not in_tag and char in replacements:
+                    result.append(replacements[char])
+                    continue
+                result.append(char)
+            return "".join(result)
 
-        REGY = re.compile(r"(\u005F)(?![^<>]*>)")
-        page = REGY.sub("$UNDERSCORE$", page)
-
-        REGY = re.compile(r"(U+002D)(?![^<>]*>)")
-        page = REGY.sub("$HYPHEN$", page)
-
-        REGY = re.compile(r"(U+002D)(?![^<>]*>)")
-        page = REGY.sub("$QUOTE$", page)
-
-        REGY = re.compile(r"(U+u005B)(?![^<>]*>)")
-        page = REGY.sub("$LEFTSQUARE$", page)
-
-        REGY = re.compile(r"(U+u005D)(?![^<>]*>)")
-        page = REGY.sub("$RIGHTSQUARE$", page)
-
-        REGY = re.compile(r"(U+u003D)(?![^<>]*>)")
-        page = REGY.sub("$EQUALS$", page)
-
-        REGY = re.compile(r"(U+0027)(?![^<>]*>)")
-        page = REGY.sub("$SINGLEQUOTE$", page)
+        page = replace_outside_tags(
+            page,
+            {
+                "(": "$LEFTPARENTHESIS$",
+                ")": "$RIGHTPARENTHESIS$",
+                "_": "$UNDERSCORE$",
+                "-": "$HYPHEN$",
+                '"': "$QUOTE$",
+                "[": "$LEFTSQUARE$",
+                "]": "$RIGHTSQUARE$",
+                "=": "$EQUALS$",
+                "'": "$SINGLEQUOTE$",
+            },
+        )
 
         def encode_content(content=""):
             content = content.replace(")", "$RIGHTPARENTHESIS$")
