@@ -8,10 +8,12 @@ import json
 import os
 import tempfile
 import unittest
+from collections import OrderedDict
 
-import domonic.JSON as JSON  # do this to use same way as previous versions of domonic
+# Import this way to preserve the documented legacy usage style.
+import domonic.JSON as JSON
 from domonic.decorators import as_json
-from domonic.html import Element
+from domonic.html import Element, table, td, tr
 
 
 class TestCase(unittest.TestCase):
@@ -60,16 +62,29 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(table_from_string, Element)
         self.assertEqual(table_from_string.tagName, "table")
 
-        table_from_dict = JSON.tablify({"id": 1, "name": "test"})
+        table_from_dict = JSON.tablify(
+            OrderedDict([("id", 1), ("name", "test")])
+        )
         self.assertIsInstance(table_from_dict, Element)
         self.assertEqual(table_from_dict.tagName, "table")
 
         table_from_list = JSON.tablify(JSON.parse(TestCase.SOMEJSON2))
-        self.assertEqual(table_from_list.getElementsByTagName("td")[0].textContent, "01")
+        self.assertEqual(
+            table_from_list.getElementsByTagName("td")[0].textContent,
+            "01",
+        )
 
         nested_table = JSON.tablify(JSON.parse(TestCase.SOMEJSON)["items"])
-        self.assertEqual(nested_table.getElementsByTagName("td")[0].textContent, "01")
+        self.assertEqual(
+            nested_table.getElementsByTagName("td")[0].textContent,
+            "01",
+        )
         self.assertIn("extra", str(table_from_string))
+        bytes_table = JSON.tablify(b'{"id": "09", "name": "bytes"}')
+        self.assertEqual(
+            bytes_table.getElementsByTagName("td")[1].textContent,
+            "bytes",
+        )
 
         with self.assertRaises(ValueError):
             JSON.tablify([1, 2, 3])
@@ -89,6 +104,15 @@ class TestCase(unittest.TestCase):
             ],
         )
 
+        td_header_table = table(
+            tr(td("id"), td("name")),
+            tr(td("09"), td("Python")),
+        )
+        self.assertEqual(
+            JSON.table2json(td_header_table),
+            [{"id": "09", "name": "Python"}],
+        )
+
         with self.assertRaises(ValueError):
             JSON.table2json("not-a-table")
 
@@ -98,8 +122,13 @@ class TestCase(unittest.TestCase):
 
         parsed_bytes = JSON.parse(TestCase.SOMEJSON.encode("utf-8"))
         self.assertEqual(parsed_bytes["items"][0]["id"], "01")
+        self.assertEqual(JSON.loads(b'{"ok": true}')["ok"], True)
 
-        with tempfile.NamedTemporaryFile("w+", suffix=".json", delete=False) as handle:
+        with tempfile.NamedTemporaryFile(
+            "w+",
+            suffix=".json",
+            delete=False,
+        ) as handle:
             handle.write('{"hello": "world"}')
             temp_path = handle.name
 
@@ -112,15 +141,28 @@ class TestCase(unittest.TestCase):
         payload = {"hi": [1, 2, 3]}
         text = JSON.stringify(payload, sort_keys=True)
         self.assertEqual(text, '{"hi": [1, 2, 3]}')
+        self.assertEqual(JSON.dumps(payload, sort_keys=True), text)
 
-        with tempfile.NamedTemporaryFile("r", suffix=".json", delete=False) as handle:
+        with tempfile.NamedTemporaryFile(
+            "r",
+            suffix=".json",
+            delete=False,
+        ) as handle:
             temp_path = handle.name
 
         try:
-            written = JSON.stringify(payload, filepath=temp_path, sort_keys=True)
+            written = JSON.stringify(
+                payload,
+                filepath=temp_path,
+                sort_keys=True,
+            )
             self.assertEqual(written, '{"hi": [1, 2, 3]}')
             with open(temp_path, encoding="utf-8") as saved_file:
                 self.assertEqual(saved_file.read(), written)
+            self.assertEqual(
+                JSON.dump(payload, filepath=temp_path, sort_keys=True),
+                written,
+            )
         finally:
             os.unlink(temp_path)
 
@@ -130,7 +172,11 @@ class TestCase(unittest.TestCase):
             {"name": "C++", "id": "07", "extra": "yes"},
         ]
 
-        with tempfile.NamedTemporaryFile("r", suffix=".csv", delete=False) as handle:
+        with tempfile.NamedTemporaryFile(
+            "r",
+            suffix=".csv",
+            delete=False,
+        ) as handle:
             csv_path = handle.name
 
         try:
@@ -147,8 +193,40 @@ class TestCase(unittest.TestCase):
         finally:
             os.unlink(csv_path)
 
+    def test_csvify_accepts_json_object_string(self):
+        with tempfile.NamedTemporaryFile(
+            "r",
+            suffix=".csv",
+            delete=False,
+        ) as handle:
+            csv_path = handle.name
+
+        try:
+            returned_path = JSON.csvify(
+                '{"id": "09", "name": "Python"}',
+                csv_path,
+            )
+            self.assertEqual(returned_path, csv_path)
+            with open(csv_path, encoding="utf-8") as csv_file:
+                csv_text = csv_file.read()
+            self.assertIn("id,name", csv_text)
+            self.assertIn("09,Python", csv_text)
+        finally:
+            os.unlink(csv_path)
+
     def test_flatten(self):
-        flattened = JSON.flatten({"user": {"name": "domonic", "meta": {"role": "admin"}}})
+        flattened = JSON.flatten(
+            OrderedDict(
+                [
+                    (
+                        "user",
+                        OrderedDict(
+                            [("name", "domonic"), ("meta", {"role": "admin"})]
+                        ),
+                    )
+                ]
+            )
+        )
         self.assertEqual(
             flattened,
             {"user__name": "domonic", "user__meta__role": "admin"},

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import csv
 import json
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any
 
@@ -21,8 +21,12 @@ from domonic.html import table, td, th, tr
 
 return_json = as_json  # legacy. use the one in decorators package
 
+RowsLike = (
+    str | bytes | bytearray | Mapping[str, Any] | Iterable[Mapping[str, Any]]
+)
 
-def parse_file(filepath: str | Path) -> Any:
+
+def parse_file(filepath: str | Path, **kwargs) -> Any:
     """[loads a json file and returns a python object]
 
     Args:
@@ -32,10 +36,10 @@ def parse_file(filepath: str | Path) -> Any:
         [type]: [a python object]
     """
     with open(filepath, encoding="utf-8") as json_file:
-        return json.load(json_file)
+        return json.load(json_file, **kwargs)
 
 
-def parse(json_string: str | bytes | bytearray) -> Any:
+def parse(json_string: str | bytes | bytearray, **kwargs) -> Any:
     """[take a json string and return a python object]
 
     Args:
@@ -46,7 +50,7 @@ def parse(json_string: str | bytes | bytearray) -> Any:
     """
     if isinstance(json_string, (bytes, bytearray)):
         json_string = json_string.decode("utf-8")
-    return json.loads(json_string)
+    return json.loads(json_string, **kwargs)
 
 
 def stringify(data: Any, filepath: str | Path | None = None, **kwargs) -> str:
@@ -54,7 +58,9 @@ def stringify(data: Any, filepath: str | Path | None = None, **kwargs) -> str:
 
     Args:
         data ([type]): [the python object]
-        filepath (str, optional): [an optional filepath to save the stringified object] [default: None]
+        filepath (str, optional): [optional filepath to save the stringified
+            object]
+            [default: None]
 
     Returns:
         [type]: [the stringified object]
@@ -66,7 +72,32 @@ def stringify(data: Any, filepath: str | Path | None = None, **kwargs) -> str:
     return payload
 
 
-def tablify(arr: str | Mapping[str, Any] | Sequence[Mapping[str, Any]]):
+def _coerce_rows(value: RowsLike, name: str):
+    if isinstance(value, (str, bytes, bytearray)):
+        value = parse(value)
+    if isinstance(value, Mapping):
+        return [value]
+    if isinstance(value, Iterable):
+        rows = list(value)
+        if all(isinstance(row, Mapping) for row in rows):
+            return rows
+    raise ValueError(f"{name} expects a dict or list of dicts")
+
+
+def _get_headings(items, name: str) -> list[Any]:
+    headings: list[Any] = []
+    seen = set()
+    for each in items:
+        if not isinstance(each, Mapping):
+            raise ValueError(f"{name} expects a dict or list of dicts")
+        for key in each:
+            if key not in seen:
+                seen.add(key)
+                headings.append(key)
+    return headings
+
+
+def tablify(arr: RowsLike):
     """tablify
 
     takes a json array and returns a html table
@@ -77,29 +108,10 @@ def tablify(arr: str | Mapping[str, Any] | Sequence[Mapping[str, Any]]):
     Returns:
         str: a html table
     """
-
-    def _get_headings(items, node):
-        headings: list[str] = []
-        row = tr()
-        for each in items:
-            if not isinstance(each, Mapping):
-                raise ValueError("tablify expects a dict or list of dicts")
-            for key in each:
-                if key not in headings:
-                    headings.append(key)
-                    row.appendChild(th(key))
-        node.appendChild(row)
-        return headings
-
-    if isinstance(arr, str):
-        arr = json.loads(arr)
-    if isinstance(arr, dict):
-        arr = [arr]
-    if not isinstance(arr, Sequence):
-        raise ValueError("tablify expects a dict or list of dicts")
-
+    arr = _coerce_rows(arr, "tablify")
     t = table()
-    headings = _get_headings(arr, t)
+    headings = _get_headings(arr, "tablify")
+    t.appendChild(tr(*[th(heading) for heading in headings]))
     for item in arr:
         row = tr(*[td(item.get(heading, "")) for heading in headings])
         t.appendChild(row)
@@ -115,7 +127,10 @@ def table2json(node) -> list[dict[str, str]]:
     if not rows:
         return []
 
-    headings = [heading.textContent for heading in rows[0].getElementsByTagName("th")]
+    heading_cells = rows[0].getElementsByTagName("th")
+    if not heading_cells:
+        heading_cells = rows[0].getElementsByTagName("td")
+    headings = [heading.textContent for heading in heading_cells]
     items: list[dict[str, str]] = []
     for row in rows[1:]:
         cells = row.getElementsByTagName("td")
@@ -128,7 +143,10 @@ def table2json(node) -> list[dict[str, str]]:
     return items
 
 
-def csvify(arr: str | Mapping[str, Any] | Sequence[Mapping[str, Any]], outfile: str | Path = "data.csv") -> str:
+def csvify(
+    arr: RowsLike,
+    outfile: str | Path = "data.csv",
+) -> str:
     """csvify
 
     takes a json array and dumps a csv file
@@ -140,24 +158,8 @@ def csvify(arr: str | Mapping[str, Any] | Sequence[Mapping[str, Any]], outfile: 
     Returns:
         str: a csv file
     """
-    if isinstance(arr, str):
-        arr = json.loads(arr)  # leniency. allow for a string
-    elif isinstance(arr, dict):
-        arr = [arr]
-    if not isinstance(arr, Sequence):
-        raise ValueError("csvify expects a dict or list of dicts")
-
-    def _get_headings(items):
-        headings: list[str] = []
-        for each in items:
-            if not isinstance(each, Mapping):
-                raise ValueError("csvify expects a dict or list of dicts")
-            for key in each:
-                if key not in headings:
-                    headings.append(key)
-        return headings
-
-    headings = _get_headings(arr)
+    arr = _coerce_rows(arr, "csvify")
+    headings = _get_headings(arr, "csvify")
     with open(outfile, "w", encoding="utf-8", newline="") as file:
         output = csv.writer(file)
         output.writerow(headings)
@@ -166,7 +168,10 @@ def csvify(arr: str | Mapping[str, Any] | Sequence[Mapping[str, Any]], outfile: 
     return str(outfile)
 
 
-def csv2json(csv_filepath: str | Path, json_filepath: str | Path | None = None) -> str:
+def csv2json(
+    csv_filepath: str | Path,
+    json_filepath: str | Path | None = None,
+) -> str:
     """
     convert a CSV to JSON.
     """
@@ -183,6 +188,16 @@ def csv2json(csv_filepath: str | Path, json_filepath: str | Path | None = None) 
     with open(json_filepath, "w", encoding="utf-8") as json_file:
         json.dump(items, json_file, indent=4)
     return payload
+
+
+load = parse_file
+loads = parse
+dumps = stringify
+json2csv = csvify
+
+
+def dump(data: Any, filepath: str | Path | None = None, **kwargs) -> str:
+    return stringify(data, filepath=filepath, **kwargs)
 
 
 """
@@ -209,13 +224,13 @@ def flatten(b: Mapping[str, Any], delim: str = "__") -> dict[str, Any]:
     # i.e. input = map( lambda x: JSON.flatten( x, "__" ), input )
     """
     val: dict[str, Any] = {}
-    for i in b.keys():
-        if isinstance(b[i], dict):
-            get = flatten(b[i], delim)
-            for j in get.keys():
-                val[i + delim + j] = get[j]
+    for key, value in b.items():
+        if isinstance(value, Mapping):
+            get = flatten(value, delim)
+            for child_key, child_value in get.items():
+                val[key + delim + child_key] = child_value
         else:
-            val[i] = b[i]
+            val[key] = value
 
     return val
 
