@@ -15,12 +15,15 @@ from __future__ import annotations
 
 import re
 import sys
+import threading
+import time
 from typing import Any, Callable
 
 from domonic import domonic
 from domonic.dom import Document, Element, Location, document
-from domonic.events import CloseEvent, Event, EventTarget, FocusEvent, HashChangeEvent, PopStateEvent
+from domonic.events import CloseEvent, Event, EventTarget, FocusEvent, HashChangeEvent, MessageEvent, PopStateEvent
 from domonic.javascript import Promise, Window as JavaScriptWindow
+from domonic.javascript import performance
 from domonic.webapi.console import Console
 from domonic.webapi.credentials import CredentialsContainer
 from domonic.webapi.geo import Geolocation
@@ -47,6 +50,12 @@ class MediaQueryList(EventTarget):
         if not media:
             return False
         text = media.strip().lower()
+        if "," in text:
+            return any(MediaQueryList._evaluate(part, width=width, height=height) for part in text.split(","))
+        if text.startswith("not "):
+            return not MediaQueryList._evaluate(text[4:].strip(), width=width, height=height)
+        if text.startswith("only "):
+            text = text[5:].strip()
         if text in ("all", "screen"):
             return True
 
@@ -68,11 +77,31 @@ class MediaQueryList(EventTarget):
 
         return all(checks) if checks else False
 
+    def _set_viewport(self, *, width: int, height: int) -> None:
+        previous = self.matches
+        self.matches = self._evaluate(self.media, width=width, height=height)
+        if self.matches != previous:
+            event = Event("change", {"bubbles": False, "cancelable": False})
+            event.matches = self.matches
+            event.media = self.media
+            self.dispatchEvent(event)
+
     def addListener(self, callback: Callable[[Event], Any]) -> None:
         self.addEventListener("change", callback)
 
     def removeListener(self, callback: Callable[[Event], Any]) -> None:
         self.removeEventListener("change", callback)
+
+
+class IdleDeadline:
+    """Small object passed to ``requestIdleCallback`` callbacks."""
+
+    def __init__(self, *, did_timeout: bool = False, budget_ms: float = 50.0) -> None:
+        self.didTimeout = did_timeout
+        self._deadline = time.monotonic() + (budget_ms / 1000)
+
+    def timeRemaining(self) -> float:
+        return max(0.0, (self._deadline - time.monotonic()) * 1000)
 
 
 class CustomElementRegistry:
@@ -304,16 +333,23 @@ class Screen(EventTarget):
 
 
 class Window(JavaScriptWindow, EventTarget):
-    def __init__(self):
+    def __init__(
+        self,
+        *,
+        doc: Document | None = None,
+        opener: "Window | None" = None,
+        parent: "Window | None" = None,
+        url: str | None = None,
+    ):
         EventTarget.__init__(self)
         self.customElements = CustomElementRegistry()
         self._localStorage: Storage = Storage()
         self._sessionStorage: Storage = Storage()
         self._navigator: Navigator = Navigator()
         self._screen: Screen = self._navigator._screen
-        self._document: Document = document
+        self._document: Document = doc if doc is not None else document
         self._document.defaultView = self
-        self._location: Location = Location("https://eventual.technology")
+        self._location: Location = Location(url or "https://eventual.technology")
         self._document.URL = self._location.href
         self._console: Console = Console()
         self._history: History = History(self)
@@ -321,12 +357,28 @@ class Window(JavaScriptWindow, EventTarget):
         self._focused: bool = True
         self._name: str = ""
         self._default_status: str = ""
+        self._status: str = ""
+        self._opener = opener
+        self._parent = parent if parent is not None else self
+        self._top = getattr(self._parent, "top", self._parent) if parent is not None else self
+        self._outer_width = self._screen.width
+        self._outer_height = self._screen.height
+        self._scroll_x = 0
+        self._scroll_y = 0
+        self._stopped = False
+        self._media_query_lists: list[MediaQueryList] = []
+        self._microtask_queue: list[Callable[[], Any]] = []
+        self._running_microtasks = False
+        self._next_animation_frame_id = 1
+        self._animation_frame_timers: dict[int, threading.Timer] = {}
+        self._next_idle_callback_id = 1
+        self._idle_callback_timers: dict[int, threading.Timer] = {}
         JavaScriptWindow.__init__(self)
 
     @staticmethod
     def _normalize_url(value: str | Location) -> str:
         href = value.href if isinstance(value, Location) else str(value)
-        if href and "://" not in href:
+        if href and not re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*:", href):
             href = "https://" + href
         return href
 
@@ -363,6 +415,57 @@ class Window(JavaScriptWindow, EventTarget):
     @property
     def console(self) -> Console:
         return self._console
+
+    @property
+    def clientInformation(self) -> Navigator:
+        return self.navigator
+
+    @property
+    def frames(self):
+        return self
+
+    @property
+    def length(self) -> int:
+        return 0
+
+    @property
+    def opener(self):
+        return self._opener
+
+    @opener.setter
+    def opener(self, value) -> None:
+        self._opener = value
+
+    @property
+    def origin(self) -> str:
+        from domonic.webapi.url import URL
+
+        return URL(self.location.href or "").origin
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @property
+    def performance(self):
+        return performance
+
+    @property
+    def self(self):
+        return self
+
+    @property
+    def top(self):
+        return self._top
+
+    @property
+    def window(self):
+        return self
+
+    @property
+    def isSecureContext(self) -> bool:
+        href = self.location.href or ""
+        return href.startswith(("https:", "wss:", "file:")) or href.startswith(("http://localhost", "http://127.0.0.1"))
 
     @property
     def localStorage(self) -> Storage:
@@ -427,6 +530,18 @@ class Window(JavaScriptWindow, EventTarget):
     def defaultStatus(self, value=None):
         self._default_status = "" if value is None else str(value)
 
+    def dump(self, message: Any = ""):
+        print(message)
+        return None
+
+    def find(self, string: str, case_sensitive: bool = False, backwards: bool = False, wrap: bool = False):
+        text = self.document.textContent or ""
+        needle = str(string)
+        if not case_sensitive:
+            text = text.lower()
+            needle = needle.lower()
+        return needle in text
+
     def focus(self):
         self._focused = True
         self.dispatchEvent(FocusEvent("focus", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
@@ -449,8 +564,26 @@ class Window(JavaScriptWindow, EventTarget):
     def innerWidth(self):
         return self._screen.width
 
+    def _update_media_queries(self) -> None:
+        for query in list(self._media_query_lists):
+            query._set_viewport(width=self.innerWidth, height=self.innerHeight)
+
     def matchMedia(self, media_query_list):
-        return MediaQueryList(media_query_list, width=self.innerWidth, height=self.innerHeight)
+        query = MediaQueryList(media_query_list, width=self.innerWidth, height=self.innerHeight)
+        self._media_query_lists.append(query)
+        return query
+
+    def cancelAnimationFrame(self, request_id: int):
+        timer = self._animation_frame_timers.pop(request_id, None)
+        if timer is not None:
+            timer.cancel()
+        return None
+
+    def cancelIdleCallback(self, callback_id: int):
+        timer = self._idle_callback_timers.pop(callback_id, None)
+        if timer is not None:
+            timer.cancel()
+        return None
 
     def moveBy(self, x: int, y: int):
         self._screen.left += x
@@ -472,9 +605,143 @@ class Window(JavaScriptWindow, EventTarget):
     def navigator(self):
         return self._navigator
 
+    def open(self, url: str = "", target: str = "_blank", features: str = "", replace: bool = False):
+        target_window = None
+        if target == "_self" or (self.name and target == self.name):
+            target_window = self
+        elif target == "_parent":
+            target_window = self.parent
+        elif target == "_top":
+            target_window = self.top
+        if target_window is not None:
+            if url:
+                target_window.location = url
+            return target_window
+        child = Window(doc=Document(), opener=self, parent=self, url="about:blank")
+        if url:
+            child.location = url
+        return child
+
+    @property
+    def outerHeight(self):
+        return self._outer_height
+
+    @property
+    def outerWidth(self):
+        return self._outer_width
+
+    @property
+    def pageXOffset(self):
+        return self.scrollX
+
+    @property
+    def pageYOffset(self):
+        return self.scrollY
+
+    def postMessage(self, message: Any, targetOrigin: str = "*", transfer: list[Any] | None = None):
+        if targetOrigin not in ("*", "/") and targetOrigin != self.origin:
+            return None
+        event = MessageEvent(
+            "message",
+            {
+                "data": message,
+                "origin": self.origin,
+                "source": self,
+                "ports": transfer or [],
+                "bubbles": False,
+                "cancelable": False,
+            },
+        )
+        self.dispatchEvent(event)
+        return None
+
+    def print(self):
+        self.dispatchEvent(Event("beforeprint", {"bubbles": False, "cancelable": False}))
+        self.dispatchEvent(Event("afterprint", {"bubbles": False, "cancelable": False}))
+        return None
+
+    def queueMicrotask(self, callback: Callable[[], Any]):
+        if not callable(callback):
+            raise TypeError("queueMicrotask callback must be callable")
+        self._microtask_queue.append(callback)
+        if self._running_microtasks:
+            return None
+        self._running_microtasks = True
+        try:
+            while self._microtask_queue:
+                self._microtask_queue.pop(0)()
+        finally:
+            self._running_microtasks = False
+        return None
+
+    def requestAnimationFrame(self, callback: Callable[[float], Any]) -> int:
+        if not callable(callback):
+            raise TypeError("requestAnimationFrame callback must be callable")
+        request_id = self._next_animation_frame_id
+        self._next_animation_frame_id += 1
+
+        def run():
+            self._animation_frame_timers.pop(request_id, None)
+            callback(self.performance.now())
+
+        timer = threading.Timer(1 / 60, run)
+        timer.daemon = True
+        self._animation_frame_timers[request_id] = timer
+        timer.start()
+        return request_id
+
+    def requestIdleCallback(self, callback: Callable[[IdleDeadline], Any], options: dict[str, Any] | None = None) -> int:
+        if not callable(callback):
+            raise TypeError("requestIdleCallback callback must be callable")
+        options = options or {}
+        timeout = options.get("timeout")
+        delay = 0.01
+        did_timeout = False
+        if isinstance(timeout, (int, float)) and timeout <= 0:
+            delay = 0
+            did_timeout = True
+        callback_id = self._next_idle_callback_id
+        self._next_idle_callback_id += 1
+
+        def run():
+            self._idle_callback_timers.pop(callback_id, None)
+            callback(IdleDeadline(did_timeout=did_timeout))
+
+        timer = threading.Timer(delay, run)
+        timer.daemon = True
+        self._idle_callback_timers[callback_id] = timer
+        timer.start()
+        return callback_id
+
+    def resizeBy(self, x: int, y: int):
+        return self.resizeTo(self.outerWidth + int(x), self.outerHeight + int(y))
+
+    def resizeTo(self, width: int, height: int):
+        width = max(0, int(width))
+        height = max(0, int(height))
+        changed = width != self._outer_width or height != self._outer_height
+        self._outer_width = width
+        self._outer_height = height
+        self._screen.width = width
+        self._screen.height = height
+        self._screen.availWidth = width
+        self._screen.availHeight = height
+        if changed:
+            self._update_media_queries()
+            self.dispatchEvent(Event("resize", {"bubbles": False, "cancelable": False}))
+        return None
+
     @property
     def screen(self) -> Screen:
         return self._screen
+
+    @property
+    def screenX(self) -> int:
+        return self.screenLeft
+
+    @property
+    def screenY(self) -> int:
+        return self.screenTop
 
     @property
     def screenLeft(self) -> int:
@@ -483,6 +750,61 @@ class Window(JavaScriptWindow, EventTarget):
     @property
     def screenTop(self) -> int:
         return self._screen.screenTop
+
+    def _parse_scroll_args(self, x=0, y=0, **options) -> tuple[int, int]:
+        if isinstance(x, dict):
+            options = x
+            x = options.get("left", options.get("x", self.scrollX))
+            y = options.get("top", options.get("y", self.scrollY))
+        else:
+            x = options.get("left", x)
+            y = options.get("top", y)
+        return int(x or 0), int(y or 0)
+
+    def scroll(self, x=0, y=0, **options):
+        return self.scrollTo(x, y, **options)
+
+    def scrollBy(self, x=0, y=0, **options):
+        x, y = self._parse_scroll_args(x, y, **options)
+        return self.scrollTo(self.scrollX + x, self.scrollY + y)
+
+    def scrollByLines(self, lines: int):
+        return self.scrollBy(0, int(lines) * 40)
+
+    def scrollByPages(self, pages: int):
+        return self.scrollBy(0, int(pages) * self.innerHeight)
+
+    def scrollTo(self, x=0, y=0, **options):
+        x, y = self._parse_scroll_args(x, y, **options)
+        x = max(0, x)
+        y = max(0, y)
+        changed = x != self._scroll_x or y != self._scroll_y
+        self._scroll_x = x
+        self._scroll_y = y
+        if changed:
+            self.dispatchEvent(Event("scroll", {"bubbles": False, "cancelable": False}))
+            self.dispatchEvent(Event("scrollend", {"bubbles": False, "cancelable": False}))
+        return None
+
+    @property
+    def scrollX(self):
+        return self._scroll_x
+
+    @property
+    def scrollY(self):
+        return self._scroll_y
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value=None):
+        self._status = "" if value is None else str(value)
+
+    def stop(self):
+        self._stopped = True
+        return None
 
 
 window = Window()

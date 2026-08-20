@@ -3,11 +3,13 @@
     ~~~~~~~~~~~~~~~~
 """
 
+import threading
+import time
 import unittest
 
-from domonic.html import body, div
 from domonic.events import CloseEvent
-from domonic.window import MediaQueryList, Window
+from domonic.html import body, div
+from domonic.window import IdleDeadline, MediaQueryList, Window
 
 
 class TestCase(unittest.TestCase):
@@ -109,6 +111,104 @@ class TestCase(unittest.TestCase):
         self.assertEqual(win.navigator.clearAppBadge(), None)
         self.assertEqual(win.navigator.getBattery()["level"], 1.0)
         self.assertFalse(win.navigator.vibrate([100]))
+
+    def test_window_identity_viewport_scroll_and_media_queries(self):
+        win = Window()
+        self.assertIs(win.window, win)
+        self.assertIs(win.self, win)
+        self.assertIs(win.frames, win)
+        self.assertIs(win.parent, win)
+        self.assertIs(win.top, win)
+        self.assertEqual(win.length, 0)
+        self.assertTrue(win.isSecureContext)
+        self.assertIs(win.clientInformation, win.navigator)
+
+        changes = []
+        query = win.matchMedia("(min-width: 700px) and (orientation: landscape)")
+        query.addEventListener("change", lambda event: changes.append((event.matches, event.media)))
+        self.assertTrue(query.matches)
+
+        resize_events = []
+        win.addEventListener("resize", lambda event: resize_events.append(event.type))
+        win.resizeTo(500, 800)
+        self.assertEqual(win.innerWidth, 500)
+        self.assertEqual(win.innerHeight, 800)
+        self.assertEqual(win.outerWidth, 500)
+        self.assertEqual(win.outerHeight, 800)
+        self.assertEqual(resize_events, ["resize"])
+        self.assertFalse(query.matches)
+        self.assertEqual(changes, [(False, "(min-width: 700px) and (orientation: landscape)")])
+
+        scroll_events = []
+        win.addEventListener("scroll", lambda event: scroll_events.append((win.scrollX, win.scrollY)))
+        win.scrollTo({"left": 10, "top": 20})
+        win.scrollBy(5, -10)
+        win.scrollByLines(1)
+        self.assertEqual(win.scrollX, 15)
+        self.assertEqual(win.scrollY, 50)
+        self.assertEqual(win.pageXOffset, 15)
+        self.assertEqual(win.pageYOffset, 50)
+        self.assertEqual(scroll_events, [(10, 20), (15, 10), (15, 50)])
+
+    def test_window_messaging_print_open_and_status(self):
+        win = Window()
+        messages = []
+        printed = []
+        win.onmessage = lambda event: messages.append((event.data, event.origin, event.source))
+        win.addEventListener("beforeprint", lambda event: printed.append(event.type))
+        win.addEventListener("afterprint", lambda event: printed.append(event.type))
+
+        win.postMessage({"hello": "world"}, win.origin)
+        self.assertEqual(messages, [({"hello": "world"}, win.origin, win)])
+
+        win.print()
+        self.assertEqual(printed, ["beforeprint", "afterprint"])
+
+        win.status = "Ready"
+        win.defaultStatus = "Idle"
+        self.assertEqual(win.status, "Ready")
+        self.assertEqual(win.defaultStatus, "Idle")
+
+        child = win.open("about:blank")
+        self.assertIs(child.opener, win)
+        self.assertIs(child.parent, win)
+        self.assertIs(child.top, win)
+        self.assertEqual(child.location.href, "about:blank")
+        self.assertIs(win.open("https://example.com", "_self"), win)
+        self.assertEqual(win.location.href, "https://example.com")
+
+    def test_window_microtask_animation_frame_and_idle_callbacks(self):
+        win = Window()
+        order = []
+        win.queueMicrotask(lambda: order.append("first"))
+        win.queueMicrotask(lambda: (order.append("second"), win.queueMicrotask(lambda: order.append("third"))))
+        self.assertEqual(order, ["first", "second", "third"])
+
+        raf_done = threading.Event()
+        raf_times = []
+        win.requestAnimationFrame(lambda timestamp: (raf_times.append(timestamp), raf_done.set()))
+        self.assertTrue(raf_done.wait(0.25))
+        self.assertEqual(len(raf_times), 1)
+        self.assertGreaterEqual(raf_times[0], 0)
+
+        cancelled = []
+        request_id = win.requestAnimationFrame(lambda timestamp: cancelled.append(timestamp))
+        win.cancelAnimationFrame(request_id)
+        time.sleep(0.05)
+        self.assertEqual(cancelled, [])
+
+        idle_done = threading.Event()
+        idle_deadlines = []
+        win.requestIdleCallback(lambda deadline: (idle_deadlines.append(deadline), idle_done.set()))
+        self.assertTrue(idle_done.wait(0.25))
+        self.assertIsInstance(idle_deadlines[0], IdleDeadline)
+        self.assertGreaterEqual(idle_deadlines[0].timeRemaining(), 0)
+
+        idle_cancelled = []
+        callback_id = win.requestIdleCallback(lambda deadline: idle_cancelled.append(deadline))
+        win.cancelIdleCallback(callback_id)
+        time.sleep(0.05)
+        self.assertEqual(idle_cancelled, [])
 
 
 if __name__ == "__main__":
