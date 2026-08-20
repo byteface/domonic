@@ -64,6 +64,41 @@ class TestCase(unittest.TestCase):
         self.assertEqual(str(drawing), '<svg viewBox="0 0 10 10"></svg>')
         self.assertEqual(str(custom), "<my-custom-svg></my-custom-svg>")
 
+    def test_svg2_exports_and_namespace_conflicts(self):
+        from domonic import a as html_a
+        from domonic import style as html_style
+
+        drawing = svg(
+            a("home", _href="#home"),
+            style("circle { fill: red; }"),
+            set(_attributeName="opacity", _to="1"),
+        )
+
+        self.assertEqual(a().namespaceURI, "http://www.w3.org/2000/svg")
+        self.assertEqual(audio().namespaceURI, "http://www.w3.org/2000/svg")
+        self.assertEqual(html_a().namespaceURI, "http://www.w3.org/1999/xhtml")
+        self.assertEqual(html_style().namespaceURI, "http://www.w3.org/1999/xhtml")
+        self.assertIn("<set attributeName", str(drawing))
+        self.assertEqual(str(create_element("font_face")), "<font-face></font-face>")
+        self.assertEqual(str(color_profile()), "<color-profile></color-profile>")
+
+    def test_svg_geometry_helpers(self):
+        dot = circle(_cx="5", _cy="6", _r="2")
+        drawing = svg(g(dot), _width="10", _height="10")
+
+        self.assertIs(dot.ownerSVGElement, drawing)
+        self.assertIs(dot.viewportElement, drawing)
+        self.assertTrue(drawing.getScreenCTM().isIdentity)
+
+        point = drawing.createSVGPoint(10, 20).matrixTransform(drawing.createSVGMatrix().translate(5, 7))
+        self.assertEqual((point.x, point.y), (15.0, 27.0))
+
+        bbox = dot.getBBox()
+        self.assertEqual((bbox.x, bbox.y, bbox.width, bbox.height), (3.0, 4.0, 4.0, 4.0))
+
+        points_box = polyline(_points="0,0 10,4 -2,8").getBBox()
+        self.assertEqual((points_box.x, points_box.y, points_box.width, points_box.height), (-2.0, 0.0, 12.0, 8.0))
+
     def test_svg_legacy_and_filter_exports(self):
         icon = svg(
             defs(filter(feGaussianBlur(_in="SourceGraphic", _stdDeviation="2"))),
