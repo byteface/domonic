@@ -1,0 +1,60 @@
+"""
+    test_rss
+    ~~~~~~~~
+"""
+
+import unittest
+
+import domonic.xml.rss as rss_module
+from domonic.xml.rss import *
+
+
+class TestCase(unittest.TestCase):
+    def test_rss_feed(self):
+        doc = rss(
+            channel(
+                title("Example Channel"),
+                link("https://example.com/"),
+                description("The latest from example.com"),
+                atom_link(_href="https://example.com/feed.xml", _rel="self", _type="application/rss+xml"),
+                item(
+                    title("An item"),
+                    guid("https://example.com/items/1", **{"isPermaLink": "true"}),
+                    pubDate("Sat, 07 Sep 2002 00:00:01 GMT"),
+                    content_encoded("Full content"),
+                ),
+            ),
+            **{"xmlns:atom": XMLNS_ATOM, "xmlns:content": XMLNS_CONTENT},
+        )
+
+        rendered = str(doc)
+        self.assertIn('<rss version="2.0"', rendered)
+        self.assertIn('xmlns:atom="http://www.w3.org/2005/Atom"', rendered)
+        self.assertIn('<atom:link href="https://example.com/feed.xml" rel="self" type="application/rss+xml"></atom:link>', rendered)
+        self.assertIn('<content:encoded>Full content</content:encoded>', rendered)
+
+    def test_rss_generated_constructor_pattern(self):
+        self.assertIn("content:encoded", rss_tags)
+        self.assertIn("xmlns:content", rss_attributes)
+        self.assertTrue(issubclass(content_encoded, RSSElement))
+        self.assertEqual(content_encoded.name, "content:encoded")
+        self.assertIs(rss_module.__dict__["atom:link"], atom_link)
+
+        doc = rss(
+            channel(item(guid("1", is_perma_link="false"), create_element("dc:creator", "byteface"))),
+            xmlns_atom=XMLNS_ATOM,
+            xmlns_content=XMLNS_CONTENT,
+            xmlns_dc=XMLNS_DC,
+        )
+        rendered = str(doc)
+        self.assertIn('version="2.0"', rendered)
+        self.assertIn('xmlns:dc="http://purl.org/dc/elements/1.1/"', rendered)
+        self.assertIn('<guid isPermaLink="false">1</guid>', rendered)
+        self.assertIn("<dc:creator>byteface</dc:creator>", rendered)
+
+        custom = create_element("itunes:duration", "10:00")
+        self.assertEqual(str(custom), "<itunes:duration>10:00</itunes:duration>")
+
+
+if __name__ == "__main__":
+    unittest.main()
