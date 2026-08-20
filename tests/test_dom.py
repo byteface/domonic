@@ -1231,6 +1231,21 @@ class DOMTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             r.comparePoint(text, 10)
 
+    def test_range_collapse_defaults_to_end_boundary(self):
+        text = Text("abcdef")
+        r = Range()
+        r.setStart(text, 1)
+        r.setEnd(text, 4)
+
+        r.collapse()
+        self.assertEqual((r.startOffset, r.endOffset), (4, 4))
+        self.assertTrue(r.collapsed)
+
+        r.setStart(text, 1)
+        r.setEnd(text, 4)
+        r.collapse(True)
+        self.assertEqual((r.startOffset, r.endOffset), (1, 1))
+
     def test_document_and_shadow_selection_helpers(self):
         host = div(_id="host")
         page = html(body(host))
@@ -2113,6 +2128,12 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(len(ranges), 2)
         self.assertEqual(ranges.start(0), 0)
         self.assertEqual(ranges.end(1), 20)
+        with self.assertRaises(IndexError):
+            ranges.start(-1)
+        with self.assertRaises(IndexError):
+            ranges.end(2)
+        with self.assertRaises(TypeError):
+            ranges.start("0")
 
     def test_text_split_text_and_document_defaults(self):
         node = div(Text("hello"))
@@ -2127,6 +2148,39 @@ class DOMTest(unittest.TestCase):
         page = Document()
         self.assertEqual(page.URL, "")
         self.assertEqual(page.baseURI, "")
+
+    def test_character_data_methods_validate_offsets(self):
+        text = Text("abcdef")
+
+        self.assertEqual(text.substringData(1, 3), "bcd")
+        self.assertEqual(text.insertData(3, "X"), "abcXdef")
+        self.assertEqual(text.deleteData(3, 1), "abcdef")
+        self.assertEqual(text.replaceData(1, 2, "YY"), "aYYdef")
+
+        for method, args in (
+            (text.substringData, (-1, 1)),
+            (text.substringData, (99, 1)),
+            (text.substringData, (0, -1)),
+            (text.insertData, (-1, "x")),
+            (text.deleteData, (-1, 1)),
+            (text.deleteData, (0, -1)),
+            (text.replaceData, (-1, 1, "x")),
+            (text.replaceData, (0, -1, "x")),
+            (text.splitText, (-1,)),
+            (text.splitText, (99,)),
+        ):
+            with self.assertRaises(IndexError):
+                method(*args)
+
+        for method, args in (
+            (text.substringData, ("0", 1)),
+            (text.insertData, ("0", "x")),
+            (text.deleteData, (0, "1")),
+            (text.replaceData, (0, "1", "x")),
+            (text.splitText, ("0",)),
+        ):
+            with self.assertRaises(TypeError):
+                method(*args)
 
     def test_entity_reference_ordinal(self):
         self.assertEqual(EntityReference.ordinal("A"), 65)
@@ -2419,6 +2473,13 @@ class DOMTest(unittest.TestCase):
         self.assertIs(items.item(0), items[0])
         self.assertIsNone(items.item(-1))
         self.assertIsNone(items.item(2))
+
+    def test_html_collection_named_item_skips_nodes_without_attributes(self):
+        items = HTMLCollection([Text("loose"), div(_id="hit"), span(_name="named")])
+
+        self.assertIs(items.namedItem("hit"), items[1])
+        self.assertIs(items.namedItem("named"), items[2])
+        self.assertIsNone(items.namedItem("missing"))
 
     def test_select_options_returns_live_options_collection(self):
         picker = select(
@@ -2975,19 +3036,26 @@ class NodeTest(unittest.TestCase):
         after = p("after", _id="after")
         before = strong("before", _id="before")
 
-        text_node.after(after)
-        text_node.before(before)
+        text_node.after(" after text ", after)
+        text_node.before(before, " before text ")
 
         self.assertEqual(
             str(node),
-            '<div><strong id="before">before</strong>one'
+            '<div><strong id="before">before</strong> before text one after text '
             '<p id="after">after</p><span id="two">two</span></div>',
         )
-        self.assertIs(after.previousSibling, text_node)
-        self.assertIs(before.nextSibling, text_node)
+        self.assertEqual(text_node.nextSibling, " after text ")
+        self.assertEqual(after.previousSibling, " after text ")
+        self.assertEqual(before.nextSibling, " before text ")
 
         replacement = em("replacement", _id="replacement")
-        text_node.replaceWith(replacement)
+        text_node.replaceWith("replacement text ", replacement)
+        self.assertEqual(
+            str(node),
+            '<div><strong id="before">before</strong> before text replacement text '
+            '<em id="replacement">replacement</em> after text '
+            '<p id="after">after</p><span id="two">two</span></div>',
+        )
         self.assertEqual(
             [getattr(child, "id", None) for child in node.children],
             ["before", "replacement", "after", "two"],
@@ -3533,6 +3601,32 @@ class TestDomTokenList(unittest.TestCase):
                 method("")
             with self.assertRaises(ValueError):
                 method("two words")
+
+    def test_replace_and_iteration_helpers(self):
+        sample = div(_class="one two three")
+        tokens = sample.classList
+
+        self.assertTrue(tokens.replace("two", "deux"))
+        self.assertEqual(list(tokens), ["one", "deux", "three"])
+        self.assertEqual(sample.className, "one deux three")
+
+        self.assertFalse(tokens.replace("missing", "unused"))
+        self.assertTrue(tokens.replace("deux", "three"))
+        self.assertEqual(list(tokens), ["one", "three"])
+        self.assertEqual(sample.className, "one three")
+
+        self.assertEqual(list(tokens.keys()), [0, 1])
+        self.assertEqual(list(tokens.values()), ["one", "three"])
+        self.assertEqual(list(tokens.entries()), [(0, "one"), (1, "three")])
+
+        seen = []
+        tokens.forEach(lambda currentValue, currentIndex, listObj: seen.append((currentValue, currentIndex, listObj)))
+        self.assertEqual(seen, [("one", 0, tokens), ("three", 1, tokens)])
+
+        with self.assertRaises(ValueError):
+            tokens.replace("", "four")
+        with self.assertRaises(ValueError):
+            tokens.replace("one", "two words")
 
 
 if __name__ == "__main__":

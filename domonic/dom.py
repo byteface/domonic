@@ -1762,24 +1762,31 @@ class ChildNode(Node):
             self.parentNode.removeChild(self)
         return self
 
-    def replaceWith(self, newChild):
-        """Replaces this ChildNode with a new one."""
-        self.parentNode.replaceChild(newChild, self)
+    def replaceWith(self, *nodes):
+        """Replaces this ChildNode with one or more nodes or strings."""
+        if self.parentNode is None:
+            return self
+        replacement = DocumentFragment(*_coerce_replacement_nodes(*nodes))
+        self.parentNode.replaceChild(replacement, self)
         return self
 
-    def before(self, newChild):
-        """Inserts a newChild node immediately before this ChildNode."""
-        self.parentNode.insertBefore(newChild, self)
+    def before(self, *nodes):
+        """Inserts one or more nodes or strings immediately before this ChildNode."""
+        if self.parentNode is None:
+            return self
+        insertion = DocumentFragment(*_coerce_insertion_nodes(*nodes))
+        self.parentNode.insertBefore(insertion, self)
         return self
 
-    def after(self, newChild):
-        """Inserts a newChild node immediately after this ChildNode."""
+    def after(self, *nodes):
+        """Inserts one or more nodes or strings immediately after this ChildNode."""
         if self.parentNode is None:
             return self
         siblings = list(self.parentNode.childNodes)
         index = siblings.index(self)
         reference = siblings[index + 1] if index + 1 < len(siblings) else None
-        self.parentNode.insertBefore(newChild, reference)
+        insertion = DocumentFragment(*_coerce_insertion_nodes(*nodes))
+        self.parentNode.insertBefore(insertion, reference)
         return self
 
 
@@ -2446,6 +2453,24 @@ class DOMTokenList(list):
         else:
             raise TypeError("force must be a boolean")
 
+    def replace(self, token, newToken) -> bool:
+        """Replaces an existing token with a new token."""
+        token = self._validate_token(token)
+        newToken = self._validate_token(newToken)
+        if token not in self:
+            return False
+        if token == newToken:
+            self._sync()
+            return True
+
+        index = self.index(token)
+        if newToken in self:
+            super().remove(token)
+        else:
+            self[index] = newToken
+        self._sync()
+        return True
+
     def contains(self, token) -> bool:
         """Returns true if the token is in the list, and false otherwise"""
         # return token in self.el.className
@@ -2459,6 +2484,24 @@ class DOMTokenList(list):
     def toString(self) -> str:
         """Returns a string containing all tokens in the list, with spaces separating each token"""
         return " ".join(self)
+
+    def entries(self) -> Iterable[tuple[int, str]]:
+        """Returns an iterator over index/token pairs."""
+        for i in range(len(self)):
+            yield i, self[i]
+
+    def forEach(self, func: Callable[[str, int, "DOMTokenList"], Any], thisArg: Any = None) -> None:
+        """Calls a function for each token in the list."""
+        for i in range(len(self)):
+            func(self[i], i, self)
+
+    def keys(self) -> Iterable[int]:
+        """Returns an iterator over token indexes."""
+        return iter(range(len(self)))
+
+    def values(self) -> Iterable[str]:
+        """Returns an iterator over tokens."""
+        return iter(self)
 
     def __str__(self):
         return self.toString()
@@ -4723,7 +4766,7 @@ class Range(AbastractRange):
     def setEndAfter(self, node: Node) -> None:
         self.setEnd(node.parentNode, list(node.parentNode.childNodes).index(node) + 1)
 
-    def collapse(self, toStart: bool) -> None:
+    def collapse(self, toStart: bool = False) -> None:
         if toStart:
             self.endContainer = self.startContainer
             self.endOffset = self.startOffset
@@ -5036,11 +5079,18 @@ class TimeRanges:
                 self._ranges.append((item[0], item[1]))
         self.length = len(self._ranges)
 
+    def _range_at(self, index):
+        if not isinstance(index, int):
+            raise TypeError("index must be an integer")
+        if index < 0 or index >= self.length:
+            raise IndexError("TimeRanges index is out of bounds")
+        return self._ranges[index]
+
     def start(self, index):
-        return self._ranges[index][0]
+        return self._range_at(index)[0]
 
     def end(self, index):
-        return self._ranges[index][1]
+        return self._range_at(index)[1]
 
     def __len__(self):
         return self.length
@@ -5942,6 +5992,19 @@ class CharacterData(Node):
     before = ChildNode.before
     after = ChildNode.after
 
+    def _validate_data_range(self, offset: int, count: int | None = None) -> str:
+        if not isinstance(offset, int):
+            raise TypeError("offset must be an integer")
+        data = self.args[0] if self.args else ""
+        if offset < 0 or offset > len(data):
+            raise IndexError("CharacterData offset is out of bounds")
+        if count is not None:
+            if not isinstance(count, int):
+                raise TypeError("count must be an integer")
+            if count < 0:
+                raise IndexError("CharacterData count is out of bounds")
+        return data
+
     def appendData(self, data):
         """Appends the given DOMString to the CharacterData.data string; when this method returns,
         data contains the concatenated DOMString."""
@@ -5954,8 +6017,8 @@ class CharacterData(Node):
     def deleteData(self, offset: int, count: int):
         """Removes the specified amount of characters, starting at the specified offset,
         from the CharacterData.data string; when this method returns, data contains the shortened DOMString."""
-        old_value = self.args[0]
-        updated = self.args[0][:offset] + self.args[0][offset + count :]
+        old_value = self._validate_data_range(offset, count)
+        updated = old_value[:offset] + old_value[offset + count :]
         self.args = (updated,)
         _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
@@ -5963,8 +6026,8 @@ class CharacterData(Node):
     def insertData(self, offset: int, data):
         """Inserts the specified characters, at the specified offset, in the CharacterData.data string;
         when this method returns, data contains the modified DOMString."""
-        old_value = self.args[0]
-        updated = self.args[0][:offset] + data + self.args[0][offset:]
+        old_value = self._validate_data_range(offset)
+        updated = old_value[:offset] + data + old_value[offset:]
         self.args = (updated,)
         _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
@@ -5972,8 +6035,8 @@ class CharacterData(Node):
     def replaceData(self, offset: int, count: int, data):
         """Replaces the specified amount of characters, starting at the specified offset, with the specified DOMString;
         when this method returns, data contains the modified DOMString."""
-        old_value = self.args[0]
-        updated = self.args[0][:offset] + data + self.args[0][offset + count :]
+        old_value = self._validate_data_range(offset, count)
+        updated = old_value[:offset] + data + old_value[offset + count :]
         self.args = (updated,)
         _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
@@ -5985,7 +6048,8 @@ class CharacterData(Node):
     def substringData(self, offset: int, length: int):
         """Returns a DOMString containing the part of CharacterData.data of the specified length and
         starting at the specified offset."""
-        return self.args[0][offset : offset + length]
+        data = self._validate_data_range(offset, length)
+        return data[offset : offset + length]
 
 
 class EntityReference(Node):
@@ -6063,6 +6127,7 @@ class Text(CharacterData):
     def splitText(self, offset: int):
         """Splits the Text node into two Text nodes at the specified offset, keeping both in the tree as siblings.
         The first node is returned, while the second node is discarded and exists outside the tree."""
+        self._validate_data_range(offset)
         current = self.args[0]
         head = current[:offset]
         tail = current[offset:]
@@ -6165,9 +6230,11 @@ class HTMLCollection(list):
     def namedItem(self, name: str) -> Node | None:
         """Returns the specific node whose ID or, as a fallback, name matches the string specified by name."""
         for item in self:
-            if item.id == name:
+            item_id = item.getAttribute("id") if hasattr(item, "getAttribute") else getattr(item, "id", None)
+            item_name = item.getAttribute("name") if hasattr(item, "getAttribute") else getattr(item, "name", None)
+            if item_id == name:
                 return item
-            elif item.name == name:
+            elif item_name == name:
                 return item
         return None
 
