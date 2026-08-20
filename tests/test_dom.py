@@ -620,6 +620,12 @@ class DOMTest(unittest.TestCase):
         dom1 = html(div(div(div(div(div(div(div(article("asdfasdf", div(), div("yo"), _id="test")))))))))
         result = dom1.getElementById("test")
         assert result.tagName == "article"
+        self.assertIsNone(dom1.getElementById("missing"))
+
+        doc = Document()
+        doc.appendChild(div(_id="doc-hit"))
+        self.assertEqual(doc.getElementById("doc-hit").tagName, "div")
+        self.assertIsNone(doc.getElementById("missing"))
         # print(result)
         # print(len(result.children))
         # assert len(result.children) == 3  # TODO - does a text node count?
@@ -1829,6 +1835,19 @@ class DOMTest(unittest.TestCase):
         node.setAttributeNS("http://example.com/ns", "data-other", "x")
         self.assertEqual(node.getAttribute("data-other"), "x")
 
+    def test_remove_attribute_node_accepts_attr_nodes(self):
+        node = div(_title="hello", **{"_data-state": "ready"})
+        attr = node.getAttributeNode("title")
+
+        removed = node.removeAttributeNode(attr)
+
+        self.assertEqual((removed.name, removed.value), ("title", "hello"))
+        self.assertFalse(node.hasAttribute("title"))
+        self.assertEqual(node.getAttribute("data-state"), "ready")
+        self.assertIsNone(node.removeAttributeNode(attr))
+        self.assertEqual(node.removeAttributeNode("_data-state").name, "data-state")
+        self.assertFalse(node.hasAttribute("data-state"))
+
     def test_dataset_and_dom_string_map_helpers(self):
         node = div(**{"_data-user-id": "7", "_data-theme-name": "night"})
         dataset = node.dataset
@@ -1847,6 +1866,24 @@ class DOMTest(unittest.TestCase):
         self.assertTrue(dataset.delete("mode"))
         self.assertFalse(dataset.delete("missing"))
         self.assertEqual(dataset.get("mode"), None)
+
+    def test_dataset_reflects_element_data_attributes(self):
+        node = div()
+        dataset = node.dataset
+
+        dataset.set("userId", "7")
+        self.assertEqual(node.getAttribute("data-user-id"), "7")
+
+        dataset["themeName"] = "night"
+        self.assertEqual(node.getAttribute("data-theme-name"), "night")
+        self.assertEqual(node.dataset["themeName"], "night")
+
+        node.setAttribute("data-api-url", "/v1")
+        self.assertEqual(dataset.get("apiUrl"), "/v1")
+        self.assertEqual(sorted(dataset.keys()), ["apiUrl", "themeName", "userId"])
+
+        self.assertTrue(dataset.delete("themeName"))
+        self.assertIsNone(node.getAttribute("data-theme-name"))
 
     def test_node_operator_helpers(self):
         node = div(span("a"), _id="root")
@@ -2375,6 +2412,13 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(controls.item(0).getAttribute("name"), "email")
         self.assertEqual(controls.namedItem("choice").tagName, "select")
         self.assertEqual(controls["submitter"].tagName, "button")
+
+    def test_html_collection_item_returns_none_for_invalid_indexes(self):
+        items = ul(li("one"), li("two")).getElementsByTagName("li")
+
+        self.assertIs(items.item(0), items[0])
+        self.assertIsNone(items.item(-1))
+        self.assertIsNone(items.item(2))
 
     def test_select_options_returns_live_options_collection(self):
         picker = select(
@@ -3445,18 +3489,50 @@ class TestDomTokenList(unittest.TestCase):
         sample = div(_class="one two")
         tokens = sample.classList
 
-        tokens.toggle("two")
+        self.assertFalse(tokens.toggle("two"))
         self.assertFalse(tokens.contains("two"))
-        tokens.toggle("three")
+        self.assertTrue(tokens.toggle("three"))
         self.assertTrue(tokens.contains("three"))
-        tokens.toggle("four", True)
+        self.assertTrue(tokens.toggle("four", True))
         self.assertTrue(tokens.contains("four"))
-        tokens.toggle("four", False)
+        self.assertFalse(tokens.toggle("four", False))
         self.assertFalse(tokens.contains("four"))
         self.assertEqual(tokens.item(0), "one")
         self.assertEqual(tokens.item(10), None)
         self.assertEqual(tokens.toString(), "one three")
         self.assertEqual(sample.className, "one three")
+
+    def test_class_list_empty_elements_are_mutable(self):
+        sample = div()
+        tokens = sample.classList
+
+        self.assertIsInstance(tokens, DOMTokenList)
+        self.assertEqual(tokens.toString(), "")
+
+        tokens.add("ready", "active")
+
+        self.assertEqual(tokens.toString(), "ready active")
+        self.assertEqual(sample.className, "ready active")
+
+    def test_class_list_normalizes_whitespace_and_duplicates(self):
+        sample = div(_class="  one\t two\none  ")
+        tokens = sample.classList
+
+        self.assertEqual(list(tokens), ["one", "two"])
+        tokens.add("two", "three")
+
+        self.assertEqual(tokens.toString(), "one two three")
+        self.assertEqual(sample.className, "one two three")
+
+    def test_class_list_rejects_invalid_tokens(self):
+        sample = div(_class="one")
+        tokens = sample.classList
+
+        for method in (tokens.add, tokens.remove, tokens.toggle, tokens.contains):
+            with self.assertRaises(ValueError):
+                method("")
+            with self.assertRaises(ValueError):
+                method("two words")
 
 
 if __name__ == "__main__":

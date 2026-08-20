@@ -1966,50 +1966,83 @@ class NamedNodeMap:
 class DOMStringMap:
     """Dictionary-like helper for element dataset values."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, element: "Element | None" = None, **kwargs):
+        self._element = element
         self._store: dict[str, Any] = dict(*args, **kwargs)
         super().__init__()
 
+    @staticmethod
+    def _attribute_name(name: str) -> str:
+        from domonic.utils import Utils
+
+        return f"data-{Utils.case_kebab(str(name))}"
+
+    @staticmethod
+    def _property_name(attribute: str) -> str:
+        from domonic.utils import Utils
+
+        return Utils.case_camel(attribute[5:])
+
+    def _data(self) -> dict[str, Any]:
+        if self._element is None:
+            return self._store
+
+        data: dict[str, Any] = {}
+        for key, value in self._element.kwargs.items():
+            attr_name = key[1:] if key.startswith("_") else key
+            if attr_name.startswith("data-") and len(attr_name) > 5:
+                data[self._property_name(attr_name)] = value
+        return data
+
     def __getitem__(self, name: str) -> Any:
-        return self._store[name]
+        return self._data()[name]
 
     def __setitem__(self, name: str, value: Any) -> None:
+        if self._element is not None:
+            self._element.setAttribute(self._attribute_name(name), value)
+            return
         self._store[name] = value
 
+    def __delitem__(self, name: str) -> None:
+        if self._element is not None:
+            self._element.removeAttribute(self._attribute_name(name))
+            return
+        del self._store[name]
+
     def __contains__(self, name: str) -> bool:
-        return name in self._store
+        return name in self._data()
 
     def __iter__(self):
-        return iter(self._store)
+        return iter(self._data())
 
     def __len__(self) -> int:
-        return len(self._store)
+        return len(self._data())
 
     def keys(self):
-        return self._store.keys()
+        return self._data().keys()
 
     def values(self):
-        return self._store.values()
+        return self._data().values()
 
     def items(self):
-        return self._store.items()
+        return self._data().items()
 
     def __repr__(self) -> str:
-        return repr(self._store)
+        return repr(self._data())
 
     def get(self, name: str):
         """Returns the value of the item with the specified name"""
-        return self._store.get(name)
+        return self._data().get(name)
 
     def set(self, name: str, value):
         """Sets the value of the item with the specified name"""
-        self._store[name] = value
+        self[name] = value
         return True
 
     def delete(self, name: str) -> bool:
         """Deletes the item with the specified name"""
-        if name in self._store:
-            del self._store[name]
+        if name in self:
+            del self[name]
             return True
         return False
 
@@ -2356,46 +2389,67 @@ class DOMTokenList(list):
 
     def __init__(self, element: "Node"):
         self.el = element
-        # trim and split on whitespace
-        # classes = element.className.replace(r'^\s+|\s+$/g', '').split(r'\s+/')
-        self.classes = element.className.split(" ")
-        self.classes = [x.strip() for x in self.classes]
-        super().__init__(self.classes)
+        tokens = []
+        for token in str(element.className or "").split():
+            if token not in tokens:
+                tokens.append(token)
+        self.classes = tokens
+        super().__init__(tokens)
+
+    @staticmethod
+    def _validate_token(token) -> str:
+        token = str(token)
+        if token == "":
+            raise ValueError("DOMTokenList token must not be empty")
+        if any(char.isspace() for char in token):
+            raise ValueError("DOMTokenList token must not contain whitespace")
+        return token
+
+    def _sync(self) -> None:
+        self.classes = list(self)
+        self.el.className = self.toString()
 
     def add(self, *args):
         """Adds the given tokens to the list"""
         for item in args:
-            if item not in self:
-                self.append(item)
-                self.el.className = self.toString()
+            token = self._validate_token(item)
+            if token not in self:
+                self.append(token)
+        self._sync()
 
     def remove(self, *args):
         """Removes the given tokens from the list"""
         for item in args:
-            if item in self:
-                super().remove(item)
-                self.el.className = self.toString()
+            token = self._validate_token(item)
+            while token in self:
+                super().remove(token)
+        self._sync()
 
     def toggle(self, token, force=None):
         """If force is not given, removes token from list if present,
         otherwise adds token to list. If force is true, adds token to list,
         and if force is false, removes token from list if present."""
+        token = self._validate_token(token)
         if force is None:
             if token in self:
                 self.remove(token)
+                return False
             else:
                 self.add(token)
+                return True
         elif force is True:
             self.add(token)
+            return True
         elif force is False:
             self.remove(token)
+            return False
         else:
             raise TypeError("force must be a boolean")
-        self.classes = list(self)
 
     def contains(self, token) -> bool:
         """Returns true if the token is in the list, and false otherwise"""
         # return token in self.el.className
+        token = self._validate_token(token)
         return token in self
 
     def item(self, index: int):
@@ -3347,15 +3401,15 @@ class Element(Node):
     @property
     def classList(self):
         """Returns the value of the classList attribute of an element"""
-        cl = self.getAttribute("class")
-        if cl is None:
-            return []  # TODO - fix this
-        else:
-            return DOMTokenList(self)
+        return DOMTokenList(self)
 
     @classList.setter
     def classList(self, newlist):
         """Sets or returns the value of the classList attribute of an element"""
+        if isinstance(newlist, DOMTokenList):
+            newlist = newlist.toString()
+        elif isinstance(newlist, (list, tuple, set)):
+            newlist = " ".join(str(item) for item in newlist)
         self.setAttribute("class", newlist)
         # raise NotImplementedError
 
@@ -3435,14 +3489,7 @@ class Element(Node):
     @property
     def dataset(self):
         """Returns the value of the dataset attribute of an element"""
-        from domonic.utils import Utils
-
-        dsmap = DOMStringMap()
-        for key, value in self.kwargs.items():
-            attr_name = key[1:] if key.startswith("_") else key
-            if attr_name.startswith("data-"):
-                dsmap[Utils.case_camel(attr_name.replace("data-", ""))] = value
-        return dsmap
+        return DOMStringMap(element=self)
 
     @property
     def dir(self):
@@ -4072,20 +4119,23 @@ class Element(Node):
         )
         return None
 
-    def removeAttributeNode(self, attribute):  # untested
+    def removeAttributeNode(self, attribute):
         """Removes a specified attribute node, and returns the removed node"""
-        for each in self.kwargs:
-            if attribute == each:
-                val = self.kwargs[each]
-                del self.kwargs[each]
-                _notify_attribute_changed(self, attribute, val, None)
-                _queue_mutation_record(
-                    "attributes",
-                    self,
-                    attribute_name=attribute[1:] if isinstance(attribute, str) and attribute.startswith("_") else attribute,
-                    old_value=str(val) if val is not None else None,
-                )
-                return Attr(attribute, val)
+        attr_name = attribute.name if isinstance(attribute, Attr) else str(attribute)
+        key = attr_name if attr_name.startswith("_") else f"_{attr_name}"
+        if key not in self.kwargs:
+            return None
+
+        val = self.kwargs.pop(key)
+        public_name = key[1:] if key.startswith("_") else key
+        _notify_attribute_changed(self, key, val, None)
+        _queue_mutation_record(
+            "attributes",
+            self,
+            attribute_name=public_name,
+            old_value=str(val) if val is not None else None,
+        )
+        return Attr(public_name, val)
 
     def requestFullscreen(self):
         """Shows an element in fullscreen mode"""
@@ -5531,7 +5581,7 @@ class Document(Element):
             if match is not False and match is not None:
                 return match
 
-        return False
+        return None
 
     def getElementsByName(self, name: str):
         """[Returns a NodeList containing all elements with a specified name]
@@ -6107,7 +6157,7 @@ class HTMLCollection(list):
         Returns:
             [type]: [the node at the indexth position, or None]
         """
-        if index < len(self):
+        if 0 <= index < len(self):
             return self[index]
         else:
             return None
