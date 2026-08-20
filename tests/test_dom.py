@@ -872,6 +872,35 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(len(combined), 3)
         self.assertEqual([node.tagName for node in combined], ["div", "span", "p"])
 
+    def test_class_selectors_match_literal_class_tokens(self):
+        page = html(
+            body(
+                div("literal", _class="foo+bar widget"),
+                div("plain", _class="foobar widget"),
+                span("multi", _class="foo+bar active"),
+            )
+        )
+
+        matches = page.querySelectorAll(".foo+bar")
+        self.assertEqual([node.textContent for node in matches], ["literal", "multi"])
+        self.assertEqual([node.textContent for node in page.querySelectorAll("div.foo+bar")], ["literal"])
+        self.assertEqual(page.querySelectorAll(".foo+bar.missing"), [])
+
+    def test_attribute_selectors_match_literal_tokens(self):
+        page = html(
+            body(
+                div("literal", _class="foo+bar widget"),
+                div("plain", _class="foobar widget"),
+                p("base", _lang="en"),
+                p("regional", _lang="en-US"),
+                p("word", _lang="english"),
+            )
+        )
+
+        self.assertEqual([node.textContent for node in page.querySelectorAll("[class~=foo+bar]")], ["literal"])
+        self.assertEqual(page.querySelectorAll("[class~=foo]"), [])
+        self.assertEqual([node.textContent for node in page.querySelectorAll("[lang|=en]")], ["base", "regional"])
+
     def test_decorators(self):
         from domonic.decorators import el
 

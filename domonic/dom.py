@@ -3086,14 +3086,15 @@ class Element(Node):
             if pos + 1 and not (pos > left_bracket and pos < right_bracket):
                 parts = str.split(element, ".")
                 tag = parts[0]
-                class_name = parts[1]
+                class_names = [part for part in parts[1:] if part]
                 found = getElements(context, tag)
                 # found = document.getElementsByClassName(class_name)
                 context = []
+                if not class_names:
+                    continue
                 for fnd in found:
-                    if fnd.getAttribute("class") and re.search(
-                        r"(^|\s)" + class_name + r"(\s|$)", fnd.getAttribute("class")
-                    ):
+                    class_attribute = fnd.getAttribute("class")
+                    if class_attribute and all(class_name in class_attribute.split() for class_name in class_names):
                         context.append(fnd)
 
                 continue
@@ -3118,9 +3119,9 @@ class Element(Node):
                         continue
                     if operator == "=" and fnd.getAttribute(attr) != value:
                         continue  # WORKING
-                    if operator == "~" and not (re.search(r"(^|\\s)" + value + "(\\s|$)", attr_value)):
+                    if operator == "~" and value not in str(attr_value).split():
                         continue  # NOT WORKING?
-                    if operator == "|" and not (re.search(r"^" + value + "-?", attr_value)):
+                    if operator == "|" and attr_value != value and not str(attr_value).startswith(value + "-"):
                         continue
                     if operator == "^" and str.find(attr_value, value) != 0:
                         continue  # WORKING
@@ -3812,7 +3813,7 @@ class Element(Node):
 
         def _fallback_selector_results():
             if query.startswith("."):
-                return self.getElementsByClassName(query[1:])
+                return list(self.getElementsByClassName(" ".join(query.split(".")[1:])))
             if query.startswith("#"):
                 found = self.getElementById(query[1:])
                 return [found] if found else []
@@ -3820,7 +3821,7 @@ class Element(Node):
             return results if isinstance(results, list) else []
 
         naked_query = query[1:]
-        if "." in naked_query or "[" in naked_query or " " in naked_query:
+        if "." in naked_query or "[" in query or " " in naked_query:
             try:
                 from cssselect import HTMLTranslator, SelectorError
 
@@ -3836,8 +3837,7 @@ class Element(Node):
             except ImportError:
                 return _fallback_selector_results()
             except SelectorError:
-                print("Invalid selector.")
-                return []
+                return _fallback_selector_results()
 
         elements = []
 
