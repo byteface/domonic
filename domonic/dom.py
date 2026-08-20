@@ -16,6 +16,7 @@ import copy
 import os
 import re
 import time
+from collections.abc import Iterable as IterableABC
 from email.utils import formatdate
 from typing import Any, Callable, ClassVar, Iterable, Iterator
 
@@ -102,7 +103,7 @@ def _run_disconnected_callback(element: "Element") -> None:
 
 def _run_adopted_callback(element: "Element", old_document: "Document | None", new_document: "Document | None") -> None:
     callback = getattr(element, "adoptedCallback", None)
-    if callable(callback) and old_document is not new_document:
+    if callable(callback) and old_document is not None and old_document is not new_document:
         callback(old_document, new_document)
 
 
@@ -111,6 +112,66 @@ def _adopt_tree(node: "Node", old_document: "Document | None", new_document: "Do
         current._ownerDocument = new_document
         if isinstance(current, Element):
             _run_adopted_callback(current, old_document, new_document)
+
+
+def _owner_document_for(node: "Node") -> "Document | None":
+    owner_document = node.ownerDocument
+    return owner_document if isinstance(owner_document, Document) else None
+
+
+def _drain_document_fragment(fragment: "DocumentFragment") -> tuple[Any, ...]:
+    children = tuple(fragment.args)
+    fragment.args = ()
+    for child in children:
+        if isinstance(child, Node):
+            child.parentNode = None
+    return children
+
+
+def _coerce_insertion_nodes(*nodes: Any) -> tuple[Any, ...]:
+    prepared: list[Any] = []
+    for node in nodes:
+        if isinstance(node, DocumentFragment):
+            prepared.extend(_drain_document_fragment(node))
+        else:
+            prepared.append(node)
+    return tuple(prepared)
+
+
+def _coerce_replacement_nodes(*nodes: Any) -> tuple[Any, ...]:
+    if (
+        len(nodes) == 1
+        and isinstance(nodes[0], IterableABC)
+        and not isinstance(nodes[0], (str, bytes, bytearray, Node))
+    ):
+        nodes = tuple(nodes[0])
+    return _coerce_insertion_nodes(*nodes)
+
+
+def _detach_node_for_insertion(node: Any) -> "Document | None":
+    if not isinstance(node, Node):
+        return None
+    old_document = _owner_document_for(node)
+    old_parent = getattr(node, "parentNode", None)
+    if isinstance(old_parent, Node):
+        removed = old_parent.removeChild(node)
+        if removed is None:
+            node.parentNode = None
+    return old_document
+
+
+def _connect_inserted_node(
+    parent: "Node",
+    node: Any,
+    old_document: "Document | None",
+) -> None:
+    if not isinstance(node, Node):
+        return
+    node.parentNode = parent
+    parent_document = parent.ownerDocument
+    new_document = parent_document if isinstance(parent_document, Document) else None
+    _adopt_tree(node, old_document, new_document)
+    _connect_tree(node)
 
 
 def _upgrade_custom_element_instance(element: "Element") -> "Element":
@@ -1098,38 +1159,29 @@ class Node(EventTarget):
         Args:
             item (Node): The Node to add.
         """
-        if isinstance(aChild, DocumentFragment):
-            items = aChild.args
-            previous_sibling = self.args[-1] if len(self.args) else None
-            self.args = self.args + items
-            for item in items:
-                if isinstance(item, Node):
-                    old_document = item.ownerDocument if isinstance(item.ownerDocument, Document) else None
-                    item.parentNode = self
-                    _adopt_tree(item, old_document, self.ownerDocument if isinstance(self.ownerDocument, Document) else None)
-                    _connect_tree(item)
-            added_nodes = [item for item in items if isinstance(item, Node)]
-            if added_nodes:
-                _queue_mutation_record("childList", self, added_nodes=added_nodes, previous_sibling=previous_sibling)
-            _notify_slot_change(self)
-            return DocumentFragment()
-        else:
-            previous_sibling = self.args[-1] if len(self.args) else None
-            self.args = self.args + (aChild,)
-            if isinstance(aChild, Node):
-                old_document = aChild.ownerDocument if isinstance(aChild.ownerDocument, Document) else None
-                aChild.parentNode = self
-                _adopt_tree(aChild, old_document, self.ownerDocument if isinstance(self.ownerDocument, Document) else None)
-                _connect_tree(aChild)
-                _queue_mutation_record("childList", self, added_nodes=(aChild,), previous_sibling=previous_sibling)
-            _notify_slot_change(self)
-            # return aChild  # causes max recursion when called chained? then don't chain?
-            return aChild
+        items = _coerce_insertion_nodes(aChild)
+        old_documents = [
+            (item, _detach_node_for_insertion(item)) for item in items
+        ]
+        previous_sibling = self.args[-1] if len(self.args) else None
+        self.args = self.args + items
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
+        added_nodes = [item for item in items if isinstance(item, Node)]
+        if added_nodes:
+            _queue_mutation_record(
+                "childList",
+                self,
+                added_nodes=added_nodes,
+                previous_sibling=previous_sibling,
+            )
+        _notify_slot_change(self)
+        return aChild
 
     @property
     def childElementCount(self) -> int:
         """Returns the number of child elements an element has"""
-        return len(self.args)
+        return len([child for child in self.args if not isinstance(child, str)])
 
     @property
     def childNodes(self) -> "NodeList":
@@ -1139,12 +1191,8 @@ class Node(EventTarget):
 
     @property
     def children(self) -> list[Node]:
-        """Returns a collection of an element's child element (excluding text and comment nodes)"""
-        newlist: list = []
-        for each in self.args:
-            if type(each) != str:
-                newlist.append(each)
-        return newlist
+        """Returns a collection of child nodes, excluding string content."""
+        return [child for child in self.args if not isinstance(child, str)]
 
     def compareDocumentPosition(self, otherElement: "Node") -> int:
         """
@@ -1353,28 +1401,34 @@ class Node(EventTarget):
         # TODO - can throw value error if wrong ordered params. may be helpful to catch to say so.
         """
         if reference_node is None:
-            self.appendChild(new_node)
-        else:
-            # remove new_node from its previous parent node
-            if new_node.parentNode is not None:
-                new_node.parentNode.removeChild(new_node)
-            old_document = new_node.ownerDocument if isinstance(new_node.ownerDocument, Document) else None
-            previous_sibling = reference_node.previousSibling
-            self.args = (
-                self.args[: self.args.index(reference_node)]
-                + (new_node,)
-                + self.args[self.args.index(reference_node) :]
-            )
-            new_node.parentNode = self
-            _adopt_tree(new_node, old_document, self.ownerDocument if isinstance(self.ownerDocument, Document) else None)
-            _connect_tree(new_node)
+            return self.appendChild(new_node)
+        if new_node is reference_node:
+            return new_node
+
+        items = _coerce_insertion_nodes(new_node)
+        old_documents = [
+            (item, _detach_node_for_insertion(item)) for item in items
+        ]
+        index = self.args.index(reference_node)
+        previous_sibling = (
+            self.args[index - 1]
+            if index > 0 and isinstance(self.args[index - 1], Node)
+            else None
+        )
+        self.args = self.args[:index] + items + self.args[index:]
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
+        added_nodes = [item for item in items if isinstance(item, Node)]
+        if added_nodes:
             _queue_mutation_record(
                 "childList",
                 self,
-                added_nodes=(new_node,),
+                added_nodes=added_nodes,
                 previous_sibling=previous_sibling,
                 next_sibling=reference_node,
             )
+        else:
+            return new_node
         _notify_slot_change(self)
         return new_node
 
@@ -1419,34 +1473,47 @@ class Node(EventTarget):
         Returns:
             [type]: [the old child node]
         """
-        for count, each in enumerate(self.args):
-            if each == oldChild:
-                replace_args = list(self.args)
-                old_document = newChild.ownerDocument if isinstance(newChild.ownerDocument, Document) else None
-                previous_sibling = replace_args[count - 1] if count > 0 and isinstance(replace_args[count - 1], Node) else None
-                next_sibling = (
-                    replace_args[count + 1] if count + 1 < len(replace_args) and isinstance(replace_args[count + 1], Node) else None
-                )
-                if isinstance(oldChild, Node):
-                    _disconnect_tree(oldChild)
-                replace_args[count] = newChild
-                self.args = tuple(replace_args)
-                if isinstance(newChild, Node):
-                    newChild.parentNode = self
-                    _adopt_tree(newChild, old_document, self.ownerDocument if isinstance(self.ownerDocument, Document) else None)
-                    _connect_tree(newChild)
-                if isinstance(oldChild, Node):
-                    oldChild.parentNode = None
-                _queue_mutation_record(
-                    "childList",
-                    self,
-                    added_nodes=(newChild,) if isinstance(newChild, Node) else (),
-                    removed_nodes=(oldChild,) if isinstance(oldChild, Node) else (),
-                    previous_sibling=previous_sibling,
-                    next_sibling=next_sibling,
-                )
-                _notify_slot_change(self)
-                return oldChild
+        if newChild is oldChild:
+            return oldChild
+
+        items = _coerce_insertion_nodes(newChild)
+        old_documents = [
+            (item, _detach_node_for_insertion(item)) for item in items
+        ]
+        try:
+            count = list(self.args).index(oldChild)
+        except ValueError:
+            return oldChild
+
+        replace_args = list(self.args)
+        previous_sibling = (
+            replace_args[count - 1]
+            if count > 0 and isinstance(replace_args[count - 1], Node)
+            else None
+        )
+        next_sibling = (
+            replace_args[count + 1]
+            if count + 1 < len(replace_args)
+            and isinstance(replace_args[count + 1], Node)
+            else None
+        )
+        if isinstance(oldChild, Node):
+            _disconnect_tree(oldChild)
+        replace_args[count : count + 1] = list(items)
+        self.args = tuple(replace_args)
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
+        if isinstance(oldChild, Node):
+            oldChild.parentNode = None
+        _queue_mutation_record(
+            "childList",
+            self,
+            added_nodes=[item for item in items if isinstance(item, Node)],
+            removed_nodes=(oldChild,) if isinstance(oldChild, Node) else (),
+            previous_sibling=previous_sibling,
+            next_sibling=next_sibling,
+        )
+        _notify_slot_change(self)
         return oldChild
         # for count, each in enumerate(self.args):
         #     if each == oldChild:
@@ -1670,15 +1737,18 @@ class ParentNode:
         return None
 
     def append(self, *args):
-        self.args += args
+        self.args += _coerce_insertion_nodes(*args)
+        self._update_parents()
         return self
 
     def prepend(self, *args):
-        self.args = (args).extend(self.args)
+        self.args = _coerce_insertion_nodes(*args) + tuple(self.args)
+        self._update_parents()
         return self
 
-    def replaceChildren(self, children):
-        self.args = children
+    def replaceChildren(self, *children):
+        self.args = _coerce_replacement_nodes(*children)
+        self._update_parents()
 
 
 class ChildNode(Node):
@@ -1704,7 +1774,12 @@ class ChildNode(Node):
 
     def after(self, newChild):
         """Inserts a newChild node immediately after this ChildNode."""
-        self.parentNode.insertBefore(newChild, self)
+        if self.parentNode is None:
+            return self
+        siblings = list(self.parentNode.childNodes)
+        index = siblings.index(self)
+        reference = siblings[index + 1] if index + 1 < len(siblings) else None
+        self.parentNode.insertBefore(newChild, reference)
         return self
 
 
@@ -2881,6 +2956,16 @@ class Element(Node):
         self.dir = None
         super().__init__(*args, **kwargs)
 
+    @property
+    def childElementCount(self) -> int:
+        """Returns the number of child elements an element has."""
+        return len([child for child in self.args if isinstance(child, Element)])
+
+    @property
+    def children(self) -> list[Node]:
+        """Returns child elements, excluding text, comments, and strings."""
+        return [child for child in self.args if isinstance(child, Element)]
+
     def _getElementById(self, _id: str):
         for element in self.getElementsByTagName("*"):
             if element.getAttribute("id") == _id:
@@ -3144,7 +3229,23 @@ class Element(Node):
 
     def append(self, *args):
         """Inserts a set of Node objects or DOMString objects after the last child of the Element."""
-        self.args += args
+        items = _coerce_insertion_nodes(*args)
+        old_documents = [
+            (item, _detach_node_for_insertion(item)) for item in items
+        ]
+        previous_sibling = self.args[-1] if len(self.args) else None
+        self.args += items
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
+        added_nodes = [item for item in items if isinstance(item, Node)]
+        if added_nodes:
+            _queue_mutation_record(
+                "childList",
+                self,
+                added_nodes=added_nodes,
+                previous_sibling=previous_sibling,
+            )
+        _notify_slot_change(self)
         self._update_parents()
         return self
 
@@ -3362,10 +3463,10 @@ class Element(Node):
 
     def firstElementChild(self):
         """Returns the first child element of an element"""
-        try:
-            return self.args[0]
-        except Exception:
-            return None
+        for child in self.args:
+            if isinstance(child, Element):
+                return child
+        return None
 
     def focus(self):
         """Sets focus on an element"""
@@ -3589,17 +3690,67 @@ class Element(Node):
     def before(self, *nodes: Any) -> None:
         if self.parentNode is None:
             return
+        nodes = tuple(
+            node for node in _coerce_insertion_nodes(*nodes) if node is not self
+        )
+        if not nodes:
+            return
         parent = self.parentNode
+        old_documents = [
+            (node, _detach_node_for_insertion(node)) for node in nodes
+        ]
         index = parent.args.index(self)
-        parent.args = parent.args[:index] + tuple(nodes) + parent.args[index:]
+        previous_sibling = (
+            parent.args[index - 1]
+            if index > 0 and isinstance(parent.args[index - 1], Node)
+            else None
+        )
+        parent.args = parent.args[:index] + nodes + parent.args[index:]
+        for node, old_document in old_documents:
+            _connect_inserted_node(parent, node, old_document)
+        added_nodes = [node for node in nodes if isinstance(node, Node)]
+        if added_nodes:
+            _queue_mutation_record(
+                "childList",
+                parent,
+                added_nodes=added_nodes,
+                previous_sibling=previous_sibling,
+                next_sibling=self,
+            )
+        _notify_slot_change(parent)
         parent._update_parents()
 
     def after(self, *nodes: Any) -> None:
         if self.parentNode is None:
             return
+        nodes = tuple(
+            node for node in _coerce_insertion_nodes(*nodes) if node is not self
+        )
+        if not nodes:
+            return
         parent = self.parentNode
+        old_documents = [
+            (node, _detach_node_for_insertion(node)) for node in nodes
+        ]
         index = parent.args.index(self) + 1
-        parent.args = parent.args[:index] + tuple(nodes) + parent.args[index:]
+        next_sibling = (
+            parent.args[index]
+            if index < len(parent.args) and isinstance(parent.args[index], Node)
+            else None
+        )
+        parent.args = parent.args[:index] + nodes + parent.args[index:]
+        for node, old_document in old_documents:
+            _connect_inserted_node(parent, node, old_document)
+        added_nodes = [node for node in nodes if isinstance(node, Node)]
+        if added_nodes:
+            _queue_mutation_record(
+                "childList",
+                parent,
+                added_nodes=added_nodes,
+                previous_sibling=self,
+                next_sibling=next_sibling,
+            )
+        _notify_slot_change(parent)
         parent._update_parents()
 
     def insertAdjacentElement(self, position: str, element: Element) -> Element | None:
@@ -3667,10 +3818,10 @@ class Element(Node):
         Returns:
             [type]: [the last child element of an element]
         """
-        try:
-            return self.args[len(self.args) - 1]
-        except Exception:
-            return None
+        for child in reversed(self.args):
+            if isinstance(child, Element):
+                return child
+        return None
 
     def namespaceURI(self) -> str:
         """Returns the namespace URI of an element"""
@@ -3689,10 +3840,13 @@ class Element(Node):
     def nextElementSibling(self) -> Node | None:
         """Returns the next element at the same node tree level"""
         if self.parentNode is not None:
-            for count, el in enumerate(self.parentNode.args):
-                if el is self and count < len(self.parentNode.args) - 1:
-                    if type(self.parentNode.args[count + 1]) is not str:
-                        return self.parentNode.args[count + 1]
+            found_self = False
+            for el in self.parentNode.args:
+                if el is self:
+                    found_self = True
+                    continue
+                if found_self and isinstance(el, Element):
+                    return el
         return None
 
     @property
@@ -3700,10 +3854,12 @@ class Element(Node):
         """returns the Element immediately prior to the specified one in its parent's children list,
         or None if the specified element is the first one in the list."""
         if self.parentNode is not None:
-            for count, el in enumerate(self.parentNode.args):
-                if el is self and count > 0:
-                    if type(self.parentNode.args[count - 1]) is not str:
-                        return self.parentNode.args[count - 1]
+            previous = None
+            for el in self.parentNode.args:
+                if el is self:
+                    return previous
+                if isinstance(el, Element):
+                    previous = el
         return None
 
     def normalize(self) -> list[Any]:
@@ -3772,8 +3928,46 @@ class Element(Node):
 
     def prepend(self, *args: Any) -> None:
         """Prepends a node to the current element"""
-        newargs = list(args) + list(self.args)
-        self.args = tuple(newargs)
+        items = _coerce_insertion_nodes(*args)
+        old_documents = [
+            (item, _detach_node_for_insertion(item)) for item in items
+        ]
+        next_sibling = (
+            self.args[0]
+            if len(self.args) and isinstance(self.args[0], Node)
+            else None
+        )
+        self.args = items + tuple(self.args)
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
+        added_nodes = [item for item in items if isinstance(item, Node)]
+        if added_nodes:
+            _queue_mutation_record("childList", self, added_nodes=added_nodes, next_sibling=next_sibling)
+        _notify_slot_change(self)
+        self._update_parents()
+
+    def replaceChildren(self, *nodes: Any) -> None:
+        """Replaces the element's children with the supplied nodes."""
+        items = _coerce_replacement_nodes(*nodes)
+        removed_nodes = [node for node in self.args if isinstance(node, Node)]
+        for node in removed_nodes:
+            _disconnect_tree(node)
+            node.parentNode = None
+        old_documents = [
+            (item, _detach_node_for_insertion(item)) for item in items
+        ]
+        self.args = items
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
+        added_nodes = [item for item in items if isinstance(item, Node)]
+        if added_nodes or removed_nodes:
+            _queue_mutation_record(
+                "childList",
+                self,
+                added_nodes=added_nodes,
+                removed_nodes=removed_nodes,
+            )
+        _notify_slot_change(self)
         self._update_parents()
 
     def querySelector(self, query: str) -> Element | None:
@@ -5661,9 +5855,20 @@ class DocumentFragment(Node):
     _matchElement = Document._matchElement
     attributes = Element.attributes
 
-    def replaceChildren(self, newChildren: Iterable[Any]) -> None:
+    def replaceChildren(self, *newChildren: Any) -> None:
         """Replaces the childNodes of the DocumentFragment object."""
-        self.content.replaceChild(newChildren)
+        for child in self.args:
+            if isinstance(child, Node):
+                _disconnect_tree(child)
+                child.parentNode = None
+
+        items = _coerce_replacement_nodes(*newChildren)
+        old_documents = [
+            (item, _detach_node_for_insertion(item)) for item in items
+        ]
+        self.args = items
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
 
     def __format__(self, format_spec):
         return self.__str__()

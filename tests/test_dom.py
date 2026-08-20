@@ -1735,6 +1735,39 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(wrapper.querySelector("#replacement").textContent, "R")
         self.assertEqual(wrapper.querySelector("#tail").textContent, "T")
 
+    def test_fragment_before_after_and_replace_children_moves_nodes(self):
+        host = div(span("target", _id="target"))
+        target = host.querySelector("#target")
+        before_fragment = Document.createDocumentFragment(
+            em("one", _id="one"),
+            strong("two", _id="two"),
+        )
+        after_fragment = Document.createDocumentFragment(p("three", _id="three"))
+
+        target.before(before_fragment)
+        target.after(after_fragment)
+
+        self.assertEqual(before_fragment.childNodes.length, 0)
+        self.assertEqual(after_fragment.childNodes.length, 0)
+        self.assertEqual(
+            [child.getAttribute("id") for child in host.children],
+            ["one", "two", "target", "three"],
+        )
+
+        moved = host.querySelector("#two")
+        replacement_fragment = Document.createDocumentFragment(
+            span("replacement", _id="replacement")
+        )
+        host.replaceChildren([replacement_fragment, moved])
+
+        self.assertEqual(replacement_fragment.childNodes.length, 0)
+        self.assertEqual(
+            [child.getAttribute("id") for child in host.children],
+            ["replacement", "two"],
+        )
+        self.assertIs(moved.parentNode, host)
+        self.assertIsNone(target.parentNode)
+
     def test_insert_adjacent_invalid_position(self):
         target = span("target")
         with self.assertRaises(ValueError):
@@ -2871,6 +2904,53 @@ class NodeTest(unittest.TestCase):
         assert three is two.nextSibling, '"%s" != "%s"' % (three, two.nextSibling)
         assert None is three.nextSibling, 'None != "%s"' % three.nextSibling
 
+    def test_element_child_helpers_ignore_text_and_comments(self):
+        node = div(
+            "lead",
+            span("one", _id="one"),
+            Document.createTextNode("gap"),
+            Comment("note"),
+            p("two", _id="two"),
+            "tail",
+        )
+        one = node.querySelector("#one")
+        two = node.querySelector("#two")
+
+        self.assertEqual(node.childElementCount, 2)
+        self.assertEqual(node.children, [one, two])
+        self.assertIs(node.firstElementChild(), one)
+        self.assertIs(node.lastElementChild(), two)
+        self.assertIs(one.nextElementSibling, two)
+        self.assertIs(two.previousElementSibling, one)
+        self.assertIsNone(two.nextElementSibling)
+        self.assertIsNone(one.previousElementSibling)
+
+    def test_childnode_text_helpers_insert_in_the_right_order(self):
+        node = div(Document.createTextNode("one"), span("two", _id="two"))
+        text_node = node.firstChild
+        after = p("after", _id="after")
+        before = strong("before", _id="before")
+
+        text_node.after(after)
+        text_node.before(before)
+
+        self.assertEqual(
+            str(node),
+            '<div><strong id="before">before</strong>one'
+            '<p id="after">after</p><span id="two">two</span></div>',
+        )
+        self.assertIs(after.previousSibling, text_node)
+        self.assertIs(before.nextSibling, text_node)
+
+        replacement = em("replacement", _id="replacement")
+        text_node.replaceWith(replacement)
+        self.assertEqual(
+            [getattr(child, "id", None) for child in node.children],
+            ["before", "replacement", "after", "two"],
+        )
+        self.assertIs(replacement.parentNode, node)
+        self.assertIsNone(text_node.parentNode)
+
     def test_compareDocumentPosition(self):
         node = Document.createElement("node")
         one = Document.createElement("one")
@@ -2936,6 +3016,19 @@ class NodeTest(unittest.TestCase):
         assert len(node) == 2, f"{len(node)} != {2}"
         self._checkPositions(node)
 
+        source = Document.createElement("source")
+        target = Document.createElement("target")
+        moved = Document.createElement("moved")
+        old = Document.createElement("old")
+        source.appendChild(moved)
+        target.appendChild(old)
+        result = target.replaceChild(moved, old)
+        self.assertIs(result, old)
+        self.assertEqual(source.childNodes.length, 0)
+        self.assertIs(target.firstChild, moved)
+        self.assertIs(moved.parentNode, target)
+        self.assertIsNone(old.parentNode)
+
     def test_removeChild(self):
         node = Document.createElement("node")
         one = Document.createElement("one")
@@ -2962,12 +3055,30 @@ class NodeTest(unittest.TestCase):
         frag = Document.createDocumentFragment()
         frag.appendChild(two)
         frag.appendChild(three)
-        node.appendChild(frag)
+        returned = node.appendChild(frag)
         # print(node)
+        assert returned is frag, f'"{returned}" != "{frag}"'
+        assert frag.childNodes.length == 0, f"{frag.childNodes.length} != 0"
         assert node[0] is one, f'"{node[0]}" != "{one}"'
         assert node[1] is two, f'"{node[1]}" != "{two}"'
         assert node[2] is three, f'"{node[2]}" != "{three}"'
+        assert two.parentNode is node, f'"{two.parentNode}" != "{node}"'
+        assert three.parentNode is node, f'"{three.parentNode}" != "{node}"'
         self._checkPositions(node)
+
+    def test_appendChild_moves_existing_nodes_between_parents(self):
+        old_parent = div(span("kid", _id="kid"))
+        new_parent = div()
+        kid = old_parent.querySelector("#kid")
+
+        returned = new_parent.appendChild(kid)
+
+        self.assertIs(returned, kid)
+        self.assertEqual(old_parent.children, [])
+        self.assertEqual(new_parent.children, [kid])
+        self.assertIs(kid.parentNode, new_parent)
+        self.assertFalse(old_parent.contains(kid))
+        self.assertTrue(new_parent.contains(kid))
 
     def test_insert(self):
         """Insert into empty node"""
@@ -3027,17 +3138,15 @@ class NodeTest(unittest.TestCase):
         frag.appendChild(four)
         # node.insert(1, frag)
         # node.args = (args).extend(self.args)
-        # add frag at nodes position 1
-        # TODO - what is expected behaviour for prepending frags?.
-        # as appendChild says to break it apart and add each child?. not sure with append/prepend
         node.prepend(frag)
-        # print(node)
-        print("TODO.test_Element_prepend")
-        return
-        assert node[0] is one, f'"{node[0]}" != "{one}"'
-        assert node[1] is three, f'"{node[1]}" != "{three}"'
-        assert node[2] is four, f'"{node[2]}" != "{four}"'
+
+        assert frag.childNodes.length == 0, f"{frag.childNodes.length} != 0"
+        assert node[0] is three, f'"{node[0]}" != "{three}"'
+        assert node[1] is four, f'"{node[1]}" != "{four}"'
+        assert node[2] is one, f'"{node[2]}" != "{one}"'
         assert node[3] is two, f'"{node[3]}" != "{two}"'
+        assert three.parentNode is node, f'"{three.parentNode}" != "{node}"'
+        assert four.parentNode is node, f'"{four.parentNode}" != "{node}"'
         self._checkPositions(node)
 
     # TODO - item assignment - bring dunders over from tag now? - or we bringing all over for v8?
