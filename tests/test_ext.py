@@ -13,8 +13,13 @@ class TestExtScaffolds(unittest.TestCase):
         servers = get_supported_servers()
         self.assertIn("none", servers)
         self.assertIn("fastapi", servers)
+        self.assertIn("fasthtml", servers)
+        self.assertIn("apiflask", servers)
+        self.assertIn("django-ninja", servers)
         self.assertIn("muffin", servers)
         self.assertIn("baize", servers)
+        self.assertIn("esmerald", servers)
+        self.assertIn("granian", servers)
         self.assertIn("emmett", servers)
         self.assertIn("eve", servers)
         self.assertIn("klein", servers)
@@ -49,18 +54,36 @@ class TestExtScaffolds(unittest.TestCase):
             with self.subTest(server=server):
                 ast.parse(hello_world)
 
+    def test_modern_server_scaffolds_use_current_packages(self):
+        self.assertEqual(get_server_requirements("fasthtml"), ["python-fasthtml==0.14.12"])
+        self.assertEqual(get_server_requirements("apiflask"), ["APIFlask==3.1.1"])
+        self.assertIn("django-ninja==1.6.3", get_server_requirements("django-ninja"))
+        self.assertEqual(get_server_requirements("esmerald"), ["esmerald==3.9.4", "lilya==0.23.3", "uvicorn==0.52.4"])
+        self.assertEqual(get_server_requirements("granian"), ["granian==2.8.1"])
+
     def test_non_one_file_targets_are_not_scaffolded(self):
         servers = get_supported_servers()
         for package in (
+            "connexion",
+            "daphne",
+            "gradio",
             "graphene",
+            "gunicorn",
             "httpx",
             "invenio",
             "jupyterhub",
             "kombu",
             "masonite",
             "motor",
+            "nicegui",
             "pydantic",
+            "py4web",
+            "reflex",
+            "shiny",
+            "streamlit",
             "trio",
+            "uvicorn",
+            "waitress",
         ):
             self.assertNotIn(package, servers)
 

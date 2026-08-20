@@ -29,6 +29,51 @@ Below are some examples of how to use domonic with some popular webservers
 
 WARNING: When generating dynamic content make sure to escape any user generated content to avoid `XSS attacks. <https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html>`_.
 
+CLI project scaffolds
+--------------------------------
+
+The project command can generate a one-file hello world for a pinned server/framework:
+
+.. code-block :: bash
+
+    domonic project mysite --server fasthtml
+
+Current scaffold choices are:
+
+.. code-block :: text
+
+    none
+    sanic
+    flask
+    apiflask
+    cherrypy
+    django
+    django-ninja
+    bottle
+    pyramid
+    werkzeug
+    tornado
+    aiohttp
+    fastapi
+    fasthtml
+    starlette
+    blacksheep
+    muffin
+    falcon
+    baize
+    esmerald
+    granian
+    emmett
+    eve
+    klein
+    litestar
+    quart
+    robyn
+
+Project-shaped tools such as Connexion and py4web, and app suites such as NiceGUI,
+Reflex, Streamlit, Gradio, and Shiny, are better handled as dedicated examples
+instead of pretending they fit a single ``app.py`` scaffold.
+
 
 Using domonic with Cherrypy
 --------------------------------
@@ -587,5 +632,4 @@ Dealing with Package dependencies is here in their documentation.
 https://cloud.google.com/functions/docs/writing/specifying-dependencies-python
 
 `Find out more about Google Cloud Functions here... <https://cloud.google.com/functions>`_.
-
 
