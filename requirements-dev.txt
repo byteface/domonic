@@ -5,11 +5,11 @@ itsdangerous==2.2.0
 Jinja2==3.1.6
 Sphinx==9.1.0 #
 fastapi==0.135.1 #
-setuptools==82.0.1
+setuptools==84.0.0
 twine==6.2.0
 uvicorn==0.42.0 #
 toml==0.10.2 #
-ujson==5.12.0 #
+ujson==5.13.0 #
 websockets==16.0 #
 isort==8.0.1 #
 wheel==0.46.3 #
