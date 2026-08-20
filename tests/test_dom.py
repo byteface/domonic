@@ -3447,6 +3447,7 @@ class NodeTest(unittest.TestCase):
         one = Document.createElement("one")
         two = Document.createElement("two")
         three = Document.createTextNode("three")
+        one.setAttribute("id", "source")
         two.append(three)
         one.append(two)
         res = one.cloneNode(1)
@@ -3457,6 +3458,13 @@ class NodeTest(unittest.TestCase):
         assert str(one) == str(res)
         assert one is not res
         assert one[0] is not res[0]
+        assert res[0].parentNode is res
+
+        shallow = one.cloneNode(False)
+        assert type(shallow) is type(one), f'"{type(shallow)}" != "{type(one)}"'
+        assert shallow.getAttribute("id") == "source"
+        assert len(shallow.childNodes) == 0
+        assert shallow.parentNode is None
 
     def test_normalize(self):
         node = Document.createElement("node")
@@ -3551,6 +3559,13 @@ class NodeTest(unittest.TestCase):
         res = node.textContent
         expected = "onethreefour"
         assert res == expected, f'"{res}" != "{expected}"'
+
+        node.textContent = "plain"
+        assert node.textContent == "plain"
+        assert node.args == ("plain",)
+        assert one.parentNode is None
+        assert two.parentNode is None
+        assert three.parentNode is two
 
     def test_isSameNode(self):
         node = Document.createElement("node")

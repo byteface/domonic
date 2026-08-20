@@ -1566,7 +1566,10 @@ class Node(EventTarget):
         if deep:
             return copy.deepcopy(self)
         else:
-            return copy.copy(self)  # shallow copy
+            clone = copy.copy(self)  # shallow copy
+            clone.args = ()
+            clone.parentNode = None
+            return clone
 
     def isSameNode(self, node):
         """Checks if two elements are the same node"""
@@ -1662,12 +1665,18 @@ class Node(EventTarget):
     def textContent(self, content):
         """Sets the text content of a node and its descendants"""
         old_value = self.textContent
+        removed_nodes = [node for node in self.args if isinstance(node, Node)]
+        for node in removed_nodes:
+            _disconnect_tree(node)
+            node.parentNode = None
         if content in (None, ""):
             self.args = ()
         else:
             self.args = (content,)
         if isinstance(self, CharacterData):
             _queue_mutation_record("characterData", self, old_value=old_value)
+        elif removed_nodes:
+            _queue_mutation_record("childList", self, removed_nodes=removed_nodes)
         return content
 
     # def isSupported(self): return False #  🗑
