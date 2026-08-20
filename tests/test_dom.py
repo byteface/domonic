@@ -10,6 +10,7 @@ import tempfile
 import unittest
 
 from domonic import *
+from domonic.CDN import CDN_CSS
 from domonic.dom import *
 from domonic.html import *
 from domonic.style import *
@@ -235,8 +236,7 @@ class DOMTest(unittest.TestCase):
                     script(_src="static/js/jquery.min.js"),
                     link(
                         _rel="stylesheet",
-                        _href="https://use.fontawesome.com/releases/v5.7.1/css/all.css",
-                        _integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr",
+                        _href=CDN_CSS.FONTAWESOME,
                         _crossorigin="anonymous",
                     ),
                 ),

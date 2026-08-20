@@ -15,7 +15,7 @@ from domonic.javascript import *
 # generate the webpage that makes the socket connection back to our server
 page = html(
     head(title("Test Capturing Browser Events")),
-    script(_src="https://code.jquery.com/jquery-3.5.1.min.js"),
+    script(_src=CDN_JS.JQUERY),
     body(
         Websocket(drag_events=True, hashchange_events=True, wheel_events=True, clipboard_events=True),
         # canvas(_id="canvas", _width="500", _height="500"),

@@ -12,6 +12,7 @@
 import base64
 import json
 
+from domonic.CDN import CDN_CSS, CDN_JS
 from domonic.events import *
 from domonic.html import *
 
@@ -601,8 +602,8 @@ class Webpage:  # TODO - shouldn't this extend html?
         self.content = content
 
     def __str__(self):
-        classless_css = link(_rel="stylesheet", _href="https://unpkg.com/marx-css/css/marx.min.css")
-        jquery = script(_src="https://code.jquery.com/jquery-3.5.1.min.js")
+        classless_css = link(_rel="stylesheet", _href=CDN_CSS.MARX)
+        jquery = script(_src=CDN_JS.JQUERY)
         code = script(
             """
             $(document).on( "click", ".close", function() {

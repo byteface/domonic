@@ -4,10 +4,11 @@ import sys
 sys.path.insert(0, "..")
 
 from domonic.html import *
+from domonic.CDN import CDN_CSS, CDN_JS
 from domonic.javascript import Math
 
-classless_css = link(_rel="stylesheet", _href="https://unpkg.com/marx-css/css/marx.min.css")
-jquery = script(_src="https://code.jquery.com/jquery-3.5.1.min.js")
+classless_css = link(_rel="stylesheet", _href=CDN_CSS.MARX)
+jquery = script(_src=CDN_JS.JQUERY)
 
 code = script(
     """

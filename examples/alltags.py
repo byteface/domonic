@@ -2,6 +2,7 @@ import sys
 
 sys.path.insert(0, "..")
 
+from domonic.CDN import CDN_CSS
 from domonic.html import *
 
 # TODO - finish example using every tag
@@ -22,7 +23,7 @@ output = html(
         link(
             _rel="stylesheet",
             _type="text/css",
-            _href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.css",
+            _href=CDN_CSS.MILLIGRAM,
         ),
         style(css),
         script(js),

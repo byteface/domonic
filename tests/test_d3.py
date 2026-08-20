@@ -8,6 +8,7 @@
 import time
 import unittest
 
+from domonic.CDN import CDN_CSS
 from domonic.dom import *
 from domonic.html import *
 from domonic.svg import *  # lowercase path is in here
@@ -922,8 +923,7 @@ class TestCase(unittest.TestCase):
                     script(_src="static/js/jquery.min.js"),
                     link(
                         _rel="stylesheet",
-                        _href="https://use.fontawesome.com/releases/v5.7.1/css/all.css",
-                        _integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr",
+                        _href=CDN_CSS.FONTAWESOME,
                         _crossorigin="anonymous",
                     ),
                 ),

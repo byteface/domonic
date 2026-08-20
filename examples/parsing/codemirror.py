@@ -9,6 +9,7 @@ from domonic.utils import Utils
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from domonic import domonic
+from domonic.CDN import CDN_CSS, CDN_JS
 from domonic.html import *
 
 app = FastAPI()
@@ -16,16 +17,11 @@ app = FastAPI()
 page = lambda content: html(_lang="en", _class="no-js", _dir="auto").html(
     head(
         title("HTML 2 PYML CONVERTER"),
-        script(_src="https://code.jquery.com/jquery-3.5.1.min.js"),
-        link(_rel="stylesheet", _href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.css"),
-        script(
-            _type="text/javascript", _src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.js"
-        ),
-        script(
-            _type="text/javascript",
-            _src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/python/python.min.js",
-        ),
-        link(_rel="stylesheet", _href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/theme/monokai.min.css"),
+        script(_src=CDN_JS.JQUERY),
+        link(_rel="stylesheet", _href=CDN_CSS.CODEMIRROR),
+        script(_type="text/javascript", _src=CDN_JS.CODEMIRROR),
+        script(_type="text/javascript", _src=CDN_JS.CODEMIRROR_PYTHON),
+        link(_rel="stylesheet", _href=CDN_CSS.CODEMIRROR_MONOKAI),
         script(
             """
             window.addEventListener('load', () => {

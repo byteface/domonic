@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from domonic.html import *
 from domonic.components import Modal
 from domonic.javascript import *
-from domonic.CDN import CDN_CSS
+from domonic.CDN import CDN_CSS, CDN_JS
 
 app = FastAPI()
 
@@ -151,7 +151,7 @@ async def world(request: Request, age: str = DEFAULT_BIRTHDAY):
         str(
             html(
                 head(
-                    script(_src="https://code.jquery.com/jquery-3.5.1.min.js"),
+                    script(_src=CDN_JS.JQUERY),
                     link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.BALLOON),
                     link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.BOOTSTRAP),
                     link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.MVP),

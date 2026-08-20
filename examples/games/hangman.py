@@ -17,7 +17,7 @@ app.add_middleware(SessionMiddleware, secret_key="secret", session_cookie="sessi
 
 page_wrapper = lambda content: html(
     head(
-        script(_src="https://code.jquery.com/jquery-3.5.1.min.js"),
+        script(_src=CDN_JS.JQUERY),
         link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.MVP),
         script(_type="text/javascript").html(
             """
