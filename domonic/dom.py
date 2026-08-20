@@ -13,6 +13,7 @@ web-platform concepts rather than a small HTML helper tree.
 from __future__ import annotations
 
 import copy
+from html import escape as _escape_html
 import os
 import re
 import time
@@ -49,6 +50,22 @@ class DOMConfig:
     HTMX_ENABLED: bool = False  # Default is false
     # NO_REPR: bool = True  # objects always render?
     ATTRIBUTE_QUOTES: bool | str | None = '"'  # i.e. <tag="">
+
+
+def _attribute_quote_mark() -> str:
+    if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == "":
+        return ""
+    if DOMConfig.ATTRIBUTE_QUOTES is True or DOMConfig.ATTRIBUTE_QUOTES is None:
+        return '"'
+    return str(DOMConfig.ATTRIBUTE_QUOTES)
+
+
+def _render_attribute_value(value: Any) -> str:
+    quote = _attribute_quote_mark()
+    should_quote = DOMConfig.ATTRIBUTE_QUOTES is not None or type(value) == str
+    rendered_value = _escape_html(str(value), quote=True) if DOMConfig.GLOBAL_AUTOESCAPE else value
+    quote = quote if should_quote else ""
+    return f"{quote}{rendered_value}{quote}"
 
 
 def _get_custom_element_registry():
@@ -370,6 +387,28 @@ def _dispatch_value_change_events(control: "Element") -> None:
     control.dispatchEvent(Event("change", {"bubbles": True, "cancelable": False}))
 
 
+def _radio_group_members(control: "Element", *, include_disabled: bool = True) -> list["HTMLInputElement"]:
+    if not isinstance(control, Element):
+        return []
+    name = control.getAttribute("name")
+    if not name:
+        return [control] if isinstance(control, HTMLInputElement) else []
+    form = _form_owner(control)
+    root = form if form is not None else getattr(control, "parentNode", None)
+    if root is None or not hasattr(root, "querySelectorAll"):
+        return [control] if isinstance(control, HTMLInputElement) else []
+    radios = []
+    for candidate in root.querySelectorAll("input"):
+        if (
+            isinstance(candidate, HTMLInputElement)
+            and (include_disabled or not candidate.hasAttribute("disabled"))
+            and (candidate.getAttribute("type") or "").lower() == "radio"
+            and candidate.getAttribute("name") == name
+        ):
+            radios.append(candidate)
+    return radios or ([control] if isinstance(control, HTMLInputElement) else [])
+
+
 def _is_control_valid(control: "Element") -> bool:
     if not isinstance(control, Element) or control.hasAttribute("disabled"):
         return True
@@ -380,22 +419,7 @@ def _is_control_valid(control: "Element") -> bool:
             if input_type == "checkbox":
                 return control.checked
             if input_type == "radio":
-                form = _form_owner(control)
-                root = form if form is not None else getattr(control, "parentNode", None)
-                name = control.getAttribute("name")
-                if root is not None and hasattr(root, "querySelectorAll"):
-                    radios = [
-                        candidate
-                        for candidate in root.querySelectorAll("input")
-                        if (
-                            isinstance(candidate, HTMLInputElement)
-                            and not candidate.hasAttribute("disabled")
-                            and (candidate.getAttribute("type") or "").lower() == "radio"
-                            and candidate.getAttribute("name") == name
-                        )
-                    ]
-                    return any(radio.checked for radio in radios)
-                return control.checked
+                return any(radio.checked for radio in _radio_group_members(control, include_disabled=False))
             return control.value != ""
         if tag_name == "textarea":
             return control.value != ""
@@ -578,12 +602,6 @@ class Node(EventTarget):
                 "http_equiv": "http-equiv",
             }.get(key, key)
 
-            QM = DOMConfig.ATTRIBUTE_QUOTES
-            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == "":
-                QM = ""
-            elif DOMConfig.ATTRIBUTE_QUOTES is True or DOMConfig.ATTRIBUTE_QUOTES is None:
-                QM = '"'
-
             # note - consider making this an attributes handler for any custom attributes
             # so on config user can add a handler function for the attribute
             if DOMConfig.HTMX_ENABLED:
@@ -622,7 +640,7 @@ class Node(EventTarget):
                 ]
 
                 if key in htmx_attributes:
-                    return f""" data-hx-{key}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}"""
+                    return f""" data-hx-{key}={_render_attribute_value(value)}"""
 
             # lets us have boolean attributes
             if key in [
@@ -672,7 +690,7 @@ class Node(EventTarget):
             ]:
                 if value == "" or value == key:
                     return f""" {key}"""
-            return f""" {key}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}"""
+            return f""" {key}={_render_attribute_value(value)}"""
 
         try:
             return "".join([format_attr(key, value) for key, value in self.kwargs.items()])
@@ -686,14 +704,9 @@ class Node(EventTarget):
     @__attributes__.setter
     def __attributes__(self, ignore):
         try:
-            QM = DOMConfig.ATTRIBUTE_QUOTES
-            if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == "":
-                QM = ""
-            elif DOMConfig.ATTRIBUTE_QUOTES is True or DOMConfig.ATTRIBUTE_QUOTES is None:
-                QM = '"'
             self.__attributes = "".join(
                 [
-                    f""" {key.split('_', 1)[1]}={QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}{value}{QM if DOMConfig.ATTRIBUTE_QUOTES is not None else QM if type(value) == str else ''}"""
+                    f""" {key.split('_', 1)[1]}={_render_attribute_value(value)}"""
                     for key, value in self.kwargs.items()
                 ]
             )
@@ -8492,6 +8505,15 @@ class HTMLButtonElement(HTMLElement):
     def interestForElement(self, target: Any) -> None:
         _set_id_reference(self, "interestfor", target)
 
+    @property
+    def value(self) -> str:
+        attr_value = self.getAttribute("value")
+        return "" if attr_value is None else str(attr_value)
+
+    @value.setter
+    def value(self, new_value: Any) -> None:
+        self.setAttribute("value", new_value)
+
     def click(self):
         result = super().click()
         if self.hasAttribute("disabled"):
@@ -9106,8 +9128,19 @@ class HTMLInputElement(HTMLElement):
             self.setAttribute("popovertargetaction", action)
 
     @property
+    def type(self) -> str:
+        return str(self.getAttribute("type") or "text").lower()
+
+    @type.setter
+    def type(self, new_type: Any) -> None:
+        self.setAttribute("type", new_type)
+
+    @property
     def value(self) -> str:
-        return self.getAttribute("value") or ""
+        attr_value = self.getAttribute("value")
+        if attr_value is None:
+            return "on" if self.type in {"checkbox", "radio"} else ""
+        return str(attr_value)
 
     @value.setter
     def value(self, new_value: Any) -> None:
@@ -9142,6 +9175,10 @@ class HTMLInputElement(HTMLElement):
     @checked.setter
     def checked(self, is_checked: bool) -> None:
         if is_checked:
+            if self.type == "radio":
+                for candidate in _radio_group_members(self):
+                    if candidate is not self:
+                        candidate.checked = False
             self.setAttribute("checked", True)
         else:
             self.removeAttribute("checked")
@@ -9150,22 +9187,11 @@ class HTMLInputElement(HTMLElement):
         result = super().click()
         if self.hasAttribute("disabled"):
             return result
-        input_type = (self.getAttribute("type") or "text").lower()
+        input_type = self.type
         if input_type in {"checkbox", "radio"}:
             was_checked = self.checked
             if input_type == "radio":
                 if not was_checked:
-                    form = _form_owner(self)
-                    root = form if form is not None else self.parentNode
-                    name = self.getAttribute("name")
-                    for candidate in getattr(root, "querySelectorAll", lambda query: [])("input"):
-                        if (
-                            isinstance(candidate, HTMLInputElement)
-                            and candidate is not self
-                            and (candidate.getAttribute("type") or "").lower() == "radio"
-                            and candidate.getAttribute("name") == name
-                        ):
-                            candidate.checked = False
                     self.checked = True
             else:
                 self.checked = not was_checked
@@ -9440,7 +9466,7 @@ class HTMLOptionElement(HTMLElement):
     @property
     def value(self) -> str:
         attr_value = self.getAttribute("value")
-        return self.textContent if attr_value is None else attr_value
+        return self.textContent if attr_value is None else str(attr_value)
 
     @value.setter
     def value(self, new_value: Any) -> None:
@@ -9453,9 +9479,11 @@ class HTMLOptionElement(HTMLElement):
     @selected.setter
     def selected(self, is_selected: bool) -> None:
         if is_selected:
-            parent = self.parentNode
-            if isinstance(parent, HTMLSelectElement) and not parent.hasAttribute("multiple"):
-                for option in parent.options:
+            select_owner = self.parentNode
+            while select_owner is not None and not isinstance(select_owner, HTMLSelectElement):
+                select_owner = getattr(select_owner, "parentNode", None)
+            if isinstance(select_owner, HTMLSelectElement) and not select_owner.hasAttribute("multiple"):
+                for option in select_owner.options:
                     if option is not self:
                         option.removeAttribute("selected")
             self.setAttribute("selected", True)

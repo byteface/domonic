@@ -1957,11 +1957,14 @@ class DOMTest(unittest.TestCase):
     def test_node_attribute_rendering_configurations(self):
         button_node = button("Go", _disabled="", _data_value="7", _get="/api/items")
         media_node = video(_autoplay=True, _controls=True, _loop=True, _muted=True, _playsinline=True)
+        unsafe_node = div(_title='a " b & < c')
         original_quotes = DOMConfig.ATTRIBUTE_QUOTES
         original_htmx = DOMConfig.HTMX_ENABLED
+        original_autoescape = DOMConfig.GLOBAL_AUTOESCAPE
         try:
             DOMConfig.ATTRIBUTE_QUOTES = '"'
             DOMConfig.HTMX_ENABLED = False
+            DOMConfig.GLOBAL_AUTOESCAPE = False
             rendered = button_node.__attributes__
             self.assertIn(" disabled", rendered)
             self.assertIn(' data_value="7"', rendered)
@@ -1979,9 +1982,16 @@ class DOMTest(unittest.TestCase):
             DOMConfig.HTMX_ENABLED = True
             htmx_rendered = button_node.__attributes__
             self.assertIn(" data-hx-get=", htmx_rendered)
+
+            DOMConfig.ATTRIBUTE_QUOTES = '"'
+            DOMConfig.HTMX_ENABLED = False
+            DOMConfig.GLOBAL_AUTOESCAPE = True
+            self.assertEqual(unsafe_node.__attributes__, ' title="a &quot; b &amp; &lt; c"')
+            self.assertEqual(str(unsafe_node), '<div title="a &quot; b &amp; &lt; c"></div>')
         finally:
             DOMConfig.ATTRIBUTE_QUOTES = original_quotes
             DOMConfig.HTMX_ENABLED = original_htmx
+            DOMConfig.GLOBAL_AUTOESCAPE = original_autoescape
 
     def test_node_autoescape_and_pyml_helpers(self):
         node = div(Text("<unsafe>"), span(Text("ok")), _data_label="x", **{"data-mode": "demo"})
@@ -2362,6 +2372,25 @@ class DOMTest(unittest.TestCase):
             ],
         )
 
+    def test_common_form_value_properties_stringify_values(self):
+        number_input = input(_value=0)
+        checkbox = input(_type="checkbox")
+        radio = input(_type="radio")
+        zero_option = option("Zero", value=0)
+        submitter = button("Save", value=0)
+
+        self.assertEqual(number_input.type, "text")
+        self.assertEqual(number_input.value, "0")
+        self.assertEqual(checkbox.value, "on")
+        self.assertEqual(radio.value, "on")
+        self.assertEqual(zero_option.value, "0")
+        self.assertEqual(submitter.value, "0")
+
+        number_input.type = "email"
+        submitter.value = 1
+        self.assertEqual(number_input.type, "email")
+        self.assertEqual(submitter.value, "1")
+
     def test_form_validity_invalid_events_and_formnovalidate(self):
         email = input(_name="email", _required=True, _id="email")
         submitter = button("Send", _type="submit", _id="send")
@@ -2476,6 +2505,24 @@ class DOMTest(unittest.TestCase):
         pro.checked = True
         self.assertTrue(signup.checkValidity())
         self.assertTrue(free.checkValidity())
+        self.assertFalse(free.checked)
+        self.assertTrue(pro.checked)
+
+    def test_radio_groups_ignore_unnamed_inputs(self):
+        first = input(_type="radio")
+        second = input(_type="radio")
+        required = input(_type="radio", _required=True)
+        signup = form(first, second, required)
+
+        first.checked = True
+        second.checked = True
+
+        self.assertTrue(first.checked)
+        self.assertTrue(second.checked)
+        self.assertFalse(signup.checkValidity())
+
+        required.checked = True
+        self.assertTrue(signup.checkValidity())
 
     def test_form_elements_returns_live_form_controls_collection(self):
         signup = form(
@@ -2557,6 +2604,11 @@ class DOMTest(unittest.TestCase):
         options.remove(0)
         self.assertEqual(options.length, 3)
         self.assertEqual(options.item(0).textContent, "Two")
+
+        options.item(0).selected = True
+        options.item(1).selected = True
+        self.assertFalse(options.item(0).selected)
+        self.assertTrue(options.item(1).selected)
 
     def test_range_get_client_rects_returns_domrectlist(self):
         container = div(span("a"), span("b"))
