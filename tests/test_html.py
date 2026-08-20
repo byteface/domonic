@@ -108,6 +108,7 @@ class TestHTML(unittest.TestCase):
         assert str(del_()) == "<del></del>"
         assert str(slot()) == "<slot></slot>"
         assert str(search()) == "<search></search>"
+        assert str(selectedcontent()) == "<selectedcontent></selectedcontent>"
         assert str(portal()) == "<portal></portal>"
 
     def test_hello_world(self):
@@ -127,6 +128,126 @@ class TestHTML(unittest.TestCase):
         assert myel._id == "mydiv"
         assert myel._class == "test"
         assert myel.onclick == "alert('hi');"
+
+    def test_modern_html_attributes(self):
+        self.assertIn("portal", html_tags)
+        self.assertIn("selectedcontent", html_tags)
+        for attr in (
+            "allow",
+            "allowfullscreen",
+            "accept-charset",
+            "abbr",
+            "alpha",
+            "anchor",
+            "autocorrect",
+            "blocking",
+            "browsingtopics",
+            "capture",
+            "closedby",
+            "colorspace",
+            "command",
+            "commandfor",
+            "credentialless",
+            "decoding",
+            "disablepictureinpicture",
+            "exportparts",
+            "fetchpriority",
+            "formenctype",
+            "formmethod",
+            "formnovalidate",
+            "formtarget",
+            "headingoffset",
+            "headingreset",
+            "http-equiv",
+            "imagesizes",
+            "imagesrcset",
+            "inert",
+            "interestfor",
+            "minlength",
+            "nomodule",
+            "onauxclick",
+            "onbeforeinput",
+            "onbeforematch",
+            "onbeforetoggle",
+            "oncancel",
+            "onclose",
+            "oncommand",
+            "oncontextlost",
+            "oncontextrestored",
+            "onformdata",
+            "onlanguagechange",
+            "onmessage",
+            "onmessageerror",
+            "onmouseenter",
+            "onmouseleave",
+            "onpagereveal",
+            "onpageswap",
+            "onrejectionhandled",
+            "onscrollend",
+            "onsecuritypolicyviolation",
+            "onslotchange",
+            "onunhandledrejection",
+            "ping",
+            "popover",
+            "popovertarget",
+            "popovertargetaction",
+            "referrerpolicy",
+            "shadowrootclonable",
+            "shadowrootcustomelementregistry",
+            "shadowrootdelegatesfocus",
+            "shadowrootmode",
+            "shadowrootserializable",
+            "shadowrootslotassignment",
+            "writingsuggestions",
+        ):
+            self.assertIn(attr, html_attributes)
+
+        self.assertEqual(
+            str(div("Find me", _hidden="until-found", _onbeforematch="reveal()")),
+            '<div hidden="until-found" onbeforematch="reveal()">Find me</div>',
+        )
+        self.assertEqual(
+            str(
+                button(
+                    "Open",
+                    _popovertarget="menu",
+                    _popovertargetaction="toggle",
+                    _commandfor="dialog",
+                    _command="show-modal",
+                )
+            ),
+            '<button popovertarget="menu" popovertargetaction="toggle" commandfor="dialog" command="show-modal">Open</button>',
+        )
+        self.assertEqual(
+            str(template(_shadowrootmode="open", _shadowrootclonable=True, _shadowrootserializable=True)),
+            '<template shadowrootmode="open" shadowrootclonable="true" shadowrootserializable="true"></template>',
+        )
+        self.assertEqual(
+            str(dialog(_closedby="any")),
+            '<dialog closedby="any"></dialog>',
+        )
+        self.assertEqual(
+            str(input(_type="color", _alpha=True, _colorspace="display-p3")),
+            '<input type="color" alpha="true" colorspace="display-p3"/>',
+        )
+        self.assertEqual(
+            str(form(action="/signup", accept_charset="UTF-8", rel="external")),
+            '<form action="/signup" accept-charset="UTF-8" rel="external"></form>',
+        )
+        self.assertEqual(
+            str(
+                input(
+                    _list="values",
+                    _min="1",
+                    _max="10",
+                    minlength="2",
+                    capture="user",
+                    popovertarget="picker",
+                    popovertargetaction="show",
+                )
+            ),
+            '<input capture="user" list="values" max="10" minlength="2" min="1" popovertarget="picker" popovertargetaction="show"/>',
+        )
 
     def test_create_element(self):
         assert (
@@ -169,11 +290,14 @@ body(
             self.skipTest("requests is not installed")
         print("test_domonic_get-----------=-----------=-----------=-----------=-----------=-----------=-----------=")
         # page = domonic.get("http://eventual.technology")
-        page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/checkout/")
-        page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/carousel/?#")
-        page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/dashboard/#")
-        page = domonic.get("https://www.google.com")
-        page = domonic.get("https://www.facebook.com")
+        try:
+            page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/checkout/")
+            page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/carousel/?#")
+            page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/dashboard/#")
+            page = domonic.get("https://www.google.com")
+            page = domonic.get("https://www.facebook.com")
+        except requests.exceptions.RequestException as exc:
+            self.skipTest(f"external network is unavailable: {exc}")
         print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         print(render(page))
         pass

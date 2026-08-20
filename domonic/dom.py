@@ -495,6 +495,10 @@ class Node(EventTarget):
             if value is False:
                 value = "false"
             key = key.split("_", 1)[1]
+            key = {
+                "accept_charset": "accept-charset",
+                "http_equiv": "http-equiv",
+            }.get(key, key)
 
             QM = DOMConfig.ATTRIBUTE_QUOTES
             if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == "":
@@ -1213,16 +1217,13 @@ class Node(EventTarget):
 
     def contains(self, node: "Node") -> bool:
         """Check whether a node is a descendant of a given node"""
-        # this will go crunch on big stuff... need to consider best way
-        for each in self.args:
-            if each == node:
+        if node is self:
+            return True
+        parent = getattr(node, "parentNode", None)
+        while parent is not None:
+            if parent is self:
                 return True
-            try:
-                if each.contains(node):
-                    return True
-            except Exception:
-                pass  # TODO - dont iterate strings
-
+            parent = getattr(parent, "parentNode", None)
         return False
 
     @property
@@ -2881,16 +2882,9 @@ class Element(Node):
         super().__init__(*args, **kwargs)
 
     def _getElementById(self, _id: str):
-        # TODO - i think i need to build a hash map of IDs to positions on the tree
-        # for now I'm going using recursion so this is a bit of a hack to do a few levels
-        if self.getAttribute("id") == _id:
-            return self
-        for child in self.childNodes:
-            if not isinstance(child, Element):
-                continue
-            match = child._getElementById(_id)
-            if match is not False and match is not None:
-                return match
+        for element in self.getElementsByTagName("*"):
+            if element.getAttribute("id") == _id:
+                return element
         return False
 
     def _getElementByAttrVal(self, attr: str, val: str):
@@ -2954,12 +2948,16 @@ class Element(Node):
         Returns:
             [bool]: [True if selector maches Element otherwise False]
         """
-        if self.ownerDocument is None:
-            return False
-        matches = self.ownerDocument.querySelectorAll(s)
-        for match in matches:
-            if match == self:
+        selectors = [selector.strip() for selector in str(s).split(",") if selector.strip()]
+        for selector in selectors:
+            if self._matchElement(self, selector):
                 return True
+
+        root = self.ownerDocument if self.ownerDocument is not None else self.rootNode
+        if hasattr(root, "querySelectorAll"):
+            for match in root.querySelectorAll(s):
+                if match is self:
+                    return True
         return False
 
     # https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
@@ -3461,9 +3459,25 @@ class Element(Node):
         Returns:
             [type]: [a NodeList of all child elements with the specified class name]
         """
-        # TODO - this will have to change as this i live and qsa aint.
-        # return self.querySelectorAll('.' + className)
-        return HTMLCollection(self.querySelectorAll("." + className))
+        required = {token for token in str(className).split() if token}
+        if not required:
+            return HTMLCollection()
+
+        elements = HTMLCollection()
+
+        def anon(el):
+            if not isinstance(el, Element):
+                return
+            class_tokens = set(str(el.getAttribute("class") or "").split())
+            if required.issubset(class_tokens):
+                elements.append(el)
+
+        self._iterate(self, anon)
+        return elements
+
+    def getElementById(self, _id: str) -> Element | None:
+        """Returns the descendant element whose id matches the supplied value."""
+        return self._getElementById(_id) or None
 
     def elementFromPoint(self, x: float, y: float) -> Element | None:
         """Returns the topmost element in this subtree at the specified coordinates."""
@@ -3788,6 +3802,13 @@ class Element(Node):
             return []
 
         query = query.strip()
+        if re.match(r"^#[\w-]+$", query):
+            found = self.getElementById(query[1:])
+            return [found] if found is not None else []
+        if re.match(r"^\.[\w-]+(?:\.[\w-]+)*$", query):
+            return list(self.getElementsByClassName(" ".join(query.split(".")[1:])))
+        if re.match(r"^(\*|[A-Za-z][\w-]*)$", query):
+            return list(self.getElementsByTagName(query))
 
         def _fallback_selector_results():
             if query.startswith("."):
@@ -5312,16 +5333,9 @@ class Document(Element):
         for each in self.childNodes:
             if not isinstance(each, Element):
                 continue
-            if each.getAttribute("id") == _id:
-                return each
-            for child in each.childNodes:
-                if not isinstance(child, Element):
-                    continue
-                match = child._getElementById(_id)
-                # TODO - i think i need to build a hash map of IDs to positions on the tree
-                # for now I'm going to use recursion and add this same method to Element
-                if match is not False and match is not None:
-                    return match
+            match = each._getElementById(_id)
+            if match is not False and match is not None:
+                return match
 
         return False
 
@@ -7261,6 +7275,7 @@ class Sanitizer:
                     "samp",
                     "section",
                     "select",
+                    "selectedcontent",
                     "selectmenu",
                     "small",
                     "source",
@@ -7295,6 +7310,7 @@ class Sanitizer:
                     "action": ["*"],
                     "align": ["*"],
                     "alink": ["*"],
+                    "alpha": ["*"],
                     "allow": ["*"],
                     "allowfullscreen": ["*"],
                     "alt": ["*"],
@@ -7314,6 +7330,8 @@ class Sanitizer:
                     "bgcolor": ["*"],
                     "border": ["*"],
                     "bordercolor": ["*"],
+                    "blocking": ["*"],
+                    "browsingtopics": ["*"],
                     "capture": ["*"],
                     "cellpadding": ["*"],
                     "cellspacing": ["*"],
@@ -7332,13 +7350,18 @@ class Sanitizer:
                     "color": ["*"],
                     "cols": ["*"],
                     "colspan": ["*"],
+                    "colorspace": ["*"],
                     "compact": ["*"],
+                    "closedby": ["*"],
+                    "command": ["*"],
+                    "commandfor": ["*"],
                     "content": ["*"],
                     "contenteditable": ["*"],
                     "controls": ["*"],
                     "controlslist": ["*"],
                     "conversiondestination": ["*"],
                     "coords": ["*"],
+                    "credentialless": ["*"],
                     "crossorigin": ["*"],
                     "csp": ["*"],
                     "data": ["*"],
@@ -7363,6 +7386,7 @@ class Sanitizer:
                     "event": ["*"],
                     "exportparts": ["*"],
                     "face": ["*"],
+                    "fetchpriority": ["*"],
                     "for": ["*"],
                     "form": ["*"],
                     "formaction": ["*"],
@@ -7373,6 +7397,8 @@ class Sanitizer:
                     "frame": ["*"],
                     "frameborder": ["*"],
                     "headers": ["*"],
+                    "headingoffset": ["*"],
+                    "headingreset": ["*"],
                     "height": ["*"],
                     "hidden": ["*"],
                     "high": ["*"],
@@ -7389,6 +7415,7 @@ class Sanitizer:
                     "impressionexpiry": ["*"],
                     "incremental": ["*"],
                     "inert": ["*"],
+                    "interestfor": ["*"],
                     "inputmode": ["*"],
                     "integrity": ["*"],
                     "invisible": ["*"],
@@ -7437,6 +7464,9 @@ class Sanitizer:
                     "placeholder": ["*"],
                     "playsinline": ["*"],
                     "policy": ["*"],
+                    "popover": ["*"],
+                    "popovertarget": ["*"],
+                    "popovertargetaction": ["*"],
                     "poster": ["*"],
                     "preload": ["*"],
                     "pseudo": ["*"],
@@ -7462,7 +7492,12 @@ class Sanitizer:
                     "select": ["*"],
                     "selected": ["*"],
                     "shadowroot": ["*"],
+                    "shadowrootclonable": ["*"],
+                    "shadowrootcustomelementregistry": ["*"],
                     "shadowrootdelegatesfocus": ["*"],
+                    "shadowrootmode": ["*"],
+                    "shadowrootserializable": ["*"],
+                    "shadowrootslotassignment": ["*"],
                     "shape": ["*"],
                     "size": ["*"],
                     "sizes": ["*"],
@@ -7497,6 +7532,7 @@ class Sanitizer:
                     "vspace": ["*"],
                     "webkitdirectory": ["*"],
                     "width": ["*"],
+                    "writingsuggestions": ["*"],
                     "wrap": ["*"],
                 },
             }
@@ -7605,14 +7641,102 @@ class Sanitizer:
         return str(self.sanitize(frag))
 
 
+def _resolve_id_reference(element: "Element", attribute: str) -> "Element | None":
+    target_id = element.getAttribute(attribute)
+    if not target_id:
+        return None
+    doc = element.ownerDocument
+    return doc.getElementById(target_id) if doc is not None else None
+
+
+def _set_id_reference(element: "Element", attribute: str, target: Any) -> None:
+    if target is None:
+        element.removeAttribute(attribute)
+        return
+    if isinstance(target, Element):
+        target_id = target.getAttribute("id")
+        if target_id is None:
+            raise ValueError(f"{attribute} target element must have an id")
+        element.setAttribute(attribute, target_id)
+        return
+    element.setAttribute(attribute, target)
+
+
+def _set_attributes(element: "Element", attributes: dict[str, Any]) -> None:
+    for name, value in attributes.items():
+        if value is not None:
+            element.setAttribute(name, value)
+
+
 class HTMLElement(Element):
     name = ""
+
+    @property
+    def popover(self) -> str | None:
+        return self.getAttribute("popover")
+
+    @popover.setter
+    def popover(self, value: Any) -> None:
+        if value is None or value is False:
+            self.removeAttribute("popover")
+            return
+        if value is True:
+            value = "auto"
+        self.setAttribute("popover", value)
+
+    def _set_popover_open(self, is_open: bool):
+        from domonic.events import ToggleEvent
+
+        old_state = "open" if self.hasAttribute("open") else "closed"
+        new_state = "open" if is_open else "closed"
+        if old_state == new_state:
+            return self
+        before_toggle = ToggleEvent(
+            ToggleEvent.BEFORETOGGLE,
+            {"bubbles": False, "cancelable": True, "oldState": old_state, "newState": new_state},
+        )
+        if not self.dispatchEvent(before_toggle):
+            return self
+        if is_open:
+            self.setAttribute("open", True)
+        else:
+            self.removeAttribute("open")
+        self.dispatchEvent(
+            ToggleEvent(
+                ToggleEvent.TOGGLE,
+                {"bubbles": False, "cancelable": False, "oldState": old_state, "newState": new_state},
+            )
+        )
+        return self
+
+    def showPopover(self):
+        return self._set_popover_open(True)
+
+    def hidePopover(self):
+        return self._set_popover_open(False)
+
+    def togglePopover(self, force: bool | None = None):
+        if force is None:
+            force = not self.hasAttribute("open")
+        return self._set_popover_open(bool(force))
 
 
 class HTMLAnchorElement(HTMLElement):
     name = "a"
 
-    def __init__(self, *args, href=None, target=None, rel=None, download=None, type=None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        href=None,
+        target=None,
+        rel=None,
+        download=None,
+        hreflang=None,
+        ping=None,
+        referrerpolicy=None,
+        type=None,
+        **kwargs,
+    ):
         """HTMLAnchorElement
 
         Args:
@@ -7623,22 +7747,46 @@ class HTMLAnchorElement(HTMLElement):
             type (str, optional): Specifies the MIME type of the linked resource.
         """
         super().__init__(*args, **kwargs)
-        if href is not None:
-            self.setAttribute("href", href)
-        if target is not None:
-            self.setAttribute("target", target)
-        if rel is not None:
-            self.setAttribute("rel", rel)
-        if download is not None:
-            self.setAttribute("download", download)
-        if type is not None:
-            self.setAttribute("type", type)
+        _set_attributes(
+            self,
+            {
+                "href": href,
+                "target": target,
+                "rel": rel,
+                "download": download,
+                "hreflang": hreflang,
+                "ping": ping,
+                "referrerpolicy": referrerpolicy,
+                "type": type,
+            },
+        )
+
+    @property
+    def interestForElement(self) -> Element | None:
+        return _resolve_id_reference(self, "interestfor")
+
+    @interestForElement.setter
+    def interestForElement(self, target: Any) -> None:
+        _set_id_reference(self, "interestfor", target)
 
 
 class HTMLAreaElement(HTMLElement):
     name = "area"
 
-    def __init__(self, *args, href=None, target=None, alt=None, coords=None, shape=None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        href=None,
+        target=None,
+        alt=None,
+        coords=None,
+        download=None,
+        ping=None,
+        rel=None,
+        referrerpolicy=None,
+        shape=None,
+        **kwargs,
+    ):
         """HTMLAreaElement
 
         Args:
@@ -7649,23 +7797,45 @@ class HTMLAreaElement(HTMLElement):
             shape (str, optional): Specifies the shape of the clickable area (e.g., "rect", "circle", "poly").
         """
         super().__init__(*args, **kwargs)
-        if href is not None:
-            self.setAttribute("href", href)
-        if target is not None:
-            self.setAttribute("target", target)
-        if alt is not None:
-            self.setAttribute("alt", alt)
-        if coords is not None:
-            self.setAttribute("coords", coords)
-        if shape is not None:
-            self.setAttribute("shape", shape)
+        _set_attributes(
+            self,
+            {
+                "href": href,
+                "target": target,
+                "alt": alt,
+                "coords": coords,
+                "download": download,
+                "ping": ping,
+                "rel": rel,
+                "referrerpolicy": referrerpolicy,
+                "shape": shape,
+            },
+        )
+
+    @property
+    def interestForElement(self) -> Element | None:
+        return _resolve_id_reference(self, "interestfor")
+
+    @interestForElement.setter
+    def interestForElement(self, target: Any) -> None:
+        _set_id_reference(self, "interestfor", target)
 
 
 class HTMLAudioElement(HTMLElement):
     name = "audio"
 
     def __init__(
-        self, *args, autoplay: bool = None, controls=None, loop=None, muted=None, preload=None, src=None, **kwargs
+        self,
+        *args,
+        autoplay: bool = None,
+        controls=None,
+        crossorigin=None,
+        loading=None,
+        loop=None,
+        muted=None,
+        preload=None,
+        src=None,
+        **kwargs,
     ):
         """HTMLAudioElement
 
@@ -7678,18 +7848,19 @@ class HTMLAudioElement(HTMLElement):
             src (_type_, optional): _description_. Defaults to None.
         """
         super().__init__(*args, **kwargs)
-        if autoplay is not None:
-            self.setAttribute("autoplay", autoplay)
-        if controls is not None:
-            self.setAttribute("controls", controls)
-        if loop is not None:
-            self.setAttribute("loop", loop)
-        if muted is not None:
-            self.setAttribute("muted", muted)
-        if preload is not None:
-            self.setAttribute("preload", preload)
-        if src is not None:
-            self.setAttribute("src", src)
+        _set_attributes(
+            self,
+            {
+                "autoplay": autoplay,
+                "controls": controls,
+                "crossorigin": crossorigin,
+                "loading": loading,
+                "loop": loop,
+                "muted": muted,
+                "preload": preload,
+                "src": src,
+            },
+        )
 
 
 class HTMLBRElement(HTMLElement):
@@ -7792,6 +7963,8 @@ class HTMLButtonElement(HTMLElement):
     def __init__(
         self,
         *args,
+        command=None,
+        commandfor=None,
         disabled: bool = None,
         form=None,
         formaction: str = None,
@@ -7800,6 +7973,8 @@ class HTMLButtonElement(HTMLElement):
         formnovalidate=None,
         formtarget=None,
         name=None,
+        popovertarget=None,
+        popovertargetaction=None,
         type=None,
         value=None,
         **kwargs,
@@ -7819,6 +7994,10 @@ class HTMLButtonElement(HTMLElement):
             value (_type_, optional): _description_. Defaults to None.
         """
         super().__init__(*args, **kwargs)
+        if command is not None:
+            self.setAttribute("command", command)
+        if commandfor is not None:
+            self.setAttribute("commandfor", commandfor)
         if disabled is not None:
             self.setAttribute("disabled", disabled)
         if form is not None:
@@ -7835,10 +8014,41 @@ class HTMLButtonElement(HTMLElement):
             self.setAttribute("formtarget", formtarget)
         if name is not None:
             self.setAttribute("name", name)
+        if popovertarget is not None:
+            self.setAttribute("popovertarget", popovertarget)
+        if popovertargetaction is not None:
+            self.setAttribute("popovertargetaction", popovertargetaction)
         if type is not None:
             self.setAttribute("type", type)
         if value is not None:
             self.setAttribute("value", value)
+
+    @property
+    def popoverTargetElement(self) -> Element | None:
+        return _resolve_id_reference(self, "popovertarget")
+
+    @popoverTargetElement.setter
+    def popoverTargetElement(self, target: Any) -> None:
+        _set_id_reference(self, "popovertarget", target)
+
+    @property
+    def popoverTargetAction(self) -> str | None:
+        return self.getAttribute("popovertargetaction")
+
+    @popoverTargetAction.setter
+    def popoverTargetAction(self, action: Any) -> None:
+        if action is None:
+            self.removeAttribute("popovertargetaction")
+        else:
+            self.setAttribute("popovertargetaction", action)
+
+    @property
+    def interestForElement(self) -> Element | None:
+        return _resolve_id_reference(self, "interestfor")
+
+    @interestForElement.setter
+    def interestForElement(self, target: Any) -> None:
+        _set_id_reference(self, "interestfor", target)
 
     def click(self):
         result = super().click()
@@ -7906,7 +8116,7 @@ class HTMLDataListElement(HTMLElement):
 class HTMLDialogElement(HTMLElement):
     name = "dialog"
 
-    def __init__(self, *args, open=None, **kwargs):
+    def __init__(self, *args, open=None, closedby=None, **kwargs):
         """HTMLDialogElement
 
         Args:
@@ -7915,6 +8125,8 @@ class HTMLDialogElement(HTMLElement):
         super().__init__(*args, **kwargs)
         if open is not None:
             self.setAttribute("open", open)
+        if closedby is not None:
+            self.setAttribute("closedby", closedby)
 
     @property
     def open(self) -> bool:
@@ -8040,11 +8252,13 @@ class HTMLFormElement(HTMLElement):
         self,
         *args,
         action: str = None,
+        accept_charset: str = None,
         autocomplete=None,
         enctype: str = None,
         method: str = None,
         name: str = None,
         novalidate: bool = None,
+        rel: str = None,
         target=None,
         **kwargs,
     ):
@@ -8052,16 +8266,20 @@ class HTMLFormElement(HTMLElement):
 
         Args:
             action (str, optional): The URL that processes the form submission.
+            accept_charset (str, optional): Character encoding to use for form submission.
             autocomplete (str, optional): off/on.
             enctype (str, optional): If the value of the method attribute is post, enctype is the MIME type of the form submission
             method (str, optional): The HTTP method to submit the form with. GET and POST
             name (str, optional): _description_. Defaults to None.
             novalidate (bool, optional): _description_. Defaults to None.
+            rel (str, optional): Relationship between the target resource and the current document.
             target (str, optional): _description_. Defaults to None.
         """
         super().__init__(*args, **kwargs)
         if action is not None:
             self.setAttribute("action", action)
+        if accept_charset is not None:
+            self.setAttribute("accept-charset", accept_charset)
         if autocomplete is not None:
             self.setAttribute("autocomplete", autocomplete)
         if enctype is not None:
@@ -8072,6 +8290,8 @@ class HTMLFormElement(HTMLElement):
             self.setAttribute("name", name)
         if novalidate is not None:
             self.setAttribute("novalidate", novalidate)
+        if rel is not None:
+            self.setAttribute("rel", rel)
         if target is not None:
             self.setAttribute("target", target)
 
@@ -8146,7 +8366,22 @@ class HTMLHeadingElement(HTMLElement):
 class HTMLIFrameElement(HTMLElement):
     name = "iframe"
 
-    def __init__(self, *args, src=None, name=None, sandbox=None, allowfullscreen=None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        allow=None,
+        allowfullscreen=None,
+        credentialless=None,
+        height=None,
+        loading=None,
+        name=None,
+        referrerpolicy=None,
+        sandbox=None,
+        src=None,
+        srcdoc=None,
+        width=None,
+        **kwargs,
+    ):
         """HTMLIFrameElement
 
         Args:
@@ -8156,14 +8391,22 @@ class HTMLIFrameElement(HTMLElement):
             allowfullscreen (str, optional): _description_. Defaults to None.
         """
         super().__init__(*args, **kwargs)
-        if src is not None:
-            self.setAttribute("src", src)
-        if name is not None:
-            self.setAttribute("name", name)
-        if sandbox is not None:
-            self.setAttribute("sandbox", sandbox)
-        if allowfullscreen is not None:
-            self.setAttribute("allowfullscreen", allowfullscreen)
+        _set_attributes(
+            self,
+            {
+                "allow": allow,
+                "allowfullscreen": allowfullscreen,
+                "credentialless": credentialless,
+                "height": height,
+                "loading": loading,
+                "name": name,
+                "referrerpolicy": referrerpolicy,
+                "sandbox": sandbox,
+                "src": src,
+                "srcdoc": srcdoc,
+                "width": width,
+            },
+        )
 
 
 class HTMLImageElement(HTMLElement):
@@ -8174,12 +8417,17 @@ class HTMLImageElement(HTMLElement):
         self,
         *args,
         alt=None,
-        src=None,
+        controls=None,
         crossorigin=None,
+        decoding=None,
+        fetchpriority=None,
         height=None,
         ismap=None,
+        loading=None,
         longdesc=None,
+        referrerpolicy=None,
         sizes=None,
+        src=None,
         srcset=None,
         usemap=None,
         width=None,
@@ -8200,26 +8448,26 @@ class HTMLImageElement(HTMLElement):
             width (str, optional): _description_. Defaults to None.
         """
         super().__init__(*args, **kwargs)
-        if alt is not None:
-            self.setAttribute("alt", alt)
-        if src is not None:
-            self.setAttribute("src", src)
-        if crossorigin is not None:
-            self.setAttribute("crossorigin", crossorigin)
-        if height is not None:
-            self.setAttribute("height", height)
-        if ismap is not None:
-            self.setAttribute("ismap", ismap)
-        if longdesc is not None:
-            self.setAttribute("longdesc", longdesc)
-        if sizes is not None:
-            self.setAttribute("sizes", sizes)
-        if srcset is not None:
-            self.setAttribute("srcset", srcset)
-        if usemap is not None:
-            self.setAttribute("usemap", usemap)
-        if width is not None:
-            self.setAttribute("width", width)
+        _set_attributes(
+            self,
+            {
+                "alt": alt,
+                "controls": controls,
+                "crossorigin": crossorigin,
+                "decoding": decoding,
+                "fetchpriority": fetchpriority,
+                "height": height,
+                "ismap": ismap,
+                "loading": loading,
+                "longdesc": longdesc,
+                "referrerpolicy": referrerpolicy,
+                "sizes": sizes,
+                "src": src,
+                "srcset": srcset,
+                "usemap": usemap,
+                "width": width,
+            },
+        )
 
     def load(self):
         self.dispatchEvent(Event("loadstart", {"bubbles": False, "cancelable": False}))
@@ -8247,10 +8495,13 @@ class HTMLInputElement(HTMLElement):
         self,
         *args,
         accept=None,
+        alpha=None,
         alt=None,
         autocomplete=None,
         autofocus=None,
+        capture=None,
         checked=None,
+        colorspace=None,
         dirname=None,
         disabled=None,
         form=None,
@@ -8263,11 +8514,14 @@ class HTMLInputElement(HTMLElement):
         _list=None,
         _max=None,
         maxlength=None,
+        minlength=None,
         _min=None,
         multiple=None,
         name=None,
         pattern=None,
         placeholder=None,
+        popovertarget=None,
+        popovertargetaction=None,
         readonly=None,
         required=None,
         size=None,
@@ -8315,14 +8569,20 @@ class HTMLInputElement(HTMLElement):
         super().__init__(*args, **kwargs)
         if accept is not None:
             self.setAttribute("accept", accept)
+        if alpha is not None:
+            self.setAttribute("alpha", alpha)
         if alt is not None:
             self.setAttribute("alt", alt)
         if autocomplete is not None:
             self.setAttribute("autocomplete", autocomplete)
         if autofocus is not None:
             self.setAttribute("autofocus", autofocus)
+        if capture is not None:
+            self.setAttribute("capture", capture)
         if checked is not None:
             self.setAttribute("checked", checked)
+        if colorspace is not None:
+            self.setAttribute("colorspace", colorspace)
         if dirname is not None:
             self.setAttribute("dirname", dirname)
         if disabled is not None:
@@ -8341,14 +8601,16 @@ class HTMLInputElement(HTMLElement):
             self.setAttribute("formtarget", formtarget)
         if height is not None:
             self.setAttribute("height", height)
-        # if _list is not None:
-        #     self.setAttribute('list', _list)
-        # if _max is not None:
-        #     self.setAttribute('max', _max)
+        if _list is not None:
+            self.setAttribute("list", _list)
+        if _max is not None:
+            self.setAttribute("max", _max)
         if maxlength is not None:
             self.setAttribute("maxlength", maxlength)
-        # if _min is not None:
-        #     self.setAttribute('min', _min)
+        if minlength is not None:
+            self.setAttribute("minlength", minlength)
+        if _min is not None:
+            self.setAttribute("min", _min)
         if multiple is not None:
             self.setAttribute("multiple", multiple)
         if name is not None:
@@ -8357,6 +8619,10 @@ class HTMLInputElement(HTMLElement):
             self.setAttribute("pattern", pattern)
         if placeholder is not None:
             self.setAttribute("placeholder", placeholder)
+        if popovertarget is not None:
+            self.setAttribute("popovertarget", popovertarget)
+        if popovertargetaction is not None:
+            self.setAttribute("popovertargetaction", popovertargetaction)
         if readonly is not None:
             self.setAttribute("readonly", readonly)
         if required is not None:
@@ -8375,6 +8641,25 @@ class HTMLInputElement(HTMLElement):
             self.setAttribute("width", width)
         self._default_value = self.value
         self._default_checked = self.checked
+
+    @property
+    def popoverTargetElement(self) -> Element | None:
+        return _resolve_id_reference(self, "popovertarget")
+
+    @popoverTargetElement.setter
+    def popoverTargetElement(self, target: Any) -> None:
+        _set_id_reference(self, "popovertarget", target)
+
+    @property
+    def popoverTargetAction(self) -> str | None:
+        return self.getAttribute("popovertargetaction")
+
+    @popoverTargetAction.setter
+    def popoverTargetAction(self, action: Any) -> None:
+        if action is None:
+            self.removeAttribute("popovertargetaction")
+        else:
+            self.setAttribute("popovertargetaction", action)
 
     @property
     def value(self) -> str:
@@ -8498,7 +8783,27 @@ class HTMLLegendElement(HTMLElement):
 class HTMLLinkElement(HTMLElement):
     name = "link"
 
-    def __init__(self, *args, rel=None, href=None, type=None, sizes=None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        as_=None,
+        blocking=None,
+        color=None,
+        crossorigin=None,
+        disabled=None,
+        fetchpriority=None,
+        href=None,
+        hreflang=None,
+        imagesizes=None,
+        imagesrcset=None,
+        integrity=None,
+        media=None,
+        referrerpolicy=None,
+        rel=None,
+        sizes=None,
+        type=None,
+        **kwargs,
+    ):
         """HTMLLinkElement
 
         Args:
@@ -8508,14 +8813,27 @@ class HTMLLinkElement(HTMLElement):
             sizes (str, optional): Defines the sizes of the icons linked.
         """
         super().__init__(*args, **kwargs)
-        if rel is not None:
-            self.setAttribute("rel", rel)
-        if href is not None:
-            self.setAttribute("href", href)
-        if type is not None:
-            self.setAttribute("type", type)
-        if sizes is not None:
-            self.setAttribute("sizes", sizes)
+        _set_attributes(
+            self,
+            {
+                "as": as_,
+                "blocking": blocking,
+                "color": color,
+                "crossorigin": crossorigin,
+                "disabled": disabled,
+                "fetchpriority": fetchpriority,
+                "href": href,
+                "hreflang": hreflang,
+                "imagesizes": imagesizes,
+                "imagesrcset": imagesrcset,
+                "integrity": integrity,
+                "media": media,
+                "referrerpolicy": referrerpolicy,
+                "rel": rel,
+                "sizes": sizes,
+                "type": type,
+            },
+        )
 
 
 class HTMLMapElement(HTMLElement):
@@ -8529,22 +8847,31 @@ class HTMLMapElement(HTMLElement):
 class HTMLMediaElement(HTMLElement):
     name = ""
 
-    def __init__(self, *args, src=None, crossorigin=None, preload=None, autoplay=None, loop=None, muted=None, controls=None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        src=None,
+        crossorigin=None,
+        preload=None,
+        autoplay=None,
+        loop=None,
+        muted=None,
+        controls=None,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
-        if src is not None:
-            self.setAttribute("src", src)
-        if crossorigin is not None:
-            self.setAttribute("crossorigin", crossorigin)
-        if preload is not None:
-            self.setAttribute("preload", preload)
-        if autoplay is not None:
-            self.setAttribute("autoplay", autoplay)
-        if loop is not None:
-            self.setAttribute("loop", loop)
-        if muted is not None:
-            self.setAttribute("muted", muted)
-        if controls is not None:
-            self.setAttribute("controls", controls)
+        _set_attributes(
+            self,
+            {
+                "src": src,
+                "crossorigin": crossorigin,
+                "preload": preload,
+                "autoplay": autoplay,
+                "loop": loop,
+                "muted": muted,
+                "controls": controls,
+            },
+        )
 
     def load(self):
         self.dispatchEvent(Event("loadstart", {"bubbles": False, "cancelable": False}))
@@ -8841,30 +9168,38 @@ class HTMLQuoteElement(HTMLElement):
 class HTMLScriptElement(HTMLElement):
     name = "script"
 
-    # def __init__(self, *args, _async=None, charset=None, crossorigin=None, defer=None, src=None, type=None, **kwargs):
-    #     """HTMLScriptElement
-
-    #     Args:
-    #         async (_type_, optional): _description_. Defaults to None.
-    #         charset (_type_, optional): _description_. Defaults to None.
-    #         crossorigin (_type_, optional): _description_. Defaults to None.
-    #         defer (_type_, optional): _description_. Defaults to None.
-    #         src (_type_, optional): _description_. Defaults to None.
-    #         type (_type_, optional): _description_. Defaults to None.
-    #     """
-    #     super().__init__(*args, **kwargs)
-    #     # if _async is not None:
-    #         # self.setAttribute('async', _async)
-    #     if charset is not None:
-    #         self.setAttribute('charset', charset)
-    #     if crossorigin is not None:
-    #         self.setAttribute('crossorigin', crossorigin)
-    #     if defer is not None:
-    #         self.setAttribute('defer', defer)
-    #     if src is not None:
-    #         self.setAttribute('src', src)
-    #     if type is not None:
-    #         self.setAttribute('type', type)
+    def __init__(
+        self,
+        *args,
+        async_=None,
+        blocking=None,
+        crossorigin=None,
+        defer=None,
+        fetchpriority=None,
+        integrity=None,
+        nomodule=None,
+        referrerpolicy=None,
+        src=None,
+        type=None,
+        **kwargs,
+    ):
+        """HTMLScriptElement"""
+        super().__init__(*args, **kwargs)
+        _set_attributes(
+            self,
+            {
+                "async": async_,
+                "blocking": blocking,
+                "crossorigin": crossorigin,
+                "defer": defer,
+                "fetchpriority": fetchpriority,
+                "integrity": integrity,
+                "nomodule": nomodule,
+                "referrerpolicy": referrerpolicy,
+                "src": src,
+                "type": type,
+            },
+        )
 
 
 class HTMLSelectElement(HTMLElement):
@@ -8961,6 +9296,10 @@ class HTMLSelectElement(HTMLElement):
         return self.checkValidity()
 
 
+class HTMLSelectedContentElement(HTMLElement):
+    name = "selectedcontent"
+
+
 class HTMLShadowElement(HTMLElement):
     name = "shadow"
     # Currently, the shadow element is obsolete and not typically used in HTML5. Its use was associated with the deprecated Shadow DOM v0 API.
@@ -8977,7 +9316,7 @@ class HTMLSourceElement(HTMLElement):
     name = "source"
     __isempty = True
 
-    def __init__(self, *args, src=None, type=None, media=None, sizes=None, **kwargs):
+    def __init__(self, *args, height=None, media=None, sizes=None, src=None, srcset=None, type=None, width=None, **kwargs):
         """HTMLSourceElement
 
         Args:
@@ -8987,14 +9326,18 @@ class HTMLSourceElement(HTMLElement):
             sizes (str, optional): Specifies the sizes of the source.
         """
         super().__init__(*args, **kwargs)
-        if src is not None:
-            self.setAttribute("src", src)
-        if type is not None:
-            self.setAttribute("type", type)
-        if media is not None:
-            self.setAttribute("media", media)
-        if sizes is not None:
-            self.setAttribute("sizes", sizes)
+        _set_attributes(
+            self,
+            {
+                "height": height,
+                "media": media,
+                "sizes": sizes,
+                "src": src,
+                "srcset": srcset,
+                "type": type,
+                "width": width,
+            },
+        )
 
 
 class HTMLSpanElement(HTMLElement):
@@ -9005,7 +9348,7 @@ class HTMLSpanElement(HTMLElement):
 class HTMLStyleElement(HTMLElement):
     name = "style"
 
-    def __init__(self, *args, type=None, media=None, scoped=None, **kwargs):
+    def __init__(self, *args, blocking=None, media=None, scoped=None, type=None, **kwargs):
         """HTMLStyleElement
 
         Args:
@@ -9014,12 +9357,7 @@ class HTMLStyleElement(HTMLElement):
             scoped (str, optional): Indicates whether the style is scoped to the element.
         """
         super().__init__(*args, **kwargs)
-        if type is not None:
-            self.setAttribute("type", type)
-        if media is not None:
-            self.setAttribute("media", media)
-        if scoped is not None:
-            self.setAttribute("scoped", scoped)
+        _set_attributes(self, {"blocking": blocking, "media": media, "scoped": scoped, "type": type})
 
 
 class HTMLTableCaptionElement(HTMLElement):
@@ -9175,6 +9513,30 @@ class HTMLSlotElement(HTMLElement):
 class HTMLTemplateElement(HTMLElement):
     name = "template"
 
+    def __init__(
+        self,
+        *args,
+        shadowrootclonable=None,
+        shadowrootcustomelementregistry=None,
+        shadowrootdelegatesfocus=None,
+        shadowrootmode=None,
+        shadowrootserializable=None,
+        shadowrootslotassignment=None,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        _set_attributes(
+            self,
+            {
+                "shadowrootclonable": shadowrootclonable,
+                "shadowrootcustomelementregistry": shadowrootcustomelementregistry,
+                "shadowrootdelegatesfocus": shadowrootdelegatesfocus,
+                "shadowrootmode": shadowrootmode,
+                "shadowrootserializable": shadowrootserializable,
+                "shadowrootslotassignment": shadowrootslotassignment,
+            },
+        )
+
     @property
     def content(self):
         return DocumentFragment(*self.args)
@@ -9190,11 +9552,14 @@ class HTMLTextAreaElement(HTMLElement):
     def __init__(
         self,
         *args,
+        autocomplete=None,
         autofocus=None,
         cols=None,
+        dirname=None,
         disabled=None,
         form=None,
         maxlength=None,
+        minlength=None,
         name=None,
         placeholder=None,
         readonly=None,
@@ -9219,16 +9584,22 @@ class HTMLTextAreaElement(HTMLElement):
             wrap (_type_, optional): _description_. Defaults to None.
         """
         super().__init__(*args, **kwargs)
+        if autocomplete is not None:
+            self.setAttribute("autocomplete", autocomplete)
         if autofocus is not None:
             self.setAttribute("autofocus", autofocus)
         if cols is not None:
             self.setAttribute("cols", cols)
+        if dirname is not None:
+            self.setAttribute("dirname", dirname)
         if disabled is not None:
             self.setAttribute("disabled", disabled)
         if form is not None:
             self.setAttribute("form", form)
         if maxlength is not None:
             self.setAttribute("maxlength", maxlength)
+        if minlength is not None:
+            self.setAttribute("minlength", minlength)
         if name is not None:
             self.setAttribute("name", name)
         if placeholder is not None:
@@ -9343,9 +9714,13 @@ class HTMLVideoElement(HTMLElement):
         *args,
         autoplay=None,
         controls=None,
+        controlslist=None,
+        crossorigin=None,
+        disablepictureinpicture=None,
         height=None,
         loop=None,
         muted=None,
+        playsinline=None,
         poster=None,
         preload=None,
         src=None,
@@ -9366,24 +9741,24 @@ class HTMLVideoElement(HTMLElement):
             width (_type_, optional): _description_. Defaults to None.
         """
         super().__init__(*args, **kwargs)
-        if autoplay is not None:
-            self.setAttribute("autoplay", autoplay)
-        if controls is not None:
-            self.setAttribute("controls", controls)
-        if height is not None:
-            self.setAttribute("height", height)
-        if loop is not None:
-            self.setAttribute("loop", loop)
-        if muted is not None:
-            self.setAttribute("muted", muted)
-        if poster is not None:
-            self.setAttribute("poster", poster)
-        if preload is not None:
-            self.setAttribute("preload", preload)
-        if src is not None:
-            self.setAttribute("src", src)
-        if width is not None:
-            self.setAttribute("width", width)
+        _set_attributes(
+            self,
+            {
+                "autoplay": autoplay,
+                "controls": controls,
+                "controlslist": controlslist,
+                "crossorigin": crossorigin,
+                "disablepictureinpicture": disablepictureinpicture,
+                "height": height,
+                "loop": loop,
+                "muted": muted,
+                "playsinline": playsinline,
+                "poster": poster,
+                "preload": preload,
+                "src": src,
+                "width": width,
+            },
+        )
 
 
 class HTMLPortalElement(HTMLElement):

@@ -42,7 +42,7 @@ class TestTemplates(unittest.TestCase):
 
     def test_redirect_page(self):
         page = str(redirect_page("/next", 5))
-        self.assertIn('http_equiv="refresh"', page)
+        self.assertIn('http-equiv="refresh"', page)
         self.assertIn('content="5;url=/next"', page)
         self.assertIn("Redirecting", page)
 

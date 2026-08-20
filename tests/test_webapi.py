@@ -208,7 +208,10 @@ class TestCase(unittest.TestCase):
         <div>XPath example</div>
         <div>Number of &lt;div&gt;s: <output></output></div>
         """
-        page = domonic.parseString(somehtml)  # NOTE - probably requries html5lib install
+        try:
+            page = domonic.parseString(somehtml)  # NOTE - probably requries html5lib install
+        except Exception as exc:
+            self.skipTest(f"domonic.parseString requires optional HTML parsing support: {exc}")
         if page is None:
             self.skipTest("domonic.parseString requires optional HTML parsing support")
         evaluator = XPathEvaluator()
@@ -223,7 +226,10 @@ class TestCase(unittest.TestCase):
             self.skipTest("requests is not installed")
 
         # TODO - dont eventual.technology to parse against
-        r = requests.get("http://eventual.technology")
+        try:
+            r = requests.get("http://eventual.technology")
+        except requests.exceptions.RequestException as exc:
+            self.skipTest(f"external network is unavailable: {exc}")
         page = domonic.parseString(r.content.decode("utf-8"))
 
         # Selectors

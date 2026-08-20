@@ -361,44 +361,82 @@ class Event:
     EMPTIED: str = "emptied"  #:
     ABORT: str = "abort"  #:
     AFTERPRINT: str = "afterprint"  #:
+    AUXCLICK: str = "auxclick"  #:
+    BEFOREINPUT: str = "beforeinput"  #:
+    BEFOREMATCH: str = "beforematch"  #:
     BEFOREPRINT: str = "beforeprint"  #:
+    BEFORETOGGLE: str = "beforetoggle"  #:
     BEFOREUNLOAD: str = "beforeunload"  #:
+    BLUR: str = "blur"  #:
+    CANCEL: str = "cancel"  #:
     CANPLAY: str = "canplay"  #:
     CANPLAYTHROUGH: str = "canplaythrough"  #:
     CHANGE: str = "change"  #:
+    CLICK: str = "click"  #:
+    CLOSE: str = "close"  #:
+    COMMAND: str = "command"  #:
+    CONNECT: str = "connect"  #:
+    CONTEXTLOST: str = "contextlost"  #:
+    CONTEXTRESTORED: str = "contextrestored"  #:
+    CURRENTENTRYCHANGE: str = "currententrychange"  #:
+    DISPOSE: str = "dispose"  #:
+    DOMCONTENTLOADED: str = "DOMContentLoaded"  #:
     DURATIONCHANGE: str = "durationchange"  #:
     ENDED: str = "ended"  #:
     ERROR: str = "error"  #:
+    FOCUS: str = "focus"  #:
+    FORMDATA: str = "formdata"  #:
     FULLSCREENCHANGE: str = "fullscreenchange"  #:
     FULLSCREENERROR: str = "fullscreenerror"  #:
+    HASHCHANGE: str = "hashchange"  #:
     INPUT: str = "input"  #:
     INVALID: str = "invalid"  #:
+    LANGUAGECHANGE: str = "languagechange"  #:
     LOAD: str = "load"  #:
     LOADEDDATA: str = "loadeddata"  #:
     LOADEDMETADATA: str = "loadedmetadata"  #:
     MESSAGE: str = "message"  #:
+    MESSAGEERROR: str = "messageerror"  #:
+    MOUSEENTER: str = "mouseenter"  #:
+    MOUSELEAVE: str = "mouseleave"  #:
+    NAVIGATE: str = "navigate"  #:
+    NAVIGATEERROR: str = "navigateerror"  #:
+    NAVIGATESUCCESS: str = "navigatesuccess"  #:
     OFFLINE: str = "offline"  #:
     ONLINE: str = "online"  #:
     OPEN: str = "open"  #:
+    PAGEHIDE: str = "pagehide"  #:
+    PAGEREVEAL: str = "pagereveal"  #:
+    PAGESHOW: str = "pageshow"  #:
+    PAGESWAP: str = "pageswap"  #:
     PAUSE: str = "pause"  #:
     PLAY: str = "play"  #:
     PLAYING: str = "playing"  #:
+    POINTERCANCEL: str = "pointercancel"  #:
+    POPSTATE: str = "popstate"  #:
     PROGRESS: str = "progress"  #:
     RATECHANGE: str = "ratechange"  #:
     READYSTATECHANGE: str = "readystatechange"  #:
     RESIZE: str = "resize"  #:
+    REJECTIONHANDLED: str = "rejectionhandled"  #:
     RESET: str = "reset"  #:
     SCROLL: str = "scroll"  #:
+    SCROLLEND: str = "scrollend"  #:
     SEARCH: str = "search"  #:
+    SECURITYPOLICYVIOLATION: str = "securitypolicyviolation"  #:
     SEEKED: str = "seeked"  #:
     SEEKING: str = "seeking"  #:
     SELECT: str = "select"  #:
     SHOW: str = "show"  #:
+    SLOTCHANGE: str = "slotchange"  #:
     STALLED: str = "stalled"  #:
+    STORAGE: str = "storage"  #:
     SUBMIT: str = "submit"  #:
     SUSPEND: str = "suspend"  #:
     TOGGLE: str = "toggle"  #:
+    UNHANDLEDREJECTION: str = "unhandledrejection"  #:
     UNLOAD: str = "unload"  #:
+    VISIBILITYCHANGE: str = "visibilitychange"  #:
     VOLUMECHANGE: str = "volumechange"  #:
     WAITING: str = "waiting"  #:
 
@@ -1319,6 +1357,32 @@ class CustomEvent(Event):
         return self
 
 
+class ToggleEvent(Event):
+    """ToggleEvent"""
+
+    BEFORETOGGLE: str = "beforetoggle"  #:
+    TOGGLE: str = "toggle"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs
+        self.oldState = options.get("oldState", "")
+        self.newState = options.get("newState", "")
+        self.source = options.get("source", None)
+        super().__init__(_type, options, *args, **kwargs)
+
+
+class CommandEvent(Event):
+    """CommandEvent"""
+
+    COMMAND: str = "command"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs
+        self.command = options.get("command", "")
+        self.source = options.get("source", None)
+        super().__init__(_type, options, *args, **kwargs)
+
+
 class GamePadEvent(Event):
     """GamePadEvent"""
 
@@ -1570,34 +1634,47 @@ class MessageEvent(Event):
 
 class GlobalEventHandler:
     _handler_names = (
-        "onabort", "onblur", "oncancel", "oncanplay", "oncanplaythrough", "onchange", "onclick",
-        "onclose", "oncontextmenu", "oncuechange", "ondblclick", "ondrag", "ondragend",
-        "ondragenter", "ondragexit", "ondragleave", "ondragover", "ondragstart", "ondrop",
-        "ondurationchange", "onemptied", "onended", "onerror", "onfocus", "ongotpointercapture",
-        "oninput", "oninvalid", "onkeydown", "onkeypress", "onkeyup", "onload", "onloadeddata",
-        "onloadedmetadata", "onloadend", "onloadstart", "onlostpointercapture", "onmouseenter",
-        "onmouseleave", "onmousemove", "onmouseout", "onmouseover", "onmouseup", "onpause",
-        "onplay", "onplaying", "onpointercancel", "onpointerdown", "onpointerenter",
-        "onpointerleave", "onpointermove", "onpointerout", "onpointerover", "onpointerup",
-        "onprogress", "onratechange", "onreset", "onresize", "onscroll", "onseeked",
-        "onseeking", "onselect", "onselectionchange", "onselectstart", "onshow", "onstalled",
-        "onsubmit", "onsuspend", "ontimeupdate", "onvolumechange", "onwaiting", "onwheel",
-        "onanimationcancel", "onanimationend", "onanimationiteration", "onauxclick", "onformdata",
-        "onmousedown", "ontouchcancel", "ontouchstart", "ontransitioncancel", "ontransitionend",
+        "onabort", "onanimationcancel", "onanimationend", "onanimationiteration", "onauxclick",
+        "onbeforeinput", "onbeforematch", "onbeforetoggle", "onblur", "oncancel", "oncanplay",
+        "oncanplaythrough", "onchange", "onclick", "onclose", "oncommand", "onconnect",
+        "oncontextlost", "oncontextmenu", "oncontextrestored", "oncuechange", "oncurrententrychange",
+        "ondblclick", "ondispose", "ondrag", "ondragend", "ondragenter", "ondragexit",
+        "ondragleave", "ondragover", "ondragstart", "ondrop", "ondurationchange", "onemptied",
+        "onended", "onerror", "onfocus", "onformdata", "ongotpointercapture", "oninput",
+        "oninvalid", "onkeydown", "onkeypress", "onkeyup", "onlanguagechange", "onload",
+        "onloadeddata", "onloadedmetadata", "onloadend", "onloadstart", "onlostpointercapture",
+        "onmessage", "onmessageerror", "onmouseenter", "onmouseleave", "onmousedown",
+        "onmousemove", "onmouseout", "onmouseover", "onmouseup", "onnavigate", "onnavigateerror",
+        "onnavigatesuccess", "onopen", "onpause", "onplay", "onplaying", "onpointercancel",
+        "onpointerdown", "onpointerenter", "onpointerleave", "onpointermove", "onpointerout",
+        "onpointerover", "onpointerup", "onprogress", "onratechange", "onreadystatechange",
+        "onrejectionhandled", "onreset", "onresize", "onscroll", "onscrollend", "onsearch",
+        "onsecuritypolicyviolation", "onseeked", "onseeking", "onselect", "onselectionchange",
+        "onselectstart", "onshow", "onslotchange", "onstalled", "onsubmit", "onsuspend",
+        "ontimeupdate", "ontoggle", "ontouchcancel", "ontouchstart", "ontransitioncancel",
+        "ontransitionend", "onunhandledrejection", "onvisibilitychange", "onvolumechange",
+        "onwaiting", "onwheel",
     )
 
 
 class WindowEventHandler:
     _handler_names = (
-        "onabort", "onafterprint", "onbeforeprint", "onbeforeunload", "onblur", "oncanplay",
-        "oncanplaythrough", "onchange", "onclick", "oncontextmenu", "oncopy", "oncuechange",
-        "oncut", "ondblclick", "ondrag", "ondragend", "ondragenter", "ondragleave", "ondragover",
-        "ondragstart", "ondrop", "ondurationchange", "onemptied", "onended", "onerror", "onfocus",
-        "onhashchange", "oninput", "oninvalid", "onkeydown", "onkeypress", "onkeyup", "onload",
-        "onloadeddata", "onloadedmetadata", "onloadstart", "onmessage", "onmousedown",
-        "onmouseenter", "onmouseleave", "onmousemove", "onmouseout", "onmouseover", "onmouseup",
-        "onmousewheel", "onoffline", "ononline", "onpagehide", "onpageshow", "onpaste",
-        "onpopstate", "onresize", "onscroll", "onstorage", "onsubmit", "onunload",
+        "onabort", "onafterprint", "onbeforeinput", "onbeforematch", "onbeforeprint",
+        "onbeforetoggle", "onbeforeunload", "onblur", "oncanplay", "oncanplaythrough",
+        "onchange", "onclick", "oncommand", "onconnect", "oncontextlost", "oncontextmenu",
+        "oncontextrestored", "oncopy", "oncuechange", "oncurrententrychange", "oncut",
+        "ondblclick", "ondispose", "ondrag", "ondragend", "ondragenter", "ondragleave",
+        "ondragover", "ondragstart", "ondrop", "ondurationchange", "onemptied", "onended",
+        "onerror", "onfocus", "onformdata", "onhashchange", "oninput", "oninvalid",
+        "onkeydown", "onkeypress", "onkeyup", "onlanguagechange", "onload", "onloadeddata",
+        "onloadedmetadata", "onloadstart", "onmessage", "onmessageerror", "onmousedown",
+        "onmouseenter", "onmouseleave", "onmousemove", "onmouseout", "onmouseover",
+        "onmouseup", "onmousewheel", "onnavigate", "onnavigateerror", "onnavigatesuccess",
+        "onoffline", "ononline", "onopen", "onpagehide", "onpagereveal", "onpageshow",
+        "onpageswap", "onpaste", "onpopstate", "onreadystatechange", "onrejectionhandled",
+        "onresize", "onscroll", "onscrollend", "onsearch", "onsecuritypolicyviolation",
+        "onslotchange", "onstorage", "onsubmit", "ontoggle", "onunhandledrejection",
+        "onunload", "onvisibilitychange",
     )
 
     def __init__(self, window):

@@ -689,6 +689,7 @@ class DOMTest(unittest.TestCase):
         # print("RESULT>>>>>", result)
         # print('--')
         assert result.id == "thing"
+        assert dom1.getElementById("thing") is result
 
         result = dom1.querySelector("span")
         # print('--')
@@ -705,6 +706,9 @@ class DOMTest(unittest.TestCase):
         # print("RESULT>>>>>", result)
         assert len(result) == 1
         assert result[0].className == "test this thing"
+        assert len(dom1.getElementsByClassName("test this")) == 1
+        assert len(dom1.querySelectorAll(".test.this")) == 1
+        assert dom1.contains(dom1)
 
         links = self.page.querySelectorAll("a[rel=nofollow]")
         # for linky in links:
@@ -1481,6 +1485,142 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(active.startOffset, 2)
         self.assertIs(active.endContainer, second)
         self.assertEqual(active.endOffset, 3)
+
+    def test_popover_and_interest_reflected_properties(self):
+        doc = Document()
+        root = div()
+        target = div(_id="menu")
+        control = button("Open")
+        interest = a("More")
+        root.appendChild(target)
+        root.appendChild(control)
+        root.appendChild(interest)
+        doc.appendChild(root)
+
+        target.popover = True
+        self.assertEqual(target.getAttribute("popover"), "auto")
+        self.assertIs(target.showPopover(), target)
+        self.assertTrue(target.hasAttribute("open"))
+        self.assertIs(target.togglePopover(False), target)
+        self.assertFalse(target.hasAttribute("open"))
+
+        control.popoverTargetElement = target
+        self.assertEqual(control.getAttribute("popovertarget"), "menu")
+        self.assertIs(control.popoverTargetElement, target)
+        control.popoverTargetAction = "show"
+        self.assertEqual(control.getAttribute("popovertargetaction"), "show")
+
+        interest.interestForElement = target
+        self.assertEqual(interest.getAttribute("interestfor"), "menu")
+        self.assertIs(interest.interestForElement, target)
+
+        target.addEventListener("beforetoggle", lambda event: event.preventDefault())
+        self.assertIs(target.showPopover(), target)
+        self.assertFalse(target.hasAttribute("open"))
+
+    def test_modern_dom_constructor_reflected_attributes(self):
+        anchor = HTMLAnchorElement(
+            "Docs",
+            href="/docs",
+            hreflang="en",
+            ping="/log",
+            referrerpolicy="no-referrer",
+        )
+        self.assertEqual(anchor.getAttribute("ping"), "/log")
+        self.assertEqual(anchor.getAttribute("referrerpolicy"), "no-referrer")
+
+        area_el = HTMLAreaElement(
+            href="/map",
+            alt="Map",
+            download="map.png",
+            ping="/area-log",
+            rel="nofollow",
+            referrerpolicy="origin",
+        )
+        self.assertEqual(area_el.getAttribute("download"), "map.png")
+        self.assertEqual(area_el.getAttribute("rel"), "nofollow")
+
+        iframe_el = HTMLIFrameElement(
+            allow="fullscreen",
+            credentialless=True,
+            loading="lazy",
+            referrerpolicy="no-referrer",
+            srcdoc="<p>Hello</p>",
+        )
+        self.assertEqual(iframe_el.getAttribute("allow"), "fullscreen")
+        self.assertEqual(iframe_el.getAttribute("credentialless"), True)
+        self.assertEqual(iframe_el.getAttribute("srcdoc"), "<p>Hello</p>")
+
+        image = HTMLImageElement(
+            alt="Hero",
+            decoding="async",
+            fetchpriority="high",
+            loading="lazy",
+            referrerpolicy="no-referrer",
+            src="/hero.avif",
+        )
+        self.assertEqual(image.getAttribute("decoding"), "async")
+        self.assertEqual(image.getAttribute("fetchpriority"), "high")
+
+        link_el = HTMLLinkElement(
+            as_="script",
+            blocking="render",
+            fetchpriority="high",
+            href="/app.js",
+            imagesizes="100vw",
+            imagesrcset="/app-small.js 1x",
+            referrerpolicy="origin",
+            rel="preload",
+        )
+        self.assertEqual(link_el.getAttribute("as"), "script")
+        self.assertEqual(link_el.getAttribute("imagesrcset"), "/app-small.js 1x")
+
+        script_el = HTMLScriptElement(
+            async_=True,
+            blocking="render",
+            fetchpriority="high",
+            nomodule=True,
+            referrerpolicy="no-referrer",
+            src="/legacy.js",
+        )
+        self.assertEqual(script_el.getAttribute("async"), True)
+        self.assertEqual(script_el.getAttribute("nomodule"), True)
+
+        source_el = HTMLSourceElement(srcset="/small.avif 1x", sizes="50vw", width="640", height="360")
+        self.assertEqual(source_el.getAttribute("srcset"), "/small.avif 1x")
+        self.assertEqual(source_el.getAttribute("height"), "360")
+
+        style_el = HTMLStyleElement(blocking="render", media="screen")
+        self.assertEqual(style_el.getAttribute("blocking"), "render")
+
+        template_el = HTMLTemplateElement(
+            shadowrootmode="open",
+            shadowrootdelegatesfocus=True,
+            shadowrootserializable=True,
+        )
+        self.assertEqual(template_el.getAttribute("shadowrootmode"), "open")
+        self.assertEqual(template_el.getAttribute("shadowrootserializable"), True)
+
+        textarea_el = HTMLTextAreaElement(autocomplete="on", dirname="notes.dir", minlength=2)
+        self.assertEqual(textarea_el.getAttribute("autocomplete"), "on")
+        self.assertEqual(textarea_el.getAttribute("minlength"), 2)
+
+        dialog_el = HTMLDialogElement(closedby="any")
+        self.assertEqual(dialog_el.getAttribute("closedby"), "any")
+
+        audio_el = HTMLAudioElement(crossorigin="anonymous", loading="lazy")
+        self.assertEqual(audio_el.getAttribute("crossorigin"), "anonymous")
+        self.assertEqual(audio_el.getAttribute("loading"), "lazy")
+
+        video_el = HTMLVideoElement(
+            controlslist="nodownload",
+            crossorigin="anonymous",
+            disablepictureinpicture=True,
+            playsinline=True,
+        )
+        self.assertEqual(video_el.getAttribute("controlslist"), "nodownload")
+        self.assertEqual(video_el.getAttribute("disablepictureinpicture"), True)
+        self.assertEqual(video_el.getAttribute("playsinline"), True)
 
     def test_document_caret_position_from_point(self):
         target = div("hello", _id="target")
@@ -2325,6 +2465,9 @@ class DOMTest(unittest.TestCase):
             if bird.matches(".endangered"):
                 # print('The ' + bird.textContent + ' is endangered!')
                 assert "The " + bird.textContent + " is endangered!" == "The Philippine eagle is endangered!"
+        assert birds[1].matches("li.endangered")
+        assert birds[1].matches(".safe, .endangered")
+        assert birds[1].closest("ul") is content
 
     def test_getElementsByTagName(self):
         content = ul(_id="birds").html(
