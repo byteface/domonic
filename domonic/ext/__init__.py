@@ -8,14 +8,6 @@
 
 from __future__ import annotations
 
-# HELLO WORLDS - one-file web server/framework scaffolds for `domonic project`.
-#
-# The older wishlist also mentioned graphene, httpx, invenio, jupyterhub,
-# kombu, masonite, motor, pydantic, and trio. Those are not exposed here
-# because they are libraries, platforms, or project-layout CLIs rather than
-# simple one-file server targets.
-
-
 def _hello_page_source(framework: str) -> str:
     return f"""\
 def page():
