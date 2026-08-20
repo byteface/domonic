@@ -377,7 +377,24 @@ def _is_control_valid(control: "Element") -> bool:
         tag_name = getattr(control, "tagName", getattr(control, "name", "")).lower()
         if tag_name == "input":
             input_type = (control.getAttribute("type") or "text").lower()
-            if input_type in {"checkbox", "radio"}:
+            if input_type == "checkbox":
+                return control.checked
+            if input_type == "radio":
+                form = _form_owner(control)
+                root = form if form is not None else getattr(control, "parentNode", None)
+                name = control.getAttribute("name")
+                if root is not None and hasattr(root, "querySelectorAll"):
+                    radios = [
+                        candidate
+                        for candidate in root.querySelectorAll("input")
+                        if (
+                            isinstance(candidate, HTMLInputElement)
+                            and not candidate.hasAttribute("disabled")
+                            and (candidate.getAttribute("type") or "").lower() == "radio"
+                            and candidate.getAttribute("name") == name
+                        )
+                    ]
+                    return any(radio.checked for radio in radios)
                 return control.checked
             return control.value != ""
         if tag_name == "textarea":
@@ -2396,12 +2413,23 @@ class DOMTokenList(list):
 
     def __init__(self, element: "Node"):
         self.el = element
-        tokens = []
-        for token in str(element.className or "").split():
-            if token not in tokens:
-                tokens.append(token)
+        tokens = self._tokens_from_element()
         self.classes = tokens
         super().__init__(tokens)
+
+    def _tokens_from_element(self) -> list[str]:
+        tokens = []
+        for token in str(self.el.className or "").split():
+            if token not in tokens:
+                tokens.append(token)
+        return tokens
+
+    def _reload(self) -> None:
+        tokens = self._tokens_from_element()
+        if tokens != list(list.__iter__(self)):
+            list.clear(self)
+            list.extend(self, tokens)
+        self.classes = tokens
 
     @staticmethod
     def _validate_token(token) -> str:
@@ -2413,23 +2441,49 @@ class DOMTokenList(list):
         return token
 
     def _sync(self) -> None:
-        self.classes = list(self)
-        self.el.className = self.toString()
+        self.classes = list(list.__iter__(self))
+        self.el.className = " ".join(self.classes)
+
+    @property
+    def length(self) -> int:
+        self._reload()
+        return list.__len__(self)
+
+    def __len__(self) -> int:
+        return self.length
+
+    def __iter__(self):
+        self._reload()
+        return list.__iter__(self)
+
+    def __contains__(self, token) -> bool:
+        self._reload()
+        return list.__contains__(self, token)
+
+    def __getitem__(self, index):
+        self._reload()
+        return list.__getitem__(self, index)
+
+    def __eq__(self, other):
+        self._reload()
+        return list(list.__iter__(self)) == other
 
     def add(self, *args):
         """Adds the given tokens to the list"""
+        self._reload()
         for item in args:
             token = self._validate_token(item)
-            if token not in self:
-                self.append(token)
+            if not list.__contains__(self, token):
+                list.append(self, token)
         self._sync()
 
     def remove(self, *args):
         """Removes the given tokens from the list"""
+        self._reload()
         for item in args:
             token = self._validate_token(item)
-            while token in self:
-                super().remove(token)
+            while list.__contains__(self, token):
+                list.remove(self, token)
         self._sync()
 
     def toggle(self, token, force=None):
@@ -2437,8 +2491,9 @@ class DOMTokenList(list):
         otherwise adds token to list. If force is true, adds token to list,
         and if force is false, removes token from list if present."""
         token = self._validate_token(token)
+        self._reload()
         if force is None:
-            if token in self:
+            if list.__contains__(self, token):
                 self.remove(token)
                 return False
             else:
@@ -2457,17 +2512,18 @@ class DOMTokenList(list):
         """Replaces an existing token with a new token."""
         token = self._validate_token(token)
         newToken = self._validate_token(newToken)
-        if token not in self:
+        self._reload()
+        if not list.__contains__(self, token):
             return False
         if token == newToken:
             self._sync()
             return True
 
-        index = self.index(token)
-        if newToken in self:
-            super().remove(token)
+        index = list.index(self, token)
+        if list.__contains__(self, newToken):
+            list.remove(self, token)
         else:
-            self[index] = newToken
+            list.__setitem__(self, index, newToken)
         self._sync()
         return True
 
@@ -2479,29 +2535,35 @@ class DOMTokenList(list):
 
     def item(self, index: int):
         """Returns the token at the specified index"""
-        return self[index] if 0 <= index < len(self) else None
+        self._reload()
+        return list.__getitem__(self, index) if 0 <= index < list.__len__(self) else None
 
     def toString(self) -> str:
         """Returns a string containing all tokens in the list, with spaces separating each token"""
-        return " ".join(self)
+        self._reload()
+        return " ".join(list.__iter__(self))
 
     def entries(self) -> Iterable[tuple[int, str]]:
         """Returns an iterator over index/token pairs."""
+        self._reload()
         for i in range(len(self)):
-            yield i, self[i]
+            yield i, list.__getitem__(self, i)
 
     def forEach(self, func: Callable[[str, int, "DOMTokenList"], Any], thisArg: Any = None) -> None:
         """Calls a function for each token in the list."""
+        self._reload()
         for i in range(len(self)):
-            func(self[i], i, self)
+            func(list.__getitem__(self, i), i, self)
 
     def keys(self) -> Iterable[int]:
         """Returns an iterator over token indexes."""
+        self._reload()
         return iter(range(len(self)))
 
     def values(self) -> Iterable[str]:
         """Returns an iterator over tokens."""
-        return iter(self)
+        self._reload()
+        return list.__iter__(self)
 
     def __str__(self):
         return self.toString()
@@ -3005,25 +3067,63 @@ class NodeList(list):
 
 
 class RadioNodeList(NodeList):
-    # TODO - not tested
+    """A live collection of form controls sharing an id or name."""
 
-    def __init__(self, name: str) -> None:  # , owner: Element):
-        self.name: str = name
+    def __init__(self, nodes: Iterable[Node] | str | None = None, name: str | None = None, owner=None) -> None:
+        if isinstance(nodes, str) and name is None:
+            name = nodes
+            nodes = None
+        self.name: str = name or ""
+        self._owner = owner
+        super().__init__(list(nodes or []))
+
+    def _nodes(self) -> list[Node]:
+        if self._owner is not None and hasattr(self._owner, "_controls"):
+            return [
+                control
+                for control in self._owner._controls()
+                if control.getAttribute("id") == self.name or control.getAttribute("name") == self.name
+            ]
+        return list(list.__iter__(self))
+
+    @property
+    def length(self) -> int:
+        return len(self._nodes())
 
     def __iter__(self) -> Iterator[Node]:
-        return iter(self.getElementsByName(self.name))
+        return iter(self._nodes())
 
     def __getitem__(self, index: int) -> Node:
-        return self.getElementsByName(self.name)[index]
+        return self._nodes()[index]
 
     def __len__(self) -> int:
-        return len(self.getElementsByName(self.name))
+        return self.length
 
     @property
     def value(self) -> Any:
         """Returns the value of the first element in the collection,
         or null if there are no elements in the collection."""
-        return self[0].value if len(self) > 0 else None
+        for node in self._nodes():
+            if isinstance(node, HTMLInputElement) and (node.getAttribute("type") or "").lower() == "radio" and node.checked:
+                return node.value
+        return ""
+
+    @value.setter
+    def value(self, new_value: Any) -> None:
+        matching_radio = None
+        for node in self._nodes():
+            if (
+                isinstance(node, HTMLInputElement)
+                and (node.getAttribute("type") or "").lower() == "radio"
+                and node.value == str(new_value)
+            ):
+                matching_radio = node
+                break
+        if matching_radio is None:
+            return
+        for node in self._nodes():
+            if isinstance(node, HTMLInputElement) and (node.getAttribute("type") or "").lower() == "radio":
+                node.checked = node is matching_radio
 
 
 class Element(Node):
@@ -5955,6 +6055,26 @@ class DocumentFragment(Node):
     _matchElement = Document._matchElement
     attributes = Element.attributes
 
+    def append(self, *nodes: Any) -> None:
+        """Appends nodes or strings to the DocumentFragment."""
+        items = _coerce_insertion_nodes(*nodes)
+        old_documents = [
+            (item, _detach_node_for_insertion(item)) for item in items
+        ]
+        self.args = self.args + items
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
+
+    def prepend(self, *nodes: Any) -> None:
+        """Prepends nodes or strings to the DocumentFragment."""
+        items = _coerce_insertion_nodes(*nodes)
+        old_documents = [
+            (item, _detach_node_for_insertion(item)) for item in items
+        ]
+        self.args = items + self.args
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
+
     def replaceChildren(self, *newChildren: Any) -> None:
         """Replaces the childNodes of the DocumentFragment object."""
         for child in self.args:
@@ -8555,7 +8675,7 @@ class HTMLFormControlsCollection(HTMLCollection):
         controls = self._controls()
         return controls[index] if 0 <= index < len(controls) else None
 
-    def namedItem(self, name: str) -> HTMLElement | None:
+    def namedItem(self, name: str) -> HTMLElement | RadioNodeList | None:
         matches = [
             control
             for control in self._controls()
@@ -8563,6 +8683,8 @@ class HTMLFormControlsCollection(HTMLCollection):
         ]
         if not matches:
             return None
+        if len(matches) > 1:
+            return RadioNodeList(matches, name=name, owner=self)
         return matches[0]
 
 

@@ -1756,6 +1756,23 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(wrapper.querySelector("#replacement").textContent, "R")
         self.assertEqual(wrapper.querySelector("#tail").textContent, "T")
 
+    def test_document_fragment_append_and_prepend_accept_multiple_nodes(self):
+        frag = Document.createDocumentFragment()
+        child = span("child", _id="child")
+
+        frag.append("lead ", child)
+        frag.prepend(strong("start", _id="start"), " ")
+
+        self.assertEqual(str(frag), '<strong id="start">start</strong> lead <span id="child">child</span>')
+        self.assertIs(child.parentNode, frag)
+        self.assertEqual([node.getAttribute("id") for node in frag.children], ["start", "child"])
+
+        donor = Document.createDocumentFragment(em("donor", _id="donor"))
+        frag.append(donor)
+
+        self.assertEqual(donor.childNodes.length, 0)
+        self.assertEqual([node.getAttribute("id") for node in frag.children], ["start", "child", "donor"])
+
     def test_fragment_before_after_and_replace_children_moves_nodes(self):
         host = div(span("target", _id="target"))
         target = host.querySelector("#target")
@@ -2449,6 +2466,17 @@ class DOMTest(unittest.TestCase):
         self.assertIsNone(image.abort())
         self.assertEqual(events, ["loadstart", "load", "load", "error", "abort"])
 
+    def test_required_radio_group_validity_uses_group_checked_state(self):
+        free = input(_type="radio", _name="plan", _value="free", _required=True)
+        pro = input(_type="radio", _name="plan", _value="pro")
+        signup = form(free, pro)
+
+        self.assertFalse(signup.checkValidity())
+
+        pro.checked = True
+        self.assertTrue(signup.checkValidity())
+        self.assertTrue(free.checkValidity())
+
     def test_form_elements_returns_live_form_controls_collection(self):
         signup = form(
             input(_name="email", _id="email"),
@@ -2466,6 +2494,32 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(controls.item(0).getAttribute("name"), "email")
         self.assertEqual(controls.namedItem("choice").tagName, "select")
         self.assertEqual(controls["submitter"].tagName, "button")
+
+    def test_form_elements_named_item_returns_live_radio_node_list(self):
+        free = input(_type="radio", _name="plan", _value="free")
+        pro = input(_type="radio", _name="plan", _value="pro", _checked=True)
+        signup = form(free, pro)
+
+        group = signup.elements.namedItem("plan")
+
+        self.assertIsInstance(group, RadioNodeList)
+        self.assertEqual(group.length, 2)
+        self.assertEqual(group.value, "pro")
+        self.assertIs(group.item(0), free)
+
+        group.value = "free"
+        self.assertTrue(free.checked)
+        self.assertFalse(pro.checked)
+        self.assertEqual(group.value, "free")
+
+        enterprise = input(_type="radio", _name="plan", _value="enterprise")
+        signup.appendChild(enterprise)
+        self.assertEqual(group.length, 3)
+        self.assertEqual(list(group.values()), [free, pro, enterprise])
+
+        empty = RadioNodeList("missing")
+        self.assertEqual(empty.length, 0)
+        self.assertEqual(empty.value, "")
 
     def test_html_collection_item_returns_none_for_invalid_indexes(self):
         items = ul(li("one"), li("two")).getElementsByTagName("li")
@@ -3627,6 +3681,24 @@ class TestDomTokenList(unittest.TestCase):
             tokens.replace("", "four")
         with self.assertRaises(ValueError):
             tokens.replace("one", "two words")
+
+    def test_class_list_objects_remain_live_after_attribute_changes(self):
+        sample = div(_class="one")
+        tokens = sample.classList
+
+        sample.className = "two three"
+        self.assertEqual(list(tokens), ["two", "three"])
+        self.assertEqual(tokens.length, 2)
+        self.assertTrue(tokens.contains("two"))
+        self.assertEqual(tokens.item(1), "three")
+
+        tokens.add("four")
+        self.assertEqual(sample.className, "two three four")
+
+        sample.setAttribute("class", "five")
+        self.assertEqual(tokens.toString(), "five")
+        tokens.remove("five")
+        self.assertEqual(sample.className, "")
 
 
 if __name__ == "__main__":
