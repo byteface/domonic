@@ -4,25 +4,54 @@
     - call command line functions in python 3
 """
 import os
+import shlex
 import subprocess
-
-from domonic.javascript import window
+from os import PathLike
+from typing import Any, Iterable, Sequence
 
 
 class TerminalException(Exception):
     """raised if the terminal throws an exception"""
 
-    def __init__(self, error, message="An error message was recieved from terminal"):
-        print(error, message)
-        self.message = message
+    def __init__(self, error=None, message="An error message was received from terminal"):
+        self.error = error
+        self.output = _decode_output(message)
+        self.returncode = getattr(error, "returncode", None)
+        self.cmd = getattr(error, "cmd", None)
+        self.message = self.output or str(error) or message
         super().__init__(self.message)
+
+
+def _decode_output(value: Any, encoding: str = "utf-8") -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode(encoding, errors="replace")
+    if isinstance(value, list):
+        return "".join(_decode_output(item, encoding) for item in value)
+    return str(value)
+
+
+def _stringify_arg(arg: Any) -> str:
+    if isinstance(arg, PathLike):
+        return os.fspath(arg)
+    return str(arg)
+
+
+def _format_params(args: Iterable[Any]) -> str:
+    args = tuple(args)
+    if not args:
+        return ""
+    if len(args) == 1:
+        return _stringify_arg(args[0])
+    return " ".join(shlex.quote(_stringify_arg(arg)) for arg in args)
 
 
 class command:
     """wrapper class for all terminal commands"""
 
     @staticmethod
-    def run(cmd: str):
+    def run(cmd: str, **kwargs):
         """run
 
         runs any command on the terminal
@@ -33,14 +62,54 @@ class command:
         Returns:
             str: the response as a string
         """
-        returned_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
-        return returned_output.decode("utf-8")
+        return command._execute(cmd, **kwargs).stdout
+
+    @staticmethod
+    def run_args(args: Sequence[Any], **kwargs):
+        """Run a command without shell parsing and return its stdout."""
+        if isinstance(args, (str, bytes)):
+            raise TypeError("run_args expects a sequence of command arguments")
+        kwargs = {**kwargs, "shell": False}
+        return command._execute([_stringify_arg(arg) for arg in args], **kwargs).stdout
+
+    @staticmethod
+    def _execute(cmd: str | Sequence[str], **kwargs):
+        encoding = kwargs.get("encoding", "utf-8")
+        shell = kwargs.get("shell", True)
+        check = kwargs.get("check", True)
+        env = kwargs.get("env")
+        if env is not None:
+            env = {**os.environ, **{str(key): str(value) for key, value in env.items()}}
+        try:
+            completed = subprocess.run(
+                cmd if shell or not isinstance(cmd, str) else shlex.split(cmd),
+                shell=shell,
+                cwd=kwargs.get("cwd"),
+                env=env,
+                input=kwargs.get("input"),
+                timeout=kwargs.get("timeout"),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding=encoding,
+                errors="replace",
+            )
+        except subprocess.TimeoutExpired as exc:
+            exc.output = _decode_output(exc.output, encoding)
+            raise TerminalException(exc, exc.output) from exc
+
+        completed.stdout = _decode_output(completed.stdout, encoding)
+        if check and completed.returncode != 0:
+            error = subprocess.CalledProcessError(completed.returncode, cmd, output=completed.stdout)
+            raise TerminalException(error, completed.stdout) from error
+        return completed
 
     def __init__(self, *args, **kwargs) -> None:
         self.args = args
         self.kwargs = kwargs
-        self.params = "".join([each.__str__() for each in args])
+        self.params = _format_params(args)
         self.result = ""
+        self.returncode = None
 
         if not hasattr(self, "first_run"):
             self.first_run = True
@@ -78,28 +147,29 @@ class command:
             # for now this behaves how i want despite the _new_ hack and double call on this command
             """
             if self.has_wait is not True:
-                returned_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
-                self.result = returned_output.decode("utf-8")
+                completed = self._execute(cmd, **self.kwargs)
+                self.result = completed.stdout
+                self.returncode = completed.returncode
             else:
-                self.result = "PING FAIL"
+                kwargs = {**self.kwargs}
+                kwargs.setdefault("timeout", 3)
+                kwargs.setdefault("check", False)
+                try:
+                    completed = self._execute(cmd, **kwargs)
+                    self.result = completed.stdout
+                    self.returncode = completed.returncode
+                except TerminalException as exc:
+                    if isinstance(exc.error, subprocess.TimeoutExpired):
+                        self.result = exc.output
+                        self.returncode = None
+                    else:
+                        self.result = exc.output
+                        raise
 
-                def kill_switch(proc):
-                    proc.kill()
-                    return
-
-                # try:
-                proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                intId = window.setInterval(kill_switch, 3000, proc)
-                self.result = proc.stdout.readlines()
-                window.clearInterval(intId)
-                # except subprocess.TimeoutExpired as e:
-                # self.result = returned_output.decode("utf-8")
-                # print('process ran too long')
-
-        except subprocess.CalledProcessError as e:
-            print(e.output)
+        except TerminalException as e:
             self.result = e.output
-            raise TerminalException(e, self.result)
+            self.returncode = e.returncode
+            raise
 
         return
 
@@ -116,8 +186,17 @@ class command:
     def __str__(self) -> str:
         return str(self.result)
 
+    def __iter__(self):
+        return iter(str(self.result).splitlines())
+
     def __getitem__(self, index):
-        return self.result.splitlines()[index]
+        return str(self.result).splitlines()[index]
+
+    def __len__(self):
+        return len(str(self.result).splitlines())
+
+    def __contains__(self, value):
+        return value in str(self.result).splitlines() or str(value) in str(self.result)
 
 
 class cd(command):
@@ -190,15 +269,21 @@ whoami = type("whoami", (command,), {"name": "whoami"})
 class history(command):
     def run_command(self):
         self.iterable = True
-        try:
-            # history is empty for non interactive sessions so read file
-            from os.path import expanduser, join
+        # history is empty for non-interactive sessions, so read the user's shell history file.
+        from os.path import expanduser, join
 
-            with open(join(expanduser("~"), ".bash_history"), "r") as f:
+        candidates = [
+            os.environ.get("HISTFILE"),
+            join(expanduser("~"), ".zsh_history"),
+            join(expanduser("~"), ".bash_history"),
+        ]
+        for path in candidates:
+            if not path or not os.path.exists(path):
+                continue
+            with open(path, "r", encoding="utf-8", errors="replace") as f:
                 self.result = "".join(f.readlines())
-        except Exception as e:
-            print("failed to get history:", e)
-            self.result = ""
+            return
+        self.result = ""
 
 
 ping = type("ping", (command,), {"name": "ping", "wait": True, "iterable": True})  # < TODO - need to stream feedback

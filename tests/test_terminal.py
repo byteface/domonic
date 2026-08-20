@@ -32,6 +32,27 @@ class TestCase(unittest.TestCase):
         # print("OYI::", thedir)
         self.assertIn("domonic", thedir)
 
+    def test_command_core_helpers(self):
+        self.assertEqual(echo("hello", "world").strip(), "hello world")
+        self.assertEqual(command.run_args(["printf", "hello world"]), "hello world")
+
+        files = ls()
+        self.assertGreater(len(files), 0)
+        self.assertIn("domonic", files)
+        self.assertIn("domonic", list(files))
+
+    def test_command_errors_are_decoded(self):
+        with self.assertRaises(TerminalException) as exc:
+            command.run_args(["ls", "__domonic_missing_file__"])
+
+        self.assertIsInstance(exc.exception.output, str)
+        self.assertIn("__domonic_missing_file__", str(exc.exception))
+
+    def test_wait_command_timeout_returns_partial_output(self):
+        sleeper = type("sleeper", (command,), {"name": "sleep", "wait": True, "iterable": True})
+        result = sleeper("1", timeout=0.01)
+        self.assertEqual(str(result), "")
+
     def test_bash_cd(self):
         pass  # TODO - need to change github action
         # print(cd('../'))  # < CD does not run on terminal
@@ -96,7 +117,12 @@ class TestCase(unittest.TestCase):
         print(echo("test"))
         print(df())
         print(du())
-        print(ps())
+        try:
+            print(ps())
+        except TerminalException as exc:
+            if "Operation not permitted" in str(exc):
+                self.skipTest("ps is not permitted in this sandbox")
+            raise
         # print(cowsay('moo'))
         print(date())
         # print(cal())
