@@ -8,6 +8,7 @@
 """
 
 import unittest
+from unittest.mock import patch
 
 from domonic.CDN import CDN_CSS, CDN_JS
 from domonic import domonic
@@ -32,6 +33,36 @@ class TestCase(unittest.TestCase):
     def evaluate(self):
         t1 = domonic.evaluate("<html></html>")
         print(t1)
+
+    def test_pyml_validation_does_not_execute_unsafe_calls(self):
+        with patch("os.system") as system:
+            is_valid, fixed = domonic._is_valid_pyml("__import__('os').system('echo nope')")
+
+        system.assert_not_called()
+        self.assertFalse(is_valid)
+        self.assertEqual(fixed, "")
+
+    def test_pyml_validation_accepts_safe_markup_fragments(self):
+        self.assertEqual(domonic._is_valid_pyml("span("), (True, "span("))
+        self.assertEqual(domonic._is_valid_pyml('_class="notice"'), (True, '_class="notice"'))
+
+    def test_parse_preserves_basic_attribute_output(self):
+        page = domonic.parse('<div id="one" class="two"></div>')
+        self.assertEqual(
+            page,
+            """div(
+_id="one", _class="two",
+),""",
+        )
+
+    def test_parse_preserves_hyphenated_attribute_output(self):
+        page = domonic.parse('<div data-user-id="7" aria-label="Open"></div>')
+        self.assertEqual(
+            page,
+            """div(
+**{"_data-user-id":"7"},  **{"_aria-label":"Open"},
+),""",
+        )
 
     def test_hacked_expat_parser(self):
         # test the  hacked version of the xpat parser

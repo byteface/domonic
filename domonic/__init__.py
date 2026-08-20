@@ -13,6 +13,7 @@ __author__ = "@byteface"
 VERSION = __version__
 
 
+import ast
 import re
 import sys
 import domonic.dom as dom
@@ -295,6 +296,49 @@ class domonic:
             return pyml
 
     @staticmethod
+    def _is_safe_pyml_ast(tree):
+        """Return True when a parsed PyML expression contains only inert markup calls."""
+        allowed_names = {name for name in globals()}
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                if not isinstance(node.func, ast.Name):
+                    return False
+                if node.func.id.startswith("__"):
+                    return False
+                target = globals().get(node.func.id)
+                if target is None or not callable(target):
+                    return False
+                continue
+
+            if isinstance(node, ast.Name):
+                if node.id.startswith("__") or node.id not in allowed_names:
+                    return False
+                continue
+
+            if isinstance(
+                node,
+                (
+                    ast.Expression,
+                    ast.Load,
+                    ast.Constant,
+                    ast.Dict,
+                    ast.Tuple,
+                    ast.List,
+                    ast.Starred,
+                    ast.keyword,
+                    ast.UnaryOp,
+                    ast.UAdd,
+                    ast.USub,
+                ),
+            ):
+                continue
+
+            return False
+
+        return True
+
+    @staticmethod
     def _is_valid_pyml(line):
         """
         tests a line
@@ -302,21 +346,23 @@ class domonic:
         """
         try:
             test_line = line.strip("\n").strip()
+            if not test_line:
+                return False, ""
 
-            if "(" in line:
-                test_line = line + ")"
+            if "(" in test_line:
+                test_line = test_line + ")"
 
-            if line[0] in ['"', "_", "*"]:
-                test_line = "div(" + line
+            if test_line[0] in ['"', "_", "*"]:
+                test_line = "div(" + test_line
                 if test_line[len(test_line) - 1] != ")":
                     test_line = test_line + ")"
 
-            if line == "),":
+            if test_line == "),":
                 return True, line
 
-            # print(test_line)
-            l = eval(test_line)
-            # print('PASS:', line)
+            tree = ast.parse(test_line, mode="eval")
+            if not domonic._is_safe_pyml_ast(tree):
+                return False, ""
             return True, line
         except Exception:
             # print(e)
@@ -810,6 +856,113 @@ class domonic:
         #     newline = front + mid + end
         #     return newline
 
+        def scan_attribute_assignments(line):
+            attribs = []
+            length = len(line)
+            cursor = 0
+
+            while cursor < length:
+                while cursor < length and line[cursor].isspace():
+                    cursor += 1
+
+                key_start = cursor
+                while cursor < length and not line[cursor].isspace() and line[cursor] not in "=>":
+                    cursor += 1
+
+                if cursor == key_start:
+                    cursor += 1
+                    continue
+
+                key = line[key_start:cursor]
+                scan = cursor
+                while scan < length and line[scan].isspace():
+                    scan += 1
+
+                if scan >= length or line[scan] != "=":
+                    cursor = scan if scan > cursor else cursor + 1
+                    continue
+
+                scan += 1
+                while scan < length and line[scan].isspace():
+                    scan += 1
+
+                if scan >= length:
+                    attribs.append((key, ""))
+                    cursor = scan
+                    continue
+
+                quote = line[scan] if line[scan] in ("'", '"') else None
+                if quote:
+                    scan += 1
+                    value = []
+                    escaped = False
+
+                    while scan < length:
+                        char = line[scan]
+                        if escaped:
+                            value.append(char)
+                            escaped = False
+                        elif char == "\\":
+                            value.append(char)
+                            escaped = True
+                        elif char == quote:
+                            break
+                        else:
+                            value.append(char)
+                        scan += 1
+
+                    attribs.append((key, "".join(value)))
+                    cursor = scan + 1 if scan < length else scan
+                    continue
+
+                value_start = scan
+                while scan < length:
+                    if line[scan].isspace() or line[scan] == ">":
+                        break
+                    if line[scan] == "/" and scan + 1 < length and line[scan + 1] == ">":
+                        break
+                    scan += 1
+
+                attribs.append((key, line[value_start:scan]))
+                cursor = scan
+
+            return attribs
+
+        def scan_hyphenated_attribute_tokens(line):
+            matches = []
+            length = len(line)
+            cursor = 0
+
+            while cursor < length:
+                if line[cursor] != " ":
+                    cursor += 1
+                    continue
+
+                start = cursor
+                cursor += 1
+                token_start = cursor
+
+                if cursor >= length or not (line[cursor].isalpha() or line[cursor] == "_"):
+                    continue
+
+                saw_hyphen = False
+                while cursor < length:
+                    char = line[cursor]
+                    if char == "-":
+                        saw_hyphen = cursor > token_start
+                        cursor += 1
+                        continue
+                    if char.isalnum() or char == "_":
+                        cursor += 1
+                        continue
+                    break
+
+                token = line[token_start:cursor]
+                if saw_hyphen and all(part for part in token.split("-")):
+                    matches.append(line[start:cursor])
+
+            return matches
+
         def parse_attributes(line):
 
             values = re.findall('"([^"]*)"', line)
@@ -836,10 +989,7 @@ class domonic:
                     line = parts[0] + "=" + '"' + parts[1] + '"'
                     # print(line)
 
-            attribs = re.findall(
-                r"((?:(?!\s|=).)*)\s*?=\s*?[\"']?((?:(?<=\")(?:(?<=\\)\"|[^\"])*|(?<=')(?:(?<=\\)'|[^'])*)|(?:(?!\"|')(?:(?!\/>|>|\s).)+))",
-                line,
-            )
+            attribs = scan_attribute_assignments(line)
 
             if attribs:
                 for each in attribs:
@@ -1004,7 +1154,7 @@ class domonic:
                 line = fix_hyphen_tags(line)
 
                 # any leftover solo hyphenataed data-tags
-                hyphenated = re.findall(r" [-A-Za-z]+\w+(?:-\w+)+", line)
+                hyphenated = scan_hyphenated_attribute_tokens(line)
                 for each in hyphenated:
                     line = line.replace(each, f'**\u007b"_{each}":{True}\u007d,')
 
