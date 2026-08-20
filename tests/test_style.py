@@ -464,14 +464,54 @@ class TestCase(unittest.TestCase):
         style = CSSStyleDeclaration()
         style.setProperty("background-color", "red")
         style.setProperty("font-size", "12px", "important")
+        style.setProperty("--brand-color", "oklch(62% 0.18 240)")
 
-        self.assertEqual(style.length, 2)
+        self.assertEqual(style.length, 3)
         self.assertEqual(style.item(0), "background-color")
         self.assertEqual(style.item(1), "font-size")
-        self.assertEqual(style.item(2), "")
+        self.assertEqual(style.item(2), "--brand-color")
+        self.assertEqual(style.item(3), "")
         self.assertEqual(style.getPropertyPriority("font-size"), "important")
         self.assertEqual(style.getPropertyValue("font-size"), "12px")
+        self.assertEqual(style.getPropertyValue("--brand-color"), "oklch(62% 0.18 240)")
         self.assertIn("font-size: 12px !important;", style.cssText)
+
+        style.setProperty("font-size", "14px")
+        self.assertEqual(style.length, 3)
+        self.assertEqual(style.getPropertyPriority("font-size"), "")
+        self.assertEqual(style.getPropertyValue("font-size"), "14px")
+
+    def test_css_style_declaration_replaces_css_text_cleanly(self):
+        style = CSSStyleDeclaration()
+        style.cssText = "color: red; background-image: url('/important.png'); width: 10px !important;"
+
+        self.assertEqual(style.getPropertyValue("color"), "red")
+        self.assertEqual(style.getPropertyValue("background-image"), "url('/important.png')")
+        self.assertEqual(style.getPropertyPriority("background-image"), "")
+        self.assertEqual(style.getPropertyPriority("width"), "important")
+        self.assertEqual(list(style), ["color", "background-image", "width"])
+        self.assertIn("color", style)
+
+        style.cssText = "margin: 0;"
+        self.assertEqual(style.getPropertyValue("color"), "")
+        self.assertEqual(style.getPropertyValue("width"), "")
+        self.assertEqual(style.getPropertyValue("margin"), "0")
+        self.assertNotIn("color", style)
+
+        style["padding"] = "1rem"
+        self.assertEqual(style.getPropertyValue("padding"), "1rem")
+
+    def test_inline_style_replaces_existing_properties(self):
+        node = div(_style="color:red;")
+        node.style.color = "blue"
+        node.style.color = "green"
+        node.style.accentColor = "hotpink"
+        node.style.containerType = "inline-size"
+
+        self.assertEqual(node.getAttribute("style"), "color:green;accent-color:hotpink;container-type:inline-size;")
+        self.assertEqual(node.style.getPropertyValue("color"), "green")
+        self.assertEqual(node.style.getPropertyValue("accent-color"), "hotpink")
+        self.assertEqual(node.style.getPropertyValue("container-type"), "inline-size")
 
     def test_css_stylesheet_rule_mutation_helpers(self):
         sheet = CSSStyleSheet()
@@ -490,6 +530,11 @@ class TestCase(unittest.TestCase):
 
         sheet.removeRule(0)
         self.assertEqual(len(sheet.cssRules), 0)
+
+        with self.assertRaises(DOMException):
+            sheet.insertRule("main { display: block; }", -1)
+        with self.assertRaises(DOMException):
+            sheet.deleteRule(0)
 
     def test_stylesheet_list_populates_from_document(self):
         page = html(
@@ -512,6 +557,176 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0].selectorText, "div")
         self.assertEqual(rules[0].style.getPropertyValue("color"), "red")
+
+    def test_css_parser_modern_rules(self):
+        css = """
+            @layer reset, theme;
+            @layer theme {
+                @supports (display: grid) {
+                    .card {
+                        display: grid;
+                    }
+                }
+            }
+            @container sidebar (width > 40rem) {
+                .item {
+                    container-type: inline-size;
+                }
+            }
+            @container style(--dense: true), main scroll-state(stuck: top) {
+                .toolbar {
+                    position: sticky;
+                }
+            }
+            @scope (.article) to (.comments) {
+                p {
+                    color: blue;
+                }
+            }
+            @import url("theme.css") layer(theme.components) supports(display: grid) screen and (min-width: 40rem);
+            @supports-condition --fancy-layout {
+                .fancy {
+                    display: grid;
+                }
+            }
+            @when supports(display: flex) {
+                .when-rule {
+                    display: flex;
+                }
+            }
+            @else {
+                .fallback {
+                    display: block;
+                }
+            }
+            @font-face {
+                font-family: Test;
+                src: url("fonts/a;b.woff2");
+            }
+            @property --brand-hue {
+                syntax: "<number>";
+                inherits: true;
+                initial-value: 210;
+            }
+        """
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(css)
+
+        self.assertIsInstance(sheet.cssRules[0], CSSLayerStatementRule)
+        self.assertEqual(sheet.cssRules[0].nameList, ["reset", "theme"])
+
+        layer = sheet.cssRules[1]
+        self.assertIsInstance(layer, CSSLayerBlockRule)
+        self.assertEqual(layer.name, "theme")
+        self.assertIsInstance(layer.cssRules[0], CSSSupportsRule)
+        self.assertEqual(layer.cssRules[0].conditionText, "(display: grid)")
+        self.assertEqual(layer.cssRules[0].cssRules[0].style.getPropertyValue("display"), "grid")
+
+        container = sheet.cssRules[2]
+        self.assertIsInstance(container, CSSContainerRule)
+        self.assertEqual(container.containerName, "sidebar")
+        self.assertEqual(container.containerQuery, "(width > 40rem)")
+        self.assertEqual(container.cssRules[0].style.getPropertyValue("container-type"), "inline-size")
+
+        multi_container = sheet.cssRules[3]
+        self.assertIsInstance(multi_container, CSSContainerRule)
+        self.assertEqual(multi_container.containerName, "")
+        self.assertEqual(multi_container.containerQuery, "")
+        self.assertEqual(
+            multi_container.conditions,
+            [
+                {"name": "", "query": "style(--dense: true)"},
+                {"name": "main", "query": "scroll-state(stuck: top)"},
+            ],
+        )
+        self.assertEqual(
+            multi_container.conditionText,
+            "style(--dense: true), main scroll-state(stuck: top)",
+        )
+
+        scope = sheet.cssRules[4]
+        self.assertIsInstance(scope, CSSScopeRule)
+        self.assertEqual(scope.start, ".article")
+        self.assertEqual(scope.end, ".comments")
+
+        import_rule = sheet.cssRules[5]
+        self.assertIsInstance(import_rule, CSSImportRule)
+        self.assertEqual(import_rule.href, 'url("theme.css")')
+        self.assertEqual(import_rule.layerName, "theme.components")
+        self.assertEqual(import_rule.supportsText, "display: grid")
+        self.assertEqual(import_rule.media.mediaText, "screen and (min-width: 40rem)")
+
+        supports_condition = sheet.cssRules[6]
+        self.assertIsInstance(supports_condition, CSSSupportsConditionRule)
+        self.assertEqual(supports_condition.name, "--fancy-layout")
+        self.assertEqual(supports_condition.cssRules[0].selectorText, ".fancy")
+
+        when_rule = sheet.cssRules[7]
+        self.assertIsInstance(when_rule, CSSWhenRule)
+        self.assertEqual(when_rule.conditionText, "supports(display: flex)")
+        self.assertEqual(when_rule.cssRules[0].style.getPropertyValue("display"), "flex")
+
+        else_rule = sheet.cssRules[8]
+        self.assertIsInstance(else_rule, CSSElseRule)
+        self.assertEqual(else_rule.conditionText, "")
+        self.assertEqual(else_rule.cssRules[0].selectorText, ".fallback")
+
+        font_face = sheet.cssRules[9]
+        self.assertIsInstance(font_face, CSSFontFaceRule)
+        self.assertEqual(font_face.style.getPropertyValue("src"), 'url("fonts/a;b.woff2")')
+
+        prop = sheet.cssRules[10]
+        self.assertIsInstance(prop, CSSPropertyRule)
+        self.assertEqual(prop.name, "--brand-hue")
+        self.assertEqual(prop.style.getPropertyValue("initial-value"), "210")
+
+    def test_css_parser_nested_style_rules(self):
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(
+            """
+            .card {
+                color: red;
+                &:hover {
+                    color: blue;
+                }
+                @media (width > 40rem) {
+                    & {
+                        display: grid;
+                    }
+                }
+                background: white;
+            }
+            """
+        )
+
+        rule = sheet.cssRules[0]
+        self.assertEqual(rule.selectorText, ".card")
+        self.assertEqual(rule.style.getPropertyValue("color"), "red")
+        self.assertEqual(rule.cssRules[0].selectorText, "&:hover")
+        self.assertEqual(rule.cssRules[0].style.getPropertyValue("color"), "blue")
+        self.assertIsInstance(rule.cssRules[1], CSSMediaRule)
+        self.assertEqual(rule.cssRules[1].cssRules[0].selectorText, "&")
+        self.assertEqual(rule.cssRules[1].cssRules[0].style.getPropertyValue("display"), "grid")
+        self.assertIsInstance(rule.cssRules[2], CSSNestedDeclarations)
+        self.assertEqual(rule.cssRules[2].style.getPropertyValue("background"), "white")
+
+    def test_css_stylesheet_replace_returns_promise(self):
+        sheet = CSSStyleSheet()
+        promise = sheet.replace("article { margin: 0; }")
+
+        self.assertEqual(promise.state, "fulfilled")
+        self.assertIs(promise.data, sheet)
+        self.assertEqual(sheet.cssRules[0].selectorText, "article")
+
+    def test_css_namespace_utilities(self):
+        self.assertEqual(CSS.escape("123 item"), "\\31 23\\ item")
+        self.assertEqual(CSS.escape("-"), "\\-")
+        self.assertTrue(CSS.supports("display", "grid"))
+        self.assertTrue(CSS.supports("container-type", "inline-size"))
+        self.assertTrue(CSS.supports("(display: grid) and (container-type: inline-size)"))
+        self.assertTrue(CSS.supports("at-rule(@container)"))
+        self.assertFalse(CSS.supports(" display", "grid"))
+        self.assertFalse(CSS.supports("display", "grid !important"))
 
 
 if __name__ == "__main__":

@@ -12,8 +12,367 @@ from __future__ import annotations
 
 import re
 from re import M, findall, finditer
+from typing import Any
 
 from .utils import Utils
+
+COMMENT_REGEXP = r"/\*[\s\S]*?\*/"
+_IMPORTANT_RE = re.compile(r"\s*!\s*important\s*$", re.IGNORECASE)
+_KNOWN_CSS_PROPERTIES: set[str] | None = None
+_CSS_STYLE_INTERNAL_NAMES = {
+    "cssText",
+    "parentRule",
+    "parentStyleSheet",
+    "_css_text",
+    "_declared_properties",
+    "_members_checked",
+    "_parent_node",
+    "_suspend_style_sync",
+}
+_ADDITIONAL_CSS_PROPERTY_NAMES = {
+    "accent-color",
+    "align-tracks",
+    "anchor-name",
+    "anchor-scope",
+    "animation-composition",
+    "appearance",
+    "aspect-ratio",
+    "backdrop-filter",
+    "block-size",
+    "border-block",
+    "border-block-color",
+    "border-block-end",
+    "border-block-end-color",
+    "border-block-end-style",
+    "border-block-end-width",
+    "border-block-start",
+    "border-block-start-color",
+    "border-block-start-style",
+    "border-block-start-width",
+    "border-block-style",
+    "border-block-width",
+    "border-inline",
+    "border-inline-color",
+    "border-inline-end",
+    "border-inline-end-color",
+    "border-inline-end-style",
+    "border-inline-end-width",
+    "border-inline-start",
+    "border-inline-start-color",
+    "border-inline-start-style",
+    "border-inline-start-width",
+    "border-inline-style",
+    "border-inline-width",
+    "container",
+    "container-name",
+    "container-type",
+    "contain-intrinsic-block-size",
+    "contain-intrinsic-height",
+    "contain-intrinsic-inline-size",
+    "contain-intrinsic-size",
+    "contain-intrinsic-width",
+    "content-visibility",
+    "field-sizing",
+    "font-palette",
+    "font-size-adjust",
+    "font-synthesis-position",
+    "font-synthesis-small-caps",
+    "font-synthesis-style",
+    "font-synthesis-weight",
+    "hyphenate-character",
+    "image-rendering",
+    "initial-letter",
+    "inline-size",
+    "inset",
+    "inset-block",
+    "inset-block-end",
+    "inset-block-start",
+    "inset-inline",
+    "inset-inline-end",
+    "inset-inline-start",
+    "interpolate-size",
+    "justify-tracks",
+    "line-clamp",
+    "margin-block",
+    "margin-block-end",
+    "margin-block-start",
+    "margin-inline",
+    "margin-inline-end",
+    "margin-inline-start",
+    "mask-border",
+    "mask-clip",
+    "mask-composite",
+    "mask-image",
+    "mask-mode",
+    "mask-origin",
+    "mask-position",
+    "mask-repeat",
+    "mask-size",
+    "max-block-size",
+    "max-inline-size",
+    "min-block-size",
+    "min-inline-size",
+    "object-fit",
+    "object-position",
+    "offset",
+    "offset-anchor",
+    "offset-distance",
+    "offset-path",
+    "offset-position",
+    "offset-rotate",
+    "overflow-anchor",
+    "overflow-block",
+    "overflow-clip-margin",
+    "overflow-inline",
+    "overscroll-behavior",
+    "overscroll-behavior-block",
+    "overscroll-behavior-inline",
+    "overscroll-behavior-x",
+    "overscroll-behavior-y",
+    "padding-block",
+    "padding-block-end",
+    "padding-block-start",
+    "padding-inline",
+    "padding-inline-end",
+    "padding-inline-start",
+    "place-content",
+    "place-items",
+    "place-self",
+    "position-anchor",
+    "position-area",
+    "position-try",
+    "position-try-fallbacks",
+    "position-try-order",
+    "position-visibility",
+    "print-color-adjust",
+    "rotate",
+    "scale",
+    "scrollbar-color",
+    "scrollbar-gutter",
+    "scrollbar-width",
+    "text-box",
+    "text-box-edge",
+    "text-box-trim",
+    "text-decoration-skip-ink",
+    "text-emphasis",
+    "text-emphasis-color",
+    "text-emphasis-position",
+    "text-emphasis-style",
+    "text-size-adjust",
+    "text-wrap",
+    "text-wrap-mode",
+    "text-wrap-style",
+    "timeline-scope",
+    "touch-action",
+    "translate",
+    "view-timeline",
+    "view-timeline-axis",
+    "view-timeline-inset",
+    "view-timeline-name",
+    "view-transition-class",
+    "view-transition-name",
+}
+
+
+def _css_property_name(name: str) -> str:
+    """Normalize DOM style names to CSS property names."""
+    if name in ("cssFloat", "float"):
+        return "float"
+    if name.startswith("--"):
+        return name
+    return Utils.case_kebab(name)
+
+
+def _css_attribute_name(name: str) -> str:
+    """Normalize CSS property names to DOM style attribute names."""
+    if name == "float":
+        return "cssFloat"
+    if name.startswith("--"):
+        return name
+    return Utils.case_camel(name)
+
+
+def _strip_css_comments(css_text: str) -> str:
+    return re.sub(COMMENT_REGEXP, "", css_text or "")
+
+
+def _split_css_declarations(css_text: str) -> list[str]:
+    declarations: list[str] = []
+    start = 0
+    quote = None
+    escaped = False
+    depth = 0
+    for index, char in enumerate(css_text or ""):
+        if quote is not None:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
+            continue
+        if char in "([{":
+            depth += 1
+            continue
+        if char in ")]}" and depth > 0:
+            depth -= 1
+            continue
+        if char == ";" and depth == 0:
+            item = css_text[start:index].strip()
+            if item:
+                declarations.append(item)
+            start = index + 1
+    item = (css_text or "")[start:].strip()
+    if item:
+        declarations.append(item)
+    return declarations
+
+
+def _parse_css_declarations(css_text: str) -> list[tuple[str, str, str]]:
+    entries: list[tuple[str, str, str]] = []
+    for declaration in _split_css_declarations(css_text):
+        if ":" not in declaration:
+            continue
+        name, value = declaration.split(":", 1)
+        name = name.strip()
+        value = value.strip()
+        if not name:
+            continue
+        priority = ""
+        if _IMPORTANT_RE.search(value):
+            value = _IMPORTANT_RE.sub("", value).strip()
+            priority = "important"
+        entries.append((name, value, priority))
+    return entries
+
+
+def _set_css_declaration(
+    entries: list[tuple[str, str, str]],
+    property_name: str,
+    value: Any,
+    priority: str = "",
+) -> list[tuple[str, str, str]]:
+    value = "" if value is None else str(value)
+    priority = "important" if str(priority or "").lower() == "important" else ""
+    updated = False
+    next_entries: list[tuple[str, str, str]] = []
+    for name, current_value, current_priority in entries:
+        if name == property_name:
+            if not updated:
+                next_entries.append((property_name, value, priority))
+                updated = True
+            continue
+        next_entries.append((name, current_value, current_priority))
+    if not updated:
+        next_entries.append((property_name, value, priority))
+    return next_entries
+
+
+def _serialize_css_declarations(entries: list[tuple[str, str, str]], compact: bool = False) -> str:
+    separator = ":" if compact else ": "
+    joiner = "" if compact else " "
+    declarations = [
+        f"{name}{separator}{value}{joiner}!important;" if priority == "important" else f"{name}{separator}{value};"
+        for name, value, priority in entries
+    ]
+    return "".join(declarations) if compact else " ".join(declarations)
+
+
+def _split_top_level_commas(text: str) -> list[str]:
+    values: list[str] = []
+    start = 0
+    quote = None
+    escaped = False
+    depth = 0
+    for index, char in enumerate(text or ""):
+        if quote is not None:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
+            continue
+        if char in "([":
+            depth += 1
+            continue
+        if char in ")]" and depth > 0:
+            depth -= 1
+            continue
+        if char == "," and depth == 0:
+            values.append(text[start:index].strip())
+            start = index + 1
+    tail = (text or "")[start:].strip()
+    if tail:
+        values.append(tail)
+    return values
+
+
+def _find_matching_paren(css_text: str, open_index: int) -> int:
+    quote = None
+    escaped = False
+    depth = 0
+    for index in range(open_index, len(css_text)):
+        char = css_text[index]
+        if quote is not None:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
+            continue
+        if char == "(":
+            depth += 1
+            continue
+        if char == ")":
+            depth -= 1
+            if depth == 0:
+                return index
+    return -1
+
+
+def _split_top_level_word(text: str, word: str) -> tuple[str, str] | None:
+    quote = None
+    escaped = False
+    depth = 0
+    lower_word = word.lower()
+    lower_text = (text or "").lower()
+    for index, char in enumerate(text or ""):
+        if quote is not None:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
+            continue
+        if char in "([":
+            depth += 1
+            continue
+        if char in ")]" and depth > 0:
+            depth -= 1
+            continue
+        if depth != 0 or lower_text[index : index + len(lower_word)] != lower_word:
+            continue
+        before = text[index - 1] if index > 0 else " "
+        after_index = index + len(lower_word)
+        after = text[after_index] if after_index < len(text) else " "
+        if before.isspace() and after.isspace():
+            return text[:index], text[after_index:]
+    return None
 
 
 class StyleSheet:
@@ -119,11 +478,19 @@ class CSSRule:
     VIEWPORT_RULE: int = 13
     SUPPORTS_CONDITION_RULE: int = 14
     DOCUMENT_RULE: int = 15
+    COLOR_PROFILE_RULE: int = 16
+    LAYER_BLOCK_RULE: int = 17
+    LAYER_STATEMENT_RULE: int = 18
+    CONTAINER_RULE: int = 19
+    SCOPE_RULE: int = 20
+    PROPERTY_RULE: int = 21
+    NESTED_DECLARATIONS_RULE: int = 22
+    WHEN_RULE: int = 23
+    ELSE_RULE: int = 24
 
     # GROUPING_RULES = [FONT_FACE_RULE, MEDIA_RULE, NAMESPACE_RULE, KEYFRAMES_RULE, COUNTER_STYLE_RULE, SUPPORTS_RULE, SUPPORTS_CONDITION_RULE]
 
     def __init__(self):
-        self.parentStyleSheet = None
         # self._type = None
         self.parentRule: "CSSRule" = None
         self.parentStyleSheet: "CSSStyleSheet" = None
@@ -136,7 +503,14 @@ class CSSRule:
         To access or modify parts of the rule (e.g. the value of "font-size" in the example)
         use the properties on the specialized interface for the rule's type.
         """
-        return self.__cssText
+        return self.__cssText or ""
+
+    @cssText.setter
+    def cssText(self, value):
+        self.__cssText = "" if value is None else str(value)
+
+    def __str__(self):
+        return self.cssText
 
     # @property
     # def parentRule(self):
@@ -160,8 +534,19 @@ class CSSImportRule(CSSRule):
         super().__init__()
         self.href: str = None
         self.media: "MediaList" = None
+        self.layerName: str | None = None
+        self.supportsText: str = ""
         self.styleSheet: "CSSStyleSheet" = None
         self.type = CSSRule.IMPORT_RULE
+
+    @property
+    def cssText(self):
+        layer = ""
+        if self.layerName is not None:
+            layer = " layer" if self.layerName == "" else f" layer({self.layerName})"
+        supports = f" supports({self.supportsText})" if self.supportsText else ""
+        media = f" {self.media.mediaText}" if self.media and self.media.mediaText else ""
+        return f"@import {self.href}{layer}{supports}{media};"
 
     # @property
     # def href(self):
@@ -186,6 +571,7 @@ class CSSStyleRule(CSSRule):
         super().__init__()
         self.selectorText: str = None
         self.style: "CSSStyleDeclaration" = None
+        self.cssRules: "CSSRuleList" = CSSRuleList()
         self.type = CSSRule.STYLE_RULE
 
     # @property
@@ -201,7 +587,11 @@ class CSSStyleRule(CSSRule):
     @property
     def cssText(self):
         """Returns the textual representation of the rule."""
-        return self.selectorText + "{" + self.style.cssText + "}"
+        body = self.style.cssText if self.style is not None else ""
+        children = " ".join(str(rule) for rule in self.cssRules)
+        if children:
+            body = f"{body} {children}".strip()
+        return f"{self.selectorText} {{{body}}}"
 
     # @cssText.setter
     # def cssText(self, value):
@@ -217,6 +607,10 @@ class CSSFontFaceRule(CSSRule):
         self.style: "CSSStyleDeclaration" = None
         self.type = CSSRule.FONT_FACE_RULE
 
+    @property
+    def cssText(self):
+        return f"@font-face {{{self.style.cssText if self.style is not None else ''}}}"
+
     # @property
     # def style(self):
     #     """Returns the CSSStyleDeclaration object representing the declaration block of this rule."""
@@ -231,6 +625,11 @@ class CSSPageRule(CSSRule):
         self.selectorText: str = None
         self.style: "CSSStyleDeclaration" = None
         self.type = CSSRule.PAGE_RULE
+
+    @property
+    def cssText(self):
+        selector = f" {self.selectorText}" if self.selectorText else ""
+        return f"@page{selector} {{{self.style.cssText if self.style is not None else ''}}}"
 
     # @property
     # def selectorText(self):
@@ -252,6 +651,11 @@ class CSSNamespaceRule(CSSRule):
         self.prefix: str = None
         self.type = CSSRule.NAMESPACE_RULE
 
+    @property
+    def cssText(self):
+        prefix = f" {self.prefix}" if self.prefix else ""
+        return f"@namespace{prefix} {self.namespaceURI};"
+
     # @property
     # def namespaceURI(self):
     #     """Returns the namespace URI for this rule."""
@@ -271,6 +675,10 @@ class CSSKeyframesRule(CSSRule):
         self.cssRules: "CSSRuleList" = CSSRuleList()
         self.name: str = None
         self.type = CSSRule.KEYFRAMES_RULE
+
+    @property
+    def cssText(self):
+        return f"@keyframes {self.name} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
 
     # @property
     # def cssRules(self):
@@ -292,6 +700,10 @@ class CSSKeyframeRule(CSSRule):
         self.keyText: str = None
         self.style: "CSSStyleDeclaration" = None
         self.type = CSSRule.KEYFRAME_RULE
+
+    @property
+    def cssText(self):
+        return f"{self.keyText} {{{self.style.cssText if self.style is not None else ''}}}"
 
     # @property
     # def cssRules(self):
@@ -316,7 +728,12 @@ class CSSCounterStyleRule(CSSRule):
         super().__init__()
         self.name: str = None
         self.system: str = None
+        self.style: "CSSStyleDeclaration" = None
         self.type = CSSRule.COUNTER_STYLE_RULE
+
+    @property
+    def cssText(self):
+        return f"@counter-style {self.name} {{{self.style.cssText if self.style is not None else ''}}}"
 
     # @property
     # def name(self):
@@ -334,8 +751,12 @@ class CSSDocumentRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.cssRules: "CSSRuleList" = None
+        self.cssRules: "CSSRuleList" = CSSRuleList()
         self.type = CSSRule.DOCUMENT_RULE
+
+    @property
+    def cssText(self):
+        return f"@document {{{' '.join(str(rule) for rule in self.cssRules or [])}}}"
 
     # @property
     # def cssRules(self):
@@ -356,7 +777,12 @@ class CSSColorProfileRule(CSSRule):
     def __init__(self):
         super().__init__()
         self.colorProfile: str = None
+        self.style: "CSSStyleDeclaration" = None
         self.type = CSSRule.COLOR_PROFILE_RULE
+
+    @property
+    def cssText(self):
+        return f"@color-profile {self.colorProfile} {{{self.style.cssText if self.style is not None else ''}}}"
 
     # @property
     # def colorProfile(self):
@@ -369,8 +795,12 @@ class CSSFontFeatureValuesRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.cssRules: "CSSRuleList" = None
+        self.cssRules: "CSSRuleList" = CSSRuleList()
         self.type = CSSRule.FONT_FEATURE_VALUES_RULE
+
+    @property
+    def cssText(self):
+        return f"@font-feature-values {{{' '.join(str(rule) for rule in self.cssRules)}}}"
 
     # @property
     # def cssRules(self):
@@ -383,8 +813,36 @@ class CSSGroupingRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.cssRules: "CSSRuleList" = None
+        self.cssRules: "CSSRuleList" = CSSRuleList()
         # self.type = CSSRule.GROUPING_RULE
+
+    @property
+    def cssText(self):
+        return " ".join(str(rule) for rule in self.cssRules)
+
+    def deleteRule(self, index: int):
+        """Deletes the rule at the specified index from this grouping rule."""
+        from domonic.dom import DOMException
+
+        if index < 0 or index >= len(self.cssRules):
+            raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
+        del self.cssRules[index]
+
+    def insertRule(self, rule: str, index: int = None):
+        """Inserts a child rule into this grouping rule."""
+        from domonic.dom import DOMException
+
+        rules = _parse_rule_list(self.parentStyleSheet, _strip_css_comments(rule), self)
+        if len(rules) == 0:
+            raise DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Invalid CSS rule.")
+        if len(rules) > 1:
+            raise DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Only one rule is allowed.")
+        if index is None:
+            index = len(self.cssRules)
+        if index < 0 or index > len(self.cssRules):
+            raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
+        self.cssRules.insert(index, rules[0])
+        return index
 
     # @property
     # def cssRules(self):
@@ -398,7 +856,7 @@ class CSSConditionRule(CSSGroupingRule):
     def __init__(self):
         super().__init__()
         self.conditionText: str = None
-        self.cssRules: "CSSRuleList" = None
+        self.cssRules: "CSSRuleList" = CSSRuleList()
         # self.type = CSSRule.CONDITIONAL_RULE
 
     # @property
@@ -418,8 +876,52 @@ class CSSSupportsRule(CSSConditionRule):
     def __init__(self):
         super().__init__()
         self.conditionText: str = None
-        self.cssRules: "CSSRuleList" = None
+        self.cssRules: "CSSRuleList" = CSSRuleList()
         self.type = CSSRule.SUPPORTS_RULE
+
+    @property
+    def cssText(self):
+        return f"@supports {self.conditionText} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
+
+
+class CSSSupportsConditionRule(CSSGroupingRule):
+    """The CSSSupportsConditionRule interface represents a @supports-condition rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.name: str = ""
+        self.type = CSSRule.SUPPORTS_CONDITION_RULE
+
+    @property
+    def cssText(self):
+        return f"@supports-condition {self.name} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
+
+
+class CSSWhenRule(CSSConditionRule):
+    """Represents a CSS Conditional Level 5 @when rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.conditionText: str = ""
+        self.type = CSSRule.WHEN_RULE
+
+    @property
+    def cssText(self):
+        return f"@when {self.conditionText} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
+
+
+class CSSElseRule(CSSConditionRule):
+    """Represents a CSS Conditional Level 5 @else rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.conditionText: str = ""
+        self.type = CSSRule.ELSE_RULE
+
+    @property
+    def cssText(self):
+        condition = f" {self.conditionText}" if self.conditionText else ""
+        return f"@else{condition} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
 
 
 class CSSMediaRule(CSSConditionRule):
@@ -441,6 +943,97 @@ class CSSMediaRule(CSSConditionRule):
     #     """Returns a MediaList representing the intended destination medium for style information."""
     #     raise NotImplementedError
 
+    @property
+    def cssText(self):
+        return f"@media {self.media.mediaText} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
+
+
+class CSSContainerRule(CSSConditionRule):
+    """The CSSContainerRule interface represents a @container rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.containerName: str = ""
+        self.containerQuery: str = ""
+        self.conditions: list[dict[str, str]] = []
+        self.type = CSSRule.CONTAINER_RULE
+
+    @property
+    def cssText(self):
+        condition = self.conditionText or _serialize_container_conditions(self.conditions)
+        prelude = f" {condition}" if condition else ""
+        return f"@container{prelude} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
+
+
+class CSSScopeRule(CSSGroupingRule):
+    """The CSSScopeRule interface represents a @scope rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.start: str | None = None
+        self.end: str | None = None
+        self.type = CSSRule.SCOPE_RULE
+
+    @property
+    def cssText(self):
+        start = f" ({self.start})" if self.start else ""
+        end = f" to ({self.end})" if self.end else ""
+        return f"@scope{start}{end} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
+
+
+class CSSLayerBlockRule(CSSGroupingRule):
+    """The CSSLayerBlockRule interface represents a @layer block rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.name: str = ""
+        self.type = CSSRule.LAYER_BLOCK_RULE
+
+    @property
+    def cssText(self):
+        name = f" {self.name}" if self.name else ""
+        return f"@layer{name} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
+
+
+class CSSLayerStatementRule(CSSRule):
+    """The CSSLayerStatementRule interface represents a statement-style @layer rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.nameList: list[str] = []
+        self.type = CSSRule.LAYER_STATEMENT_RULE
+
+    @property
+    def cssText(self):
+        return f"@layer {', '.join(self.nameList)};"
+
+
+class CSSPropertyRule(CSSRule):
+    """The CSSPropertyRule interface represents a Houdini @property rule."""
+
+    def __init__(self):
+        super().__init__()
+        self.name: str = ""
+        self.style: "CSSStyleDeclaration" = None
+        self.type = CSSRule.PROPERTY_RULE
+
+    @property
+    def cssText(self):
+        return f"@property {self.name} {{{self.style.cssText if self.style is not None else ''}}}"
+
+
+class CSSNestedDeclarations(CSSRule):
+    """The CSSNestedDeclarations interface represents declarations mixed with nested rules."""
+
+    def __init__(self):
+        super().__init__()
+        self.style: "CSSStyleDeclaration" = None
+        self.type = CSSRule.NESTED_DECLARATIONS_RULE
+
+    @property
+    def cssText(self):
+        return self.style.cssText if self.style is not None else ""
+
 
 class MediaList(list):
     """The MediaList interface represents a list of media. It is used in the @media at-rule."""
@@ -457,7 +1050,10 @@ class MediaList(list):
 
     def item(self, index: int) -> str:
         """Returns the media at the given index in the MediaList."""
-        return self[index]
+        try:
+            return self[index]
+        except IndexError:
+            return None
 
     def appendMedium(self, newMedium: str) -> None:
         """Appends a new medium to the end of the list."""
@@ -465,7 +1061,10 @@ class MediaList(list):
 
     def deleteMedium(self, oldMedium: str) -> None:
         """Removes medium in the media list. If the medium is not found nothing happens."""
-        self.remove(oldMedium)
+        try:
+            self.remove(oldMedium)
+        except ValueError:
+            pass
 
 
 class CSSRuleList(list):
@@ -481,7 +1080,10 @@ class CSSRuleList(list):
 
     def item(self, index: int) -> "CSSRule":
         """Gets a single CSSRule."""
-        return self[index]
+        try:
+            return self[index]
+        except IndexError:
+            return None
 
 
 class CSSStyleSheet(StyleSheet):
@@ -508,6 +1110,10 @@ class CSSStyleSheet(StyleSheet):
 
     def deleteRule(self, index: int):
         """Deletes the rule at the specified index into the stylesheet's rule list."""
+        from domonic.dom import DOMException
+
+        if index < 0 or index >= len(self.cssRules):
+            raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
         del self.cssRules[index]
         self.rules = self.cssRules
 
@@ -521,21 +1127,21 @@ class CSSStyleSheet(StyleSheet):
             raise DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Invalid CSS rule.")
         if len(rules) > 1:
             raise DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Only one rule is allowed.")
-        if index is not None:
-            if index > len(self.cssRules):
-                raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
-            self.cssRules.insert(index, rules[0])
-            self.rules = self.cssRules
-            return index
-        new_index = len(self.cssRules)
-        self.cssRules.append(rules[0])
+        if index is None:
+            index = len(self.cssRules)
+        if index < 0 or index > len(self.cssRules):
+            raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
+        self.cssRules.insert(index, rules[0])
         self.rules = self.cssRules
-        return new_index
+        return index
 
     def replace(self, text: str):
         """Asynchronously replaces the content of the stylesheet and returns
         a Promise that resolves with the updated CSSStyleSheet."""
         self.replaceSync(text)
+        from domonic.javascript import Promise
+
+        return Promise(lambda resolve, reject: resolve(self))
 
     def replaceSync(self, text: str):
         """Synchronously replaces the content of the stylesheet."""
@@ -550,7 +1156,7 @@ class CSSStyleSheet(StyleSheet):
     #     raise NotImplementedError
 
     # Legacy methods
-    def addRule(self, selectorText: str, style: str, index: int):
+    def addRule(self, selectorText: str, style: str, index: int = None):
         """Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply
         to the matching elements.
         This differs from insertRule(), which takes the textual representation of the entire rule as a single string.
@@ -1343,6 +1949,41 @@ class Style:
 
         self._members_checked = True  # NOTE - this ALWAYS needs to be last or all props will render
 
+    def __setattr__(self, name: str, value: Any) -> None:
+        descriptor = getattr(type(self), name, None)
+        if isinstance(descriptor, property) and descriptor.fset is not None:
+            super().__setattr__(name, value)
+            return
+
+        super().__setattr__(name, value)
+        if not self._should_sync_style_name(name):
+            return
+        self._set_parent_style_property(name, "none" if value is None else value)
+
+    def _should_sync_style_name(self, name: str) -> bool:
+        if name in _CSS_STYLE_INTERNAL_NAMES or name.startswith("_"):
+            return False
+        if getattr(self, "_suspend_style_sync", False):
+            return False
+        if not getattr(self, "_members_checked", False):
+            return False
+        return getattr(self, "_parent_node", None) is not None
+
+    def _set_parent_style_property(self, name: str, value: Any, priority: str = "") -> None:
+        if self._parent_node is None:
+            return
+        property_name = _css_property_name(name)
+        entries = _parse_css_declarations(self._parent_node.getAttribute("style") or "")
+        entries = _set_css_declaration(entries, property_name, value, priority)
+        css_text = _serialize_css_declarations(entries, compact=True)
+        self._parent_node.setAttribute("style", css_text)
+        if hasattr(self, "_css_text"):
+            object.__setattr__(self, "_css_text", css_text)
+        if hasattr(self, "_declared_properties") and not property_name.startswith("--"):
+            declared_properties = set(getattr(self, "_declared_properties", set()))
+            declared_properties.add(_css_attribute_name(property_name))
+            object.__setattr__(self, "_declared_properties", declared_properties)
+
     def style_set_decorator(func):
         from functools import wraps
 
@@ -1358,20 +1999,10 @@ class Style:
             if not self._members_checked:
                 return
 
-            if self._parent_node is not None:
-                key = func.__name__
-                s = f"{Utils.case_kebab(key)}:{value};"
-                styles = self._parent_node.getAttribute("style")
-                if styles is not None:
-                    # TODO - replace if exists. should be able to do this now with the parser?
-                    # if key not in styles:
-                    styles = styles + s
-                    # else:
-                    # styles = styles.replace(f"{key}:{self.__dict__[key]}", s)
-                else:
-                    styles = s
-                # print(styles)
-                self._parent_node.setAttribute("style", styles)
+            if getattr(self, "_suspend_style_sync", False):
+                return
+
+            self._set_parent_style_property(func.__name__, value)
 
         return style_wrapper
 
@@ -5055,66 +5686,76 @@ class CSSStyleDeclaration(Style):
     def __init__(self, parentNode=None, *args, **kwargs):
         # print("*** MADE A STYLE ***")
         # super(Style).__init__(*args, **kwargs)
+        self._css_text = ""
+        self._declared_properties = set()
+        self._suspend_style_sync = False
         super().__init__(parentNode, *args, **kwargs)
         # self.__parentNode = parentNode
         # self.__cssText = None
         self.parentRule = None
-        self.cssText = None
+        self.cssText = parentNode.getAttribute("style") if parentNode is not None and parentNode.getAttribute("style") else ""
 
     @staticmethod
     def _to_kebab(name: str) -> str:
-        return Utils.case_kebab(name) if name is not None else ""
+        return _css_property_name(name) if name is not None else ""
 
     @staticmethod
     def _to_camel(name: str) -> str:
-        if not name:
-            return name
-        parts = name.split("-")
-        return parts[0] + "".join(part[:1].upper() + part[1:] for part in parts[1:])
+        return _css_attribute_name(name) if name else name
 
     def _current_css_text(self) -> str:
-        if getattr(self, "cssText", None):
+        if getattr(self, "cssText", ""):
             return self.cssText or ""
         if self._parent_node is not None:
             return self._parent_node.getAttribute("style") or ""
         return ""
 
     def _property_entries(self):
-        text = self._current_css_text().strip()
-        if text == "":
-            return []
-        entries = []
-        for item in text.split(";"):
-            item = item.strip()
-            if not item or ":" not in item:
-                continue
-            name, value = item.split(":", 1)
-            value = value.strip()
-            priority = ""
-            if value.endswith("!important"):
-                value = value[: -len("!important")].strip()
-                priority = "important"
-            entries.append((name.strip(), value, priority))
-        return entries
+        return _parse_css_declarations(self._current_css_text())
 
     def _sync_css_text(self, entries):
-        css_text = "; ".join(
-            f"{name}: {value}{' !important' if priority == 'important' else ''}"
-            for name, value, priority in entries
-        )
-        if css_text:
-            css_text += ";"
+        css_text = _serialize_css_declarations(entries)
         self.cssText = css_text
         if self._parent_node is not None:
             self._parent_node.setAttribute("style", css_text)
 
-    # @property
-    # def cssText(self):
-    #     """Textual representation of the declaration block, if and only if it is exposed via HTMLElement.style.
-    #     Setting this attribute changes the inline style.
-    #     If you want a text representation of a computed declaration block,
-    #     you can get it with JSON.stringify()."""
-    #     raise NotImplementedError
+    @property
+    def cssText(self):
+        """Textual representation of the declaration block."""
+        return getattr(self, "_css_text", "")
+
+    @cssText.setter
+    def cssText(self, value):
+        text = "" if value is None else str(value).strip()
+        entries = _parse_css_declarations(text)
+        next_declared_properties = {
+            self._to_camel(name)
+            for name, _, _ in entries
+            if not name.startswith("--")
+        }
+        previous_declared_properties = set(getattr(self, "_declared_properties", set()))
+        object.__setattr__(self, "_css_text", text)
+        if getattr(self, "_parent_node", None) is not None and getattr(self, "_members_checked", False):
+            self._parent_node.setAttribute("style", text)
+
+        object.__setattr__(self, "_suspend_style_sync", True)
+        try:
+            for attribute_name in previous_declared_properties - next_declared_properties:
+                try:
+                    setattr(self, attribute_name, "")
+                except Exception:
+                    object.__setattr__(self, attribute_name, "")
+            for name, property_value, _ in entries:
+                attribute_name = self._to_camel(name)
+                if attribute_name.startswith("--"):
+                    continue
+                try:
+                    setattr(self, attribute_name, property_value)
+                except Exception:
+                    object.__setattr__(self, attribute_name, property_value)
+            object.__setattr__(self, "_declared_properties", next_declared_properties)
+        finally:
+            object.__setattr__(self, "_suspend_style_sync", False)
 
     @property
     def length(self):
@@ -5149,7 +5790,8 @@ class CSSStyleDeclaration(Style):
         for name, value, _ in reversed(self._property_entries()):
             if name == target:
                 return value
-        return getattr(self, self._to_camel(propertyName), "")
+        value = getattr(self, self._to_camel(propertyName), "")
+        return "" if value is None or value == "none" else value
 
     def item(self, index: int) -> str:
         """Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.
@@ -5161,6 +5803,21 @@ class CSSStyleDeclaration(Style):
             return ""
         return entries[index][0]
 
+    def __getitem__(self, index):
+        if isinstance(index, int):
+            return self.item(index)
+        return self.getPropertyValue(index)
+
+    def __setitem__(self, propertyName, value):
+        self.setProperty(propertyName, value)
+
+    def __contains__(self, propertyName):
+        return self.getPropertyValue(propertyName) != ""
+
+    def __iter__(self):
+        for index in range(self.length):
+            yield self.item(index)
+
     def removeProperty(self, propertyName):
         """Removes a property from the CSS declaration block."""
         current = self.getPropertyValue(propertyName)
@@ -5168,19 +5825,34 @@ class CSSStyleDeclaration(Style):
         entries = [entry for entry in self._property_entries() if entry[0] != target]
         self._sync_css_text(entries)
         try:
-            setattr(self, self._to_camel(propertyName), "")
+            object.__setattr__(self, "_suspend_style_sync", True)
+            if not target.startswith("--"):
+                setattr(self, self._to_camel(propertyName), "")
         except Exception:
             pass
+        finally:
+            object.__setattr__(self, "_suspend_style_sync", False)
         return current
 
     # Modifies an existing CSS property or creates a new CSS property in the declaration block. """
     def setProperty(self, property, value, priority=None):
         target = self._to_kebab(property)
-        priority = "important" if priority == "important" else ""
-        entries = [entry for entry in self._property_entries() if entry[0] != target]
-        entries.append((target, value, priority))
+        value = "" if value is None else str(value)
+        priority = "" if priority is None else str(priority).strip().lower()
+        if priority not in ("", "important") and value:
+            return
+        if _IMPORTANT_RE.search(value):
+            value = _IMPORTANT_RE.sub("", value).strip()
+            priority = "important"
+        entries = _set_css_declaration(self._property_entries(), target, value, priority)
         self._sync_css_text(entries)
-        setattr(self, self._to_camel(property), value)
+        if target.startswith("--"):
+            return
+        object.__setattr__(self, "_suspend_style_sync", True)
+        try:
+            setattr(self, self._to_camel(property), value)
+        finally:
+            object.__setattr__(self, "_suspend_style_sync", False)
 
     def getPropertyCSSValue(self):
         """Only supported via getComputedStyle in Firefox. Returns the property value as a
@@ -5188,98 +5860,627 @@ class CSSStyleDeclaration(Style):
         raise NotImplementedError
 
 
-COMMENT_REGEXP = r"/\*[\s\S]*?\*/"
+def _known_css_property_names() -> set[str]:
+    global _KNOWN_CSS_PROPERTIES
+    if _KNOWN_CSS_PROPERTIES is None:
+        style = Style()
+        names = set(_ADDITIONAL_CSS_PROPERTY_NAMES)
+        for name in style.__dict__:
+            if name.startswith("_") or name in _CSS_STYLE_INTERNAL_NAMES:
+                continue
+            names.add(_css_property_name(name))
+        for name, descriptor in Style.__dict__.items():
+            if isinstance(descriptor, property):
+                names.add(_css_property_name(name))
+        _KNOWN_CSS_PROPERTIES = names
+    return _KNOWN_CSS_PROPERTIES
+
+
+def _has_balanced_css_delimiters(text: str) -> bool:
+    quote = None
+    escaped = False
+    stack: list[str] = []
+    pairs = {")": "(", "]": "[", "}": "{"}
+    for char in text or "":
+        if quote is not None:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
+            continue
+        if char in "([{":
+            stack.append(char)
+            continue
+        if char in ")]}":
+            if not stack or stack[-1] != pairs[char]:
+                return False
+            stack.pop()
+    return quote is None and not stack
+
+
+def _supports_property_value(property_name: str, value: str) -> bool:
+    if property_name != property_name.strip() or not property_name:
+        return False
+    if value is None or not str(value).strip() or _IMPORTANT_RE.search(str(value)):
+        return False
+    if not _has_balanced_css_delimiters(str(value)):
+        return False
+    normalized = _css_property_name(property_name)
+    if normalized.startswith("--"):
+        return len(normalized) > 2
+    return normalized in _known_css_property_names()
+
+
+def _supports_condition(condition_text: str) -> bool:
+    text = (condition_text or "").strip()
+    if not text:
+        return False
+    split = _split_top_level_word(text, "or")
+    if split:
+        return _supports_condition(split[0]) or _supports_condition(split[1])
+    split = _split_top_level_word(text, "and")
+    if split:
+        return _supports_condition(split[0]) and _supports_condition(split[1])
+    if text.lower().startswith("not "):
+        return not _supports_condition(text[4:].strip())
+
+    text = _strip_wrapping_parens(text)
+    lower = text.lower()
+    for function_name in ("selector", "font-tech", "font-format", "named-feature", "env"):
+        function_match = _consume_css_function(text, function_name)
+        if function_match and function_match[0]:
+            return True
+    at_rule_match = _consume_css_function(text, "at-rule")
+    if at_rule_match:
+        return at_rule_match[0].strip().lower() in {
+            "@container",
+            "@counter-style",
+            "@font-face",
+            "@font-feature-values",
+            "@import",
+            "@keyframes",
+            "@layer",
+            "@media",
+            "@namespace",
+            "@page",
+            "@property",
+            "@scope",
+            "@supports",
+        }
+    if lower.startswith("selector("):
+        return False
+
+    entries = _parse_css_declarations(text)
+    return len(entries) == 1 and _supports_property_value(entries[0][0], entries[0][1])
+
+
+class CSS:
+    """Namespace for CSS utility functions."""
+
+    @staticmethod
+    def escape(ident: Any) -> str:
+        """Serialize a string for safe use as a CSS identifier."""
+        ident = "" if ident is None else str(ident)
+        result: list[str] = []
+        length = len(ident)
+        for index, char in enumerate(ident):
+            code = ord(char)
+            if code == 0:
+                result.append("\uFFFD")
+            elif 0x0001 <= code <= 0x001F or code == 0x007F:
+                result.append(f"\\{code:x} ")
+            elif index == 0 and char.isdigit():
+                result.append(f"\\{code:x} ")
+            elif index == 1 and char.isdigit() and ident[0] == "-":
+                result.append(f"\\{code:x} ")
+            elif index == 0 and char == "-" and length == 1:
+                result.append("\\-")
+            elif code >= 0x0080 or char in "-_" or char.isalnum():
+                result.append(char)
+            else:
+                result.append(f"\\{char}")
+        return "".join(result)
+
+    @staticmethod
+    def supports(property: str, value: str = None) -> bool:
+        """Best-effort syntax-level equivalent of ``CSS.supports()``."""
+        if value is None:
+            return _supports_condition(str(property))
+        return _supports_property_value(str(property), str(value))
+
+
+def _normalize_declaration_text(css_text: str) -> str:
+    text = " ".join(line.strip() for line in (css_text or "").strip().splitlines() if line.strip())
+    text = re.sub(r"\s+", " ", text)
+    entries = _parse_css_declarations(text)
+    if not entries:
+        return text.strip()
+    serialized = _serialize_css_declarations(entries)
+    if len(entries) == 1 and not text.rstrip().endswith(";"):
+        return serialized[:-1]
+    return serialized
+
+
+def _skip_css_whitespace(css_text: str, index: int) -> int:
+    while index < len(css_text) and css_text[index].isspace():
+        index += 1
+    return index
+
+
+def _find_next_rule_boundary(css_text: str, start: int) -> tuple[int, str]:
+    quote = None
+    escaped = False
+    depth = 0
+    for index in range(start, len(css_text)):
+        char = css_text[index]
+        if quote is not None:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
+            continue
+        if char in "([":
+            depth += 1
+            continue
+        if char in ")]" and depth > 0:
+            depth -= 1
+            continue
+        if depth == 0 and char in "{;":
+            return index, char
+    return -1, ""
+
+
+def _find_next_top_level_char(css_text: str, start: int, target: str) -> int:
+    quote = None
+    escaped = False
+    depth = 0
+    for index in range(start, len(css_text)):
+        char = css_text[index]
+        if quote is not None:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
+            continue
+        if char in "([":
+            depth += 1
+            continue
+        if char in ")]" and depth > 0:
+            depth -= 1
+            continue
+        if depth == 0 and char == target:
+            return index
+    return -1
+
+
+def _find_matching_brace(css_text: str, open_index: int) -> int:
+    quote = None
+    escaped = False
+    depth = 0
+    for index in range(open_index, len(css_text)):
+        char = css_text[index]
+        if quote is not None:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
+            continue
+        if char == "{":
+            depth += 1
+            continue
+        if char == "}":
+            depth -= 1
+            if depth == 0:
+                return index
+    return -1
+
+
+def _style_from_declarations(css_text: str, parentRule: CSSRule) -> CSSStyleDeclaration:
+    style = CSSStyleDeclaration()
+    style.cssText = _normalize_declaration_text(css_text)
+    style.parentRule = parentRule
+    return style
+
+
+def _extract_style_block_parts(block: str) -> tuple[str, list[tuple[str, str, str]]]:
+    declarations: list[str] = []
+    nested_parts: list[tuple[str, str, str]] = []
+    cursor = 0
+    seen_nested_rule = False
+    while True:
+        open_index = _find_next_top_level_char(block, cursor, "{")
+        if open_index == -1:
+            tail = block[cursor:]
+            if seen_nested_rule:
+                if _parse_css_declarations(tail):
+                    nested_parts.append(("declarations", "", tail))
+            else:
+                declarations.append(tail)
+            break
+        segment = block[cursor:open_index]
+        split_at = segment.rfind(";")
+        if split_at == -1:
+            declarations_text = ""
+            nested_prelude = segment.strip()
+        else:
+            declarations_text = segment[: split_at + 1]
+            nested_prelude = segment[split_at + 1 :].strip()
+        if seen_nested_rule:
+            if _parse_css_declarations(declarations_text):
+                nested_parts.append(("declarations", "", declarations_text))
+        else:
+            declarations.append(declarations_text)
+        close_index = _find_matching_brace(block, open_index)
+        if close_index == -1:
+            if seen_nested_rule:
+                if _parse_css_declarations(block[open_index:]):
+                    nested_parts.append(("declarations", "", block[open_index:]))
+            else:
+                declarations.append(block[open_index:])
+            break
+        nested_parts.append(("rule", nested_prelude, block[open_index + 1 : close_index]))
+        seen_nested_rule = True
+        cursor = close_index + 1
+    return "".join(declarations), nested_parts
+
+
+def _parse_single_container_condition(value: str) -> dict[str, str]:
+    value = (value or "").strip()
+    if not value:
+        return {"name": "", "query": ""}
+    lower = value.lower()
+    query_starters = ("(", "style(", "scroll-state(", "not ", "not(", "and ", "or ")
+    if lower.startswith(query_starters):
+        return {"name": "", "query": value}
+    parts = value.split(None, 1)
+    if len(parts) == 1:
+        return {"name": "", "query": parts[0]}
+    return {"name": parts[0], "query": parts[1].strip()}
+
+
+def _parse_container_conditions(prelude: str) -> list[dict[str, str]]:
+    value = prelude.replace("@container", "", 1).strip()
+    if not value:
+        return []
+    return [_parse_single_container_condition(item) for item in _split_top_level_commas(value)]
+
+
+def _serialize_container_conditions(conditions: list[dict[str, str]]) -> str:
+    parts: list[str] = []
+    for condition in conditions or []:
+        name = condition.get("name", "")
+        query = condition.get("query", "")
+        parts.append(f"{name} {query}".strip())
+    return ", ".join(part for part in parts if part)
+
+
+def _parse_container_prelude(prelude: str) -> tuple[str, str, list[dict[str, str]]]:
+    conditions = _parse_container_conditions(prelude)
+    if len(conditions) == 1:
+        condition = conditions[0]
+        return condition["name"], condition["query"], conditions
+    return "", "", conditions
+
+
+def _strip_wrapping_parens(value: str) -> str:
+    value = (value or "").strip()
+    if value.startswith("("):
+        close_index = _find_matching_paren(value, 0)
+        if close_index == len(value) - 1:
+            return value[1:-1].strip()
+    return value
+
+
+def _parse_scope_prelude(prelude: str) -> tuple[str | None, str | None]:
+    value = prelude.replace("@scope", "", 1).strip()
+    if not value:
+        return None, None
+    split = _split_top_level_word(value, "to")
+    if split:
+        start, end = split
+        return _strip_wrapping_parens(start), _strip_wrapping_parens(end)
+    return _strip_wrapping_parens(value), None
+
+
+def _consume_css_function(text: str, function_name: str) -> tuple[str, str] | None:
+    text = (text or "").lstrip()
+    prefix = f"{function_name}("
+    if not text.lower().startswith(prefix):
+        return None
+    open_index = len(function_name)
+    close_index = _find_matching_paren(text, open_index)
+    if close_index == -1:
+        return None
+    return text[open_index + 1 : close_index].strip(), text[close_index + 1 :].strip()
+
+
+def _parse_import_tail(text: str) -> tuple[str | None, str, str]:
+    layer_name: str | None = None
+    supports_text = ""
+    media_text = (text or "").strip()
+
+    layer_match = _consume_css_function(media_text, "layer")
+    if layer_match:
+        layer_name, media_text = layer_match
+    elif media_text.lower() == "layer" or media_text.lower().startswith("layer "):
+        layer_name = ""
+        media_text = media_text[5:].strip()
+
+    supports_match = _consume_css_function(media_text, "supports")
+    if supports_match:
+        supports_text, media_text = supports_match
+
+    return layer_name, supports_text, media_text.strip()
+
+
+def _parse_statement_at_rule(prelude: str, parentStyleSheet: CSSStyleSheet, parentRule: CSSRule | None) -> CSSRule | None:
+    lower = prelude.lower()
+    if not lower.startswith("@") and parentRule is not None and _parse_css_declarations(prelude):
+        rule = CSSNestedDeclarations()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.style = _style_from_declarations(prelude, rule)
+        return rule
+    if lower.startswith("@import"):
+        rule = CSSImportRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rest = prelude[len("@import") :].strip()
+        href_match = re.match(r"(url\([^)]+\)|\"[^\"]+\"|'[^']+')\s*(.*)$", rest)
+        if href_match:
+            rule.href = href_match.group(1)
+            layer_name, supports_text, media_text = _parse_import_tail(href_match.group(2).strip())
+            rule.layerName = layer_name
+            rule.supportsText = supports_text
+            rule.media = MediaList([item for item in _split_top_level_commas(media_text) if item])
+        else:
+            rule.href = rest
+            rule.media = MediaList()
+        return rule
+    if lower.startswith("@namespace"):
+        rule = CSSNamespaceRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rest = prelude[len("@namespace") :].strip()
+        parts = rest.split(None, 1)
+        if len(parts) == 2:
+            rule.prefix = parts[0]
+            rule.namespaceURI = parts[1]
+        else:
+            rule.namespaceURI = rest
+        return rule
+    if lower.startswith("@layer"):
+        rule = CSSLayerStatementRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.nameList = [name for name in _split_top_level_commas(prelude[len("@layer") :].strip()) if name]
+        return rule
+    rule = CSSRule()
+    rule.parentStyleSheet = parentStyleSheet
+    rule.parentRule = parentRule
+    rule.type = CSSRule.CHARSET_RULE if lower.startswith("@charset") else CSSRule.UNKNOWN_RULE
+    rule.cssText = f"{prelude};"
+    return rule
+
+
+def _parse_keyframe_rules(parentStyleSheet: CSSStyleSheet, parentRule: CSSKeyframesRule, block: str) -> CSSRuleList:
+    rules = CSSRuleList()
+    index = 0
+    while index < len(block):
+        index = _skip_css_whitespace(block, index)
+        boundary, kind = _find_next_rule_boundary(block, index)
+        if boundary == -1 or kind != "{":
+            break
+        key_text = block[index:boundary].strip()
+        close_index = _find_matching_brace(block, boundary)
+        if close_index == -1:
+            break
+        rule = CSSKeyframeRule()
+        rule.keyText = key_text
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.style = _style_from_declarations(block[boundary + 1 : close_index], rule)
+        rules.append(rule)
+        index = close_index + 1
+    return rules
+
+
+def _parse_style_rule(
+    parentStyleSheet: CSSStyleSheet,
+    parentRule: CSSRule | None,
+    selectorText: str,
+    block: str,
+) -> CSSStyleRule:
+    rule = CSSStyleRule()
+    rule.selectorText = selectorText.strip()
+    rule.parentStyleSheet = parentStyleSheet
+    rule.parentRule = parentRule
+    declarations, nested_rules = _extract_style_block_parts(block)
+    rule.style = _style_from_declarations(declarations, rule)
+    for nested_type, nested_prelude, nested_block in nested_rules:
+        if nested_type == "declarations":
+            nested = CSSNestedDeclarations()
+            nested.parentStyleSheet = parentStyleSheet
+            nested.parentRule = rule
+            nested.style = _style_from_declarations(nested_block, nested)
+            if nested.style.length:
+                rule.cssRules.append(nested)
+            continue
+        if not nested_prelude:
+            continue
+        rule.cssRules.append(_parse_block_rule(parentStyleSheet, rule, nested_prelude, nested_block))
+    return rule
+
+
+def _parse_block_rule(
+    parentStyleSheet: CSSStyleSheet,
+    parentRule: CSSRule | None,
+    prelude: str,
+    block: str,
+) -> CSSRule:
+    lower = prelude.lower()
+    if lower.startswith("@media"):
+        rule = CSSMediaRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        for medium in _split_top_level_commas(prelude[len("@media") :].strip()):
+            if medium:
+                rule.media.appendMedium(medium)
+        rule.conditionText = rule.media.mediaText
+        rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
+        return rule
+    if lower.startswith("@supports-condition"):
+        rule = CSSSupportsConditionRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.name = prelude[len("@supports-condition") :].strip()
+        rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
+        return rule
+    if lower.startswith("@supports"):
+        rule = CSSSupportsRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.conditionText = prelude[len("@supports") :].strip()
+        rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
+        return rule
+    if lower.startswith("@when"):
+        rule = CSSWhenRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.conditionText = prelude[len("@when") :].strip()
+        rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
+        return rule
+    if lower.startswith("@else"):
+        rule = CSSElseRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.conditionText = prelude[len("@else") :].strip()
+        rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
+        return rule
+    if lower.startswith("@container"):
+        rule = CSSContainerRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.containerName, rule.containerQuery, rule.conditions = _parse_container_prelude(prelude)
+        rule.conditionText = _serialize_container_conditions(rule.conditions)
+        rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
+        return rule
+    if lower.startswith("@scope"):
+        rule = CSSScopeRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.start, rule.end = _parse_scope_prelude(prelude)
+        rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
+        return rule
+    if lower.startswith("@layer"):
+        rule = CSSLayerBlockRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.name = prelude[len("@layer") :].strip()
+        rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
+        return rule
+    if lower.startswith("@keyframes") or lower.startswith("@-webkit-keyframes"):
+        rule = CSSKeyframesRule()
+        rule.name = prelude.split(None, 1)[1].strip() if len(prelude.split(None, 1)) > 1 else ""
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.cssRules = _parse_keyframe_rules(parentStyleSheet, rule, block)
+        return rule
+    if lower.startswith("@font-face"):
+        rule = CSSFontFaceRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.style = _style_from_declarations(block, rule)
+        return rule
+    if lower.startswith("@page"):
+        rule = CSSPageRule()
+        rule.selectorText = prelude[len("@page") :].strip()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.style = _style_from_declarations(block, rule)
+        return rule
+    if lower.startswith("@property"):
+        rule = CSSPropertyRule()
+        rule.name = prelude[len("@property") :].strip()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.style = _style_from_declarations(block, rule)
+        return rule
+    if lower.startswith("@counter-style"):
+        rule = CSSCounterStyleRule()
+        rule.name = prelude[len("@counter-style") :].strip()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.style = _style_from_declarations(block, rule)
+        rule.system = rule.style.getPropertyValue("system")
+        return rule
+    if lower.startswith("@color-profile"):
+        rule = CSSColorProfileRule()
+        rule.colorProfile = prelude[len("@color-profile") :].strip()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.style = _style_from_declarations(block, rule)
+        return rule
+    if lower.startswith("@font-feature-values"):
+        rule = CSSFontFeatureValuesRule()
+        rule.parentStyleSheet = parentStyleSheet
+        rule.parentRule = parentRule
+        rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
+        return rule
+    return _parse_style_rule(parentStyleSheet, parentRule, prelude, block)
+
+
+def _parse_rule_list(parentStyleSheet: CSSStyleSheet, cssText: str, parentRule: CSSRule | None = None) -> CSSRuleList:
+    rules = CSSRuleList()
+    css = cssText or ""
+    index = 0
+    while index < len(css):
+        index = _skip_css_whitespace(css, index)
+        if index >= len(css):
+            break
+        boundary, kind = _find_next_rule_boundary(css, index)
+        if boundary == -1:
+            break
+        prelude = css[index:boundary].strip()
+        if not prelude:
+            index = boundary + 1
+            continue
+        if kind == ";":
+            rule = _parse_statement_at_rule(prelude, parentStyleSheet, parentRule)
+            if rule is not None:
+                rules.append(rule)
+            index = boundary + 1
+            continue
+        close_index = _find_matching_brace(css, boundary)
+        if close_index == -1:
+            break
+        block = css[boundary + 1 : close_index]
+        rules.append(_parse_block_rule(parentStyleSheet, parentRule, prelude, block))
+        index = close_index + 1
+    return rules
 
 
 class CSSParser:
     @staticmethod
     def parseFromString(parentStyleSheet: CSSStyleSheet, cssText: str):
-        css = re.sub(COMMENT_REGEXP, "", cssText)
-        cssRules = []
-        stack = []
-        parentRule: CSSRule = None
-        lastIndex = 0
-        match = None
-
-        def matches(s: str):
-            regExp = r"{|}"
-
-            class Match:
-                def __init__(self, index: int, match: str):
-                    self.index = index
-                    self.match = match
-
-                def __str__(self):
-                    return f"{self.match}"
-
-                def __repr__(self):
-                    return f"{self.match}"
-
-                def __getitem__(self, index):
-                    return self.match[index]
-
-            import re
-
-            matches = re.finditer(regExp, s, flags=re.MULTILINE)
-            return [Match(m.start(), m.group(0)) for m in matches]
-
-        for count, match in enumerate(matches(css)):
-            if match[0] == "{":
-                selectorText = css[lastIndex : match.index].strip()
-                if selectorText.startswith("@keyframes"):
-                    newRule = CSSKeyframesRule()
-                    newRule.name = selectorText.replace("@keyframes ", "")
-                    newRule.parentStyleSheet = parentStyleSheet
-                    cssRules.append(newRule)
-                    parentRule = newRule
-                elif selectorText.startswith("@media"):
-                    mediums = selectorText.replace("@media", "").split(",")
-                    newRule = CSSMediaRule()
-                    for medium in mediums:
-                        newRule.media.appendMedium(medium.strip())
-                    newRule.parentStyleSheet = parentStyleSheet
-                    cssRules.append(newRule)
-                    parentRule = newRule
-                elif parentRule is not None and parentRule.type == CSSRule.KEYFRAMES_RULE:
-                    newRule = CSSKeyframeRule()
-                    newRule.keyText = selectorText.strip()
-                    newRule.parentStyleSheet = parentStyleSheet
-                    newRule.parentRule = parentRule
-                    parentRule.cssRules.append(newRule)
-                    parentRule = newRule
-                elif parentRule is not None and parentRule.type == CSSRule.MEDIA_RULE:
-                    newRule = CSSStyleRule()
-                    newRule.selectorText = selectorText
-                    newRule.parentStyleSheet = parentStyleSheet
-                    newRule.parentRule = parentRule
-                    parentRule.cssRules.append(newRule)
-                    parentRule = newRule
-                else:
-                    newRule = CSSStyleRule()
-                    newRule.selectorText = selectorText
-                    newRule.parentStyleSheet = parentStyleSheet
-                    newRule.parentRule = parentRule
-                    if not parentRule:
-                        cssRules.append(newRule)
-                    parentRule = newRule
-                stack.append(parentRule)
-            else:
-                if parentRule is not None:
-                    cssText = css[lastIndex : match.index].strip()
-                    cssText = re.sub(" +", " ", cssText)
-                    cssText = re.sub("\n", "", cssText)
-                    if (
-                        parentRule.type == CSSRule.FONT_FACE_RULE
-                        or parentRule.type == CSSRule.KEYFRAME_RULE
-                        or parentRule.type == CSSRule.STYLE_RULE
-                    ):
-                        style = CSSStyleDeclaration()
-                        style.cssText = cssText
-                        style.parentRule = parentRule
-                        parentRule.style = style
-                        # print('break')
-
-                stack.pop()
-                parentRule = stack[-1] if stack else None
-            lastIndex = match.index + 1
-        return cssRules
+        return _parse_rule_list(parentStyleSheet, _strip_css_comments(cssText))
