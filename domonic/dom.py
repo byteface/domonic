@@ -3488,32 +3488,23 @@ class Element(Node):
     @innerHTML.setter
     def innerHTML(self, value):
         if value is not None:
-            self.args = tuple(self._parse_html_fragment(value))
-            self._update_parents()
+            self.replaceChildren(*self._parse_html_fragment(value))
         return self.content
 
     @property
     def outerHTML(self):
-        return self
+        return str(self)
 
     @outerHTML.setter
     def outerHTML(self, value):
-        if isinstance(value, Element):
-            replacement_nodes = [value]
-        elif isinstance(value, str):
-            replacement_nodes = self._parse_html_fragment(value)
-        else:
-            replacement_nodes = [value]
         if self.parentNode is None:
             return self
-        parent = self.parentNode
-        index = parent.args.index(self)
-        parent.args = parent.args[:index] + tuple(replacement_nodes) + parent.args[index + 1 :]
-        parent._update_parents()
+        replacement = DocumentFragment(*self._parse_html_fragment(value))
+        self.parentNode.replaceChild(replacement, self)
         return self
 
     def html(self, *args):
-        self.args = args
+        self.replaceChildren(*args)
         return self
 
     def _parse_html_fragment(self, value: Any) -> list[Any]:

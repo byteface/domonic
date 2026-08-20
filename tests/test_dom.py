@@ -1744,17 +1744,36 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(host.querySelector("#after").tagName, "b")
 
     def test_innerhtml_and_outerhtml_parse_fragments(self):
-        host = div(_id="host")
+        old_child = span("old", _id="old")
+        host = div(old_child, _id="host")
+        self.assertEqual(host.outerHTML, '<div id="host"><span id="old">old</span></div>')
+
         host.innerHTML = "<span id='first'>A</span><span id='second'>B</span>"
         self.assertEqual(len(host.children), 2)
         self.assertEqual(host.children[0].getAttribute("id"), "first")
         self.assertEqual(host.children[1].textContent, "B")
+        self.assertIsNone(old_child.parentNode)
+        self.assertIs(host.children[0].parentNode, host)
 
         wrapper = div(host)
         host.outerHTML = "<section id='replacement'>R</section><aside id='tail'>T</aside>"
         self.assertEqual([child.tagName for child in wrapper.children], ["section", "aside"])
         self.assertEqual(wrapper.querySelector("#replacement").textContent, "R")
         self.assertEqual(wrapper.querySelector("#tail").textContent, "T")
+        self.assertIsNone(host.parentNode)
+        self.assertIs(wrapper.children[0].parentNode, wrapper)
+
+    def test_html_helper_replaces_children_and_detaches_old_nodes(self):
+        old_child = span("old", _id="old")
+        host = div(old_child)
+        new_child = strong("new", _id="new")
+
+        returned = host.html(new_child, " tail")
+
+        self.assertIs(returned, host)
+        self.assertEqual(str(host), '<div><strong id="new">new</strong> tail</div>')
+        self.assertIsNone(old_child.parentNode)
+        self.assertIs(new_child.parentNode, host)
 
     def test_document_fragment_append_and_prepend_accept_multiple_nodes(self):
         frag = Document.createDocumentFragment()
