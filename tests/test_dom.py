@@ -716,6 +716,14 @@ class DOMTest(unittest.TestCase):
         assert len(dom1.querySelectorAll(".test.this")) == 1
         assert dom1.contains(dom1)
 
+        scoped = div(div("child", _id="child", _class="box"), _id="root", _class="box")
+        self.assertIsNone(scoped.querySelector("#root"))
+        self.assertIsNone(scoped.getElementById("root"))
+        self.assertEqual(scoped.querySelector("#child").id, "child")
+        self.assertEqual([element.id for element in scoped.getElementsByClassName("box")], ["child"])
+        self.assertEqual([element.id for element in scoped.querySelectorAll("div")], ["child"])
+        self.assertEqual([element.id for element in scoped.querySelectorAll("*")], ["child"])
+
         links = self.page.querySelectorAll("a[rel=nofollow]")
         # for linky in links:
         #     print(linky.getAttribute("href"))

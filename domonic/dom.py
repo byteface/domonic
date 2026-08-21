@@ -3186,6 +3186,8 @@ class Element(Node):
         return [child for child in self.args if isinstance(child, Element)]
 
     def _getElementById(self, _id: str):
+        if self.getAttribute("id") == _id:
+            return self
         for element in self.getElementsByTagName("*"):
             if element.getAttribute("id") == _id:
                 return element
@@ -3771,6 +3773,8 @@ class Element(Node):
         elements = HTMLCollection()
 
         def anon(el):
+            if el is self:
+                return
             if not isinstance(el, Element):
                 return
             class_tokens = set(str(el.getAttribute("class") or "").split())
@@ -3782,7 +3786,13 @@ class Element(Node):
 
     def getElementById(self, _id: str) -> Element | None:
         """Returns the descendant element whose id matches the supplied value."""
-        return self._getElementById(_id) or None
+        for child in self.childNodes:
+            if not isinstance(child, Element):
+                continue
+            match = child._getElementById(_id)
+            if match is not False and match is not None:
+                return match
+        return None
 
     def elementFromPoint(self, x: float, y: float) -> Element | None:
         """Returns the topmost element in this subtree at the specified coordinates."""
@@ -3827,6 +3837,8 @@ class Element(Node):
         elements = HTMLCollection()
 
         def anon(el):
+            if el is self:
+                return
             if self._matchElement(el, tagName):
                 elements.append(el)
 
