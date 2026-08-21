@@ -1211,18 +1211,17 @@ class Node(EventTarget):
     @property
     def childElementCount(self) -> int:
         """Returns the number of child elements an element has"""
-        return len([child for child in self.args if not isinstance(child, str)])
+        return len(self.children)
 
     @property
     def childNodes(self) -> "NodeList":
         """Returns a live NodeList containing all the children of this node"""
-        # return list(self.args)
-        return NodeList(self.args)
+        return LiveNodeList(self)
 
     @property
     def children(self) -> list[Node]:
-        """Returns a collection of child nodes, excluding string content."""
-        return [child for child in self.args if not isinstance(child, str)]
+        """Returns a live collection of child nodes, excluding string content."""
+        return LiveNodeList(self, lambda child: not isinstance(child, str))
 
     def compareDocumentPosition(self, otherElement: "Node") -> int:
         """
@@ -1757,7 +1756,7 @@ class ParentNode:
     @property
     def children(self) -> "NodeList":
         """Return list of child nodes."""
-        return NodeList([e for e in self.childNodes if e.nodeType == Node.ELEMENT_NODE])
+        return LiveNodeList(self, lambda child: isinstance(child, Element))
 
     @property
     def firstElementChild(self):
@@ -3088,6 +3087,114 @@ class NodeList(list):
         return iter(self)
 
 
+class LiveNodeList(NodeList):
+    """List-like live view over a node's current children."""
+
+    def __init__(self, owner: Node, predicate: Callable[[Any], bool] | None = None) -> None:
+        self._owner = owner
+        self._predicate = predicate
+        super().__init__()
+
+    def _nodes(self) -> list[Any]:
+        nodes = list(getattr(self._owner, "args", ()))
+        if self._predicate is not None:
+            nodes = [node for node in nodes if self._predicate(node)]
+        return nodes
+
+    @property
+    def length(self) -> int:
+        return len(self._nodes())
+
+    def __len__(self) -> int:
+        return self.length
+
+    def __iter__(self) -> Iterator[Any]:
+        return iter(self._nodes())
+
+    def __reversed__(self) -> Iterator[Any]:
+        return reversed(self._nodes())
+
+    def __getitem__(self, index):
+        return self._nodes()[index]
+
+    def __contains__(self, item: Any) -> bool:
+        return item in self._nodes()
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, LiveNodeList):
+            other = other._nodes()
+        return self._nodes() == list(other) if isinstance(other, IterableABC) else False
+
+    def __repr__(self) -> str:
+        return repr(self._nodes())
+
+    def append(self, item: Any) -> None:
+        self._owner.appendChild(item)
+
+    def extend(self, items: Iterable[Any]) -> None:
+        for item in items:
+            self.append(item)
+
+    def insert(self, index: int, item: Any) -> None:
+        nodes = self._nodes()
+        if index < 0:
+            index = max(0, len(nodes) + index)
+        if index >= len(nodes):
+            self.append(item)
+            return
+        self._owner.insertBefore(item, nodes[index])
+
+    def _remove_direct_child(self, item: Any) -> Any:
+        if isinstance(item, Node):
+            removed = self._owner.removeChild(item)
+            if removed is not None:
+                return removed
+        siblings = list(getattr(self._owner, "args", ()))
+        for index, child in enumerate(siblings):
+            if child is item or child == item:
+                removed = siblings.pop(index)
+                self._owner.args = tuple(siblings)
+                _notify_slot_change(self._owner)
+                return removed
+        raise ValueError("node is not in list")
+
+    def remove(self, item: Any) -> None:
+        if item not in self._nodes():
+            raise ValueError("node is not in list")
+        self._remove_direct_child(item)
+
+    def pop(self, index: int = -1) -> Any:
+        node = self._nodes()[index]
+        return self._remove_direct_child(node)
+
+    def clear(self) -> None:
+        for node in list(self._nodes()):
+            self._remove_direct_child(node)
+
+    def __delitem__(self, index) -> None:
+        nodes = self._nodes()[index]
+        if isinstance(index, slice):
+            for node in list(nodes):
+                self._remove_direct_child(node)
+            return
+        self._remove_direct_child(nodes)
+
+    def __setitem__(self, index, item: Any) -> None:
+        if isinstance(index, slice):
+            old_nodes = self._nodes()[index]
+            new_nodes = list(item)
+            if old_nodes:
+                reference = old_nodes[0]
+                for node in new_nodes:
+                    self._owner.insertBefore(node, reference)
+                for node in list(old_nodes):
+                    self._remove_direct_child(node)
+                return
+            self.extend(new_nodes)
+            return
+        self._owner.replaceChild(item, self._nodes()[index])
+
+
 class RadioNodeList(NodeList):
     """A live collection of form controls sharing an id or name."""
 
@@ -3178,12 +3285,12 @@ class Element(Node):
     @property
     def childElementCount(self) -> int:
         """Returns the number of child elements an element has."""
-        return len([child for child in self.args if isinstance(child, Element)])
+        return len(self.children)
 
     @property
     def children(self) -> list[Node]:
         """Returns child elements, excluding text, comments, and strings."""
-        return [child for child in self.args if isinstance(child, Element)]
+        return LiveNodeList(self, lambda child: isinstance(child, Element))
 
     def _getElementById(self, _id: str):
         if self.getAttribute("id") == _id:

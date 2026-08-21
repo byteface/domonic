@@ -3118,6 +3118,38 @@ class NodeTest(unittest.TestCase):
         assert node.childNodes[2] is three, f'"{node.childNodes[2]}" != "{three}"'
         self._checkPositions(node)
 
+    def test_child_collections_are_live(self):
+        node = div(span("one", _id="one"), " gap ")
+        one = node.querySelector("#one")
+        child_nodes = node.childNodes
+        children = node.children
+        two = p("two", _id="two")
+
+        node.append(two)
+
+        self.assertIsInstance(child_nodes, NodeList)
+        self.assertEqual(child_nodes.length, 3)
+        self.assertIs(child_nodes[-1], two)
+        self.assertEqual([child.getAttribute("id") for child in children], ["one", "two"])
+        self.assertEqual(node.childElementCount, 2)
+
+        removed = child_nodes.pop()
+        self.assertIs(removed, two)
+        self.assertIsNone(two.parentNode)
+        self.assertEqual([child.getAttribute("id") for child in children], ["one"])
+
+        child_nodes.append(two)
+        self.assertIs(two.parentNode, node)
+        child_nodes.insert(0, "lead ")
+        self.assertEqual(node.firstChild, "lead ")
+        del child_nodes[0]
+        self.assertIs(node.firstChild, one)
+
+        children.clear()
+        self.assertEqual(node.args, (" gap ",))
+        self.assertIsNone(one.parentNode)
+        self.assertIsNone(two.parentNode)
+
     def test_previousSibling(self):
         node = Document.createElement("node")
         one = Document.createElement("one")
