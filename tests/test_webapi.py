@@ -6,6 +6,7 @@ test_webapi
 import json
 import os
 import tempfile
+import threading
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -38,6 +39,11 @@ from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePo
 from domonic.webapi.sanitizer import Sanitizer
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.urlpattern import URLPattern
+from domonic.webapi.webworkers import (
+    DedicatedWorkerGlobalScope,
+    Worker as WebWorker,
+    get_current_worker_scope,
+)
 from domonic.webapi.xhr import FormData, XMLHttpRequest
 
 # from domonic.decorators import silence
@@ -879,6 +885,154 @@ class TestCase(unittest.TestCase):
         first.close()
         second.close()
         other.close()
+
+    def test_webworker_callable(self):
+        def worker_main(scope):
+            self.assertIsInstance(scope, DedicatedWorkerGlobalScope)
+            self.assertIs(get_current_worker_scope(), scope)
+
+            def handle(event):
+                data = event.data
+                data["worker"] = scope.name
+                scope.postMessage(data, {"transfer": event.ports})
+
+            scope.onmessage = handle
+
+        worker = WebWorker(worker_main, {"name": "callable-worker"})
+        received = []
+        ready = threading.Event()
+
+        worker.onmessage = lambda event: (
+            received.append((event.data, event.source, event.ports)),
+            ready.set(),
+        )
+
+        transfer_port = MessagePort()
+        payload = {"items": ["original"]}
+        worker.postMessage(payload, [transfer_port])
+        payload["items"].append("mutated")
+
+        self.assertTrue(ready.wait(2))
+        self.assertEqual(
+            received,
+            [
+                (
+                    {"items": ["original"], "worker": "callable-worker"},
+                    worker.scope,
+                    [transfer_port],
+                )
+            ],
+        )
+
+        worker.terminate()
+        self.assertTrue(worker.join(2))
+
+    def test_webworker_script(self):
+        source = """
+def handle(event):
+    if event.data == "close":
+        close()
+    else:
+        postMessage({"reply": event.data, "name": self.name})
+
+onmessage = handle
+"""
+        with tempfile.NamedTemporaryFile(
+            "w", suffix=".py", delete=False
+        ) as worker_file:
+            worker_file.write(source)
+            worker_path = worker_file.name
+
+        worker = None
+        try:
+            worker = WebWorker(worker_path, {"name": "script-worker"})
+            received = []
+            ready = threading.Event()
+            worker.addEventListener(
+                "message",
+                lambda event: (
+                    received.append((event.data, event.source)),
+                    ready.set(),
+                ),
+            )
+
+            worker.postMessage("hello")
+
+            self.assertTrue(ready.wait(2))
+            self.assertEqual(
+                received,
+                [({"reply": "hello", "name": "script-worker"}, worker.scope)],
+            )
+
+            worker.postMessage("close")
+            self.assertTrue(worker.join(2))
+            self.assertTrue(worker.closed)
+        finally:
+            if worker is not None:
+                worker.terminate()
+                worker.join(2)
+            os.unlink(worker_path)
+
+    def test_webworker_errors(self):
+        class Uncloneable:
+            def __deepcopy__(self, memo):
+                raise TypeError("no worker clone")
+
+        def worker_main(scope):
+            scope.onmessageerror = lambda event: scope.postMessage(
+                {
+                    "messageerror": type(event.error).__name__,
+                    "source": event.source is worker,
+                }
+            )
+
+            def handle(event):
+                if event.data == "explode":
+                    raise ValueError("boom")
+                if event.data == "bad-reply":
+                    scope.postMessage(Uncloneable())
+
+            scope.onmessage = handle
+
+        worker = WebWorker(worker_main)
+        messages = []
+        errors = []
+        message_errors = []
+        message_ready = threading.Event()
+        error_ready = threading.Event()
+        message_error_ready = threading.Event()
+
+        worker.onmessage = lambda event: (
+            messages.append(event.data),
+            message_ready.set(),
+        )
+        worker.onerror = lambda event: (
+            errors.append((event.message, type(event.error))),
+            error_ready.set(),
+        )
+        worker.onmessageerror = lambda event: (
+            message_errors.append((event.data, type(event.error), event.source)),
+            message_error_ready.set(),
+        )
+
+        worker.postMessage(Uncloneable())
+        self.assertTrue(message_ready.wait(2))
+        self.assertEqual(messages, [{"messageerror": "TypeError", "source": True}])
+
+        worker.postMessage("explode")
+        self.assertTrue(error_ready.wait(2))
+        self.assertEqual(errors, [("boom", ValueError)])
+
+        worker.postMessage("bad-reply")
+        self.assertTrue(message_error_ready.wait(2))
+        self.assertEqual(len(message_errors), 1)
+        self.assertIsInstance(message_errors[0][0], Uncloneable)
+        self.assertEqual(message_errors[0][1], TypeError)
+        self.assertIs(message_errors[0][2], worker.scope)
+
+        worker.terminate()
+        self.assertTrue(worker.join(2))
+        self.assertTrue(worker.terminated)
 
     def test_networkinfo(self):
         pass

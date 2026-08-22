@@ -66,6 +66,32 @@ message wiring for worker-like code and tests.
 	BroadcastChannel("updates").postMessage({"ok": True})
 
 
+Web Workers
+----------------
+
+``Worker`` runs a local Python script or callable in a daemon thread with a
+browser-style ``DedicatedWorkerGlobalScope``. Messages are cloned between the
+parent and worker, and both sides support ``onmessage``, ``messageerror`` and
+``error`` events.
+
+.. code-block :: python
+
+	from threading import Event
+
+	from domonic.webapi.webworkers import Worker
+
+	done = Event()
+
+	def worker_main(scope):
+		scope.onmessage = lambda event: scope.postMessage(event.data.upper())
+
+	worker = Worker(worker_main)
+	worker.onmessage = lambda event: (print(event.data), done.set())
+	worker.postMessage("hello")
+	done.wait(2)
+	worker.terminate()
+
+
 File API
 ----------------
 
@@ -171,6 +197,10 @@ https://developer.mozilla.org/en-US/docs/Web/API
     :noindex:
 
 .. automodule:: domonic.webapi.messaging
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.webworkers
     :members:
     :noindex:
 

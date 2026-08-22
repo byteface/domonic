@@ -1045,7 +1045,7 @@ class TestCase(unittest.TestCase):
         self.assertTrue(True)
 
     def test_javascript_Worker(self):
-        with self.assertRaises(NotImplementedError):
+        with self.assertRaises(FileNotFoundError):
             Worker("/worker.py")
 
     def test_javascript_at(self):

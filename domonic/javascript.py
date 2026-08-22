@@ -81,6 +81,7 @@ except ImportError:  # pragma: no cover - optional dependency
 
 
 from domonic.webapi.url import URL, URLSearchParams
+from domonic.webapi.webworkers import Worker as _WebWorker
 from domonic.webapi.webstorage import Storage
 
 JSONScalar = str | int | float | bool | None
@@ -849,26 +850,8 @@ class Map:
 #         raise NotImplementedError
 
 
-class Worker:
-    """[A background task that can be created via script, which can send messages back to its creator.
-    Creating a worker is done by calling the Worker("path/to/worker/script") constructor.]
-    TODO - JSWorker - Node
-    Args:
-        object ([str]): [takes a path to a python script]
-    """
-
-    def __init__(self, script: str) -> None:
-        """creates a new Worker object."""
-        raise NotImplementedError
-
-    def postMessage(self) -> None:
-        """Sends a message — consisting of any object — to the worker's inner scope."""
-        raise NotImplementedError
-
-    def terminate(self) -> None:
-        """Immediately terminates the worker. This does not let worker finish its operations; it is halted at once.
-        ServiceWorker instances do not support this method."""
-        raise NotImplementedError
+class Worker(_WebWorker):
+    """Background worker exposed from the legacy ``domonic.javascript`` namespace."""
 
 
 class Math(Object):

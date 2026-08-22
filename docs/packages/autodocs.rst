@@ -70,6 +70,9 @@
 .. automodule:: domonic.webapi.messaging
     :members:
 
+.. automodule:: domonic.webapi.webworkers
+    :members:
+
 .. automodule:: domonic.webapi.file
     :members:
 
