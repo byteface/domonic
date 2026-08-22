@@ -178,6 +178,32 @@ To create your own custom elements, use ``create_element``.
     from domonic.html import *
     create_element('custom_el', div('some content'), _id="test")
 
+Custom element names can include hyphens, which makes them useful for emitting
+web-component style markup.
+
+.. code-block :: python
+
+    from domonic.html import *
+
+    card = create_element(
+        "profile-card",
+        template(
+            style(".card { border: 1px solid #ccc; padding: 1rem; }"),
+            article(slot(_name="name"), slot(), _class="card"),
+            _shadowrootmode="open",
+        ),
+        strong("byteface", _slot="name"),
+        "Server-rendered Declarative Shadow DOM.",
+    )
+
+    print(card)
+
+.. code-block :: html
+
+    <profile-card><template shadowrootmode="open"><style>.card { border: 1px solid #ccc; padding: 1rem; }</style><article class="card"><slot name="name"></slot><slot></slot></article></template><strong slot="name">byteface</strong>Server-rendered Declarative Shadow DOM.</profile-card>
+
+See ``examples/declarative_shadow_dom.py`` for a complete page.
+
 
 You can also use the DOM API:
 
