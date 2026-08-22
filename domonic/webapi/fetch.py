@@ -4,289 +4,640 @@ domonic.webapi.fetch
 https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
 """
 
-# import array
-# import datetime
-# import gc
-# import json
-# import math
-# import multiprocessing
-# import os
-# import random
-# import re
-# import signal
-# import struct
-# import sys
+from __future__ import annotations
+
+import copy
+import json as jsonlib
 import threading
+import urllib.parse
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from multiprocessing.pool import ThreadPool as Pool
+from typing import Any
 
 from domonic.javascript import Promise
-from domonic.window import window
 
-# TODO - untested. moving these over from javascript module
-# TODO - check if promise also needs to come to this package
+_MISSING = object()
 
 
-class FetchedSet:  # not a promise
-    def __init__(self, *args, **kwargs):
-        self.results = []
+class FetchedSet:
+    """Container returned by the batch fetch helpers."""
 
-    def __getitem__(self, index):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self.results: list[Any] = list(args)
+
+    def __getitem__(self, index: int) -> Any:
         return self.results[index]
 
-    def oncomplete(self, func):  # runs once all results are back
-        func(self.results)
-        return
+    def __iter__(self):
+        return iter(self.results)
 
-    # def __call__(self, func):
-    #     self.results.append(func)
+    def __len__(self) -> int:
+        return len(self.results)
 
+    def append(self, result: Any) -> None:
+        self.results.append(result)
 
-# @staticmethod
-def fetch(url: str, **kwargs):
-    # undocumented - warning. use at own risk
-    # note - kinda pointless atm. just use requests directly and you wont have to muck about with a Promise
-    if type(url) is not str:
-        raise ValueError(
-            "fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled"
-        )
-    f = Promise()
-    r = window._do_request(url, f, *kwargs)
-    return f.resolve(r)
-
-
-# @staticmethod
-def fetch_set(urls: list, callback_function=None, error_handler=None, **kwargs):
-    # undocumented - warning. use at own risk
-    # note - still blocks. just gets all before continuing
-    # problems - all urls can only have 1 associated callback, error and set of kwargs
-    if type(urls) is str:
-        urls = [urls]  # leniency
-    f = FetchedSet()
-    for url in urls:
-        r = window.fetch(url, **kwargs).then(callback_function)
-        f.results.append(r.data)
-    return f
-
-
-# @staticmethod
-def fetch_threaded(urls: list, callback_function=None, error_handler=None, **kwargs):
-    # undocumented - warning. use at own risk
-    # note - still blocks. just gets all before continuing using threads
-    # problems - all urls can only have 1 associated callback, error and set of kwargs
-    if type(urls) is str:
-        urls = [urls]  # leniency
-    f = FetchedSet()
-    jobs = []
-    for url in urls:
-        thread = threading.Thread(target=window._do_request(url, f, **kwargs))
-        thread.setDaemon(True)
-        jobs.append(thread)
-    map(lambda j: j.start(), jobs)
-    map(lambda j: j.join(), jobs)
-    # f = FetchedSet()
-    return f
-
-
-# @staticmethod
-def fetch_pooled(urls: list, callback_function=None, error_handler=None, **kwargs):
-    # undocumented - warning. use at own risk
-    # note - still blocks. just gets all before continuing using a pool
-    # problems - all urls can only have 1 associated callback, error and set of kwargs
-    if type(urls) is str:
-        urls = [urls]  # leniency
-    f = FetchedSet()
-
-    def _do_request_wrapper(obj):
-        url = obj["url"]
-        f = obj["f"]
-        kwargs = obj["k"]
-        kwargs["callback_function"] = obj["c"]
-        kwargs["error_handler"] = obj["e"]
-        window._do_request(url, f, **kwargs)
-
-    jobs = []
-    p = Pool()
-    urls = [
-        {"url": url, "f": f, "c": callback_function, "e": error_handler, "k": kwargs}
-        for url in urls
-    ]
-    results = p.map(_do_request_wrapper, urls)
-    p.close()
-    p.join()
-    return f
-
-
-# def fetch_aysnc( urls: list, options={}, type="async" ):
-# TODO - a version using async/await
+    def oncomplete(self, func: Callable[[list[Any]], Any]) -> Any:
+        """Run ``func`` once all results have been collected."""
+        return func(self.results)
 
 
 class Headers:
-    def __init__(self, all=None):
-        # https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders#Example
-        self.headers = {}  # Object.create(None)
-        arr = all.split("\r\n")
-        for each in arr:
-            line = arr
-            parts = line.split(": ")
-            name = parts.shift()
-            value = parts.join(": ")
-            self.headers[name.lower()] = value
+    """Case-insensitive Fetch ``Headers`` collection."""
 
-    def get(self, name: str):
-        return self.headers[name.lower()]
+    def __init__(self, init: Any = None) -> None:
+        self.headers: dict[str, list[str]] = {}
+        if init is not None:
+            self._fill(init)
 
-    def set(self, name: str, value: str):
-        self.headers[name.lower()] = value
+    @staticmethod
+    def _normalize_name(name: Any) -> str:
+        name = str(name).strip().lower()
+        if not name:
+            raise ValueError("Header name cannot be empty")
+        if ":" in name or any(ord(char) < 33 for char in name):
+            raise ValueError(f"Invalid header name: {name!r}")
+        return name
 
-    def has(self, name: str):
-        return name in self.headers
+    @staticmethod
+    def _normalize_value(value: Any) -> str:
+        return str(value).strip()
 
-    def keys(self):
-        return self.headers.keys()
+    def _fill(self, init: Any) -> None:
+        if isinstance(init, Headers):
+            for name, value in init.raw_items():
+                self.append(name, value)
+            return
 
-    def values(self):
-        return self.headers.values()
+        if isinstance(init, str):
+            for line in init.replace("\r\n", "\n").split("\n"):
+                if not line or ":" not in line:
+                    continue
+                name, value = line.split(":", 1)
+                self.append(name, value)
+            return
 
-    def entries(self):
-        return self.headers.entries()
+        if isinstance(init, Mapping):
+            for name, value in init.items():
+                if isinstance(value, Sequence) and not isinstance(
+                    value, (str, bytes, bytearray)
+                ):
+                    for item in value:
+                        self.append(name, item)
+                else:
+                    self.set(name, value)
+            return
 
-    def delete(self, name):
-        del self.headers[name]
+        for name, value in init:
+            self.append(name, value)
 
-    def forEach(self, callback, thisArg=None):
-        for name, value in self.headers.items():
-            callback(value, name, self)
+    def append(self, name: str, value: Any) -> None:
+        name = self._normalize_name(name)
+        self.headers.setdefault(name, []).append(self._normalize_value(value))
 
-    def map(self, callback, thisArg=None):
-        return [callback(value, name, self) for name, value in self.headers.items()]
+    def delete(self, name: str) -> None:
+        self.headers.pop(self._normalize_name(name), None)
 
-    def filter(self, callback, thisArg=None):
+    def get(self, name: str, default: Any = None) -> str | Any:
+        values = self.headers.get(self._normalize_name(name))
+        if values is None:
+            return default
+        return ", ".join(values)
+
+    def getSetCookie(self) -> list[str]:
+        return list(self.headers.get("set-cookie", []))
+
+    def has(self, name: str) -> bool:
+        return self._normalize_name(name) in self.headers
+
+    def set(self, name: str, value: Any) -> None:
+        self.headers[self._normalize_name(name)] = [self._normalize_value(value)]
+
+    def keys(self) -> list[str]:
+        return list(self.headers.keys())
+
+    def values(self) -> list[str]:
+        return [", ".join(values) for values in self.headers.values()]
+
+    def entries(self) -> list[tuple[str, str]]:
+        return [(name, ", ".join(values)) for name, values in self.headers.items()]
+
+    def raw_items(self) -> list[tuple[str, str]]:
         return [
+            (name, value) for name, values in self.headers.items() for value in values
+        ]
+
+    def forEach(self, callback: Callable[..., Any], thisArg: Any = None) -> None:
+        for name, value in self.entries():
             callback(value, name, self)
-            for name, value in self.headers.items()
+
+    def map(self, callback: Callable[..., Any], thisArg: Any = None) -> list[Any]:
+        return [callback(value, name, self) for name, value in self.entries()]
+
+    def filter(self, callback: Callable[..., Any], thisArg: Any = None) -> list[Any]:
+        return [
+            (name, value)
+            for name, value in self.entries()
             if callback(value, name, self)
         ]
 
-    def reduce(self, callback, initialValue):
-        return [
-            callback(initialValue, value, name, self)
-            for name, value in self.headers.items()
-        ]
+    def reduce(self, callback: Callable[..., Any], initialValue: Any) -> Any:
+        result = initialValue
+        for name, value in self.entries():
+            result = callback(result, value, name, self)
+        return result
 
-    def toString(self):
-        return str(self.headers)
+    def toString(self) -> str:
+        return str(self.toObject())
 
-    def toObject(self):
-        return self.headers
+    def toObject(self) -> dict[str, str]:
+        return dict(self.entries())
 
-    def toJSON(self):
-        return self.headers
+    def toJSON(self) -> dict[str, str]:
+        return self.toObject()
 
-    def __str__(self):
-        return str(self.headers)
+    def copy(self) -> Headers:
+        return Headers(self)
 
-    def __repr__(self):
-        return str(self.headers)
+    def __str__(self) -> str:
+        return self.toString()
+
+    def __repr__(self) -> str:
+        return self.toString()
 
     def __iter__(self):
-        return self.headers.__iter__()
+        return iter(self.entries())
 
-    def __next__(self):
-        return self.headers.__next__()
+    def __len__(self) -> int:
+        return len(self.headers)
 
-    def __getitem__(self, key):
-        return self.headers[key]
+    def __getitem__(self, key: str) -> str:
+        value = self.get(key)
+        if value is None:
+            raise KeyError(key)
+        return value
 
-    def __setitem__(self, key, value):
-        self.headers[key] = value
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.set(key, value)
 
-    def __delitem__(self, key):
-        del self.headers[key]
+    def __delitem__(self, key: str) -> None:
+        self.delete(key)
 
-    def __contains__(self, key):
-        return key in self.headers
+    def __contains__(self, key: str) -> bool:
+        return self.has(key)
 
 
-class Response:
-    def __init__(self, url=None, status=None, statusText=None, headers=None, body=None):
-        self.url = url
-        self.status = status
-        self.statusText = statusText
-        self.headers = headers
+class _BodyMixin:
+    body: Any
+    bodyUsed: bool
+
+    def _init_body(self, body: Any = None) -> None:
         self.body = body
+        self.bodyUsed = False
 
-    def arrayBuffer(self):
+    def _clone_body(self) -> Any:
+        return copy.deepcopy(self.body)
+
+    def _consume_body(self) -> Any:
+        self.bodyUsed = True
         return self.body
 
-    def blob(self):
+    def _body_as_bytes(self) -> bytes:
+        body = self._consume_body()
+        if body is None:
+            return b""
+        if isinstance(body, bytes):
+            return body
+        if isinstance(body, bytearray):
+            return bytes(body)
+        if isinstance(body, memoryview):
+            return body.tobytes()
+        if isinstance(body, str):
+            return body.encode("utf-8")
+        return jsonlib.dumps(body).encode("utf-8")
+
+    def arrayBuffer(self) -> bytes:
+        return self._body_as_bytes()
+
+    def bytes(self) -> bytes:
+        return self._body_as_bytes()
+
+    def blob(self) -> Any:
+        self.bodyUsed = True
         return self.body
 
-    def formData(self):
-        return self.body
+    def formData(self) -> Any:
+        body = self._consume_body()
+        if isinstance(body, Mapping):
+            return dict(body)
+        text = self.text()
+        return {
+            key: values[0] if len(values) == 1 else values
+            for key, values in urllib.parse.parse_qs(
+                text, keep_blank_values=True
+            ).items()
+        }
 
-    def json(self):
-        return self.body
+    def json(self) -> Any:
+        body = self._consume_body()
+        if body is None:
+            return None
+        if isinstance(body, (Mapping, list, tuple)):
+            return body
+        if isinstance(body, (bytes, bytearray, memoryview)):
+            body = bytes(body).decode("utf-8")
+        return jsonlib.loads(str(body))
 
-    def text(self):
-        return self.body
+    def text(self) -> str:
+        body = self._consume_body()
+        if body is None:
+            return ""
+        if isinstance(body, bytes):
+            return body.decode("utf-8")
+        if isinstance(body, bytearray):
+            return bytes(body).decode("utf-8")
+        if isinstance(body, memoryview):
+            return body.tobytes().decode("utf-8")
+        if isinstance(body, (Mapping, list, tuple)):
+            return jsonlib.dumps(body)
+        return str(body)
 
-    def clone(self):
-        return Response(self.url, self.status, self.statusText, self.headers, self.body)
 
-    def __str__(self):
-        return str(self.body)
+class _ResponseJSONDescriptor:
+    def __get__(self, instance: Response | None, owner: type[Response]):
+        if instance is None:
+            return owner._json_response
+        return instance._json_body
 
-    def __repr__(self):
-        return str(self.body)
+
+class Response(_BodyMixin):
+    """Fetch ``Response`` object."""
+
+    def __init__(
+        self,
+        url: Any = None,
+        status: int | Mapping[str, Any] | None = None,
+        statusText: str | None = None,
+        headers: Any = None,
+        body: Any = None,
+        *,
+        init: Mapping[str, Any] | None = None,
+        type: str = "default",
+        redirected: bool = False,
+    ) -> None:
+        if isinstance(status, Mapping) and statusText is None and headers is None:
+            body = url
+            init = {**status, **(init or {})}
+            url = init.pop("url", "")
+            status = None
+
+        if status is None and statusText is None and headers is None and body is None:
+            body = url
+            url = ""
+
+        init = dict(init or {})
+        body = init.pop("body", body)
+        url = init.pop("url", url)
+        status = init.pop("status", status)
+        statusText = init.pop("statusText", statusText)
+        headers = init.pop("headers", headers)
+        type = init.pop("type", type)
+        redirected = init.pop("redirected", redirected)
+
+        self.url = "" if url is None else str(url)
+        self.status = 200 if status is None else int(status)
+        self.statusText = "" if statusText is None else str(statusText)
+        self.headers = Headers(headers)
+        self.type = str(type)
+        self.redirected = bool(redirected)
+        self._init_body(body)
+
+    @property
+    def ok(self) -> bool:
+        return 200 <= self.status <= 299
+
+    def clone(self) -> Response:
+        if self.bodyUsed:
+            raise TypeError("Cannot clone a Response whose body has already been used")
+        return Response(
+            url=self.url,
+            status=self.status,
+            statusText=self.statusText,
+            headers=self.headers.copy(),
+            body=self._clone_body(),
+            type=self.type,
+            redirected=self.redirected,
+        )
+
+    @classmethod
+    def error(cls) -> Response:
+        return cls(
+            url="", status=0, statusText="", headers=None, body=None, type="error"
+        )
+
+    @classmethod
+    def redirect(cls, url: str, status: int = 302) -> Response:
+        if status not in (301, 302, 303, 307, 308):
+            raise ValueError("Response.redirect status must be a redirect status")
+        return cls(
+            url="",
+            status=status,
+            statusText="",
+            headers={"Location": str(url)},
+            body=None,
+            type="default",
+            redirected=True,
+        )
+
+    @classmethod
+    def _json_response(
+        cls, data: Any, init: Mapping[str, Any] | None = None
+    ) -> Response:
+        init = dict(init or {})
+        headers = Headers(init.pop("headers", None))
+        if not headers.has("content-type"):
+            headers.set("content-type", "application/json")
+        return cls(
+            url=init.pop("url", ""),
+            status=init.pop("status", 200),
+            statusText=init.pop("statusText", ""),
+            headers=headers,
+            body=jsonlib.dumps(data),
+            init=init,
+        )
+
+    def _json_body(self) -> Any:
+        return _BodyMixin.json(self)
+
+    json = _ResponseJSONDescriptor()
+
+    def __str__(self) -> str:
+        return self.text()
+
+    def __repr__(self) -> str:
+        return f"<Response [{self.status}]>"
 
     def __iter__(self):
-        return self.body.__iter__()
+        return iter(self.body)
 
-    def __next__(self):
-        return self.body.__next__()
-
-    def __getitem__(self, key):
+    def __getitem__(self, key: Any) -> Any:
         return self.body[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Any, value: Any) -> None:
         self.body[key] = value
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: Any) -> None:
         del self.body[key]
 
-    def __contains__(self, key):
+    def __contains__(self, key: Any) -> bool:
         return key in self.body
 
 
-class Request:
+class Request(_BodyMixin):
+    """Fetch ``Request`` object."""
+
     def __init__(
         self,
-        url=None,
-        method=None,
-        headers=None,
-        body=None,
-        mode=None,
-        credentials=None,
-        cache=None,
-    ):
-        self.url = url
-        self.method = method
-        self.headers = headers
-        self.body = body
-        self.mode = mode
-        self.credentials = credentials
-        self.cache = cache
+        url: Any = None,
+        method: str | Mapping[str, Any] | None = None,
+        headers: Any = None,
+        body: Any = None,
+        mode: str | None = None,
+        credentials: str | None = None,
+        cache: str | None = None,
+        *,
+        init: Mapping[str, Any] | None = None,
+        redirect: str | None = None,
+        referrer: str | None = None,
+        referrerPolicy: str | None = None,
+        integrity: str | None = None,
+        keepalive: bool | None = None,
+        signal: Any = None,
+        destination: str = "",
+        priority: str | None = None,
+        duplex: str | None = None,
+    ) -> None:
+        original: Request | None = url if isinstance(url, Request) else None
+        if isinstance(method, Mapping):
+            init = {**method, **(init or {})}
+            method = None
+        init = dict(init or {})
 
-    def clone(self):
-        return Request(
-            self.url,
-            self.method,
-            self.headers,
-            self.body,
-            self.mode,
-            self.credentials,
-            self.cache,
+        self.url = (
+            original.url
+            if original is not None
+            else str(init.pop("url", "" if url is None else url))
+        )
+        self.method = str(
+            init.pop("method", method or (original.method if original else "GET"))
+        ).upper()
+        headers = init.pop(
+            "headers", headers or (original.headers if original else None)
+        )
+        json_body = init.pop("json", _MISSING)
+        body = init.pop(
+            "body", body if body is not None else (original.body if original else None)
+        )
+        self.headers = Headers(headers)
+        if json_body is not _MISSING and body is None:
+            body = jsonlib.dumps(json_body)
+            if not self.headers.has("content-type"):
+                self.headers.set("content-type", "application/json")
+
+        self.mode = init.pop("mode", mode or (original.mode if original else "cors"))
+        self.credentials = init.pop(
+            "credentials",
+            credentials or (original.credentials if original else "same-origin"),
+        )
+        self.cache = init.pop(
+            "cache", cache or (original.cache if original else "default")
+        )
+        self.redirect = init.pop(
+            "redirect", redirect or (original.redirect if original else "follow")
+        )
+        self.referrer = init.pop(
+            "referrer", referrer or (original.referrer if original else "about:client")
+        )
+        self.referrerPolicy = init.pop(
+            "referrerPolicy",
+            referrerPolicy or (original.referrerPolicy if original else ""),
+        )
+        self.integrity = init.pop(
+            "integrity", integrity or (original.integrity if original else "")
+        )
+        self.keepalive = bool(
+            init.pop("keepalive", keepalive if keepalive is not None else False)
+        )
+        self.signal = init.pop(
+            "signal", signal or (original.signal if original else None)
+        )
+        self.destination = init.pop(
+            "destination", destination or (original.destination if original else "")
+        )
+        self.priority = init.pop(
+            "priority", priority or (original.priority if original else "auto")
+        )
+        self.duplex = init.pop(
+            "duplex", duplex or (original.duplex if original else None)
         )
 
-    def arrayBuffer(self):
-        return self.body
+        if self.method in ("GET", "HEAD") and body is not None:
+            raise TypeError("Request with GET/HEAD method cannot have a body")
+        self._init_body(body)
+
+    def clone(self) -> Request:
+        if self.bodyUsed:
+            raise TypeError("Cannot clone a Request whose body has already been used")
+        return Request(
+            self.url,
+            method=self.method,
+            headers=self.headers.copy(),
+            body=self._clone_body(),
+            mode=self.mode,
+            credentials=self.credentials,
+            cache=self.cache,
+            redirect=self.redirect,
+            referrer=self.referrer,
+            referrerPolicy=self.referrerPolicy,
+            integrity=self.integrity,
+            keepalive=self.keepalive,
+            signal=self.signal,
+            destination=self.destination,
+            priority=self.priority,
+            duplex=self.duplex,
+        )
+
+    def __repr__(self) -> str:
+        return f"<Request [{self.method} {self.url}]>"
+
+
+def _normalize_urls(urls: str | Iterable[str]) -> list[str]:
+    if isinstance(urls, str):
+        return [urls]
+    return list(urls)
+
+
+def _requests_kwargs(request: Request, kwargs: Mapping[str, Any]) -> dict[str, Any]:
+    request_kwargs = dict(kwargs)
+    request_kwargs.setdefault("headers", request.headers.toObject())
+    if request.method not in ("GET", "HEAD") and request.body is not None:
+        request_kwargs.setdefault("data", request.body)
+    if request.redirect == "manual":
+        request_kwargs.setdefault("allow_redirects", False)
+    elif request.redirect == "follow":
+        request_kwargs.setdefault("allow_redirects", True)
+    return request_kwargs
+
+
+def _response_from_requests(response: Any) -> Response:
+    return Response(
+        url=getattr(response, "url", ""),
+        status=getattr(response, "status_code", None),
+        statusText=getattr(response, "reason", ""),
+        headers=getattr(response, "headers", None),
+        body=getattr(response, "content", getattr(response, "text", None)),
+        redirected=bool(getattr(response, "history", [])),
+    )
+
+
+def fetch(
+    input: str | Request, init: Mapping[str, Any] | None = None, **kwargs: Any
+) -> Promise:
+    """Fetch a resource and return a domonic ``Promise`` fulfilled with ``Response``."""
+    promise = Promise()
+    request = input if isinstance(input, Request) else Request(input, init=init)
+
+    signal = request.signal
+    if signal is not None and getattr(signal, "aborted", False):
+        return promise.reject(getattr(signal, "reason", RuntimeError("Fetch aborted")))
+
+    try:
+        import requests
+
+        response = requests.request(
+            request.method, request.url, **_requests_kwargs(request, kwargs)
+        )
+        if request.redirect == "error" and 300 <= response.status_code <= 399:
+            return promise.reject(RuntimeError("Fetch redirect blocked"))
+        return promise.resolve(_response_from_requests(response))
+    except Exception as exc:
+        return promise.reject(exc)
+
+
+def _resolve_fetch_result(
+    promise: Promise,
+    callback_function: Callable[[Any], Any] | None = None,
+    error_handler: Callable[[Any], Any] | None = None,
+) -> Any:
+    if promise.state == "rejected":
+        if error_handler is not None:
+            promise.catch(error_handler)
+        return promise.data
+    if callback_function is not None:
+        promise.then(callback_function)
+    return promise.data
+
+
+def fetch_set(
+    urls: str | Iterable[str],
+    callback_function: Callable[[Any], Any] | None = None,
+    error_handler: Callable[[Any], Any] | None = None,
+    **kwargs: Any,
+) -> FetchedSet:
+    """Fetch a set of URLs sequentially and return their results."""
+    fetched = FetchedSet()
+    for url in _normalize_urls(urls):
+        fetched.append(
+            _resolve_fetch_result(
+                fetch(url, **kwargs), callback_function, error_handler
+            )
+        )
+    return fetched
+
+
+def fetch_threaded(
+    urls: str | Iterable[str],
+    callback_function: Callable[[Any], Any] | None = None,
+    error_handler: Callable[[Any], Any] | None = None,
+    **kwargs: Any,
+) -> FetchedSet:
+    """Fetch a set of URLs concurrently using threads."""
+    url_list = _normalize_urls(urls)
+    results: list[Any] = [None] * len(url_list)
+
+    def worker(index: int, url: str) -> None:
+        results[index] = _resolve_fetch_result(
+            fetch(url, **kwargs), callback_function, error_handler
+        )
+
+    jobs = [
+        threading.Thread(target=worker, args=(index, url), daemon=True)
+        for index, url in enumerate(url_list)
+    ]
+    for job in jobs:
+        job.start()
+    for job in jobs:
+        job.join()
+    return FetchedSet(*results)
+
+
+def fetch_pooled(
+    urls: str | Iterable[str],
+    callback_function: Callable[[Any], Any] | None = None,
+    error_handler: Callable[[Any], Any] | None = None,
+    **kwargs: Any,
+) -> FetchedSet:
+    """Fetch a set of URLs using a thread pool."""
+    url_list = _normalize_urls(urls)
+
+    def worker(url: str) -> Any:
+        return _resolve_fetch_result(
+            fetch(url, **kwargs), callback_function, error_handler
+        )
+
+    pool = Pool()
+    try:
+        return FetchedSet(*pool.map(worker, url_list))
+    finally:
+        pool.close()
+        pool.join()

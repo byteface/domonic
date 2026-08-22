@@ -3,14 +3,26 @@ test_webapi
 ~~~~~~~~~~~~~~~~
 """
 
+import json
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from domonic.dom import *
+from domonic.events import AbortController
 from domonic.html import *
 from domonic.javascript import *
 from domonic.webapi import *
 from domonic.webapi.console import Console, console
+from domonic.webapi.fetch import (
+    Headers,
+    Request,
+    Response,
+    fetch,
+    fetch_pooled,
+    fetch_set,
+    fetch_threaded,
+)
 from domonic.webapi.urlpattern import URLPattern
 
 # from domonic.decorators import silence
@@ -138,7 +150,138 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_fetch(self):
-        pass
+        headers = Headers("Content-Type: text/plain\r\nX-Test: one")
+        headers.append("X-Test", "two")
+        headers.append("Set-Cookie", "a=1")
+        headers.append("Set-Cookie", "b=2")
+
+        self.assertEqual(headers.get("CONTENT-TYPE"), "text/plain")
+        self.assertEqual(headers.get("x-test"), "one, two")
+        self.assertEqual(headers.get("missing", "fallback"), "fallback")
+        self.assertEqual(headers.getSetCookie(), ["a=1", "b=2"])
+        self.assertTrue(headers.has("content-type"))
+        self.assertIn("x-test", headers)
+        self.assertEqual(headers["X-Test"], "one, two")
+        headers.set("X-Test", "three")
+        self.assertEqual(headers.get("x-test"), "three")
+        headers.delete("x-test")
+        self.assertFalse(headers.has("x-test"))
+        self.assertEqual(headers.keys(), ["content-type", "set-cookie"])
+        self.assertEqual(
+            headers.entries(),
+            [("content-type", "text/plain"), ("set-cookie", "a=1, b=2")],
+        )
+        seen = []
+        headers.forEach(lambda value, name, target: seen.append((name, value, target)))
+        self.assertEqual(seen[0], ("content-type", "text/plain", headers))
+        self.assertEqual(
+            headers.reduce(lambda acc, value, name, target: acc + [name], []),
+            ["content-type", "set-cookie"],
+        )
+
+        response = Response(
+            '{"ok": true}',
+            {"status": 201, "headers": {"Content-Type": "application/json"}},
+        )
+        clone = response.clone()
+        self.assertEqual(response.status, 201)
+        self.assertTrue(response.ok)
+        self.assertEqual(response.headers.get("content-type"), "application/json")
+        self.assertEqual(clone.json(), {"ok": True})
+        self.assertFalse(response.bodyUsed)
+        self.assertEqual(response.text(), '{"ok": true}')
+        self.assertTrue(response.bodyUsed)
+        with self.assertRaises(TypeError):
+            response.clone()
+
+        json_response = Response.json({"hello": "world"}, {"status": 202})
+        self.assertEqual(json_response.status, 202)
+        self.assertEqual(json_response.headers.get("content-type"), "application/json")
+        self.assertEqual(json_response.json(), {"hello": "world"})
+        redirect_response = Response.redirect("https://example.com/next", 303)
+        self.assertTrue(redirect_response.redirected)
+        self.assertEqual(
+            redirect_response.headers.get("location"), "https://example.com/next"
+        )
+        self.assertEqual(Response.error().type, "error")
+        with self.assertRaises(ValueError):
+            Response.redirect("https://example.com/nope", 200)
+
+        request = Request(
+            "https://example.com/api",
+            {
+                "method": "POST",
+                "headers": {"Content-Type": "application/x-www-form-urlencoded"},
+                "body": "name=Ada",
+                "credentials": "include",
+            },
+        )
+        request_clone = request.clone()
+        self.assertEqual(request.method, "POST")
+        self.assertEqual(
+            request.headers.get("content-type"), "application/x-www-form-urlencoded"
+        )
+        self.assertEqual(request.formData(), {"name": "Ada"})
+        self.assertEqual(request_clone.text(), "name=Ada")
+        with self.assertRaises(TypeError):
+            Request("https://example.com/api", {"body": "not allowed"})
+        json_request = Request(
+            "https://example.com/api", {"method": "POST", "json": {"ok": True}}
+        )
+        self.assertEqual(json_request.headers.get("content-type"), "application/json")
+        self.assertEqual(json_request.json(), {"ok": True})
+
+        def fake_request(method, url, **kwargs):
+            body = {"url": url, "method": method, "headers": kwargs.get("headers")}
+            return SimpleNamespace(
+                url=url,
+                status_code=200,
+                reason="OK",
+                headers={"Content-Type": "application/json"},
+                content=json.dumps(body).encode("utf-8"),
+                history=[],
+            )
+
+        with patch("requests.request", side_effect=fake_request) as request_mock:
+            promise = fetch(
+                "https://example.com/data",
+                init={"headers": {"Accept": "application/json"}},
+            )
+            self.assertEqual(promise.state, "fulfilled")
+            self.assertIsInstance(promise.data, Response)
+            self.assertEqual(promise.data.json()["url"], "https://example.com/data")
+            self.assertEqual(
+                request_mock.call_args.kwargs["headers"], {"accept": "application/json"}
+            )
+
+        with patch("requests.request", side_effect=fake_request):
+            urls = ["https://example.com/one", "https://example.com/two"]
+            self.assertEqual(
+                fetch_set(urls, lambda response: response.json()["url"]).results, urls
+            )
+            self.assertEqual(
+                fetch_threaded(urls, lambda response: response.json()["url"]).results,
+                urls,
+            )
+            self.assertEqual(
+                fetch_pooled(urls, lambda response: response.json()["url"]).results,
+                urls,
+            )
+
+        with patch("requests.request", side_effect=RuntimeError("boom")):
+            result = fetch_set(
+                "https://example.com/fail",
+                error_handler=lambda error: f"caught:{error}",
+            )
+            self.assertEqual(result.results, ["caught:boom"])
+
+        controller = AbortController()
+        controller.abort("stop")
+        aborted = fetch(
+            Request("https://example.com/never", {"signal": controller.signal})
+        )
+        self.assertEqual(aborted.state, "rejected")
+        self.assertEqual(aborted.data, "stop")
 
     def test_gamepad(self):
         pass
