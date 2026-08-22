@@ -1,7 +1,7 @@
 """
-    test_domonic
-    ~~~~~~~~~~~~
-    - unit tests for domonic
+test_domonic
+~~~~~~~~~~~~
+- unit tests for domonic
 """
 
 import importlib
@@ -14,6 +14,10 @@ from domonic.html import *
 html_module = importlib.import_module("domonic.html")
 
 
+def _debug_print(*args, **kwargs):
+    return None
+
+
 class TestHTMLRendering(unittest.TestCase):
     def test_div_tag(self):
         tag = div()
@@ -24,10 +28,24 @@ class TestHTMLRendering(unittest.TestCase):
         self.assertEqual(str(tag), '<a href="http://example.com"></a>')
 
         tag = a()
-        self.assertEqual(str(tag), '<a></a>')
+        self.assertEqual(str(tag), "<a></a>")
 
     def test_html_void_tags(self):
-        for factory in (area, base, br, col, embed, hr, img, input, link, meta, source, track, wbr):
+        for factory in (
+            area,
+            base,
+            br,
+            col,
+            embed,
+            hr,
+            img,
+            input,
+            link,
+            meta,
+            source,
+            track,
+            wbr,
+        ):
             with self.subTest(tag=factory.name):
                 self.assertEqual(str(factory()), f"<{factory.name}/>")
 
@@ -117,18 +135,31 @@ class TestHTML(unittest.TestCase):
         assert str(portal()) == "<portal></portal>"
 
     def test_hello_world(self):
-        assert str(html(body(h1("Hello World!")))) == """<html><body><h1>Hello World!</h1></body></html>"""
+        assert (
+            str(html(body(h1("Hello World!"))))
+            == """<html><body><h1>Hello World!</h1></body></html>"""
+        )
 
     def test_html_attributes(self):
         assert (
             str(
                 div(
-                    _id="mydiv", _class="test", **{"_aria-label": True}, **{"_data-name": True}, _onclick="alert('hi');"
+                    _id="mydiv",
+                    _class="test",
+                    **{"_aria-label": True},
+                    **{"_data-name": True},
+                    _onclick="alert('hi');",
                 )
             )
             == """<div id="mydiv" class="test" aria-label="true" data-name="true" onclick="alert('hi');"></div>"""
         )
-        myel = div(_id="mydiv", _class="test", **{"_aria-label": True}, **{"_data-name": True}, _onclick="alert('hi');")
+        myel = div(
+            _id="mydiv",
+            _class="test",
+            **{"_aria-label": True},
+            **{"_data-name": True},
+            _onclick="alert('hi');",
+        )
         assert myel.id == "mydiv"
         assert myel._id == "mydiv"
         assert myel._class == "test"
@@ -224,7 +255,13 @@ class TestHTML(unittest.TestCase):
             '<button popovertarget="menu" popovertargetaction="toggle" commandfor="dialog" command="show-modal">Open</button>',
         )
         self.assertEqual(
-            str(template(_shadowrootmode="open", _shadowrootclonable=True, _shadowrootserializable=True)),
+            str(
+                template(
+                    _shadowrootmode="open",
+                    _shadowrootclonable=True,
+                    _shadowrootserializable=True,
+                )
+            ),
             '<template shadowrootmode="open" shadowrootclonable="true" shadowrootserializable="true"></template>',
         )
         self.assertEqual(
@@ -263,29 +300,29 @@ class TestHTML(unittest.TestCase):
         assert str(create_element("del")) == "<del></del>"
 
     def test_html_tag_registry_exports(self):
-        missing = [tag_name for tag_name in html_tags if not hasattr(html_module, html_module._TAG_ALIASES.get(tag_name, tag_name))]
+        missing = [
+            tag_name
+            for tag_name in html_tags
+            if not hasattr(
+                html_module, html_module._TAG_ALIASES.get(tag_name, tag_name)
+            )
+        ]
         assert missing == []
 
     def test_domonic_parse(self):
         page = domonic.parse("<html><body></body></html>")
-        assert (
-            page
-            == """html(
+        assert page == """html(
 body(
 ),
 ),"""
-        )
 
     def test_domonic_parse_with_single_quotes(self):
         page = domonic.parse("<html><body>'some content'</body></html>")
-        assert (
-            page
-            == """html(
+        assert page == """html(
 body(
 "'some content'"
 ),
 ),"""
-        )
 
     @silence
     def test_domonic_get(self):
@@ -293,18 +330,28 @@ body(
             import requests  # noqa: F401
         except ModuleNotFoundError:
             self.skipTest("requests is not installed")
-        print("test_domonic_get-----------=-----------=-----------=-----------=-----------=-----------=-----------=")
+        _debug_print(
+            "test_domonic_get-----------=-----------=-----------=-----------=-----------=-----------=-----------="
+        )
         # page = domonic.get("http://eventual.technology")
         try:
-            page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/checkout/")
-            page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/carousel/?#")
-            page = domonic.get("https://v5.getbootstrap.com/docs/5.0/examples/dashboard/#")
+            page = domonic.get(
+                "https://v5.getbootstrap.com/docs/5.0/examples/checkout/"
+            )
+            page = domonic.get(
+                "https://v5.getbootstrap.com/docs/5.0/examples/carousel/?#"
+            )
+            page = domonic.get(
+                "https://v5.getbootstrap.com/docs/5.0/examples/dashboard/#"
+            )
             page = domonic.get("https://www.google.com")
             page = domonic.get("https://www.facebook.com")
         except requests.exceptions.RequestException as exc:
             self.skipTest(f"external network is unavailable: {exc}")
-        print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-        print(render(page))
+        _debug_print(
+            "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+        )
+        _debug_print(render(page))
         pass
 
     def test_domonic_render(self):
@@ -315,7 +362,10 @@ body(
                 title("eventual.technology"),
                 meta(_name="viewport", _content="width=device-width, initial-scale=1"),
                 meta(_name="description", _content="eventual technology"),
-                meta(_name="keywords", _content="website, html5, javascript, python, software, aws"),
+                meta(
+                    _name="keywords",
+                    _content="website, html5, javascript, python, software, aws",
+                ),
                 meta(_name="author", _content="eventual.technology"),
                 meta(_property="og:title", _content="eventual technology"),
                 meta(_property="og:image", _content=""),
@@ -329,7 +379,13 @@ body(
             ),
             body(
                 header(h1(a(_href="mailto:mike@eventual.technology")), h2("12345")),
-                footer(img(_class="logo", _src="static/img/logo.svg", _alt="eventual technology")),
+                footer(
+                    img(
+                        _class="logo",
+                        _src="static/img/logo.svg",
+                        _alt="eventual technology",
+                    )
+                ),
             ),
         )
         # print(render(test))
@@ -344,7 +400,10 @@ body(
             title("byteface"),
             meta(_name="viewport", _content="width=device-width, initial-scale=1"),
             meta(_name="description", _content="eventual technology"),
-            meta(_name="keywords", _content="website, html5, javascript, python, software, aws"),
+            meta(
+                _name="keywords",
+                _content="website, html5, javascript, python, software, aws",
+            ),
             meta(_name="author", _content=""),
             meta(_property="og:title", _content=""),
             meta(_property="og:image", _content=""),
@@ -366,12 +425,19 @@ body(
             meta(_name="google-site-verification", _content=""),
             meta(_name="google-analytics", _content=""),
             meta(_name="hostname", _content="site.com"),
-            link(_rel="icon", _class="js-site-favicon", _type="image/png", _href="favicon.svg"),
+            link(
+                _rel="icon",
+                _class="js-site-favicon",
+                _type="image/png",
+                _href="favicon.svg",
+            ),
             meta(_name="theme-color", _content="#1e2327"),
-            link(_rel="manifest", _href="/manifest.json", _crossOrigin="use-credentials"),
+            link(
+                _rel="manifest", _href="/manifest.json", _crossOrigin="use-credentials"
+            ),
             meta(_property="profile:username", _content="byteface"),
         )
-        print(render(test))
+        _debug_print(render(test))
         pass
 
     @silence
@@ -381,10 +447,16 @@ body(
                 meta(_charset="utf-8"),
                 meta(_name="viewport", _content="width=device-width, initial-scale=1"),
                 meta(_name="description", _content=""),
-                meta(_name="author", _content="Mark Otto, Jacob Thornton, and Bootstrap contributors"),
+                meta(
+                    _name="author",
+                    _content="Mark Otto, Jacob Thornton, and Bootstrap contributors",
+                ),
                 meta(_name="generator", _content="Hugo 0.72.0"),
                 title("Checkout example · Bootstrap"),
-                link(_rel="canonical", _href="https://v5.getbootstrap.com/docs/5.0/examples/checkout/"),
+                link(
+                    _rel="canonical",
+                    _href="https://v5.getbootstrap.com/docs/5.0/examples/checkout/",
+                ),
                 link(
                     _href="/docs/5.0/dist/css/bootstrap.min.css",
                     _rel="stylesheet",
@@ -408,12 +480,17 @@ body(
                     _sizes="16x16",
                     _type="image/png",
                 ),
-                link(_rel="manifest", _href="/docs/5.0/assets/img/favicons/manifest.json"),
-                link(_rel="mask-icon", _href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg", _color="#7952b3"),
+                link(
+                    _rel="manifest", _href="/docs/5.0/assets/img/favicons/manifest.json"
+                ),
+                link(
+                    _rel="mask-icon",
+                    _href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg",
+                    _color="#7952b3",
+                ),
                 link(_rel="icon", _href="/docs/5.0/assets/img/favicons/favicon.ico"),
                 meta(_name="theme-color", _content="#7952b3"),
-                style(
-                    """
+                style("""
                 .bd-placeholder-img {
                     font-size: 1.125rem;
                     text-anchor: middle;
@@ -427,11 +504,12 @@ body(
                     font-size: 3.5rem;
                 }
                 }
-                """
-                ),
+                """),
                 link(_href="form-validation.css", _rel="stylesheet"),
             ),
-            body(_class="bg-light").html(  # , _html= # TODO - make an attribute to do the same
+            body(
+                _class="bg-light"
+            ).html(  # , _html= # TODO - make an attribute to do the same
                 div(_class="container").html(
                     div(_class="py-5 text-center").html(
                         img(
@@ -451,47 +529,65 @@ body(
                     ),
                     div(_class="row g-3").html(
                         div(_class="col-md-5 col-lg-4 order-md-last").html(
-                            h4(_class="d-flex justify-content-between align-items-center mb-3").html(
+                            h4(
+                                _class="d-flex justify-content-between align-items-center mb-3"
+                            ).html(
                                 span("Your cart", _class="text-muted"),
                                 span("3", _class="badge bg-secondary rounded-pill"),
                             ),
                             ul(_class="list-group mb-3").html(
-                                li(_class="list-group-item d-flex justify-content-between lh-sm").html(
+                                li(
+                                    _class="list-group-item d-flex justify-content-between lh-sm"
+                                ).html(
                                     div(
                                         h6("Product name", _class="my-0"),
                                         small("Brief description", _class="text-muted"),
                                     ),
                                     span("$12", _class="text-muted"),
                                 ),
-                                li(_class="list-group-item d-flex justify-content-between lh-sm").html(
+                                li(
+                                    _class="list-group-item d-flex justify-content-between lh-sm"
+                                ).html(
                                     div(
                                         h6("Second product", _class="my-0"),
                                         small("Brief description", _class="text-muted"),
                                     ),
                                     span("$8", _class="text-muted"),
                                 ),
-                                li(_class="list-group-item d-flex justify-content-between lh-sm").html(
+                                li(
+                                    _class="list-group-item d-flex justify-content-between lh-sm"
+                                ).html(
                                     div(
                                         h6("Third item", _class="my-0"),
                                         small("Brief description", _class="text-muted"),
                                     ),
                                     span("$5", _class="text-muted"),
                                 ),
-                                li(_class="list-group-item d-flex justify-content-between bg-light").html(
+                                li(
+                                    _class="list-group-item d-flex justify-content-between bg-light"
+                                ).html(
                                     div(_class="text-success").html(
                                         h6("Promo code", _class="my-0"),
                                         small("EXAMPLECODE"),
                                     ),
                                     span("−$5", _class="text-success"),
                                 ),
-                                li(_class="list-group-item d-flex justify-content-between").html(
-                                    span("Total (USD)"), strong("$20")
-                                ),
+                                li(
+                                    _class="list-group-item d-flex justify-content-between"
+                                ).html(span("Total (USD)"), strong("$20")),
                             ),
                             form(_class="card p-2").html(
                                 div(_class="input-group").html(
-                                    input(_type="text", _class="form-control", _placeholder="Promo code"),
-                                    button("Redeem", _type="submit", _class="btn btn-secondary"),
+                                    input(
+                                        _type="text",
+                                        _class="form-control",
+                                        _placeholder="Promo code",
+                                    ),
+                                    button(
+                                        "Redeem",
+                                        _type="submit",
+                                        _class="btn btn-secondary",
+                                    ),
                                 )
                             ),
                         ),
@@ -500,7 +596,11 @@ body(
                             form(_class="needs-validation", _novalidate=True).html(
                                 div(_class="row g-3").html(
                                     div(_class="col-sm-6").html(
-                                        label("First name", _for="firstName", _class="form-label"),
+                                        label(
+                                            "First name",
+                                            _for="firstName",
+                                            _class="form-label",
+                                        ),
                                         input(
                                             _type="text",
                                             _class="form-control",
@@ -509,10 +609,17 @@ body(
                                             _value="",
                                             _required=True,
                                         ),
-                                        div("Valid first name is required.", _class="invalid-feedback"),
+                                        div(
+                                            "Valid first name is required.",
+                                            _class="invalid-feedback",
+                                        ),
                                     ),
                                     div(_class="col-sm-6").html(
-                                        label("Last name", _for="lastName", _class="form-label"),
+                                        label(
+                                            "Last name",
+                                            _for="lastName",
+                                            _class="form-label",
+                                        ),
                                         input(
                                             _type="text",
                                             _class="form-control",
@@ -521,10 +628,17 @@ body(
                                             _value="",
                                             _required=True,
                                         ),
-                                        div("Valid last name is required.", _class="invalid-feedback"),
+                                        div(
+                                            "Valid last name is required.",
+                                            _class="invalid-feedback",
+                                        ),
                                     ),
                                     div(_class="col-12").html(
-                                        label("Username", _for="username", _class="form-label"),
+                                        label(
+                                            "Username",
+                                            _for="username",
+                                            _class="form-label",
+                                        ),
                                         div(_class="input-group").html(
                                             span("@", _class="input-group-text"),
                                             input(
@@ -534,11 +648,18 @@ body(
                                                 _placeholder="Username",
                                                 _required=True,
                                             ),
-                                            div("Your username is required.", _class="invalid-feedback"),
+                                            div(
+                                                "Your username is required.",
+                                                _class="invalid-feedback",
+                                            ),
                                         ),
                                     ),
                                     div(_class="col-12").html(
-                                        label("Email Optional", _for="email", _class="form-label"),
+                                        label(
+                                            "Email Optional",
+                                            _for="email",
+                                            _class="form-label",
+                                        ),
                                         input(
                                             _type="email",
                                             _class="form-control",
@@ -551,7 +672,11 @@ body(
                                         ),
                                     ),
                                     div(_class="col-12").html(
-                                        label("Address", _for="address", _class="form-label"),
+                                        label(
+                                            "Address",
+                                            _for="address",
+                                            _class="form-label",
+                                        ),
                                         input(
                                             _type="text",
                                             _class="form-control",
@@ -559,10 +684,17 @@ body(
                                             _placeholder="1234 Main St",
                                             _required=True,
                                         ),
-                                        div("Please enter your shipping address.", _class="invalid-feedback"),
+                                        div(
+                                            "Please enter your shipping address.",
+                                            _class="invalid-feedback",
+                                        ),
                                     ),
                                     div(_class="col-12").html(
-                                        label("Address 2 Optional", _for="address2", _class="form-label"),
+                                        label(
+                                            "Address 2 Optional",
+                                            _for="address2",
+                                            _class="form-label",
+                                        ),
                                         input(
                                             _type="text",
                                             _class="form-control",
@@ -571,20 +703,40 @@ body(
                                         ),
                                     ),
                                     div(_class="col-md-5").html(
-                                        label("Country", _for="country", _class="form-label"),
-                                        select(_class="form-select", _id="country", _required=True).html(
+                                        label(
+                                            "Country",
+                                            _for="country",
+                                            _class="form-label",
+                                        ),
+                                        select(
+                                            _class="form-select",
+                                            _id="country",
+                                            _required=True,
+                                        ).html(
                                             option("Choose...", _value=""),
                                             option("United States"),
                                         ),
-                                        div("Please select a valid country.", _class="invalid-feedback"),
+                                        div(
+                                            "Please select a valid country.",
+                                            _class="invalid-feedback",
+                                        ),
                                     ),
                                     div(_class="col-md-4").html(
-                                        label("State", _for="state", _class="form-label"),
-                                        select(_class="form-select", _id="state", _required=True).html(
+                                        label(
+                                            "State", _for="state", _class="form-label"
+                                        ),
+                                        select(
+                                            _class="form-select",
+                                            _id="state",
+                                            _required=True,
+                                        ).html(
                                             option("Choose...", _value=""),
                                             option("California"),
                                         ),
-                                        div("Please provide a valid state.", _class="invalid-feedback"),
+                                        div(
+                                            "Please provide a valid state.",
+                                            _class="invalid-feedback",
+                                        ),
                                     ),
                                     div(_class="col-md-3").html(
                                         label("Zip", _for="zip", _class="form-label"),
@@ -595,12 +747,19 @@ body(
                                             _placeholder="",
                                             _required=True,
                                         ),
-                                        div("Zip code required.", _class="invalid-feedback"),
+                                        div(
+                                            "Zip code required.",
+                                            _class="invalid-feedback",
+                                        ),
                                     ),
                                 ),
                                 hr(_class="my-4"),
                                 div(_class="form-check").html(
-                                    input(_type="checkbox", _class="form-check-input", _id="same-address"),
+                                    input(
+                                        _type="checkbox",
+                                        _class="form-check-input",
+                                        _id="same-address",
+                                    ),
                                     label(
                                         "Shipping address is the same as my billing address",
                                         _class="form-check-label",
@@ -608,7 +767,11 @@ body(
                                     ),
                                 ),
                                 div(_class="form-check").html(
-                                    input(_type="checkbox", _class="form-check-input", _id="save-info"),
+                                    input(
+                                        _type="checkbox",
+                                        _class="form-check-input",
+                                        _id="save-info",
+                                    ),
                                     label(
                                         "Save this information for next time",
                                         _class="form-check-label",
@@ -627,7 +790,11 @@ body(
                                             _checked=True,
                                             _required=True,
                                         ),
-                                        label("Credit card", _class="form-check-label", _for="credit"),
+                                        label(
+                                            "Credit card",
+                                            _class="form-check-label",
+                                            _for="credit",
+                                        ),
                                     ),
                                     div(_class="form-check").html(
                                         input(
@@ -637,7 +804,11 @@ body(
                                             _class="form-check-input",
                                             _required=True,
                                         ),
-                                        label("Debit card", _class="form-check-label", _for="debit"),
+                                        label(
+                                            "Debit card",
+                                            _class="form-check-label",
+                                            _for="debit",
+                                        ),
                                     ),
                                     div(_class="form-check").html(
                                         input(
@@ -647,12 +818,20 @@ body(
                                             _class="form-check-input",
                                             _required=True,
                                         ),
-                                        label("PayPal", _class="form-check-label", _for="paypal"),
+                                        label(
+                                            "PayPal",
+                                            _class="form-check-label",
+                                            _for="paypal",
+                                        ),
                                     ),
                                 ),
                                 div(_class="row gy-3").html(
                                     div(_class="col-md-6").html(
-                                        label("Name on card", _for="cc-name", _class="form-label"),
+                                        label(
+                                            "Name on card",
+                                            _for="cc-name",
+                                            _class="form-label",
+                                        ),
                                         input(
                                             _type="text",
                                             _class="form-control",
@@ -660,11 +839,21 @@ body(
                                             _placeholder="",
                                             _required=True,
                                         ),
-                                        small("Full name as displayed on card", _class="text-muted"),
-                                        div("Name on card is required", _class="invalid-feedback"),
+                                        small(
+                                            "Full name as displayed on card",
+                                            _class="text-muted",
+                                        ),
+                                        div(
+                                            "Name on card is required",
+                                            _class="invalid-feedback",
+                                        ),
                                     ),
                                     div(_class="col-md-6").html(
-                                        label("Credit card number", _for="cc-number", _class="form-label"),
+                                        label(
+                                            "Credit card number",
+                                            _for="cc-number",
+                                            _class="form-label",
+                                        ),
                                         input(
                                             _type="text",
                                             _class="form-control",
@@ -672,10 +861,17 @@ body(
                                             _placeholder="",
                                             _required=True,
                                         ),
-                                        div("Credit card number is required", _class="invalid-feedback"),
+                                        div(
+                                            "Credit card number is required",
+                                            _class="invalid-feedback",
+                                        ),
                                     ),
                                     div(_class="col-md-3").html(
-                                        label("Expiration", _for="cc-expiration", _class="form-label"),
+                                        label(
+                                            "Expiration",
+                                            _for="cc-expiration",
+                                            _class="form-label",
+                                        ),
                                         input(
                                             _type="text",
                                             _class="form-control",
@@ -683,10 +879,15 @@ body(
                                             _placeholder="",
                                             _required=True,
                                         ),
-                                        div("Expiration date required", _class="invalid-feedback"),
+                                        div(
+                                            "Expiration date required",
+                                            _class="invalid-feedback",
+                                        ),
                                     ),
                                     div(_class="col-md-3").html(
-                                        label("CVV", _for="cc-cvv", _class="form-label"),
+                                        label(
+                                            "CVV", _for="cc-cvv", _class="form-label"
+                                        ),
                                         input(
                                             _type="text",
                                             _class="form-control",
@@ -694,12 +895,17 @@ body(
                                             _placeholder="",
                                             _required=True,
                                         ),
-                                        div("Security code required", _class="invalid-feedback"),
+                                        div(
+                                            "Security code required",
+                                            _class="invalid-feedback",
+                                        ),
                                     ),
                                 ),
                                 hr(_class="my-4"),
                                 button(
-                                    "Continue to checkout", _class="btn btn-primary btn-lg btn-block", _type="submit"
+                                    "Continue to checkout",
+                                    _class="btn btn-primary btn-lg btn-block",
+                                    _type="submit",
                                 ),
                             ),
                         ),
@@ -723,7 +929,7 @@ body(
         )
 
         # print(render(test,'bs5_test_checkout.html'))
-        print(render(test))
+        _debug_print(render(test))
         pass
 
     @silence
@@ -733,10 +939,16 @@ body(
                 meta(_charset="utf-8"),
                 meta(_name="viewport", _content="_width=device-width, initial-scale=1"),
                 meta(_name="description", _content=""),
-                meta(_name="author", _content="Mark Otto, Jacob Thornton, and Bootstrap contributors"),
+                meta(
+                    _name="author",
+                    _content="Mark Otto, Jacob Thornton, and Bootstrap contributors",
+                ),
                 meta(_name="generator", _content="Hugo 0.72.0"),
                 title("Carousel Template · Bootstrap"),
-                link(_rel="canonical", _href="https://v5.getbootstrap.com/docs/5.0/examples/carousel/"),
+                link(
+                    _rel="canonical",
+                    _href="https://v5.getbootstrap.com/docs/5.0/examples/carousel/",
+                ),
                 link(
                     _href="/docs/5.0/dist/css/bootstrap.min.css",
                     _rel="stylesheet",
@@ -760,12 +972,17 @@ body(
                     _sizes="16x16",
                     _type="image/png",
                 ),
-                link(_rel="manifest", _href="/docs/5.0/assets/img/favicons/manifest.json"),
-                link(_rel="mask-icon", _href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg", _color="#7952b3"),
+                link(
+                    _rel="manifest", _href="/docs/5.0/assets/img/favicons/manifest.json"
+                ),
+                link(
+                    _rel="mask-icon",
+                    _href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg",
+                    _color="#7952b3",
+                ),
                 link(_rel="icon", _href="/docs/5.0/assets/img/favicons/favicon.ico"),
                 meta(_name="theme-color", _content="#7952b3"),
-                style(
-                    """
+                style("""
                 .bd-placeholder-img {
                     font-size: 1.125rem;
                     text-anchor: middle;
@@ -779,13 +996,14 @@ body(
                     font-size: 3.5rem;
                     }
                 }
-                """
-                ),
+                """),
                 link(_href="carousel.css", _rel="stylesheet"),
             ),
             body(
                 header(
-                    nav(_class="navbar navbar-expand-md navbar-dark fixed-top bg-dark").html(
+                    nav(
+                        _class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"
+                    ).html(
                         div(_class="container-fluid").html(
                             a("Carousel", _class="navbar-brand", _href="#"),
                             button(
@@ -799,13 +1017,23 @@ body(
                                 **{"_aria-label": "Toggle navigation"},
                             ),
                         ),
-                        div(_class="collapse navbar-collapse", _id="navbarCollapse").html(
+                        div(
+                            _class="collapse navbar-collapse", _id="navbarCollapse"
+                        ).html(
                             ul(_class="navbar-nav mr-auto mb-2 mb-md-0").html(
                                 li(
-                                    a("Home", _class="nav-link", **{"_aria-current": "page"}, _href="#"),
+                                    a(
+                                        "Home",
+                                        _class="nav-link",
+                                        **{"_aria-current": "page"},
+                                        _href="#",
+                                    ),
                                     _class="nav-item active",
                                 ),
-                                li(a("Link", _class="nav-link", _href="#"), _class="nav-item"),
+                                li(
+                                    a("Link", _class="nav-link", _href="#"),
+                                    _class="nav-item",
+                                ),
                                 li(
                                     a(
                                         "Disabled",
@@ -819,7 +1047,11 @@ body(
                             ),
                             form(_class="d-flex").html(
                                 input(
-                                    button("Search", _class="btn btn-outline-success", _type="submit"),
+                                    button(
+                                        "Search",
+                                        _class="btn btn-outline-success",
+                                        _type="submit",
+                                    ),
                                     _class="form-control mr-2",
                                     _type="search",
                                     _placeholder="Search",
@@ -830,11 +1062,25 @@ body(
                     )
                 ),
                 main(
-                    div(_id="myCarousel", _class="carousel slide", **{"_data-ride": "carousel"}).html(
+                    div(
+                        _id="myCarousel",
+                        _class="carousel slide",
+                        **{"_data-ride": "carousel"},
+                    ).html(
                         ol(_class="carousel-indicators").html(
-                            li(**{"_data-target": "#myCarousel"}, **{"_data-slide-to": "0"}, _class="active"),
-                            li(**{"_data-target": "#myCarousel"}, **{"_data-slide-to": "1"}),
-                            li(**{"_data-target": "#myCarousel"}, **{"_data-slide-to": "2"}),
+                            li(
+                                **{"_data-target": "#myCarousel"},
+                                **{"_data-slide-to": "0"},
+                                _class="active",
+                            ),
+                            li(
+                                **{"_data-target": "#myCarousel"},
+                                **{"_data-slide-to": "1"},
+                            ),
+                            li(
+                                **{"_data-target": "#myCarousel"},
+                                **{"_data-slide-to": "2"},
+                            ),
                         ),
                         div(_class="carousel-inner").html(
                             div(_class="carousel-item active").html(
@@ -864,7 +1110,14 @@ body(
                                         p(
                                             "Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit."
                                         ),
-                                        p(a("Learn more", _class="btn btn-lg btn-primary", _href="#", _role="button")),
+                                        p(
+                                            a(
+                                                "Learn more",
+                                                _class="btn btn-lg btn-primary",
+                                                _href="#",
+                                                _role="button",
+                                            )
+                                        ),
                                     )
                                 ),
                             ),
@@ -894,7 +1147,10 @@ body(
                             _role="button",
                             **{"_data-slide": "prev"},
                         ).html(
-                            span(**{"_aria-hidden": "true"}, _class="carousel-control-prev-icon"),
+                            span(
+                                **{"_aria-hidden": "true"},
+                                _class="carousel-control-prev-icon",
+                            ),
                             span("Previous", _class="sr-only"),
                         ),
                         a(
@@ -903,7 +1159,10 @@ body(
                             _role="button",
                             **{"_data-slide": "next"},
                         ).html(
-                            span(_class="carousel-control-next-icon", **{"_aria-hidden": "true"}),
+                            span(
+                                _class="carousel-control-next-icon",
+                                **{"_aria-hidden": "true"},
+                            ),
                             span("Next", _class="sr-only"),
                         ),
                     ),
@@ -915,7 +1174,14 @@ body(
                                 p(
                                     "Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna."
                                 ),
-                                p(a("View details &raquo;", _class="btn btn-secondary", _href="#", _role="button")),
+                                p(
+                                    a(
+                                        "View details &raquo;",
+                                        _class="btn btn-secondary",
+                                        _href="#",
+                                        _role="button",
+                                    )
+                                ),
                             ),
                             div(_class="col-lg-4").html(
                                 """<svg _class="bd-placeholder-img rounded-circle", _width="140", _height="140" xmlns="http://www.w3.org/2000/svg" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice", _role="img" focusable="false",title(Placeholder)<rect _width="100%", _height="100%" fill="#777")<text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>""",
@@ -923,7 +1189,14 @@ body(
                                 p(
                                     "Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh."
                                 ),
-                                p(a("View details &raquo;", _class="btn btn-secondary", _href="#", _role="button")),
+                                p(
+                                    a(
+                                        "View details &raquo;",
+                                        _class="btn btn-secondary",
+                                        _href="#",
+                                        _role="button",
+                                    )
+                                ),
                             ),
                             div(_class="col-lg-4").html(
                                 """<svg _class="bd-placeholder-img rounded-circle", _width="140", _height="140" xmlns="http://www.w3.org/2000/svg" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice", _role="img" focusable="false",title(Placeholder)<rect _width="100%", _height="100%" fill="#777")<text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>""",
@@ -931,7 +1204,14 @@ body(
                                 p(
                                     "Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus."
                                 ),
-                                p(a("View details &raquo;", _class="btn btn-secondary", _href="#", _role="button")),
+                                p(
+                                    a(
+                                        "View details &raquo;",
+                                        _class="btn btn-secondary",
+                                        _href="#",
+                                        _role="button",
+                                    )
+                                ),
                                 hr(_class="featurette-divider"),
                                 div(_class="row featurette").html(
                                     div(_class="col-md-7").html(
@@ -1010,7 +1290,7 @@ body(
             ),
         )
         # print(render(test,'bs5_test_carousel.html'))
-        print(render(test))
+        _debug_print(render(test))
         pass
 
     @silence
@@ -1021,10 +1301,16 @@ body(
                 meta(_charset="utf-8"),
                 meta(_name="viewport", _content="width=device-width, initial-scale=1"),
                 meta(_name="description", _content=""),
-                meta(_name="author", _content="Mark Otto, Jacob Thornton, and Bootstrap contributors"),
+                meta(
+                    _name="author",
+                    _content="Mark Otto, Jacob Thornton, and Bootstrap contributors",
+                ),
                 meta(_name="generator", _content="Hugo 0.72.0"),
                 title("Dashboard Template · Bootstrap"),
-                link(_rel="canonical", _href="https://v5.getbootstrap.com/docs/5.0/examples/dashboard/"),
+                link(
+                    _rel="canonical",
+                    _href="https://v5.getbootstrap.com/docs/5.0/examples/dashboard/",
+                ),
                 link(
                     _href="/docs/5.0/dist/css/bootstrap.min.css",
                     _rel="stylesheet",
@@ -1048,12 +1334,17 @@ body(
                     _sizes="16x16",
                     _type="image/png",
                 ),
-                link(_rel="manifest", _href="/docs/5.0/assets/img/favicons/manifest.json"),
-                link(_rel="mask-icon", _href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg", _color="#7952b3"),
+                link(
+                    _rel="manifest", _href="/docs/5.0/assets/img/favicons/manifest.json"
+                ),
+                link(
+                    _rel="mask-icon",
+                    _href="/docs/5.0/assets/img/favicons/safari-pinned-tab.svg",
+                    _color="#7952b3",
+                ),
                 link(_rel="icon", _href="/docs/5.0/assets/img/favicons/favicon.ico"),
                 meta(_name="theme-color", _content="#7952b3"),
-                style(
-                    """
+                style("""
                 .bd-placeholder-img {
                     font-size: 1.125rem;
                     text-anchor: middle;
@@ -1067,13 +1358,18 @@ body(
                     font-size: 3.5rem;
                 }
                 }
-                """
-                ),
+                """),
                 link(_href="dashboard.css", _rel="stylesheet"),
             ),
             body(
-                nav(_class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow").html(
-                    a("Company name", _class="navbar-brand col-md-3 col-lg-2 mr-0 px-3", _href="#"),
+                nav(
+                    _class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow"
+                ).html(
+                    a(
+                        "Company name",
+                        _class="navbar-brand col-md-3 col-lg-2 mr-0 px-3",
+                        _href="#",
+                    ),
                     button(
                         span(_class="navbar-toggler-icon"),
                         _class="navbar-toggler position-absolute d-md-none collapsed",
@@ -1091,13 +1387,17 @@ body(
                         **{"_aria-label": "Search"},
                     ).html(
                         ul(_class="navbar-nav px-3").html(
-                            li(a("Sign out", _class="nav-link", _href="#"), _class="nav-item text-nowrap")
+                            li(
+                                a("Sign out", _class="nav-link", _href="#"),
+                                _class="nav-item text-nowrap",
+                            )
                         )
                     ),
                     div(_class="container-fluid").html(
                         div(_class="row").html(
                             nav(
-                                _id="sidebarMenu", _class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
+                                _id="sidebarMenu",
+                                _class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse",
                             ).html(
                                 div(_class="position-sticky pt-3").html(
                                     ul(_class="nav flex-column").html(
@@ -1122,7 +1422,9 @@ body(
                                         ),
                                         li(
                                             a(
-                                                span(**{"_data-feather": "shopping-cart"}),
+                                                span(
+                                                    **{"_data-feather": "shopping-cart"}
+                                                ),
                                                 "Products",
                                                 _class="nav-link",
                                                 _href="#",
@@ -1140,7 +1442,9 @@ body(
                                         ),
                                         li(
                                             a(
-                                                span(**{"_data-feather": "bar-chart-2"}),
+                                                span(
+                                                    **{"_data-feather": "bar-chart-2"}
+                                                ),
                                                 "Reports",
                                                 _class="nav-link",
                                                 _href="#",
@@ -1163,7 +1467,10 @@ body(
                                 ).html(
                                     span("Saved reports"),
                                     a(
-                                        span(**{"_data-feather": "plus-circle"}, **{"_aria-label": "Add a new report"}),
+                                        span(
+                                            **{"_data-feather": "plus-circle"},
+                                            **{"_aria-label": "Add a new report"},
+                                        ),
                                         _class="link-secondary",
                                         _href="#",
                                     ),
@@ -1216,8 +1523,16 @@ body(
                             h1("Dashboard", _class="h2"),
                             div(_class="btn-toolbar mb-2 mb-md-0").html(
                                 div(_class="btn-group mr-2").html(
-                                    button("Share", _type="button", _class="btn btn-sm btn-outline-secondary"),
-                                    button("Export", _type="button", _class="btn btn-sm btn-outline-secondary"),
+                                    button(
+                                        "Share",
+                                        _type="button",
+                                        _class="btn btn-sm btn-outline-secondary",
+                                    ),
+                                    button(
+                                        "Export",
+                                        _type="button",
+                                        _class="btn btn-sm btn-outline-secondary",
+                                    ),
                                 ),
                                 button(
                                     span(**{"_data-feather": "calendar"}),
@@ -1227,28 +1542,137 @@ body(
                                 ),
                             ),
                         ),
-                        canvas(_class="my-4 w-100", _id="myChart", _width="900", _height="380"),
+                        canvas(
+                            _class="my-4 w-100",
+                            _id="myChart",
+                            _width="900",
+                            _height="380",
+                        ),
                         h2("Section title"),
                         div(_class="table-responsive").html(
                             table(_class="table table-striped table-sm").html(
-                                thead(tr(th("  #"), th("Header"), th("Header"), th("Header"), th("Header"))),
+                                thead(
+                                    tr(
+                                        th("  #"),
+                                        th("Header"),
+                                        th("Header"),
+                                        th("Header"),
+                                        th("Header"),
+                                    )
+                                ),
                                 tbody(
-                                    tr(td("1, 001"), td("Lorem"), td("ipsum"), td("dolor"), td("sit")),
-                                    tr(td("1, 002"), td("amet"), td("consectetur"), td("adipiscing"), td("elit")),
-                                    tr(td("1, 003"), td("Integer"), td("nec"), td("odio"), td("Praesent")),
-                                    tr(td("1, 003"), td("libero"), td("Sed"), td("cursus"), td("ante")),
-                                    tr(td("1, 004"), td("dapibus"), td("diam"), td("Sed"), td("nisi")),
-                                    tr(td("1, 005"), td("Nulla"), td("quis"), td("sem"), td("at")),
-                                    tr(td("1, 006"), td("nibh"), td("elementum"), td("imperdiet"), td("Duis")),
-                                    tr(td("1, 007"), td("sagittis"), td("ipsum"), td("Praesent"), td("mauris")),
-                                    tr(td("1, 008"), td("Fusce"), td("nec"), td("tellus"), td("sed")),
-                                    tr(td("1, 009"), td("augue"), td("semper"), td("porta"), td("Mauris")),
-                                    tr(td("1, 010"), td("massa"), td("Vestibulum"), td("lacinia"), td("arcu")),
-                                    tr(td("1, 011"), td("eget"), td("nulla"), td("Class"), td("aptent")),
-                                    tr(td("1, 012"), td("taciti"), td("sociosqu"), td("ad"), td("litora")),
-                                    tr(td("1, 013"), td("torquent"), td("per"), td("conubia"), td("nostra")),
-                                    tr(td("1, 014"), td("per"), td("inceptos"), td("himenaeos"), td("Curabitur")),
-                                    tr(td("1, 015"), td("sodales"), td("ligula"), td(" in "), td("libero")),
+                                    tr(
+                                        td("1, 001"),
+                                        td("Lorem"),
+                                        td("ipsum"),
+                                        td("dolor"),
+                                        td("sit"),
+                                    ),
+                                    tr(
+                                        td("1, 002"),
+                                        td("amet"),
+                                        td("consectetur"),
+                                        td("adipiscing"),
+                                        td("elit"),
+                                    ),
+                                    tr(
+                                        td("1, 003"),
+                                        td("Integer"),
+                                        td("nec"),
+                                        td("odio"),
+                                        td("Praesent"),
+                                    ),
+                                    tr(
+                                        td("1, 003"),
+                                        td("libero"),
+                                        td("Sed"),
+                                        td("cursus"),
+                                        td("ante"),
+                                    ),
+                                    tr(
+                                        td("1, 004"),
+                                        td("dapibus"),
+                                        td("diam"),
+                                        td("Sed"),
+                                        td("nisi"),
+                                    ),
+                                    tr(
+                                        td("1, 005"),
+                                        td("Nulla"),
+                                        td("quis"),
+                                        td("sem"),
+                                        td("at"),
+                                    ),
+                                    tr(
+                                        td("1, 006"),
+                                        td("nibh"),
+                                        td("elementum"),
+                                        td("imperdiet"),
+                                        td("Duis"),
+                                    ),
+                                    tr(
+                                        td("1, 007"),
+                                        td("sagittis"),
+                                        td("ipsum"),
+                                        td("Praesent"),
+                                        td("mauris"),
+                                    ),
+                                    tr(
+                                        td("1, 008"),
+                                        td("Fusce"),
+                                        td("nec"),
+                                        td("tellus"),
+                                        td("sed"),
+                                    ),
+                                    tr(
+                                        td("1, 009"),
+                                        td("augue"),
+                                        td("semper"),
+                                        td("porta"),
+                                        td("Mauris"),
+                                    ),
+                                    tr(
+                                        td("1, 010"),
+                                        td("massa"),
+                                        td("Vestibulum"),
+                                        td("lacinia"),
+                                        td("arcu"),
+                                    ),
+                                    tr(
+                                        td("1, 011"),
+                                        td("eget"),
+                                        td("nulla"),
+                                        td("Class"),
+                                        td("aptent"),
+                                    ),
+                                    tr(
+                                        td("1, 012"),
+                                        td("taciti"),
+                                        td("sociosqu"),
+                                        td("ad"),
+                                        td("litora"),
+                                    ),
+                                    tr(
+                                        td("1, 013"),
+                                        td("torquent"),
+                                        td("per"),
+                                        td("conubia"),
+                                        td("nostra"),
+                                    ),
+                                    tr(
+                                        td("1, 014"),
+                                        td("per"),
+                                        td("inceptos"),
+                                        td("himenaeos"),
+                                        td("Curabitur"),
+                                    ),
+                                    tr(
+                                        td("1, 015"),
+                                        td("sodales"),
+                                        td("ligula"),
+                                        td(" in "),
+                                        td("libero"),
+                                    ),
                                 ),
                             )
                         ),
@@ -1256,7 +1680,9 @@ body(
                 )
             ),
             script(
-                _src="/docs/5.0/dist/js/bootstrap.bundle.min.js", _integrity="sha384-1234", _crossorigin="anonymous"
+                _src="/docs/5.0/dist/js/bootstrap.bundle.min.js",
+                _integrity="sha384-1234",
+                _crossorigin="anonymous",
             ),
             script(
                 _src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.24.1/feather.min.js",
@@ -1285,7 +1711,10 @@ body(
 
     def test_domonic_render_a_tag(self):
         atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
-        assert str(atag) == '<a href="https://somesite.com:8000/blog/article-one#some-hash"></a>'
+        assert (
+            str(atag)
+            == '<a href="https://somesite.com:8000/blog/article-one#some-hash"></a>'
+        )
         assert "https://somesite.com:8000/blog/article-one#some-hash" == atag.href
         assert "https" == atag.protocol
         assert "8000" == str(atag.port)
@@ -1340,7 +1769,9 @@ body(
             div()
             with body():
                 p()
-        assert str(d) == "<html><head><p></p></head><div></div><body><p></p></body></html>"
+        assert (
+            str(d) == "<html><head><p></p></head><div></div><body><p></p></body></html>"
+        )
 
     # def test_pyml(self):
     # root = html5_parser.parse(some_html, treebuilder='dom')
@@ -1370,16 +1801,14 @@ body(
         with d:
             with head():
                 with title():
-                    div(
-                        """
+                    div("""
                     <form>
                     <label for="fname">First name:</label><br>
                     <input type="text" id="fname" name="fname" value="John"><br>
                     <label for="lname">Last name:</label><br>
                     <input type="text" id="lname" name="lname" value="Doe">
                     </form>
-                    """
-                    )
+                    """)
             with body():
                 with div(_class="container"):
                     with div(_class="row"):
@@ -1399,18 +1828,14 @@ body(
                 with title():
                     pass
             with body():
-                div(
-                    domonic.parseString(
-                        """
+                div(domonic.parseString("""
                 <form>
                 <label for="fname">First name:</label><br>
                 <input type="text" id="fname" name="fname" value="John"><br>
                 <label for="lname">Last name:</label><br>
                 <input type="text" id="lname" name="lname" value="Doe">
                 </form>
-                """
-                    )
-                )
+                """))
         assert len(d.forms) > 0
 
     def test_four_oh_four(self):
@@ -1453,16 +1878,17 @@ body(
         assert '<script src="foo.js" async hidden checked></script>' == str(s)
         s = script(_src="foo.js", _async=True, _hidden=False, _checked=True)
         # print(s)
-        assert '<script src="foo.js" async="true" hidden="false" checked="true"></script>' == str(s)
+        assert (
+            '<script src="foo.js" async="true" hidden="false" checked="true"></script>'
+            == str(s)
+        )
 
     def test_dialog(self):
         d = html()
         with d:
             dialog("hello", _open="")
             form(button("close"), _method="dialog", _action="close")
-        assert (
-            f"{d}"
-            == """<!DOCTYPE html>
+        assert f"{d}" == """<!DOCTYPE html>
 <html>
 	<dialog open>hello</dialog>
 		<button>close</button>
@@ -1473,7 +1899,6 @@ body(
 		<button>close</button>
 	</form>
 </html>"""
-        )
         # mydialog = HTMLDialogElement()
         # print(mydialog)
         # print(str(mydialog))

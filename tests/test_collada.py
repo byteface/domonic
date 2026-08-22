@@ -1,6 +1,6 @@
 """
-    test_collada
-    ~~~~~~~~~~~~
+test_collada
+~~~~~~~~~~~~
 """
 
 import unittest
@@ -8,12 +8,16 @@ import unittest
 from domonic.xml.collada import *
 
 
+def _debug_print(*args, **kwargs):
+    return None
+
+
 class TestCase(unittest.TestCase):
 
     # @silence
     def test_domonic_collada(self):
         col = COLLADA()
-        print(col)
+        _debug_print(col)
         assert col.tag == "COLLADA"
 
 

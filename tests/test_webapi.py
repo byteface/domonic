@@ -37,6 +37,10 @@ from domonic.webapi.xhr import FormData, XMLHttpRequest
 # from domonic.decorators import silence
 
 
+def _debug_print(*args, **kwargs):
+    return None
+
+
 class TestCase(unittest.TestCase):
     def test_console_api_surface(self):
         Console.reset()
@@ -684,23 +688,23 @@ class TestCase(unittest.TestCase):
 
         expression = evaluator.createExpression("//ul/li")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes))
+        _debug_print(str(result.nodes))
 
         expression = evaluator.createExpression("//ul/li/a")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes))
+        _debug_print(str(result.nodes))
 
         expression = evaluator.createExpression("//ul/li/a")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes))
+        _debug_print(str(result.nodes))
 
         expression = evaluator.createExpression("//ul/li/a")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes))
+        _debug_print(str(result.nodes))
 
         expression = evaluator.createExpression("//div/*")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes))
+        _debug_print(str(result.nodes))
 
         # root fails?
         # expression = evaluator.createExpression("/")
@@ -714,13 +718,13 @@ class TestCase(unittest.TestCase):
         # NOTE - attributes reqiures underscores
         expression = evaluator.createExpression('//*[@_id="contact"]')
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes))
+        _debug_print(str(result.nodes))
 
         expression = evaluator.createExpression(
             '//*[@_class="social-link social-link-instagram"]'
         )  # NOTE - requires all classes to match
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes))
+        _debug_print(str(result.nodes))
 
         # expression = evaluator.createExpression("//input[@type='submit']")
         # result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
@@ -728,21 +732,21 @@ class TestCase(unittest.TestCase):
 
         expression = evaluator.createExpression("//a[contains(@_href, 'twitter')]")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes[0]))
+        _debug_print(str(result.nodes[0]))
         # wow. nice!
 
         expression = evaluator.createExpression("//a[contains(@href, 'twitter')]")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print("NO UNDERSCORE", str(result.nodes[0]))
+        _debug_print("NO UNDERSCORE", str(result.nodes[0]))
 
         expression = evaluator.createExpression('//*[last()][name()="a"]')
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes[0]))
+        _debug_print(str(result.nodes[0]))
         # so cool this all works out of the box!
 
         expression = evaluator.createExpression("//span/text()")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes[0]))
+        _debug_print(str(result.nodes[0]))
 
         somepage = html(
             head(), body(h1("some title"), p("some text"), div("some more text"))
@@ -750,7 +754,7 @@ class TestCase(unittest.TestCase):
 
         expression = evaluator.createExpression("//div/text()")
         result = expression.evaluate(somepage, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        print(str(result.nodes[0]))
+        _debug_print(str(result.nodes[0]))
 
         """
         TODO - unit tests for the following so i know what works

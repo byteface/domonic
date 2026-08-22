@@ -3852,15 +3852,15 @@ class DOMTest(unittest.TestCase):
         # print(walker.firstChild())
         # print(walker.firstChild())
 
-        # //Alert the starting node Tree Walker currently points to (root node)
-        window.alert(walker.currentNode.tagName)  # alerts DIV (with id=contentarea)
-        # assert walker.currentNode.tagName == 'DIV'
+        visited = [walker.currentNode.tagName]
 
         # Step through and alert all child nodes
         # for n in walker.nextNode():
         while walker.nextNode():
             # print('+++', walker.nextNode())
-            window.alert(walker.currentNode)  # //alerts P, SPAN, and B.
+            visited.append(walker.currentNode.tagName)
+
+        self.assertEqual(visited, ["div", "p", "span", "b"])
 
         # //Go back to the first child node of the collection and alert it
         walker.currentNode = (

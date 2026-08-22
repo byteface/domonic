@@ -1,7 +1,7 @@
 """
-    test_d3
-    ~~~~~~~~~~~~~~~
-    unit tests for domonic.d3
+test_d3
+~~~~~~~~~~~~~~~
+unit tests for domonic.d3
 
 """
 
@@ -14,6 +14,7 @@ from domonic.html import *
 from domonic.svg import *  # lowercase path is in here
 
 import domonic.d3 as d3
+
 # from mock import patch
 # from domonic.javascript import Math
 from domonic import domonic
@@ -22,14 +23,17 @@ from domonic.d3.dispatch import Dispatch, dispatch
 from domonic.d3.format import *
 from domonic.d3.format import format
 from domonic.d3.queue import queue
+
 # from domonic.d3.path import Path
 from domonic.d3.polygon import *
 from domonic.d3.selection import *
 from domonic.decorators import silence
 
-
 # from domonic.d3.timer import *
 
+
+def _debug_print(*args, **kwargs):
+    return None
 
 
 class TestCase(unittest.TestCase):
@@ -43,7 +47,9 @@ class TestCase(unittest.TestCase):
         def second(done):
             return "b"
 
-        queue(1).defer(first).defer(second).awaitAll(lambda error, values: results.append((error, values)))
+        queue(1).defer(first).defer(second).awaitAll(
+            lambda error, values: results.append((error, values))
+        )
 
         assert results == [(None, ["a", "b"])]
 
@@ -57,25 +63,30 @@ class TestCase(unittest.TestCase):
     def test_d3_path(self):
 
         from domonic.d3.path import Path
+
         p = Path()
         p.moveTo(1, 2)
         p.lineTo(3, 4)
         p.closePath()
-        print(p)
+        _debug_print(p)
 
         from domonic.svg import path
+
         # context = d3.path()
         # drawCircle(context, 40);
         # mypath = path(_d="", _fill="red", _stroke="blue", **{"_stroke-width": "3"})
         mypath = path(_fill="red", _stroke="blue", **{"_stroke-width": "3"})
-        print(mypath)
+        _debug_print(mypath)
         mypath.setAttribute("d", str(p))
-        print(mypath)
+        _debug_print(mypath)
 
     def test_d3_format(self):
 
         f = format(".1f")
-        self.assertEqual([f(0.1 * i) for i in range(10)], ["0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9"])
+        self.assertEqual(
+            [f(0.1 * i) for i in range(10)],
+            ["0.0", "0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9"],
+        )
 
         # dot-filled and centered,
         assert format(".^20")(42) == ".........42........."
@@ -177,7 +188,7 @@ class TestCase(unittest.TestCase):
         s.fill = "_"
         assert str(s) == "_>-"
         s.align = "^"
-        print(str(s))
+        _debug_print(str(s))
         assert str(s) == "_^-"
         s.sign = "+"
         assert str(s) == "_^+"
@@ -309,7 +320,7 @@ class TestCase(unittest.TestCase):
         # assert f(0.0001) == "0.01%"
 
         f = format(",~g")
-        print(f(10000.0))
+        _debug_print(f(10000.0))
         # assert f(10000.0) == "10,000"
         # assert f(10000.1) == "10,000.1"
 
@@ -320,7 +331,7 @@ class TestCase(unittest.TestCase):
         assert format(".2f")(0.449) == "0.45"
         assert format(".3f")(0.4449) == "0.445"
         assert format(".5f")(0.444449) == "0.44445"
-        print(format(".1f")(100))
+        _debug_print(format(".1f")(100))
         assert format(".1f")(100) == "100.0"
         assert format(".2f")(100) == "100.00"
         assert format(".3f")(100) == "100.000"
@@ -332,7 +343,7 @@ class TestCase(unittest.TestCase):
         assert f(-0.429) == "−$0.43"
         assert f(-1) == "−$1.00"
         assert f(1e4) == "+$10,000.00"
-        print(f(1e4))
+        _debug_print(f(1e4))
 
         assert format("10,.1f")(123456.49) == " 123,456.5"
         assert format("10,.2f")(1234567.449) == "1,234,567.45"
@@ -354,20 +365,41 @@ class TestCase(unittest.TestCase):
         assert format("+f")(+1e-12) == "+0.000000"
 
         # assert formatLocale({"decimal": "|"}).format("06.2f")(2) == "002|00"
-        print(formatLocale({"decimal": "/"}).format("06.2f")(2))
+        _debug_print(formatLocale({"decimal": "/"}).format("06.2f")(2))
         assert formatLocale({"decimal": "/"}).format("06.2f")(2) == "002/00"
         # return
-        assert formatLocale({"decimal": ".", "currency": ["฿", ""]}).format("$06.2f")(2) == "฿02.00"
-        assert formatLocale({"decimal": ".", "currency": ["", "฿"]}).format("$06.2f")(2) == "02.00฿"
-        # assert formatLocale({"decimal": ",", "currency": ["", " €"]}).format("$.3s")(1.2e9) == "1,20G €"
-        # assert formatLocale({"decimal": "."}).format("012,.2f")(2) == "000000002.00" # TODO - bug
-        assert formatLocale({"decimal": ".", "grouping": [3], "thousands": ","}).format("012,.2f")(2) == "0,000,002.00"
-        assert formatLocale({"decimal": ".", "grouping": [2], "thousands": ","}).format("012,.2f")(2) == "0,00,00,02.00"
         assert (
-            formatLocale({"decimal": ".", "grouping": [2, 3], "thousands": ","}).format("012,.2f")(2) == "00,000,02.00"
+            formatLocale({"decimal": ".", "currency": ["฿", ""]}).format("$06.2f")(2)
+            == "฿02.00"
         )
         assert (
-            formatLocale({"decimal": ".", "grouping": [3, 2, 2, 2, 2, 2, 2], "thousands": ","}).format(",d")(1e12)
+            formatLocale({"decimal": ".", "currency": ["", "฿"]}).format("$06.2f")(2)
+            == "02.00฿"
+        )
+        # assert formatLocale({"decimal": ",", "currency": ["", " €"]}).format("$.3s")(1.2e9) == "1,20G €"
+        # assert formatLocale({"decimal": "."}).format("012,.2f")(2) == "000000002.00" # TODO - bug
+        assert (
+            formatLocale({"decimal": ".", "grouping": [3], "thousands": ","}).format(
+                "012,.2f"
+            )(2)
+            == "0,000,002.00"
+        )
+        assert (
+            formatLocale({"decimal": ".", "grouping": [2], "thousands": ","}).format(
+                "012,.2f"
+            )(2)
+            == "0,00,00,02.00"
+        )
+        assert (
+            formatLocale({"decimal": ".", "grouping": [2, 3], "thousands": ","}).format(
+                "012,.2f"
+            )(2)
+            == "00,000,02.00"
+        )
+        assert (
+            formatLocale(
+                {"decimal": ".", "grouping": [3, 2, 2, 2, 2, 2, 2], "thousands": ","}
+            ).format(",d")(1e12)
             == "10,00,00,00,00,000"
         )
 
@@ -378,7 +410,7 @@ class TestCase(unittest.TestCase):
         assert f(100) == "100"
         assert f(1000) == "1,000"
         assert f(10000) == "10,000"
-        print(f(100000))
+        _debug_print(f(100000))
         assert f(100000) == "1,00,000"  # note only works with correct locale
         # print(f(1000000))
         assert f(1000000) == "10,00,000"
@@ -399,16 +431,39 @@ class TestCase(unittest.TestCase):
         assert f(-1000.321) == "−1,000.321"
         assert f(-10.5) == "−10.5"
 
-        assert formatLocale({"decimal": ".", "grouping": [3], "thousands": " "}).format("012,.2f")(2) == "0 000 002.00"
-        assert formatLocale({"decimal": ".", "grouping": [3], "thousands": "/"}).format("012,.2f")(2) == "0/000/002.00"
+        assert (
+            formatLocale({"decimal": ".", "grouping": [3], "thousands": " "}).format(
+                "012,.2f"
+            )(2)
+            == "0 000 002.00"
+        )
+        assert (
+            formatLocale({"decimal": ".", "grouping": [3], "thousands": "/"}).format(
+                "012,.2f"
+            )(2)
+            == "0/000/002.00"
+        )
 
-        assert formatLocale({"decimal": ".", "percent": "!"}).format("06.2%")(2) == "200.00!"
+        assert (
+            formatLocale({"decimal": ".", "percent": "!"}).format("06.2%")(2)
+            == "200.00!"
+        )
         # print(formatLocale({"decimal": ".", "percent": "﹪"}).format("06.2%")(2))
-        assert formatLocale({"decimal": ".", "percent": "﹪"}).format("06.2%")(2) == "200.00﹪"
+        assert (
+            formatLocale({"decimal": ".", "percent": "﹪"}).format("06.2%")(2)
+            == "200.00﹪"
+        )
 
-        assert formatLocale({"decimal": ".", "minus": "-"}).format("06.2f")(-2) == "-02.00"
-        assert formatLocale({"decimal": ".", "minus": "−"}).format("06.2f")(-2) == "−02.00"
-        assert formatLocale({"decimal": ".", "minus": "➖"}).format("06.2f")(-2) == "➖02.00"
+        assert (
+            formatLocale({"decimal": ".", "minus": "-"}).format("06.2f")(-2) == "-02.00"
+        )
+        assert (
+            formatLocale({"decimal": ".", "minus": "−"}).format("06.2f")(-2) == "−02.00"
+        )
+        assert (
+            formatLocale({"decimal": ".", "minus": "➖"}).format("06.2f")(-2)
+            == "➖02.00"
+        )
         assert formatLocale({"decimal": "."}).format("06.2f")(-2) == "−02.00"
 
         assert formatLocale({"nan": "N/A"}).format("6.2f")(None) == "   N/A"
@@ -555,8 +610,8 @@ class TestCase(unittest.TestCase):
         d = dispatch("foo").on("foo", some_func)
 
         d.call("foo", foo, bar)
-        print(results)
-        print([{'this':foo, 'arguments':[bar]}])
+        _debug_print(results)
+        _debug_print([{'this':foo, 'arguments':[bar]}])
         assert results == [{'this':foo, 'arguments':[bar]}]
         return
 
@@ -662,7 +717,7 @@ class TestCase(unittest.TestCase):
         # document is a global so has to be implicitely imported
         from domonic.dom import document
 
-        print(document)
+        _debug_print(document)
 
         # page = html(body())
 
@@ -676,7 +731,9 @@ class TestCase(unittest.TestCase):
         # select("body").append("svg").attr("width", 960)
         # select("body").append("svg").attr("width", 960).attr("height", 500).attr("byte", "face")
 
-        select("body").append("svg").attr("width", 960).attr("height", 500)  # .append("g")
+        select("body").append("svg").attr("width", 960).attr(
+            "height", 500
+        )  # .append("g")
 
         b = select("svg").append("g")
 
@@ -689,13 +746,13 @@ class TestCase(unittest.TestCase):
         # select("body").append("svg")
         # print(select("body").append("svg"))
         c = d3.select("svg")
-        print("gubbins:", *c)
+        _debug_print("gubbins:", *c)
         # return
 
-        print(select("svg").append("g"))
-        print("shoudlbe::", b)
-        print("shoudlbe::", *b)
-        print(str(page))
+        _debug_print(select("svg").append("g"))
+        _debug_print("shoudlbe::", b)
+        _debug_print("shoudlbe::", *b)
+        _debug_print(str(page))
         # return
         # d3.select("body")
         #   .append("svg")
@@ -724,40 +781,71 @@ class TestCase(unittest.TestCase):
                 div(_class="overlay").html(
                     div(_class="content h-100 d-flex align-items-center").html(
                         div(_class="container text-center text-black").html(
-                            p("Welcome to the information age", _class="headings-font-family text-uppercase lead"),
+                            p(
+                                "Welcome to the information age",
+                                _class="headings-font-family text-uppercase lead",
+                            ),
                             h1(
                                 "We are",
                                 span("COMPANY", _class="font-weight-bold d-block"),
                                 _class="text-uppercase hero-text text-black",
                             ),
-                            p("And this is our company website", _class="headings-font-family text-uppercase lead"),
+                            p(
+                                "And this is our company website",
+                                _class="headings-font-family text-uppercase lead",
+                            ),
                         )
                     )
                 ),
                 header(_class="header sticky-top").html(
-                    nav(_class="navbar navbar-expand-lg bg-white border-bottom py-0").html(
+                    nav(
+                        _class="navbar navbar-expand-lg bg-white border-bottom py-0"
+                    ).html(
                         div(_class="container").html(
                             h6("website.com"),
-                            div(_id="navbarSupportedContent", _class="collapse navbar-collapse").html(
+                            div(
+                                _id="navbarSupportedContent",
+                                _class="collapse navbar-collapse",
+                            ).html(
                                 ul(_class="navbar-nav ml-auto px-3").html(
                                     li(
-                                        a("Home", _href="", _class="nav-link text-uppercase link-scroll"),
+                                        a(
+                                            "Home",
+                                            _href="",
+                                            _class="nav-link text-uppercase link-scroll",
+                                        ),
                                         _class="nav-item active",
                                     ),
                                     li(
-                                        a("About", _href="#about", _class="nav-link text-uppercase link-scroll"),
+                                        a(
+                                            "About",
+                                            _href="#about",
+                                            _class="nav-link text-uppercase link-scroll",
+                                        ),
                                         _class="nav-item",
                                     ),
                                     li(
-                                        a("Services", _href="#services", _class="nav-link text-uppercase link-scroll"),
+                                        a(
+                                            "Services",
+                                            _href="#services",
+                                            _class="nav-link text-uppercase link-scroll",
+                                        ),
                                         _class="nav-item",
                                     ),
                                     li(
-                                        a("Team", _href="#team", _class="nav-link text-uppercase link-scroll"),
+                                        a(
+                                            "Team",
+                                            _href="#team",
+                                            _class="nav-link text-uppercase link-scroll",
+                                        ),
                                         _class="nav-item",
                                     ),
                                     li(
-                                        a("Contact", _href="#contact", _class="nav-link text-uppercase link-scroll"),
+                                        a(
+                                            "Contact",
+                                            _href="#contact",
+                                            _class="nav-link text-uppercase link-scroll",
+                                        ),
                                         _class="nav-item",
                                     ),
                                 )
@@ -773,7 +861,9 @@ class TestCase(unittest.TestCase):
                                     h6("About us", _class="lined text-uppercase"),
                                 ),
                                 p("Specialists in xxxxx.", _class="lead"),
-                                p("COMPANY can provide xxxxxx solutions. We have expertise in the following areas."),
+                                p(
+                                    "COMPANY can provide xxxxxx solutions. We have expertise in the following areas."
+                                ),
                                 div(_class="row").html(
                                     div(_class="col-lg-6").html(
                                         ul(_class="mb-0").html(
@@ -795,7 +885,8 @@ class TestCase(unittest.TestCase):
                     )
                 ),
                 div(
-                    _class="row text-white text-center", _style="background: url(static/img/header.jpg); padding:20px;"
+                    _class="row text-white text-center",
+                    _style="background: url(static/img/header.jpg); padding:20px;",
                 ).html(
                     div(_class="col-lg-12").html(
                         h5(_class="text-uppercase font-weight-bold").html(
@@ -825,21 +916,30 @@ class TestCase(unittest.TestCase):
                             div(_class="col-lg-4").html(
                                 div(_class="bg-white mb-4 p-4").html(
                                     h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
-                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    h4(
+                                        "Headline",
+                                        _class="text-uppercase font-weight-bold",
+                                    ),
                                     p("Lorem ipsum.", _class="small text-gray"),
                                 )
                             ),
                             div(_class="col-lg-4").html(
                                 div(_class="bg-white mb-4 p-4").html(
                                     h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
-                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    h4(
+                                        "Headline",
+                                        _class="text-uppercase font-weight-bold",
+                                    ),
                                     p("Lorem ipsum.", _class="small text-gray"),
                                 )
                             ),
                             div(_class="col-lg-4").html(
                                 div(_class="bg-white mb-4 p-4").html(
                                     h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
-                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    h4(
+                                        "Headline",
+                                        _class="text-uppercase font-weight-bold",
+                                    ),
                                     p("Lorem ipsum.", _class="small text-gray"),
                                 )
                             ),
@@ -861,9 +961,16 @@ class TestCase(unittest.TestCase):
                                         _height="300px;",
                                     ),
                                     h4(_class="font-weight-bold text-uppercase").html(
-                                        a("Username", _href="#", _class="no-anchor-style")
+                                        a(
+                                            "Username",
+                                            _href="#",
+                                            _class="no-anchor-style",
+                                        )
                                     ),
-                                    p("Director", _class="small text-gray text-uppercase"),
+                                    p(
+                                        "Director",
+                                        _class="small text-gray text-uppercase",
+                                    ),
                                 ),
                             ),
                         )
@@ -877,7 +984,10 @@ class TestCase(unittest.TestCase):
                                 div(_class="col-lg-12 text-center").html(
                                     p(
                                         "Email : ",
-                                        a("user@website.com", _href="mailto:user@website.com"),
+                                        a(
+                                            "user@website.com",
+                                            _href="mailto:user@website.com",
+                                        ),
                                         br(),
                                         "or Call us on : ",
                                         a("123456789", _href="tel:123456789"),
@@ -916,7 +1026,10 @@ class TestCase(unittest.TestCase):
                     footer(_style="padding:20px;").html(
                         div(_class="row text-center").html(
                             div(_class="col-lg-12 text-center").html(
-                                p("Copyright &copy; 2021 COMPANY. All rights Reserved.", _class="mb-0 text-gray"),
+                                p(
+                                    "Copyright &copy; 2021 COMPANY. All rights Reserved.",
+                                    _class="mb-0 text-gray",
+                                ),
                             )
                         )
                     ),
@@ -940,30 +1053,32 @@ class TestCase(unittest.TestCase):
 
         selection.classed("foo bar", True)
         # print( ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", Math.random() )
-        selection.classed("test", lambda this: Math.random() > 0.2)  # seems to always do it
+        selection.classed(
+            "test", lambda this: Math.random() > 0.2
+        )  # seems to always do it
         # print(page)
         # print(selection.text())
         selection.text("CHANGE")
-        print(page)
+        _debug_print(page)
 
         selection = d3.selectAll("p")
-        print(selection)
+        _debug_print(selection)
         # print(*selection)
 
-        print("Nodes::", selection.nodes())
-        print("Nodes::", selection.node())
+        _debug_print("Nodes::", selection.nodes())
+        _debug_print("Nodes::", selection.node())
 
         elements = Array.from_(selection)
-        print("Elements::", elements)
+        _debug_print("Elements::", elements)
 
-        print(selection.empty())
+        _debug_print(selection.empty())
 
         def name(selection, first, last):
             selection.attr("first-name", first).attr("last-name", last)
 
         d3.selectAll("div").call(name, "John", "Snow")
 
-        print(page)
+        _debug_print(page)
         # select("body").append("svg").attr("width", 960).attr("height", 500).append("g").attr("transform", "translate(20,20)").append("rect").attr("width", 920).attr("height", 460)
 
     def test_select2(self):
@@ -971,10 +1086,12 @@ class TestCase(unittest.TestCase):
         # selectAll("p").attr("class", "graf").style("color", "red")
 
         # pass
-        print(d3.namespace("svg:text"))  # {"space": "http://www.w3.org/2000/svg", "local": "text"}
+        _debug_print(
+            d3.namespace("svg:text")
+        )  # {"space": "http://www.w3.org/2000/svg", "local": "text"}
 
         test = d3.local()
-        print(test)
+        _debug_print(test)
 
     def test_select3(self):
 
@@ -994,10 +1111,10 @@ class TestCase(unittest.TestCase):
         three = d.querySelector("#three")
         # assertSelection(select(d).selectAll("h1").select("span"), {"groups": [[one, three]], "parents": [d]})
         s = select(d).selectAll("h1").select("span")
-        print(s)
-        print(*s)
-        print(s._groups)
-        print(s._parents)
+        _debug_print(s)
+        _debug_print(*s)
+        _debug_print(s._groups)
+        _debug_print(s._parents)
         return
 
         # selection.select(function) selects the return value of the given function for each selected element
@@ -1088,7 +1205,9 @@ class TestCase(unittest.TestCase):
         # selection.selectAll(string) selects all descendants that match the selector string for each selected element
         d = html(
             head(
-                domonic.load("<h1 id='one'><span></span><span></span></h1><h1 id='two'><span></span><span></span></h1>")
+                domonic.load(
+                    "<h1 id='one'><span></span><span></span></h1><h1 id='two'><span></span><span></span></h1>"
+                )
             )
         )
         one = d.querySelector("#one")
@@ -1178,13 +1297,12 @@ class TestCase(unittest.TestCase):
         # print(document)
         # import importlib
         # importlib.reload(domonic.dom)
-        print("body", d.doctype)
-        print("bodyx", domonic.dom.document.doctype)
-        print("body", document.doctype)
-        from domonic.dom import \
-            document  # re-import to get the updated document
+        _debug_print("body", d.doctype)
+        _debug_print("bodyx", domonic.dom.document.doctype)
+        _debug_print("body", document.doctype)
+        from domonic.dom import document  # re-import to get the updated document
 
-        print("body", document.doctype)
+        _debug_print("body", document.doctype)
         assert type(select(document.body).append("h1")) == Selection
 
         # selection.append(name) appends a new element of the specified name as the last child of each selected element
@@ -1198,7 +1316,7 @@ class TestCase(unittest.TestCase):
 
         # selection.append(name) observes the specified namespace, if any",
         d = html(body(div(_id="one"), div(_id="two")))
-        print("should work?::", d.querySelector("#one"))
+        _debug_print("should work?::", d.querySelector("#one"))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
         # s = selectAll([one, two]).append("svg:g")
@@ -1267,7 +1385,7 @@ class TestCase(unittest.TestCase):
             assert four.namespaceURI == "https://d3js.org/2016/namespace"
             # assertSelection(selection, {groups: [[three, four]]});
         except Exception as e:
-            print(e)
+            _debug_print(e)
             del namespaces["d3js"]
 
         # selection.append(function) appends the returned element as the last child of each selected element
@@ -1334,7 +1452,13 @@ class TestCase(unittest.TestCase):
 
     @silence
     def test_attr(self):
-        d = html(body(domonic.load("<h1 id='one' class='c1 c2'>hello</h1><h1 id='two' class='c3'></h1>")))
+        d = html(
+            body(
+                domonic.load(
+                    "<h1 id='one' class='c1 c2'>hello</h1><h1 id='two' class='c3'></h1>"
+                )
+            )
+        )
 
         # selection.attr(name) returns the value of the attribute with the specified name on the first selected element
         # <h1 class='c1 c2'>hello</h1><h1 class='c3'></h1>", () => {
@@ -1422,7 +1546,9 @@ class TestCase(unittest.TestCase):
         one = d.querySelector("#one")
         two = d.querySelector("#two")
         selection = selectAll([one, two])
-        assert selection.attr("foo", lambda d, i: f"bar-{i}" if i else None) == selection
+        assert (
+            selection.attr("foo", lambda d, i: f"bar-{i}" if i else None) == selection
+        )
         assert one.hasAttribute("foo") == False
         assert two.getAttribute("foo") == "bar-1"
 
@@ -1561,7 +1687,7 @@ class TestCase(unittest.TestCase):
         d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
         one = d.querySelector("#one")
         two = d.querySelector("#two")
-        print(*selectAll([one, two]))
+        _debug_print(*selectAll([one, two]))
         assert [*selectAll([one, two])] == [one, two]
 
         # selection iteration merges nodes from all groups into a single array
@@ -1580,10 +1706,10 @@ class TestCase(unittest.TestCase):
     def test_nodes(self):
         # selection.nodes() returns an array containing all selected nodes
         d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
-        print(d)
+        _debug_print(d)
         one = d.querySelector("#one")
         two = d.querySelector("#two")
-        print(d3.selectAll([one, two]).nodes())
+        _debug_print(d3.selectAll([one, two]).nodes())
         assert d3.selectAll([one, two]).nodes() == [one, two]
 
         # selection.nodes() merges nodes from all groups into a single array
@@ -1626,8 +1752,27 @@ class TestCase(unittest.TestCase):
         self.assertEqual(polygonCentroid(triangle), [0, 2])
 
     def test_polygonHull(self):
-        points_0 = [[0, 6], [12, 8], [23, -5], [-5, -3], [5, 11], [12, 4], [7, 7], [6, 1]]
-        points_1 = [[-4, 0], [8, 12], [4, 8], [-4, -4], [0, 0], [-6, 12], [23, 2], [19, -8], [-7, -6]]
+        points_0 = [
+            [0, 6],
+            [12, 8],
+            [23, -5],
+            [-5, -3],
+            [5, 11],
+            [12, 4],
+            [7, 7],
+            [6, 1],
+        ]
+        points_1 = [
+            [-4, 0],
+            [8, 12],
+            [4, 8],
+            [-4, -4],
+            [0, 0],
+            [-6, 12],
+            [23, 2],
+            [19, -8],
+            [-7, -6],
+        ]
 
         hull_0 = [[-5, -3], [0, 6], [5, 11], [12, 8], [23, -5]]
         hull_1 = [[-7, -6], [-6, 12], [8, 12], [19, -8], [23, 2]]

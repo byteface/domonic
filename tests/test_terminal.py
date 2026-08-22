@@ -1,9 +1,10 @@
 """
-    test_terminal
-    ~~~~~~~~~~~~~~~~
+test_terminal
+~~~~~~~~~~~~~~~~
 """
 
 import unittest
+from tempfile import TemporaryDirectory
 
 from domonic.decorators import silence
 from domonic.terminal import *
@@ -16,10 +17,8 @@ class TestCase(unittest.TestCase):
         assert "domonic" in files
         # return
         self.assertIn("domonic", ls())
-        print(ls("-al"))
-        print(ls("../"))
-        for line in ls():
-            print("line:", line)
+        self.assertIn("domonic", ls("-al"))
+        self.assertGreater(len(list(ls())), 0)
         # for f in ls():
         #     try:
         #         print(f)
@@ -49,7 +48,9 @@ class TestCase(unittest.TestCase):
         self.assertIn("__domonic_missing_file__", str(exc.exception))
 
     def test_wait_command_timeout_returns_partial_output(self):
-        sleeper = type("sleeper", (command,), {"name": "sleep", "wait": True, "iterable": True})
+        sleeper = type(
+            "sleeper", (command,), {"name": "sleep", "wait": True, "iterable": True}
+        )
         result = sleeper("1", timeout=0.01)
         self.assertEqual(str(result), "")
 
@@ -65,47 +66,34 @@ class TestCase(unittest.TestCase):
         # self.assertTrue('domonic' in thedir_aftercd)
 
     def test_bash_mkdir(self):
-        try:
-            mkdir("somedir")
-            self.assertIn("somedir", ls())
-        except Exception as e:
-            print(e)
-        finally:
-            # rm('-r somedir')
-            rmdir("somedir")
-            self.assertTrue("somedir" not in ls())
+        with TemporaryDirectory() as tmp:
+            mkdir("somedir", cwd=tmp)
+            self.assertIn("somedir", ls(cwd=tmp))
+            rmdir("somedir", cwd=tmp)
+            self.assertTrue("somedir" not in ls(cwd=tmp))
 
     def test_bash_touch(self):
-        try:
-            touch("somefile")
-            self.assertTrue("somefile" in ls())
-        except Exception as e:
-            print(e)
-        finally:
-            rm("somefile")
-            self.assertTrue("somefile" not in ls())
+        with TemporaryDirectory() as tmp:
+            touch("somefile", cwd=tmp)
+            self.assertTrue("somefile" in ls(cwd=tmp))
+            rm("somefile", cwd=tmp)
+            self.assertTrue("somefile" not in ls(cwd=tmp))
 
     def test_bash_mv(self):
-        try:
-            touch("somefile")
-            mv("somefile temp")
-        except Exception as e:
-            print(e)
-        finally:
-            self.assertTrue("somefile" not in ls())
-            self.assertTrue("temp" in ls())
-            rm("temp")
+        with TemporaryDirectory() as tmp:
+            touch("somefile", cwd=tmp)
+            mv("somefile temp", cwd=tmp)
+            self.assertTrue("somefile" not in ls(cwd=tmp))
+            self.assertTrue("temp" in ls(cwd=tmp))
+            rm("temp", cwd=tmp)
 
     def test_bash_cp(self):
-        try:
-            touch("somefile")
-            cp("somefile temp")
-        except Exception as e:
-            print(e)
-        finally:
-            self.assertTrue("temp" in ls())
-            rm("somefile")
-            rm("temp")
+        with TemporaryDirectory() as tmp:
+            touch("somefile", cwd=tmp)
+            cp("somefile temp", cwd=tmp)
+            self.assertTrue("temp" in ls(cwd=tmp))
+            rm("somefile", cwd=tmp)
+            rm("temp", cwd=tmp)
 
     @silence
     def test_bash_git(self):
@@ -113,18 +101,18 @@ class TestCase(unittest.TestCase):
         self.assertIn("master", git("status"))
 
     def test_bash_general(self):
-        print(man("ls"))
-        print(echo("test"))
-        print(df())
-        print(du())
+        self.assertIn("LS", man("ls").upper())
+        self.assertEqual(echo("test").strip(), "test")
+        self.assertTrue(str(df()).strip())
+        self.assertTrue(str(du("-s .")).strip())
         try:
-            print(ps())
+            self.assertTrue(str(ps()).strip())
         except TerminalException as exc:
             if "Operation not permitted" in str(exc):
                 self.skipTest("ps is not permitted in this sandbox")
             raise
         # print(cowsay('moo'))
-        print(date())
+        self.assertTrue(str(date()).strip())
         # print(cal())
         # failing on github actions
         # for i, l in enumerate(cat('LICENSE.txt')):

@@ -1,9 +1,9 @@
 """
-    test_domonic
-    ~~~~~~~~~~~~
-    domonic core tests for __init__.py at the root of the domonic package
+test_domonic
+~~~~~~~~~~~~
+domonic core tests for __init__.py at the root of the domonic package
 
-    (previously no tests. was using examples/parsing/page.py to drive dev)
+(previously no tests. was using examples/parsing/page.py to drive dev)
 
 """
 
@@ -14,12 +14,16 @@ from domonic.CDN import CDN_CSS, CDN_JS
 from domonic import domonic
 
 
+def _debug_print(*args, **kwargs):
+    return None
+
+
 class TestCase(unittest.TestCase):
     """Tests for the domonic"""
 
     def test_load(self):
         t1 = domonic.load("<html></html>")
-        print("test_load:::", t1, type(t1))
+        _debug_print("test_load:::", t1, type(t1))
 
     def test_loads(self):
         # t1 = domonic.loads('<html></html>')
@@ -28,15 +32,19 @@ class TestCase(unittest.TestCase):
 
     def parse(self):
         t1 = domonic.parse("<html></html>")
-        assert t1 == "html(),"  # hmm wondering if parse is correct term. as returns pyml strings
+        assert (
+            t1 == "html(),"
+        )  # hmm wondering if parse is correct term. as returns pyml strings
 
     def evaluate(self):
         t1 = domonic.evaluate("<html></html>")
-        print(t1)
+        _debug_print(t1)
 
     def test_pyml_validation_does_not_execute_unsafe_calls(self):
         with patch("os.system") as system:
-            is_valid, fixed = domonic._is_valid_pyml("__import__('os').system('echo nope')")
+            is_valid, fixed = domonic._is_valid_pyml(
+                "__import__('os').system('echo nope')"
+            )
 
         system.assert_not_called()
         self.assertFalse(is_valid)
@@ -44,7 +52,9 @@ class TestCase(unittest.TestCase):
 
     def test_pyml_validation_accepts_safe_markup_fragments(self):
         self.assertEqual(domonic._is_valid_pyml("span("), (True, "span("))
-        self.assertEqual(domonic._is_valid_pyml('_class="notice"'), (True, '_class="notice"'))
+        self.assertEqual(
+            domonic._is_valid_pyml('_class="notice"'), (True, '_class="notice"')
+        )
 
     def test_parse_preserves_basic_attribute_output(self):
         page = domonic.parse('<div id="one" class="two"></div>')
@@ -66,7 +76,7 @@ _id="one", _class="two",
 
     def test_hacked_expat_parser(self):
         # test the  hacked version of the xpat parser
-        print("test!>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        _debug_print("test!>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         # t1 = domonic.parseString('<html></html>')
         # print(t1)
         t1 = domonic.parseString(
@@ -75,10 +85,10 @@ _id="one", _class="two",
 		$('#results').html( Number($('#a').val()) + Number($('#b').val()) )}};
 </script></head><body><article><div><label>Add numbers:</label><input id="a" /><span>+</span><input id="b" /><button id="calculate_button" onclick="add();">Calculate</button><div>Result:<div id="results"></div></div></div></article></body></html>"""
         )
-        print("RES:", t1)
-        print("RES:", type(t1))
-        print("RES:", str(t1))
-        print(t1.getElementById("a"))
+        _debug_print("RES:", t1)
+        _debug_print("RES:", type(t1))
+        _debug_print("RES:", str(t1))
+        _debug_print(t1.getElementById("a"))
 
         # print(t1)
         return
@@ -90,10 +100,10 @@ _id="one", _class="two",
         # from domonic import render
         # print( render( t1 ) )
 
-        print("test222!")
+        _debug_print("test222!")
         t1 = domonic.parseString("<div></div>")
-        print(t1)
-        print(str(t1))
+        _debug_print(t1)
+        _debug_print(str(t1))
         # from domonic import render
         # print( render( t1 ) )
 
@@ -108,7 +118,9 @@ _id="one", _class="two",
 
     def test_parse_string_with_html5_parser_option(self):
         try:
-            page = domonic.parseString("<html><body><p>Hi</p></body></html>", parser="html5_parser")
+            page = domonic.parseString(
+                "<html><body><p>Hi</p></body></html>", parser="html5_parser"
+            )
         except ImportError:
             self.skipTest("html5_parser is not installed")
         else:
@@ -117,7 +129,9 @@ _id="one", _class="two",
 
     def test_parse_string_with_lxml_html_option(self):
         try:
-            page = domonic.parseString("<html><body><p>Hi</p></body></html>", parser="lxml_html")
+            page = domonic.parseString(
+                "<html><body><p>Hi</p></body></html>", parser="lxml_html"
+            )
         except ImportError:
             self.skipTest("lxml is not installed")
         else:
@@ -136,7 +150,9 @@ _id="one", _class="two",
 
     def test_parse_string_with_markupever_option(self):
         try:
-            page = domonic.parseString("<html><body><p>Hi</p></body></html>", parser="markupever")
+            page = domonic.parseString(
+                "<html><body><p>Hi</p></body></html>", parser="markupever"
+            )
         except ImportError:
             self.skipTest("markupever is not installed")
         else:
@@ -145,7 +161,9 @@ _id="one", _class="two",
 
     def test_parse_string_with_selectolax_option(self):
         try:
-            page = domonic.parseString("<html><body><p>Hi</p></body></html>", parser="selectolax")
+            page = domonic.parseString(
+                "<html><body><p>Hi</p></body></html>", parser="selectolax"
+            )
         except ImportError:
             self.skipTest("selectolax is not installed")
         else:
@@ -154,7 +172,9 @@ _id="one", _class="two",
 
     def test_parse_string_with_justhtml_option(self):
         try:
-            page = domonic.parseString("<html><body><p>Hi</p></body></html>", parser="justhtml")
+            page = domonic.parseString(
+                "<html><body><p>Hi</p></body></html>", parser="justhtml"
+            )
         except ImportError:
             self.skipTest("justhtml is not installed")
         else:

@@ -1,13 +1,17 @@
 """
-    test_domonic
-    ~~~~~~~~~~~~
-    - unit tests for domonic
-    # TODO - tests for all bs5 pages
+test_domonic
+~~~~~~~~~~~~
+- unit tests for domonic
+# TODO - tests for all bs5 pages
 """
 
 import unittest
 
 from domonic.xml.mathml import *
+
+
+def _debug_print(*args, **kwargs):
+    return None
 
 
 class TestCase(unittest.TestCase):
@@ -55,7 +59,7 @@ class TestCase(unittest.TestCase):
             none("x"),
         )
 
-        print(somemath)
+        _debug_print(somemath)
 
 
 if __name__ == "__main__":

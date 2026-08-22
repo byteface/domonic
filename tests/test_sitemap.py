@@ -1,6 +1,6 @@
 """
-    test_sitemap
-    ~~~~~~~~~~~~
+test_sitemap
+~~~~~~~~~~~~
 """
 
 import unittest
@@ -12,16 +12,25 @@ from domonic.decorators import silence
 from domonic.xml.sitemap import *
 
 
+def _debug_print(*args, **kwargs):
+    return None
+
+
 class TestCase(unittest.TestCase):
 
     # @silence
     def test_sitemap(self):
 
         # a sitemap index contains a list of sitemaps .i.e
-        doc = sitemapindex(sitemap(loc("https://x.net/egypt/post-sitemap.xml"), lastmod("2021-07-08T13:12:16+00:00")))
+        doc = sitemapindex(
+            sitemap(
+                loc("https://x.net/egypt/post-sitemap.xml"),
+                lastmod("2021-07-08T13:12:16+00:00"),
+            )
+        )
 
-        print(doc)
-        print(str(doc))
+        _debug_print(doc)
+        _debug_print(str(doc))
 
         doc = sitemap(
             url(
@@ -34,8 +43,8 @@ class TestCase(unittest.TestCase):
             )
         )
 
-        print(doc)
-        print(str(doc))
+        _debug_print(doc)
+        _debug_print(str(doc))
 
     def test_sitemapindex(self):
 
@@ -49,40 +58,64 @@ class TestCase(unittest.TestCase):
         # print(f"{sm!r}")
 
         sm = sitemapindex()
-        sm += sitemap(loc("https://abd.net/sitemap1.xml"), lastmod(str(datetime.datetime.now())))
-        sm += sitemap(loc("https://abd.net/sitemap2.xml"), lastmod(str(datetime.datetime.now())))
-        sm += sitemap(loc("https://abd.net/sitemap3.xml"), lastmod(str(datetime.datetime.now())))
+        sm += sitemap(
+            loc("https://abd.net/sitemap1.xml"), lastmod(str(datetime.datetime.now()))
+        )
+        sm += sitemap(
+            loc("https://abd.net/sitemap2.xml"), lastmod(str(datetime.datetime.now()))
+        )
+        sm += sitemap(
+            loc("https://abd.net/sitemap3.xml"), lastmod(str(datetime.datetime.now()))
+        )
 
-        print(f"{sm!s}")
-        print(f"{sm!r}")
+        _debug_print(f"{sm!s}")
+        _debug_print(f"{sm!r}")
         # print(f"{sm!a}")
-        print(f"{sm}")
-
+        _debug_print(f"{sm}")
 
     def test_namespaced_tags(self):
-        self.assertEqual(str(globals()["image:image"]()), '<image:image></image:image>')
-        self.assertEqual(str(globals()["image:loc"]()), '<image:loc></image:loc>')
-        self.assertEqual(str(globals()["image:caption"]()), '<image:caption></image:caption>')
-        self.assertEqual(str(globals()["image:title"]()), '<image:title></image:title>')
-        self.assertEqual(str(globals()["image:geo_location"]()), '<image:geo_location></image:geo_location>')
-        self.assertEqual(str(globals()["image:license"]()), '<image:license></image:license>')
+        self.assertEqual(str(globals()["image:image"]()), "<image:image></image:image>")
+        self.assertEqual(str(globals()["image:loc"]()), "<image:loc></image:loc>")
+        self.assertEqual(
+            str(globals()["image:caption"]()), "<image:caption></image:caption>"
+        )
+        self.assertEqual(str(globals()["image:title"]()), "<image:title></image:title>")
+        self.assertEqual(
+            str(globals()["image:geo_location"]()),
+            "<image:geo_location></image:geo_location>",
+        )
+        self.assertEqual(
+            str(globals()["image:license"]()), "<image:license></image:license>"
+        )
 
-        self.assertEqual(str(create_ns_element("image:image")), '<image:image></image:image>')
-        self.assertEqual(str(create_ns_element("image:loc")), '<image:loc></image:loc>')
-        self.assertEqual(str(create_ns_element("image:title")), '<image:title></image:title>')
-        self.assertEqual(str(create_ns_element("image:caption")), '<image:caption></image:caption>')
-        self.assertEqual(str(create_ns_element("image:geo_location")), '<image:geo_location></image:geo_location>')
-        self.assertEqual(str(create_ns_element("image:license")), '<image:license></image:license>')
+        self.assertEqual(
+            str(create_ns_element("image:image")), "<image:image></image:image>"
+        )
+        self.assertEqual(str(create_ns_element("image:loc")), "<image:loc></image:loc>")
+        self.assertEqual(
+            str(create_ns_element("image:title")), "<image:title></image:title>"
+        )
+        self.assertEqual(
+            str(create_ns_element("image:caption")), "<image:caption></image:caption>"
+        )
+        self.assertEqual(
+            str(create_ns_element("image:geo_location")),
+            "<image:geo_location></image:geo_location>",
+        )
+        self.assertEqual(
+            str(create_ns_element("image:license")), "<image:license></image:license>"
+        )
 
         # Testing other namespaces (video, news, geo, atom, xhtml, mobile)
-        self.assertEqual(str(globals()["video:video"]()), '<video:video></video:video>')
-        self.assertEqual(str(globals()["video:title"]()), '<video:title></video:title>')
-        self.assertEqual(str(globals()["news:news"]()), '<news:news></news:news>')
-        self.assertEqual(str(globals()["geo:geo"]()), '<geo:geo></geo:geo>')
-        self.assertEqual(str(globals()["atom:link"]()), '<atom:link></atom:link>')
-        self.assertEqual(str(globals()["xhtml:link"]()), '<xhtml:link></xhtml:link>')
-        self.assertEqual(str(globals()["mobile:mobile"]()), '<mobile:mobile></mobile:mobile>')
-
+        self.assertEqual(str(globals()["video:video"]()), "<video:video></video:video>")
+        self.assertEqual(str(globals()["video:title"]()), "<video:title></video:title>")
+        self.assertEqual(str(globals()["news:news"]()), "<news:news></news:news>")
+        self.assertEqual(str(globals()["geo:geo"]()), "<geo:geo></geo:geo>")
+        self.assertEqual(str(globals()["atom:link"]()), "<atom:link></atom:link>")
+        self.assertEqual(str(globals()["xhtml:link"]()), "<xhtml:link></xhtml:link>")
+        self.assertEqual(
+            str(globals()["mobile:mobile"]()), "<mobile:mobile></mobile:mobile>"
+        )
 
     @silence
     def test_loadsitemap(self):
@@ -97,13 +130,12 @@ class TestCase(unittest.TestCase):
 </sitemapindex>"""
         with patch("domonic.xml.sitemap._get_sitemap_text", return_value=xml):
             sm = get_sitemap("https://x.net/merchants/ar/sitemap_index.xml")
-        print(sm)
+        _debug_print(sm)
         self.assertIsNotNone(sm)
         self.assertIn(getattr(sm, "tagName", None), ("sitemapindex", "xml", "html"))
         if getattr(sm, "tagName", None) in ("xml", "html"):
             self.assertEqual(len(sm.getElementsByTagName("sitemapindex")), 1)
         self.assertEqual(len(sm.getElementsByTagName("sitemap")), 1)
-
 
     @silence
     def test_parse_sitemapindex(self):
@@ -118,7 +150,7 @@ class TestCase(unittest.TestCase):
 </urlset>"""
         with patch("domonic.xml.sitemap._get_sitemap_text", return_value=xml):
             sm = get_sitemap("https://x.net/merchants/ar/page-sitemap.xml")
-        print(sm)
+        _debug_print(sm)
         self.assertIsNotNone(sm)
         self.assertIn(getattr(sm, "tagName", None), ("urlset", "xml", "html"))
         if getattr(sm, "tagName", None) in ("xml", "html"):

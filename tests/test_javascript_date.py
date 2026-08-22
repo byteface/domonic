@@ -1,7 +1,7 @@
 """
-    test_javascript_date
-    ~~~~~~~~~~~~~~~
-    unit tests for domonic.javascript.Date
+test_javascript_date
+~~~~~~~~~~~~~~~
+unit tests for domonic.javascript.Date
 """
 
 import time
@@ -10,14 +10,17 @@ from inspect import stack
 from unittest.mock import Mock
 
 from domonic.javascript import *
-from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
-                                Window)
+from domonic.javascript import URL, Array, Date, Global, Math, Object, String, Window
+
+
+def _debug_print(*args, **kwargs):
+    return None
 
 
 class TestCase(unittest.TestCase):
     def test_javascript_date(self):
 
-        print(Date.now())
+        _debug_print(Date.now())
 
         unixTimeZero = Date.parse("01 Jan 1970 00:00:00 GMT")
         assert unixTimeZero == 0
@@ -46,7 +49,7 @@ class TestCase(unittest.TestCase):
         # print(d.getSeconds())
         assert d.getSeconds() == 0
 
-        print("d.getTime()", d.getTime())
+        _debug_print("d.getTime()", d.getTime())
         # assert d.getTime() == 1546300800000 # ??
         # print( d.getTimezoneOffset() )
         # print(d.getYear())
@@ -67,7 +70,7 @@ class TestCase(unittest.TestCase):
         assert d.getHours() == 2
 
         # print( d.setItem() )
-        print(d.setMilliseconds(123))
+        _debug_print(d.setMilliseconds(123))
 
         d.setMinutes(10)  # TODO - returns?
         assert d.getMinutes() == 10
@@ -81,41 +84,41 @@ class TestCase(unittest.TestCase):
         # print(d.setTime(1000))  # TODO - more dates
 
         # TODO - go back over all these methods
-        print(d.getUTCDate())
-        print(d.getUTCDay())
-        print(d.getUTCFullYear())
-        print(d.getUTCHours())
-        print(d.getUTCMilliseconds())
-        print(d.getUTCMinutes())
-        print(d.getUTCMonth())
-        print(d.getUTCSeconds())
+        _debug_print(d.getUTCDate())
+        _debug_print(d.getUTCDay())
+        _debug_print(d.getUTCFullYear())
+        _debug_print(d.getUTCHours())
+        _debug_print(d.getUTCMilliseconds())
+        _debug_print(d.getUTCMinutes())
+        _debug_print(d.getUTCMonth())
+        _debug_print(d.getUTCSeconds())
 
         # TODO - i think all these setters have supposed to have returns...
-        print(d.setUTCDate(1))
-        print(d.setUTCFullYear(1928))
-        print(d.setUTCHours(3))
-        print(d.setUTCMilliseconds(123))
-        print(d.setUTCMinutes(50))
-        print(d.setUTCMonth(3))
-        print(d.setUTCSeconds(11))
-        print(d.setYear(1987))
+        _debug_print(d.setUTCDate(1))
+        _debug_print(d.setUTCFullYear(1928))
+        _debug_print(d.setUTCHours(3))
+        _debug_print(d.setUTCMilliseconds(123))
+        _debug_print(d.setUTCMinutes(50))
+        _debug_print(d.setUTCMonth(3))
+        _debug_print(d.setUTCSeconds(11))
+        _debug_print(d.setYear(1987))
 
-        print(d.toDateString())
-        print(d.toGMTString())
-        print(d.toJSON())
-        print(d.toISOString())
-        print(d.toLocaleDateString())
-        print(d.toLocaleString())
-        print(d.toLocaleTimeString())
-        print(d.toTimeString())
-        print(d.toUTCString())
-        print(d.UTC())
+        _debug_print(d.toDateString())
+        _debug_print(d.toGMTString())
+        _debug_print(d.toJSON())
+        _debug_print(d.toISOString())
+        _debug_print(d.toLocaleDateString())
+        _debug_print(d.toLocaleString())
+        _debug_print(d.toLocaleTimeString())
+        _debug_print(d.toTimeString())
+        _debug_print(d.toUTCString())
+        _debug_print(d.UTC())
 
-        print(Date(1415988000))
+        _debug_print(Date(1415988000))
         # print(Date(9999))
         # print(Date(99999))
         d = Date(1415988000)
-        print(d.getFullYear())
+        _debug_print(d.getFullYear())
 
         # do year 2048
         # millisecs = (2048 - 1970) * 365 * 24 * 60 * 60 * 1000
@@ -256,34 +259,34 @@ class TestCase(unittest.TestCase):
         event = Date("August 19, 1975 23:15:30")
         event.setMinutes(45)
         assert event.getMinutes() == 45
-        print(event)
+        _debug_print(event)
         # // expected output: Tue Aug 19 1975 23:45:30 GMT+0200 (CEST)
 
     def setSeconds(self):
         event = Date("August 19, 1975 23:15:30")
         event.setSeconds(42)
         assert event.getSeconds() == 42
-        print(event)
+        _debug_print(event)
         # // Sat Apr 19 1975 23:15:42 GMT+0100 (CET)
 
     def setTime(self):
         event1 = Date("July 1, 1999")
         event2 = Date()
         event2.setTime(event1.getTime())
-        print(event1)
+        _debug_print(event1)
         # // expected output: Thu Jul 01 1999 00:00:00 GMT+0200 (CEST)
-        print(event2)
+        _debug_print(event2)
         # // expected output: Thu Jul 01 1999 00:00:00 GMT+0200 (CEST)
 
     def setDate(self):
         event = Date("August 19, 1975 23:15:30")
         event.setDate(24)
-        print(event.getDate())
+        _debug_print(event.getDate())
         assert event.getDate() == 24
         # // expected output: 24
         event.setDate(32)
         # // Only 31 days in August!
-        print(event.getDate())
+        _debug_print(event.getDate())
         assert event.getDate() == 31
         # // expected output: 1
 
@@ -299,11 +302,11 @@ class TestCase(unittest.TestCase):
     def setHours(self):
         event = Date("August 19, 1975 23:15:30")
         event.setHours(20)
-        print(event)
+        _debug_print(event)
         assert event.getHours() == 20
         # // expected output: Tue Aug 19 1975 20:15:30 GMT+0200 (CEST)
         event.setHours(20, 21, 22)
-        print(event)
+        _debug_print(event)
         assert event.getHours() == 20
         # // expected output: Tue Aug 19 1975 20:21:22 GMT+0200 (CEST)
 
