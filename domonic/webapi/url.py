@@ -2,18 +2,15 @@
 domonic.webapi.url
 ====================================
 https://developer.mozilla.org/en-US/docs/Web/API/URL
-
-# TODO - move the unit tests for this class from javascript to webapi
-# TODO - untested
-
 """
 
 from __future__ import annotations
 
+import os
 import urllib.parse
 from typing import Any, Callable, Iterable, Iterator
 
-ParamInput = str | dict[str, Any] | Iterable[tuple[str, Any]]
+ParamInput = str | dict[str, Any] | Iterable[tuple[str, Any]] | None
 
 
 class URL:
@@ -33,21 +30,37 @@ class URL:
         if callable(setter):
             setter("href", href or "")
 
-    def _load_from_href(self, href: str) -> None:
+    def _load_from_href(self, href: str, base: str | None = None) -> None:
         href = href or ""
+        if base is not None:
+            href = urllib.parse.urljoin(str(base), href)
         parsed = urllib.parse.urlsplit(href)
         object.__setattr__(self, "url", parsed)
         object.__setattr__(self, "_url_href", href)
         object.__setattr__(self, "_URL__protocol", parsed.scheme)
+        object.__setattr__(self, "_URL__username", parsed.username or "")
+        object.__setattr__(self, "_URL__password", parsed.password or "")
         object.__setattr__(self, "_URL__hostname", parsed.hostname)
-        object.__setattr__(self, "_URL__port", parsed.port)
+        try:
+            port = parsed.port
+        except ValueError:
+            port = None
+        object.__setattr__(self, "_URL__port", port)
         object.__setattr__(self, "_URL__pathname", parsed.path)
         object.__setattr__(self, "_URL__search", parsed.query)
         object.__setattr__(
             self, "_URL__hash", f"#{parsed.fragment}" if parsed.fragment else ""
         )
-        object.__setattr__(self, "_searchParams", URLSearchParams(parsed.query))
+        object.__setattr__(
+            self,
+            "_searchParams",
+            URLSearchParams(parsed.query, _update=self._search_params_changed),
+        )
         object.__setattr__(self, "_url_state_source", href)
+
+    def _search_params_changed(self, params: URLSearchParams) -> None:
+        object.__setattr__(self, "_URL__search", params.toString())
+        self.__update__()
 
     def _ensure_url_state(self) -> None:
         href = self._get_href_value()
@@ -73,13 +86,15 @@ class URL:
             query = new["search"] or ""
             if query and not query.startswith("?"):
                 query = "?" + query
+            userinfo = ""
+            if self.username:
+                userinfo = urllib.parse.quote(self.username, safe="")
+                if self.password:
+                    userinfo += ":" + urllib.parse.quote(self.password, safe="")
+                userinfo += "@"
+            scheme = new["protocol"] + "://" if new["protocol"] else ""
             self.url = urllib.parse.urlsplit(
-                new["protocol"]
-                + "://"
-                + new["host"]
-                + new["pathname"]
-                + query
-                + new["hash"]
+                scheme + userinfo + new["host"] + new["pathname"] + query + new["hash"]
             )
 
             self._set_href_value(self.url.geturl())
@@ -91,8 +106,8 @@ class URL:
             return
 
     def __init__(
-        self, url: str = "", *args: Any, **kwargs: Any
-    ) -> None:  # TODO - relative to
+        self, url: str = "", base: str | None = None, *args: Any, **kwargs: Any
+    ) -> None:
         """URL
 
         builds a url
@@ -100,7 +115,11 @@ class URL:
         Args:
             url (str): a url
         """
-        self._load_from_href(url)
+        if args and base is None:
+            base = args[0]
+        if "base" in kwargs and base is None:
+            base = kwargs["base"]
+        self._load_from_href(url, base)
 
     @property
     def href(self) -> str:
@@ -112,9 +131,9 @@ class URL:
         self._set_href_value(href)
 
     @property
-    def searchParams(self) -> str:
+    def searchParams(self) -> URLSearchParams:
         self._ensure_url_state()
-        return self._searchParams.toString()
+        return self._searchParams
 
     @property
     def origin(self) -> str:
@@ -126,17 +145,18 @@ class URL:
     def toString(self) -> str:
         return str(self.href)
 
-    # def toJson
+    @staticmethod
+    def canParse(url: str, base: str | None = None) -> bool:
+        try:
+            URL(url, base)
+            parsed = urllib.parse.urlsplit(urllib.parse.urljoin(base or "", url))
+            return bool(parsed.scheme or base)
+        except Exception:
+            return False
 
-    # @property
-    # def href(self):
-    # TODO - check js vs tag. does js version remove query?. if so detect self.
-    #     return self.href
-
-    # @href.setter
-    # def href(self, href:str):
-    #     self.url = href
-    #     self.href = href
+    @staticmethod
+    def parse(url: str, base: str | None = None) -> URL | None:
+        return URL(url, base) if URL.canParse(url, base) else None
 
     @property
     def protocol(self) -> str:
@@ -146,7 +166,6 @@ class URL:
     @protocol.setter
     def protocol(self, p: str):
         self.__protocol = (p or "").rstrip(":")
-        # if self.ready : self.__update__() # TODO - this instead of silent err?
         self.__update__()
 
     @property
@@ -169,8 +188,31 @@ class URL:
         return self.__port
 
     @port.setter
-    def port(self, p: int | None):
-        self.__port = p
+    def port(self, p: int | str | None):
+        if p in ("", None):
+            self.__port = None
+        else:
+            self.__port = int(p)
+        self.__update__()
+
+    @property
+    def username(self) -> str:
+        self._ensure_url_state()
+        return self.__username
+
+    @username.setter
+    def username(self, value: str):
+        self.__username = "" if value is None else str(value)
+        self.__update__()
+
+    @property
+    def password(self) -> str:
+        self._ensure_url_state()
+        return self.__password
+
+    @password.setter
+    def password(self, value: str):
+        self.__password = "" if value is None else str(value)
         self.__update__()
 
     @property
@@ -222,7 +264,9 @@ class URL:
         if value is None:
             value = ""
         self.__search = value if value == "" else value.lstrip("?")
-        self._searchParams = URLSearchParams(self.__search)
+        self._searchParams = URLSearchParams(
+            self.__search, _update=self._search_params_changed
+        )
         self.__update__()
 
     @property
@@ -247,80 +291,58 @@ class URL:
         return str(self.href)
 
     # NOTE - node -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    # @staticmethod
-    # def domainToASCII(domain: str):
-    #     """[It returns the Punycode ASCII serialization of the domain.
-    #     If domain is an invalid domain, the empty string is returned.]
+    @staticmethod
+    def domainToASCII(domain: str) -> str:
+        """Return the Punycode ASCII serialization of a domain."""
+        try:
+            return str(domain).encode("idna").decode("ascii")
+        except Exception:
+            return ""
 
-    #     Args:
-    #         domain (str): [description]
-    #     """
-    #     pass
+    @staticmethod
+    def domainToUnicode(domain: str) -> str:
+        """Return the Unicode serialization of a domain."""
+        try:
+            return str(domain).encode("ascii").decode("idna")
+        except Exception:
+            return ""
 
-    # @staticmethod
-    # def domainToUnicode(domain: str):
-    #     """[returns the Unicode serialization of the domain.
-    #     If the domain is invalid, the empty string is returned]
+    @staticmethod
+    def fileURLToPath(url: str | URL) -> str:
+        """Return a local filesystem path for a ``file:`` URL."""
+        href = url.href if isinstance(url, URL) else str(url)
+        parsed = urllib.parse.urlsplit(href)
+        if parsed.scheme and parsed.scheme != "file":
+            raise ValueError("URL must use the file: protocol")
+        path = urllib.parse.unquote(parsed.path)
+        if parsed.netloc and parsed.netloc not in ("localhost", ""):
+            path = "//" + parsed.netloc + path
+        return path
 
-    #     Args:
-    #         domain (str): [description]
-    #     """
-    #     pass
-
-    # @staticmethod
-    # def fileURLToPath(url: str):
-    #     """[ensures the correct decodings of percent-encoded characters as well as
-    #     ensuring a cross-platform valid absolute path string.]
-
-    #     Args:
-    #         url (str): [The fully-resolved platform-specific file path.]
-    #     """
-    #     if url is None:
-    #         return
-    #     return urllib.parse.unquote(url)
-
-    # @staticmethod
-    # def format(URL, options):
-    #     """[summary]
-
-    #     Args:
-    #         URL ([type]): [description]
-    #         options ([type]): [description]
-    #     """
-    #     pass
-
-    # @staticmethod
-    # def pathToFileURL(path: str):
-    #     """[summary]
-
-    #     Args:
-    #         path (str): [description]
-    #     """
-    #     pass
-
-    # @staticmethod
-    # def urlToHttpOptions(url: str):
-    #     """[summary]
-
-    #     Args:
-    #         url (str): [description]
-    #     """
-    #     pass
+    @staticmethod
+    def pathToFileURL(path: str) -> URL:
+        """Return a file URL for a local filesystem path."""
+        absolute = os.path.abspath(path)
+        return URL("file://" + urllib.parse.quote(absolute))
 
 
 class URLSearchParams:
     """[utility methods to work with the query string of a URL]"""
 
-    def __init__(self, paramString: ParamInput):  # , **paramsObj):
+    def __init__(
+        self,
+        paramString: ParamInput = "",
+        _update: Callable[[URLSearchParams], Any] | None = None,
+    ):
         """[Returns a URLSearchParams object instance.]
 
         Args:
             paramString ([type]): [ i.e. q=URLUtils.searchParams&topic=api]
         """
-        # TODO - escape
-        # import ast
-        # TODO - dont think i can do this cant urls params have duplicate keys?
-        # self.params = ast.literal_eval(paramString)
+        self._update = _update
+        if paramString is None:
+            paramString = ""
+
         if isinstance(paramString, str):
             if paramString.startswith("?"):
                 paramString = paramString[1 : len(paramString)]
@@ -332,7 +354,11 @@ class URLSearchParams:
                 self.params.setdefault(key, []).append(value)
         elif isinstance(paramString, dict):
             self.params = {
-                str(key): value if isinstance(value, list) else [str(value)]
+                str(key): (
+                    [str(item) for item in value]
+                    if isinstance(value, list)
+                    else [str(value)]
+                )
                 for key, value in paramString.items()
             }
         elif hasattr(paramString, "__iter__"):
@@ -344,32 +370,57 @@ class URLSearchParams:
                 f"Malformed paramString.  Must be a string or a dict with dict like items. Got: {paramString}"
             )
 
+    def _changed(self) -> None:
+        if self._update is not None:
+            self._update(self)
+
     def __iter__(self) -> Iterator[tuple[str, list[str]]]:
-        for attr in self.params.items():  # dir(self.params.items()):
-            # if not attr.startswith("__"):
+        for attr in self.params.items():
             yield attr
 
     def append(self, key: str, value: str) -> None:
         """Appends a specified key/value pair as a new search parameter"""
-        # TODO - ordereddict?
-        self.params.setdefault(key, []).append(value)  # [key]=value
+        self.params.setdefault(str(key), []).append(str(value))  # [key]=value
+        self._changed()
 
-    def delete(self, key: str) -> None:
+    def delete(self, key: str, value: str | None = None) -> None:
         """Deletes the given search parameter, and its associated value, from the list of all search parameters."""
-        self.params.pop(key, None)
+        key = str(key)
+        if value is None:
+            self.params.pop(key, None)
+        else:
+            value = str(value)
+            values = [item for item in self.params.get(key, []) if item != value]
+            if values:
+                self.params[key] = values
+            else:
+                self.params.pop(key, None)
+        self._changed()
 
-    def has(self, key: str) -> bool:
+    def has(self, key: str, value: str | None = None) -> bool:
         """Returns a Boolean indicating if such a given parameter exists."""
-        return key in self.params
+        key = str(key)
+        if value is None:
+            return key in self.params
+        return str(value) in self.params.get(key, [])
 
     def entries(self) -> Iterable[tuple[str, list[str]]]:
         """Returns an iterator allowing iteration through all key/value pairs contained in this object."""
         return self.params.items()
 
-    def forEach(self, func: Callable[[str, list[str]], Any]) -> None:
+    def pairs(self) -> Iterable[tuple[str, str]]:
+        """Returns each key/value pair, including duplicates."""
+        for key, values in self.params.items():
+            for value in values:
+                yield key, value
+
+    def forEach(self, func: Callable[..., Any]) -> None:
         """Allows iteration through all values contained in this object via a callback function."""
-        for key, value in self.params.items():
-            func(key, value)
+        for key, value in self.pairs():
+            try:
+                func(value, key, self)
+            except TypeError:
+                func(key, value)
 
     def keys(self) -> Iterable[str]:
         """Returns an iterator allowing iteration through all keys of the key/value pairs contained in this object."""
@@ -385,6 +436,11 @@ class URLSearchParams:
     def sort(self) -> None:
         """Sorts all key/value pairs, if any, by their keys."""
         self.params = dict(sorted(self.params.items()))
+        self._changed()
+
+    @property
+    def size(self) -> int:
+        return sum(len(values) for values in self.params.values())
 
     def values(self) -> Iterable[list[str]]:
         """Returns an iterator allowing iteration through all values of the key/value pairs
@@ -400,7 +456,8 @@ class URLSearchParams:
     def set(self, key: str, value: str) -> None:
         """Sets the value associated with a given search parameter to the given value.
         If there are several values, the others are deleted."""
-        self.params[key] = [value]
+        self.params[str(key)] = [str(value)]
+        self._changed()
 
     def getAll(self, key: str) -> list[str]:
         """Returns all the values associated with a given search parameter."""

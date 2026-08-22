@@ -4,6 +4,7 @@ test_webapi
 """
 
 import json
+import os
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -23,7 +24,9 @@ from domonic.webapi.fetch import (
     fetch_set,
     fetch_threaded,
 )
+from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.urlpattern import URLPattern
+from domonic.webapi.xhr import FormData, XMLHttpRequest
 
 # from domonic.decorators import silence
 
@@ -283,6 +286,136 @@ class TestCase(unittest.TestCase):
         self.assertEqual(aborted.state, "rejected")
         self.assertEqual(aborted.data, "stop")
 
+    def test_url_and_urlsearchparams_edges(self):
+        url = URL("/docs/page?one=1", "https://user:pass@example.com/base/")
+        self.assertEqual(url.href, "https://user:pass@example.com/docs/page?one=1")
+        self.assertEqual(url.username, "user")
+        self.assertEqual(url.password, "pass")
+        self.assertEqual(url.origin, "https://example.com")
+
+        url.username = "ada"
+        url.password = "secret"
+        url.searchParams.append("two", "2")
+        self.assertEqual(
+            url.href, "https://ada:secret@example.com/docs/page?one=1&two=2"
+        )
+        self.assertEqual(url.search, "?one=1&two=2")
+        self.assertEqual(url.searchParams.size, 2)
+        self.assertTrue(url.searchParams.has("two", "2"))
+        url.searchParams.delete("one", "1")
+        self.assertEqual(url.href, "https://ada:secret@example.com/docs/page?two=2")
+
+        params = URLSearchParams({"b": [2, 3], "a": "1"})
+        self.assertEqual(list(params.pairs()), [("b", "2"), ("b", "3"), ("a", "1")])
+        params.sort()
+        self.assertEqual(params.toString(), "a=1&b=2&b=3")
+        called = []
+        params.forEach(lambda value, key, target: called.append((key, value, target)))
+        self.assertEqual(called[0], ("a", "1", params))
+
+        self.assertTrue(URL.canParse("/next", "https://example.com"))
+        self.assertIsInstance(URL.parse("/next", "https://example.com"), URL)
+        self.assertFalse(URL.canParse("/next"))
+        self.assertEqual(URL.domainToASCII("mañana.com"), "xn--maana-pta.com")
+        self.assertEqual(URL.domainToUnicode("xn--maana-pta.com"), "mañana.com")
+        file_url = URL.pathToFileURL("README.md")
+        self.assertEqual(URL.fileURLToPath(file_url), os.path.abspath("README.md"))
+
+    def test_urlpattern(self):
+        pattern = URLPattern(
+            {"hostname": "*.example.com", "pathname": "/books/:id(\\d+)"}
+        )
+        self.assertTrue(pattern.hasRegExpGroups)
+        self.assertTrue(pattern.test("https://store.example.com/books/123"))
+        self.assertFalse(pattern.test("https://store.example.com/books/abc"))
+        match = pattern.exec_("https://store.example.com/books/123")
+        self.assertEqual(match["hostname"]["groups"]["0"], "store")
+        self.assertEqual(match["pathname"]["groups"]["id"], "123")
+
+        relative = URLPattern({"pathname": "/foo/*"})
+        self.assertTrue(relative.test({"pathname": "/foo/bar"}))
+        relative_match = relative.exec_("/foo/bar", "https://example.com/base")
+        self.assertEqual(relative_match["pathname"]["groups"]["0"], "bar")
+        self.assertEqual(
+            relative_match["inputs"], ["/foo/bar", "https://example.com/base"]
+        )
+
+        typed = URLPattern({"pathname": "/:type(foo|bar)"})
+        self.assertTrue(typed.test({"pathname": "/foo"}))
+        self.assertFalse(typed.test({"pathname": "/baz"}))
+        self.assertEqual(
+            typed.exec_({"pathname": "/bar"})["pathname"]["groups"]["type"], "bar"
+        )
+
+    def test_xmlhttprequest_lifecycle_and_formdata(self):
+        form_el = form(action="/", method="post")
+        form_el += input(type="text", name="name", value="Ada")
+        form_el += input(
+            type="checkbox", name="subscribe", value="yes", checked="checked"
+        )
+        form_el += textarea("hello", name="bio")
+
+        data = FormData(form_el)
+        self.assertEqual(data.get("name"), "Ada")
+        self.assertEqual(data.getAll("subscribe"), ["yes"])
+        data.append("name", "Grace")
+        self.assertEqual(data.getAll("name"), ["Ada", "Grace"])
+        data.set("name", "Lin")
+        self.assertEqual(data.get("name"), "Lin")
+        self.assertTrue(data.has("bio"))
+        self.assertEqual(list(data.keys()), ["subscribe", "bio", "name"])
+        self.assertEqual(list(data.values()), ["yes", "hello", "Lin"])
+        self.assertEqual(str(data), "subscribe=yes&bio=hello&name=Lin")
+        data.delete("bio")
+        self.assertFalse(data.has("bio"))
+
+        events = []
+
+        def fake_request(method, url, **kwargs):
+            return SimpleNamespace(
+                url=url,
+                status_code=201,
+                reason="Created",
+                headers={"Content-Type": "application/json", "X-Test": "ok"},
+                text='{"saved": true}',
+                content=b'{"saved": true}',
+                encoding="utf-8",
+            )
+
+        xhr = XMLHttpRequest(responseType="json")
+        xhr.onreadystatechange = lambda event: events.append(("state", xhr.readyState))
+        xhr.onload = lambda event: events.append(("load", xhr.status))
+        xhr.onloadend = lambda event: events.append(("end", xhr.readyState))
+        xhr.onprogress = lambda event: events.append(("progress", event.loaded))
+
+        xhr.open("POST", "https://example.com/api")
+        xhr.setRequestHeader("X-Test", "yes")
+        with patch("requests.request", side_effect=fake_request) as request_mock:
+            xhr.send("payload")
+
+        self.assertEqual(xhr.readyState, XMLHttpRequest.DONE)
+        self.assertEqual(xhr.status, 201)
+        self.assertEqual(xhr.statusText, "Created")
+        self.assertEqual(xhr.response, {"saved": True})
+        self.assertEqual(xhr.getResponseHeader("x-test"), "ok")
+        self.assertIn("content-type: application/json", xhr.getAllResponseHeaders())
+        self.assertEqual(
+            request_mock.call_args.args[:2], ("POST", "https://example.com/api")
+        )
+        self.assertEqual(request_mock.call_args.kwargs["headers"], {"x-test": "yes"})
+        self.assertIn(("load", 201), events)
+        self.assertIn(("end", XMLHttpRequest.DONE), events)
+
+        errored = []
+        xhr_error = XMLHttpRequest(
+            onerror=lambda event: errored.append(str(event.error))
+        )
+        xhr_error.open("GET", "https://example.com/fail")
+        with patch("requests.request", side_effect=RuntimeError("boom")):
+            xhr_error.send()
+        self.assertEqual(xhr_error.readyState, XMLHttpRequest.DONE)
+        self.assertEqual(errored, ["boom"])
+
     def test_gamepad(self):
         pass
 
@@ -393,13 +526,11 @@ class TestCase(unittest.TestCase):
         # myform += button(type='submit', value='Submit')
 
         f = FormData(myform)
-        print(f)
+        self.assertEqual(str(f), "name=&email=&phone=&message=")
 
         # f.append('name', 'John')
         # f.append('age', '25')
         # f.append('email', '
-
-        print("***")
 
         # myform = """
         # <form action="/">
