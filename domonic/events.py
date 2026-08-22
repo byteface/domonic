@@ -29,6 +29,7 @@ class EventListener:
     """Interface-style base for listener objects with ``handleEvent()``."""
 
     def handleEvent(self, event: "Event") -> Any:
+        """Handle an event passed by ``EventTarget`` dispatch."""
         raise NotImplementedError
 
 
@@ -50,8 +51,7 @@ class EventListenerOptions(dict):
 
 
 class EventTarget:
-    """
-    DOM-style event target base class.
+    """DOM-style event target base class.
 
     Extend ``EventTarget`` to give an object support for
     ``addEventListener()``, ``removeEventListener()``, and ``dispatchEvent()``
@@ -59,7 +59,6 @@ class EventTarget:
     """
 
     def __init__(self, *args, **kwargs) -> None:
-        # Initialize a dictionary to store event listeners.
         self.listeners: dict[str, list[Callable[..., Any]]] = {}
         self._listener_options: dict[str, list[dict[str, Any]]] = {}
 
@@ -180,12 +179,16 @@ class EventTarget:
         *args,
         **kwargs,
     ) -> None:
-        """
-        Add an event listener for the given event type.
+        """Add an event listener for the given event type.
 
         Args:
             eventType (str): The type of the event to listen for.
             callback (Callable): The callback function to be executed when the event occurs.
+            options: A DOM-style options dictionary or legacy capture boolean.
+
+        ``options`` may contain ``capture``, ``once``, ``passive``, and
+        ``signal``. Duplicate listeners with the same callback and capture
+        value are ignored, matching DOM listener registration behavior.
         """
         if callback is None:
             return
@@ -226,12 +229,12 @@ class EventTarget:
         callback: Callable[..., Any] | None,
         options: bool | dict[str, Any] | None = None,
     ) -> None:
-        """
-        Remove an event listener for the given event type.
+        """Remove an event listener for the given event type.
 
         Args:
             eventType (str): The type of the event.
             callback (Callable): The callback function to be removed.
+            options: A DOM-style options dictionary or legacy capture boolean.
         """
         if callback is None or eventType not in self.listeners:
             return
@@ -259,14 +262,14 @@ class EventTarget:
         raise TypeError("dispatchEvent() expects an Event, event type, or mapping")
 
     def dispatchEvent(self, event: Any) -> bool:
-        """
-        Dispatch the specified event to all registered event listeners.
+        """Dispatch the specified event to registered listeners.
 
         Args:
-            event (Dict): The event object to be dispatched.
+            event: An ``Event`` instance, event type string, or event mapping.
 
         Returns:
-            bool: True if the event was successfully dispatched, otherwise False.
+            bool: ``False`` when a cancelable event had its default prevented,
+            otherwise ``True``.
         """
         event = self._coerce_event(event)
         event.target = self
@@ -308,14 +311,14 @@ class EventTarget:
             event._in_passive_listener = False
 
     async def dispatchEventAsync(self, event: Any) -> bool:
-        """
-        Dispatch the specified event asynchronously to all registered event listeners.
+        """Dispatch the specified event to sync and async listeners.
 
         Args:
-            event (Dict): The event object to be dispatched.
+            event: An ``Event`` instance, event type string, or event mapping.
 
         Returns:
-            bool: True if the event was successfully dispatched, otherwise False.
+            bool: ``False`` when a cancelable event had its default prevented,
+            otherwise ``True``.
 
         **Usage:**
 
@@ -426,7 +429,7 @@ EventDispatcher = EventTarget  #: legacy alias
 
 
 class Event:
-    """Event class represents events and their properties."""
+    """Base DOM event with propagation, cancelation, and path state."""
 
     # Constants for event types
     EMPTIED: str = "emptied"  #:
@@ -539,6 +542,12 @@ class Event:
     def __init__(
         self, _type: str = "", options: dict[str, Any] | None = None, *args, **kwargs
     ) -> None:
+        """Create an event from an event type and optional initializer values.
+
+        ``options`` accepts the common DOM ``EventInit`` fields such as
+        ``bubbles``, ``cancelable``, and ``composed``. Keyword arguments are
+        also accepted for backwards-compatible domonic call sites.
+        """
         options = options or kwargs  # if options is none use kwargs
         self.type: str = _type
         self.bubbles: bool = options.get("bubbles", False)
@@ -586,9 +595,7 @@ class Event:
         self.defaultPrevented = not self._returnValue
 
     def composedPath(self):
-        """
-        Returns a list of the event's path, from the root to the target.
-        """
+        """Return the event path captured during dispatch."""
         if self._path is not None:
             return list(self._path)
         path = []
@@ -599,7 +606,7 @@ class Event:
                 current_target = current_target.parentNode
             else:
                 break
-        # Include the window as the final item in the path.
+        # Include a document/window default view when the target chain exposes one.
         if path:
             last = path[-1]
             default_view = getattr(last, "defaultView", None)
@@ -615,7 +622,7 @@ class Event:
         *args,
         **kwargs,
     ) -> "Event":
-        """Initialize the event."""
+        """Reinitialize the event when it is not currently dispatching."""
         if self._dispatching:
             return self
         self.type = _type or self.type
@@ -631,49 +638,32 @@ class Event:
         return self
 
     def stopPropagation(self):
-        """[prevents further propagation of the current event in the capturing and bubbling phases]"""
-        self.cancelBubble = True  # Set the cancelBubble flag to stop propagation
+        """Prevent further propagation in the capture and bubble phases."""
+        self.cancelBubble = True
         self._propagation_stopped = True
 
     def msConvertURL(self, url):
-        """
-        Converts the provided URL to a format recognized by Internet Explorer.
+        """Convert a URL using domonic's legacy Microsoft-style helper.
 
         Args:
             url (str): The URL to be converted.
 
         Returns:
-            str: The converted URL.
+            str: A ``javascript:window.open(...)`` wrapper for HTTP(S) URLs,
+            otherwise the original URL.
         """
         if url.startswith("http"):
-            # Example conversion for HTTP/HTTPS URLs in Internet Explorer
             return f'javascript:window.open("{url}");'
-        else:
-            # Handle other URL formats as needed
-            return url
+        return url
 
     def preventDefault(self) -> None:
-        """
-        Prevents the default action associated with the event, if cancelable.
-
-        This method is used to signal that the event should not trigger its default behavior.
-
-        Returns:
-            None
-        """
+        """Mark the default action as prevented when the event is cancelable."""
         if self.cancelable and not self._in_passive_listener:
             self.defaultPrevented = True
             self.returnValue = False
 
     def stopImmediatePropagation(self) -> None:
-        """
-        Prevents further propagation of the current event and immediately stops other event listeners in the same phase from being invoked.
-
-        This method is used to stop the event's propagation immediately and ensure that no other listeners in the same phase are invoked.
-
-        Returns:
-            None
-        """
+        """Stop propagation and skip remaining listeners on the current target."""
         self.cancelBubble = True
         self._propagation_stopped = True
         self._immediate_propagation_stopped = True
@@ -713,18 +703,14 @@ class AbortController:
 
 
 class UIEvent(Event):
-    """UIEvent is a specialized event class for user interface events."""
+    """Event carrying view, detail, and UI coordinate context."""
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
-        """
-        Initialize a UIEvent.
+        """Create a UI event from an event type and UI initializer values.
 
         Args:
             _type (str): The type of the UIEvent.
-            options (dict, optional): Additional options for the event. Defaults to None.
-
-        Returns:
-            None
+            options: UI event initializer values such as ``view`` and ``detail``.
         """
         options = options or kwargs  # If options is None, use kwargs
         self.canBubble = options.get("canBubble", None)
@@ -760,7 +746,7 @@ class UIEvent(Event):
 
 
 class MouseEvent(UIEvent):
-    """mouse events"""
+    """Mouse input event with button, coordinate, and modifier state."""
 
     CLICK: str = "click"  #:
     CONTEXTMENU: str = "contextmenu"  #:
@@ -774,6 +760,7 @@ class MouseEvent(UIEvent):
     MOUSEUP: str = "mouseup"  #:
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        """Create a mouse event from standard mouse initializer values."""
         options = options or kwargs
         self.canBubble = options.get("canBubble", None)
         self.cancelable = options.get("cancelable", None)
@@ -824,6 +811,7 @@ class MouseEvent(UIEvent):
         *args,
         **kwargs,
     ) -> "MouseEvent":
+        """Legacy initializer for updating an existing mouse event."""
         from_json = from_json or {}
         self.initEvent(_type or self.type, canBubble, cancelable)
         self.canBubble = canBubble
@@ -914,9 +902,8 @@ class MouseEvent(UIEvent):
     def which(self):
         return 0 if self._button is None else int(self._button) + 1
 
-    # MOUSE_EVENT
     def getModifierState(self, keyArg: str):
-        """Returns an array containing target ranges that will be affected by the insertion/deletion"""
+        """Return whether the named modifier key was active for the event."""
         lookup = {
             "Alt": self.altKey,
             "Control": self.ctrlKey,
@@ -924,15 +911,6 @@ class MouseEvent(UIEvent):
             "Shift": self.shiftKey,
         }
         return lookup.get(keyArg, False)
-
-    # MovementX Returns the horizontal coordinate of the mouse pointer relative to the position of the last mousemove event MouseEvent
-    # MovementY Returns the vertical coordinate of the mouse pointer relative to the position of the last mousemove event   MouseEvent
-    # offsetX   Returns the horizontal coordinate of the mouse pointer relative to the position of the edge of the target element   MouseEvent
-    # offsetY   Returns the vertical coordinate of the mouse pointer relative to the position of the edge of the target element MouseEvent
-    # pageX Returns the horizontal coordinate of the mouse pointer, relative to the document, when the mouse event was triggered    MouseEvent
-    # pageY Returns the vertical coordinate of the mouse pointer, relative to the document, when the mouse event was triggered  MouseEvent
-    # region        MouseEvent
-    # relatedTarget Returns the element related to the element that triggered the mouse event   MouseEvent, FocusEvent
 
 
 def _infer_char_code(key: str) -> int:
@@ -985,7 +963,7 @@ def _infer_code_from_key_and_location(key: str, location: int) -> str:
 
 
 class KeyboardEvent(UIEvent):
-    """keyboard events"""
+    """Keyboard input event with normalized key, code, and modifier state."""
 
     KEYDOWN: str = "keydown"  #:
     KEYPRESS: str = "keypress"  #:
@@ -997,6 +975,7 @@ class KeyboardEvent(UIEvent):
     DOM_KEY_LOCATION_NUMPAD: int = KeyLocation.NUMPAD  #:
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        """Create a keyboard event from standard keyboard initializer values."""
         options = options or kwargs  # if options is none use kwargs
         self.canBubble = options.get("canBubble", None)
         self.cancelable = options.get("cancelable", None)
@@ -1049,6 +1028,7 @@ class KeyboardEvent(UIEvent):
         modifiersListArg,
         repeat,
     ) -> "KeyboardEvent":
+        """Legacy initializer for updating an existing keyboard event."""
         self.initEvent(typeArg, canBubbleArg, cancelableArg)
         self.canBubbleArg = canBubbleArg
         self.cancelableArg = cancelableArg
@@ -1102,16 +1082,12 @@ class KeyboardEvent(UIEvent):
         return self.key
 
     def getModifierState(self, keyArg: str) -> bool:
+        """Return whether the named modifier key was active for the event."""
         return self._modifier_states.get(keyArg, False)
-
-    # KeyboardEvent
-    # isComposing   Returns whether the state of the event is composing or not  InputEvent, KeyboardEvent
-    # repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent
-    # location  Returns the location of a key on the keyboard or device KeyboardEvent
 
 
 class CompositionEvent(UIEvent):
-    """CompositionEvent"""
+    """Input method editor composition event."""
 
     START: str = "compositionstart"
     END: str = "compositionend"
@@ -1125,7 +1101,7 @@ class CompositionEvent(UIEvent):
 
 
 class FocusEvent(UIEvent):
-    """FocusEvent"""
+    """Focus transition event with an optional related target."""
 
     BLUR: str = "blur"  #:
     FOCUS: str = "focus"  #:
@@ -1139,7 +1115,7 @@ class FocusEvent(UIEvent):
 
 
 class TouchEvent(UIEvent):
-    """TouchEvent"""
+    """Touch input event with active, target, and changed touch lists."""
 
     TOUCHCANCEL: str = "touchcancel"  #:
     TOUCHEND: str = "touchend"  #:
@@ -1159,6 +1135,7 @@ class TouchEvent(UIEvent):
         super().__init__(_type, options, *args, **kwargs)
 
     def getModifierState(self, keyArg: str):
+        """Return whether the named modifier key was active for the event."""
         lookup = {
             "Alt": self.altKey,
             "Control": self.ctrlKey,
@@ -1169,7 +1146,7 @@ class TouchEvent(UIEvent):
 
 
 class WheelEvent(UIEvent):
-    """WheelEvent"""
+    """Wheel input event with delta values and delta mode constants."""
 
     DOM_DELTA_PIXEL: int = 0
     DOM_DELTA_LINE: int = 1
@@ -1188,7 +1165,7 @@ class WheelEvent(UIEvent):
 
 
 class AnimationEvent(Event):
-    """AnimationEvent"""
+    """CSS animation lifecycle event."""
 
     ANIMATIONEND: str = "animationend"  #:
     ANIMATIONITERATION: str = "animationiteration"  #:
@@ -1197,16 +1174,16 @@ class AnimationEvent(Event):
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.animationName = options.get("animationName", None)
-        """ Returns the name of the animation """
+        # Name of the animation that fired the event.
         self.elapsedTime = options.get("elapsedTime", None)
-        """ Returns the number of seconds an animation has been running """
+        # Seconds the animation has been running, excluding paused time.
         self.pseudoElement = options.get("pseudoElement", None)
-        """ Returns the name of the pseudo-element of the animation """
+        # Name of the pseudo-element that fired the event, when present.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class ClipboardEvent(Event):
-    """ClipboardEvent"""
+    """Clipboard operation event exposing clipboard data."""
 
     COPY: str = "copy"  #:
     CUT: str = "cut"  #:
@@ -1215,12 +1192,12 @@ class ClipboardEvent(Event):
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.clipboardData = options.get("clipboardData", None)
-        """ Returns an object containing the data affected by the clipboard operation """
+        # Data affected by the clipboard operation.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class ErrorEvent(Event):
-    """ErrorEvent"""
+    """Script or resource error event."""
 
     ERROR: str = "error"  #:
 
@@ -1235,7 +1212,7 @@ class ErrorEvent(Event):
 
 
 class CloseEvent(Event):
-    """CloseEvent"""
+    """Close event used by streams, sockets, and similar resources."""
 
     CLOSE: str = "close"  #:
 
@@ -1248,7 +1225,7 @@ class CloseEvent(Event):
 
 
 class SubmitEvent(Event):
-    """SubmitEvent"""
+    """Form submission event with the submitting control."""
 
     SUBMIT: str = "submit"  #:
 
@@ -1259,7 +1236,7 @@ class SubmitEvent(Event):
 
 
 class PointerEvent(MouseEvent):
-    """PointerEvent"""
+    """Pointer input event extending mouse events for pen, touch, and mouse."""
 
     POINTER: str = "pointer"  #:
     POINTERCANCEL: str = "pointercancel"  #:
@@ -1291,15 +1268,18 @@ class PointerEvent(MouseEvent):
         super().__init__(_type, options, *args, **kwargs)
 
     def getCoalescedEvents(self):
+        """Return the coalesced pointer events supplied at construction."""
         return list(self._coalescedEvents)
 
     def getPredictedEvents(self):
+        """Return the predicted pointer events supplied at construction."""
         return list(self._predictedEvents)
 
 
 class BeforeUnloadEvent(Event):
+    """Before-unload event with browser-compatible return value handling."""
+
     BEFOREUNLOAD: ClassVar[str] = Event.BEFOREUNLOAD  #:
-    """ BeforeUnloadEvent """
 
     def __init__(
         self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
@@ -1319,7 +1299,7 @@ class BeforeUnloadEvent(Event):
 
 
 class SVGEvent(Event):
-    """SVGEvent"""
+    """SVG event type constants and base behavior."""
 
     ABORT: str = "abort"  #:
     LOAD: str = "load"  #:
@@ -1337,9 +1317,10 @@ class SVGEvent(Event):
 
 
 class TimerEvent(Event):
+    """Timer lifecycle event used by domonic animation helpers."""
+
     TIMER: str = "timer"  #:
     TIMER_COMPLETE: str = "timercomplete"  #:
-    """ TimerEvent """
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
@@ -1347,7 +1328,7 @@ class TimerEvent(Event):
 
 
 class DragEvent(MouseEvent):
-    """DragEvent"""
+    """Drag-and-drop event carrying optional data transfer state."""
 
     DRAG: str = "drag"  #:
     DRAGEND: str = "dragend"  #:
@@ -1367,12 +1348,12 @@ class DragEvent(MouseEvent):
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.dataTransfer = options.get("dataTransfer", None)
-        """ Returns the data that is dragged/dropped """
+        # Data transfer object associated with the drag operation.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class HashChangeEvent(Event):
-    """HashChangeEvent"""
+    """URL fragment transition event."""
 
     CHANGE: str = "hashchange"  #:
 
@@ -1384,7 +1365,7 @@ class HashChangeEvent(Event):
 
 
 class InputEvent(UIEvent):
-    """InputEvent"""
+    """Editable-content input event with inserted data and target ranges."""
 
     CHANGE: str = "change"  #:
     SELECT: str = "select"  #:
@@ -1393,18 +1374,18 @@ class InputEvent(UIEvent):
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.data = options.get("data", None)
-        """ Returns the inserted characters """
+        # Inserted characters, if any.
         self.dataTransfer = options.get("dataTransfer", None)
-        """ Returns an object containing information about the inserted/deleted data """
+        # DataTransfer details for rich insertions, if any.
         self.inputType = options.get("inputType", None)
-        """ Returns the type of the change (i.e "inserting" or "deleting") """
+        # Type of edit operation, for example ``insertText`` or ``deleteContentBackward``.
         self.isComposing = options.get("isComposing", None)
-        """ Returns whether the state of the event is composing or not """
+        # Whether the input occurs during an active composition session.
         self._targetRanges = list(options.get("targetRanges", []))
         super().__init__(_type, options, *args, **kwargs)
 
     def getTargetRanges(self):
-        """Returns an array containing target ranges that will be affected by the insertion/deletion"""
+        """Return target ranges affected by the insertion or deletion."""
         if hasattr(self, "_targetRanges"):
             return list(self._targetRanges)
         if isinstance(getattr(self, "target", None), object):
@@ -1419,7 +1400,7 @@ class InputEvent(UIEvent):
 
 
 class PageTransitionEvent(Event):
-    """PageTransitionEvent"""
+    """Page show/hide transition event."""
 
     PAGEHIDE: str = "pagehide"  #:
     PAGESHOW: str = "pageshow"  #:
@@ -1427,61 +1408,60 @@ class PageTransitionEvent(Event):
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.persisted = options.get("persisted", None)
-        """ Returns whether the webpage was cached by the browser """
+        # Whether the page was restored from a page cache.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class PopStateEvent(Event):
-    """PopStateEvent"""
+    """History navigation event carrying restored state."""
 
     POPSTATE: str = "popstate"  #:
-    # ONPOPSTATE = "onpopstate"  #:??
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.state = options.get("state", None)
-        """ Returns an object containing a copy of the history entries """
+        # State object associated with the history entry.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class StorageEvent(Event):
-    """StorageEvent"""
+    """Storage mutation event."""
 
     STORAGE: str = "storage"  #:
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.key = options.get("key", None)
-        """ Returns the key of the changed storage item """
+        # Key of the changed storage item.
         self.newValue = options.get("newValue", None)
-        """ Returns the new value of the changed storage item """
+        # New value of the changed storage item.
         self.oldValue = options.get("oldValue", None)
-        """ Returns the old value of the changed storage item """
+        # Previous value of the changed storage item.
         self.storageArea = options.get("storageArea", None)
-        """ Returns an object representing the affected storage object """
+        # Storage object that was affected.
         self.url = options.get("url", None)
-        """ Returns the URL of the changed item's document """
+        # URL of the document where the change happened.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class TransitionEvent(Event):
-    """TransitionEvent"""
+    """CSS transition lifecycle event."""
 
     TRANSITIONEND: str = "transitionend"  #:
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.propertyName = options.get("propertyName", None)
-        """ Returns the name of the transition"""
+        # Name of the CSS property that transitioned.
         self.elapsedTime = options.get("elapsedTime", None)
-        """  Returns the number of seconds a transition has been running """
+        # Seconds the transition has been running, excluding delay.
         self.pseudoElement = options.get("pseudoElement", None)
-        """ Returns the name of the pseudo-element of the transition """
+        # Name of the pseudo-element that fired the event, when present.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class ProgressEvent(Event):
-    """ProgressEvent"""
+    """Progress event with byte counts and computability state."""
 
     LOADSTART: str = "loadstart"  #:
     PROGRESS: str = "progress"  #:
@@ -1501,7 +1481,7 @@ class ProgressEvent(Event):
 
 
 class CustomEvent(Event):
-    """CustomEvent"""
+    """Custom application event carrying arbitrary detail data."""
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
@@ -1521,7 +1501,7 @@ class CustomEvent(Event):
 
 
 class ToggleEvent(Event):
-    """ToggleEvent"""
+    """Popover or details toggle event with old and new state."""
 
     BEFORETOGGLE: str = "beforetoggle"  #:
     TOGGLE: str = "toggle"  #:
@@ -1535,7 +1515,7 @@ class ToggleEvent(Event):
 
 
 class CommandEvent(Event):
-    """CommandEvent"""
+    """Command activation event carrying a command string and source."""
 
     COMMAND: str = "command"  #:
 
@@ -1547,7 +1527,7 @@ class CommandEvent(Event):
 
 
 class GamePadEvent(Event):
-    """GamePadEvent"""
+    """Gamepad connection event."""
 
     START: str = "gamepadconnected"  #:
     STOP: str = "gamepaddisconnected"  #:
@@ -1559,7 +1539,7 @@ class GamePadEvent(Event):
 
 
 class FormDataEvent(Event):
-    """FormDataEvent"""
+    """FormData construction event carrying a form data object."""
 
     FORMDATA: str = "formdata"  #:
 
@@ -1570,7 +1550,7 @@ class FormDataEvent(Event):
 
 
 class TrackEvent(Event):
-    """TrackEvent"""
+    """Media track add/remove event."""
 
     ADDTRACK: str = "addtrack"  #:
     REMOVETRACK: str = "removetrack"  #:
@@ -1582,7 +1562,7 @@ class TrackEvent(Event):
 
 
 class BlobEvent(Event):
-    """BlobEvent"""
+    """Media recorder data event carrying a blob-like object."""
 
     DATAAVAILABLE: str = "dataavailable"  #:
 
@@ -1594,7 +1574,7 @@ class BlobEvent(Event):
 
 
 class DeviceMotionEvent(Event):
-    """DeviceMotionEvent"""
+    """Device motion event with acceleration and rotation readings."""
 
     DEVICEMOTION: str = "devicemotion"  #:
 
@@ -1610,7 +1590,7 @@ class DeviceMotionEvent(Event):
 
 
 class DeviceOrientationEvent(Event):
-    """DeviceOrientationEvent"""
+    """Device orientation event with alpha, beta, and gamma angles."""
 
     DEVICEORIENTATION: str = "deviceorientation"  #:
     DEVICEORIENTATIONABSOLUTE: str = "deviceorientationabsolute"  #:
@@ -1625,7 +1605,7 @@ class DeviceOrientationEvent(Event):
 
 
 class DeviceLightEvent(Event):
-    """DeviceLightEvent"""
+    """Ambient light event carrying a light level value."""
 
     DEVICELIGHT: str = "devicelight"  #:
 
@@ -1636,7 +1616,7 @@ class DeviceLightEvent(Event):
 
 
 class DeviceProximityEvent(Event):
-    """DeviceProximityEvent"""
+    """Device proximity event carrying distance bounds."""
 
     DEVICEPROXIMITY: str = "deviceproximity"  #:
 
@@ -1649,7 +1629,7 @@ class DeviceProximityEvent(Event):
 
 
 class WebGLContextEvent(Event):
-    """WebGLContextEvent"""
+    """WebGL context lifecycle event with an optional status message."""
 
     WEBGLCONTEXTLOST: str = "webglcontextlost"  #:
     WEBGLCONTEXTRESTORED: str = "webglcontextrestored"  #:
@@ -1662,16 +1642,16 @@ class WebGLContextEvent(Event):
 
 
 class FetchEvent(Event):
-    """FetchEvent"""
+    """Service-worker-style fetch event."""
 
     FETCH: str = "fetch"  #:
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.clientId = options.get("clientId", None)
-        """ Returns the client ID of the fetch request """
+        # Client ID associated with the fetch request.
         self.request = options.get("request", None)
-        """ Returns the request object """
+        # Request-like object being handled.
         self._responded_with = options.get("response", None)
         self._pending_promises: list[Any] = []
         super().__init__(_type, options, *args, **kwargs)
@@ -1701,108 +1681,100 @@ class FetchEvent(Event):
         )
 
     def respondWith(self, response):
-        """Returns a promise that resolves to the response object"""
+        """Store and return the response object supplied for this fetch."""
         self._responded_with = response
         return response
 
     def waitUntil(self, promise):
-        """Returns a promise that resolves when the response is available"""
+        """Track and return a pending wait object supplied by the caller."""
         self._pending_promises.append(promise)
         return promise
 
 
 class ExtendableEvent(Event):
-    """ExtendableEvent"""
-
-    # CAPTURING_PHASE = 1
-    # AT_TARGET = 2
-    # BUBBLING_PHASE = 3
+    """Event that can track caller-supplied work before completion."""
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.extendable = options.get("extendable", True)
-        """ Returns whether the event is extendable or not """
+        # Whether the event accepts work through waitUntil().
         self._pending_promises: list[Any] = []
-        """ Returns the time stamp of the event """
         super().__init__(_type, options, *args, **kwargs)
 
     def waitUntil(self, promise: Any):
+        """Track and return a pending wait object supplied by the caller."""
         self._pending_promises.append(promise)
         return promise
 
 
 class SyncEvent(ExtendableEvent):
-    """SyncEvent"""
+    """Background sync event with tag and final-attempt state."""
 
     SYNC: str = "sync"  #:
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.tag = options.get("tag", None)
-        """ Returns the tag of the sync event """
+        # Sync registration tag.
         self.lastChance = options.get("lastChance", None)
-        """ Returns whether the sync event is the last chance or not """
+        # Whether this is the final retry opportunity.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class SecurityPolicyViolationEvent(Event):
-    """SecurityPolicyViolationEvent"""
+    """Content Security Policy violation event."""
 
     SECURITY_POLICY_VIOLATION: str = "securitypolicyviolation"  #:
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.documentURI = options.get("documentURI", None)
-        """ Returns the URI of the document that violated the policy """
+        # URI of the protected document.
         self.referrer = options.get("referrer", None)
-        """ Returns the referrer of the resource that violated the policy """
+        # Referrer of the protected document or blocked resource.
         self.blockedURI = options.get("blockedURI", None)
-        """ Returns the blocked URI """
+        # URI blocked by the policy.
         self.violatedDirective = options.get("violatedDirective", None)
-        """ Returns the violated directive """
+        # Directive text that was violated.
         self.effectiveDirective = options.get("effectiveDirective", None)
-        """ Returns the effective directive that was violated """
+        # Effective directive name.
         self.originalPolicy = options.get("originalPolicy", None)
-        """ Returns the original policy """
+        # Full policy text.
         self.disposition = options.get("disposition", None)
-        """ Returns whether the policy was enforced or reported """
+        # Policy disposition, typically ``enforce`` or ``report``.
         self.sourceFile = options.get("sourceFile", None)
-        """ Returns the source file that violated the policy """
+        # Source file related to the violation.
         self.statusCode = options.get("statusCode", 0)
-        """ Returns the HTTP status code of the document or resource """
+        # HTTP status code of the document or resource.
         self.lineNumber = options.get("lineNumber", 0)
-        """ Returns the line number where the violation occurred """
+        # Line number where the violation occurred.
         self.columnNumber = options.get("columnNumber", 0)
-        """ Returns the column number where the violation occurred """
+        # Column number where the violation occurred.
         self.sample = options.get("sample", "")
-        """ Returns a sample of the violating source """
+        # Source sample associated with the violation.
         self.isFrameAncestor = options.get("isFrameAncestor", None)
-        """ Returns whether the frame is an ancestor of the frame that violated the policy """
+        # Whether the violating frame is an ancestor frame.
         self.isMainFrame = options.get("isMainFrame", None)
-        """ Returns whether the frame is the main frame """
+        # Whether the violation occurred in the main frame.
         self.frame = options.get("frame", None)
-        """ Returns the frame that violated the policy """
+        # Frame object associated with the violation.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class DOMContentLoadedEvent(Event):
-    """DOMContentLoadedEvent"""
+    """Document-ready event carrying the loaded document."""
 
     DOMCONTENTLOADED: str = "DOMContentLoaded"  #:
-    # LOAD: str = "load"  #: already on event
-    # BEFOREUNLOAD: str = "beforeunload"  #: already on event
-    # UNLOAD: str = "unload"  #: already on event
-    # readystatechange = "readystatechange"  #: ?? where does this one belong. Have added it to event
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.document = options.get("document", None)
-        """ Returns the document that was loaded """
+        # Document that finished parsing.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class TweenEvent(Event):
-    """TweenEvent"""
+    """Animation tween lifecycle event with a source object."""
 
     START: str = "onStart"  #:
     STOP: str = "onStop"  #:
@@ -1830,7 +1802,7 @@ class TweenEvent(Event):
 
 
 class PromiseRejectionEvent(Event):
-    """PromiseRejectionEvent"""
+    """Unhandled or handled promise rejection event."""
 
     UNHANDLED: str = "unhandledrejection"  #:
     HANDLED: str = "rejectionhandled"  #:
@@ -1838,16 +1810,16 @@ class PromiseRejectionEvent(Event):
     def __init__(self, _type, options=None, *args, **kwargs):
         options = options or kwargs
         self.promise = options.get("promise", None)
-        """ Returns the promise that was rejected """
+        # Promise-like object that was rejected.
         self.reason = options.get("reason", None)
-        """ Returns the reason of the rejection """
+        # Rejection reason.
         self.isRejected = options.get("isRejected", None)
-        """ Returns whether the promise was rejected or not """
+        # Whether the promise is currently rejected.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class MessageEvent(Event):
-    """MessageEvent"""
+    """Cross-context message event."""
 
     MESSAGE: str = "message"  #:
     CONNECT: str = "connect"  #:
@@ -1856,19 +1828,21 @@ class MessageEvent(Event):
     def __init__(self, _type, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.data = options.get("data", None)
-        """ Returns the data of the message """
+        # Message payload.
         self.origin = options.get("origin", None)
-        """ Returns the origin of the message """
+        # Origin that produced the message.
         self.lastEventId = options.get("lastEventId", None)
-        """ Returns the last event id of the message """
+        # Last event ID for streaming/event-source messages.
         self.source = options.get("source", None)
-        """ Returns the source of the message """
+        # Source object that sent the message.
         self.ports = options.get("ports", [])
-        """ Returns the ports of the message """
+        # Message ports transferred with the event.
         super().__init__(_type, options, *args, **kwargs)
 
 
 class GlobalEventHandler:
+    """Mixin that installs default ``on*`` event handler methods."""
+
     _handler_names = (
         "onabort",
         "onanimationcancel",
@@ -1980,6 +1954,8 @@ class GlobalEventHandler:
 
 
 class WindowEventHandler:
+    """Window-specific ``on*`` event handler methods."""
+
     _handler_names = (
         "onabort",
         "onafterprint",
@@ -2067,11 +2043,14 @@ class WindowEventHandler:
     )
 
     def __init__(self, window):
+        """Bind the handler collection to a window-like object."""
         super().__init__()
         self.window = window
 
 
 def _make_default_event_handler(name: str):
+    """Create a default handler that records and forwards the event."""
+
     def handler(self, event):
         self._last_event = event
         callback = getattr(self, f"_{name}_callback", None)
@@ -2084,6 +2063,7 @@ def _make_default_event_handler(name: str):
 
 
 def _install_default_event_handlers(*classes) -> None:
+    """Install generated default handlers on each supplied handler class."""
     for cls in classes:
         for name in getattr(cls, "_handler_names", ()):
             setattr(cls, name, _make_default_event_handler(name))
