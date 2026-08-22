@@ -15,6 +15,12 @@ from domonic.html import *
 from domonic.javascript import *
 from domonic.webapi import *
 from domonic.webapi.console import Console, console
+from domonic.webapi.encoding import (
+    TextDecoder,
+    TextDecoderStream,
+    TextEncoder,
+    TextEncoderStream,
+)
 from domonic.webapi.fetch import (
     Headers,
     Request,
@@ -106,24 +112,76 @@ class TestCase(unittest.TestCase):
             )
 
     def test_encodingAPI(self):
-        # utf8decoder = TextDecoder()  # default 'utf-8' or 'utf8'
+        decoder = TextDecoder()
+        self.assertEqual(decoder.encoding, "utf-8")
+        self.assertFalse(decoder.fatal)
+        self.assertFalse(decoder.ignoreBOM)
 
-        # u8arr = Uint8Array([240, 160, 174, 183])
-        # i8arr = Int8Array([-16, -96, -82, -73])
-        # u16arr = Uint16Array([41200, 47022])
-        # i16arr = Int16Array([-24336, -18514])
-        # i32arr = Int32Array([-1213292304])
+        self.assertEqual(decoder.decode(Uint8Array([240, 160, 174, 183])), "𠮷")
+        self.assertEqual(decoder.decode(Int8Array([-16, -96, -82, -73])), "𠮷")
+        self.assertEqual(decoder.decode(ArrayBuffer(0)), "")
+        self.assertEqual(decoder.decode(bytearray([0xEF, 0xBB, 0xBF, 65])), "A")
+        self.assertEqual(
+            TextDecoder("utf-8", {"ignoreBOM": True}).decode(
+                bytearray([0xEF, 0xBB, 0xBF, 65])
+            ),
+            "\ufeffA",
+        )
 
-        # console.log(utf8decoder.decode(u8arr))
-        # console.log(utf8decoder.decode(i8arr))
-        # console.log(utf8decoder.decode(u16arr))
-        # console.log(utf8decoder.decode(i16arr))
-        # console.log(utf8decoder.decode(i32arr))
+        self.assertEqual(TextDecoder().decode(b"\xff"), "\ufffd")
+        with self.assertRaises(UnicodeDecodeError):
+            TextDecoder("utf-8", {"fatal": True}).decode(b"\xff")
 
-        # win1251decoder = TextDecoder('windows-1251')
-        # b = Uint8Array([207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33])
-        # console.log(win1251decoder.decode(b))  # // Привет, мир!
-        pass
+        partial = TextDecoder()
+        self.assertEqual(partial.decode(b"\xf0\x9f", {"stream": True}), "")
+        self.assertEqual(partial.decode(b"\x92\xa9"), "💩")
+
+        split_bom = TextDecoder()
+        self.assertEqual(split_bom.decode(b"\xef", {"stream": True}), "")
+        self.assertEqual(split_bom.decode(b"\xbb\xbfA"), "A")
+        self.assertEqual(TextDecoder("utf-16").decode(b"\xff\xfeA\x00"), "A")
+
+        win1251decoder = TextDecoder("windows-1251")
+        b = Uint8Array([207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33])
+        self.assertEqual(win1251decoder.decode(b), "Привет, мир!")
+        self.assertEqual(TextDecoder("iso-8859-1").decode(b"\x80"), "€")
+
+        encoder = TextEncoder()
+        self.assertEqual(encoder.encoding, "utf-8")
+        self.assertEqual(encoder.encode("hello 💩"), b"hello \xf0\x9f\x92\xa9")
+        with self.assertRaises(LookupError):
+            TextEncoder("utf-16")
+
+        dest = Uint8Array(8)
+        result = encoder.encodeInto("A💩Z", dest)
+        self.assertEqual(result["read"], 4)
+        self.assertEqual(result.written, 6)
+        self.assertEqual(
+            bytes(dest.buffer.buffer[: result.written]), b"A\xf0\x9f\x92\xa9Z"
+        )
+
+        buffer = ArrayBuffer(4)
+        view = DataView(buffer, 1, 2)
+        result = encoder.encodeInto("é", view)
+        self.assertEqual(result, {"read": 1, "written": 2})
+        self.assertEqual(TextDecoder().decode(view), "é")
+        self.assertEqual(list(buffer.buffer), [0, 0xC3, 0xA9, 0])
+
+        tight = bytearray(4)
+        result = encoder.encodeInto("A💩", tight)
+        self.assertEqual(result, {"read": 1, "written": 1})
+        self.assertEqual(tight, bytearray(b"A\x00\x00\x00"))
+
+        decoder_stream = TextDecoderStream()
+        self.assertEqual(decoder_stream.write(b"\xf0\x9f"), "")
+        self.assertEqual(decoder_stream.write(b"\x92\xa9"), "💩")
+        self.assertEqual(decoder_stream.read(), "💩")
+        self.assertEqual(repr(decoder_stream), "<TextDecoderStream encoding=utf-8>")
+
+        encoder_stream = TextEncoderStream()
+        self.assertEqual(encoder_stream.write("ok"), b"ok")
+        self.assertEqual(encoder_stream.read(), b"ok")
+        self.assertEqual(repr(encoder_stream), "<TextEncoderStream encoding=utf-8>")
 
     def test_canvas(self):
         pass
